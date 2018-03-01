@@ -3,14 +3,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-class TerrainTile
+struct TerrainTile
 {
-public:
-  TerrainTile(glm::mat4& model, int x, int y, float lowLeft, float lowRight, float upperRight, float upperLeft, float width, float depth, bool orderCrossed = false);
-  const glm::mat4 model;
+  TerrainTile(int x, int y, float lowLeft, float lowRight, float upperRight, float upperLeft, bool orderCrossed = false);
   const int mapX, mapY;
   const float lowLeft, lowRight, upperRight, upperLeft;
-  const float width, depth;
   const bool orderCrossed;
 };
 

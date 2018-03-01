@@ -1,8 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <set>
 #include <ctime>
-#include <map>
-#include <algorithm>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -18,21 +17,23 @@
 #include "TerrainTile.h"
 
 GLFWwindow* initGLFW();
-void generateTerrainData(std::vector<std::vector<float>>& map, int cycles, std::vector<TerrainTile>& tiles);
-void generateTerrainTestData(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles);
-void createTiles(int x, int y, int width, int depth, std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles);
+void generateHillData(std::vector<std::vector<float>>& map, int cycles, float* max_height, HILL_DENSITY density);
+void generateWaterData(std::vector<std::vector<float>>& map, unsigned int shoreSizeBase, float waterLevel);
+void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat);
+bool isOrphanAt(int x, int y, std::vector<std::vector<float>>& map);
+void compressHeight(std::vector<std::vector<float>>& map, float threshold_percent, float* limit, float ratio);
 template <typename T> void initializeMap(std::vector<std::vector<T>>& map)
 {
   map.clear();
-  map.reserve(LANDS_HEIGHT + 1);
-  for (size_t row = 0; row < LANDS_HEIGHT + 1; row++)
+  map.reserve(TILES_HEIGHT + 1);
+  for (size_t row = 0; row < TILES_HEIGHT + 1; row++)
     {
       std::vector<T> rowN;
-      rowN.reserve(LANDS_WIDTH + 1);
+      rowN.reserve(TILES_WIDTH + 1);
       map.emplace_back(rowN);
     }
   for (auto& row : map)
-    for (size_t elem = 0; elem < LANDS_WIDTH + 1; elem++)
+    for (size_t elem = 0; elem < TILES_WIDTH + 1; elem++)
       row.emplace_back(0);
 }
 
@@ -50,6 +51,7 @@ int main()
   glewInit();
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   //SHADER STUFF
   Shader scene(PROJ_PATH + "/shaders/scene.vs", PROJ_PATH + "/shaders/scene.fs");
@@ -60,37 +62,170 @@ int main()
   GLuint flatTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/grass.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE1);
   GLuint hillTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/grassHill.jpg", GL_REPEAT);
+  glActiveTexture(GL_TEXTURE2);
+  GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water.jpg", GL_REPEAT);
   scene.setInt("grassTexture", 0);
   scene.setInt("hillTexture", 1);
+  scene.setInt("waterTexture", 2);
+
+  //generating land height map
+  std::vector<std::vector<float>> hillsMap, waterMap;
+  std::vector<TerrainTile> hillTiles, waterTiles;
+  hillTiles.reserve(NUM_TILES);
+  waterTiles.reserve(NUM_TILES);
+  initializeMap(hillsMap);
+  initializeMap(waterMap);
+  float max_height = 0.0f;
+  generateHillData(hillsMap, 8, &max_height, HILL_DENSITY::DENSE);
+  generateHillData(hillsMap, 4, &max_height, HILL_DENSITY::THIN);
+  compressHeight(hillsMap, 0.15f, &max_height, 1.4f); //slightly compress entire height range
+  compressHeight(hillsMap, 0.8f, &max_height, 4.0f); //more heavy compress for top-most peaks
+  createTiles(hillsMap, hillTiles, false);
+  hillTiles.shrink_to_fit();
+
+  unsigned int shoreSizeBase = 3;
+  generateWaterData(waterMap, shoreSizeBase, 0.2f);
+  createTiles(waterMap, waterTiles, true);
+  waterTiles.shrink_to_fit();
+  while (waterTiles.size() < TILES_WIDTH * (shoreSizeBase + 2) * (shoreSizeBase + 2)
+         || waterTiles.size() > TILES_WIDTH * (shoreSizeBase + 3) * (shoreSizeBase + 3))
+    {
+      waterTiles.clear();
+      initializeMap(waterMap);
+      generateWaterData(waterMap, shoreSizeBase, 0.2f);
+      createTiles(waterMap, waterTiles, true);
+      waterTiles.shrink_to_fit();
+    }
+
+  std::cout << hillTiles.size() << std::endl;
+  std::cout << waterTiles.size() << std::endl;
+  const size_t HILLS_VERTEX_DATA_LENGTH = hillTiles.size() * 20;
+  const size_t HILLS_ELEMENT_DATA_LENGTH = hillTiles.size() * 6;
+  const size_t WATER_VERTEX_DATA_LENGTH = waterTiles.size() * 20;
+  const size_t WATER_ELEMENT_DATA_LENGTH = waterTiles.size() * 6;
+  GLfloat hillsVertices[HILLS_VERTEX_DATA_LENGTH];
+  GLuint hillsIndices[HILLS_ELEMENT_DATA_LENGTH];
+  GLfloat waterVertices[WATER_VERTEX_DATA_LENGTH];
+  GLuint waterIndices[WATER_ELEMENT_DATA_LENGTH];
+
+  //fill hill buffer
+  std::uniform_real_distribution<float> coordinate_offset_distribution(0.1f, 0.7f);
+  std::default_random_engine randomizer;
+  for (unsigned int i = 0; i < hillTiles.size(); i++)
+    {
+      TerrainTile& tile = hillTiles[i];
+      int offset = i * 20;
+      int indexArrayOffset = i * 6;
+      int index = i * 4;
+      //ll
+      hillsVertices[offset] = -1- TILES_WIDTH / 2 + tile.mapX;
+      hillsVertices[offset+1] = tile.lowLeft;
+      hillsVertices[offset+2] = - TILES_HEIGHT / 2 + tile.mapY;
+      hillsVertices[offset+3] = 0.0f;
+      hillsVertices[offset+4] = 0.0f;
+      //lr
+      hillsVertices[offset+5] = - TILES_WIDTH / 2 + tile.mapX;
+      hillsVertices[offset+6] = tile.lowRight;
+      hillsVertices[offset+7] = - TILES_HEIGHT / 2 + tile.mapY;
+      hillsVertices[offset+8] = 1.0f;
+      hillsVertices[offset+9] = 0.0f;
+      //ur
+      hillsVertices[offset+10] = - TILES_WIDTH / 2 + tile.mapX;
+      hillsVertices[offset+11] = tile.upperRight;
+      hillsVertices[offset+12] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      hillsVertices[offset+13] = 1.0f;
+      hillsVertices[offset+14] = 1.0f;
+      //ul
+      hillsVertices[offset+15] = -1 - TILES_WIDTH / 2 + tile.mapX;
+      hillsVertices[offset+16] = tile.upperLeft;
+      hillsVertices[offset+17] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      hillsVertices[offset+18] = 0.0f;
+      hillsVertices[offset+19] = 1.0f;
+
+      bool indicesCrossed = false;
+      if (tile.lowRight < tile.upperLeft || tile.upperLeft < tile.lowRight)
+        indicesCrossed = true;
+
+      if (!indicesCrossed)
+        {
+          hillsIndices[indexArrayOffset] = index;
+          hillsIndices[indexArrayOffset+1] = index + 1;
+          hillsIndices[indexArrayOffset+2] = index + 2;
+          hillsIndices[indexArrayOffset+3] = index + 2;
+          hillsIndices[indexArrayOffset+4] = index + 3;
+          hillsIndices[indexArrayOffset+5] = index;
+        }
+      else
+        {
+          hillsIndices[indexArrayOffset] = index + 1;
+          hillsIndices[indexArrayOffset+1] = index + 2;
+          hillsIndices[indexArrayOffset+2] = index + 3;
+          hillsIndices[indexArrayOffset+3] = index + 3;
+          hillsIndices[indexArrayOffset+4] = index;
+          hillsIndices[indexArrayOffset+5] = index + 1;
+        }
+    }
+
+  //fill water buffer
+  for (unsigned int i = 0; i < waterTiles.size(); i++)
+    {
+      TerrainTile& tile = waterTiles[i];
+      int offset = i * 20;
+      int indexArrayOffset = i * 6;
+      int index = i * 4;
+      //ll
+      waterVertices[offset] = -1- TILES_WIDTH / 2 + tile.mapX;
+      waterVertices[offset+1] = tile.lowLeft;
+      waterVertices[offset+2] = - TILES_HEIGHT / 2 + tile.mapY;
+      waterVertices[offset+3] = 0.0f;
+      waterVertices[offset+4] = 0.0f;
+      //lr
+      waterVertices[offset+5] = - TILES_WIDTH / 2 + tile.mapX;
+      waterVertices[offset+6] = tile.lowRight;
+      waterVertices[offset+7] = - TILES_HEIGHT / 2 + tile.mapY;
+      waterVertices[offset+8] = 1.0f;
+      waterVertices[offset+9] = 0.0f;
+      //ur
+      waterVertices[offset+10] = - TILES_WIDTH / 2 + tile.mapX;
+      waterVertices[offset+11] = tile.upperRight;
+      waterVertices[offset+12] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      waterVertices[offset+13] = 1.0f;
+      waterVertices[offset+14] = 1.0f;
+      //ul
+      waterVertices[offset+15] = -1 - TILES_WIDTH / 2 + tile.mapX;
+      waterVertices[offset+16] = tile.upperLeft;
+      waterVertices[offset+17] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      waterVertices[offset+18] = 0.0f;
+      waterVertices[offset+19] = 1.0f;
+
+      waterIndices[indexArrayOffset] = index;
+      waterIndices[indexArrayOffset+1] = index + 1;
+      waterIndices[indexArrayOffset+2] = index + 2;
+      waterIndices[indexArrayOffset+3] = index + 2;
+      waterIndices[indexArrayOffset+4] = index + 3;
+      waterIndices[indexArrayOffset+5] = index;
+    }
 
   //BASE TILE VERTEX DATA
-  GLuint VAO, VBO, EBO, EBOx;
+  GLuint VAO, VBO, EBO;
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
   glGenBuffers(1, &VBO);
   glGenBuffers(1, &EBO);
-  glGenBuffers(1, &EBOx);
 
-  GLuint indices[] = {
+  GLuint flatIndices[] = {
     0,1,2,
     2,3,0
   };
-  GLuint indicesCrossed[] = {
-    3,0,1,
-    1,2,3
-  };
   //height set slightly higher than base 0.0 level to prevent z-fighting
   GLfloat flatSquareVertices[] = {
-     -0.5f * LANDS_WIDTH, -0.01f,  0.5f * LANDS_WIDTH,  0.0f, 0.0f,
-      0.5f * LANDS_WIDTH, -0.01f,  0.5f * LANDS_WIDTH,  1.0f * LANDS_WIDTH, 0.0f,
-      0.5f * LANDS_WIDTH, -0.01f, -0.5f * LANDS_WIDTH,  1.0f * LANDS_WIDTH, 1.0f * LANDS_WIDTH,
-     -0.5f * LANDS_WIDTH, -0.01f, -0.5f * LANDS_WIDTH,  0.0f, 1.0f * LANDS_WIDTH
+     -0.5f * TILES_WIDTH, -0.01f,  0.5f * TILES_WIDTH,  0.0f, 0.0f,
+      0.5f * TILES_WIDTH, -0.01f,  0.5f * TILES_WIDTH,  1.0f * TILES_WIDTH, 0.0f,
+      0.5f * TILES_WIDTH, -0.01f, -0.5f * TILES_WIDTH,  1.0f * TILES_WIDTH, 1.0f * TILES_WIDTH,
+     -0.5f * TILES_WIDTH, -0.01f, -0.5f * TILES_WIDTH,  0.0f, 1.0f * TILES_WIDTH
     };
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOx);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesCrossed), indicesCrossed, GL_STATIC_DRAW);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(flatIndices), flatIndices, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(flatSquareVertices), flatSquareVertices, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
@@ -102,39 +237,49 @@ int main()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   //INSTANCE TILES VERTEX DATA
-  GLuint iVAO, iVBO, iEBO;
-  glGenVertexArrays(1, &iVAO);
-  glBindVertexArray(iVAO);
-  glGenBuffers(1, &iVBO);
-  glGenBuffers(1, &iEBO);
+  GLuint hillsVAO, hillsVBO, hillsEBO;
+  glGenVertexArrays(1, &hillsVAO);
+  glBindVertexArray(hillsVAO);
+  glGenBuffers(1, &hillsVBO);
+  glGenBuffers(1, &hillsEBO);
 
-  GLfloat vertices[] = {
-    -0.5f, 0.0f,  0.5f,  0.0f, 0.0f,
-     0.5f, 0.0f,  0.5f,  1.0f, 0.0f,
-     0.5f, 0.0f, -0.5f,  1.0f, 1.0f,
-    -0.5f, 0.0f, -0.5f,  0.0f, 1.0f
-  };
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iEBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, iVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hillsEBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(hillsIndices), hillsIndices, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, hillsVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(hillsVertices), hillsVertices, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  //generating land height map
-  std::vector<std::vector<float>> map;
-  std::vector<TerrainTile> tiles;
-  tiles.reserve(NUM_LANDS);
-//  generateTerrainTestData(map, tiles);
-  generateTerrainData(map, 8, tiles);
-  generateTerrainData(map, 8, tiles);
-  generateTerrainData(map, 8, tiles);
-  tiles.shrink_to_fit();
+  //Water tiles vertex data
+  GLuint waterVAO, waterVBO, waterEBO;
+  glGenVertexArrays(1, &waterVAO);
+  glBindVertexArray(waterVAO);
+  glGenBuffers(1, &waterVBO);
+  glGenBuffers(1, &waterEBO);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, waterEBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(waterIndices), waterIndices, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(waterVertices), waterVertices, GL_STATIC_DRAW);
+  const GLuint waterBindingPoint = 9;
+  glBindVertexBuffer(waterBindingPoint, waterVBO, 0, 5 * sizeof(GLfloat));
+  glEnableVertexAttribArray(0);
+  glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
+  glVertexAttribBinding(0, waterBindingPoint);
+  glEnableVertexAttribArray(1);
+  glVertexAttribFormat(1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat));
+  glVertexAttribBinding(1, waterBindingPoint);
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   glm::mat4 projection;
-  projection = glm::perspective(glm::radians(cam.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 200.0f);
+  projection = glm::perspective(glm::radians(cam.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 500.0f);
 
   //MAIN LOOP
   while(!glfwWindowShouldClose(window))
@@ -149,76 +294,25 @@ int main()
       scene.use();
       scene.setMat4("projection", projection);
       scene.setMat4("view", cam.getViewMatrix());
+      glm::mat4 model;
+      scene.setMat4("model", model);
 
       //height tiles
-      glBindVertexArray(iVAO);
-      glActiveTexture(GL_TEXTURE1);
-      glBindTexture(GL_TEXTURE_2D, hillTexture);
-      for (auto& tile : tiles)
-        {
-          /* method 1: using glMapBuffer = slow*/
-//          glBindBuffer(GL_ARRAY_BUFFER, iVBO);
-//          float* vertex_pointer = (float*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-//          *vertex_pointer = -0.5 * (tile.width * (tile.width - 1) / tile.width);
-//          *(vertex_pointer+1) = tile.lowLeft;
-//          *(vertex_pointer+2) =  0.5 * (tile.depth * (tile.depth - 1) / tile.depth);
+      glBindVertexArray(hillsVAO);
+      glBindBuffer(GL_ARRAY_BUFFER, hillsVBO);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hillsEBO);
+      glDrawElements(GL_TRIANGLES, 6 * hillTiles.size(), GL_UNSIGNED_INT, 0);
 
-//          *(vertex_pointer+5) =  0.5 * (tile.width * (tile.width - 1) / tile.width);
-//          *(vertex_pointer+6) = tile.lowRight;
-//          *(vertex_pointer+7) =  0.5 * (tile.depth * (tile.depth - 1) / tile.depth);
-//          *(vertex_pointer+8) =  2.0f * tile.width - 1;
-
-//          *(vertex_pointer+10) =  0.5 * (tile.width * (tile.width - 1) / tile.width);
-//          *(vertex_pointer+11) = tile.upperRight;
-//          *(vertex_pointer+12) = -0.5 * (tile.depth * (tile.depth - 1) / tile.depth);
-//          *(vertex_pointer+13) =  2.0f * tile.width - 1;
-//          *(vertex_pointer+14) =  2.0f * tile.depth - 1;
-
-//          *(vertex_pointer+15) = -0.5 * (tile.width * (tile.width - 1) / tile.width);
-//          *(vertex_pointer+16) = tile.upperLeft;
-//          *(vertex_pointer+17) = -0.5 * (tile.depth * (tile.depth - 1) / tile.depth);
-//          *(vertex_pointer+19) =  2.0f * tile.depth - 1;
-//          glUnmapBuffer(GL_ARRAY_BUFFER);
-
-          /*
-            Method 2: Brute force = fast enough
-          */
-          vertices[0] = -0.5 * (tile.width * (tile.width - 1) / tile.width);
-          vertices[1] = tile.lowLeft;
-          vertices[2] =  0.5 * (tile.depth * (tile.depth - 1) / tile.depth);
-
-          vertices[5] =  0.5 * (tile.width * (tile.width - 1) / tile.width);
-          vertices[6] = tile.lowRight;
-          vertices[7] =  0.5 * (tile.depth * (tile.depth - 1) / tile.depth);
-          vertices[8] =  2.0f * tile.width - 1;
-
-          vertices[10] =  0.5 * (tile.width * (tile.width - 1) / tile.width);
-          vertices[11] = tile.upperRight;
-          vertices[12] = -0.5 * (tile.depth * (tile.depth - 1) / tile.depth);
-          vertices[13] =  2.0f * tile.width - 1;
-          vertices[14] =  2.0f * tile.depth - 1;
-
-          vertices[15] = -0.5 * (tile.width * (tile.width - 1) / tile.width);
-          vertices[16] = tile.upperLeft;
-          vertices[17] = -0.5 * (tile.depth * (tile.depth - 1) / tile.depth);
-          vertices[19] =  2.0f * tile.depth - 1;
-
-          glBindBuffer(GL_ARRAY_BUFFER, iVBO);
-          glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
-          glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-          if (tile.orderCrossed)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOx);
-          else
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-          scene.setMat4("model", tile.model);
-          scene.setFloat("HeightOffset", (rand()/RAND_MAX) / 10);
-          glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        }
+      //water tiles
+      glBindVertexArray(waterVAO);
+      scene.setInt("waterRendering", 1);
+      glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, waterEBO);
+      glDrawElements(GL_TRIANGLES, 6 * waterTiles.size(), GL_UNSIGNED_INT, 0);
+      scene.setInt("waterRendering", 0);
 
       //base tile
       glBindVertexArray(VAO);
-      glm::mat4 model;
-      scene.setMat4("model", model);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
       glfwSwapBuffers(window);
@@ -227,13 +321,13 @@ int main()
   //CLEANUP
   glDeleteTextures(1, &flatTexture);
   glDeleteTextures(1, &hillTexture);
+  glDeleteTextures(1, &waterTexture);
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);
-  glDeleteBuffers(1, &EBOx);
-  glDeleteVertexArrays(1, &iVAO);
-  glDeleteBuffers(1, &iVBO);
-  glDeleteBuffers(1, &iEBO);
+  glDeleteVertexArrays(1, &hillsVAO);
+  glDeleteBuffers(1, &hillsVBO);
+  glDeleteBuffers(1, &hillsEBO);
   scene.cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();
@@ -259,186 +353,485 @@ GLFWwindow* initGLFW()
   return window;
 }
 
-void createTiles(int x, int y, int width, int depth, std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles)
-{
-  glm::vec3 translation(-1.0f * (LANDS_WIDTH / 2 - x - width / 2 + (width+1) % 2),
-                         0.0f,
-                        -1.0f * (LANDS_HEIGHT / 2 - y - depth / 2 - (depth+1) % 2));
-  //flat rect
-  glm::mat4 model;
-  model = glm::translate(model, translation);
-  model = glm::translate(model, glm::vec3((width+1)%2/2.0f, 0.0f, -(depth+1)%2/2.0*3));
-  tiles.emplace_back(model, x, y, map[y+depth-1][x], map[y+depth-1][x+width-1], map[y][x+width-1], map[y][x], width, depth);
-
-  //lower oblique
-  glm::mat4 low;
-  low = glm::translate(low, translation);
-  low = glm::translate(low, glm::vec3((width % 2 == 0 ? 0.5f : 0), 0.0f, depth / 2.0f - (depth+1)%2/2.0f*3));
-  tiles.emplace_back(low, x, y, map[y+depth][x], map[y+depth][x+width-1], map[y+depth-1][x+width-1], map[y+depth-1][x], width, 2);
-
-  //upper oblique
-  glm::mat4 up;
-  up = glm::translate(up, translation);
-  up = glm::translate(up, glm::vec3((width % 2 == 0 ? 0.5f : 0), 0.0f, -depth / 2 - 0.5f - (depth+1) % 2));
-  tiles.emplace_back(up, x, y, map[y][x], map[y][x+width-1], map[y-1][x+width-1], map[y-1][x], width, 2);
-
-  //left oblique
-  glm::mat4 left;
-  left = glm::translate(left, translation);
-  left = glm::translate(left, glm::vec3(-width / 2 - 0.5f + (width % 2 == 0 ? 1.0f : 0), 0.0f, -(depth+1)%2/2.0*3));
-  tiles.emplace_back(left, x, y, map[y+depth-1][x-1], map[y+depth-1][x], map[y][x], map[y][x-1], 2, depth);
-
-  //right oblique
-  glm::mat4 right;
-  right = glm::translate(right, translation);
-  right = glm::translate(right, glm::vec3(-width / 2 - 0.5f + (width % 2 == 0 ? 1.0f : 0) + width, 0.0f, -(depth+1)%2/2.0*3));
-  tiles.emplace_back(right, x, y, map[y+depth-1][x+width-1], map[y+depth-1][x+width], map[y][x+width], map[y][x+width-1], 2, depth);
-
-  //lower-left corner
-  glm::mat4 ll;
-  ll = glm::translate(ll, translation);
-  ll = glm::translate(ll, glm::vec3(-width / 2.0f + (width % 2 == 0 ? 0.5f : 0), 0.0f, depth / 2.0f - (depth+1)%2/2.0f*3));
-  tiles.emplace_back(ll, x, y, map[y+depth][x-1], map[y+depth][x], map[y+depth-1][x], map[y+depth-1][x-1], 2, 2);
-
-  //lower-right corner
-  glm::mat4 lr;
-  lr = glm::translate(lr, translation);
-  lr = glm::translate(lr, glm::vec3(width / 2.0f + (width % 2 == 0 ? 0.5f : 0), 0.0f, depth / 2.0f - (depth+1)%2/2.0f*3));
-  tiles.emplace_back(lr, x, y, map[y+depth][x+width-1], map[y+depth][x+width], map[y+depth-1][x+width], map[y+depth-1][x+width-1], 2, 2, true);
-
-  //upper-right corner
-  glm::mat4 ur;
-  ur = glm::translate(ur, translation);
-  ur = glm::translate(ur, glm::vec3(-width / 2 - 0.5f + (width % 2 == 0 ? 1.0f : 0) + width, 0.0f, -depth / 2 - 0.5f - (depth+1) % 2));
-  tiles.emplace_back(ur, x, y, map[y][x+width-1], map[y][x+width], map[y-1][x+width], map[y-1][x+width-1], 2, 2);
-
-  //upper-left corner
-  glm::mat4 ul;
-  ul = glm::translate(ul, translation);
-  ul = glm::translate(ul, glm::vec3(-width / 2 - 0.5f + (width % 2 == 0 ? 1.0f : 0), 0.0f, -depth / 2 - 0.5f - (depth+1) % 2));
-  tiles.emplace_back(ul, x, y, map[y][x-1], map[y][x], map[y-1][x], map[y-1][x-1], 2, 2, true);
-}
-
-void generateTerrainData(std::vector<std::vector<float>>& map, int cycles, std::vector<TerrainTile>& tiles)
+void generateHillData(std::vector<std::vector<float>>& map, int cycles, float* max_height, HILL_DENSITY density)
 {
   srand(time(NULL));
-  const int MIN_DISTANCE = cycles;
-  for (int c = 0; c < cycles; c++)
+  std::uniform_real_distribution<float> random(0.3f, 0.7f);
+  std::default_random_engine engine;
+  float density_value = 1.0f * (float)TILES_WIDTH;
+  if (density == HILL_DENSITY::THIN)
+      density_value = 1.1f * (float)TILES_WIDTH;
+  else if (density == HILL_DENSITY::DENSE)
+    density_value = 0.9f * (float)TILES_WIDTH;
+
+  //hills kernel generation cycle
+  for (int y = 1; y < TILES_HEIGHT; y++)
     {
-      initializeMap(map);
-      int width = rand() / (RAND_MAX / 12) + 6;
-      int depth = rand() / (RAND_MAX / 12) + 6;
-      int cycle = rand() / (RAND_MAX / LANDS_WIDTH / MIN_DISTANCE);
-      while (cycle <= MIN_DISTANCE)
-        cycle = rand() / (RAND_MAX / LANDS_WIDTH / MIN_DISTANCE);
-      for (int y = 1; y < LANDS_HEIGHT; y++)
+      for (int x = 1; x < TILES_WIDTH; x++)
         {
-          for (int x = 1; x < LANDS_WIDTH; x++)
+          if (rand() % (int)density_value == 0)
             {
-              if ((y * LANDS_WIDTH + x) % cycle == 0)
+              map[y][x] += 1.0f;
+            }
+        }
+    }
+  *max_height = 1.0f;
+
+  //fattening hills around, based on their kernel positions
+  for (int cycle = 1; cycle < cycles; cycle++)
+    {
+      for (int y = cycle; y < TILES_HEIGHT + 1 - cycle; y++)
+        {
+          for (int x = cycle; x < TILES_WIDTH + 1 - cycle; x++)
+            {
+              if (y >= TILES_HEIGHT)
+                break;
+              if (rand() % (cycle+1) == cycle && (map[y][x] != 0))
                 {
-                  for (int w = 0; w < width; w++)
+                  int left = x-cycle;
+                  if (left <= cycle)
+                    left = cycle;
+                  int right = x+cycle;
+                  if (right >= TILES_WIDTH - cycle)
+                    right = TILES_WIDTH - cycle;
+                  int top = y-cycle;
+                  if (top <= cycle)
+                    top = cycle;
+                  int bottom = y+cycle;
+                  if (bottom >= TILES_HEIGHT - cycle)
+                    bottom = TILES_HEIGHT - cycle;
+                  for (int y2 = top; y2 <= bottom; y2++)
                     {
-                      if (x + width >= LANDS_WIDTH)
-                        width -= x+width - LANDS_WIDTH;
-                      for (int d = 0; d < depth; d++)
+                      for (int x2 = left; x2 <= right; x2++)
                         {
-                          if (y + depth >= LANDS_HEIGHT)
-                            depth -= y+depth - LANDS_HEIGHT;
-                          map[y+d][x+w] += (c+1) / (3.0f + c / 2.0f) + rand()/(float)RAND_MAX/(depth+width)*(depth*width/2.2f);
+                          if (rand() % (cycle + 2) > 1)
+                            {
+                              if (map[y2][x2] < cycle)
+                                map[y2][x2] += 1.0f - 0.075f * cycle;
+                              map[y2][x2] += (random(engine) / cycle);
+                              if (map[y2][x2] > *max_height)
+                                *max_height = map[y2][x2];
+                            }
                         }
                     }
-                  createTiles(x, y, width, depth, map, tiles);
-
-                  x += width;
-                  y += depth;
-                  width = rand() / (RAND_MAX / (12 - c)) + 6;
-                  depth = rand() / (RAND_MAX / (12 - c)) + 6;
+                  x += cycle;
+                  y += cycle;
                 }
-              cycle = rand() / (RAND_MAX / LANDS_WIDTH / MIN_DISTANCE);
-              while (cycle <= MIN_DISTANCE)
-                cycle = rand() / (RAND_MAX / LANDS_WIDTH / MIN_DISTANCE);
+            }
+        }
+      //random reduce orphan heights which were not fattened
+      for (int y = cycle; y < TILES_HEIGHT + 1 - cycle; y++)
+        {
+          for (int x = cycle; x < TILES_WIDTH + 1 - cycle; x++)
+            {
+              if (map[y][x] == 1.0f && isOrphanAt(x, y, map))
+                map[y][x] = 0.0f;
             }
         }
     }
 }
 
-void generateTerrainTestData(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles)
+void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat)
 {
-  initializeMap(map);
-  int width = 5;
-  int depth = 6;
-  int y = 2, x = 2;
-  for (int y1 = y; y1 < y + depth; y1++)
+  for (unsigned int y = 1; y < map.size(); y++)
     {
-      for (int x1 = x; x1 < x + width; x1++)
+      for (unsigned int x = 1; x < map[0].size(); x++)
         {
-          map[y1][x1] += 1.0f;
+          bool toCreate;
+          if (!flat)
+            toCreate = map[y][x] != 0 || map[y-1][x] != 0 || map[y][x-1] != 0 || map[y-1][x-1] != 0;
+          else
+            toCreate = map[y][x] != 0;
+          if (toCreate)
+            {
+              float ll;
+              float lr;
+              float ur;
+              float ul;
+              if (!flat)
+                {
+                  ll = map[y][x-1];
+                  lr = map[y][x];
+                  ur = map[y-1][x];
+                  ul = map[y-1][x-1];
+                }
+              else
+                {
+                  ll = map[y][x];
+                  lr = map[y][x];
+                  ur = map[y][x];
+                  ul = map[y][x];
+                }
+              tiles.emplace_back(x, y, ll, lr, ur, ul);
+            }
         }
     }
-  glm::vec3 translation(-1.0f * (LANDS_WIDTH / 2 - x - width / 2 + (width+1) % 2),
-                         0.0f,
-                        -1.0f * (LANDS_HEIGHT / 2 - y - depth / 2 - (depth+1) % 2));
-  //flat rect
-  glm::mat4 model;
-  model = glm::translate(model, translation);
-  model = glm::translate(model, glm::vec3((width+1)%2/2.0f, 0.0f, -(depth+1)%2/2.0*3));
-  TerrainTile flatTile(model, x, y, map[y+depth-1][x], map[y+depth-1][x+width-1], map[y][x+width-1], map[y][x], width, depth);
-  tiles.push_back(flatTile);
+}
 
-  //lower oblique
-  glm::mat4 low;
-  low = glm::translate(low, translation);
-  low = glm::translate(low, glm::vec3((width % 2 == 0 ? 0.5f : 0), 0.0f, depth / 2.0f - (depth+1)%2/2.0f*3));
-  TerrainTile lowTile(low, x, y, map[y+depth][x], map[y+depth][x+width-1], map[y+depth-1][x+width-1], map[y+depth-1][x], width, 2);
-  tiles.push_back(lowTile);
+bool isOrphanAt(int x, int y, std::vector<std::vector<float>>& map)
+{
+  return (map[y-1][x-1] == 0 &&
+          map[y-1][x] == 0 &&
+          map[y-1][x+1] == 0 &&
+          map[y][x-1] == 0 &&
+          map[y][x+1] == 0 &&
+          map[y+1][x-1] == 0 &&
+          map[y+1][x] == 0 &&
+          map[y+1][x+1] == 0);
+}
 
-  //upper oblique
-  glm::mat4 up;
-  up = glm::translate(up, translation);
-  up = glm::translate(up, glm::vec3((width % 2 == 0 ? 0.5f : 0), 0.0f, -depth / 2 - 0.5f - (depth+1) % 2));
-  TerrainTile upTile(up, x, y, map[y][x], map[y][x+width-1], map[y-1][x+width-1], map[y-1][x], width, 2);
-  tiles.push_back(upTile);
+void compressHeight(std::vector<std::vector<float>>& map, float threshold_percent, float *limit, float ratio)
+{
+  float threshold_value = *limit * threshold_percent;
+  for (auto& row : map)
+    for (auto& height : row)
+      {
+        if (height < threshold_value)
+          continue;
+        height = threshold_value + (height - threshold_value) / ratio;
+      }
+  *limit /= ratio;
+}
 
-  //left oblique
-  glm::mat4 left;
-  left = glm::translate(left, translation);
-  left = glm::translate(left, glm::vec3(-width / 2 - 0.5f + (width % 2 == 0 ? 1.0f : 0), 0.0f, -(depth+1)%2/2.0*3));
-  TerrainTile leftTile(left, x, y, map[y+depth-1][x-1], map[y+depth-1][x], map[y][x], map[y][x-1], 2, depth);
-  tiles.push_back(leftTile);
+void generateWaterData(std::vector<std::vector<float>>& map, unsigned int shoreSizeBase, float waterLevel)
+{
+  srand(time(NULL));
+  bool startAxisFromX = rand() % 2 == 0;
+  bool riverEnd = false;
+  unsigned int curveMaxDistance = rand() % 32 + 32;
+  unsigned int curveDistanceStep = 0;
+  const unsigned int X_MID_POINT = TILES_WIDTH / 2;
+  const unsigned int Y_MID_POINT = TILES_HEIGHT / 2;
+  const int MIN_CURVE_CHANGES = 8;
+  int numCurveChanges = 0;
+  enum DIRECTION : int {
+    UP = 0, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, UP_LEFT
+  };
+  DIRECTION dir;
+  unsigned int y, x;
+  unsigned int startCoord = rand() % TILES_HEIGHT;
+  x = startAxisFromX ? startCoord : 0;
+  y = startAxisFromX ? 0 : startCoord;
+  dir = startAxisFromX ? DOWN : RIGHT;
 
-  //right oblique
-  glm::mat4 right;
-  right = glm::translate(right, translation);
-  right = glm::translate(right, glm::vec3(-width / 2 - 0.5f + (width % 2 == 0 ? 1.0f : 0) + width, 0.0f, -(depth+1)%2/2.0*3));
-  TerrainTile rightTile(right, x, y, map[y+depth-1][x+width-1], map[y+depth-1][x+width], map[y][x+width], map[y][x+width-1], 2, depth);
-  tiles.push_back(rightTile);
+  while (!riverEnd)
+    {
+      switch (dir) {
+        case UP:
+          {
+            ++curveDistanceStep;
+            --y;
+            if (y <= 0)
+              {
+                y = 0;
+                riverEnd = true;
+              }
+            if (rand() % 4 == 0)
+              x += rand() % 2 == 0 ? 1 : -1;
+            if (x <= 0)
+              {
+                x = 0;
+                riverEnd = true;
+              }
+            if (x >= TILES_WIDTH)
+              {
+                x = TILES_WIDTH;
+                riverEnd = true;
+              }
 
-  //lower-left corner
-  glm::mat4 ll;
-  ll = glm::translate(ll, translation);
-  ll = glm::translate(ll, glm::vec3(-width / 2.0f + (width % 2 == 0 ? 0.5f : 0), 0.0f, depth / 2.0f - (depth+1)%2/2.0f*3));
-  TerrainTile llTile(ll, x, y, map[y+depth][x-1], map[y+depth][x], map[y+depth-1][x], map[y+depth-1][x-1], 2, 2);
-  tiles.push_back(llTile);
+            map[y][x] = waterLevel;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 32 + 32;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == DOWN || dir == DOWN_LEFT || dir == DOWN_RIGHT || dir == UP
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case UP_RIGHT:
+          {
+            ++curveDistanceStep;
+            y -= rand() % 2;
+            x += rand() % 2;
+            if (y <= 0)
+              {
+                y = 0;
+                riverEnd = true;
+              }
+            if (x >= TILES_WIDTH)
+              {
+                x = TILES_WIDTH;
+                riverEnd = true;
+              }
+            map[y][x] = waterLevel;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 32 + 32;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == DOWN_LEFT || dir == DOWN || dir == LEFT || dir == UP_RIGHT
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case RIGHT:
+          {
+            ++curveDistanceStep;
+            ++x;
+            if (x >= TILES_WIDTH)
+              {
+                x = TILES_WIDTH;
+                riverEnd = true;
+              }
+            if (rand() % 4 == 0)
+              y += rand() % 2 == 0 ? 1 : -1;
+            if (y <= 0)
+              {
+                y = 0;
+                riverEnd = true;
+              }
+            if (y >= TILES_HEIGHT)
+              {
+                y = TILES_HEIGHT;
+                riverEnd = true;
+              }
 
-  //lower-right corner
-  glm::mat4 lr;
-  lr = glm::translate(lr, translation);
-  lr = glm::translate(lr, glm::vec3(width / 2.0f + (width % 2 == 0 ? 0.5f : 0), 0.0f, depth / 2.0f - (depth+1)%2/2.0f*3));
-  TerrainTile lrTile(lr, x, y, map[y+depth][x+width-1], map[y+depth][x+width], map[y+depth-1][x+width], map[y+depth-1][x+width-1], 2, 2, true);
-  tiles.push_back(lrTile);
+            map[y][x] = waterLevel;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 32 + 32;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == LEFT || dir == UP_LEFT || dir == DOWN_LEFT || dir == RIGHT
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case DOWN_RIGHT:
+          {
+            ++curveDistanceStep;
+            y += rand() % 2;
+            x += rand() % 2;
+            if (y >= TILES_HEIGHT)
+              {
+                y = TILES_HEIGHT;
+                riverEnd = true;
+              }
+            if (x >= TILES_WIDTH)
+              {
+                x = TILES_WIDTH;
+                riverEnd = true;
+              }
+            map[y][x] = waterLevel;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 32 + 32;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == UP_LEFT || dir == UP || dir == LEFT || dir == DOWN_RIGHT
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case DOWN:
+          {
+            ++curveDistanceStep;
+            ++y;
+            if (y >= TILES_HEIGHT)
+              {
+                y = TILES_HEIGHT;
+                riverEnd = true;
+              }
+            if (rand() % 4 == 0)
+              x += rand() % 2 == 0 ? 1 : -1;
+            if (x <= 0)
+              {
+                x = 0;
+                riverEnd = true;
+              }
+            if (x >= TILES_WIDTH)
+              {
+                x = TILES_WIDTH;
+                riverEnd = true;
+              }
 
-  //upper-right corner
-  glm::mat4 ur;
-  ur = glm::translate(ur, translation);
-  ur = glm::translate(ur, glm::vec3(-width / 2 - 0.5f + (width % 2 == 0 ? 1.0f : 0) + width, 0.0f, -depth / 2 - 0.5f - (depth+1) % 2));
-  TerrainTile urTile(ur, x, y, map[y][x+width-1], map[y][x+width], map[y-1][x+width], map[y-1][x+width-1], 2, 2);
-  tiles.push_back(urTile);
+            map[y][x] = waterLevel;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 32 + 32;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == UP || dir == UP_LEFT || dir == UP_RIGHT || dir == DOWN
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case DOWN_LEFT:
+          {
+            ++curveDistanceStep;
+            y += rand() % 2;
+            x -= rand() % 2;
+            if (y >= TILES_HEIGHT)
+              {
+                y = TILES_HEIGHT;
+                riverEnd = true;
+              }
+            if (x <= 0)
+              {
+                x = 0;
+                riverEnd = true;
+              }
+            map[y][x] = waterLevel;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 32 + 32;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == UP_RIGHT || dir == UP || dir == RIGHT || dir == DOWN_LEFT
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case LEFT:
+          {
+            ++curveDistanceStep;
+            --x;
+            if (x <= 0)
+              {
+                x = 0;
+                riverEnd = true;
+              }
+            if (rand() % 4 == 0)
+              y += rand() % 2 == 0 ? 1 : -1;
+            if (y <= 0)
+              {
+                y = 0;
+                riverEnd = true;
+              }
+            if (y >= TILES_HEIGHT)
+              {
+                y = TILES_HEIGHT;
+                riverEnd = true;
+              }
 
-  //upper-left corner
-  glm::mat4 ul;
-  ul = glm::translate(ul, translation);
-  ul = glm::translate(ul, glm::vec3(-width / 2 - 0.5f + (width % 2 == 0 ? 1.0f : 0), 0.0f, -depth / 2 - 0.5f - (depth+1) % 2));
-  TerrainTile ulTile(ul, x, y, map[y][x-1], map[y][x], map[y-1][x], map[y-1][x-1], 2, 2, true);
-  tiles.push_back(ulTile);
+            map[y][x] = waterLevel;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 32 + 32;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == RIGHT || dir == UP_RIGHT || dir == DOWN_RIGHT || dir == LEFT
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case UP_LEFT:
+          {
+            ++curveDistanceStep;
+            y -= rand() % 2;
+            x -= rand() % 2;
+            if (x <= 0)
+              {
+                x = 0;
+                riverEnd = true;
+              }
+            if (y <= 0)
+              {
+                y = 0;
+                riverEnd = true;
+              }
+            map[y][x] = waterLevel;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 32 + 32;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == DOWN_RIGHT || dir == DOWN || dir == RIGHT || dir == UP_LEFT
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        default:
+          break;
+        }
+
+      //fattening the kernel
+      int shoreSizeYT = rand() % 3 + shoreSizeBase;
+      int shoreSizeYB = rand() % 3 + shoreSizeBase;
+      int shoreSizeXL = rand() % 3 + shoreSizeBase;
+      int shoreSizeXR = rand() % 3 + shoreSizeBase;
+      int xl = x - shoreSizeXL;
+      if (xl <= 0)
+        xl = 0;
+      int xr = x + shoreSizeXR;
+      if (xr >= TILES_WIDTH)
+        xr = TILES_WIDTH;
+      int yt = y - shoreSizeYT;
+      if (yt <= 0)
+        yt = 0;
+      int yb = y + shoreSizeYB;
+      if (yb >= TILES_HEIGHT)
+        yb = TILES_HEIGHT;
+      for (int y1 = yt; y1 <= yb; y1++)
+        {
+          for (int x1 = xl; x1 <= xr; x1++)
+            {
+              map[y1][x1] = waterLevel;
+            }
+        }
+
+//      //remove sharp land edges hovered by water
+//      for (int y2 = 1; y2 < TILES_HEIGHT - 1; y2++)
+//        {
+//          for (int x2 = 1; x2 < TILES_WIDTH - 1; x2++)
+//            {
+//              if (map[y2][x2] == waterLevel)
+//                continue;
+//              if ((map[y2-1][x2] == waterLevel && map[y2+1][x2] == waterLevel) || (map[y2][x2-1] == waterLevel && map[y2][x2+1] == waterLevel))
+//                map[y2][x2] = waterLevel;
+//            }
+//        }
+    }
 }
