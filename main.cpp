@@ -17,9 +17,10 @@
 #include "TerrainTile.h"
 
 GLFWwindow* initGLFW();
-void generateHillData(std::vector<std::vector<float>>& map, int cycles, float* max_height, HILL_DENSITY density);
 void generateWaterData(std::vector<std::vector<float>>& map, unsigned int shoreSizeBase, float waterLevel);
-void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat);
+void generateBaseTerrainData(std::vector<std::vector<float>>& map, std::vector<std::vector<float>>& water);
+void generateHillData(std::vector<std::vector<float>>& map, int cycles, float* max_height, HILL_DENSITY density);
+void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat, bool createOnZeroTiles);
 bool isOrphanAt(int x, int y, std::vector<std::vector<float>>& map);
 void compressHeight(std::vector<std::vector<float>>& map, float threshold_percent, float* limit, float ratio);
 template <typename T> void initializeMap(std::vector<std::vector<T>>& map)
@@ -42,6 +43,7 @@ Timer timer;
 Camera cam(glm::vec3(0.0f, 3.0f, 0.0f));
 InputController input;
 TextureLoader textureLoader;
+const float WATER_LEVEL = -0.75f;
 
 int main()
 {
@@ -64,51 +66,117 @@ int main()
   GLuint hillTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/grassHill.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE2);
   GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water.jpg", GL_REPEAT);
+  glActiveTexture(GL_TEXTURE3);
+  GLuint sandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/sand.jpg", GL_REPEAT);
   scene.setInt("grassTexture", 0);
   scene.setInt("hillTexture", 1);
   scene.setInt("waterTexture", 2);
+  scene.setInt("sandTexture", 3);
+  scene.setFloat("waterLevel", WATER_LEVEL);
 
-  //generating land height map
-  std::vector<std::vector<float>> hillsMap, waterMap;
-  std::vector<TerrainTile> hillTiles, waterTiles;
-  hillTiles.reserve(NUM_TILES);
-  waterTiles.reserve(NUM_TILES);
-  initializeMap(hillsMap);
-  initializeMap(waterMap);
-  float max_height = 0.0f;
-  generateHillData(hillsMap, 8, &max_height, HILL_DENSITY::DENSE);
-  generateHillData(hillsMap, 4, &max_height, HILL_DENSITY::THIN);
-  compressHeight(hillsMap, 0.15f, &max_height, 1.4f); //slightly compress entire height range
-  compressHeight(hillsMap, 0.8f, &max_height, 4.0f); //more heavy compress for top-most peaks
-  createTiles(hillsMap, hillTiles, false);
-  hillTiles.shrink_to_fit();
-
+  //generation water map
+  std::vector<std::vector<float>> waterMap;
+  std::vector<TerrainTile> waterTiles;
   unsigned int shoreSizeBase = 3;
-  generateWaterData(waterMap, shoreSizeBase, 0.2f);
-  createTiles(waterMap, waterTiles, true);
+  initializeMap(waterMap);
+  waterTiles.reserve(NUM_TILES);
+  generateWaterData(waterMap, shoreSizeBase, WATER_LEVEL);
+  createTiles(waterMap, waterTiles, true, false);
   waterTiles.shrink_to_fit();
   while (waterTiles.size() < TILES_WIDTH * (shoreSizeBase + 2) * (shoreSizeBase + 2)
          || waterTiles.size() > TILES_WIDTH * (shoreSizeBase + 3) * (shoreSizeBase + 3))
     {
       waterTiles.clear();
+      waterTiles.reserve(NUM_TILES);
       initializeMap(waterMap);
-      generateWaterData(waterMap, shoreSizeBase, 0.2f);
-      createTiles(waterMap, waterTiles, true);
+      generateWaterData(waterMap, shoreSizeBase, WATER_LEVEL);
+      createTiles(waterMap, waterTiles, true, false);
       waterTiles.shrink_to_fit();
     }
-
-  std::cout << hillTiles.size() << std::endl;
-  std::cout << waterTiles.size() << std::endl;
-  const size_t HILLS_VERTEX_DATA_LENGTH = hillTiles.size() * 20;
-  const size_t HILLS_ELEMENT_DATA_LENGTH = hillTiles.size() * 6;
+  std::cout << "Water tiles: " << waterTiles.size() << std::endl;
+  //fill water buffer
   const size_t WATER_VERTEX_DATA_LENGTH = waterTiles.size() * 20;
   const size_t WATER_ELEMENT_DATA_LENGTH = waterTiles.size() * 6;
-  GLfloat hillsVertices[HILLS_VERTEX_DATA_LENGTH];
-  GLuint hillsIndices[HILLS_ELEMENT_DATA_LENGTH];
   GLfloat waterVertices[WATER_VERTEX_DATA_LENGTH];
   GLuint waterIndices[WATER_ELEMENT_DATA_LENGTH];
+  for (unsigned int i = 0; i < waterTiles.size(); i++)
+    {
+      TerrainTile& tile = waterTiles[i];
+      int offset = i * 20;
+      int indexArrayOffset = i * 6;
+      int index = i * 4;
+      //ll
+      waterVertices[offset] = -1- TILES_WIDTH / 2 + tile.mapX;
+      waterVertices[offset+1] = tile.lowLeft;
+      waterVertices[offset+2] = - TILES_HEIGHT / 2 + tile.mapY;
+      waterVertices[offset+3] = 0.0f;
+      waterVertices[offset+4] = 0.0f;
+      //lr
+      waterVertices[offset+5] = - TILES_WIDTH / 2 + tile.mapX;
+      waterVertices[offset+6] = tile.lowRight;
+      waterVertices[offset+7] = - TILES_HEIGHT / 2 + tile.mapY;
+      waterVertices[offset+8] = 1.0f;
+      waterVertices[offset+9] = 0.0f;
+      //ur
+      waterVertices[offset+10] = - TILES_WIDTH / 2 + tile.mapX;
+      waterVertices[offset+11] = tile.upperRight;
+      waterVertices[offset+12] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      waterVertices[offset+13] = 1.0f;
+      waterVertices[offset+14] = 1.0f;
+      //ul
+      waterVertices[offset+15] = -1 - TILES_WIDTH / 2 + tile.mapX;
+      waterVertices[offset+16] = tile.upperLeft;
+      waterVertices[offset+17] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      waterVertices[offset+18] = 0.0f;
+      waterVertices[offset+19] = 1.0f;
 
-  //fill hill buffer
+      waterIndices[indexArrayOffset] = index;
+      waterIndices[indexArrayOffset+1] = index + 1;
+      waterIndices[indexArrayOffset+2] = index + 2;
+      waterIndices[indexArrayOffset+3] = index + 2;
+      waterIndices[indexArrayOffset+4] = index + 3;
+      waterIndices[indexArrayOffset+5] = index;
+    }
+  //Water tiles vertex data
+  GLuint waterVAO, waterVBO, waterEBO;
+  glGenVertexArrays(1, &waterVAO);
+  glBindVertexArray(waterVAO);
+  glGenBuffers(1, &waterVBO);
+  glGenBuffers(1, &waterEBO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, waterEBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(waterIndices), waterIndices, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(waterVertices), waterVertices, GL_STATIC_DRAW);
+  const GLuint waterBindingPoint = 9;
+  glBindVertexBuffer(waterBindingPoint, waterVBO, 0, 5 * sizeof(GLfloat));
+  glEnableVertexAttribArray(0);
+  glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
+  glVertexAttribBinding(0, waterBindingPoint);
+  glEnableVertexAttribArray(1);
+  glVertexAttribFormat(1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat));
+  glVertexAttribBinding(1, waterBindingPoint);
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  //generating land height map
+  std::vector<std::vector<float>> hillsMap;
+  std::vector<TerrainTile> hillTiles;
+  hillTiles.reserve(NUM_TILES);
+  initializeMap(hillsMap);
+  float max_height = 0.0f;
+  generateHillData(hillsMap, 8, &max_height, HILL_DENSITY::DENSE);
+  generateHillData(hillsMap, 4, &max_height, HILL_DENSITY::THIN);
+  compressHeight(hillsMap, 0.15f, &max_height, 1.4f); //slightly compress entire height range
+  compressHeight(hillsMap, 0.8f, &max_height, 4.0f); //more heavy compress for top-most peaks
+  createTiles(hillsMap, hillTiles, false, false);
+  hillTiles.shrink_to_fit();
+  std::cout << "Hills tiles: " << hillTiles.size() << std::endl;
+  //fill hills buffer
+  const size_t HILLS_VERTEX_DATA_LENGTH = hillTiles.size() * 20;
+  const size_t HILLS_ELEMENT_DATA_LENGTH = hillTiles.size() * 6;
+  GLfloat hillsVertices[HILLS_VERTEX_DATA_LENGTH];
+  GLuint hillsIndices[HILLS_ELEMENT_DATA_LENGTH];
   std::uniform_real_distribution<float> coordinate_offset_distribution(0.1f, 0.7f);
   std::default_random_engine randomizer;
   for (unsigned int i = 0; i < hillTiles.size(); i++)
@@ -165,84 +233,12 @@ int main()
           hillsIndices[indexArrayOffset+5] = index + 1;
         }
     }
-
-  //fill water buffer
-  for (unsigned int i = 0; i < waterTiles.size(); i++)
-    {
-      TerrainTile& tile = waterTiles[i];
-      int offset = i * 20;
-      int indexArrayOffset = i * 6;
-      int index = i * 4;
-      //ll
-      waterVertices[offset] = -1- TILES_WIDTH / 2 + tile.mapX;
-      waterVertices[offset+1] = tile.lowLeft;
-      waterVertices[offset+2] = - TILES_HEIGHT / 2 + tile.mapY;
-      waterVertices[offset+3] = 0.0f;
-      waterVertices[offset+4] = 0.0f;
-      //lr
-      waterVertices[offset+5] = - TILES_WIDTH / 2 + tile.mapX;
-      waterVertices[offset+6] = tile.lowRight;
-      waterVertices[offset+7] = - TILES_HEIGHT / 2 + tile.mapY;
-      waterVertices[offset+8] = 1.0f;
-      waterVertices[offset+9] = 0.0f;
-      //ur
-      waterVertices[offset+10] = - TILES_WIDTH / 2 + tile.mapX;
-      waterVertices[offset+11] = tile.upperRight;
-      waterVertices[offset+12] = -1 - TILES_HEIGHT / 2 + tile.mapY;
-      waterVertices[offset+13] = 1.0f;
-      waterVertices[offset+14] = 1.0f;
-      //ul
-      waterVertices[offset+15] = -1 - TILES_WIDTH / 2 + tile.mapX;
-      waterVertices[offset+16] = tile.upperLeft;
-      waterVertices[offset+17] = -1 - TILES_HEIGHT / 2 + tile.mapY;
-      waterVertices[offset+18] = 0.0f;
-      waterVertices[offset+19] = 1.0f;
-
-      waterIndices[indexArrayOffset] = index;
-      waterIndices[indexArrayOffset+1] = index + 1;
-      waterIndices[indexArrayOffset+2] = index + 2;
-      waterIndices[indexArrayOffset+3] = index + 2;
-      waterIndices[indexArrayOffset+4] = index + 3;
-      waterIndices[indexArrayOffset+5] = index;
-    }
-
-  //BASE TILE VERTEX DATA
-  GLuint VAO, VBO, EBO;
-  glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
-  glGenBuffers(1, &VBO);
-  glGenBuffers(1, &EBO);
-
-  GLuint flatIndices[] = {
-    0,1,2,
-    2,3,0
-  };
-  //height set slightly higher than base 0.0 level to prevent z-fighting
-  GLfloat flatSquareVertices[] = {
-     -0.5f * TILES_WIDTH, -0.01f,  0.5f * TILES_WIDTH,  0.0f, 0.0f,
-      0.5f * TILES_WIDTH, -0.01f,  0.5f * TILES_WIDTH,  1.0f * TILES_WIDTH, 0.0f,
-      0.5f * TILES_WIDTH, -0.01f, -0.5f * TILES_WIDTH,  1.0f * TILES_WIDTH, 1.0f * TILES_WIDTH,
-     -0.5f * TILES_WIDTH, -0.01f, -0.5f * TILES_WIDTH,  0.0f, 1.0f * TILES_WIDTH
-    };
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(flatIndices), flatIndices, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(flatSquareVertices), flatSquareVertices, GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-  //INSTANCE TILES VERTEX DATA
+  //Hills tiles vertex data
   GLuint hillsVAO, hillsVBO, hillsEBO;
   glGenVertexArrays(1, &hillsVAO);
   glBindVertexArray(hillsVAO);
   glGenBuffers(1, &hillsVBO);
   glGenBuffers(1, &hillsEBO);
-
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hillsEBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(hillsIndices), hillsIndices, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, hillsVBO);
@@ -255,29 +251,112 @@ int main()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  //Water tiles vertex data
-  GLuint waterVAO, waterVBO, waterEBO;
-  glGenVertexArrays(1, &waterVAO);
-  glBindVertexArray(waterVAO);
-  glGenBuffers(1, &waterVBO);
-  glGenBuffers(1, &waterEBO);
+  //generating base terrain data
+  std::vector<std::vector<float>> baseMap;
+  std::vector<TerrainTile> baseTiles;
+  baseTiles.reserve(NUM_TILES);
+  initializeMap(baseMap);
+  generateBaseTerrainData(baseMap, waterMap);
+  createTiles(baseMap, baseTiles, false, true);
+  baseTiles.shrink_to_fit();
+  std::cout << "Base tiles: " << baseTiles.size() << std::endl;
+  const size_t BASE_TILES_SUB_VECTOR_CAPACITY = TILES_HEIGHT * 16;
+  unsigned int numBaseSubTiles = baseTiles.size() / BASE_TILES_SUB_VECTOR_CAPACITY;
+  std::vector<std::vector<TerrainTile>> baseSubTiles;
+  baseSubTiles.reserve(numBaseSubTiles);
+  for (unsigned int i = 0; i < numBaseSubTiles; ++i)
+    {
+      baseSubTiles.push_back(std::vector<TerrainTile>());
+    }
+  for (auto& emptyTilesSubVector : baseSubTiles)
+    emptyTilesSubVector.reserve(BASE_TILES_SUB_VECTOR_CAPACITY);
+  std::cout << "Base sub tiles: " << numBaseSubTiles << std::endl;
+  unsigned int counter = 0;
+  for (auto& tile : baseTiles)
+    {
+      baseSubTiles[counter/BASE_TILES_SUB_VECTOR_CAPACITY].push_back(tile);
+      counter++;
+    }
+  baseSubTiles.shrink_to_fit();
+  for (unsigned int i = 0; i < baseSubTiles.size(); ++i)
+    {
+      std::cout << "Base sub tile vec " << i << " : " << baseSubTiles[i].size() << std::endl;
+    }
+  const size_t BASE_TERRAIN_DATA_LENGTH = baseSubTiles[0].size() * 20;
+  const size_t BASE_TERRAIN_ELEMENT_LENGTH = baseSubTiles[0].size() * 6;
+  GLuint baseVAO[numBaseSubTiles], baseVBO[numBaseSubTiles], baseEBO[numBaseSubTiles];
+  glGenVertexArrays(numBaseSubTiles, baseVAO);
+  glGenBuffers(numBaseSubTiles, baseVBO);
+  glGenBuffers(numBaseSubTiles, baseEBO);
+  //generate random offsets
+  std::uniform_real_distribution<float> base_height_offset_distribution(0.01f, 0.1f);
+  GLfloat heightOffsets[NUM_TILES + TILES_WIDTH];
+  for (unsigned int i = 0; i < sizeof(heightOffsets) / sizeof(GLfloat); i++)
+    heightOffsets[i] = base_height_offset_distribution(randomizer);
+  //fill base terrain vertex data
+  GLfloat vertices[BASE_TERRAIN_DATA_LENGTH];
+  GLuint indices[BASE_TERRAIN_ELEMENT_LENGTH];
+  GLuint heightOffsetIndex = 0;
+  for (unsigned int i = 0; i < numBaseSubTiles; i++)
+    {
+      for (unsigned int c = 0; c < baseSubTiles[i].size(); c++)
+        {
+          TerrainTile& tile = baseSubTiles[i][c];
+          int offset = c * 20;
+          int indexArrayOffset = c * 6;
+          int index = c * 4;
+          float heightOffsetLL = heightOffsets[heightOffsetIndex + TILES_WIDTH];
+          float heightOffsetLR = heightOffsets[heightOffsetIndex + TILES_WIDTH + 1];
+          float heightOffsetUR = heightOffsets[heightOffsetIndex + 1];
+          float heightOffsetUL = heightOffsets[heightOffsetIndex];
+          ++heightOffsetIndex;
+          //ll
+          vertices[offset] = -1- TILES_WIDTH / 2 + tile.mapX;
+          vertices[offset+1] = tile.lowLeft + heightOffsetLL;
+          vertices[offset+2] = - TILES_HEIGHT / 2 + tile.mapY;
+          vertices[offset+3] = 0.0f;
+          vertices[offset+4] = 0.0f;
+          //lr
+          vertices[offset+5] = - TILES_WIDTH / 2 + tile.mapX;
+          vertices[offset+6] = tile.lowRight + heightOffsetLR;
+          vertices[offset+7] = - TILES_HEIGHT / 2 + tile.mapY;
+          vertices[offset+8] = 1.0f;
+          vertices[offset+9] = 0.0f;
+          //ur
+          vertices[offset+10] = - TILES_WIDTH / 2 + tile.mapX;
+          vertices[offset+11] = tile.upperRight + heightOffsetUR;
+          vertices[offset+12] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+          vertices[offset+13] = 1.0f;
+          vertices[offset+14] = 1.0f;
+          //ul
+          vertices[offset+15] = -1 - TILES_WIDTH / 2 + tile.mapX;
+          vertices[offset+16] = tile.upperLeft + heightOffsetUL;
+          vertices[offset+17] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+          vertices[offset+18] = 0.0f;
+          vertices[offset+19] = 1.0f;
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, waterEBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(waterIndices), waterIndices, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(waterVertices), waterVertices, GL_STATIC_DRAW);
-  const GLuint waterBindingPoint = 9;
-  glBindVertexBuffer(waterBindingPoint, waterVBO, 0, 5 * sizeof(GLfloat));
-  glEnableVertexAttribArray(0);
-  glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
-  glVertexAttribBinding(0, waterBindingPoint);
-  glEnableVertexAttribArray(1);
-  glVertexAttribFormat(1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat));
-  glVertexAttribBinding(1, waterBindingPoint);
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+          indices[indexArrayOffset] = index + 1;
+          indices[indexArrayOffset+1] = index + 2;
+          indices[indexArrayOffset+2] = index + 3;
+          indices[indexArrayOffset+3] = index + 3;
+          indices[indexArrayOffset+4] = index;
+          indices[indexArrayOffset+5] = index + 1;
+        }
+      glBindVertexArray(baseVAO[i]);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, baseEBO[i]);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+      glBindBuffer(GL_ARRAY_BUFFER, baseVBO[i]);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+      glEnableVertexAttribArray(1);
+      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+      glBindVertexArray(0);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
 
+  glm::mat4 model;
   glm::mat4 projection;
   projection = glm::perspective(glm::radians(cam.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 500.0f);
 
@@ -294,26 +373,28 @@ int main()
       scene.use();
       scene.setMat4("projection", projection);
       scene.setMat4("view", cam.getViewMatrix());
-      glm::mat4 model;
       scene.setMat4("model", model);
 
       //height tiles
       glBindVertexArray(hillsVAO);
       glBindBuffer(GL_ARRAY_BUFFER, hillsVBO);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hillsEBO);
-      glDrawElements(GL_TRIANGLES, 6 * hillTiles.size(), GL_UNSIGNED_INT, 0);
+      scene.setInt("surfaceTextureEnum", 2);
+//      glDrawElements(GL_TRIANGLES, 6 * hillTiles.size(), GL_UNSIGNED_INT, 0);
 
       //water tiles
       glBindVertexArray(waterVAO);
-      scene.setInt("waterRendering", 1);
+      scene.setInt("surfaceTextureEnum", 1);
       glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, waterEBO);
       glDrawElements(GL_TRIANGLES, 6 * waterTiles.size(), GL_UNSIGNED_INT, 0);
-      scene.setInt("waterRendering", 0);
+      scene.setInt("surfaceTextureEnum", 0);
 
-      //base tile
-      glBindVertexArray(VAO);
-      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+      for (unsigned int i = 0; i < numBaseSubTiles; i++)
+        {
+          glBindVertexArray(baseVAO[i]);
+          glDrawElements(GL_TRIANGLES, 6 * baseSubTiles[i].size(), GL_UNSIGNED_INT, 0);
+        }
 
       glfwSwapBuffers(window);
     }
@@ -322,9 +403,9 @@ int main()
   glDeleteTextures(1, &flatTexture);
   glDeleteTextures(1, &hillTexture);
   glDeleteTextures(1, &waterTexture);
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
-  glDeleteBuffers(1, &EBO);
+  glDeleteVertexArrays(numBaseSubTiles, baseVAO);
+  glDeleteBuffers(numBaseSubTiles, baseVBO);
+  glDeleteBuffers(numBaseSubTiles, baseEBO);
   glDeleteVertexArrays(1, &hillsVAO);
   glDeleteBuffers(1, &hillsVBO);
   glDeleteBuffers(1, &hillsEBO);
@@ -431,7 +512,7 @@ void generateHillData(std::vector<std::vector<float>>& map, int cycles, float* m
     }
 }
 
-void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat)
+void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat, bool createOnZeroHeight)
 {
   for (unsigned int y = 1; y < map.size(); y++)
     {
@@ -442,7 +523,7 @@ void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>&
             toCreate = map[y][x] != 0 || map[y-1][x] != 0 || map[y][x-1] != 0 || map[y-1][x-1] != 0;
           else
             toCreate = map[y][x] != 0;
-          if (toCreate)
+          if (toCreate || createOnZeroHeight)
             {
               float ll;
               float lr;
@@ -833,5 +914,16 @@ void generateWaterData(std::vector<std::vector<float>>& map, unsigned int shoreS
 //                map[y2][x2] = waterLevel;
 //            }
 //        }
+    }
+}
+
+void generateBaseTerrainData(std::vector<std::vector<float>>& map, std::vector<std::vector<float>>& water)
+{
+  for (unsigned int y = 0; y <= TILES_HEIGHT; y++)
+    {
+      for (unsigned int x = 0; x <= TILES_WIDTH; x++)
+        {
+          map[y][x] = water[y][x] * 1.15f;
+        }
     }
 }
