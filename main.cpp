@@ -24,6 +24,7 @@ void liftWaterLevel(std::vector<std::vector<float>>& waterMap, float liftValue);
 void generateBaseTerrainMap(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& waterMap);
 void smoothBaseTerrainMap(std::vector<std::vector<float>>& baseMap);
 void correctBaseTerrainMapAtEdges(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& waterMap);
+void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap);
 void generateHillData(std::vector<std::vector<float>>& hillMap, int cycles, float* max_height, HILL_DENSITY density);
 void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat, bool createOnZeroTiles);
 bool isOrphanAt(int x, int y, std::vector<std::vector<float>>& map);
@@ -195,6 +196,7 @@ int main()
   initializeMap(baseMap);
   generateBaseTerrainMap(baseMap, waterMap);
   smoothBaseTerrainMap(baseMap);
+  compressHeightBaseTerrainMap(baseMap);
   correctBaseTerrainMapAtEdges(baseMap, waterMap);
   createTiles(baseMap, baseTiles, false, true);
   baseTiles.shrink_to_fit();
@@ -298,7 +300,7 @@ int main()
   //fill water buffer
   addWaterNearbyBaseTerrain(waterMap);
   fillSharpTerrainWithWater(waterMap);
-  liftWaterLevel(waterMap, -0.4f);
+  liftWaterLevel(waterMap, -0.2f);
   createTiles(waterMap, waterTiles, true, false);
   waterTiles.shrink_to_fit();
   std::cout << "Water tiles #: " << waterTiles.size() << std::endl;
@@ -1069,5 +1071,18 @@ void correctBaseTerrainMapAtEdges(std::vector<std::vector<float>>& baseMap, std:
         baseMap[y][0] = baseMap[y][1];
       if (waterMap[y][TILES_WIDTH] != 0)
         baseMap[y][TILES_WIDTH] = baseMap[y][TILES_WIDTH - 1];
+    }
+}
+
+void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap)
+{
+  //smooth entire height range
+  for (std::vector<float>& row : baseMap)
+    {
+      for (float& height : row)
+        {
+          if (height < 0)
+          height *= 0.5f;
+        }
     }
 }
