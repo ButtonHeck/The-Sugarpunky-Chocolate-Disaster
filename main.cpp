@@ -24,7 +24,7 @@ void liftWaterLevel(std::vector<std::vector<float>>& waterMap, float liftValue);
 void generateBaseTerrainMap(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& waterMap);
 void smoothBaseTerrainMap(std::vector<std::vector<float>>& baseMap);
 void correctBaseTerrainMapAtEdges(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& waterMap);
-void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap);
+void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap, float ratio);
 void generateHillData(std::vector<std::vector<float>>& hillMap, int cycles, float* max_height, HILL_DENSITY density);
 void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat, bool createOnZeroTiles);
 bool isOrphanAt(int x, int y, std::vector<std::vector<float>>& map);
@@ -73,7 +73,7 @@ int main()
   glActiveTexture(GL_TEXTURE1);
   GLuint hillTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/grassHill.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE2);
-  GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water.png", GL_REPEAT);
+  GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water2.png", GL_REPEAT);
   glActiveTexture(GL_TEXTURE3);
   GLuint sandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/sand.jpg", GL_REPEAT);
   scene.setInt("grassTexture", 0);
@@ -196,7 +196,7 @@ int main()
   initializeMap(baseMap);
   generateBaseTerrainMap(baseMap, waterMap);
   smoothBaseTerrainMap(baseMap);
-  compressHeightBaseTerrainMap(baseMap);
+  compressHeightBaseTerrainMap(baseMap, 2.0f);
   correctBaseTerrainMapAtEdges(baseMap, waterMap);
   createTiles(baseMap, baseTiles, false, true);
   baseTiles.shrink_to_fit();
@@ -300,7 +300,7 @@ int main()
   //fill water buffer
   addWaterNearbyBaseTerrain(waterMap);
   fillSharpTerrainWithWater(waterMap);
-  liftWaterLevel(waterMap, -0.2f);
+//  liftWaterLevel(waterMap, 0.2f);
   createTiles(waterMap, waterTiles, true, false);
   waterTiles.shrink_to_fit();
   std::cout << "Water tiles #: " << waterTiles.size() << std::endl;
@@ -1074,7 +1074,7 @@ void correctBaseTerrainMapAtEdges(std::vector<std::vector<float>>& baseMap, std:
     }
 }
 
-void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap)
+void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap, float ratio)
 {
   //smooth entire height range
   for (std::vector<float>& row : baseMap)
@@ -1082,7 +1082,7 @@ void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap)
       for (float& height : row)
         {
           if (height < 0)
-          height *= 0.5f;
+          height /= ratio;
         }
     }
 }

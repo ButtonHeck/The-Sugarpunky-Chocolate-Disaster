@@ -52,4 +52,6 @@ DISTFILES += \
     textures/grassHill.jpg \
     textures/sand.jpg \
     textures/water.jpg \
-    textures/water.png
+    textures/water.png \
+    textures/water2.png \
+    textures/water2.jpg

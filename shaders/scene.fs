@@ -23,7 +23,7 @@ void main()
     {
         FragColor = mix(texture(sandTexture, TexCoords),
                         texture(grassTexture, TexCoords),
-                        max(min(PosHeight * 1.33 - waterLevel + (1.0 + waterLevel), 1.0), 0.0));
+                        max(min(PosHeight * 1.66 - waterLevel + (1.0 + waterLevel), 1.0), 0.0));
     }
     else
     {
