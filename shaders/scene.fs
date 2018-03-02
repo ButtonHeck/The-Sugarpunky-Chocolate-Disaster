@@ -21,8 +21,12 @@ void main()
     }
     else if (surfaceTextureEnum == 0)
     {
-        FragColor = mix(texture(sandTexture, TexCoords), texture(grassTexture, TexCoords), PosHeight-waterLevel+(1+waterLevel));
+        FragColor = mix(texture(sandTexture, TexCoords),
+                        texture(grassTexture, TexCoords),
+                        max(min(PosHeight - waterLevel + (1.0 + waterLevel), 1.0), 0.0));
     }
     else
+    {
         FragColor = texture(waterTexture, TexCoords);
+    }
 }

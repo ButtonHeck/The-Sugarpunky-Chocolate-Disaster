@@ -49,4 +49,7 @@ DISTFILES += \
     textures/grass.jpg \
     textures/grass_test.jpg \
     textures/grassHill_test.jpg \
-    textures/grassHill.jpg
+    textures/grassHill.jpg \
+    textures/sand.jpg \
+    textures/water.jpg \
+    textures/water.png
