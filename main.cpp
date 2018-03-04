@@ -24,7 +24,8 @@ void generateBaseTerrainMap(std::vector<std::vector<float>>& baseMap, std::vecto
 void smoothBaseTerrainMap(std::vector<std::vector<float>>& baseMap);
 void correctBaseTerrainMapAtEdges(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& waterMap);
 void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap, float ratio, bool entireRange);
-void generateHillData(std::vector<std::vector<float>>& hillMap, int cycles, float* max_height, HILL_DENSITY density);
+void generateHillMap(std::vector<std::vector<float>>& hillMap, std::vector<std::vector<float>>& waterMap, int cycles, float* max_height, HILL_DENSITY density);
+bool hasWaterNearby(unsigned int x, unsigned int y, std::vector<std::vector<float>>& waterMap, unsigned int radius);
 void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat, bool createOnZeroTiles);
 bool isOrphanAt(int x, int y, std::vector<std::vector<float>>& map);
 void compressHeight(std::vector<std::vector<float>>& hillMap, float threshold_percent, float* limit, float ratio);
@@ -104,10 +105,10 @@ int main()
   hillTiles.reserve(NUM_TILES);
   initializeMap(hillsMap);
   float max_height = 0.0f;
-  generateHillData(hillsMap, 8, &max_height, HILL_DENSITY::DENSE);
-  generateHillData(hillsMap, 4, &max_height, HILL_DENSITY::THIN);
-  compressHeight(hillsMap, 0.15f, &max_height, 1.4f); //slightly compress entire height range
-  compressHeight(hillsMap, 0.8f, &max_height, 4.0f); //more heavy compress for top-most peaks
+  generateHillMap(hillsMap, waterMap, 8, &max_height, HILL_DENSITY::DENSE);
+  generateHillMap(hillsMap, waterMap, 4, &max_height, HILL_DENSITY::THIN);
+  compressHeight(hillsMap, 0.15f, &max_height, 1.5f); //slightly compress entire height range
+  compressHeight(hillsMap, 0.8f, &max_height, 5.0f); //more heavy compress for top-most peaks
   createTiles(hillsMap, hillTiles, false, false);
   hillTiles.shrink_to_fit();
   std::cout << "Hills tiles: " << hillTiles.size() << std::endl;
@@ -229,7 +230,7 @@ int main()
   glGenBuffers(numBaseSubTiles, baseVBO);
   glGenBuffers(numBaseSubTiles, baseEBO);
   //generate random offsets (to create more organic surface)
-  std::uniform_real_distribution<float> base_height_offset_distribution(0.01f, 0.15f);
+  std::uniform_real_distribution<float> base_height_offset_distribution(0.01f, 0.1f);
   GLfloat baseTerrainHeightOffsets[NUM_TILES + TILES_WIDTH];
   for (unsigned int i = 0; i < sizeof(baseTerrainHeightOffsets) / sizeof(GLfloat); i++)
     baseTerrainHeightOffsets[i] = base_height_offset_distribution(RANDOM_ENGINE);
@@ -396,7 +397,7 @@ int main()
       glBindVertexArray(hillsVAO);
       glBindBuffer(GL_ARRAY_BUFFER, hillsVBO);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hillsEBO);
-//      glDrawElements(GL_TRIANGLES, 6 * hillTiles.size(), GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_TRIANGLES, 6 * hillTiles.size(), GL_UNSIGNED_INT, 0);
 
       //base terrain tiles
       scene.setInt("surfaceTextureEnum", 0);
@@ -411,9 +412,10 @@ int main()
       glBindVertexArray(waterVAO);
       glBindBuffer(GL_ARRAY_BUFFER, waterVBO);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, waterEBO);
-      for (size_t i = 0; i < sizeof(waterHeightOffsets) / sizeof(GLfloat); i++)
+      for (size_t i = 0; i < sizeof(waterHeightOffsets) / sizeof(GLfloat); i+=2)
         {
-            waterHeightOffsets[i] = std::cos(glfwGetTime() * (i % 37 + 1) / 24) / 12 + WATER_LEVEL;
+            waterHeightOffsets[i] = std::cos(glfwGetTime() * (i % 31 + 1) / 24) / 12 + WATER_LEVEL;
+            waterHeightOffsets[i+1] = std::sin(glfwGetTime() * (i % 29 + 1) / 24) / 12 + WATER_LEVEL;
         }
       GLfloat* temp = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
       for (unsigned int i = 0; i < waterTiles.size(); ++i)
@@ -467,7 +469,7 @@ GLFWwindow* initGLFW()
   return window;
 }
 
-void generateHillData(std::vector<std::vector<float>>& hillMap, int cycles, float* max_height, HILL_DENSITY density)
+void generateHillMap(std::vector<std::vector<float>>& hillMap, std::vector<std::vector<float>>& waterMap, int cycles, float* max_height, HILL_DENSITY density)
 {
   srand(time(NULL));
   std::uniform_real_distribution<float> random(0.3f, 0.7f);
@@ -483,7 +485,7 @@ void generateHillData(std::vector<std::vector<float>>& hillMap, int cycles, floa
     {
       for (int x = 1; x < TILES_WIDTH; x++)
         {
-          if (rand() % (int)density_value == 0)
+          if (rand() % (int)density_value == 0 && !hasWaterNearby(x, y, waterMap, 2))
             {
               hillMap[y][x] += 1.0f;
             }
@@ -502,6 +504,7 @@ void generateHillData(std::vector<std::vector<float>>& hillMap, int cycles, floa
                 break;
               if (rand() % (cycle+1) == cycle && (hillMap[y][x] != 0))
                 {
+                  //these coords are not taking water coords into account
                   int left = x-cycle;
                   if (left <= cycle)
                     left = cycle;
@@ -514,11 +517,54 @@ void generateHillData(std::vector<std::vector<float>>& hillMap, int cycles, floa
                   int bottom = y+cycle;
                   if (bottom >= TILES_HEIGHT - cycle)
                     bottom = TILES_HEIGHT - cycle;
-                  for (int y2 = top; y2 <= bottom; y2++)
+                  //correct [left/right/top/bottom] values comparing them with water map
+                  bool cycleSkip = false;
+                  int leftCorrect = x;
+                  while (leftCorrect > left)
                     {
-                      for (int x2 = left; x2 <= right; x2++)
+                      if (hasWaterNearby(leftCorrect, y, waterMap, 3))
                         {
-                          if (rand() % (cycle + 2) > 1)
+                          //increase cycleSkip, cause we dont need high hills near the shores
+                          cycleSkip = true;
+                          break;
+                        }
+                      --leftCorrect;
+                    }
+                  int rightCorrect = x;
+                  while (rightCorrect < right)
+                    {
+                      if (hasWaterNearby(rightCorrect, y, waterMap, 2))
+                        {
+                          cycleSkip = true;
+                          break;
+                        }
+                      ++rightCorrect;
+                    }
+                  int topCorrect = y;
+                  while (topCorrect > top)
+                    {
+                      if (hasWaterNearby(x, topCorrect, waterMap, 2))
+                        {
+                          cycleSkip = true;
+                          break;
+                        }
+                      --topCorrect;
+                    }
+                  int bottomCorrect = y;
+                  while (bottomCorrect < bottom)
+                    {
+                      if (hasWaterNearby(x, bottomCorrect, waterMap, 2))
+                        {
+                          cycleSkip = true;
+                          break;
+                        }
+                      ++bottomCorrect;
+                    }
+                  for (int y2 = topCorrect; y2 <= bottomCorrect; y2++)
+                    {
+                      for (int x2 = leftCorrect; x2 <= rightCorrect; x2++)
+                        {
+                          if (rand() % (cycle + 2) > 1 && !hasWaterNearby(x2, y2, waterMap, 2))
                             {
                               if (hillMap[y2][x2] < cycle)
                                 hillMap[y2][x2] += 1.0f - 0.075f * cycle;
@@ -528,6 +574,7 @@ void generateHillData(std::vector<std::vector<float>>& hillMap, int cycles, floa
                             }
                         }
                     }
+                  cycle += cycleSkip;
                   x += cycle;
                   y += cycle;
                 }
@@ -543,6 +590,33 @@ void generateHillData(std::vector<std::vector<float>>& hillMap, int cycles, floa
             }
         }
     }
+}
+
+bool hasWaterNearby(unsigned int x, unsigned int y, std::vector<std::vector<float>>& waterMap, unsigned int radius)
+{
+  int xl = x - radius;
+  if (xl <= 0)
+    xl = 0;
+  int xr = x + radius;
+  if (xr >= TILES_WIDTH)
+    xr = TILES_WIDTH;
+  int yt = y - radius;
+  if (yt <= 0)
+    yt = 0;
+  int yb = y + radius;
+  if (yb >= TILES_HEIGHT)
+    yb = TILES_HEIGHT;
+  for (unsigned int x1 = xl; x1 <= xr; x1++)
+    {
+      for (unsigned int y1 = yt; y1 <= yb; y1++)
+        {
+          if (waterMap[y1][x1] != 0)
+            {
+              return true;
+            }
+        }
+    }
+  return false;
 }
 
 void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat, bool createOnZeroHeight)
