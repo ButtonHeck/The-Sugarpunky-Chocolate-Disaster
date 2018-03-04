@@ -307,7 +307,7 @@ int main()
   const size_t WATER_ELEMENT_DATA_LENGTH = waterTiles.size() * 6;
   GLfloat waterVertices[WATER_VERTEX_DATA_LENGTH];
   GLuint waterIndices[WATER_ELEMENT_DATA_LENGTH];
-  GLfloat waterHeightOffsets[NUM_TILES]; //a bit overhead, because all we use is the part where we have water...
+  GLfloat waterHeightOffsets[NUM_TILES + TILES_WIDTH * 2]; //a bit overhead, because all we use is the part where we have water...
   for (unsigned int i = 0; i < waterTiles.size(); i++)
     {
       TerrainTile& tile = waterTiles[i];
