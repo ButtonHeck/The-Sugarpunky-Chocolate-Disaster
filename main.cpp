@@ -24,6 +24,7 @@ void generateBaseTerrainMap(std::vector<std::vector<float>>& baseMap, std::vecto
 void smoothBaseTerrainMap(std::vector<std::vector<float>>& baseMap);
 void correctBaseTerrainMapAtEdges(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& waterMap);
 void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap, float ratio, bool entireRange);
+void denyBaseTerrainMapInvisibleTiles(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
 void generateHillMap(std::vector<std::vector<float>>& hillMap, std::vector<std::vector<float>>& waterMap, int cycles, float* max_height, HILL_DENSITY density);
 void correctHillMapAtPlateaus(std::vector<std::vector<float>>& hillMap, float plateauHeight);
 void smoothHillMapHeightChunks(std::vector<std::vector<float>>& hillMap, float baseWeight, float evenWeight, float diagonalWeight);
@@ -53,6 +54,7 @@ Camera cam(glm::vec3(0.0f, 3.0f, 0.0f));
 InputController input;
 TextureLoader textureLoader;
 const float WATER_LEVEL = -0.75f;
+const int DENY_VALUE = -10;
 std::default_random_engine RANDOMIZER_ENGINE;
 
 int main()
@@ -223,11 +225,12 @@ int main()
   smoothBaseTerrainMap(baseMap);
   compressHeightBaseTerrainMap(baseMap, 2.0f, true);
   correctBaseTerrainMapAtEdges(baseMap, waterMap);
+  denyBaseTerrainMapInvisibleTiles(baseMap, hillsMap);
   createTiles(baseMap, baseTiles, false, true);
   baseTiles.shrink_to_fit();
   std::cout << "Base tiles: " << baseTiles.size() << std::endl;
   const size_t BASE_TILES_SUB_VECTOR_CAPACITY = TILES_HEIGHT * 16;
-  unsigned int numBaseSubTiles = baseTiles.size() / BASE_TILES_SUB_VECTOR_CAPACITY;
+  unsigned int numBaseSubTiles = baseTiles.size() / BASE_TILES_SUB_VECTOR_CAPACITY + 1;
   std::vector<std::vector<TerrainTile>> baseSubTiles;
   baseSubTiles.reserve(numBaseSubTiles);
   for (unsigned int i = 0; i < numBaseSubTiles; ++i)
@@ -256,13 +259,12 @@ int main()
   glGenBuffers(numBaseSubTiles, baseEBO);
   //generate random offsets (to create more organic surface)
   std::uniform_real_distribution<float> base_height_offset_distribution(0.01f, 0.1f);
-  GLfloat baseTerrainHeightOffsets[NUM_TILES + TILES_WIDTH + 1];
+  GLfloat baseTerrainHeightOffsets[NUM_TILES + TILES_WIDTH + FMG];
   for (unsigned int i = 0; i < sizeof(baseTerrainHeightOffsets) / sizeof(GLfloat); i++)
     baseTerrainHeightOffsets[i] = base_height_offset_distribution(RANDOMIZER_ENGINE);
   //fill base terrain vertex data
   GLfloat vertices[BASE_TERRAIN_DATA_LENGTH];
   GLuint indices[BASE_TERRAIN_ELEMENT_LENGTH];
-  GLuint heightOffsetIndex = 0;
   for (unsigned int i = 0; i < numBaseSubTiles; i++)
     {
       for (unsigned int c = 0; c < baseSubTiles[i].size(); c++)
@@ -271,11 +273,11 @@ int main()
           int offset = c * 20;
           int indexArrayOffset = c * 6;
           int index = c * 4;
-          float heightOffsetLL = baseTerrainHeightOffsets[heightOffsetIndex + TILES_WIDTH];
-          float heightOffsetLR = baseTerrainHeightOffsets[heightOffsetIndex + TILES_WIDTH + 1];
-          float heightOffsetUR = baseTerrainHeightOffsets[heightOffsetIndex + 1];
-          float heightOffsetUL = baseTerrainHeightOffsets[heightOffsetIndex];
-          ++heightOffsetIndex;
+
+          float heightOffsetLL = baseTerrainHeightOffsets[(tile.mapY-1) * TILES_WIDTH + tile.mapX + TILES_WIDTH];
+          float heightOffsetLR = baseTerrainHeightOffsets[(tile.mapY-1) * TILES_WIDTH + tile.mapX + TILES_WIDTH + 1];
+          float heightOffsetUR = baseTerrainHeightOffsets[(tile.mapY-1) * TILES_WIDTH + tile.mapX + 1];
+          float heightOffsetUL = baseTerrainHeightOffsets[(tile.mapY-1) * TILES_WIDTH + tile.mapX];
           //ll
           vertices[offset] = -1- TILES_WIDTH / 2 + tile.mapX;
           vertices[offset+1] = tile.lowLeft + heightOffsetLL;
@@ -658,6 +660,8 @@ void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>&
     {
       for (unsigned int x = 1; x < map[0].size(); x++)
         {
+          if (map[y][x] == DENY_VALUE)
+            continue;
           bool toCreate;
           if (!flat)
             toCreate = map[y][x] != 0 || map[y-1][x] != 0 || map[y][x-1] != 0 || map[y-1][x-1] != 0;
@@ -672,9 +676,15 @@ void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>&
               if (!flat)
                 {
                   ll = map[y][x-1];
+                  if (ll == DENY_VALUE)
+                    ll = map[y][x];
                   lr = map[y][x];
                   ur = map[y-1][x];
+                  if (ur == DENY_VALUE)
+                    ur = map[y][x];
                   ul = map[y-1][x-1];
+                  if (ul == DENY_VALUE)
+                    ul = map[y][x];
                 }
               else
                 {
@@ -1054,14 +1064,14 @@ void generateWaterMap(std::vector<std::vector<float>>& waterMap, unsigned int sh
     }
 }
 
-void generateBaseTerrainMap(std::vector<std::vector<float>>& map, std::vector<std::vector<float>>& water)
+void generateBaseTerrainMap(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& waterMap)
 {
   std::uniform_real_distribution<float> distribution(0.9f, 1.1f);
   for (unsigned int y = 0; y <= TILES_HEIGHT; y++)
     {
       for (unsigned int x = 0; x <= TILES_WIDTH; x++)
         {
-          map[y][x] = water[y][x] * 1.1f * distribution(RANDOMIZER_ENGINE);
+          baseMap[y][x] = waterMap[y][x] * 1.1f * distribution(RANDOMIZER_ENGINE);
         }
     }
 }
@@ -1201,6 +1211,28 @@ void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap, floa
         {
           if (height < 0 || entireRange)
             height /= ratio;
+        }
+    }
+}
+
+void denyBaseTerrainMapInvisibleTiles(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap)
+{
+  for (unsigned int y = 1; y < TILES_HEIGHT - 1; y++)
+    {
+      for (unsigned int x = 1; x < TILES_WIDTH - 1; x++)
+        {
+          if (hillMap[y][x] != 0
+              && hillMap[y-1][x-1] != 0
+              && hillMap[y-1][x] != 0
+              && hillMap[y-1][x+1] != 0
+              && hillMap[y][x-1] != 0
+              && hillMap[y][x+1] != 0
+              && hillMap[y+1][x-1] != 0
+              && hillMap[y+1][x] != 0
+              && hillMap[y+1][x+1] != 0)
+            {
+              baseMap[y][x] = DENY_VALUE;
+            }
         }
     }
 }

@@ -14,5 +14,13 @@ enum HILL_DENSITY
   THIN, MEDIUM, DENSE
 };
 
+/*FMG - aka Fucking Magic Value
+* this one is used for the arrayLength of @baseTerrainHeightOffsets(main.cpp)
+* without it added to the arrayLength we could see a tile that goes straight to the
+* hell/heaven at the very bottom-right corner...
+* because shit happens. If you read this, please, do something.
+*/
+constexpr int FMG = 1;
+
 #endif // SETTINGS
 
