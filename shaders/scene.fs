@@ -16,7 +16,7 @@ void main()
 {
     if (surfaceTextureEnum == 2)
     {
-        FragColor = mix(texture(grassTexture, TexCoords), texture(hillTexture, TexCoords), min(max(0.0, PosHeight/2), 1.0));
+        FragColor = mix(texture(grassTexture, TexCoords), texture(hillTexture, TexCoords), min(max(0.0, PosHeight/2.2), 1.0));
 
     }
     else if (surfaceTextureEnum == 0)

@@ -129,6 +129,25 @@ int main()
       int offset = i * 20;
       int indexArrayOffset = i * 6;
       int index = i * 4;
+
+      //approximation for texture mapping based on height coords of the tile.
+      //for now, it works only for tiles which have a slope for either left->right and top->bottom (or vice versa) direction
+      //generally speaking it doesn't work for tiles with one of the following principal scheme:
+      /*
+       * UL UR      0 1       1 0       0 0       0 0
+       * LL LR  ->  0 0   or  0 0   or  1 0   or  0 1
+       */
+      float dyRatio = 1.0, dxRatio = 1.0;
+      if ((tile.upperLeft > tile.lowLeft && tile.upperRight > tile.lowRight && tile.upperLeft > tile.lowRight && tile.upperRight > tile.lowLeft)
+          || (tile.upperLeft < tile.lowLeft && tile.upperRight < tile.lowRight && tile.upperLeft < tile.lowRight && tile.upperRight < tile.lowLeft))
+        {
+          dyRatio = std::max(std::abs((tile.upperLeft + tile.upperRight) / 2 - (tile.lowLeft + tile.lowRight) / 2), 1.0f);
+        }
+      if ((tile.upperLeft > tile.upperRight && tile.upperLeft > tile.lowRight && tile.lowLeft > tile.upperRight && tile.lowLeft > tile.lowRight)
+          || (tile.upperLeft < tile.upperRight && tile.upperLeft < tile.lowRight && tile.lowLeft < tile.upperRight && tile.lowLeft < tile.lowRight))
+        {
+          dxRatio = std::max(std::abs((tile.lowLeft + tile.upperLeft) / 2 - (tile.lowRight + tile.upperRight) / 2), 1.0f);
+        }
       //ll
       hillsVertices[offset] = -1- TILES_WIDTH / 2 + tile.mapX;
       hillsVertices[offset+1] = tile.lowLeft;
@@ -139,20 +158,20 @@ int main()
       hillsVertices[offset+5] = - TILES_WIDTH / 2 + tile.mapX;
       hillsVertices[offset+6] = tile.lowRight;
       hillsVertices[offset+7] = - TILES_HEIGHT / 2 + tile.mapY;
-      hillsVertices[offset+8] = 1.0f;
+      hillsVertices[offset+8] = 1.0f * dxRatio;
       hillsVertices[offset+9] = 0.0f;
       //ur
       hillsVertices[offset+10] = - TILES_WIDTH / 2 + tile.mapX;
       hillsVertices[offset+11] = tile.upperRight;
       hillsVertices[offset+12] = -1 - TILES_HEIGHT / 2 + tile.mapY;
-      hillsVertices[offset+13] = 1.0f;
-      hillsVertices[offset+14] = 1.0f;
+      hillsVertices[offset+13] = 1.0f * dxRatio;
+      hillsVertices[offset+14] = 1.0f * dyRatio;
       //ul
       hillsVertices[offset+15] = -1 - TILES_WIDTH / 2 + tile.mapX;
       hillsVertices[offset+16] = tile.upperLeft;
       hillsVertices[offset+17] = -1 - TILES_HEIGHT / 2 + tile.mapY;
       hillsVertices[offset+18] = 0.0f;
-      hillsVertices[offset+19] = 1.0f;
+      hillsVertices[offset+19] = 1.0f * dyRatio;
 
       bool indicesCrossed = false;
       if (tile.lowRight < tile.upperLeft || tile.upperLeft < tile.lowRight)
