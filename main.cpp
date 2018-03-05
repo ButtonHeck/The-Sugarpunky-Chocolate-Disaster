@@ -25,6 +25,7 @@ void smoothBaseTerrainMap(std::vector<std::vector<float>>& baseMap);
 void correctBaseTerrainMapAtEdges(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& waterMap);
 void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap, float ratio, bool entireRange);
 void denyBaseTerrainMapInvisibleTiles(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
+void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vector<TerrainTile>& baseChunks);
 void generateHillMap(std::vector<std::vector<float>>& hillMap, std::vector<std::vector<float>>& waterMap, int cycles, float* max_height, HILL_DENSITY density);
 void correctHillMapAtPlateaus(std::vector<std::vector<float>>& hillMap, float plateauHeight);
 void smoothHillMapHeightChunks(std::vector<std::vector<float>>& hillMap, float baseWeight, float evenWeight, float diagonalWeight);
@@ -55,6 +56,7 @@ InputController input;
 TextureLoader textureLoader;
 const float WATER_LEVEL = -0.75f;
 const int DENY_VALUE = -10;
+const int BASE_TERRAIN_CHUNK_SIZE = 16;
 std::default_random_engine RANDOMIZER_ENGINE;
 
 int main()
@@ -218,14 +220,16 @@ int main()
 
   //generating base terrain data
   std::vector<std::vector<float>> baseMap;
-  std::vector<TerrainTile> baseTiles;
+  std::vector<TerrainTile> baseTiles, baseChunks16;
   baseTiles.reserve(NUM_TILES);
+  baseChunks16.reserve(NUM_TILES / (BASE_TERRAIN_CHUNK_SIZE * BASE_TERRAIN_CHUNK_SIZE));
   initializeMap(baseMap);
   generateBaseTerrainMap(baseMap, waterMap);
   smoothBaseTerrainMap(baseMap);
   compressHeightBaseTerrainMap(baseMap, 2.0f, true);
   correctBaseTerrainMapAtEdges(baseMap, waterMap);
-  denyBaseTerrainMapInvisibleTiles(baseMap, hillsMap);
+//  denyBaseTerrainMapInvisibleTiles(baseMap, hillsMap);
+  splitBaseTerrainToChunks(baseMap, baseChunks16);
   createTiles(baseMap, baseTiles, false, true);
   baseTiles.shrink_to_fit();
   std::cout << "Base tiles: " << baseTiles.size() << std::endl;
@@ -257,14 +261,9 @@ int main()
   glGenVertexArrays(numBaseSubTiles, baseVAO);
   glGenBuffers(numBaseSubTiles, baseVBO);
   glGenBuffers(numBaseSubTiles, baseEBO);
-  //generate random offsets (to create more organic surface)
-  std::uniform_real_distribution<float> base_height_offset_distribution(0.01f, 0.1f);
-  GLfloat baseTerrainHeightOffsets[NUM_TILES + TILES_WIDTH + FMG];
-  for (unsigned int i = 0; i < sizeof(baseTerrainHeightOffsets) / sizeof(GLfloat); i++)
-    baseTerrainHeightOffsets[i] = base_height_offset_distribution(RANDOMIZER_ENGINE);
   //fill base terrain vertex data
-  GLfloat vertices[BASE_TERRAIN_DATA_LENGTH];
-  GLuint indices[BASE_TERRAIN_ELEMENT_LENGTH];
+  GLfloat baseVertices[BASE_TERRAIN_DATA_LENGTH];
+  GLuint baseIndices[BASE_TERRAIN_ELEMENT_LENGTH];
   for (unsigned int i = 0; i < numBaseSubTiles; i++)
     {
       for (unsigned int c = 0; c < baseSubTiles[i].size(); c++)
@@ -273,48 +272,43 @@ int main()
           int offset = c * 20;
           int indexArrayOffset = c * 6;
           int index = c * 4;
-
-          float heightOffsetLL = baseTerrainHeightOffsets[(tile.mapY-1) * TILES_WIDTH + tile.mapX + TILES_WIDTH];
-          float heightOffsetLR = baseTerrainHeightOffsets[(tile.mapY-1) * TILES_WIDTH + tile.mapX + TILES_WIDTH + 1];
-          float heightOffsetUR = baseTerrainHeightOffsets[(tile.mapY-1) * TILES_WIDTH + tile.mapX + 1];
-          float heightOffsetUL = baseTerrainHeightOffsets[(tile.mapY-1) * TILES_WIDTH + tile.mapX];
           //ll
-          vertices[offset] = -1- TILES_WIDTH / 2 + tile.mapX;
-          vertices[offset+1] = tile.lowLeft + heightOffsetLL;
-          vertices[offset+2] = - TILES_HEIGHT / 2 + tile.mapY;
-          vertices[offset+3] = 0.0f;
-          vertices[offset+4] = 0.0f;
+          baseVertices[offset] = -1- TILES_WIDTH / 2 + tile.mapX;
+          baseVertices[offset+1] = tile.lowLeft;
+          baseVertices[offset+2] = - TILES_HEIGHT / 2 + tile.mapY;
+          baseVertices[offset+3] = 0.0f;
+          baseVertices[offset+4] = 0.0f;
           //lr
-          vertices[offset+5] = - TILES_WIDTH / 2 + tile.mapX;
-          vertices[offset+6] = tile.lowRight + heightOffsetLR;
-          vertices[offset+7] = - TILES_HEIGHT / 2 + tile.mapY;
-          vertices[offset+8] = 1.0f;
-          vertices[offset+9] = 0.0f;
+          baseVertices[offset+5] = - TILES_WIDTH / 2 + tile.mapX;
+          baseVertices[offset+6] = tile.lowRight;
+          baseVertices[offset+7] = - TILES_HEIGHT / 2 + tile.mapY;
+          baseVertices[offset+8] = 1.0f;
+          baseVertices[offset+9] = 0.0f;
           //ur
-          vertices[offset+10] = - TILES_WIDTH / 2 + tile.mapX;
-          vertices[offset+11] = tile.upperRight + heightOffsetUR;
-          vertices[offset+12] = -1 - TILES_HEIGHT / 2 + tile.mapY;
-          vertices[offset+13] = 1.0f;
-          vertices[offset+14] = 1.0f;
+          baseVertices[offset+10] = - TILES_WIDTH / 2 + tile.mapX;
+          baseVertices[offset+11] = tile.upperRight;
+          baseVertices[offset+12] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+          baseVertices[offset+13] = 1.0f;
+          baseVertices[offset+14] = 1.0f;
           //ul
-          vertices[offset+15] = -1 - TILES_WIDTH / 2 + tile.mapX;
-          vertices[offset+16] = tile.upperLeft + heightOffsetUL;
-          vertices[offset+17] = -1 - TILES_HEIGHT / 2 + tile.mapY;
-          vertices[offset+18] = 0.0f;
-          vertices[offset+19] = 1.0f;
+          baseVertices[offset+15] = -1 - TILES_WIDTH / 2 + tile.mapX;
+          baseVertices[offset+16] = tile.upperLeft;
+          baseVertices[offset+17] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+          baseVertices[offset+18] = 0.0f;
+          baseVertices[offset+19] = 1.0f;
 
-          indices[indexArrayOffset] = index;
-          indices[indexArrayOffset+1] = index + 1;
-          indices[indexArrayOffset+2] = index + 2;
-          indices[indexArrayOffset+3] = index + 2;
-          indices[indexArrayOffset+4] = index + 3;
-          indices[indexArrayOffset+5] = index;
+          baseIndices[indexArrayOffset] = index;
+          baseIndices[indexArrayOffset+1] = index + 1;
+          baseIndices[indexArrayOffset+2] = index + 2;
+          baseIndices[indexArrayOffset+3] = index + 2;
+          baseIndices[indexArrayOffset+4] = index + 3;
+          baseIndices[indexArrayOffset+5] = index;
         }
       glBindVertexArray(baseVAO[i]);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, baseEBO[i]);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(baseIndices), baseIndices, GL_STATIC_DRAW);
       glBindBuffer(GL_ARRAY_BUFFER, baseVBO[i]);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(baseVertices), baseVertices, GL_STATIC_DRAW);
       glEnableVertexAttribArray(0);
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
       glEnableVertexAttribArray(1);
@@ -323,6 +317,66 @@ int main()
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
+  //generating base terrain flat tile chunks
+  const size_t BASE_CHUNK_VERTICES_DATA_LENGTH = baseChunks16.size() * 20;
+  const size_t BASE_CHUNK_VERTICES_ELEMENT_LENGTH = baseChunks16.size() * 6;
+  GLfloat baseChunkVertices[BASE_CHUNK_VERTICES_DATA_LENGTH];
+  GLuint baseChunkIndices[BASE_CHUNK_VERTICES_ELEMENT_LENGTH];
+  for (unsigned int i = 0; i < baseChunks16.size(); i++)
+    {
+      TerrainTile& tile = baseChunks16[i];
+      int offset = i * 20;
+      int indexArrayOffset = i * 6;
+      int index = i * 4;
+
+      //ll
+      baseChunkVertices[offset] = 1- TILES_WIDTH / 2 + tile.mapX;
+      baseChunkVertices[offset+1] = tile.lowLeft;
+      baseChunkVertices[offset+2] = - 2 - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE - 1;
+      baseChunkVertices[offset+3] = 0.0f;
+      baseChunkVertices[offset+4] = 0.0f;
+      //lr
+      baseChunkVertices[offset+5] = -2 - TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE - 1;
+      baseChunkVertices[offset+6] = tile.lowRight;
+      baseChunkVertices[offset+7] = -2 - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE - 1;
+      baseChunkVertices[offset+8] = BASE_TERRAIN_CHUNK_SIZE;
+      baseChunkVertices[offset+9] = 0.0f;
+      //ur
+      baseChunkVertices[offset+10] = -2 - TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE - 1;
+      baseChunkVertices[offset+11] = tile.upperRight;
+      baseChunkVertices[offset+12] = 1 - TILES_HEIGHT / 2 + tile.mapY;
+      baseChunkVertices[offset+13] = BASE_TERRAIN_CHUNK_SIZE;
+      baseChunkVertices[offset+14] = BASE_TERRAIN_CHUNK_SIZE;
+      //ul
+      baseChunkVertices[offset+15] = 1 - TILES_WIDTH / 2 + tile.mapX;
+      baseChunkVertices[offset+16] = tile.upperLeft;
+      baseChunkVertices[offset+17] = 1 - TILES_HEIGHT / 2 + tile.mapY;
+      baseChunkVertices[offset+18] = 0.0f;
+      baseChunkVertices[offset+19] = BASE_TERRAIN_CHUNK_SIZE;
+
+      baseChunkIndices[indexArrayOffset] = index;
+      baseChunkIndices[indexArrayOffset+1] = index + 1;
+      baseChunkIndices[indexArrayOffset+2] = index + 2;
+      baseChunkIndices[indexArrayOffset+3] = index + 2;
+      baseChunkIndices[indexArrayOffset+4] = index + 3;
+      baseChunkIndices[indexArrayOffset+5] = index;
+    }
+  GLuint baseChunkVAO, baseChunkVBO, baseChunkEBO;
+  glGenVertexArrays(1, &baseChunkVAO);
+  glGenBuffers(1, &baseChunkEBO);
+  glGenBuffers(1, &baseChunkVBO);
+  glBindVertexArray(baseChunkVAO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, baseChunkEBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(baseChunkIndices), baseChunkIndices, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, baseChunkVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(baseChunkVertices), baseChunkVertices, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   //fill water buffer
   addWaterNearbyBaseTerrain(waterMap);
@@ -429,6 +483,12 @@ int main()
           glBindVertexArray(baseVAO[i]);
           glDrawElements(GL_TRIANGLES, 6 * baseSubTiles[i].size(), GL_UNSIGNED_INT, 0);
         }
+
+      //base terrain chunk tiles
+      glBindVertexArray(baseChunkVAO);
+      glBindBuffer(GL_ARRAY_BUFFER, baseChunkVBO);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, baseChunkEBO);
+      glDrawElements(GL_TRIANGLES, 6 * baseChunks16.size(), GL_UNSIGNED_INT, 0);
 
       //water tiles
       scene.setInt("surfaceTextureEnum", 1);
@@ -1232,6 +1292,38 @@ void denyBaseTerrainMapInvisibleTiles(std::vector<std::vector<float>>& baseMap, 
               && hillMap[y+1][x+1] != 0)
             {
               baseMap[y][x] = DENY_VALUE;
+            }
+        }
+    }
+}
+
+void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vector<TerrainTile>& baseChunks)
+{
+  for (unsigned int y = 0; y < TILES_HEIGHT; y+=BASE_TERRAIN_CHUNK_SIZE)
+    {
+      for (unsigned int x = 0; x < TILES_WIDTH; x+=BASE_TERRAIN_CHUNK_SIZE)
+        {
+          bool emptyChunk = true;
+          for (unsigned int y1 = y; y1 < y + BASE_TERRAIN_CHUNK_SIZE; y1++)
+            {
+              for (unsigned int x1 = x; x1 < x + BASE_TERRAIN_CHUNK_SIZE; x1++)
+                {
+                  if (baseMap[y1][x1] != 0 || baseMap[y1+1][x1] != 0 || baseMap[y1+1][x+1] != 0 || baseMap[y][x+1] != 0)
+                    emptyChunk = false;
+                }
+              if (!emptyChunk)
+                break;
+            }
+          if (emptyChunk)
+            {
+              for (unsigned int ydel = y + 2; ydel < y + BASE_TERRAIN_CHUNK_SIZE - 2; ydel++)
+                {
+                  for (unsigned int xdel = x + 2; xdel < x + BASE_TERRAIN_CHUNK_SIZE - 2; xdel++)
+                    {
+                      baseMap[ydel][xdel] = DENY_VALUE;
+                    }
+                }
+              baseChunks.emplace_back(x, y, 0, 0, 0, 0, false);
             }
         }
     }
