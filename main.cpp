@@ -56,7 +56,7 @@ InputController input;
 TextureLoader textureLoader;
 const float WATER_LEVEL = -0.75f;
 const int DENY_VALUE = -10;
-const int BASE_TERRAIN_CHUNK_SIZE = 16;
+const int BASE_TERRAIN_CHUNK_SIZE = 32;
 std::default_random_engine RANDOMIZER_ENGINE;
 
 int main()
@@ -104,7 +104,6 @@ int main()
       initializeMap(waterMap);
       generateWaterMap(waterMap, shoreSizeBase, WATER_LEVEL, numWaterTiles);
     }
-  std::cout << "Water on map: " << numWaterTiles << std::endl;
 
   //generating hill height map
   std::vector<std::vector<float>> hillsMap;
@@ -121,7 +120,6 @@ int main()
   removeOrphanHills(hillsMap);
   createTiles(hillsMap, hillTiles, false, false);
   hillTiles.shrink_to_fit();
-  std::cout << "Hills tiles: " << hillTiles.size() << std::endl;
   //fill hills buffer
   const size_t HILLS_VERTEX_DATA_LENGTH = hillTiles.size() * 20;
   const size_t HILLS_ELEMENT_DATA_LENGTH = hillTiles.size() * 6;
@@ -133,7 +131,6 @@ int main()
       int offset = i * 20;
       int indexArrayOffset = i * 6;
       int index = i * 4;
-
       //approximation for texture mapping based on height coords of the tile.
       //for now, it works only for tiles which have a slope for either left->right and top->bottom (or vice versa) direction
       //generally speaking it doesn't work for tiles with one of the following principal scheme:
@@ -220,19 +217,18 @@ int main()
 
   //generating base terrain data
   std::vector<std::vector<float>> baseMap;
-  std::vector<TerrainTile> baseTiles, baseChunks16;
+  std::vector<TerrainTile> baseTiles, baseTerrainChunks;
   baseTiles.reserve(NUM_TILES);
-  baseChunks16.reserve(NUM_TILES / (BASE_TERRAIN_CHUNK_SIZE * BASE_TERRAIN_CHUNK_SIZE));
+  baseTerrainChunks.reserve(NUM_TILES / (BASE_TERRAIN_CHUNK_SIZE * BASE_TERRAIN_CHUNK_SIZE));
   initializeMap(baseMap);
   generateBaseTerrainMap(baseMap, waterMap);
   smoothBaseTerrainMap(baseMap);
   compressHeightBaseTerrainMap(baseMap, 2.0f, true);
   correctBaseTerrainMapAtEdges(baseMap, waterMap);
-//  denyBaseTerrainMapInvisibleTiles(baseMap, hillsMap);
-  splitBaseTerrainToChunks(baseMap, baseChunks16);
+  splitBaseTerrainToChunks(baseMap, baseTerrainChunks);
+  denyBaseTerrainMapInvisibleTiles(baseMap, hillsMap);
   createTiles(baseMap, baseTiles, false, true);
   baseTiles.shrink_to_fit();
-  std::cout << "Base tiles: " << baseTiles.size() << std::endl;
   const size_t BASE_TILES_SUB_VECTOR_CAPACITY = TILES_HEIGHT * 16;
   unsigned int numBaseSubTiles = baseTiles.size() / BASE_TILES_SUB_VECTOR_CAPACITY + 1;
   std::vector<std::vector<TerrainTile>> baseSubTiles;
@@ -243,7 +239,6 @@ int main()
     }
   for (auto& emptyTilesSubVector : baseSubTiles)
     emptyTilesSubVector.reserve(BASE_TILES_SUB_VECTOR_CAPACITY);
-  std::cout << "Base sub tiles: " << numBaseSubTiles << std::endl;
   unsigned int counter = 0;
   for (auto& tile : baseTiles)
     {
@@ -251,10 +246,6 @@ int main()
       counter++;
     }
   baseSubTiles.shrink_to_fit();
-  for (unsigned int i = 0; i < baseSubTiles.size(); ++i)
-    {
-      std::cout << "Base sub tile vec " << i << " : " << baseSubTiles[i].size() << std::endl;
-    }
   const size_t BASE_TERRAIN_DATA_LENGTH = baseSubTiles[0].size() * 20;
   const size_t BASE_TERRAIN_ELEMENT_LENGTH = baseSubTiles[0].size() * 6;
   GLuint baseVAO[numBaseSubTiles], baseVBO[numBaseSubTiles], baseEBO[numBaseSubTiles];
@@ -318,41 +309,40 @@ int main()
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
   //generating base terrain flat tile chunks
-  const size_t BASE_CHUNK_VERTICES_DATA_LENGTH = baseChunks16.size() * 20;
-  const size_t BASE_CHUNK_VERTICES_ELEMENT_LENGTH = baseChunks16.size() * 6;
+  const size_t BASE_CHUNK_VERTICES_DATA_LENGTH = baseTerrainChunks.size() * 20;
+  const size_t BASE_CHUNK_VERTICES_ELEMENT_LENGTH = baseTerrainChunks.size() * 6;
   GLfloat baseChunkVertices[BASE_CHUNK_VERTICES_DATA_LENGTH];
   GLuint baseChunkIndices[BASE_CHUNK_VERTICES_ELEMENT_LENGTH];
-  for (unsigned int i = 0; i < baseChunks16.size(); i++)
+  for (unsigned int i = 0; i < baseTerrainChunks.size(); i++)
     {
-      TerrainTile& tile = baseChunks16[i];
+      TerrainTile& tile = baseTerrainChunks[i];
       int offset = i * 20;
       int indexArrayOffset = i * 6;
       int index = i * 4;
-
       //ll
-      baseChunkVertices[offset] = 1- TILES_WIDTH / 2 + tile.mapX;
+      baseChunkVertices[offset] = - TILES_WIDTH / 2 + tile.mapX;
       baseChunkVertices[offset+1] = tile.lowLeft;
-      baseChunkVertices[offset+2] = - 2 - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE - 1;
+      baseChunkVertices[offset+2] = - 1 - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE - 1;
       baseChunkVertices[offset+3] = 0.0f;
       baseChunkVertices[offset+4] = 0.0f;
       //lr
-      baseChunkVertices[offset+5] = -2 - TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE - 1;
+      baseChunkVertices[offset+5] = -1 - TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE - 1;
       baseChunkVertices[offset+6] = tile.lowRight;
-      baseChunkVertices[offset+7] = -2 - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE - 1;
-      baseChunkVertices[offset+8] = BASE_TERRAIN_CHUNK_SIZE;
+      baseChunkVertices[offset+7] = -1 - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE - 1;
+      baseChunkVertices[offset+8] = BASE_TERRAIN_CHUNK_SIZE - 4;
       baseChunkVertices[offset+9] = 0.0f;
       //ur
-      baseChunkVertices[offset+10] = -2 - TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE - 1;
+      baseChunkVertices[offset+10] = -1 - TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE - 1;
       baseChunkVertices[offset+11] = tile.upperRight;
-      baseChunkVertices[offset+12] = 1 - TILES_HEIGHT / 2 + tile.mapY;
-      baseChunkVertices[offset+13] = BASE_TERRAIN_CHUNK_SIZE;
-      baseChunkVertices[offset+14] = BASE_TERRAIN_CHUNK_SIZE;
+      baseChunkVertices[offset+12] = - TILES_HEIGHT / 2 + tile.mapY;
+      baseChunkVertices[offset+13] = BASE_TERRAIN_CHUNK_SIZE - 4;
+      baseChunkVertices[offset+14] = BASE_TERRAIN_CHUNK_SIZE - 4;
       //ul
-      baseChunkVertices[offset+15] = 1 - TILES_WIDTH / 2 + tile.mapX;
+      baseChunkVertices[offset+15] = - TILES_WIDTH / 2 + tile.mapX;
       baseChunkVertices[offset+16] = tile.upperLeft;
-      baseChunkVertices[offset+17] = 1 - TILES_HEIGHT / 2 + tile.mapY;
+      baseChunkVertices[offset+17] = - TILES_HEIGHT / 2 + tile.mapY;
       baseChunkVertices[offset+18] = 0.0f;
-      baseChunkVertices[offset+19] = BASE_TERRAIN_CHUNK_SIZE;
+      baseChunkVertices[offset+19] = BASE_TERRAIN_CHUNK_SIZE - 4;
 
       baseChunkIndices[indexArrayOffset] = index;
       baseChunkIndices[indexArrayOffset+1] = index + 1;
@@ -383,7 +373,6 @@ int main()
   fillSharpTerrainWithWater(waterMap);
   createTiles(waterMap, waterTiles, true, false);
   waterTiles.shrink_to_fit();
-  std::cout << "Water tiles #: " << waterTiles.size() << std::endl;
   const size_t WATER_VERTEX_DATA_LENGTH = waterTiles.size() * 20;
   const size_t WATER_ELEMENT_DATA_LENGTH = waterTiles.size() * 6;
   GLfloat waterVertices[WATER_VERTEX_DATA_LENGTH];
@@ -450,15 +439,26 @@ int main()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+  //print info
+  std::cout << "Water on map:" << numWaterTiles << std::endl;
+  std::cout << "Water tiles: " << waterTiles.size() << std::endl;
+  std::cout << "Hills tiles: " << hillTiles.size() << std::endl;
+  std::cout << "Chunks tiles:" << baseTerrainChunks.size() << std::endl;
+  std::cout << "Base tiles:  " << baseTiles.size() << std::endl;
+  std::cout << "#subvecs:    " << numBaseSubTiles << std::endl;
+  for (unsigned int i = 0; i < baseSubTiles.size(); ++i)
+    std::cout << "Base subvec" << i << ": " << baseSubTiles[i].size() << std::endl;
+  std::cout << "Summary: " << (waterTiles.size() + hillTiles.size() + baseTerrainChunks.size() + baseTiles.size()) << std::endl;
+
+  //pre-setup
   glm::mat4 model;
   glm::mat4 projection;
-  projection = glm::perspective(glm::radians(cam.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 500.0f);
+  projection = glm::perspective(glm::radians(cam.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 3.0f, 400.0f);
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
   //MAIN LOOP
   while(!glfwWindowShouldClose(window))
     {
-      glfwPollEvents();
-      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       float delta = timer.tick();
       input.processKeyboard(delta);
@@ -488,7 +488,7 @@ int main()
       glBindVertexArray(baseChunkVAO);
       glBindBuffer(GL_ARRAY_BUFFER, baseChunkVBO);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, baseChunkEBO);
-      glDrawElements(GL_TRIANGLES, 6 * baseChunks16.size(), GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_TRIANGLES, 6 * baseTerrainChunks.size(), GL_UNSIGNED_INT, 0);
 
       //water tiles
       scene.setInt("surfaceTextureEnum", 1);
@@ -514,6 +514,7 @@ int main()
       glDrawElements(GL_TRIANGLES, 6 * waterTiles.size(), GL_UNSIGNED_INT, 0);
       glDisable(GL_BLEND);
 
+      glfwPollEvents();
       glfwSwapBuffers(window);
     }
 
@@ -1309,16 +1310,19 @@ void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vec
               for (unsigned int x1 = x; x1 < x + BASE_TERRAIN_CHUNK_SIZE; x1++)
                 {
                   if (baseMap[y1][x1] != 0 || baseMap[y1+1][x1] != 0 || baseMap[y1+1][x+1] != 0 || baseMap[y][x+1] != 0)
-                    emptyChunk = false;
+                    {
+                      emptyChunk = false;
+                      break;
+                    }
                 }
               if (!emptyChunk)
                 break;
             }
           if (emptyChunk)
             {
-              for (unsigned int ydel = y + 2; ydel < y + BASE_TERRAIN_CHUNK_SIZE - 2; ydel++)
+              for (unsigned int ydel = y + 1; ydel < y + BASE_TERRAIN_CHUNK_SIZE - 1; ydel++)
                 {
-                  for (unsigned int xdel = x + 2; xdel < x + BASE_TERRAIN_CHUNK_SIZE - 2; xdel++)
+                  for (unsigned int xdel = x + 1; xdel < x + BASE_TERRAIN_CHUNK_SIZE - 1; xdel++)
                     {
                       baseMap[ydel][xdel] = DENY_VALUE;
                     }
