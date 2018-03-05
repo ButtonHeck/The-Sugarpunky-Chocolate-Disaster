@@ -26,7 +26,7 @@ void correctBaseTerrainMapAtEdges(std::vector<std::vector<float>>& baseMap, std:
 void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap, float ratio, bool entireRange);
 void generateHillMap(std::vector<std::vector<float>>& hillMap, std::vector<std::vector<float>>& waterMap, int cycles, float* max_height, HILL_DENSITY density);
 void correctHillMapAtPlateaus(std::vector<std::vector<float>>& hillMap, float plateauHeight);
-void smoothHillMapHeightChunks(std::vector<std::vector<float>>& hillMap, std::vector<std::vector<float>>& hillMapSmoothed, float baseWeight, float evenWeight, float diagonalWeight);
+void smoothHillMapHeightChunks(std::vector<std::vector<float>>& hillMap, float baseWeight, float evenWeight, float diagonalWeight);
 void removeOrphanHills(std::vector<std::vector<float>>& hillMap);
 bool hasWaterNearby(unsigned int x, unsigned int y, std::vector<std::vector<float>>& waterMap, unsigned int radius);
 void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat, bool createOnZeroTiles);
@@ -102,20 +102,18 @@ int main()
     }
   std::cout << "Water on map: " << numWaterTiles << std::endl;
 
-  //generating land height map
-  std::vector<std::vector<float>> hillsMap, hillsMapSmoothed;
+  //generating hill height map
+  std::vector<std::vector<float>> hillsMap;
   std::vector<TerrainTile> hillTiles;
   hillTiles.reserve(NUM_TILES);
   initializeMap(hillsMap);
-  initializeMap(hillsMapSmoothed);
   float max_height = 0.0f;
   generateHillMap(hillsMap, waterMap, 8, &max_height, HILL_DENSITY::DENSE);
   generateHillMap(hillsMap, waterMap, 4, &max_height, HILL_DENSITY::THIN);
   compressHeight(hillsMap, 0.15f, &max_height, 1.5f); //slightly compress entire height range
   compressHeight(hillsMap, 0.66f, &max_height, 5.0f); //more heavy compress for top-most peaks
   correctHillMapAtPlateaus(hillsMap, 1.0f);
-  smoothHillMapHeightChunks(hillsMap, hillsMapSmoothed, 0.7f, 0.05f, 0.025f);
-  hillsMap.assign(hillsMapSmoothed.begin(), hillsMapSmoothed.end());
+  smoothHillMapHeightChunks(hillsMap, 0.7f, 0.05f, 0.025f);
   removeOrphanHills(hillsMap);
   createTiles(hillsMap, hillTiles, false, false);
   hillTiles.shrink_to_fit();
@@ -316,7 +314,7 @@ int main()
   GLfloat waterVertices[WATER_VERTEX_DATA_LENGTH];
   GLuint waterIndices[WATER_ELEMENT_DATA_LENGTH];
   GLfloat waterHeightOffsets[NUM_TILES + TILES_WIDTH * 2]; //a bit overhead, because all we use is the part where we have water...
-  //also, we don\t have to init waterHeightOffsets, because we update its data every frame
+  //also, we don't have to init waterHeightOffsets, because we update its data every frame
   for (unsigned int i = 0; i < waterTiles.size(); i++)
     {
       TerrainTile& tile = waterTiles[i];
@@ -570,8 +568,10 @@ void correctHillMapAtPlateaus(std::vector<std::vector<float>>& hillMap, float pl
     }
 }
 
-void smoothHillMapHeightChunks(std::vector<std::vector<float>>& hillMap, std::vector<std::vector<float>>& hillMapSmoothed, float baseWeight, float evenWeight, float diagonalWeight)
+void smoothHillMapHeightChunks(std::vector<std::vector<float>>& hillMap, float baseWeight, float evenWeight, float diagonalWeight)
 {
+  std::vector<std::vector<float>> hillMapSmoothed;
+  initializeMap(hillMapSmoothed);
   for (unsigned int y = 1; y < TILES_HEIGHT - 1; y++)
     {
       for (unsigned int x = 1; x < TILES_WIDTH - 1; x++)
@@ -591,6 +591,7 @@ void smoothHillMapHeightChunks(std::vector<std::vector<float>>& hillMap, std::ve
           hillMapSmoothed[y][x] = smoothedHeight;
         }
     }
+  hillMap.assign(hillMapSmoothed.begin(), hillMapSmoothed.end());
 }
 
 void removeOrphanHills(std::vector<std::vector<float>>& hillMap)
