@@ -325,9 +325,9 @@ int main()
   //generating base terrain flat tile chunks of BASE_TERRAIN_CHUNK_SIZE
   GLfloat baseChunkInstanceVertices[20] = {
       -1.0f, 0.0f,  1.0f, 0.0f,                         0.0f,
-       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE - 4,  0.0f,
-       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE - 4,  BASE_TERRAIN_CHUNK_SIZE - 4,
-      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE - 4
+       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE - 2,  0.0f,
+       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE - 2,  BASE_TERRAIN_CHUNK_SIZE - 2,
+      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE - 2
   };
   GLuint baseChunkInstanceIndices[6] = {0,1,2,2,3,0};
   GLuint baseChunkInstanceVAO, baseChunkInstanceVBO, baseChunkInstanceEBO, baseChunkInstanceModelVBO;
@@ -375,9 +375,9 @@ int main()
   //generating base terrain flat tile chunks of BASE_TERRAIN_CHUNK_SIZE2
   GLfloat baseChunkInstanceVertices2[20] = {
       -1.0f, 0.0f,  1.0f, 0.0f,                         0.0f,
-       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE2 - 4,  0.0f,
-       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE2 - 4,  BASE_TERRAIN_CHUNK_SIZE2 - 4,
-      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE2 - 4
+       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE2 - 2,  0.0f,
+       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE2 - 2,  BASE_TERRAIN_CHUNK_SIZE2 - 2,
+      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE2 - 2
   };
   GLuint baseChunkInstanceIndices2[6] = {0,1,2,2,3,0};
   GLuint baseChunkInstanceVAO2, baseChunkInstanceVBO2, baseChunkInstanceEBO2, baseChunkInstanceModelVBO2;
@@ -425,9 +425,9 @@ int main()
   //generating base terrain flat tile chunks of BASE_TERRAIN_CHUNK_SIZE3
   GLfloat baseChunkInstanceVertices3[20] = {
       -1.0f, 0.0f,  1.0f, 0.0f,                         0.0f,
-       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE3 - 4,  0.0f,
-       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE3 - 4,  BASE_TERRAIN_CHUNK_SIZE3 - 4,
-      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE3 - 4
+       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE3 - 2,  0.0f,
+       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE3 - 2,  BASE_TERRAIN_CHUNK_SIZE3 - 2,
+      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE3 - 2
   };
   GLuint baseChunkInstanceIndices3[6] = {0,1,2,2,3,0};
   GLuint baseChunkInstanceVAO3, baseChunkInstanceVBO3, baseChunkInstanceEBO3, baseChunkInstanceModelVBO3;
@@ -475,9 +475,9 @@ int main()
   //generating base terrain flat tile chunks of BASE_TERRAIN_CHUNK_SIZE4
   GLfloat baseChunkInstanceVertices4[20] = {
       -1.0f, 0.0f,  1.0f, 0.0f,                         0.0f,
-       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE4 - 4,  0.0f,
-       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE4 - 4,  BASE_TERRAIN_CHUNK_SIZE4 - 4,
-      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE4 - 4
+       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE4 - 2,  0.0f,
+       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE4 - 2,  BASE_TERRAIN_CHUNK_SIZE4 - 2,
+      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE4 - 2
   };
   GLuint baseChunkInstanceIndices4[6] = {0,1,2,2,3,0};
   GLuint baseChunkInstanceVAO4, baseChunkInstanceVBO4, baseChunkInstanceEBO4, baseChunkInstanceModelVBO4;
@@ -525,9 +525,9 @@ int main()
   //generating base terrain flat tile chunks of BASE_TERRAIN_CHUNK_SIZE5
   GLfloat baseChunkInstanceVertices5[20] = {
       -1.0f, 0.0f,  1.0f, 0.0f,                         0.0f,
-       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE5 - 4,  0.0f,
-       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE5 - 4,  BASE_TERRAIN_CHUNK_SIZE5 - 4,
-      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE5 - 4
+       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE5 - 2,  0.0f,
+       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE5 - 2,  BASE_TERRAIN_CHUNK_SIZE5 - 2,
+      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE5 - 2
   };
   GLuint baseChunkInstanceIndices5[6] = {0,1,2,2,3,0};
   GLuint baseChunkInstanceVAO5, baseChunkInstanceVBO5, baseChunkInstanceEBO5, baseChunkInstanceModelVBO5;
@@ -1570,7 +1570,7 @@ void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vec
             {
               for (unsigned int x1 = x; x1 < x + chunkSize; x1++)
                 {
-                  if (baseMap[y1][x1] != 0 || baseMap[y1+1][x1] != 0 || baseMap[y1+1][x+1] != 0 || baseMap[y][x+1] != 0)
+                  if (baseMap[y1][x1] != 0 || baseMap[y1+1][x1] != 0 || baseMap[y1+1][x1+1] != 0 || baseMap[y1][x1+1] != 0)
                     {
                       emptyChunk = false;
                       break;
