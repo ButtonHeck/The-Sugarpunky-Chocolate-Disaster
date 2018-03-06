@@ -6,6 +6,7 @@
 struct TerrainTile
 {
   TerrainTile(int x, int y, float lowLeft, float lowRight, float upperRight, float upperLeft, bool orderCrossed = false);
+  friend bool operator<(const TerrainTile& a, const TerrainTile& b);
   const int mapX, mapY;
   const float lowLeft, lowRight, upperRight, upperLeft;
   const bool orderCrossed;

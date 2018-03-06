@@ -12,3 +12,13 @@ TerrainTile::TerrainTile(int x, int y, float lowLeft, float lowRight, float uppe
 {
 
 }
+
+bool operator<(const TerrainTile& a, const TerrainTile& b)
+{
+  if (a.mapY < b.mapY)
+    return true;
+  else if (a.mapY == b.mapY)
+    return a.mapX < b.mapX;
+  else
+    return false;
+}

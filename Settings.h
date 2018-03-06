@@ -16,6 +16,7 @@ constexpr int BASE_TERRAIN_CHUNK_SIZE2 = 32;
 constexpr int BASE_TERRAIN_CHUNK_SIZE3 = 24;
 constexpr int BASE_TERRAIN_CHUNK_SIZE4 = 16;
 constexpr int BASE_TERRAIN_CHUNK_SIZE5 = 8;
+constexpr unsigned int SHORE_SIZE_BASE = 5;
 const std::string PROJ_PATH("/home/ilya/QtProjects/MyOpenGL/TerrainGenerationTest");
 
 enum HILL_DENSITY

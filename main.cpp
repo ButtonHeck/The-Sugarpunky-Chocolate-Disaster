@@ -91,17 +91,16 @@ int main()
   //generation water map
   std::vector<std::vector<float>> waterMap;
   std::vector<TerrainTile> waterTiles;
-  unsigned int shoreSizeBase = 5;
   initializeMap(waterMap);
   waterTiles.reserve(NUM_TILES);
   unsigned int numWaterTiles = 0;
-  generateWaterMap(waterMap, shoreSizeBase, WATER_LEVEL, numWaterTiles);
-  while (numWaterTiles < TILES_WIDTH * (shoreSizeBase + 2) * (shoreSizeBase + 2) * 8
-         || numWaterTiles > TILES_WIDTH * (shoreSizeBase + 3) * (shoreSizeBase + 3) * 9)
+  generateWaterMap(waterMap, SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
+  while (numWaterTiles < TILES_WIDTH * (SHORE_SIZE_BASE + 2) * (SHORE_SIZE_BASE + 2) * 8
+         || numWaterTiles > TILES_WIDTH * (SHORE_SIZE_BASE + 3) * (SHORE_SIZE_BASE + 3) * 9)
     {
       numWaterTiles = 0;
       initializeMap(waterMap);
-      generateWaterMap(waterMap, shoreSizeBase, WATER_LEVEL, numWaterTiles);
+      generateWaterMap(waterMap, SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
     }
 
   //generating hill height map
@@ -216,7 +215,8 @@ int main()
 
   //generating base terrain data
   std::vector<std::vector<float>> baseMap;
-  std::vector<TerrainTile> baseTiles, baseTerrainChunks, baseTerrainChunks2, baseTerrainChunks3, baseTerrainChunks4, baseTerrainChunks5;
+  std::vector<TerrainTile> baseTiles,
+      baseTerrainChunks, baseTerrainChunks2, baseTerrainChunks3, baseTerrainChunks4, baseTerrainChunks5;
   baseTiles.reserve(NUM_TILES);
   baseTerrainChunks.reserve(NUM_TILES / (BASE_TERRAIN_CHUNK_SIZE * BASE_TERRAIN_CHUNK_SIZE));
   baseTerrainChunks2.reserve(NUM_TILES / (BASE_TERRAIN_CHUNK_SIZE2 * BASE_TERRAIN_CHUNK_SIZE2));
@@ -233,15 +233,15 @@ int main()
   splitBaseTerrainToChunks(baseMap, baseTerrainChunks3, BASE_TERRAIN_CHUNK_SIZE3);
   splitBaseTerrainToChunks(baseMap, baseTerrainChunks4, BASE_TERRAIN_CHUNK_SIZE4);
   splitBaseTerrainToChunks(baseMap, baseTerrainChunks5, BASE_TERRAIN_CHUNK_SIZE5);
-  removeBaseTerrainUnderwaterTiles(baseMap, UNDERWATER_REMOVAL_LEVEL);
   baseTerrainChunks.shrink_to_fit();
   baseTerrainChunks2.shrink_to_fit();
   baseTerrainChunks3.shrink_to_fit();
   baseTerrainChunks4.shrink_to_fit();
   baseTerrainChunks5.shrink_to_fit();
   denyBaseTerrainMapInvisibleTiles(baseMap, hillsMap);
-  createTiles(baseMap, baseTiles, false, true);
+  removeBaseTerrainUnderwaterTiles(baseMap, UNDERWATER_REMOVAL_LEVEL);
   baseTiles.shrink_to_fit();
+  createTiles(baseMap, baseTiles, false, true);
   const size_t BASE_TILES_SUB_VECTOR_CAPACITY = TILES_HEIGHT * 16;
   unsigned int numBaseSubTiles = baseTiles.size() / BASE_TILES_SUB_VECTOR_CAPACITY + 1;
   std::vector<std::vector<TerrainTile>> baseSubTiles;
@@ -677,7 +677,9 @@ int main()
   std::cout << "#subvecs:         " << numBaseSubTiles << std::endl;
   for (unsigned int i = 0; i < baseSubTiles.size(); ++i)
     std::cout << "Base subvec" << i << ": " << baseSubTiles[i].size() << std::endl;
-  std::cout << "Summary: " << (waterTiles.size() + hillTiles.size() + baseTerrainChunks.size() + baseTiles.size()) << std::endl;
+  std::cout << "Summary: "
+            << (waterTiles.size() + hillTiles.size() + baseTerrainChunks.size() + baseTiles.size())
+            << std::endl;
 
   //pre-setup
   glm::mat4 model;
@@ -1049,7 +1051,7 @@ void generateWaterMap(std::vector<std::vector<float>>& waterMap, unsigned int sh
   srand(time(NULL));
   bool startAxisFromX = rand() % 2 == 0;
   bool riverEnd = false;
-  unsigned int curveMaxDistance = rand() % 32 + 32;
+  unsigned int curveMaxDistance = rand() % 48 + 48;
   unsigned int curveDistanceStep = 0;
   const unsigned int X_MID_POINT = TILES_WIDTH / 2;
   const unsigned int Y_MID_POINT = TILES_HEIGHT / 2;
@@ -1096,7 +1098,7 @@ void generateWaterMap(std::vector<std::vector<float>>& waterMap, unsigned int sh
               {
                 numCurveChanges++;
                 curveDistanceStep = 0;
-                curveMaxDistance = rand() % 32 + 32;
+                curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
                 while (dir == DOWN || dir == DOWN_LEFT || dir == DOWN_RIGHT || dir == UP
                        || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
@@ -1128,7 +1130,7 @@ void generateWaterMap(std::vector<std::vector<float>>& waterMap, unsigned int sh
               {
                 numCurveChanges++;
                 curveDistanceStep = 0;
-                curveMaxDistance = rand() % 32 + 32;
+                curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
                 while (dir == DOWN_LEFT || dir == DOWN || dir == LEFT || dir == UP_RIGHT
                        || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
@@ -1167,7 +1169,7 @@ void generateWaterMap(std::vector<std::vector<float>>& waterMap, unsigned int sh
               {
                 numCurveChanges++;
                 curveDistanceStep = 0;
-                curveMaxDistance = rand() % 32 + 32;
+                curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
                 while (dir == LEFT || dir == UP_LEFT || dir == DOWN_LEFT || dir == RIGHT
                        || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
@@ -1199,7 +1201,7 @@ void generateWaterMap(std::vector<std::vector<float>>& waterMap, unsigned int sh
               {
                 numCurveChanges++;
                 curveDistanceStep = 0;
-                curveMaxDistance = rand() % 32 + 32;
+                curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
                 while (dir == UP_LEFT || dir == UP || dir == LEFT || dir == DOWN_RIGHT
                        || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
@@ -1238,7 +1240,7 @@ void generateWaterMap(std::vector<std::vector<float>>& waterMap, unsigned int sh
               {
                 numCurveChanges++;
                 curveDistanceStep = 0;
-                curveMaxDistance = rand() % 32 + 32;
+                curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
                 while (dir == UP || dir == UP_LEFT || dir == UP_RIGHT || dir == DOWN
                        || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
@@ -1270,7 +1272,7 @@ void generateWaterMap(std::vector<std::vector<float>>& waterMap, unsigned int sh
               {
                 numCurveChanges++;
                 curveDistanceStep = 0;
-                curveMaxDistance = rand() % 32 + 32;
+                curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
                 while (dir == UP_RIGHT || dir == UP || dir == RIGHT || dir == DOWN_LEFT
                        || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
@@ -1309,7 +1311,7 @@ void generateWaterMap(std::vector<std::vector<float>>& waterMap, unsigned int sh
               {
                 numCurveChanges++;
                 curveDistanceStep = 0;
-                curveMaxDistance = rand() % 32 + 32;
+                curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
                 while (dir == RIGHT || dir == UP_RIGHT || dir == DOWN_RIGHT || dir == LEFT
                        || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
@@ -1341,7 +1343,7 @@ void generateWaterMap(std::vector<std::vector<float>>& waterMap, unsigned int sh
               {
                 numCurveChanges++;
                 curveDistanceStep = 0;
-                curveMaxDistance = rand() % 32 + 32;
+                curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
                 while (dir == DOWN_RIGHT || dir == DOWN || dir == RIGHT || dir == UP_LEFT
                        || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
