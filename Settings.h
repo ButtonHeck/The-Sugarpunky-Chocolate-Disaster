@@ -10,6 +10,7 @@ constexpr int NUM_TILES = TILES_WIDTH * TILES_HEIGHT;
 constexpr float WATER_LEVEL = -0.75f;
 constexpr int DENY_VALUE = -10;
 constexpr int BASE_TERRAIN_CHUNK_SIZE = 32;
+constexpr int BASE_TERRAIN_CHUNK_SIZE2 = 16;
 const std::string PROJ_PATH("/home/ilya/QtProjects/MyOpenGL/TerrainGenerationTest");
 
 enum HILL_DENSITY
