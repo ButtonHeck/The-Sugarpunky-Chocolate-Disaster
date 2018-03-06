@@ -62,7 +62,7 @@ int main()
   window = initGLFW();
   glewExperimental = GL_TRUE;
   glewInit();
-//  glEnable(GL_CULL_FACE);
+  glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -214,10 +214,13 @@ int main()
 
   //generating base terrain data
   std::vector<std::vector<float>> baseMap;
-  std::vector<TerrainTile> baseTiles, baseTerrainChunks, baseTerrainChunks2;
+  std::vector<TerrainTile> baseTiles, baseTerrainChunks, baseTerrainChunks2, baseTerrainChunks3, baseTerrainChunks4, baseTerrainChunks5;
   baseTiles.reserve(NUM_TILES);
   baseTerrainChunks.reserve(NUM_TILES / (BASE_TERRAIN_CHUNK_SIZE * BASE_TERRAIN_CHUNK_SIZE));
   baseTerrainChunks2.reserve(NUM_TILES / (BASE_TERRAIN_CHUNK_SIZE2 * BASE_TERRAIN_CHUNK_SIZE2));
+  baseTerrainChunks3.reserve(NUM_TILES / (BASE_TERRAIN_CHUNK_SIZE3 * BASE_TERRAIN_CHUNK_SIZE3));
+  baseTerrainChunks4.reserve(NUM_TILES / (BASE_TERRAIN_CHUNK_SIZE4 * BASE_TERRAIN_CHUNK_SIZE4));
+  baseTerrainChunks5.reserve(NUM_TILES / (BASE_TERRAIN_CHUNK_SIZE5 * BASE_TERRAIN_CHUNK_SIZE5));
   initializeMap(baseMap);
   generateBaseTerrainMap(baseMap, waterMap);
   smoothBaseTerrainMap(baseMap);
@@ -225,6 +228,14 @@ int main()
   correctBaseTerrainMapAtEdges(baseMap, waterMap);
   splitBaseTerrainToChunks(baseMap, baseTerrainChunks, BASE_TERRAIN_CHUNK_SIZE);
   splitBaseTerrainToChunks(baseMap, baseTerrainChunks2, BASE_TERRAIN_CHUNK_SIZE2);
+  splitBaseTerrainToChunks(baseMap, baseTerrainChunks3, BASE_TERRAIN_CHUNK_SIZE3);
+  splitBaseTerrainToChunks(baseMap, baseTerrainChunks4, BASE_TERRAIN_CHUNK_SIZE4);
+  splitBaseTerrainToChunks(baseMap, baseTerrainChunks5, BASE_TERRAIN_CHUNK_SIZE5);
+  baseTerrainChunks.shrink_to_fit();
+  baseTerrainChunks2.shrink_to_fit();
+  baseTerrainChunks3.shrink_to_fit();
+  baseTerrainChunks4.shrink_to_fit();
+  baseTerrainChunks5.shrink_to_fit();
   denyBaseTerrainMapInvisibleTiles(baseMap, hillsMap);
   createTiles(baseMap, baseTiles, false, true);
   baseTiles.shrink_to_fit();
@@ -408,6 +419,156 @@ int main()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+  //generating base terrain flat tile chunks of BASE_TERRAIN_CHUNK_SIZE3
+  GLfloat baseChunkInstanceVertices3[20] = {
+      -1.0f, 0.0f,  1.0f, 0.0f,                         0.0f,
+       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE3 - 4,  0.0f,
+       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE3 - 4,  BASE_TERRAIN_CHUNK_SIZE3 - 4,
+      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE3 - 4
+  };
+  GLuint baseChunkInstanceIndices3[6] = {0,1,2,2,3,0};
+  GLuint baseChunkInstanceVAO3, baseChunkInstanceVBO3, baseChunkInstanceEBO3, baseChunkInstanceModelVBO3;
+  glGenVertexArrays(1, &baseChunkInstanceVAO3);
+  glBindVertexArray(baseChunkInstanceVAO3);
+  glGenBuffers(1, &baseChunkInstanceVBO3);
+  glGenBuffers(1, &baseChunkInstanceEBO3);
+  glGenBuffers(1, &baseChunkInstanceModelVBO3);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, baseChunkInstanceEBO3);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(baseChunkInstanceIndices3), baseChunkInstanceIndices3, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, baseChunkInstanceVBO3);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(baseChunkInstanceVertices3), baseChunkInstanceVertices3, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  const int NUM_INSTANCES3 = baseTerrainChunks3.size();
+  glm::mat4* baseInstanceChunkModels3 = new glm::mat4[NUM_INSTANCES3];
+  for (unsigned int i = 0; i < baseTerrainChunks3.size(); i++)
+    {
+      glm::mat4 model;
+      TerrainTile& tile = baseTerrainChunks3[i];
+      model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE3 / 2 - 1, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE3 / 2 - 1));
+      model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZE3 / 2 - 1, 0.0f, BASE_TERRAIN_CHUNK_SIZE3 / 2 - 1));
+      baseInstanceChunkModels3[i] = model;
+    }
+  glBindBuffer(GL_ARRAY_BUFFER, baseChunkInstanceModelVBO3);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * baseTerrainChunks3.size(), &baseInstanceChunkModels3[0], GL_STATIC_DRAW);
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), 0);
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(sizeof(glm::vec4)));
+  glEnableVertexAttribArray(4);
+  glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4)));
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4)));
+  glVertexAttribDivisor(2, 1);
+  glVertexAttribDivisor(3, 1);
+  glVertexAttribDivisor(4, 1);
+  glVertexAttribDivisor(5, 1);
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  //generating base terrain flat tile chunks of BASE_TERRAIN_CHUNK_SIZE4
+  GLfloat baseChunkInstanceVertices4[20] = {
+      -1.0f, 0.0f,  1.0f, 0.0f,                         0.0f,
+       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE4 - 4,  0.0f,
+       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE4 - 4,  BASE_TERRAIN_CHUNK_SIZE4 - 4,
+      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE4 - 4
+  };
+  GLuint baseChunkInstanceIndices4[6] = {0,1,2,2,3,0};
+  GLuint baseChunkInstanceVAO4, baseChunkInstanceVBO4, baseChunkInstanceEBO4, baseChunkInstanceModelVBO4;
+  glGenVertexArrays(1, &baseChunkInstanceVAO4);
+  glBindVertexArray(baseChunkInstanceVAO4);
+  glGenBuffers(1, &baseChunkInstanceVBO4);
+  glGenBuffers(1, &baseChunkInstanceEBO4);
+  glGenBuffers(1, &baseChunkInstanceModelVBO4);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, baseChunkInstanceEBO4);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(baseChunkInstanceIndices4), baseChunkInstanceIndices4, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, baseChunkInstanceVBO4);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(baseChunkInstanceVertices4), baseChunkInstanceVertices4, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  const int NUM_INSTANCES4 = baseTerrainChunks4.size();
+  glm::mat4* baseInstanceChunkModels4 = new glm::mat4[NUM_INSTANCES4];
+  for (unsigned int i = 0; i < baseTerrainChunks4.size(); i++)
+    {
+      glm::mat4 model;
+      TerrainTile& tile = baseTerrainChunks4[i];
+      model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE4 / 2 - 1, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE4 / 2 - 1));
+      model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZE4 / 2 - 1, 0.0f, BASE_TERRAIN_CHUNK_SIZE4 / 2 - 1));
+      baseInstanceChunkModels4[i] = model;
+    }
+  glBindBuffer(GL_ARRAY_BUFFER, baseChunkInstanceModelVBO4);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * baseTerrainChunks4.size(), &baseInstanceChunkModels4[0], GL_STATIC_DRAW);
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), 0);
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(sizeof(glm::vec4)));
+  glEnableVertexAttribArray(4);
+  glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4)));
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4)));
+  glVertexAttribDivisor(2, 1);
+  glVertexAttribDivisor(3, 1);
+  glVertexAttribDivisor(4, 1);
+  glVertexAttribDivisor(5, 1);
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  //generating base terrain flat tile chunks of BASE_TERRAIN_CHUNK_SIZE5
+  GLfloat baseChunkInstanceVertices5[20] = {
+      -1.0f, 0.0f,  1.0f, 0.0f,                         0.0f,
+       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE5 - 4,  0.0f,
+       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE5 - 4,  BASE_TERRAIN_CHUNK_SIZE5 - 4,
+      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE5 - 4
+  };
+  GLuint baseChunkInstanceIndices5[6] = {0,1,2,2,3,0};
+  GLuint baseChunkInstanceVAO5, baseChunkInstanceVBO5, baseChunkInstanceEBO5, baseChunkInstanceModelVBO5;
+  glGenVertexArrays(1, &baseChunkInstanceVAO5);
+  glBindVertexArray(baseChunkInstanceVAO5);
+  glGenBuffers(1, &baseChunkInstanceVBO5);
+  glGenBuffers(1, &baseChunkInstanceEBO5);
+  glGenBuffers(1, &baseChunkInstanceModelVBO5);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, baseChunkInstanceEBO5);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(baseChunkInstanceIndices5), baseChunkInstanceIndices5, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, baseChunkInstanceVBO5);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(baseChunkInstanceVertices5), baseChunkInstanceVertices5, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  const int NUM_INSTANCES5 = baseTerrainChunks5.size();
+  glm::mat4* baseInstanceChunkModels5 = new glm::mat4[NUM_INSTANCES5];
+  for (unsigned int i = 0; i < baseTerrainChunks5.size(); i++)
+    {
+      glm::mat4 model;
+      TerrainTile& tile = baseTerrainChunks5[i];
+      model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE5 / 2 - 1, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE5 / 2 - 1));
+      model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZE5 / 2 - 1, 0.0f, BASE_TERRAIN_CHUNK_SIZE5 / 2 - 1));
+      baseInstanceChunkModels5[i] = model;
+    }
+  glBindBuffer(GL_ARRAY_BUFFER, baseChunkInstanceModelVBO5);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * baseTerrainChunks5.size(), &baseInstanceChunkModels5[0], GL_STATIC_DRAW);
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), 0);
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(sizeof(glm::vec4)));
+  glEnableVertexAttribArray(4);
+  glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4)));
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4)));
+  glVertexAttribDivisor(2, 1);
+  glVertexAttribDivisor(3, 1);
+  glVertexAttribDivisor(4, 1);
+  glVertexAttribDivisor(5, 1);
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
   //fill water buffer
   addWaterNearbyBaseTerrain(waterMap);
   fillSharpTerrainWithWater(waterMap);
@@ -476,12 +637,16 @@ int main()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   //print info
-  std::cout << "Water on map:" << numWaterTiles << std::endl;
-  std::cout << "Water tiles: " << waterTiles.size() << std::endl;
-  std::cout << "Hills tiles: " << hillTiles.size() << std::endl;
-  std::cout << "Chunks tiles:" << baseTerrainChunks.size() << std::endl;
-  std::cout << "Base tiles:  " << baseTiles.size() << std::endl;
-  std::cout << "#subvecs:    " << numBaseSubTiles << std::endl;
+  std::cout << "Water on map:     " << numWaterTiles << std::endl;
+  std::cout << "Water tiles:      " << waterTiles.size() << std::endl;
+  std::cout << "Hills tiles:      " << hillTiles.size() << std::endl;
+  std::cout << "x64 Chunks tiles: " << baseTerrainChunks.size() << std::endl;
+  std::cout << "x32 Chunks tiles: " << baseTerrainChunks2.size() << std::endl;
+  std::cout << "x24 Chunks tiles: " << baseTerrainChunks3.size() << std::endl;
+  std::cout << "x16 Chunks tiles: " << baseTerrainChunks4.size() << std::endl;
+  std::cout << "x8 Chunks tiles:  " << baseTerrainChunks5.size() << std::endl;
+  std::cout << "Base tiles:       " << baseTiles.size() << std::endl;
+  std::cout << "#subvecs:         " << numBaseSubTiles << std::endl;
   for (unsigned int i = 0; i < baseSubTiles.size(); ++i)
     std::cout << "Base subvec" << i << ": " << baseSubTiles[i].size() << std::endl;
   std::cout << "Summary: " << (waterTiles.size() + hillTiles.size() + baseTerrainChunks.size() + baseTiles.size()) << std::endl;
@@ -525,6 +690,12 @@ int main()
       glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, NUM_INSTANCES);
       glBindVertexArray(baseChunkInstanceVAO2);
       glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, NUM_INSTANCES2);
+      glBindVertexArray(baseChunkInstanceVAO3);
+      glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, NUM_INSTANCES3);
+      glBindVertexArray(baseChunkInstanceVAO4);
+      glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, NUM_INSTANCES4);
+      glBindVertexArray(baseChunkInstanceVAO5);
+      glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, NUM_INSTANCES5);
 
       //water tiles
       scene.setInt("surfaceTextureEnum", 1);
@@ -573,6 +744,9 @@ int main()
   glDeleteBuffers(1, &waterVBO);
   glDeleteBuffers(1, &waterEBO);
   delete[] baseInstanceChunkModels;
+  delete[] baseInstanceChunkModels2;
+  delete[] baseInstanceChunkModels3;
+  delete[] baseInstanceChunkModels4;
   scene.cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();
@@ -1345,9 +1519,9 @@ void denyBaseTerrainMapInvisibleTiles(std::vector<std::vector<float>>& baseMap, 
 
 void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vector<TerrainTile>& baseChunks, int chunkSize)
 {
-  for (unsigned int y = 0; y < TILES_HEIGHT; y += chunkSize)
+  for (unsigned int y = 0; y < TILES_HEIGHT - chunkSize / 2; y += chunkSize / 2)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x += chunkSize)
+      for (unsigned int x = 0; x < TILES_WIDTH - chunkSize / 2; x += chunkSize / 2)
         {
           bool emptyChunk = true;
           for (unsigned int y1 = y; y1 < y + chunkSize; y1++)
