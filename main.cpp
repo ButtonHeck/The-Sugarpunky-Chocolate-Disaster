@@ -26,6 +26,7 @@ void correctBaseTerrainMapAtEdges(std::vector<std::vector<float>>& baseMap, std:
 void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap, float ratio, bool entireRange);
 void denyBaseTerrainMapInvisibleTiles(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
 void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vector<TerrainTile>& baseChunks, int chunkSize);
+void removeBaseTerrainUnderwaterTiles(std::vector<std::vector<float>>& baseMap, float thresholdValue);
 void generateHillMap(std::vector<std::vector<float>>& hillMap, std::vector<std::vector<float>>& waterMap, int cycles, float* max_height, HILL_DENSITY density);
 void correctHillMapAtPlateaus(std::vector<std::vector<float>>& hillMap, float plateauHeight);
 void smoothHillMapHeightChunks(std::vector<std::vector<float>>& hillMap, float baseWeight, float evenWeight, float diagonalWeight);
@@ -80,6 +81,7 @@ int main()
   GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water2.png", GL_REPEAT);
   glActiveTexture(GL_TEXTURE3);
   GLuint sandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/sand.jpg", GL_REPEAT);
+  GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT);
   scene.setInt("grassTexture", 0);
   scene.setInt("hillTexture", 1);
   scene.setInt("waterTexture", 2);
@@ -94,8 +96,8 @@ int main()
   waterTiles.reserve(NUM_TILES);
   unsigned int numWaterTiles = 0;
   generateWaterMap(waterMap, shoreSizeBase, WATER_LEVEL, numWaterTiles);
-  while (numWaterTiles < TILES_WIDTH * (shoreSizeBase + 2) * (shoreSizeBase + 2) * 10
-         || numWaterTiles > TILES_WIDTH * (shoreSizeBase + 3) * (shoreSizeBase + 3) * 10)
+  while (numWaterTiles < TILES_WIDTH * (shoreSizeBase + 2) * (shoreSizeBase + 2) * 8
+         || numWaterTiles > TILES_WIDTH * (shoreSizeBase + 3) * (shoreSizeBase + 3) * 9)
     {
       numWaterTiles = 0;
       initializeMap(waterMap);
@@ -231,6 +233,7 @@ int main()
   splitBaseTerrainToChunks(baseMap, baseTerrainChunks3, BASE_TERRAIN_CHUNK_SIZE3);
   splitBaseTerrainToChunks(baseMap, baseTerrainChunks4, BASE_TERRAIN_CHUNK_SIZE4);
   splitBaseTerrainToChunks(baseMap, baseTerrainChunks5, BASE_TERRAIN_CHUNK_SIZE5);
+  removeBaseTerrainUnderwaterTiles(baseMap, UNDERWATER_REMOVAL_LEVEL);
   baseTerrainChunks.shrink_to_fit();
   baseTerrainChunks2.shrink_to_fit();
   baseTerrainChunks3.shrink_to_fit();
@@ -636,6 +639,31 @@ int main()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+  //generating underwater flat tile
+  GLfloat underwaterVertices[20] = {
+    -TILES_WIDTH / 2.0f, UNDERWATER_BASE_TILE_HEIGHT, TILES_HEIGHT / 2.0f, 0.0f, 0.0f,
+     TILES_WIDTH / 2.0f, UNDERWATER_BASE_TILE_HEIGHT, TILES_HEIGHT / 2.0f, TILES_WIDTH, 0.0f,
+     TILES_WIDTH / 2.0f, UNDERWATER_BASE_TILE_HEIGHT,-TILES_HEIGHT / 2.0f, TILES_WIDTH, TILES_HEIGHT,
+    -TILES_WIDTH / 2.0f, UNDERWATER_BASE_TILE_HEIGHT,-TILES_HEIGHT / 2.0f, 0.0f, TILES_HEIGHT
+  };
+  GLuint underwaterIndices[6] = {0,1,2,2,3,0};
+  GLuint underwaterVAO, underwaterVBO, underwaterEBO;
+  glGenVertexArrays(1, &underwaterVAO);
+  glGenBuffers(1, &underwaterVBO);
+  glGenBuffers(1, &underwaterEBO);
+  glBindVertexArray(underwaterVAO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, underwaterEBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(underwaterIndices), underwaterIndices, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, underwaterVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(underwaterVertices), underwaterVertices, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
   //print info
   std::cout << "Water on map:     " << numWaterTiles << std::endl;
   std::cout << "Water tiles:      " << waterTiles.size() << std::endl;
@@ -677,12 +705,19 @@ int main()
 
       //base terrain tiles
       scene.setInt("surfaceTextureEnum", 0);
-      scene.setBool("instanceRender", false);
+      glActiveTexture(GL_TEXTURE3);
+      glBindTexture(GL_TEXTURE_2D, sandTexture);
       for (unsigned int i = 0; i < numBaseSubTiles; i++)
         {
           glBindVertexArray(baseVAO[i]);
           glDrawElements(GL_TRIANGLES, 6 * baseSubTiles[i].size(), GL_UNSIGNED_INT, 0);
         }
+
+      //underwater tile
+      glActiveTexture(GL_TEXTURE3);
+      glBindTexture(GL_TEXTURE_2D, underwaterSandTexture);
+      glBindVertexArray(underwaterVAO);
+      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
       //base terrain chunk tiles
       scene.setBool("instanceRender", true);
@@ -730,6 +765,10 @@ int main()
   glDeleteTextures(1, &hillTexture);
   glDeleteTextures(1, &waterTexture);
   glDeleteTextures(1, &sandTexture);
+  glDeleteTextures(1, &underwaterSandTexture);
+  glDeleteVertexArrays(1, &underwaterVAO);
+  glDeleteBuffers(1, &underwaterVBO);
+  glDeleteBuffers(1, &underwaterEBO);
   glDeleteVertexArrays(numBaseSubTiles, baseVAO);
   glDeleteBuffers(numBaseSubTiles, baseVBO);
   glDeleteBuffers(numBaseSubTiles, baseEBO);
@@ -747,6 +786,7 @@ int main()
   delete[] baseInstanceChunkModels2;
   delete[] baseInstanceChunkModels3;
   delete[] baseInstanceChunkModels4;
+  delete[] baseInstanceChunkModels5;
   scene.cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();
@@ -1548,6 +1588,26 @@ void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vec
                 }
               baseChunks.emplace_back(x, y, 0, 0, 0, 0, false);
             }
+        }
+    }
+}
+
+void removeBaseTerrainUnderwaterTiles(std::vector<std::vector<float>>& baseMap, float thresholdValue)
+{
+  for (unsigned int y = 1; y < TILES_HEIGHT - 1; y++)
+    {
+      for (unsigned int x = 1; x < TILES_WIDTH - 1; x++)
+        {
+          if (baseMap[y-1][x-1] < thresholdValue
+              && baseMap[y-1][x] < thresholdValue
+              && baseMap[y-1][x+1] < thresholdValue
+              && baseMap[y][x-1] < thresholdValue
+              && baseMap[y][x] < thresholdValue
+              && baseMap[y][x+1] < thresholdValue
+              && baseMap[y+1][x-1] < thresholdValue
+              && baseMap[y+1][x] < thresholdValue
+              && baseMap[y+1][x+1] < thresholdValue)
+            baseMap[y][x] = DENY_VALUE;
         }
     }
 }
