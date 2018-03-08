@@ -1576,7 +1576,10 @@ void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vec
             {
               for (unsigned int x1 = x; x1 < x + chunkSize; x1++)
                 {
-                  if (baseMap[y1][x1] != 0 || baseMap[y1+1][x1] != 0 || baseMap[y1+1][x1+1] != 0 || baseMap[y1][x1+1] != 0)
+                  if ((baseMap[y1][x1] != 0 && baseMap[y1][x1] != DENY_VALUE)
+                      || (baseMap[y1+1][x1] != 0 && baseMap[y1+1][x1] != DENY_VALUE)
+                      || (baseMap[y1+1][x1+1] != 0 && baseMap[y1+1][x1+1] != DENY_VALUE)
+                      || (baseMap[y1][x1+1] != 0 && baseMap[y1][x1+1] != DENY_VALUE))
                     {
                       emptyChunk = false;
                       break;
