@@ -28,9 +28,10 @@ void denyBaseTerrainMapInvisibleTiles(std::vector<std::vector<float>>& baseMap, 
 void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vector<TerrainTile>& baseChunks, int chunkSize);
 void removeBaseTerrainUnderwaterTiles(std::vector<std::vector<float>>& baseMap, float thresholdValue);
 void generateHillMap(std::vector<std::vector<float>>& hillMap, std::vector<std::vector<float>>& waterMap, int cycles, float* max_height, HILL_DENSITY density);
-void correctHillMapAtPlateaus(std::vector<std::vector<float>>& hillMap, float plateauHeight);
+void removeHillMapPlateaus(std::vector<std::vector<float>>& hillMap, float plateauHeight);
 void smoothHillMapHeightChunks(std::vector<std::vector<float>>& hillMap, float baseWeight, float evenWeight, float diagonalWeight);
 void removeOrphanHills(std::vector<std::vector<float>>& hillMap);
+void smoothHillMapSinks(std::vector<std::vector<float>>& hillMap);
 bool hasWaterNearby(unsigned int x, unsigned int y, std::vector<std::vector<float>>& waterMap, unsigned int radius);
 void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat, bool createOnZeroTiles);
 bool isOrphanAt(int x, int y, std::vector<std::vector<float>>& map);
@@ -113,9 +114,10 @@ int main()
   generateHillMap(hillsMap, waterMap, 4, &max_height, HILL_DENSITY::THIN);
   compressHeight(hillsMap, 0.15f, &max_height, 1.5f); //slightly compress entire height range
   compressHeight(hillsMap, 0.66f, &max_height, 5.0f); //more heavy compress for top-most peaks
-  correctHillMapAtPlateaus(hillsMap, 1.0f);
+  removeHillMapPlateaus(hillsMap, 1.0f);
   smoothHillMapHeightChunks(hillsMap, 0.7f, 0.05f, 0.025f);
   removeOrphanHills(hillsMap);
+  smoothHillMapSinks(hillsMap);
   createTiles(hillsMap, hillTiles, false, false);
   hillTiles.shrink_to_fit();
   //fill hills buffer
@@ -881,7 +883,7 @@ void generateHillMap(std::vector<std::vector<float>>& hillMap, std::vector<std::
     }
 }
 
-void correctHillMapAtPlateaus(std::vector<std::vector<float>>& hillMap, float plateauHeight)
+void removeHillMapPlateaus(std::vector<std::vector<float>>& hillMap, float plateauHeight)
 {
   unsigned int yt, yb, xl, xr;
   for (unsigned int y = 1; y < TILES_HEIGHT - 1; y++)
@@ -1610,6 +1612,46 @@ void removeBaseTerrainUnderwaterTiles(std::vector<std::vector<float>>& baseMap, 
               && baseMap[y+1][x] < thresholdValue
               && baseMap[y+1][x+1] < thresholdValue)
             baseMap[y][x] = DENY_VALUE;
+        }
+    }
+}
+
+void smoothHillMapSinks(std::vector<std::vector<float>>& hillMap)
+{
+  for (unsigned int y = 1; y < TILES_HEIGHT; y++)
+    {
+      for (unsigned int x = 1; x < TILES_WIDTH; x++)
+        {
+          unsigned int higherNeighbours = 0;
+          if (hillMap[y][x] < hillMap[y-1][x-1])
+            ++higherNeighbours;
+          if (hillMap[y][x] < hillMap[y-1][x])
+            ++higherNeighbours;
+          if (hillMap[y][x] < hillMap[y-1][x+1])
+            ++higherNeighbours;
+          if (hillMap[y][x] < hillMap[y][x-1])
+            ++higherNeighbours;
+          if (hillMap[y][x] < hillMap[y][x+1])
+            ++higherNeighbours;
+          if (hillMap[y][x] < hillMap[y+1][x-1])
+            ++higherNeighbours;
+          if (hillMap[y][x] < hillMap[y+1][x])
+            ++higherNeighbours;
+          if (hillMap[y][x] < hillMap[y+1][x+1])
+            ++higherNeighbours;
+          if (higherNeighbours >= 7)
+            {
+              float avgHeight = hillMap[y-1][x-1]
+                  +hillMap[y-1][x]
+                  +hillMap[y-1][x+1]
+                  +hillMap[y][x-1]
+                  +hillMap[y][x+1]
+                  +hillMap[y+1][x-1]
+                  +hillMap[y+1][x]
+                  +hillMap[y+1][x+1];
+              avgHeight /= higherNeighbours;
+              hillMap[y][x] = avgHeight;
+            }
         }
     }
 }
