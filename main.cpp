@@ -16,10 +16,12 @@
 #include "TerrainTile.h"
 
 GLFWwindow* initGLFW();
+//water related declarations
 void generateWaterMap(std::vector<std::vector<float>>& waterMap, unsigned int shoreSizeBase, float waterLevel, unsigned int &numWaterTiles);
 void addWaterNearbyBaseTerrain(std::vector<std::vector<float>>& waterMap);
 void fillSharpTerrainWithWater(std::vector<std::vector<float>>& waterMap);
 void liftWaterLevel(std::vector<std::vector<float>>& waterMap, float liftValue);
+//base terrain related declarations
 void generateBaseTerrainMap(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& waterMap);
 void smoothBaseTerrainMap(std::vector<std::vector<float>>& baseMap);
 void correctBaseTerrainMapAtEdges(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& waterMap);
@@ -27,15 +29,17 @@ void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap, floa
 void denyBaseTerrainMapInvisibleTiles(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
 void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vector<TerrainTile>& baseChunks, int chunkSize);
 void removeBaseTerrainUnderwaterTiles(std::vector<std::vector<float>>& baseMap, float thresholdValue);
+//hills related declarations
 void generateHillMap(std::vector<std::vector<float>>& hillMap, std::vector<std::vector<float>>& waterMap, int cycles, float* max_height, HILL_DENSITY density);
+bool hasWaterNearby(unsigned int x, unsigned int y, std::vector<std::vector<float>>& waterMap, unsigned int radius);
+void compressHeightHillMap(std::vector<std::vector<float>>& hillMap, float threshold_percent, float* limit, float ratio);
 void removeHillMapPlateaus(std::vector<std::vector<float>>& hillMap, float plateauHeight);
 void smoothHillMapHeightChunks(std::vector<std::vector<float>>& hillMap, float baseWeight, float evenWeight, float diagonalWeight);
 void removeOrphanHills(std::vector<std::vector<float>>& hillMap);
-void smoothHillMapSinks(std::vector<std::vector<float>>& hillMap);
-bool hasWaterNearby(unsigned int x, unsigned int y, std::vector<std::vector<float>>& waterMap, unsigned int radius);
-void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat, bool createOnZeroTiles);
 bool isOrphanAt(int x, int y, std::vector<std::vector<float>>& map);
-void compressHeight(std::vector<std::vector<float>>& hillMap, float threshold_percent, float* limit, float ratio);
+void smoothHillMapSinks(std::vector<std::vector<float>>& hillMap);
+//general functions declarations
+void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>& tiles, bool flat, bool createOnZeroTiles);
 template <typename T> void initializeMap(std::vector<std::vector<T>>& map)
 {
   map.clear();
@@ -112,8 +116,8 @@ int main()
   float max_height = 0.0f;
   generateHillMap(hillsMap, waterMap, 8, &max_height, HILL_DENSITY::DENSE);
   generateHillMap(hillsMap, waterMap, 4, &max_height, HILL_DENSITY::THIN);
-  compressHeight(hillsMap, 0.15f, &max_height, 1.5f); //slightly compress entire height range
-  compressHeight(hillsMap, 0.66f, &max_height, 5.0f); //more heavy compress for top-most peaks
+  compressHeightHillMap(hillsMap, 0.15f, &max_height, 1.5f); //slightly compress entire height range
+  compressHeightHillMap(hillsMap, 0.66f, &max_height, 5.0f); //more heavy compress for top-most peaks
   removeHillMapPlateaus(hillsMap, 1.0f);
   smoothHillMapHeightChunks(hillsMap, 0.7f, 0.05f, 0.025f);
   removeOrphanHills(hillsMap);
@@ -327,9 +331,9 @@ int main()
   //generating base terrain flat tile chunks of BASE_TERRAIN_CHUNK_SIZE
   GLfloat baseChunkInstanceVertices[20] = {
       -1.0f, 0.0f,  1.0f, 0.0f,                         0.0f,
-       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE - 2,  0.0f,
-       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE - 2,  BASE_TERRAIN_CHUNK_SIZE - 2,
-      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE - 2
+       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE - 1,  0.0f,
+       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE - 1,  BASE_TERRAIN_CHUNK_SIZE - 1,
+      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE - 1
   };
   GLuint baseChunkInstanceIndices[6] = {0,1,2,2,3,0};
   GLuint baseChunkInstanceVAO, baseChunkInstanceVBO, baseChunkInstanceEBO, baseChunkInstanceModelVBO;
@@ -352,8 +356,8 @@ int main()
     {
       glm::mat4 model;
       TerrainTile& tile = baseTerrainChunks[i];
-      model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE / 2 - 1, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE / 2 - 1));
-      model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZE / 2 - 1, 0.0f, BASE_TERRAIN_CHUNK_SIZE / 2 - 1));
+      model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE / 2 - 0.5f, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE / 2 - 0.5f));
+      model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZE / 2 - 0.5f, 0.0f, BASE_TERRAIN_CHUNK_SIZE / 2 - 0.5f));
       baseInstanceChunkModels[i] = model;
     }
   glBindBuffer(GL_ARRAY_BUFFER, baseChunkInstanceModelVBO);
@@ -377,9 +381,9 @@ int main()
   //generating base terrain flat tile chunks of BASE_TERRAIN_CHUNK_SIZE2
   GLfloat baseChunkInstanceVertices2[20] = {
       -1.0f, 0.0f,  1.0f, 0.0f,                         0.0f,
-       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE2 - 2,  0.0f,
-       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE2 - 2,  BASE_TERRAIN_CHUNK_SIZE2 - 2,
-      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE2 - 2
+       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE2 - 1,  0.0f,
+       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE2 - 1,  BASE_TERRAIN_CHUNK_SIZE2 - 1,
+      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE2 - 1
   };
   GLuint baseChunkInstanceIndices2[6] = {0,1,2,2,3,0};
   GLuint baseChunkInstanceVAO2, baseChunkInstanceVBO2, baseChunkInstanceEBO2, baseChunkInstanceModelVBO2;
@@ -402,8 +406,8 @@ int main()
     {
       glm::mat4 model;
       TerrainTile& tile = baseTerrainChunks2[i];
-      model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE2 / 2 - 1, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE2 / 2 - 1));
-      model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZE2 / 2 - 1, 0.0f, BASE_TERRAIN_CHUNK_SIZE2 / 2 - 1));
+      model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE2 / 2 - 0.5f, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE2 / 2 - 0.5f));
+      model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZE2 / 2 - 0.5f, 0.0f, BASE_TERRAIN_CHUNK_SIZE2 / 2 - 0.5f));
       baseInstanceChunkModels2[i] = model;
     }
   glBindBuffer(GL_ARRAY_BUFFER, baseChunkInstanceModelVBO2);
@@ -427,9 +431,9 @@ int main()
   //generating base terrain flat tile chunks of BASE_TERRAIN_CHUNK_SIZE3
   GLfloat baseChunkInstanceVertices3[20] = {
       -1.0f, 0.0f,  1.0f, 0.0f,                         0.0f,
-       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE3 - 2,  0.0f,
-       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE3 - 2,  BASE_TERRAIN_CHUNK_SIZE3 - 2,
-      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE3 - 2
+       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE3 - 1,  0.0f,
+       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE3 - 1,  BASE_TERRAIN_CHUNK_SIZE3 - 1,
+      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE3 - 1
   };
   GLuint baseChunkInstanceIndices3[6] = {0,1,2,2,3,0};
   GLuint baseChunkInstanceVAO3, baseChunkInstanceVBO3, baseChunkInstanceEBO3, baseChunkInstanceModelVBO3;
@@ -452,8 +456,8 @@ int main()
     {
       glm::mat4 model;
       TerrainTile& tile = baseTerrainChunks3[i];
-      model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE3 / 2 - 1, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE3 / 2 - 1));
-      model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZE3 / 2 - 1, 0.0f, BASE_TERRAIN_CHUNK_SIZE3 / 2 - 1));
+      model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE3 / 2 - 0.5f, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE3 / 2 - 0.5f));
+      model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZE3 / 2 - 0.5f, 0.0f, BASE_TERRAIN_CHUNK_SIZE3 / 2 - 0.5f));
       baseInstanceChunkModels3[i] = model;
     }
   glBindBuffer(GL_ARRAY_BUFFER, baseChunkInstanceModelVBO3);
@@ -477,9 +481,9 @@ int main()
   //generating base terrain flat tile chunks of BASE_TERRAIN_CHUNK_SIZE4
   GLfloat baseChunkInstanceVertices4[20] = {
       -1.0f, 0.0f,  1.0f, 0.0f,                         0.0f,
-       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE4 - 2,  0.0f,
-       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE4 - 2,  BASE_TERRAIN_CHUNK_SIZE4 - 2,
-      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE4 - 2
+       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE4 - 1,  0.0f,
+       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE4 - 1,  BASE_TERRAIN_CHUNK_SIZE4 - 1,
+      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE4 - 1
   };
   GLuint baseChunkInstanceIndices4[6] = {0,1,2,2,3,0};
   GLuint baseChunkInstanceVAO4, baseChunkInstanceVBO4, baseChunkInstanceEBO4, baseChunkInstanceModelVBO4;
@@ -502,8 +506,8 @@ int main()
     {
       glm::mat4 model;
       TerrainTile& tile = baseTerrainChunks4[i];
-      model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE4 / 2 - 1, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE4 / 2 - 1));
-      model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZE4 / 2 - 1, 0.0f, BASE_TERRAIN_CHUNK_SIZE4 / 2 - 1));
+      model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE4 / 2 - 0.5f, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE4 / 2 - 0.5f));
+      model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZE4 / 2 - 0.5f, 0.0f, BASE_TERRAIN_CHUNK_SIZE4 / 2 - 0.5f));
       baseInstanceChunkModels4[i] = model;
     }
   glBindBuffer(GL_ARRAY_BUFFER, baseChunkInstanceModelVBO4);
@@ -527,9 +531,9 @@ int main()
   //generating base terrain flat tile chunks of BASE_TERRAIN_CHUNK_SIZE5
   GLfloat baseChunkInstanceVertices5[20] = {
       -1.0f, 0.0f,  1.0f, 0.0f,                         0.0f,
-       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE5 - 2,  0.0f,
-       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE5 - 2,  BASE_TERRAIN_CHUNK_SIZE5 - 2,
-      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE5 - 2
+       1.0f, 0.0f,  1.0f, BASE_TERRAIN_CHUNK_SIZE5 - 1,  0.0f,
+       1.0f, 0.0f, -1.0f, BASE_TERRAIN_CHUNK_SIZE5 - 1,  BASE_TERRAIN_CHUNK_SIZE5 - 1,
+      -1.0f, 0.0f, -1.0f, 0.0f,                         BASE_TERRAIN_CHUNK_SIZE5 - 1
   };
   GLuint baseChunkInstanceIndices5[6] = {0,1,2,2,3,0};
   GLuint baseChunkInstanceVAO5, baseChunkInstanceVBO5, baseChunkInstanceEBO5, baseChunkInstanceModelVBO5;
@@ -552,8 +556,8 @@ int main()
     {
       glm::mat4 model;
       TerrainTile& tile = baseTerrainChunks5[i];
-      model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE5 / 2 - 1, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE5 / 2 - 1));
-      model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZE5 / 2 - 1, 0.0f, BASE_TERRAIN_CHUNK_SIZE5 / 2 - 1));
+      model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZE5 / 2 - 0.5f, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZE5 / 2 - 0.5f));
+      model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZE5 / 2 - 0.5f, 0.0f, BASE_TERRAIN_CHUNK_SIZE5 / 2 - 0.5f));
       baseInstanceChunkModels5[i] = model;
     }
   glBindBuffer(GL_ARRAY_BUFFER, baseChunkInstanceModelVBO5);
@@ -1035,7 +1039,7 @@ bool isOrphanAt(int x, int y, std::vector<std::vector<float>>& map)
           map[y+1][x+1] == 0);
 }
 
-void compressHeight(std::vector<std::vector<float>>& map, float threshold_percent, float *limit, float ratio)
+void compressHeightHillMap(std::vector<std::vector<float>>& map, float threshold_percent, float *limit, float ratio)
 {
   float threshold_value = *limit * threshold_percent;
   for (auto& row : map)
@@ -1583,9 +1587,9 @@ void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vec
             }
           if (emptyChunk)
             {
-              for (unsigned int ydel = y + 1; ydel < y + chunkSize - 1; ydel++)
+              for (unsigned int ydel = y + 1; ydel < y + chunkSize; ydel++)
                 {
-                  for (unsigned int xdel = x + 1; xdel < x + chunkSize - 1; xdel++)
+                  for (unsigned int xdel = x + 1; xdel < x + chunkSize; xdel++)
                     {
                       baseMap[ydel][xdel] = DENY_VALUE;
                     }
@@ -1639,7 +1643,7 @@ void smoothHillMapSinks(std::vector<std::vector<float>>& hillMap)
             ++higherNeighbours;
           if (hillMap[y][x] < hillMap[y+1][x+1])
             ++higherNeighbours;
-          if (higherNeighbours >= 7)
+          if (higherNeighbours >= 6)
             {
               float avgHeight = hillMap[y-1][x-1]
                   +hillMap[y-1][x]
@@ -1649,7 +1653,7 @@ void smoothHillMapSinks(std::vector<std::vector<float>>& hillMap)
                   +hillMap[y+1][x-1]
                   +hillMap[y+1][x]
                   +hillMap[y+1][x+1];
-              avgHeight /= higherNeighbours;
+              avgHeight /= 9;
               hillMap[y][x] = avgHeight;
             }
         }
