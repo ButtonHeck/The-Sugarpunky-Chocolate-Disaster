@@ -27,7 +27,7 @@ void smoothBaseTerrainMap(std::vector<std::vector<float>>& baseMap);
 void correctBaseTerrainMapAtEdges(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& waterMap);
 void compressHeightBaseTerrainMap(std::vector<std::vector<float>>& baseMap, float ratio, bool entireRange);
 void denyBaseTerrainMapInvisibleTiles(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
-void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vector<TerrainTile>& baseChunks, int chunkSize);
+void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& chunkMap, std::vector<TerrainTile>& baseChunks, int chunkSize, bool overlap);
 void removeBaseTerrainUnderwaterTiles(std::vector<std::vector<float>>& baseMap, float thresholdValue);
 //hills related declarations
 void generateHillMap(std::vector<std::vector<float>>& hillMap, std::vector<std::vector<float>>& waterMap, int cycles, float* max_height, HILL_DENSITY density);
@@ -221,6 +221,7 @@ int main()
 
   //generating base terrain data
   std::vector<std::vector<float>> baseMap;
+  std::vector<std::vector<float>> chunkMap;
   std::vector<TerrainTile> baseTiles,
       baseTerrainChunks, baseTerrainChunks2, baseTerrainChunks3, baseTerrainChunks4, baseTerrainChunks5;
   baseTiles.reserve(NUM_TILES);
@@ -230,15 +231,16 @@ int main()
   baseTerrainChunks4.reserve(NUM_TILES / (BASE_TERRAIN_CHUNK_SIZE4 * BASE_TERRAIN_CHUNK_SIZE4));
   baseTerrainChunks5.reserve(NUM_TILES / (BASE_TERRAIN_CHUNK_SIZE5 * BASE_TERRAIN_CHUNK_SIZE5));
   initializeMap(baseMap);
+  initializeMap(chunkMap);
   generateBaseTerrainMap(baseMap, waterMap);
   smoothBaseTerrainMap(baseMap);
   compressHeightBaseTerrainMap(baseMap, 2.0f, true);
   correctBaseTerrainMapAtEdges(baseMap, waterMap);
-  splitBaseTerrainToChunks(baseMap, baseTerrainChunks, BASE_TERRAIN_CHUNK_SIZE);
-  splitBaseTerrainToChunks(baseMap, baseTerrainChunks2, BASE_TERRAIN_CHUNK_SIZE2);
-  splitBaseTerrainToChunks(baseMap, baseTerrainChunks3, BASE_TERRAIN_CHUNK_SIZE3);
-  splitBaseTerrainToChunks(baseMap, baseTerrainChunks4, BASE_TERRAIN_CHUNK_SIZE4);
-  splitBaseTerrainToChunks(baseMap, baseTerrainChunks5, BASE_TERRAIN_CHUNK_SIZE5);
+  splitBaseTerrainToChunks(baseMap, chunkMap, baseTerrainChunks, BASE_TERRAIN_CHUNK_SIZE, false);
+  splitBaseTerrainToChunks(baseMap, chunkMap, baseTerrainChunks2, BASE_TERRAIN_CHUNK_SIZE2, true);
+  splitBaseTerrainToChunks(baseMap, chunkMap, baseTerrainChunks3, BASE_TERRAIN_CHUNK_SIZE3, true);
+  splitBaseTerrainToChunks(baseMap, chunkMap, baseTerrainChunks4, BASE_TERRAIN_CHUNK_SIZE4, true);
+  splitBaseTerrainToChunks(baseMap, chunkMap, baseTerrainChunks5, BASE_TERRAIN_CHUNK_SIZE5, true);
   baseTerrainChunks.shrink_to_fit();
   baseTerrainChunks2.shrink_to_fit();
   baseTerrainChunks3.shrink_to_fit();
@@ -684,7 +686,12 @@ int main()
   for (unsigned int i = 0; i < baseSubTiles.size(); ++i)
     std::cout << "Base subvec" << i << ": " << baseSubTiles[i].size() << std::endl;
   std::cout << "Summary: "
-            << (waterTiles.size() + hillTiles.size() + baseTerrainChunks.size() + baseTiles.size())
+            << (waterTiles.size() + hillTiles.size() + baseTiles.size()
+                +baseTerrainChunks.size()
+                +baseTerrainChunks2.size()
+                +baseTerrainChunks3.size()
+                +baseTerrainChunks4.size()
+                +baseTerrainChunks5.size())
             << std::endl;
 
   //pre-setup
@@ -988,7 +995,7 @@ void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>&
     {
       for (unsigned int x = 1; x < map[0].size(); x++)
         {
-          if (map[y][x] == DENY_VALUE)
+          if (map[y][x] == DENY_TILE_RENDER_VALUE)
             continue;
           bool toCreate;
           if (!flat)
@@ -1004,14 +1011,14 @@ void createTiles(std::vector<std::vector<float>>& map, std::vector<TerrainTile>&
               if (!flat)
                 {
                   ll = map[y][x-1];
-                  if (ll == DENY_VALUE)
+                  if (ll == DENY_TILE_RENDER_VALUE)
                     ll = map[y][x];
                   lr = map[y][x];
                   ur = map[y-1][x];
-                  if (ur == DENY_VALUE)
+                  if (ur == DENY_TILE_RENDER_VALUE)
                     ur = map[y][x];
                   ul = map[y-1][x-1];
-                  if (ul == DENY_VALUE)
+                  if (ul == DENY_TILE_RENDER_VALUE)
                     ul = map[y][x];
                 }
               else
@@ -1559,27 +1566,45 @@ void denyBaseTerrainMapInvisibleTiles(std::vector<std::vector<float>>& baseMap, 
               && hillMap[y+1][x] != 0
               && hillMap[y+1][x+1] != 0)
             {
-              baseMap[y][x] = DENY_VALUE;
+              baseMap[y][x] = DENY_TILE_RENDER_VALUE;
             }
         }
     }
 }
 
-void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vector<TerrainTile>& baseChunks, int chunkSize)
+void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& chunkMap, std::vector<TerrainTile>& baseChunks, int chunkSize, bool overlap)
 {
-  for (unsigned int y = 0; y < TILES_HEIGHT - chunkSize / 2; y += chunkSize / 2)
+  int step = overlap ? chunkSize / 2 : chunkSize - 1;
+  for (int y = 0; y < TILES_HEIGHT - step - 1; y += step)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH - chunkSize / 2; x += chunkSize / 2)
+      for (int x = 0; x < TILES_WIDTH - step - 1; x += step)
         {
-          bool emptyChunk = true;
-          for (unsigned int y1 = y; y1 < y + chunkSize; y1++)
+          bool emptyChunk = true, chunked = true;
+          if (overlap)
             {
-              for (unsigned int x1 = x; x1 < x + chunkSize; x1++)
+              for (int y1 = y+1; y1 < y + chunkSize; y1++)
                 {
-                  if ((baseMap[y1][x1] != 0 && baseMap[y1][x1] != DENY_VALUE)
-                      || (baseMap[y1+1][x1] != 0 && baseMap[y1+1][x1] != DENY_VALUE)
-                      || (baseMap[y1+1][x1+1] != 0 && baseMap[y1+1][x1+1] != DENY_VALUE)
-                      || (baseMap[y1][x1+1] != 0 && baseMap[y1][x1+1] != DENY_VALUE))
+                  for (int x1 = x+1; x1 < x + chunkSize; x1++)
+                    {
+                      if (chunkMap[y1][x1] != DENY_CHUNK_RENDER_VALUE
+                          || chunkMap[y1+1][x1] != DENY_CHUNK_RENDER_VALUE
+                          || chunkMap[y1][x1+1] != DENY_CHUNK_RENDER_VALUE
+                          || chunkMap[y1+1][x1+1] != DENY_CHUNK_RENDER_VALUE)
+                        {
+                          chunked = false;
+                          break;
+                        }
+                    }
+                }
+            }
+          for (int y1 = y; y1 < y + chunkSize; y1++)
+            {
+              for (int x1 = x; x1 < x + chunkSize; x1++)
+                {
+                  if ((baseMap[y1][x1] != 0 && baseMap[y1][x1] != DENY_TILE_RENDER_VALUE)
+                      || (baseMap[y1+1][x1] != 0 && baseMap[y1+1][x1] != DENY_TILE_RENDER_VALUE)
+                      || (baseMap[y1+1][x1+1] != 0 && baseMap[y1+1][x1+1] != DENY_TILE_RENDER_VALUE)
+                      || (baseMap[y1][x1+1] != 0 && baseMap[y1][x1+1] != DENY_TILE_RENDER_VALUE))
                     {
                       emptyChunk = false;
                       break;
@@ -1588,13 +1613,14 @@ void splitBaseTerrainToChunks(std::vector<std::vector<float>>& baseMap, std::vec
               if (!emptyChunk)
                 break;
             }
-          if (emptyChunk)
+          if (emptyChunk && (!chunked || !overlap))
             {
-              for (unsigned int ydel = y + 1; ydel < y + chunkSize; ydel++)
+              for (int ydel = y + 1; ydel < y + chunkSize; ydel++)
                 {
-                  for (unsigned int xdel = x + 1; xdel < x + chunkSize; xdel++)
+                  for (int xdel = x + 1; xdel < x + chunkSize; xdel++)
                     {
-                      baseMap[ydel][xdel] = DENY_VALUE;
+                      baseMap[ydel][xdel] = DENY_TILE_RENDER_VALUE;
+                      chunkMap[ydel][xdel] = DENY_CHUNK_RENDER_VALUE;
                     }
                 }
               baseChunks.emplace_back(x, y, 0, 0, 0, 0, false);
@@ -1618,7 +1644,7 @@ void removeBaseTerrainUnderwaterTiles(std::vector<std::vector<float>>& baseMap, 
               && baseMap[y+1][x-1] < thresholdValue
               && baseMap[y+1][x] < thresholdValue
               && baseMap[y+1][x+1] < thresholdValue)
-            baseMap[y][x] = DENY_VALUE;
+            baseMap[y][x] = DENY_TILE_RENDER_VALUE;
         }
     }
 }
