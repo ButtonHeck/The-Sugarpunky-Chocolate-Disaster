@@ -1,0 +1,540 @@
+#include "WaterMapGenerator.h"
+
+WaterMapGenerator::WaterMapGenerator()
+  :
+    MapGenerator(){}
+
+void WaterMapGenerator::prepareMap()
+{
+  unsigned int numWaterTiles = 0;
+  generateWaterMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
+  while (numWaterTiles < TILES_WIDTH * (SHORE_SIZE_BASE + 2) * (SHORE_SIZE_BASE + 2) * 7
+         || numWaterTiles > TILES_WIDTH * (SHORE_SIZE_BASE + 3) * (SHORE_SIZE_BASE + 3) * 7)
+    {
+      numWaterTiles = 0;
+      initializeMap();
+      generateWaterMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
+    }
+}
+
+void WaterMapGenerator::fillWaterBufferData()
+{
+  addWaterNearbyBaseTerrain();
+  fillSharpTerrainWithWater();
+  createTiles(true, false);
+  tiles.shrink_to_fit();
+  const size_t VERTEX_DATA_LENGTH = tiles.size() * 20;
+  const size_t ELEMENT_DATA_LENGTH = tiles.size() * 6;
+  GLfloat vertices[VERTEX_DATA_LENGTH];
+  GLuint indices[ELEMENT_DATA_LENGTH];
+  for (unsigned int i = 0; i < tiles.size(); i++)
+    {
+      TerrainTile& tile = tiles[i];
+      int offset = i * 20;
+      int indexArrayOffset = i * 6;
+      int index = i * 4;
+      //ll
+      vertices[offset] = -1- TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+1] = tile.lowLeft;
+      vertices[offset+2] = - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+3] = 0.0f;
+      vertices[offset+4] = 0.0f;
+      //lr
+      vertices[offset+5] = - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+6] = tile.lowRight;
+      vertices[offset+7] = - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+8] = 1.0f;
+      vertices[offset+9] = 0.0f;
+      //ur
+      vertices[offset+10] = - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+11] = tile.upperRight;
+      vertices[offset+12] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+13] = 1.0f;
+      vertices[offset+14] = 1.0f;
+      //ul
+      vertices[offset+15] = -1 - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+16] = tile.upperLeft;
+      vertices[offset+17] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+18] = 0.0f;
+      vertices[offset+19] = 1.0f;
+
+      indices[indexArrayOffset] = index;
+      indices[indexArrayOffset+1] = index + 1;
+      indices[indexArrayOffset+2] = index + 2;
+      indices[indexArrayOffset+3] = index + 2;
+      indices[indexArrayOffset+4] = index + 3;
+      indices[indexArrayOffset+5] = index;
+    }
+  //Water tiles vertex data
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+  glGenBuffers(1, &vbo);
+  glGenBuffers(1, &ebo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
+  setupGLBuffersAttributes();
+  resetAllGLBuffers();
+}
+
+void WaterMapGenerator::addWaterNearbyBaseTerrain()
+{
+  //add water above the tile
+  for (unsigned int y = 0; y < TILES_HEIGHT - 1; y++)
+    {
+      for (unsigned int x = 0; x < TILES_WIDTH; x++)
+        {
+          if (map[y+1][x] != 0)
+            map[y][x] = map[y+1][x];
+        }
+    }
+  //add water below the tile
+  for (unsigned int y = TILES_HEIGHT; y > 0; y--)
+    {
+      for (unsigned int x = 0; x < TILES_WIDTH; x++)
+        {
+          if (map[y-1][x] != 0)
+            map[y][x] = map[y-1][x];
+        }
+    }
+  //add water left to the tile
+  for (unsigned int x = 0; x < TILES_WIDTH - 1; x++)
+    {
+      for (unsigned int y = 0; y < TILES_HEIGHT; y++)
+        {
+          if (map[y][x+1] != 0)
+            map[y][x] = map[y][x+1];
+        }
+    }
+  //add water right to the tile
+  for (unsigned int x = TILES_WIDTH; x > 0; x--)
+    {
+      for (unsigned int y = 0; y < TILES_HEIGHT; y++)
+        {
+          if (map[y][x-1] != 0)
+            map[y][x] = map[y][x-1];
+        }
+    }
+}
+
+void WaterMapGenerator::fillSharpTerrainWithWater()
+{
+  for (int y2 = 1; y2 < TILES_HEIGHT - 1; y2++)
+    {
+      for (int x2 = 1; x2 < TILES_WIDTH - 1; x2++)
+        {
+          if (map[y2][x2] == WATER_LEVEL)
+            continue;
+          if ((map[y2-1][x2] == WATER_LEVEL && map[y2+1][x2] == WATER_LEVEL) || (map[y2][x2-1] == WATER_LEVEL && map[y2][x2+1] == WATER_LEVEL))
+            map[y2][x2] = WATER_LEVEL;
+        }
+    }
+}
+
+void WaterMapGenerator::liftWaterLevel(float liftValue)
+{
+  for (std::vector<float>& row : map)
+    {
+      for (float& height : row)
+        {
+          if (height < 0)
+            height += liftValue;
+        }
+    }
+}
+
+void WaterMapGenerator::generateWaterMap(unsigned int shoreSizeBase, float waterLevel, unsigned int &numWaterTiles)
+{
+  srand(time(NULL));
+  bool startAxisFromX = rand() % 2 == 0;
+  bool riverEnd = false;
+  unsigned int curveMaxDistance = rand() % 48 + 48;
+  unsigned int curveDistanceStep = 0;
+  const unsigned int X_MID_POINT = TILES_WIDTH / 2;
+  const unsigned int Y_MID_POINT = TILES_HEIGHT / 2;
+  const int MIN_CURVE_CHANGES = 8;
+  int numCurveChanges = 0;
+  enum DIRECTION : int {
+    UP = 0, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, UP_LEFT
+  };
+  DIRECTION dir;
+  unsigned int y, x;
+  unsigned int startCoord = rand() % TILES_HEIGHT;
+  x = startAxisFromX ? startCoord : 0;
+  y = startAxisFromX ? 0 : startCoord;
+  dir = startAxisFromX ? DOWN : RIGHT;
+
+  while (!riverEnd)
+    {
+      switch (dir) {
+        case UP:
+          {
+            ++curveDistanceStep;
+            --y;
+            if (y <= 0)
+              {
+                y = 0;
+                riverEnd = true;
+              }
+            if (rand() % 4 == 0)
+              x += rand() % 2 == 0 ? 2 : -2;
+            if (x <= 0)
+              {
+                x = 0;
+                riverEnd = true;
+              }
+            if (x >= TILES_WIDTH)
+              {
+                x = TILES_WIDTH;
+                riverEnd = true;
+              }
+
+            map[y][x] = waterLevel;
+            ++numWaterTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 48 + 48;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == DOWN || dir == DOWN_LEFT || dir == DOWN_RIGHT || dir == UP
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case UP_RIGHT:
+          {
+            ++curveDistanceStep;
+            y -= rand() % 2;
+            x += rand() % 2;
+            if (y <= 0)
+              {
+                y = 0;
+                riverEnd = true;
+              }
+            if (x >= TILES_WIDTH)
+              {
+                x = TILES_WIDTH;
+                riverEnd = true;
+              }
+            map[y][x] = waterLevel;
+            ++numWaterTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 48 + 48;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == DOWN_LEFT || dir == DOWN || dir == LEFT || dir == UP_RIGHT
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case RIGHT:
+          {
+            ++curveDistanceStep;
+            ++x;
+            if (x >= TILES_WIDTH)
+              {
+                x = TILES_WIDTH;
+                riverEnd = true;
+              }
+            if (rand() % 4 == 0)
+              y += rand() % 2 == 0 ? 2 : -2;
+            if (y <= 0)
+              {
+                y = 0;
+                riverEnd = true;
+              }
+            if (y >= TILES_HEIGHT)
+              {
+                y = TILES_HEIGHT;
+                riverEnd = true;
+              }
+
+            map[y][x] = waterLevel;
+            ++numWaterTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 48 + 48;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == LEFT || dir == UP_LEFT || dir == DOWN_LEFT || dir == RIGHT
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case DOWN_RIGHT:
+          {
+            ++curveDistanceStep;
+            y += rand() % 2;
+            x += rand() % 2;
+            if (y >= TILES_HEIGHT)
+              {
+                y = TILES_HEIGHT;
+                riverEnd = true;
+              }
+            if (x >= TILES_WIDTH)
+              {
+                x = TILES_WIDTH;
+                riverEnd = true;
+              }
+            map[y][x] = waterLevel;
+            ++numWaterTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 48 + 48;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == UP_LEFT || dir == UP || dir == LEFT || dir == DOWN_RIGHT
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case DOWN:
+          {
+            ++curveDistanceStep;
+            ++y;
+            if (y >= TILES_HEIGHT)
+              {
+                y = TILES_HEIGHT;
+                riverEnd = true;
+              }
+            if (rand() % 4 == 0)
+              x += rand() % 2 == 0 ? 2 : -2;
+            if (x <= 0)
+              {
+                x = 0;
+                riverEnd = true;
+              }
+            if (x >= TILES_WIDTH)
+              {
+                x = TILES_WIDTH;
+                riverEnd = true;
+              }
+
+            map[y][x] = waterLevel;
+            ++numWaterTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 48 + 48;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == UP || dir == UP_LEFT || dir == UP_RIGHT || dir == DOWN
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case DOWN_LEFT:
+          {
+            ++curveDistanceStep;
+            y += rand() % 2;
+            x -= rand() % 2;
+            if (y >= TILES_HEIGHT)
+              {
+                y = TILES_HEIGHT;
+                riverEnd = true;
+              }
+            if (x <= 0)
+              {
+                x = 0;
+                riverEnd = true;
+              }
+            map[y][x] = waterLevel;
+            ++numWaterTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 48 + 48;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == UP_RIGHT || dir == UP || dir == RIGHT || dir == DOWN_LEFT
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case LEFT:
+          {
+            ++curveDistanceStep;
+            --x;
+            if (x <= 0)
+              {
+                x = 0;
+                riverEnd = true;
+              }
+            if (rand() % 4 == 0)
+              y += rand() % 2 == 0 ? 2 : -2;
+            if (y <= 0)
+              {
+                y = 0;
+                riverEnd = true;
+              }
+            if (y >= TILES_HEIGHT)
+              {
+                y = TILES_HEIGHT;
+                riverEnd = true;
+              }
+
+            map[y][x] = waterLevel;
+            ++numWaterTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 48 + 48;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == RIGHT || dir == UP_RIGHT || dir == DOWN_RIGHT || dir == LEFT
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        case UP_LEFT:
+          {
+            ++curveDistanceStep;
+            y -= rand() % 2;
+            x -= rand() % 2;
+            if (x <= 0)
+              {
+                x = 0;
+                riverEnd = true;
+              }
+            if (y <= 0)
+              {
+                y = 0;
+                riverEnd = true;
+              }
+            map[y][x] = waterLevel;
+            ++numWaterTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              {
+                numCurveChanges++;
+                curveDistanceStep = 0;
+                curveMaxDistance = rand() % 48 + 48;
+                dir = (DIRECTION)(rand() % 8);
+                while (dir == DOWN_RIGHT || dir == DOWN || dir == RIGHT || dir == UP_LEFT
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
+                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                  dir = (DIRECTION)(rand() % 8);
+              }
+            break;
+          }
+        default:
+          break;
+        }
+
+      //fattening the kernel
+      int shoreSizeYT = rand() % 3 + shoreSizeBase;
+      int shoreSizeYB = rand() % 3 + shoreSizeBase;
+      int shoreSizeXL = rand() % 3 + shoreSizeBase;
+      int shoreSizeXR = rand() % 3 + shoreSizeBase;
+      int xl = x - shoreSizeXL;
+      if (xl <= 0)
+        xl = 0;
+      int xr = x + shoreSizeXR;
+      if (xr >= TILES_WIDTH)
+        xr = TILES_WIDTH;
+      int yt = y - shoreSizeYT;
+      if (yt <= 0)
+        yt = 0;
+      int yb = y + shoreSizeYB;
+      if (yb >= TILES_HEIGHT)
+        yb = TILES_HEIGHT;
+      for (int y1 = yt; y1 <= yb; y1++)
+        {
+          for (int x1 = xl; x1 <= xr; x1++)
+            {
+              map[y1][x1] = waterLevel;
+              ++numWaterTiles;
+            }
+        }
+    }
+}
+
+void WaterMapGenerator::deleteGLObjects()
+{
+    glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
+}
+
+void WaterMapGenerator::draw(Shader &shader)
+{
+  shader.setInt("surfaceTextureEnum", 1);
+  shader.setBool("instanceRender", false);
+  glBindVertexArray(vao);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  for (size_t i = 0; i < WATER_HEIGHT_OFFSETS_SIZE; i+=2)
+    {
+        waterHeightOffsets[i] = std::cos(glfwGetTime() * (i % 31 + 1) / 24) / 12 + WATER_LEVEL;
+        waterHeightOffsets[i+1] = std::sin(glfwGetTime() * (i % 29 + 1) / 24) / 12 + WATER_LEVEL;
+    }
+  GLfloat* temp = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+  for (unsigned int i = 0; i < tiles.size(); ++i)
+    {
+      TerrainTile& tile = tiles[i];
+      *(temp+1+i*20) = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX];
+      *(temp+6+i*20) = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX + 1];
+      *(temp+11+i*20) = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX + 1];
+      *(temp+16+i*20) = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX];
+    }
+  glUnmapBuffer(GL_ARRAY_BUFFER);
+  glEnable(GL_BLEND);
+  glDrawElements(GL_TRIANGLES, 6 * tiles.size(), GL_UNSIGNED_INT, 0);
+  glDisable(GL_BLEND);
+}
+
+//Getters
+
+GLuint &WaterMapGenerator::getVAO()
+{
+  return vao;
+}
+
+GLuint &WaterMapGenerator::getVBO()
+{
+  return vbo;
+}
+
+GLuint &WaterMapGenerator::getEBO()
+{
+  return ebo;
+}
+
+GLfloat *WaterMapGenerator::getHeightOffsets()
+{
+  return waterHeightOffsets;
+}

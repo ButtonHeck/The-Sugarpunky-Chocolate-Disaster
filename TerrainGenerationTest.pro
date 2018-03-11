@@ -8,7 +8,9 @@ SOURCES += main.cpp \
     Camera.cpp \
     TextureLoader.cpp \
     TerrainTile.cpp \
-    InputController.cpp
+    InputController.cpp \
+    MapGenerator.cpp \
+    WaterMapGenerator.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -40,7 +42,9 @@ HEADERS += \
     Camera.h \
     TextureLoader.h \
     TerrainTile.h \
-    InputController.h
+    InputController.h \
+    MapGenerator.h \
+    WaterMapGenerator.h
 
 DISTFILES += \
     scene.vs \
