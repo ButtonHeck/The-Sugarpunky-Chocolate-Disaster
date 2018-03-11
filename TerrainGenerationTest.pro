@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     MapGenerator.cpp \
     WaterMapGenerator.cpp \
     HillsMapGenerator.cpp \
-    UnderwaterQuadMapGenerator.cpp
+    UnderwaterQuadMapGenerator.cpp \
+    BaseMapGenerator.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -48,7 +49,8 @@ HEADERS += \
     MapGenerator.h \
     WaterMapGenerator.h \
     HillsMapGenerator.h \
-    UnderwaterQuadMapGenerator.h
+    UnderwaterQuadMapGenerator.h \
+    BaseMapGenerator.h
 
 DISTFILES += \
     scene.vs \
