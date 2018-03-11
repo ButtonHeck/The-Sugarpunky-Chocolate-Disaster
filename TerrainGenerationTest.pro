@@ -10,7 +10,9 @@ SOURCES += main.cpp \
     TerrainTile.cpp \
     InputController.cpp \
     MapGenerator.cpp \
-    WaterMapGenerator.cpp
+    WaterMapGenerator.cpp \
+    HillsMapGenerator.cpp \
+    UnderwaterQuadMapGenerator.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -44,7 +46,9 @@ HEADERS += \
     TerrainTile.h \
     InputController.h \
     MapGenerator.h \
-    WaterMapGenerator.h
+    WaterMapGenerator.h \
+    HillsMapGenerator.h \
+    UnderwaterQuadMapGenerator.h
 
 DISTFILES += \
     scene.vs \

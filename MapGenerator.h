@@ -10,7 +10,7 @@ class MapGenerator
 {
 public:
   MapGenerator();
-  void initializeMap();
+  void initializeMap(std::vector<std::vector<float>>& map);
   void resetAllGLBuffers();
   void setupGLBuffersAttributes();
   void createTiles(bool flat, bool createOnZeroTiles);

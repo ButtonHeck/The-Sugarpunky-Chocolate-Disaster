@@ -2,11 +2,11 @@
 
 MapGenerator::MapGenerator()
 {
- initializeMap();
+ initializeMap(map);
  tiles.reserve(NUM_TILES);
 }
 
-void MapGenerator::initializeMap()
+void MapGenerator::initializeMap(std::vector<std::vector<float>>& map)
 {
   map.clear();
   map.reserve(TILES_HEIGHT + 1);

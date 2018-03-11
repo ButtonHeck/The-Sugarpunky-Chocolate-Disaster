@@ -12,7 +12,7 @@ void WaterMapGenerator::prepareMap()
          || numWaterTiles > TILES_WIDTH * (SHORE_SIZE_BASE + 3) * (SHORE_SIZE_BASE + 3) * 7)
     {
       numWaterTiles = 0;
-      initializeMap();
+      initializeMap(map);
       generateWaterMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
     }
 }
