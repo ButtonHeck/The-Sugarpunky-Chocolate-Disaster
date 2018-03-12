@@ -9,7 +9,6 @@ public:
   HillsMapGenerator(std::vector<std::vector<float>>& waterMap);
   void prepareMap();
   void fillHillsBuffersData();
-  void draw(Shader& shader);
 private:
   std::vector<std::vector<float>>& waterMap;
   void generateHillMap(int cycles, float* max_height, HILL_DENSITY density);

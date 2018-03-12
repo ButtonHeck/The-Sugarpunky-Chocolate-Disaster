@@ -23,11 +23,3 @@ void UnderwaterQuadMapGenerator::fillQuadBufferData()
   setupGLBuffersAttributes();
   resetAllGLBuffers();
 }
-
-void UnderwaterQuadMapGenerator::draw(GLuint& underwaterTexture)
-{
-  glActiveTexture(GL_TEXTURE3);
-  glBindTexture(GL_TEXTURE_2D, underwaterTexture);
-  glBindVertexArray(vao);
-  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-}

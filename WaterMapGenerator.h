@@ -11,7 +11,6 @@ public:
   void prepareMap();
   void fillWaterBufferData();
   GLfloat* getHeightOffsets();
-  void draw(Shader& shader);
   constexpr static int WATER_HEIGHT_OFFSETS_SIZE = NUM_TILES + TILES_WIDTH * 2;
 private:
   GLfloat waterHeightOffsets[WATER_HEIGHT_OFFSETS_SIZE]; //a bit overhead, because all we use is the part where we have water...

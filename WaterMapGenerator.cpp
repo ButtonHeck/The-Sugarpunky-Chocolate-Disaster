@@ -484,32 +484,6 @@ void WaterMapGenerator::generateWaterMap(unsigned int shoreSizeBase, float water
     }
 }
 
-void WaterMapGenerator::draw(Shader &shader)
-{
-  shader.setInt("surfaceTextureEnum", 1);
-  shader.setBool("instanceRender", false);
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  for (size_t i = 0; i < WATER_HEIGHT_OFFSETS_SIZE; i+=2)
-    {
-        waterHeightOffsets[i] = std::cos(glfwGetTime() * (i % 31 + 1) / 24) / 12 + WATER_LEVEL;
-        waterHeightOffsets[i+1] = std::sin(glfwGetTime() * (i % 29 + 1) / 24) / 12 + WATER_LEVEL;
-    }
-  GLfloat* temp = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-  for (unsigned int i = 0; i < tiles.size(); ++i)
-    {
-      TerrainTile& tile = tiles[i];
-      *(temp+1+i*20) = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX];
-      *(temp+6+i*20) = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX + 1];
-      *(temp+11+i*20) = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX + 1];
-      *(temp+16+i*20) = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX];
-    }
-  glUnmapBuffer(GL_ARRAY_BUFFER);
-  glEnable(GL_BLEND);
-  glDrawElements(GL_TRIANGLES, 6 * tiles.size(), GL_UNSIGNED_INT, 0);
-  glDisable(GL_BLEND);
-}
-
 GLfloat *WaterMapGenerator::getHeightOffsets()
 {
   return waterHeightOffsets;

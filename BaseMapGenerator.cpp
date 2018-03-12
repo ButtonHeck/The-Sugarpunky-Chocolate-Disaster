@@ -317,25 +317,6 @@ void BaseMapGenerator::removeBaseTerrainUnderwaterTiles(float thresholdValue)
     }
 }
 
-void BaseMapGenerator::draw(Shader &shader, GLuint &sandTexture)
-{
-  shader.setInt("surfaceTextureEnum", 0);
-  glActiveTexture(GL_TEXTURE3);
-  glBindTexture(GL_TEXTURE_2D, sandTexture);
-  glBindVertexArray(vao);
-  glDrawElements(GL_TRIANGLES, 6 * tiles.size(), GL_UNSIGNED_INT, 0);
-}
-
-void BaseMapGenerator::drawChunks(Shader &shader)
-{
-  shader.setBool("instanceRender", true);
-  for (unsigned int vao = 0; vao < 5; vao++)
-    {
-      glBindVertexArray(instanceVao[vao]);
-      glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, NUM_INSTANCES[vao]);
-    }
-}
-
 void BaseMapGenerator::deleteGLObjects()
 {
   MapGenerator::deleteGLObjects();
@@ -348,4 +329,14 @@ void BaseMapGenerator::deleteGLObjects()
 std::vector<TerrainTile> &BaseMapGenerator::getChunkTiles(int i)
 {
   return baseChunkTiles[i];
+}
+
+GLuint &BaseMapGenerator::getInstanceVAO(int i)
+{
+  return instanceVao[i];
+}
+
+int BaseMapGenerator::getNumInstances(int i)
+{
+  return NUM_INSTANCES[i];
 }

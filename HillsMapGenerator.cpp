@@ -338,10 +338,3 @@ void HillsMapGenerator::smoothHillMapSinks()
         }
     }
 }
-
-void HillsMapGenerator::draw(Shader &shader)
-{
-  shader.setInt("surfaceTextureEnum", 2);
-  glBindVertexArray(vao);
-  glDrawElements(GL_TRIANGLES, 6 * tiles.size(), GL_UNSIGNED_INT, 0);
-}

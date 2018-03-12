@@ -7,7 +7,6 @@ class UnderwaterQuadMapGenerator : public MapGenerator
 public:
   UnderwaterQuadMapGenerator();
   void fillQuadBufferData();
-  void draw(GLuint& underwaterTexture);
 };
 
 #endif // UNDERWATERQUADMAPGENERATOR_H

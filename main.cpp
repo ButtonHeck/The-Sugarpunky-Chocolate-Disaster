@@ -112,12 +112,57 @@ int main()
       scene.setMat4("view", cam.getViewMatrix());
       scene.setMat4("model", model);
 
-      //draw objects
-      hillMapGenerator.draw(scene); //height tiles
-      baseMapGenerator.draw(scene, sandTexture); //base terrain tiles
-      underwaterQuadGenerator.draw(underwaterSandTexture); //underwater tile
-      baseMapGenerator.drawChunks(scene); //base terrain chunk tiles
-      waterMapGenerator.draw(scene); //water tiles
+      //height tiles
+      scene.setInt("surfaceTextureEnum", 2);
+      glBindVertexArray(hillMapGenerator.getVAO());
+      glDrawElements(GL_TRIANGLES, 6 * hillMapGenerator.getTiles().size(), GL_UNSIGNED_INT, 0);
+
+      //base terrain tiles
+      scene.setInt("surfaceTextureEnum", 0);
+      glActiveTexture(GL_TEXTURE3);
+      glBindTexture(GL_TEXTURE_2D, sandTexture);
+      glBindVertexArray(baseMapGenerator.getVAO());
+      glDrawElements(GL_TRIANGLES, 6 * baseMapGenerator.getTiles().size(), GL_UNSIGNED_INT, 0);
+
+      //underwater tile
+      glActiveTexture(GL_TEXTURE3);
+      glBindTexture(GL_TEXTURE_2D, underwaterSandTexture);
+      glBindVertexArray(underwaterQuadGenerator.getVAO());
+      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+      //base terrain chunk tiles
+      scene.setBool("instanceRender", true);
+      for (unsigned int vao = 0; vao < 5; vao++)
+        {
+          glBindVertexArray(baseMapGenerator.getInstanceVAO(vao));
+          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator.getNumInstances(vao));
+        }
+
+      //water tiles
+      scene.setInt("surfaceTextureEnum", 1);
+      scene.setBool("instanceRender", false);
+      glBindVertexArray(waterMapGenerator.getVAO());
+      glBindBuffer(GL_ARRAY_BUFFER, waterMapGenerator.getVBO());
+      GLfloat* waterHeightOffsets = waterMapGenerator.getHeightOffsets();
+      for (size_t i = 0; i < waterMapGenerator.WATER_HEIGHT_OFFSETS_SIZE; i+=2)
+        {
+            waterHeightOffsets[i] = std::cos(glfwGetTime() * (i % 31 + 1) / 24) / 12 + WATER_LEVEL;
+            waterHeightOffsets[i+1] = std::sin(glfwGetTime() * (i % 29 + 1) / 24) / 12 + WATER_LEVEL;
+        }
+      GLfloat* temp = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+      std::vector<TerrainTile>& waterTiles = waterMapGenerator.getTiles();
+      for (unsigned int i = 0; i < waterTiles.size(); ++i)
+        {
+          TerrainTile& tile = waterTiles[i];
+          *(temp+1+i*20) = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX];
+          *(temp+6+i*20) = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX + 1];
+          *(temp+11+i*20) = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX + 1];
+          *(temp+16+i*20) = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX];
+        }
+      glUnmapBuffer(GL_ARRAY_BUFFER);
+      glEnable(GL_BLEND);
+      glDrawElements(GL_TRIANGLES, 6 * waterTiles.size(), GL_UNSIGNED_INT, 0);
+      glDisable(GL_BLEND);
 
       glfwPollEvents();
       glfwSwapBuffers(window);

@@ -10,10 +10,10 @@ public:
   void prepareMap();
   void fillBaseBufferData();
   void fillChunkBufferData();
-  void draw(Shader& shader, GLuint& sandTexture);
-  void drawChunks(Shader& shader);
   void deleteGLObjects() override;
   std::vector<TerrainTile>& getChunkTiles(int i);
+  GLuint& getInstanceVAO(int i);
+  int getNumInstances(int i);
 private:
   GLuint instanceVao[5], instanceVbo[5], instanceEbo[5], instanceModelVbo[5];
   std::vector<std::vector<float>>& waterMap;
