@@ -8,7 +8,7 @@ class BaseMapGenerator : public MapGenerator
 public:
   BaseMapGenerator(std::vector<std::vector<float>>& waterMap, std::vector<std::vector<float>>& hillMap);
   void prepareMap();
-  void fillBaseBufferData();
+  void fillBufferData();
   void fillChunkBufferData();
   void deleteGLObjects() override;
   std::vector<TerrainTile>& getChunkTiles(int i);
@@ -21,13 +21,13 @@ private:
   std::vector<TerrainTile> baseChunkTiles[5];
   std::vector<std::vector<float>> chunkMap;
   int NUM_INSTANCES[5];
-  void generateBaseTerrainMap();
-  void smoothBaseTerrainMap();
-  void correctBaseTerrainMapAtEdges();
-  void compressHeightBaseTerrainMap(float ratio, bool entireRange);
-  void denyBaseTerrainMapInvisibleTiles();
-  void splitBaseTerrainToChunks(std::vector<TerrainTile>& baseChunks, int chunkSize, bool overlap);
-  void removeBaseTerrainUnderwaterTiles(float thresholdValue);
+  void generateMap();
+  void smoothMap();
+  void correctMapAtEdges();
+  void compressMap(float ratio, bool entireRange);
+  void denyMapInvisibleTiles();
+  void splitMapToChunks(std::vector<TerrainTile>& baseChunks, int chunkSize, bool overlap);
+  void removeUnderwaterTiles(float thresholdValue);
 };
 
 #endif // BASEMAPGENERATOR_H

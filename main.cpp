@@ -62,12 +62,12 @@ int main()
   //setup tiles
   waterMapGenerator.prepareMap(); //prepare water map
   hillMapGenerator.prepareMap(); //generating hill height map
-  hillMapGenerator.fillHillsBuffersData(); //fill hills buffer
+  hillMapGenerator.fillBufferData(); //fill hills buffer
   baseMapGenerator.prepareMap(); //generating base terrain data
-  baseMapGenerator.fillBaseBufferData(); //fill base terrain vertex data
+  baseMapGenerator.fillBufferData(); //fill base terrain vertex data
   baseMapGenerator.fillChunkBufferData(); //generating data for chunk instance rendering
-  waterMapGenerator.fillWaterBufferData(); //fill water buffer
-  underwaterQuadGenerator.fillQuadBufferData(); //generating underwater flat tile
+  waterMapGenerator.fillBufferData(); //fill water buffer
+  underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
 
   //print info
   std::cout << "Water tiles:\t" << waterMapGenerator.getTiles().size() << std::endl;
@@ -141,6 +141,7 @@ int main()
       //water tiles
       scene.setInt("surfaceTextureEnum", 1);
       scene.setBool("instanceRender", false);
+      std::vector<TerrainTile>& waterTiles = waterMapGenerator.getTiles();
       glBindVertexArray(waterMapGenerator.getVAO());
       glBindBuffer(GL_ARRAY_BUFFER, waterMapGenerator.getVBO());
       GLfloat* waterHeightOffsets = waterMapGenerator.getHeightOffsets();
@@ -150,7 +151,6 @@ int main()
             waterHeightOffsets[i+1] = std::sin(glfwGetTime() * (i % 29 + 1) / 24) / 12 + WATER_LEVEL;
         }
       GLfloat* temp = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-      std::vector<TerrainTile>& waterTiles = waterMapGenerator.getTiles();
       for (unsigned int i = 0; i < waterTiles.size(); ++i)
         {
           TerrainTile& tile = waterTiles[i];

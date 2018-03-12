@@ -13,23 +13,22 @@ BaseMapGenerator::BaseMapGenerator(std::vector<std::vector<float> > &waterMap, s
 
 void BaseMapGenerator::prepareMap()
 {
-  generateBaseTerrainMap();
-  smoothBaseTerrainMap();
-  compressHeightBaseTerrainMap(2.0f, true);
-  correctBaseTerrainMapAtEdges();
-  //split as more tiles into chunks as possible
+  generateMap();
+  smoothMap();
+  compressMap(2.0f, true);
+  correctMapAtEdges();
   for (int i = 0; i < 5; i++)
     {
-      splitBaseTerrainToChunks(baseChunkTiles[i], BASE_TERRAIN_CHUNK_SIZES[i], (bool)i);
+      splitMapToChunks(baseChunkTiles[i], BASE_TERRAIN_CHUNK_SIZES[i], (bool)i);
       baseChunkTiles[i].shrink_to_fit();
     }
-  denyBaseTerrainMapInvisibleTiles();
-  removeBaseTerrainUnderwaterTiles(UNDERWATER_REMOVAL_LEVEL);
+  denyMapInvisibleTiles();
+  removeUnderwaterTiles(UNDERWATER_REMOVAL_LEVEL);
   tiles.shrink_to_fit();
   createTiles(false, true);
 }
 
-void BaseMapGenerator::fillBaseBufferData()
+void BaseMapGenerator::fillBufferData()
 {
   GLfloat vertices[tiles.size() * 20];
   GLuint indices[tiles.size() * 6];
@@ -133,7 +132,7 @@ void BaseMapGenerator::fillChunkBufferData()
     }
 }
 
-void BaseMapGenerator::generateBaseTerrainMap()
+void BaseMapGenerator::generateMap()
 {
   std::uniform_real_distribution<float> distribution(0.9f, 1.1f);
   std::default_random_engine randomizer;
@@ -146,7 +145,7 @@ void BaseMapGenerator::generateBaseTerrainMap()
     }
 }
 
-void BaseMapGenerator::smoothBaseTerrainMap()
+void BaseMapGenerator::smoothMap()
 {
   //smooth tile below on map
   for (unsigned int y = 1; y < TILES_HEIGHT - 1; y++)
@@ -186,7 +185,7 @@ void BaseMapGenerator::smoothBaseTerrainMap()
     }
 }
 
-void BaseMapGenerator::correctBaseTerrainMapAtEdges()
+void BaseMapGenerator::correctMapAtEdges()
 {
   //correct top and bottom sides of the map
   for (unsigned int x = 0; x < TILES_WIDTH; ++x)
@@ -206,7 +205,7 @@ void BaseMapGenerator::correctBaseTerrainMapAtEdges()
     }
 }
 
-void BaseMapGenerator::compressHeightBaseTerrainMap(float ratio, bool entireRange)
+void BaseMapGenerator::compressMap(float ratio, bool entireRange)
 {
   for (std::vector<float>& row : map)
     {
@@ -218,7 +217,7 @@ void BaseMapGenerator::compressHeightBaseTerrainMap(float ratio, bool entireRang
     }
 }
 
-void BaseMapGenerator::denyBaseTerrainMapInvisibleTiles()
+void BaseMapGenerator::denyMapInvisibleTiles()
 {
   for (unsigned int y = 1; y < TILES_HEIGHT - 1; y++)
     {
@@ -240,7 +239,7 @@ void BaseMapGenerator::denyBaseTerrainMapInvisibleTiles()
     }
 }
 
-void BaseMapGenerator::splitBaseTerrainToChunks(std::vector<TerrainTile> &baseChunks, int chunkSize, bool overlap)
+void BaseMapGenerator::splitMapToChunks(std::vector<TerrainTile> &baseChunks, int chunkSize, bool overlap)
 {
   int step = overlap ? chunkSize / 2 : chunkSize - 1;
   for (int y = 0; y < TILES_HEIGHT - step - 1; y += step)
@@ -297,7 +296,7 @@ void BaseMapGenerator::splitBaseTerrainToChunks(std::vector<TerrainTile> &baseCh
     }
 }
 
-void BaseMapGenerator::removeBaseTerrainUnderwaterTiles(float thresholdValue)
+void BaseMapGenerator::removeUnderwaterTiles(float thresholdValue)
 {
   for (unsigned int y = 1; y < TILES_HEIGHT - 1; y++)
     {

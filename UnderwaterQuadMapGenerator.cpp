@@ -4,7 +4,7 @@ UnderwaterQuadMapGenerator::UnderwaterQuadMapGenerator()
   :
     MapGenerator(){}
 
-void UnderwaterQuadMapGenerator::fillQuadBufferData()
+void UnderwaterQuadMapGenerator::fillBufferData()
 {
   GLfloat vertices[20] = {
     -TILES_WIDTH / 2.0f, UNDERWATER_BASE_TILE_HEIGHT, TILES_HEIGHT / 2.0f, 0.0f, 0.0f,

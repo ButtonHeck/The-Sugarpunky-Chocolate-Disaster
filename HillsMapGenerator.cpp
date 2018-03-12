@@ -9,19 +9,19 @@ HillsMapGenerator::HillsMapGenerator(std::vector<std::vector<float> > &waterMap)
 void HillsMapGenerator::prepareMap()
 {
   float max_height = 0.0f;
-  generateHillMap(8, &max_height, HILL_DENSITY::DENSE);
-  generateHillMap(4, &max_height, HILL_DENSITY::THIN);
-  compressHeightHillMap(0.15f, &max_height, 1.5f); //slightly compress entire height range
-  compressHeightHillMap(0.66f, &max_height, 5.0f); //more heavy compress for top-most peaks
-  removeHillMapPlateaus(1.0f);
-  smoothHillMapHeightChunks(0.7f, 0.05f, 0.025f);
+  generateMap(8, &max_height, HILL_DENSITY::DENSE);
+  generateMap(4, &max_height, HILL_DENSITY::THIN);
+  compressMap(0.15f, &max_height, 1.5f); //slightly compress entire height range
+  compressMap(0.66f, &max_height, 5.0f); //more heavy compress for top-most peaks
+  removeMapPlateaus(1.0f);
+  smoothMapHeightChunks(0.7f, 0.05f, 0.025f);
   removeOrphanHills();
-  smoothHillMapSinks();
+  smoothMapSinks();
   createTiles(false, false);
   tiles.shrink_to_fit();
 }
 
-void HillsMapGenerator::fillHillsBuffersData()
+void HillsMapGenerator::fillBufferData()
 {
   const size_t VERTEX_DATA_LENGTH = tiles.size() * 20;
   const size_t ELEMENT_DATA_LENGTH = tiles.size() * 6;
@@ -111,7 +111,7 @@ void HillsMapGenerator::fillHillsBuffersData()
   resetAllGLBuffers();
 }
 
-void HillsMapGenerator::generateHillMap(int cycles, float *max_height, HILL_DENSITY density)
+void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY density)
 {
   srand(time(NULL));
   std::uniform_real_distribution<float> heightDistribution(0.3f, 0.7f);
@@ -206,7 +206,7 @@ bool HillsMapGenerator::hasWaterNearby(unsigned int x, unsigned int y, unsigned 
   return false;
 }
 
-void HillsMapGenerator::compressHeightHillMap(float threshold_percent, float *limit, float ratio)
+void HillsMapGenerator::compressMap(float threshold_percent, float *limit, float ratio)
 {
   float threshold_value = *limit * threshold_percent;
   for (auto& row : map)
@@ -219,7 +219,7 @@ void HillsMapGenerator::compressHeightHillMap(float threshold_percent, float *li
   *limit /= ratio;
 }
 
-void HillsMapGenerator::removeHillMapPlateaus(float plateauHeight)
+void HillsMapGenerator::removeMapPlateaus(float plateauHeight)
 {
   unsigned int yt, yb, xl, xr;
   for (unsigned int y = 1; y < TILES_HEIGHT - 1; y++)
@@ -249,7 +249,7 @@ void HillsMapGenerator::removeHillMapPlateaus(float plateauHeight)
     }
 }
 
-void HillsMapGenerator::smoothHillMapHeightChunks(float baseWeight, float evenWeight, float diagonalWeight)
+void HillsMapGenerator::smoothMapHeightChunks(float baseWeight, float evenWeight, float diagonalWeight)
 {
   std::vector<std::vector<float>> hillMapSmoothed;
   initializeMap(hillMapSmoothed);
@@ -299,7 +299,7 @@ bool HillsMapGenerator::isOrphanAt(int x, int y)
           map[y+1][x+1] == 0);
 }
 
-void HillsMapGenerator::smoothHillMapSinks()
+void HillsMapGenerator::smoothMapSinks()
 {
   for (unsigned int y = 1; y < TILES_HEIGHT; y++)
     {

@@ -7,17 +7,17 @@ WaterMapGenerator::WaterMapGenerator()
 void WaterMapGenerator::prepareMap()
 {
   unsigned int numWaterTiles = 0;
-  generateWaterMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
-  while (numWaterTiles < TILES_WIDTH * (SHORE_SIZE_BASE + 2) * (SHORE_SIZE_BASE + 2) * 7
-         || numWaterTiles > TILES_WIDTH * (SHORE_SIZE_BASE + 3) * (SHORE_SIZE_BASE + 3) * 7)
+  generateMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
+  while (numWaterTiles < TILES_WIDTH * (SHORE_SIZE_BASE + 2) * (SHORE_SIZE_BASE + 2) * 6
+         || numWaterTiles > TILES_WIDTH * (SHORE_SIZE_BASE + 3) * (SHORE_SIZE_BASE + 3) * 6)
     {
       numWaterTiles = 0;
       initializeMap(map);
-      generateWaterMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
+      generateMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
     }
 }
 
-void WaterMapGenerator::fillWaterBufferData()
+void WaterMapGenerator::fillBufferData()
 {
   addWaterNearbyBaseTerrain();
   fillSharpTerrainWithWater();
@@ -65,7 +65,6 @@ void WaterMapGenerator::fillWaterBufferData()
       indices[indexArrayOffset+4] = index + 3;
       indices[indexArrayOffset+5] = index;
     }
-  //Water tiles vertex data
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
   glGenBuffers(1, &vbo);
@@ -144,7 +143,7 @@ void WaterMapGenerator::liftWaterLevel(float liftValue)
     }
 }
 
-void WaterMapGenerator::generateWaterMap(unsigned int shoreSizeBase, float waterLevel, unsigned int &numWaterTiles)
+void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel, unsigned int &numWaterTiles)
 {
   srand(time(NULL));
   bool startAxisFromX = rand() % 2 == 0;
@@ -153,7 +152,7 @@ void WaterMapGenerator::generateWaterMap(unsigned int shoreSizeBase, float water
   unsigned int curveDistanceStep = 0;
   const unsigned int X_MID_POINT = TILES_WIDTH / 2;
   const unsigned int Y_MID_POINT = TILES_HEIGHT / 2;
-  const int MIN_CURVE_CHANGES = 8;
+  const int MIN_CURVE_CHANGES = 12;
   int numCurveChanges = 0;
   enum DIRECTION : int {
     UP = 0, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, UP_LEFT
