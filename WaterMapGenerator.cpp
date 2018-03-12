@@ -484,13 +484,6 @@ void WaterMapGenerator::generateWaterMap(unsigned int shoreSizeBase, float water
     }
 }
 
-void WaterMapGenerator::deleteGLObjects()
-{
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);
-}
-
 void WaterMapGenerator::draw(Shader &shader)
 {
   shader.setInt("surfaceTextureEnum", 1);
@@ -515,23 +508,6 @@ void WaterMapGenerator::draw(Shader &shader)
   glEnable(GL_BLEND);
   glDrawElements(GL_TRIANGLES, 6 * tiles.size(), GL_UNSIGNED_INT, 0);
   glDisable(GL_BLEND);
-}
-
-//Getters
-
-GLuint &WaterMapGenerator::getVAO()
-{
-  return vao;
-}
-
-GLuint &WaterMapGenerator::getVBO()
-{
-  return vbo;
-}
-
-GLuint &WaterMapGenerator::getEBO()
-{
-  return ebo;
 }
 
 GLfloat *WaterMapGenerator::getHeightOffsets()

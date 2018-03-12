@@ -90,3 +90,25 @@ std::vector<TerrainTile> &MapGenerator::getTiles()
 {
   return tiles;
 }
+
+GLuint &MapGenerator::getVAO()
+{
+  return vao;
+}
+
+GLuint &MapGenerator::getVBO()
+{
+  return vbo;
+}
+
+GLuint &MapGenerator::getEBO()
+{
+  return ebo;
+}
+
+void MapGenerator::deleteGLObjects()
+{
+  glDeleteVertexArrays(1, &vao);
+  glDeleteBuffers(1, &vbo);
+  glDeleteBuffers(1, &ebo);
+}

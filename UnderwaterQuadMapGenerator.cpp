@@ -31,25 +31,3 @@ void UnderwaterQuadMapGenerator::draw(GLuint& underwaterTexture)
   glBindVertexArray(vao);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
-
-void UnderwaterQuadMapGenerator::deleteGLObjects()
-{
-  glDeleteVertexArrays(1, &vao);
-  glDeleteBuffers(1, &vbo);
-  glDeleteBuffers(1, &ebo);
-}
-
-GLuint &UnderwaterQuadMapGenerator::getVAO()
-{
-  return vao;
-}
-
-GLuint &UnderwaterQuadMapGenerator::getVBO()
-{
-  return vbo;
-}
-
-GLuint &UnderwaterQuadMapGenerator::getEBO()
-{
-  return ebo;
-}

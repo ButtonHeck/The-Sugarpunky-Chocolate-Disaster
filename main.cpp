@@ -70,16 +70,23 @@ int main()
   underwaterQuadGenerator.fillQuadBufferData(); //generating underwater flat tile
 
   //print info
-  std::cout << "Water tiles:      " << waterMapGenerator.getTiles().size() << std::endl;
-  std::cout << "Hills tiles:      " << hillMapGenerator.getTiles().size() << std::endl;
-  std::cout << "Base tiles:       " << baseMapGenerator.getTiles().size() << std::endl;
+  std::cout << "Water tiles:\t" << waterMapGenerator.getTiles().size() << std::endl;
+  std::cout << "Hills tiles:\t" << hillMapGenerator.getTiles().size() << std::endl;
+  std::cout << "Base tiles:\t" << baseMapGenerator.getTiles().size() << std::endl;
   for (unsigned int i = 0; i < 5; i++)
-    std::cout << "x" << BASE_TERRAIN_CHUNK_SIZES[i] << "\ttiles:    " << baseMapGenerator.getChunkTiles(i).size() << std::endl;
-  std::cout << "Summary: "
+    std::cout << "x" << BASE_TERRAIN_CHUNK_SIZES[i] << "\ttiles:\t" << baseMapGenerator.getChunkTiles(i).size() << "\t(instanced)" << std::endl;
+  std::cout << "Summary: \t"
             << (waterMapGenerator.getTiles().size()
                 + hillMapGenerator.getTiles().size()
                 + baseMapGenerator.getTiles().size()
                 + baseMapGenerator.getChunkTiles(0).size()
+                + baseMapGenerator.getChunkTiles(1).size()
+                + baseMapGenerator.getChunkTiles(2).size()
+                + baseMapGenerator.getChunkTiles(3).size()
+                + baseMapGenerator.getChunkTiles(4).size())
+            << std::endl;
+  std::cout << "Summary instanced: "
+            << (baseMapGenerator.getChunkTiles(0).size()
                 + baseMapGenerator.getChunkTiles(1).size()
                 + baseMapGenerator.getChunkTiles(2).size()
                 + baseMapGenerator.getChunkTiles(3).size()

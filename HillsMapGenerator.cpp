@@ -99,7 +99,6 @@ void HillsMapGenerator::fillHillsBuffersData()
           indices[indexArrayOffset+5] = index + 1;
         }
     }
-  //Hills tiles vertex data
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
   glGenBuffers(1, &vbo);
@@ -345,28 +344,4 @@ void HillsMapGenerator::draw(Shader &shader)
   shader.setInt("surfaceTextureEnum", 2);
   glBindVertexArray(vao);
   glDrawElements(GL_TRIANGLES, 6 * tiles.size(), GL_UNSIGNED_INT, 0);
-}
-
-void HillsMapGenerator::deleteGLObjects()
-{
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);
-}
-
-//Getters
-
-GLuint &HillsMapGenerator::getVAO()
-{
-  return vao;
-}
-
-GLuint &HillsMapGenerator::getVBO()
-{
-  return vbo;
-}
-
-GLuint &HillsMapGenerator::getEBO()
-{
-  return ebo;
 }

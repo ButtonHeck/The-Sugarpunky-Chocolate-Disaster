@@ -16,9 +16,14 @@ public:
   void createTiles(bool flat, bool createOnZeroTiles);
   std::vector<std::vector<float>>& getMap();
   std::vector<TerrainTile>& getTiles();
+  GLuint& getVAO();
+  GLuint& getVBO();
+  GLuint& getEBO();
+  virtual void deleteGLObjects();
 protected:
   std::vector<std::vector<float>> map;
   std::vector<TerrainTile> tiles;
+  GLuint vao, vbo, ebo;
 };
 
 #endif // MAPGENERATOR_H

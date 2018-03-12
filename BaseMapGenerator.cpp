@@ -338,30 +338,11 @@ void BaseMapGenerator::drawChunks(Shader &shader)
 
 void BaseMapGenerator::deleteGLObjects()
 {
-  glDeleteVertexArrays(1, &vao);
-  glDeleteBuffers(1, &vbo);
-  glDeleteBuffers(1, &ebo);
+  MapGenerator::deleteGLObjects();
   glDeleteVertexArrays(5, instanceVao);
   glDeleteBuffers(5, instanceVbo);
   glDeleteBuffers(5, instanceEbo);
   glDeleteBuffers(5, instanceModelVbo);
-}
-
-//Getters
-
-GLuint &BaseMapGenerator::getVAO()
-{
-  return vao;
-}
-
-GLuint &BaseMapGenerator::getVBO()
-{
-  return vbo;
-}
-
-GLuint &BaseMapGenerator::getEBO()
-{
-  return ebo;
 }
 
 std::vector<TerrainTile> &BaseMapGenerator::getChunkTiles(int i)
