@@ -145,6 +145,7 @@ int main()
       glBindVertexArray(waterMapGenerator.getVAO());
       glBindBuffer(GL_ARRAY_BUFFER, waterMapGenerator.getVBO());
       GLfloat* waterHeightOffsets = waterMapGenerator.getHeightOffsets();
+      //todo: here's a weak spot
       for (size_t i = 0; i < waterMapGenerator.WATER_HEIGHT_OFFSETS_SIZE; i+=2)
         {
             waterHeightOffsets[i] = std::cos(glfwGetTime() * (i % 31 + 1) / 24) / 12 + WATER_LEVEL;

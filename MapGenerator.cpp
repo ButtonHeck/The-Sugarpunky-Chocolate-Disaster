@@ -45,38 +45,38 @@ void MapGenerator::createTiles(bool flat, bool createOnZeroTiles)
           if (map[y][x] == DENY_TILE_RENDER_VALUE)
             continue;
           bool toCreate;
-          if (!flat)
-            toCreate = map[y][x] != 0 || map[y-1][x] != 0 || map[y][x-1] != 0 || map[y-1][x-1] != 0;
-          else
-            toCreate = map[y][x] != 0;
-          if (toCreate || createOnZeroTiles)
-            {
-              float ll;
-              float lr;
-              float ur;
-              float ul;
-              if (!flat)
-                {
-                  ll = map[y][x-1];
-                  if (ll == DENY_TILE_RENDER_VALUE)
+            if (!flat)
+              toCreate = map[y][x] != 0 || map[y-1][x] != 0 || map[y][x-1] != 0 || map[y-1][x-1] != 0;
+            else
+              toCreate = map[y][x] != 0;
+            if (toCreate || createOnZeroTiles)
+              {
+                float ll;
+                float lr;
+                float ur;
+                float ul;
+                if (!flat)
+                  {
+                    ll = map[y][x-1];
+                    if (ll == DENY_TILE_RENDER_VALUE)
+                      ll = map[y][x];
+                    lr = map[y][x];
+                    ur = map[y-1][x];
+                    if (ur == DENY_TILE_RENDER_VALUE)
+                      ur = map[y][x];
+                    ul = map[y-1][x-1];
+                    if (ul == DENY_TILE_RENDER_VALUE)
+                      ul = map[y][x];
+                  }
+                else
+                  {
                     ll = map[y][x];
-                  lr = map[y][x];
-                  ur = map[y-1][x];
-                  if (ur == DENY_TILE_RENDER_VALUE)
+                    lr = map[y][x];
                     ur = map[y][x];
-                  ul = map[y-1][x-1];
-                  if (ul == DENY_TILE_RENDER_VALUE)
                     ul = map[y][x];
-                }
-              else
-                {
-                  ll = map[y][x];
-                  lr = map[y][x];
-                  ur = map[y][x];
-                  ul = map[y][x];
-                }
-              tiles.emplace_back(x, y, ll, lr, ur, ul);
-            }
+                  }
+                tiles.emplace_back(x, y, ll, lr, ur, ul);
+              }
         }
     }
 }

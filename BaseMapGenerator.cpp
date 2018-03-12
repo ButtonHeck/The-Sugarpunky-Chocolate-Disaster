@@ -25,7 +25,7 @@ void BaseMapGenerator::prepareMap()
   denyMapInvisibleTiles();
   removeUnderwaterTiles(UNDERWATER_REMOVAL_LEVEL);
   tiles.shrink_to_fit();
-  createTiles(false, true);
+  createTiles(false, false);
 }
 
 void BaseMapGenerator::fillBufferData()
@@ -286,7 +286,7 @@ void BaseMapGenerator::splitMapToChunks(std::vector<TerrainTile> &baseChunks, in
                 {
                   for (int xdel = x + 1; xdel < x + chunkSize; xdel++)
                     {
-                      map[ydel][xdel] = DENY_TILE_RENDER_VALUE;
+                      map[ydel][xdel] = 0;
                       chunkMap[ydel][xdel] = DENY_CHUNK_RENDER_VALUE;
                     }
                 }
