@@ -8,8 +8,8 @@ void WaterMapGenerator::prepareMap()
 {
   unsigned int numWaterTiles = 0;
   generateMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
-  while (numWaterTiles < TILES_WIDTH * (SHORE_SIZE_BASE + 2) * (SHORE_SIZE_BASE + 2) * 6
-         || numWaterTiles > TILES_WIDTH * (SHORE_SIZE_BASE + 3) * (SHORE_SIZE_BASE + 3) * 6)
+  while (numWaterTiles < TILES_WIDTH * (SHORE_SIZE_BASE + 2) * (SHORE_SIZE_BASE + 2) * 9
+         || numWaterTiles > TILES_WIDTH * (SHORE_SIZE_BASE + 3) * (SHORE_SIZE_BASE + 3) * 9)
     {
       numWaterTiles = 0;
       initializeMap(map);
@@ -161,6 +161,8 @@ void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel
   y = startAxisFromX ? 0 : startCoord;
   dir = startAxisFromX ? DOWN : RIGHT;
 
+  int shoreSizeOffset = 0, riverTileCounter = 0;
+  bool shoreSizeIncrease = true;
   while (!riverEnd)
     {
       switch (dir) {
@@ -421,20 +423,33 @@ void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel
         }
 
       //fattening the kernel
-      int shoreSizeYT = rand() % 3 + shoreSizeBase;
-      int shoreSizeYB = rand() % 3 + shoreSizeBase;
-      int shoreSizeXL = rand() % 3 + shoreSizeBase;
-      int shoreSizeXR = rand() % 3 + shoreSizeBase;
-      int xl = x - shoreSizeXL;
+      int shoreSizeYT = rand() % 2 + shoreSizeBase;
+      int shoreSizeYB = rand() % 2 + shoreSizeBase;
+      int shoreSizeXL = rand() % 2 + shoreSizeBase;
+      int shoreSizeXR = rand() % 2 + shoreSizeBase;
+      ++riverTileCounter;
+      if (riverTileCounter % 19 == 0)
+        {
+          riverTileCounter = 0;
+          shoreSizeOffset += shoreSizeIncrease ? 1 : -1;
+          if (shoreSizeOffset > shoreSizeBase)
+            shoreSizeIncrease = !shoreSizeIncrease;
+          else if (shoreSizeOffset < 0)
+            {
+              shoreSizeOffset = 0;
+              shoreSizeIncrease = !shoreSizeIncrease;
+            }
+        }
+      int xl = x - shoreSizeXL - shoreSizeOffset;
       if (xl <= 0)
         xl = 0;
-      int xr = x + shoreSizeXR;
+      int xr = x + shoreSizeXR + shoreSizeOffset;
       if (xr >= TILES_WIDTH)
         xr = TILES_WIDTH;
-      int yt = y - shoreSizeYT;
+      int yt = y - shoreSizeYT - shoreSizeOffset;
       if (yt <= 0)
         yt = 0;
-      int yb = y + shoreSizeYB;
+      int yb = y + shoreSizeYB + shoreSizeOffset;
       if (yb >= TILES_HEIGHT)
         yb = TILES_HEIGHT;
       for (int y1 = yt; y1 <= yb; y1++)

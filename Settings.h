@@ -13,7 +13,7 @@ constexpr int DENY_CHUNK_RENDER_VALUE = -20;
 constexpr float UNDERWATER_REMOVAL_LEVEL = -1.2f;
 constexpr float UNDERWATER_BASE_TILE_HEIGHT = -1.3f;
 constexpr int BASE_TERRAIN_CHUNK_SIZES[] = {64, 32, 24, 16, 8};
-constexpr unsigned int SHORE_SIZE_BASE = 5;
+constexpr unsigned int SHORE_SIZE_BASE = 4;
 constexpr unsigned int QUAD_INDICES[6] = {0,1,2,2,3,0};
 const std::string PROJ_PATH("/home/ilya/QtProjects/MyOpenGL/TerrainGenerationTest");
 
