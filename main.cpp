@@ -45,7 +45,7 @@ int main()
 
   //TEXTURE LOADING
   glActiveTexture(GL_TEXTURE0);
-  GLuint flatTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/grass.jpg", GL_REPEAT);
+  GLuint flatTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/grass4.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE1);
   GLuint hillTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/grassHill.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE2);
@@ -66,6 +66,7 @@ int main()
   baseMapGenerator.prepareMap(); //generating base terrain data
   baseMapGenerator.fillBufferData(); //fill base terrain vertex data
   baseMapGenerator.fillChunkBufferData(); //generating data for chunk instance rendering
+  baseMapGenerator.fillCellBufferData(); //generating data for 1x1 tile instance rendering
   waterMapGenerator.fillBufferData(); //fill water buffer
   underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
 
@@ -74,7 +75,15 @@ int main()
   std::cout << "Hills tiles:\t" << hillMapGenerator.getTiles().size() << std::endl;
   std::cout << "Base tiles:\t" << baseMapGenerator.getTiles().size() << std::endl;
   for (unsigned int i = 0; i < 5; i++)
-    std::cout << "x" << BASE_TERRAIN_CHUNK_SIZES[i] << "\ttiles:\t" << baseMapGenerator.getChunkTiles(i).size() << "\t(instanced)" << std::endl;
+    {
+      std::cout << "x" << BASE_TERRAIN_CHUNK_SIZES[i]
+                   << "\ttiles:\t"
+                   << baseMapGenerator.getChunkTiles(i).size() << "\t(instanced)"
+                   << std::endl;
+    }
+  std::cout << "1x1 \ttiles:\t"
+            << baseMapGenerator.getNumCellInstances() << "\t(instanced)"
+            << std::endl;
   std::cout << "Summary: \t"
             << (waterMapGenerator.getTiles().size()
                 + hillMapGenerator.getTiles().size()
@@ -83,14 +92,16 @@ int main()
                 + baseMapGenerator.getChunkTiles(1).size()
                 + baseMapGenerator.getChunkTiles(2).size()
                 + baseMapGenerator.getChunkTiles(3).size()
-                + baseMapGenerator.getChunkTiles(4).size())
+                + baseMapGenerator.getChunkTiles(4).size()
+                + baseMapGenerator.getNumCellInstances())
             << std::endl;
   std::cout << "Summary instanced: "
             << (baseMapGenerator.getChunkTiles(0).size()
                 + baseMapGenerator.getChunkTiles(1).size()
                 + baseMapGenerator.getChunkTiles(2).size()
                 + baseMapGenerator.getChunkTiles(3).size()
-                + baseMapGenerator.getChunkTiles(4).size())
+                + baseMapGenerator.getChunkTiles(4).size()
+                + baseMapGenerator.getNumCellInstances())
             << std::endl;
 
   //scene setup
@@ -134,9 +145,13 @@ int main()
       scene.setBool("instanceRender", true);
       for (unsigned int vao = 0; vao < 5; vao++)
         {
-          glBindVertexArray(baseMapGenerator.getInstanceVAO(vao));
-          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator.getNumInstances(vao));
+          glBindVertexArray(baseMapGenerator.getChunkVAO(vao));
+          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator.getNumChunksInstances(vao));
         }
+
+      //base terrain 1x1 tiles
+      glBindVertexArray(baseMapGenerator.getCellVAO());
+      glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator.getNumCellInstances());
 
       //water tiles
       scene.setInt("surfaceTextureEnum", 1);

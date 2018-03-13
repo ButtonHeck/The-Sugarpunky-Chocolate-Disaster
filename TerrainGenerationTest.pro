@@ -66,4 +66,7 @@ DISTFILES += \
     textures/water2.png \
     textures/water2.jpg \
     textures/underwater_sand.jpg \
-    textures/sand2.jpg
+    textures/sand2.jpg \
+    textures/grass2.jpg \
+    textures/grass3.jpg \
+    textures/grass4.jpg
