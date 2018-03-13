@@ -116,18 +116,18 @@ void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY 
   srand(time(NULL));
   std::uniform_real_distribution<float> heightDistribution(0.3f, 0.7f);
   std::default_random_engine randomizer;
-  float density_value = 1.0f * (float)TILES_WIDTH;
+  float density_value = 3.0f * (float)TILES_WIDTH;
   if (density == HILL_DENSITY::THIN)
-      density_value = 1.1f * (float)TILES_WIDTH;
+      density_value = 3.1f * (float)TILES_WIDTH;
   else if (density == HILL_DENSITY::DENSE)
-    density_value = 0.9f * (float)TILES_WIDTH;
+    density_value = 2.9f * (float)TILES_WIDTH;
 
   //hills kernel generation cycle
   for (int y = 1; y < TILES_HEIGHT - 1; y++)
     {
       for (int x = 1; x < TILES_WIDTH - 1; x++)
         {
-          if (rand() % (int)density_value == 0 && !hasWaterNearby(x, y, 2))
+          if (rand() % (int)density_value == 0 && !hasWaterNearby(x, y, 3))
             {
               map[y][x] += 1.0f;
             }
@@ -162,7 +162,7 @@ void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY 
                     {
                       for (int x2 = left; x2 <= right; x2++)
                         {
-                          if (rand() % (cycle + 2) > 1 && !hasWaterNearby(x2, y2, 2))
+                          if (rand() % (cycle + 2) > 1 && !hasWaterNearby(x2, y2, 3))
                             {
                               map[y2][x2] += 1.0f - 0.075f * cycle + (heightDistribution(randomizer) / cycle);
                               if (map[y2][x2] > *max_height)
