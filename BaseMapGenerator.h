@@ -32,7 +32,6 @@ private:
   void smoothMap();
   void correctMapAtEdges();
   void compressMap(float ratio, bool entireRange);
-  void denyMapInvisibleTiles();
   void splitMapToChunks(std::vector<TerrainTile>& baseChunks, int chunkSize, bool overlap);
   void removeUnderwaterTiles(float thresholdValue);
   void split1x1Tiles();

@@ -22,7 +22,6 @@ void BaseMapGenerator::prepareMap()
       splitMapToChunks(baseChunkTiles[i], BASE_TERRAIN_CHUNK_SIZES[i], (bool)i);
       baseChunkTiles[i].shrink_to_fit();
     }
-  denyMapInvisibleTiles();
   removeUnderwaterTiles(UNDERWATER_REMOVAL_LEVEL);
   tiles.shrink_to_fit();
   split1x1Tiles();
@@ -258,28 +257,6 @@ void BaseMapGenerator::compressMap(float ratio, bool entireRange)
         {
           if (height < 0 || entireRange)
             height /= ratio;
-        }
-    }
-}
-
-void BaseMapGenerator::denyMapInvisibleTiles()
-{
-  for (unsigned int y = 1; y < TILES_HEIGHT - 1; y++)
-    {
-      for (unsigned int x = 1; x < TILES_WIDTH - 1; x++)
-        {
-          if (hillMap[y][x] != 0
-              && hillMap[y-1][x-1] != 0
-              && hillMap[y-1][x] != 0
-              && hillMap[y-1][x+1] != 0
-              && hillMap[y][x-1] != 0
-              && hillMap[y][x+1] != 0
-              && hillMap[y+1][x-1] != 0
-              && hillMap[y+1][x] != 0
-              && hillMap[y+1][x+1] != 0)
-            {
-              map[y][x] = DENY_TILE_RENDER_VALUE;
-            }
         }
     }
 }

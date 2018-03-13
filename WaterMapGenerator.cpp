@@ -150,9 +150,6 @@ void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel
   bool riverEnd = false;
   unsigned int curveMaxDistance = rand() % 48 + 48;
   unsigned int curveDistanceStep = 0;
-  const unsigned int X_MID_POINT = TILES_WIDTH / 2;
-  const unsigned int Y_MID_POINT = TILES_HEIGHT / 2;
-  const int MIN_CURVE_CHANGES = 12;
   int numCurveChanges = 0;
   enum DIRECTION : int {
     UP = 0, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, UP_LEFT
@@ -197,11 +194,7 @@ void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel
                 curveDistanceStep = 0;
                 curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
-                while (dir == DOWN || dir == DOWN_LEFT || dir == DOWN_RIGHT || dir == UP
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                while (dir != UP_LEFT && dir != UP_RIGHT)
                   dir = (DIRECTION)(rand() % 8);
               }
             break;
@@ -229,11 +222,7 @@ void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel
                 curveDistanceStep = 0;
                 curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
-                while (dir == DOWN_LEFT || dir == DOWN || dir == LEFT || dir == UP_RIGHT
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                while (dir != UP && dir != RIGHT)
                   dir = (DIRECTION)(rand() % 8);
               }
             break;
@@ -268,11 +257,7 @@ void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel
                 curveDistanceStep = 0;
                 curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
-                while (dir == LEFT || dir == UP_LEFT || dir == DOWN_LEFT || dir == RIGHT
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                while (dir != UP_RIGHT && dir != DOWN_RIGHT)
                   dir = (DIRECTION)(rand() % 8);
               }
             break;
@@ -300,11 +285,7 @@ void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel
                 curveDistanceStep = 0;
                 curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
-                while (dir == UP_LEFT || dir == UP || dir == LEFT || dir == DOWN_RIGHT
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                while (dir != DOWN && dir != RIGHT)
                   dir = (DIRECTION)(rand() % 8);
               }
             break;
@@ -339,11 +320,7 @@ void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel
                 curveDistanceStep = 0;
                 curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
-                while (dir == UP || dir == UP_LEFT || dir == UP_RIGHT || dir == DOWN
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                while (dir != DOWN_RIGHT && dir != DOWN_LEFT)
                   dir = (DIRECTION)(rand() % 8);
               }
             break;
@@ -371,11 +348,7 @@ void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel
                 curveDistanceStep = 0;
                 curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
-                while (dir == UP_RIGHT || dir == UP || dir == RIGHT || dir == DOWN_LEFT
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                while (dir != DOWN && dir != LEFT)
                   dir = (DIRECTION)(rand() % 8);
               }
             break;
@@ -410,11 +383,7 @@ void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel
                 curveDistanceStep = 0;
                 curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
-                while (dir == RIGHT || dir == UP_RIGHT || dir == DOWN_RIGHT || dir == LEFT
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                while (dir != UP_LEFT && dir != DOWN_LEFT)
                   dir = (DIRECTION)(rand() % 8);
               }
             break;
@@ -442,11 +411,7 @@ void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel
                 curveDistanceStep = 0;
                 curveMaxDistance = rand() % 48 + 48;
                 dir = (DIRECTION)(rand() % 8);
-                while (dir == DOWN_RIGHT || dir == DOWN || dir == RIGHT || dir == UP_LEFT
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x < X_MID_POINT && (dir == LEFT || dir == UP_LEFT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y < Y_MID_POINT && (dir == UP_LEFT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (x >= X_MID_POINT && (dir == RIGHT || dir == UP_RIGHT)))
-                       || (numCurveChanges < MIN_CURVE_CHANGES && (y >= Y_MID_POINT && (dir == DOWN_LEFT || dir == DOWN_RIGHT))))
+                while (dir != UP && dir != LEFT)
                   dir = (DIRECTION)(rand() % 8);
               }
             break;
