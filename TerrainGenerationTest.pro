@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     WaterMapGenerator.cpp \
     HillsMapGenerator.cpp \
     UnderwaterQuadMapGenerator.cpp \
-    BaseMapGenerator.cpp
+    BaseMapGenerator.cpp \
+    Skybox.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -50,7 +51,8 @@ HEADERS += \
     WaterMapGenerator.h \
     HillsMapGenerator.h \
     UnderwaterQuadMapGenerator.h \
-    BaseMapGenerator.h
+    BaseMapGenerator.h \
+    Skybox.h
 
 DISTFILES += \
     scene.vs \
@@ -69,4 +71,12 @@ DISTFILES += \
     textures/sand2.jpg \
     textures/grass2.jpg \
     textures/grass3.jpg \
-    textures/grass4.jpg
+    textures/grass4.jpg \
+    textures/cubemap1/back.png \
+    textures/cubemap1/down.png \
+    textures/cubemap1/front.png \
+    textures/cubemap1/left.png \
+    textures/cubemap1/right.png \
+    textures/cubemap1/up.png \
+    shaders/skybox.vs \
+    shaders/skybox.fs

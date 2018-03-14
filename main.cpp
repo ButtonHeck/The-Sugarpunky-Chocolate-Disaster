@@ -15,6 +15,7 @@
 #include "HillsMapGenerator.h"
 #include "UnderwaterQuadMapGenerator.h"
 #include "BaseMapGenerator.h"
+#include "Skybox.h"
 
 GLFWwindow* initGLFW();
 
@@ -27,6 +28,7 @@ WaterMapGenerator waterMapGenerator;
 HillsMapGenerator hillMapGenerator(waterMapGenerator.getMap());
 UnderwaterQuadMapGenerator underwaterQuadGenerator;
 BaseMapGenerator baseMapGenerator(waterMapGenerator.getMap(), hillMapGenerator.getMap());
+Skybox sky(PROJ_PATH + "/textures/cubemap1/", textureLoader);
 
 int main()
 {
@@ -41,6 +43,8 @@ int main()
 
   //SHADER STUFF
   Shader scene(PROJ_PATH + "/shaders/scene.vs", PROJ_PATH + "/shaders/scene.fs");
+  Shader skybox(PROJ_PATH + "/shaders/skybox.vs", PROJ_PATH + "/shaders/skybox.fs");
+  sky.fillBufferData();
   scene.use();
 
   //TEXTURE LOADING
@@ -119,8 +123,9 @@ int main()
 
       //scene update
       scene.use();
+      glm::mat4 view = cam.getViewMatrix();
       scene.setMat4("projection", projection);
-      scene.setMat4("view", cam.getViewMatrix());
+      scene.setMat4("view", view);
       scene.setMat4("model", model);
 
       //height tiles
@@ -163,8 +168,8 @@ int main()
       double frameTime = glfwGetTime();
       for (size_t i = 0; i < waterMapGenerator.WATER_HEIGHT_OFFSETS_SIZE; i+=2)
         {
-            waterHeightOffsets[i] = std::cos(frameTime * (i % 31) / 24) / 8 + WATER_LEVEL;
-            waterHeightOffsets[i+1] = std::sin(frameTime * (i % 29) / 24) / 8 + WATER_LEVEL;
+            waterHeightOffsets[i] = std::cos(frameTime * (i % 31) / 24) / 12 + WATER_LEVEL;
+            waterHeightOffsets[i+1] = std::sin(frameTime * (i % 29) / 24) / 12 + WATER_LEVEL;
         }
       GLfloat* temp = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
       unsigned int numWaterTiles = waterTiles.size();
@@ -180,6 +185,21 @@ int main()
       glEnable(GL_BLEND);
       glDrawElements(GL_TRIANGLES, 6 * waterTiles.size(), GL_UNSIGNED_INT, 0);
       glDisable(GL_BLEND);
+
+      //Skybox rendering
+      skybox.use();
+      skybox.setMat4("view", glm::mat4(glm::mat3(view)));
+      skybox.setMat4("projection", projection);
+      glDepthFunc(GL_LEQUAL);
+      glDisable(GL_CULL_FACE);
+      glStencilMask(0x00);
+      glBindVertexArray(sky.getVAO());
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, sky.getTexture());
+      glDrawArrays(GL_TRIANGLES, 0, 36);
+      glDepthFunc(GL_LESS);
+      glEnable(GL_CULL_FACE);
+      glStencilMask(0xFF);
 
       glfwPollEvents();
       glfwSwapBuffers(window);
