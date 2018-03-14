@@ -28,7 +28,7 @@ WaterMapGenerator waterMapGenerator;
 HillsMapGenerator hillMapGenerator(waterMapGenerator.getMap());
 UnderwaterQuadMapGenerator underwaterQuadGenerator;
 BaseMapGenerator baseMapGenerator(waterMapGenerator.getMap(), hillMapGenerator.getMap());
-Skybox sky(PROJ_PATH + "/textures/cubemap1/", textureLoader);
+Skybox sky(PROJ_PATH + "/textures/cubemap1scaled/", textureLoader);
 
 int main()
 {

@@ -79,4 +79,10 @@ DISTFILES += \
     textures/cubemap1/right.png \
     textures/cubemap1/up.png \
     shaders/skybox.vs \
-    shaders/skybox.fs
+    shaders/skybox.fs \
+    textures/cubemap1scaled/back.png \
+    textures/cubemap1scaled/down.png \
+    textures/cubemap1scaled/front.png \
+    textures/cubemap1scaled/left.png \
+    textures/cubemap1scaled/right.png \
+    textures/cubemap1scaled/up.png
