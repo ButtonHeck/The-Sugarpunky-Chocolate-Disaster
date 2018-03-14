@@ -23,14 +23,14 @@ void WaterMapGenerator::fillBufferData()
   fillSharpTerrainWithWater();
   createTiles(true, false);
   tiles.shrink_to_fit();
-  const size_t VERTEX_DATA_LENGTH = tiles.size() * 20;
+  const size_t VERTEX_DATA_LENGTH = tiles.size() * 32;
   const size_t ELEMENT_DATA_LENGTH = tiles.size() * 6;
   GLfloat vertices[VERTEX_DATA_LENGTH];
   GLuint indices[ELEMENT_DATA_LENGTH];
   for (unsigned int i = 0; i < tiles.size(); i++)
     {
       TerrainTile& tile = tiles[i];
-      int offset = i * 20;
+      int offset = i * 32;
       int indexArrayOffset = i * 6;
       int index = i * 4;
       //ll
@@ -39,24 +39,36 @@ void WaterMapGenerator::fillBufferData()
       vertices[offset+2] = - TILES_HEIGHT / 2 + tile.mapY;
       vertices[offset+3] = 0.0f;
       vertices[offset+4] = 0.0f;
+      vertices[offset+5] = 0.0f;
+      vertices[offset+6] = 1.0f;
+      vertices[offset+7] = 0.0f;
       //lr
-      vertices[offset+5] = - TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+6] = tile.lowRight;
-      vertices[offset+7] = - TILES_HEIGHT / 2 + tile.mapY;
-      vertices[offset+8] = 1.0f;
-      vertices[offset+9] = 0.0f;
-      //ur
-      vertices[offset+10] = - TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+11] = tile.upperRight;
-      vertices[offset+12] = -1 - TILES_HEIGHT / 2 + tile.mapY;
-      vertices[offset+13] = 1.0f;
+      vertices[offset+8] = - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+9] = tile.lowRight;
+      vertices[offset+10] = - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+11] = 1.0f;
+      vertices[offset+12] = 0.0f;
+      vertices[offset+13] = 0.0f;
       vertices[offset+14] = 1.0f;
-      //ul
-      vertices[offset+15] = -1 - TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+16] = tile.upperLeft;
-      vertices[offset+17] = -1 - TILES_HEIGHT / 2 + tile.mapY;
-      vertices[offset+18] = 0.0f;
+      vertices[offset+15] = 0.0f;
+      //ur
+      vertices[offset+16] = - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+17] = tile.upperRight;
+      vertices[offset+18] = -1 - TILES_HEIGHT / 2 + tile.mapY;
       vertices[offset+19] = 1.0f;
+      vertices[offset+20] = 1.0f;
+      vertices[offset+21] = 0.0f;
+      vertices[offset+22] = 1.0f;
+      vertices[offset+23] = 0.0f;
+      //ul
+      vertices[offset+24] = -1 - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+25] = tile.upperLeft;
+      vertices[offset+26] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+27] = 0.0f;
+      vertices[offset+28] = 1.0f;
+      vertices[offset+29] = 0.0f;
+      vertices[offset+30] = 1.0f;
+      vertices[offset+31] = 0.0f;
 
       indices[indexArrayOffset] = index;
       indices[indexArrayOffset+1] = index + 1;
@@ -73,7 +85,12 @@ void WaterMapGenerator::fillBufferData()
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
-  setupGLBuffersAttributes();
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
   resetAllGLBuffers();
 }
 

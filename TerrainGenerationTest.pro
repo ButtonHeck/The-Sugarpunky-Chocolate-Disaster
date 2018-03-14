@@ -85,4 +85,7 @@ DISTFILES += \
     textures/cubemap1scaled/front.png \
     textures/cubemap1scaled/left.png \
     textures/cubemap1scaled/right.png \
-    textures/cubemap1scaled/up.png
+    textures/cubemap1scaled/up.png \
+    shaders/water.vs \
+    shaders/water.fs \
+    textures/water2spec.png

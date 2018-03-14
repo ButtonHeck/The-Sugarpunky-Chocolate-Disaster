@@ -1,6 +1,7 @@
 #ifndef SETTINGS
 #define SETTINGS
 #include <string>
+#include <glm/glm.hpp>
 
 constexpr int SCR_WIDTH = 1440;
 constexpr int SCR_HEIGHT = 900;
@@ -16,6 +17,7 @@ constexpr int BASE_TERRAIN_CHUNK_SIZES[] = {64, 32, 24, 16, 8};
 constexpr unsigned int SHORE_SIZE_BASE = 4;
 constexpr unsigned int QUAD_INDICES[6] = {0,1,2,2,3,0};
 const std::string PROJ_PATH("/home/ilya/QtProjects/MyOpenGL/TerrainGenerationTest");
+const glm::vec3 LIGHT_DIR_TO = glm::vec3(0.5f, -0.6f, -0.3f);
 
 enum HILL_DENSITY
 {

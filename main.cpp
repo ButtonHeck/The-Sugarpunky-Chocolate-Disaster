@@ -45,6 +45,7 @@ int main()
   Shader scene(PROJ_PATH + "/shaders/scene.vs", PROJ_PATH + "/shaders/scene.fs");
   Shader skybox(PROJ_PATH + "/shaders/skybox.vs", PROJ_PATH + "/shaders/skybox.fs");
   sky.fillBufferData();
+  Shader water(PROJ_PATH + "/shaders/water.vs", PROJ_PATH + "/shaders/water.fs");
   scene.use();
 
   //TEXTURE LOADING
@@ -57,11 +58,17 @@ int main()
   glActiveTexture(GL_TEXTURE3);
   GLuint sandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/sand.jpg", GL_REPEAT);
   GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT);
+  glActiveTexture(GL_TEXTURE4);
+  GLuint waterTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/water2spec.png", GL_REPEAT);
   scene.setInt("grassTexture", 0);
   scene.setInt("hillTexture", 1);
   scene.setInt("waterTexture", 2);
   scene.setInt("sandTexture", 3);
   scene.setFloat("waterLevel", WATER_LEVEL);
+  water.use();
+  water.setInt("water_diffuse", 2);
+  water.setInt("water_specular", 4);
+  water.setVec3("lightDirTo", LIGHT_DIR_TO);
 
   //setup tiles
   waterMapGenerator.prepareMap(); //prepare water map
@@ -130,6 +137,7 @@ int main()
 
       //height tiles
       scene.setInt("surfaceTextureEnum", 2);
+      scene.setBool("instanceRender", false);
       glBindVertexArray(hillMapGenerator.getVAO());
       glDrawElements(GL_TRIANGLES, 6 * hillMapGenerator.getTiles().size(), GL_UNSIGNED_INT, 0);
 
@@ -159,8 +167,11 @@ int main()
       glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator.getNumCellInstances());
 
       //water tiles
-      scene.setInt("surfaceTextureEnum", 1);
-      scene.setBool("instanceRender", false);
+      water.use();
+      water.setMat4("model", model);
+      water.setMat4("projection", projection);
+      water.setMat4("view", view);
+      water.setVec3("viewPosition", cam.getPosition());
       std::vector<TerrainTile>& waterTiles = waterMapGenerator.getTiles();
       glBindVertexArray(waterMapGenerator.getVAO());
       glBindBuffer(GL_ARRAY_BUFFER, waterMapGenerator.getVBO());
@@ -176,10 +187,10 @@ int main()
       for (unsigned int i = 0; i < numWaterTiles; ++i)
         {
           TerrainTile& tile = waterTiles[i];
-          *(temp+1+i*20) = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX];
-          *(temp+6+i*20) = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX + 1];
-          *(temp+11+i*20) = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX + 1];
-          *(temp+16+i*20) = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX];
+          *(temp+1+i*32) = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX];
+          *(temp+9+i*32) = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX + 1];
+          *(temp+17+i*32) = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX + 1];
+          *(temp+25+i*32) = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX];
         }
       glUnmapBuffer(GL_ARRAY_BUFFER);
       glEnable(GL_BLEND);
@@ -216,6 +227,7 @@ int main()
   waterMapGenerator.deleteGLObjects();
   underwaterQuadGenerator.deleteGLObjects();
   scene.cleanUp();
+  water.cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();
 }
