@@ -22,7 +22,7 @@ void main()
     float diff = max(dot(normal, lightDir), 0.0);
     //specular shading
     vec3 reflect = reflect(-lightDir, normal);
-    float spec = pow(max(dot(reflect, viewDir), 0.0), 64.0);
+    float spec = pow(max(dot(reflect, viewDir), 0.0), 16.0);
 
     vec3 ambient = 0.1 * sampledDiffuse.rgb;
     vec3 diffuse = diff * sampledDiffuse.rgb;

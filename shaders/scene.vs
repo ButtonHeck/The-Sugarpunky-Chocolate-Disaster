@@ -6,7 +6,6 @@ layout (location = 2) in mat4 instanceModel;
 
 uniform mat4 view;
 uniform mat4 projection;
-uniform mat4 model;
 uniform bool instanceRender;
 
 out vec2 TexCoords;
@@ -17,7 +16,7 @@ void main()
     if (instanceRender)
         gl_Position = projection * view * instanceModel * vec4(pos, 1.0);
     else
-        gl_Position = projection * view * model * vec4(pos, 1.0);
+        gl_Position = projection * view * vec4(pos, 1.0);
     TexCoords = texCoords;
     PosHeight = pos.y;
 }
