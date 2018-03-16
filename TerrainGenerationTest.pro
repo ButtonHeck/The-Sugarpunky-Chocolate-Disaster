@@ -58,10 +58,7 @@ DISTFILES += \
     scene.vs \
     shaders/scene.fs \
     shaders/scene.vs \
-    textures/grass.jpg \
     textures/grass_test.jpg \
-    textures/grassHill_test.jpg \
-    textures/grassHill.jpg \
     textures/sand.jpg \
     textures/water.jpg \
     textures/water.png \
@@ -69,9 +66,6 @@ DISTFILES += \
     textures/water2.jpg \
     textures/underwater_sand.jpg \
     textures/sand2.jpg \
-    textures/grass2.jpg \
-    textures/grass3.jpg \
-    textures/grass4.jpg \
     textures/cubemap1/back.png \
     textures/cubemap1/down.png \
     textures/cubemap1/front.png \
@@ -88,4 +82,11 @@ DISTFILES += \
     textures/cubemap1scaled/up.png \
     shaders/water.vs \
     shaders/water.fs \
-    textures/water2spec.png
+    textures/water2spec.png \
+    shaders/hills.vs \
+    shaders/hills.fs \
+    textures/grass.jpg \
+    textures/grass_specular.jpg \
+    textures/hill.jpg \
+    textures/hill_specular.jpg \
+    textures/hill_test.jpg
