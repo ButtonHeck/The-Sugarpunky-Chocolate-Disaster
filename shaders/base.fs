@@ -3,26 +3,21 @@
 out vec4 FragColor;
 
 in vec3 FragPos;
-in vec3 Normal;
 in vec2 TexCoords;
 in float PosHeight;
 
 uniform sampler2D base_diffuse;
 uniform sampler2D base_specular;
-uniform sampler2D hills_diffuse;
-uniform sampler2D hills_specular;
 uniform vec3 viewPosition;
 uniform vec3 lightDirTo;
 
 void main()
 {
-    vec3 normal = normalize(Normal);
+    vec3 normal = vec3(0.0, 1.0, 0.0);
     vec3 viewDir = normalize(viewPosition - FragPos);
     vec3 lightDir = normalize(-lightDirTo);
-    vec4 sampledDiffuse =
-        mix(texture(base_diffuse, TexCoords), texture(hills_diffuse, TexCoords), min(max(0.0, PosHeight/1.5), 1.0));
-    vec4 sampledSpecular =
-        mix(texture(base_specular, TexCoords), texture(hills_specular, TexCoords), min(max(0.0, PosHeight/1.5), 1.0));
+    vec4 sampledDiffuse = texture(base_diffuse, TexCoords);
+    vec4 sampledSpecular = texture(base_specular, TexCoords);
     //diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
     //specular shading

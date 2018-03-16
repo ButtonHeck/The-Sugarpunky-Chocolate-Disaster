@@ -89,4 +89,8 @@ DISTFILES += \
     textures/grass_specular.jpg \
     textures/hill.jpg \
     textures/hill_specular.jpg \
-    textures/hill_test.jpg
+    textures/hill_test.jpg \
+    shaders/sand.vs \
+    shaders/sand.fs \
+    shaders/base.vs \
+    shaders/base.fs

@@ -9,10 +9,11 @@ in float PosHeight;
 
 uniform sampler2D base_diffuse;
 uniform sampler2D base_specular;
-uniform sampler2D hills_diffuse;
-uniform sampler2D hills_specular;
+uniform sampler2D sand_diffuse;
+uniform sampler2D sand_specular;
 uniform vec3 viewPosition;
 uniform vec3 lightDirTo;
+uniform float waterLevel;
 
 void main()
 {
@@ -20,9 +21,13 @@ void main()
     vec3 viewDir = normalize(viewPosition - FragPos);
     vec3 lightDir = normalize(-lightDirTo);
     vec4 sampledDiffuse =
-        mix(texture(base_diffuse, TexCoords), texture(hills_diffuse, TexCoords), min(max(0.0, PosHeight/1.5), 1.0));
+                mix(texture(sand_diffuse, TexCoords),
+                    texture(base_diffuse, TexCoords),
+                    max(min(PosHeight * 2.1 - waterLevel + (1.0 + waterLevel), 1.0), 0.0));
     vec4 sampledSpecular =
-        mix(texture(base_specular, TexCoords), texture(hills_specular, TexCoords), min(max(0.0, PosHeight/1.5), 1.0));
+                mix(texture(sand_specular, TexCoords),
+                    texture(base_specular, TexCoords),
+                    max(min(PosHeight * 2.1 - waterLevel + (1.0 + waterLevel), 1.0), 0.0));
     //diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
     //specular shading

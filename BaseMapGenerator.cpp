@@ -30,55 +30,95 @@ void BaseMapGenerator::prepareMap()
 
 void BaseMapGenerator::fillBufferData()
 {
-  GLfloat vertices[tiles.size() * 20];
-  GLuint indices[tiles.size() * 6];
+  GLfloat vertices[tiles.size() * 48];
+  glm::vec3 normal1, normal2;
   for (unsigned int c = 0; c < tiles.size(); c++)
     {
       TerrainTile& tile = tiles[c];
-      int offset = c * 20;
-      int indexArrayOffset = c * 6;
-      int index = c * 4;
-      //ll
-      vertices[offset] = -1- TILES_WIDTH / 2 + tile.mapX;
+      int offset = c * 48;
+      normal1 = glm::cross(
+            glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1)
+            -
+            glm::vec3(tile.mapX, tile.lowRight, tile.mapY)
+            ,
+            glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY)
+            -
+            glm::vec3(tile.mapX, tile.lowRight, tile.mapY));
+      normal2 = glm::cross(
+            glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY)
+            -
+            glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1)
+            ,
+            glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1)
+            -
+            glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1));
+      //ll1
+      vertices[offset] =   -1- TILES_WIDTH / 2 + tile.mapX;
       vertices[offset+1] = tile.lowLeft;
       vertices[offset+2] = - TILES_HEIGHT / 2 + tile.mapY;
       vertices[offset+3] = 0.0f;
       vertices[offset+4] = 0.0f;
-      //lr
-      vertices[offset+5] = - TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+6] = tile.lowRight;
-      vertices[offset+7] = - TILES_HEIGHT / 2 + tile.mapY;
-      vertices[offset+8] = 1.0f;
-      vertices[offset+9] = 0.0f;
-      //ur
-      vertices[offset+10] = - TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+11] = tile.upperRight;
-      vertices[offset+12] = -1 - TILES_HEIGHT / 2 + tile.mapY;
-      vertices[offset+13] = 1.0f;
-      vertices[offset+14] = 1.0f;
-      //ul
-      vertices[offset+15] = -1 - TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+16] = tile.upperLeft;
-      vertices[offset+17] = -1 - TILES_HEIGHT / 2 + tile.mapY;
-      vertices[offset+18] = 0.0f;
+      vertices[offset+5] = normal1.x;
+      vertices[offset+6] = normal1.y;
+      vertices[offset+7] = normal1.z;
+      //lr1
+      vertices[offset+8] =  - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+9] =  tile.lowRight;
+      vertices[offset+10] = - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+11] = 1.0f;
+      vertices[offset+12] = 0.0f;
+      vertices[offset+13] = normal1.x;
+      vertices[offset+14] = normal1.y;
+      vertices[offset+15] = normal1.z;
+      //ur1
+      vertices[offset+16] = - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+17] = tile.upperRight;
+      vertices[offset+18] = -1 - TILES_HEIGHT / 2 + tile.mapY;
       vertices[offset+19] = 1.0f;
-
-      indices[indexArrayOffset] = index;
-      indices[indexArrayOffset+1] = index + 1;
-      indices[indexArrayOffset+2] = index + 2;
-      indices[indexArrayOffset+3] = index + 2;
-      indices[indexArrayOffset+4] = index + 3;
-      indices[indexArrayOffset+5] = index;
+      vertices[offset+20] = 1.0f;
+      vertices[offset+21] = normal1.x;
+      vertices[offset+22] = normal1.y;
+      vertices[offset+23] = normal1.z;
+      //ur2
+      vertices[offset+24] = - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+25] = tile.upperRight;
+      vertices[offset+26] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+27] = 1.0f;
+      vertices[offset+28] = 1.0f;
+      vertices[offset+29] = normal2.x;
+      vertices[offset+30] = normal2.y;
+      vertices[offset+31] = normal2.z;
+      //ul2
+      vertices[offset+32] = -1 - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+33] = tile.upperLeft;
+      vertices[offset+34] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+35] = 0.0f;
+      vertices[offset+36] = 1.0f;
+      vertices[offset+37] = normal2.x;
+      vertices[offset+38] = normal2.y;
+      vertices[offset+39] = normal2.z;
+      //ll2
+      vertices[offset+40] = -1- TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+41] = tile.lowLeft;
+      vertices[offset+42] = - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+43] = 0.0f;
+      vertices[offset+44] = 0.0f;
+      vertices[offset+45] = normal2.x;
+      vertices[offset+46] = normal2.y;
+      vertices[offset+47] = normal2.z;
     }
   glGenVertexArrays(1, &vao);
   glGenBuffers(1, &vbo);
   glGenBuffers(1, &ebo);
   glBindVertexArray(vao);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  setupGLBuffersAttributes();
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
   resetAllGLBuffers();
 }
 
@@ -101,7 +141,10 @@ void BaseMapGenerator::fillChunkBufferData()
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
       glBindBuffer(GL_ARRAY_BUFFER, instanceVbo[vao]);
       glBufferData(GL_ARRAY_BUFFER, sizeof(baseChunkInstanceVertices), baseChunkInstanceVertices, GL_STATIC_DRAW);
-      setupGLBuffersAttributes();
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+      glEnableVertexAttribArray(1);
+      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
       NUM_CHUNKS_INSTANCES[vao] = baseChunkTiles[vao].size();
       glm::mat4* baseInstanceChunkModels = new glm::mat4[NUM_CHUNKS_INSTANCES[vao]];
       std::vector<TerrainTile>& baseTerrainChunk = baseChunkTiles[vao];
@@ -149,7 +192,10 @@ void BaseMapGenerator::fillCellBufferData()
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, cellVbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(cellVertices), cellVertices, GL_STATIC_DRAW);
-  setupGLBuffersAttributes();
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
   NUM_CELL_INSTANCES = cellTiles.size();
   glm::mat4* cellInstanceModels = new glm::mat4[NUM_CELL_INSTANCES];
   for (unsigned int i = 0; i < cellTiles.size(); i++)
