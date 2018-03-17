@@ -67,6 +67,8 @@ int main()
   GLuint hillTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/hill_specular.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE7);
   GLuint sandTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/sand_specular.jpg", GL_REPEAT);
+  glActiveTexture(GL_TEXTURE8);
+  GLuint baseTextureNormal = textureLoader.loadTexture(PROJ_PATH + "/textures/grass_normal.jpg", GL_REPEAT);
 
   //SHADERS SETUP
   scene.use();
@@ -85,16 +87,19 @@ int main()
   hills.setInt("hills_diffuse", 1);
   hills.setInt("base_specular", 5);
   hills.setInt("hills_specular", 6);
+  hills.setInt("base_normal", 8);
   sand.use();
   sand.setFloat("waterLevel", WATER_LEVEL);
   sand.setInt("base_diffuse", 0);
   sand.setInt("base_specular", 5);
   sand.setInt("sand_diffuse", 3);
   sand.setInt("sand_specular", 7);
+  sand.setInt("base_normal", 8);
   sand.setVec3("lightDirTo", LIGHT_DIR_TO);
   base.use();
   base.setInt("base_diffuse", 0);
   base.setInt("base_specular", 5);
+  base.setInt("base_normal", 8);
   base.setVec3("lightDirTo", LIGHT_DIR_TO);
 
   //setup tiles

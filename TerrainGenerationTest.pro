@@ -93,4 +93,5 @@ DISTFILES += \
     shaders/sand.vs \
     shaders/sand.fs \
     shaders/base.vs \
-    shaders/base.fs
+    shaders/base.fs \
+    textures/grass_normal.jpg

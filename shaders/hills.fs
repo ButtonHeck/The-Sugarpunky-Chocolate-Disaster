@@ -8,6 +8,7 @@ in vec2 TexCoords;
 
 uniform sampler2D base_diffuse;
 uniform sampler2D base_specular;
+uniform sampler2D base_normal;
 uniform sampler2D hills_diffuse;
 uniform sampler2D hills_specular;
 uniform vec3 viewPosition;
@@ -17,9 +18,10 @@ const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 
 void main()
 {
+    vec3 texNormal = texture(base_normal, vec2(FragPos.x / 384, FragPos.z / 384)).rgb;
     float PosHeight = FragPos.y;
     float transitionRatio = clamp(0.0 + PosHeight * (1 / 0.66), 0.0, 1.0);
-    vec3 normal = normalize(transitionRatio * Normal + (1.0 - transitionRatio) * NORMAL);
+    vec3 normal = normalize(transitionRatio * Normal + (1.0 - transitionRatio) * (NORMAL + texNormal));
     vec3 viewDir = normalize(viewPosition - FragPos);
     vec3 lightDir = normalize(-lightDirTo);
     vec4 sampledDiffuse =
@@ -32,7 +34,7 @@ void main()
     vec3 reflect = reflect(-lightDir, normal);
     float spec = pow(max(dot(reflect, viewDir), 0.0), 64.0);
 
-    vec3 diffuse = diff * sampledDiffuse.rgb * 0.33 + 0.67 * sampledDiffuse.rgb;
+    vec3 diffuse = diff * sampledDiffuse.rgb * 0.4 + 0.6 * sampledDiffuse.rgb;
     vec3 specular = spec * sampledSpecular.rgb;
     vec3 result = diffuse + specular;
 

@@ -8,12 +8,14 @@ in float PosHeight;
 
 uniform sampler2D base_diffuse;
 uniform sampler2D base_specular;
+uniform sampler2D base_normal;
 uniform vec3 viewPosition;
 uniform vec3 lightDirTo;
 
 void main()
 {
-    vec3 normal = vec3(0.0, 1.0, 0.0);
+    vec3 texNormal = texture(base_normal, vec2(FragPos.x / 384, FragPos.z / 384)).rgb;
+    vec3 normal = normalize(vec3(0.0, 1.0, 0.0) + texNormal);
     vec3 viewDir = normalize(viewPosition - FragPos);
     vec3 lightDir = normalize(-lightDirTo);
     vec4 sampledDiffuse = texture(base_diffuse, TexCoords);
