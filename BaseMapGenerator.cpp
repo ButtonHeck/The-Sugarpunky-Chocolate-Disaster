@@ -273,6 +273,16 @@ void BaseMapGenerator::smoothMap()
             map[y][x] += WATER_LEVEL / 1.5f;
         }
     }
+  //slightly randomize shore line between base and water level
+  std::uniform_real_distribution<float> distribution(-0.2f, 0.2f);
+  for (unsigned int y = 0; y < TILES_HEIGHT; y++)
+    {
+      for (unsigned int x = 0; x < TILES_WIDTH; x++)
+        {
+          if (map[y][x] < 0)
+            map[y][x] += distribution(randomizer);
+        }
+    }
 }
 
 void BaseMapGenerator::correctMapAtEdges()

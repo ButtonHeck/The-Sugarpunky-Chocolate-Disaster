@@ -199,7 +199,6 @@ int main()
           glBindVertexArray(baseMapGenerator.getChunkVAO(vao));
           glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator.getNumChunksInstances(vao));
         }
-
       //base terrain 1x1 tiles
       glBindVertexArray(baseMapGenerator.getCellVAO());
       glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator.getNumCellInstances());
