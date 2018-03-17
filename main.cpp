@@ -42,12 +42,12 @@ int main()
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   //SHADER LOADING
-  Shader scene(PROJ_PATH + "/shaders/scene.vs", PROJ_PATH + "/shaders/scene.fs");
-  Shader sky(PROJ_PATH + "/shaders/skybox.vs", PROJ_PATH + "/shaders/skybox.fs");
-  Shader water(PROJ_PATH + "/shaders/water.vs", PROJ_PATH + "/shaders/water.fs");
   Shader hills(PROJ_PATH + "/shaders/hills.vs", PROJ_PATH + "/shaders/hills.fs");
   Shader sand(PROJ_PATH + "/shaders/sand.vs", PROJ_PATH + "/shaders/sand.fs");
+  Shader underwater(PROJ_PATH + "/shaders/underwater.vs", PROJ_PATH + "/shaders/underwater.fs");
   Shader base(PROJ_PATH + "/shaders/base.vs", PROJ_PATH + "/shaders/base.fs");
+  Shader water(PROJ_PATH + "/shaders/water.vs", PROJ_PATH + "/shaders/water.fs");
+  Shader sky(PROJ_PATH + "/shaders/skybox.vs", PROJ_PATH + "/shaders/skybox.fs");
 
   //TEXTURE LOADING
   glActiveTexture(GL_TEXTURE0);
@@ -58,7 +58,6 @@ int main()
   GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water2.png", GL_REPEAT);
   glActiveTexture(GL_TEXTURE3);
   GLuint sandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/sand.jpg", GL_REPEAT);
-  GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE4);
   GLuint waterTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/water2spec.png", GL_REPEAT);
   glActiveTexture(GL_TEXTURE5);
@@ -69,18 +68,10 @@ int main()
   GLuint sandTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/sand_specular.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE8);
   GLuint baseTextureNormal = textureLoader.loadTexture(PROJ_PATH + "/textures/grass_normal.jpg", GL_REPEAT);
+  glActiveTexture(GL_TEXTURE9);
+  GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT);
 
   //SHADERS SETUP
-  scene.use();
-  scene.setInt("grassTexture", 0);
-  scene.setInt("hillTexture", 1);
-  scene.setInt("waterTexture", 2);
-  scene.setInt("sandTexture", 3);
-  scene.setFloat("waterLevel", WATER_LEVEL);
-  water.use();
-  water.setInt("water_diffuse", 2);
-  water.setInt("water_specular", 4);
-  water.setVec3("lightDirTo", LIGHT_DIR_TO);
   hills.use();
   hills.setVec3("lightDirTo", LIGHT_DIR_TO);
   hills.setInt("base_diffuse", 0);
@@ -96,11 +87,19 @@ int main()
   sand.setInt("sand_specular", 7);
   sand.setInt("base_normal", 8);
   sand.setVec3("lightDirTo", LIGHT_DIR_TO);
+  underwater.use();
+  underwater.setInt("underwater_diffuse", 9);
+  underwater.setInt("underwater_normal", 8);
+  underwater.setVec3("lightDirTo", LIGHT_DIR_TO);
   base.use();
   base.setInt("base_diffuse", 0);
   base.setInt("base_specular", 5);
   base.setInt("base_normal", 8);
   base.setVec3("lightDirTo", LIGHT_DIR_TO);
+  water.use();
+  water.setInt("water_diffuse", 2);
+  water.setInt("water_specular", 4);
+  water.setVec3("lightDirTo", LIGHT_DIR_TO);
 
   //setup tiles
   waterMapGenerator.prepareMap(); //prepare water map
@@ -177,20 +176,14 @@ int main()
       sand.setMat4("view", view);
       sand.setMat4("model", model);
       sand.setVec3("viewPosition", cam.getPosition());
-      glActiveTexture(GL_TEXTURE3);
-      glBindTexture(GL_TEXTURE_2D, sandTexture);
       glBindVertexArray(baseMapGenerator.getVAO());
       glDrawArrays(GL_TRIANGLES, 0, 6 * baseMapGenerator.getTiles().size());
 
       //underwater tile
-      scene.use();
-      scene.setMat4("projection", projection);
-      scene.setMat4("view", view);
-      scene.setMat4("model", model);
-      scene.setBool("instanceRender", false);
-      scene.setInt("surfaceTextureEnum", 0);
-      glActiveTexture(GL_TEXTURE3);
-      glBindTexture(GL_TEXTURE_2D, underwaterSandTexture);
+      underwater.use();
+      underwater.setMat4("projection", projection);
+      underwater.setMat4("view", view);
+      underwater.setMat4("model", model);
       glBindVertexArray(underwaterQuadGenerator.getVAO());
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -287,14 +280,12 @@ int main()
       sky.setMat4("projection", projection);
       glDepthFunc(GL_LEQUAL);
       glDisable(GL_CULL_FACE);
-      glStencilMask(0x00);
       glBindVertexArray(skybox.getVAO());
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTexture());
       glDrawArrays(GL_TRIANGLES, 0, 36);
       glDepthFunc(GL_LESS);
       glEnable(GL_CULL_FACE);
-      glStencilMask(0xFF);
 
       glfwPollEvents();
       glfwSwapBuffers(window);
@@ -306,12 +297,17 @@ int main()
   glDeleteTextures(1, &waterTexture);
   glDeleteTextures(1, &sandTexture);
   glDeleteTextures(1, &underwaterSandTexture);
+  glDeleteTextures(1, &waterTextureSpec);
+  glDeleteTextures(1, &baseTextureSpec);
+  glDeleteTextures(1, &hillTextureSpec);
+  glDeleteTextures(1, &sandTextureSpec);
+  glDeleteTextures(1, &baseTextureNormal);
   baseMapGenerator.deleteGLObjects();
   hillMapGenerator.deleteGLObjects();
   waterMapGenerator.deleteGLObjects();
   underwaterQuadGenerator.deleteGLObjects();
   hills.cleanUp();
-  scene.cleanUp();
+  underwater.cleanUp();
   water.cleanUp();
   sand.cleanUp();
   base.cleanUp();

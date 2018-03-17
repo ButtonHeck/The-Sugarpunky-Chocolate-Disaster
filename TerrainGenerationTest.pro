@@ -56,8 +56,6 @@ HEADERS += \
 
 DISTFILES += \
     scene.vs \
-    shaders/scene.fs \
-    shaders/scene.vs \
     textures/grass_test.jpg \
     textures/sand.jpg \
     textures/water.jpg \
@@ -94,4 +92,6 @@ DISTFILES += \
     shaders/sand.fs \
     shaders/base.vs \
     shaders/base.fs \
-    textures/grass_normal.jpg
+    textures/grass_normal.jpg \
+    shaders/underwater.vs \
+    shaders/underwater.fs

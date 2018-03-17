@@ -18,7 +18,7 @@ const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 
 void main()
 {
-    vec3 texNormal = texture(base_normal, vec2(FragPos.x / 384, FragPos.z / 384)).rgb;
+    vec3 texNormal = texture(base_normal, vec2(FragPos.x / 768, FragPos.z / 768)).rgb;
     float PosHeight = FragPos.y;
     float transitionRatio = clamp(0.0 + PosHeight * (1 / 0.66), 0.0, 1.0);
     vec3 normal = normalize(transitionRatio * Normal + (1.0 - transitionRatio) * (NORMAL + texNormal));

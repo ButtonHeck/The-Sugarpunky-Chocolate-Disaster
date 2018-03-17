@@ -14,7 +14,7 @@ uniform vec3 lightDirTo;
 
 void main()
 {
-    vec3 texNormal = texture(base_normal, vec2(FragPos.x / 384, FragPos.z / 384)).rgb;
+    vec3 texNormal = texture(base_normal, vec2(FragPos.x / 768, FragPos.z / 768)).rgb;
     vec3 normal = normalize(vec3(0.0, 1.0, 0.0) + texNormal);
     vec3 viewDir = normalize(viewPosition - FragPos);
     vec3 lightDir = normalize(-lightDirTo);
