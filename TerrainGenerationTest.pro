@@ -100,4 +100,7 @@ DISTFILES += \
     textures/cubemap1fx/front.png \
     textures/cubemap1fx/left.png \
     textures/cubemap1fx/right.png \
-    textures/cubemap1fx/up.png
+    textures/cubemap1fx/up.png \
+    textures/grass2.png \
+    shaders/grass.vs \
+    shaders/grass.fs
