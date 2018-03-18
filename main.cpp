@@ -209,6 +209,7 @@ int main()
       water.setVec3("viewPosition", cam.getPosition());
       std::vector<TerrainTile>& waterTiles = waterMapGenerator.getTiles();
       glBindVertexArray(waterMapGenerator.getVAO());
+      glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTexture());
       glBindBuffer(GL_ARRAY_BUFFER, waterMapGenerator.getVBO());
       GLfloat* waterHeightOffsets = waterMapGenerator.getHeightOffsets();
       double frameTime = glfwGetTime();
@@ -311,6 +312,7 @@ int main()
   water.cleanUp();
   sand.cleanUp();
   base.cleanUp();
+  sky.cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();
 }
