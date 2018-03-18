@@ -94,4 +94,10 @@ DISTFILES += \
     shaders/base.fs \
     textures/grass_normal.jpg \
     shaders/underwater.vs \
-    shaders/underwater.fs
+    shaders/underwater.fs \
+    textures/cubemap1fx/back.png \
+    textures/cubemap1fx/down.png \
+    textures/cubemap1fx/front.png \
+    textures/cubemap1fx/left.png \
+    textures/cubemap1fx/right.png \
+    textures/cubemap1fx/up.png
