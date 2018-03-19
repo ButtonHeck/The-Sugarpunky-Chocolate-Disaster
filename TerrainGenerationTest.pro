@@ -58,14 +58,8 @@ HEADERS += \
 
 DISTFILES += \
     scene.vs \
-    textures/grass_test.jpg \
     textures/sand.jpg \
-    textures/water.jpg \
-    textures/water.png \
-    textures/water2.png \
-    textures/water2.jpg \
     textures/underwater_sand.jpg \
-    textures/sand2.jpg \
     textures/cubemap1/back.png \
     textures/cubemap1/down.png \
     textures/cubemap1/front.png \
@@ -82,11 +76,8 @@ DISTFILES += \
     textures/cubemap1scaled/up.png \
     shaders/water.vs \
     shaders/water.fs \
-    textures/water2spec.png \
     shaders/hills.vs \
     shaders/hills.fs \
-    textures/grass.jpg \
-    textures/grass_specular.jpg \
     textures/hill.jpg \
     textures/hill_specular.jpg \
     textures/hill_test.jpg \
@@ -94,7 +85,6 @@ DISTFILES += \
     shaders/sand.fs \
     shaders/base.vs \
     shaders/base.fs \
-    textures/grass_normal.jpg \
     shaders/underwater.vs \
     shaders/underwater.fs \
     textures/cubemap1fx/back.png \
@@ -103,6 +93,14 @@ DISTFILES += \
     textures/cubemap1fx/left.png \
     textures/cubemap1fx/right.png \
     textures/cubemap1fx/up.png \
-    textures/grass2.png \
     shaders/grass.vs \
-    shaders/grass.fs
+    shaders/grass.fs \
+    textures/base.jpg \
+    textures/grass.png \
+    textures/base_normal.jpg \
+    textures/base_specular.jpg \
+    textures/base_test.jpg \
+    textures/water.jpg \
+    textures/water.png \
+    textures/water_specular.png \
+    textures/sand_specular.jpg

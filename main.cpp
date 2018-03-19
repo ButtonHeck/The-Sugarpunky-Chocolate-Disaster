@@ -54,27 +54,27 @@ int main()
 
   //TEXTURE LOADING
   glActiveTexture(GL_TEXTURE0);
-  GLuint baseTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/grass.jpg", GL_REPEAT);
+  GLuint baseTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/base.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE1);
   GLuint hillTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/hill.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE2);
-  GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water2.png", GL_REPEAT);
+  GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water.png", GL_REPEAT);
   glActiveTexture(GL_TEXTURE3);
   GLuint sandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/sand.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE4);
-  GLuint waterTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/water2spec.png", GL_REPEAT);
+  GLuint waterTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/water_specular.png", GL_REPEAT);
   glActiveTexture(GL_TEXTURE5);
-  GLuint baseTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/grass_specular.jpg", GL_REPEAT);
+  GLuint baseTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/base_specular.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE6);
   GLuint hillTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/hill_specular.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE7);
   GLuint sandTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/sand_specular.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE8);
-  GLuint baseTextureNormal = textureLoader.loadTexture(PROJ_PATH + "/textures/grass_normal.jpg", GL_REPEAT);
+  GLuint baseTextureNormal = textureLoader.loadTexture(PROJ_PATH + "/textures/base_normal.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE9);
   GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE10);
-  GLuint grassTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/grass2.png", GL_CLAMP_TO_EDGE);
+  GLuint grassTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/grass.png", GL_CLAMP_TO_EDGE);
 
   //SHADERS SETUP
   hills.use();

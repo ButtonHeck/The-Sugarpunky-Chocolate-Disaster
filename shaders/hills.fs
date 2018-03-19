@@ -32,7 +32,7 @@ void main()
     vec3 reflect = reflect(-lightDir, normal);
     float spec = pow(max(dot(reflect, viewDir), 0.0), 64.0);
 
-    vec3 diffuse = diff * sampledDiffuse.rgb * 0.33 + 0.67 * sampledDiffuse.rgb;
+    vec3 diffuse = diff * sampledDiffuse.rgb * 0.5 + 0.5 * sampledDiffuse.rgb;
     vec3 specular = spec * sampledSpecular.rgb;
     vec3 result = diffuse + specular;
 

@@ -18,6 +18,6 @@ void main()
     vec3 lightDir = normalize(-lightDirTo);
     vec4 sampledDiffuse = texture(underwater_diffuse, TexCoords);
     float diff = max(dot(normal, lightDir), 0.0);
-    vec3 diffuse = diff * sampledDiffuse.rgb;
+    vec3 diffuse = diff * sampledDiffuse.rgb * 1.1;
     FragColor = vec4(diffuse, sampledDiffuse.a);
 }
