@@ -16,6 +16,7 @@
 #include "UnderwaterQuadMapGenerator.h"
 #include "BaseMapGenerator.h"
 #include "Skybox.h"
+#include "GrassGenerator.h"
 
 GLFWwindow* initGLFW();
 
@@ -28,6 +29,7 @@ WaterMapGenerator waterMapGenerator;
 HillsMapGenerator hillMapGenerator(waterMapGenerator.getMap());
 UnderwaterQuadMapGenerator underwaterQuadGenerator;
 BaseMapGenerator baseMapGenerator(waterMapGenerator.getMap(), hillMapGenerator.getMap());
+GrassGenerator grassGenerator(baseMapGenerator, hillMapGenerator);
 Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
 
 int main()
@@ -116,6 +118,8 @@ int main()
   baseMapGenerator.fillCellBufferData(); //generating data for 1x1 tile instance rendering
   waterMapGenerator.fillBufferData(); //fill water buffer
   underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
+  grassGenerator.prepareMap();
+  grassGenerator.fillBufferData();
   skybox.fillBufferData();
 
   //print info
@@ -151,98 +155,6 @@ int main()
                 + baseMapGenerator.getChunkTiles(4).size()
                 + baseMapGenerator.getNumCellInstances())
             << std::endl;
-
-  //EXPERIMENTAL
-  std::default_random_engine randomizer;
-  GLfloat grassVertices[20] = {
-    0.0f, 0.0f,  0.0f, 0.0f,  0.0f,
-    1.0f, 0.0f,  0.0f, 1.0f,  0.0f,
-    1.0f, 1.0f,  0.0f, 1.0f,  1.0f,
-    0.0f, 1.0f,  0.0f, 0.0f,  1.0f
-  };
-  auto& baseMap = baseMapGenerator.getMap();
-  auto& hillMap = hillMapGenerator.getMap();
-  unsigned int numGrassTiles = 0;
-  const unsigned int GRASS_PER_TILE = 2;
-  for (unsigned int y = 0; y < TILES_HEIGHT; y++)
-    {
-      for (unsigned int x = 0; x < TILES_WIDTH; x++)
-        {
-          if ((baseMap[y][x] == 0 && baseMap[y+1][x+1] == 0 && baseMap[y+1][x] == 0 && baseMap[y][x+1] == 0)
-              && !(hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0))
-            numGrassTiles += GRASS_PER_TILE;
-        }
-    }
-  const unsigned int NUM_GRASS_VAOS = 64;
-  const unsigned int NUM_INSTANCES_PER_VAO = numGrassTiles / (NUM_GRASS_VAOS - 1);
-  std::vector<glm::mat4*> grassInstances;
-  for (unsigned int i = 0; i < NUM_GRASS_VAOS; i++)
-    grassInstances.push_back(new glm::mat4[NUM_INSTANCES_PER_VAO]);
-  std::cout << "\nnum grass tiles: " << numGrassTiles << std::endl;
-  std::cout << "num tiles per grass VAO: " << NUM_INSTANCES_PER_VAO << std::endl;
-  unsigned int counter = 0;
-  std::uniform_real_distribution<float> grassDistribution(0, 1.0f / GRASS_PER_TILE);
-  std::uniform_real_distribution<float> grassScaleDistribution(0.1f, 0.13f);
-  for (unsigned int y = 0; y < TILES_HEIGHT; y++)
-    {
-      for (unsigned int x = 0; x < TILES_WIDTH; x++)
-        {
-          if ((baseMap[y][x] == 0 && baseMap[y+1][x+1] == 0 && baseMap[y+1][x] == 0 && baseMap[y][x+1] == 0)
-              && !(hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0))
-            {
-              for (unsigned int n = 0; n < GRASS_PER_TILE; n++)
-                {
-                  glm::mat4 model;
-                  model = glm::translate(model,
-                                         glm::vec3(-TILES_WIDTH / 2.0f + x + grassDistribution(randomizer) * (n+1),
-                                                   0.0f,
-                                                   -TILES_HEIGHT / 2.0f + y + grassDistribution(randomizer) * (n+1)));
-                  model = glm::scale(model, glm::vec3(grassScaleDistribution(randomizer) * 2));
-                  model = glm::rotate(model, glm::radians((float)counter * (n+1)), glm::vec3(0.0f, 1.0f, 0.0f));
-                  grassInstances.at(counter / NUM_INSTANCES_PER_VAO)[counter % NUM_INSTANCES_PER_VAO] = model;
-                  counter++;
-                }
-            }
-        }
-    }
-  GLuint grassModelVBOs[NUM_GRASS_VAOS], grassVAOs[NUM_GRASS_VAOS];
-  glGenVertexArrays(NUM_GRASS_VAOS, grassVAOs);
-  glGenBuffers(NUM_GRASS_VAOS, grassModelVBOs);
-  GLuint grassVBO, grassEBO, grassVAO;
-  glGenVertexArrays(1, &grassVAO);
-  glGenBuffers(1, &grassVBO);
-  glGenBuffers(1, &grassEBO);
-  glBindVertexArray(grassVAO);
-  for (unsigned int i = 0; i < NUM_GRASS_VAOS; i++)
-    {
-      glBindVertexArray(grassVAOs[i]);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, grassEBO);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
-      glBindBuffer(GL_ARRAY_BUFFER, grassVBO);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(grassVertices), grassVertices, GL_STATIC_DRAW);
-      glEnableVertexAttribArray(0);
-      glEnableVertexAttribArray(1);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
-      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-      glBindBuffer(GL_ARRAY_BUFFER, grassModelVBOs[i]);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * NUM_INSTANCES_PER_VAO, &grassInstances[i][0], GL_STATIC_DRAW);
-      glEnableVertexAttribArray(2);
-      glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), 0);
-      glEnableVertexAttribArray(3);
-      glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(sizeof(glm::vec4)));
-      glEnableVertexAttribArray(4);
-      glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4)));
-      glEnableVertexAttribArray(5);
-      glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4)));
-      glVertexAttribDivisor(2, 1);
-      glVertexAttribDivisor(3, 1);
-      glVertexAttribDivisor(4, 1);
-      glVertexAttribDivisor(5, 1);
-      delete[] grassInstances.at(i);
-    }
-  glBindVertexArray(0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   //globals
   glm::mat4 model;
@@ -391,10 +303,10 @@ int main()
       grass.setMat4("view", view);
       glDisable(GL_CULL_FACE);
       glEnable(GL_BLEND);
-      for (unsigned int i = 0; i < NUM_GRASS_VAOS - 1; i++)
+      for (unsigned int i = 0; i < grassGenerator.getNumVAOS() - 1; i++)
         {
-          glBindVertexArray(grassVAOs[i]);
-          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, NUM_INSTANCES_PER_VAO);
+          glBindVertexArray(grassGenerator.getVAO(i));
+          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, grassGenerator.getNumInstancesPerVao());
         }
       glEnable(GL_CULL_FACE);
       glDisable(GL_BLEND);
@@ -419,6 +331,7 @@ int main()
   hillMapGenerator.deleteGLObjects();
   waterMapGenerator.deleteGLObjects();
   underwaterQuadGenerator.deleteGLObjects();
+  grassGenerator.deleteGLObjects();
   hills.cleanUp();
   underwater.cleanUp();
   water.cleanUp();

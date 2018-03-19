@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     HillsMapGenerator.cpp \
     UnderwaterQuadMapGenerator.cpp \
     BaseMapGenerator.cpp \
-    Skybox.cpp
+    Skybox.cpp \
+    GrassGenerator.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -52,7 +53,8 @@ HEADERS += \
     HillsMapGenerator.h \
     UnderwaterQuadMapGenerator.h \
     BaseMapGenerator.h \
-    Skybox.h
+    Skybox.h \
+    GrassGenerator.h
 
 DISTFILES += \
     scene.vs \
