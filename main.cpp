@@ -75,20 +75,30 @@ int main()
   GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE10);
   GLuint grassTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/grass.png", GL_CLAMP_TO_EDGE);
+  glActiveTexture(GL_TEXTURE11);
+  GLuint baseTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base2.jpg", GL_REPEAT);
+  glActiveTexture(GL_TEXTURE12);
+  GLuint hillTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/hill2.jpg", GL_REPEAT);
+  glActiveTexture(GL_TEXTURE13);
+  GLuint sandTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/sand2.jpg", GL_REPEAT);
 
   //SHADERS SETUP
   hills.use();
   hills.setVec3("lightDirTo", LIGHT_DIR_TO);
   hills.setInt("base_diffuse", 0);
+  hills.setInt("base_diffuse2", 11);
   hills.setInt("hills_diffuse", 1);
+  hills.setInt("hills_diffuse2", 12);
   hills.setInt("base_specular", 5);
   hills.setInt("hills_specular", 6);
   hills.setInt("base_normal", 8);
   sand.use();
   sand.setFloat("waterLevel", WATER_LEVEL);
   sand.setInt("base_diffuse", 0);
+  sand.setInt("base_diffuse2", 11);
   sand.setInt("base_specular", 5);
   sand.setInt("sand_diffuse", 3);
+  sand.setInt("sand_diffuse2", 13);
   sand.setInt("sand_specular", 7);
   sand.setInt("base_normal", 8);
   sand.setVec3("lightDirTo", LIGHT_DIR_TO);
@@ -98,6 +108,7 @@ int main()
   underwater.setVec3("lightDirTo", LIGHT_DIR_TO);
   base.use();
   base.setInt("base_diffuse", 0);
+  base.setInt("base_diffuse2", 11);
   base.setInt("base_specular", 5);
   base.setInt("base_normal", 8);
   base.setVec3("lightDirTo", LIGHT_DIR_TO);
@@ -327,6 +338,9 @@ int main()
   glDeleteTextures(1, &sandTextureSpec);
   glDeleteTextures(1, &baseTextureNormal);
   glDeleteTextures(1, &grassTexture);
+  glDeleteTextures(1, &baseTexture2);
+  glDeleteTextures(1, &hillTexture2);
+  glDeleteTextures(1, &sandTexture2);
   baseMapGenerator.deleteGLObjects();
   hillMapGenerator.deleteGLObjects();
   waterMapGenerator.deleteGLObjects();

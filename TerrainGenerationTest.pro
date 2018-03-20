@@ -103,4 +103,7 @@ DISTFILES += \
     textures/water.jpg \
     textures/water.png \
     textures/water_specular.png \
-    textures/sand_specular.jpg
+    textures/sand_specular.jpg \
+    textures/base2.jpg \
+    textures/hill2.jpg \
+    textures/sand2.jpg
