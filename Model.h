@@ -13,6 +13,7 @@ public:
   void loadModel(const std::string& path);
   void draw(Shader shaderProgram);
   void processNode(aiNode* node, const aiScene* scene);
+  void loadInstances(glm::mat4* models, unsigned int numModels);
   Mesh processMesh(aiMesh* mesh, const aiScene* scene);
   std::vector<Texture> loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName);
 private:

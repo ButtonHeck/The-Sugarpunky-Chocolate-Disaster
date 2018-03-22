@@ -39,6 +39,12 @@ void Model::processNode(aiNode *node, const aiScene* scene)
     }
 }
 
+void Model::loadInstances(glm::mat4 *models, unsigned int numModels)
+{
+  for (Mesh& mesh : meshes)
+    mesh.setupInstances(models, numModels);
+}
+
 Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene)
 {
   std::vector<Vertex> vertices;

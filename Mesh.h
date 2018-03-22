@@ -26,13 +26,15 @@ public:
   Mesh(std::vector<Vertex> vertices, std::vector<Texture> textures, std::vector<unsigned int> indices);
   Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
   void setupMesh();
+  void setupInstances(glm::mat4* models, unsigned int numModels);
   void draw(Shader shader);
   unsigned int VAO;
 private:
   std::vector<Vertex> vertices;
   std::vector<Texture> textures;
   std::vector<unsigned int> indices;
-  unsigned int VBO, EBO;
+  unsigned int VBO, EBO, instanceVBO;
+  unsigned int numInstances;
 };
 
 #endif // MESH_H

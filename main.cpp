@@ -55,7 +55,9 @@ int main()
   Shader modelShader(PROJ_PATH + "/shaders/model.vs", PROJ_PATH + "/shaders/model.fs");
 
   //MODELS
+  Model tree1(PROJ_PATH + "/models/tree1/tree1.obj", textureLoader);
   Model tree2(PROJ_PATH + "/models/tree2/tree2.obj", textureLoader);
+  Model tree3(PROJ_PATH + "/models/tree3/tree3.obj", textureLoader);
 
   //TEXTURE LOADING
   glActiveTexture(GL_TEXTURE0);
@@ -139,6 +141,45 @@ int main()
   grassGenerator.prepareMap();
   grassGenerator.fillBufferData();
   skybox.fillBufferData();
+
+  //trees models setup
+  std::vector<std::vector<glm::mat4>> treeModelsVecs;
+  for (unsigned int i = 0; i < 3; i++)
+    treeModelsVecs.push_back(std::vector<glm::mat4>());
+  std::uniform_real_distribution<float> modelSizeDistribution(0.25f, 0.5f);
+  std::default_random_engine randomizer;
+  unsigned int treeCounter = 0;
+  for (unsigned int y = 0; y < TILES_HEIGHT; y++)
+    {
+      for (unsigned int x = 0; x < TILES_WIDTH; x++)
+        {
+          auto& baseMap = baseMapGenerator.getMap();
+          auto& hillMap = hillMapGenerator.getMap();
+          if ((baseMap[y][x] == 0 && baseMap[y+1][x+1] == 0 && baseMap[y+1][x] == 0 && baseMap[y][x+1] == 0)
+              && !(hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0)
+              && rand() % 53 == 0)
+            {
+              glm::mat4 model;
+              model = glm::translate(model, glm::vec3(-TILES_WIDTH / 2.0f + x, 0.0f, -TILES_HEIGHT / 2.0f + y));
+              model = glm::rotate(model, glm::radians((float)(y * TILES_WIDTH + x * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
+              model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer)));
+              ++treeCounter;
+              treeModelsVecs[treeCounter % treeModelsVecs.size()].push_back(model);
+            }
+        }
+    }
+  std::vector<glm::mat4*> treeModels;
+  for (unsigned int i = 0; i < treeModelsVecs.size(); i++)
+    {
+      treeModels.push_back(new glm::mat4[treeModelsVecs[i].size()]);
+      for (unsigned int m = 0; m < treeModelsVecs[i].size(); m++)
+        {
+          treeModels[i][m] = treeModelsVecs[i][m];
+        }
+    }
+  tree1.loadInstances(treeModels[0], treeModelsVecs[0].size());
+  tree2.loadInstances(treeModels[1], treeModelsVecs[1].size());
+  tree3.loadInstances(treeModels[2], treeModelsVecs[2].size());
 
   //print info
   std::cout << "Water tiles:\t" << waterMapGenerator.getTiles().size() << std::endl;
@@ -338,9 +379,10 @@ int main()
       modelShader.use();
       modelShader.setMat4("projection", projection);
       modelShader.setMat4("view", view);
-      modelShader.setMat4("model", model);
       modelShader.setVec3("viewPosition", viewPosition);
+      tree1.draw(modelShader);
       tree2.draw(modelShader);
+      tree3.draw(modelShader);
 
       glfwPollEvents();
       glfwSwapBuffers(window);

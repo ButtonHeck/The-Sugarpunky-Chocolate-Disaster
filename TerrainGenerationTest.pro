@@ -113,10 +113,18 @@ DISTFILES += \
     textures/sand2.jpg \
     shaders/model.vs \
     shaders/model.fs \
+    models/tree1/tree1.obj \
+    models/tree1/leaves.jpg \
+    models/tree1/tree.jpg \
+    models/tree1/tree1.mtl \
     models/tree2/tree2.obj \
     models/tree2/leaves.jpg \
     models/tree2/tree.jpg \
-    models/tree2/tree2.mtl
+    models/tree2/tree2.mtl \
+    models/tree3/tree3.obj \
+    models/tree3/leaves.jpg \
+    models/tree3/tree.jpg \
+    models/tree3/tree3.mtl
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
