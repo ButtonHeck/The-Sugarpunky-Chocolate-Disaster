@@ -124,7 +124,15 @@ DISTFILES += \
     models/tree3/tree3.obj \
     models/tree3/leaves.jpg \
     models/tree3/tree.jpg \
-    models/tree3/tree3.mtl
+    models/tree3/tree3.mtl \
+    models/hillTree1/hillTree1.obj \
+    models/hillTree1/leaves.jpg \
+    models/hillTree1/tree.jpg \
+    models/hillTree1/hillTree1.mtl \
+    models/hillTree2/hillTree2.obj \
+    models/hillTree2/leaves.jpg \
+    models/hillTree2/tree.jpg \
+    models/hillTree2/hillTree2.mtl
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

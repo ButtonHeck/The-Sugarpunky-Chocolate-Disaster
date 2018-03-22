@@ -11,7 +11,7 @@ void HillsMapGenerator::prepareMap()
   float max_height = 0.0f;
   generateMap(10, &max_height, HILL_DENSITY::DENSE);
   generateMap(4, &max_height, HILL_DENSITY::THIN);
-  compressMap(0.66f, &max_height, 3.0f); //compress top-most peaks
+  compressMap(0.66f, &max_height, 2.0f); //compress top-most peaks
   removeMapPlateaus(1.0f);
   smoothMapHeightChunks(0.7f, 0.05f, 0.025f);
   smoothMapHeightChunks(0.6f, 0.05f, 0.05f);
@@ -242,7 +242,7 @@ void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY 
     {
       for (int x = 1; x < TILES_WIDTH - 1; x++)
         {
-          if (rand() % (int)density_value == 0 && !hasWaterNearby(x, y, 3))
+          if (rand() % (int)density_value == 0 && !hasWaterNearby(x, y, cycles - 1))
             {
               map[y][x] += 1.0f;
             }
@@ -277,7 +277,7 @@ void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY 
                     {
                       for (int x2 = left; x2 <= right; x2++)
                         {
-                          if (rand() % (cycle + 2) > 1 && !hasWaterNearby(x2, y2, 3))
+                          if (rand() % (cycle + 2) > 1 && !hasWaterNearby(x2, y2, cycles - 1))
                             {
                               map[y2][x2] += 1.0f - 0.075f * cycle + (heightDistribution(randomizer) / cycle);
                               if (map[y2][x2] > *max_height)
