@@ -17,6 +17,7 @@
 #include "BaseMapGenerator.h"
 #include "Skybox.h"
 #include "GrassGenerator.h"
+#include "Model.h"
 
 GLFWwindow* initGLFW();
 
@@ -51,6 +52,10 @@ int main()
   Shader water(PROJ_PATH + "/shaders/water.vs", PROJ_PATH + "/shaders/water.fs");
   Shader sky(PROJ_PATH + "/shaders/skybox.vs", PROJ_PATH + "/shaders/skybox.fs");
   Shader grass(PROJ_PATH + "/shaders/grass.vs", PROJ_PATH + "/shaders/grass.fs");
+  Shader modelShader(PROJ_PATH + "/shaders/model.vs", PROJ_PATH + "/shaders/model.fs");
+
+  //MODELS
+  Model tree2(PROJ_PATH + "/models/tree2/tree2.obj", textureLoader);
 
   //TEXTURE LOADING
   glActiveTexture(GL_TEXTURE0);
@@ -118,6 +123,8 @@ int main()
   water.setVec3("lightDirTo", LIGHT_DIR_TO);
   grass.use();
   grass.setInt("grassTexture", 10);
+  modelShader.use();
+  modelShader.setVec3("lightDirTo", LIGHT_DIR_TO);
 
   //setup tiles
   waterMapGenerator.prepareMap(); //prepare water map
@@ -180,13 +187,18 @@ int main()
       float delta = timer.tick();
       input.processKeyboard(delta);
       glm::mat4 view = cam.getViewMatrix();
+      glm::vec3 viewPosition = cam.getPosition();
+
+      //reset GL_TEXTURE0
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, baseTexture);
 
       //hill tiles
       hills.use();
       hills.setMat4("projection", projection);
       hills.setMat4("view", view);
       hills.setMat4("model", model);
-      hills.setVec3("viewPosition", cam.getPosition());
+      hills.setVec3("viewPosition", viewPosition);
       glBindVertexArray(hillMapGenerator.getVAO());
       glDrawElements(GL_TRIANGLES, 6 * hillMapGenerator.getTiles().size(), GL_UNSIGNED_INT, 0);
 
@@ -195,7 +207,7 @@ int main()
       sand.setMat4("projection", projection);
       sand.setMat4("view", view);
       sand.setMat4("model", model);
-      sand.setVec3("viewPosition", cam.getPosition());
+      sand.setVec3("viewPosition", viewPosition);
       glBindVertexArray(baseMapGenerator.getVAO());
       glDrawArrays(GL_TRIANGLES, 0, 6 * baseMapGenerator.getTiles().size());
 
@@ -211,7 +223,7 @@ int main()
       base.use();
       base.setMat4("projection", projection);
       base.setMat4("view", view);
-      base.setVec3("viewPosition", cam.getPosition());
+      base.setVec3("viewPosition", viewPosition);
       for (unsigned int vao = 0; vao < 5; vao++)
         {
           glBindVertexArray(baseMapGenerator.getChunkVAO(vao));
@@ -226,7 +238,7 @@ int main()
       water.setMat4("model", model);
       water.setMat4("projection", projection);
       water.setMat4("view", view);
-      water.setVec3("viewPosition", cam.getPosition());
+      water.setVec3("viewPosition", viewPosition);
       std::vector<TerrainTile>& waterTiles = waterMapGenerator.getTiles();
       glBindVertexArray(waterMapGenerator.getVAO());
       glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTexture());
@@ -322,6 +334,14 @@ int main()
       glEnable(GL_CULL_FACE);
       glDisable(GL_BLEND);
 
+      //trees rendering
+      modelShader.use();
+      modelShader.setMat4("projection", projection);
+      modelShader.setMat4("view", view);
+      modelShader.setMat4("model", model);
+      modelShader.setVec3("viewPosition", viewPosition);
+      tree2.draw(modelShader);
+
       glfwPollEvents();
       glfwSwapBuffers(window);
     }
@@ -353,6 +373,7 @@ int main()
   base.cleanUp();
   sky.cleanUp();
   grass.cleanUp();
+  modelShader.cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();
 }

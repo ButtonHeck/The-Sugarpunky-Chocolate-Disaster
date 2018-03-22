@@ -15,7 +15,9 @@ SOURCES += main.cpp \
     UnderwaterQuadMapGenerator.cpp \
     BaseMapGenerator.cpp \
     Skybox.cpp \
-    GrassGenerator.cpp
+    GrassGenerator.cpp \
+    Mesh.cpp \
+    Model.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -54,7 +56,9 @@ HEADERS += \
     UnderwaterQuadMapGenerator.h \
     BaseMapGenerator.h \
     Skybox.h \
-    GrassGenerator.h
+    GrassGenerator.h \
+    Mesh.h \
+    Model.h
 
 DISTFILES += \
     scene.vs \
@@ -106,4 +110,15 @@ DISTFILES += \
     textures/sand_specular.jpg \
     textures/base2.jpg \
     textures/hill2.jpg \
-    textures/sand2.jpg
+    textures/sand2.jpg \
+    shaders/model.vs \
+    shaders/model.fs \
+    models/tree2/tree2.obj \
+    models/tree2/leaves.jpg \
+    models/tree2/tree.jpg \
+    models/tree2/tree2.mtl
+
+unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
+
+INCLUDEPATH += $$PWD/../../../../../usr/local/include
+DEPENDPATH += $$PWD/../../../../../usr/local/include
