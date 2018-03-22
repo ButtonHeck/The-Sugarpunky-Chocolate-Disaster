@@ -362,18 +362,18 @@ int main()
       glEnable(GL_CULL_FACE);
 
       //grass rendering
-      grass.use();
-      grass.setMat4("projection", projection);
-      grass.setMat4("view", view);
-      glDisable(GL_CULL_FACE);
-      glEnable(GL_BLEND);
-      for (unsigned int i = 0; i < grassGenerator.getNumVAOS() - 1; i++)
-        {
-          glBindVertexArray(grassGenerator.getVAO(i));
-          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, grassGenerator.getNumInstancesPerVao());
-        }
-      glEnable(GL_CULL_FACE);
-      glDisable(GL_BLEND);
+//      grass.use();
+//      grass.setMat4("projection", projection);
+//      grass.setMat4("view", view);
+//      glDisable(GL_CULL_FACE);
+//      glEnable(GL_BLEND);
+//      for (unsigned int i = 0; i < grassGenerator.getNumVAOS() - 1; i++)
+//        {
+//          glBindVertexArray(grassGenerator.getVAO(i));
+//          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, grassGenerator.getNumInstancesPerVao());
+//        }
+//      glEnable(GL_CULL_FACE);
+//      glDisable(GL_BLEND);
 
       //trees rendering
       modelShader.use();

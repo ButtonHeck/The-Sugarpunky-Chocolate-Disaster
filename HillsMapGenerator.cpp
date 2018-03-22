@@ -9,12 +9,12 @@ HillsMapGenerator::HillsMapGenerator(std::vector<std::vector<float> > &waterMap)
 void HillsMapGenerator::prepareMap()
 {
   float max_height = 0.0f;
-  generateMap(8, &max_height, HILL_DENSITY::DENSE);
+  generateMap(10, &max_height, HILL_DENSITY::DENSE);
   generateMap(4, &max_height, HILL_DENSITY::THIN);
-  compressMap(0.15f, &max_height, 1.5f); //slightly compress entire height range
-  compressMap(0.66f, &max_height, 5.0f); //more heavy compress for top-most peaks
+  compressMap(0.66f, &max_height, 3.0f); //compress top-most peaks
   removeMapPlateaus(1.0f);
   smoothMapHeightChunks(0.7f, 0.05f, 0.025f);
+  smoothMapHeightChunks(0.6f, 0.05f, 0.05f);
   removeOrphanHills();
   smoothMapSinks();
   createTiles(false, false);
