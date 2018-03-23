@@ -148,8 +148,8 @@ int main()
   std::vector<std::vector<glm::mat4>> treeModelsVecs;
   for (unsigned int i = 0; i < 3; i++)
     treeModelsVecs.push_back(std::vector<glm::mat4>());
-  std::uniform_real_distribution<float> modelSizeDistribution(0.16f, 0.32f);
-  std::uniform_real_distribution<float> modelPositionDistribution(-0.1f, 0.1f);
+  std::uniform_real_distribution<float> modelSizeDistribution(0.2f, 0.3f);
+  std::uniform_real_distribution<float> modelPositionDistribution(-0.2f, 0.2f);
   std::default_random_engine randomizer;
   unsigned int treeCounter = 0;
   for (unsigned int y = 0; y < TILES_HEIGHT; y++)
@@ -200,7 +200,7 @@ int main()
           auto maxHeight = std::max(hillMap[y][x], std::max(hillMap[y][x+1], std::max(hillMap[y+1][x], hillMap[y+1][x+1])));
           auto minHeight = std::min(hillMap[y][x], std::min(hillMap[y][x+1], std::min(hillMap[y+1][x], hillMap[y+1][x+1])));
           auto slope = maxHeight - minHeight;
-          if (slope < 1.0f
+          if (slope < 0.8f
               && (hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0)
               && rand() % 2 == 0)
             {
@@ -209,11 +209,12 @@ int main()
                   || (hillMap[y+1][x] > 0 && hillMap[y][x] == 0 && hillMap[y+1][x+1] == 0 && hillMap[y][x+1] == 0))
                 indicesCrossed = true;
               glm::mat4 model;
-              model = glm::translate(model, glm::vec3(
-                                       -TILES_WIDTH / 2.0f + x + modelPositionDistribution(randomizer) + 0.5f,
-                                       hillMap[y][x] + (!indicesCrossed ?
-                                         (hillMap[y+1][x+1] - hillMap[y][x]) / 2 : std::abs(hillMap[y][x+1] - hillMap[y+1][x]) / 2),
-                                       -TILES_HEIGHT / 2.0f + y + modelPositionDistribution(randomizer) + 0.5f));
+              glm::vec3 translation(
+                    -TILES_WIDTH / 2.0f + x + 0.5f + modelPositionDistribution(randomizer),
+                    hillMap[y][x] + (!indicesCrossed ?
+                      (hillMap[y+1][x+1] - hillMap[y][x]) / 2 : std::abs(hillMap[y][x+1] - hillMap[y+1][x]) / 2),
+                    -TILES_HEIGHT / 2.0f + y + 0.5f + modelPositionDistribution(randomizer));
+              model = glm::translate(model, translation);
               model = glm::rotate(model, glm::radians((float)(y * TILES_WIDTH + x * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
               model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer)));
               ++hillTreeCounter;
