@@ -18,6 +18,7 @@
 #include "Skybox.h"
 #include "GrassGenerator.h"
 #include "Model.h"
+#include "TreeGenerator.h"
 
 GLFWwindow* initGLFW();
 
@@ -60,6 +61,7 @@ int main()
   Model tree3(PROJ_PATH + "/models/tree3/tree3.obj", textureLoader);
   Model hillTree1(PROJ_PATH + "/models/hillTree1/hillTree1.obj", textureLoader);
   Model hillTree2(PROJ_PATH + "/models/hillTree2/hillTree2.obj", textureLoader);
+  TreeGenerator treeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2});
 
   //TEXTURE LOADING
   glActiveTexture(GL_TEXTURE0);
@@ -142,97 +144,11 @@ int main()
   underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
   grassGenerator.prepareMap();
   grassGenerator.fillBufferData();
-  skybox.fillBufferData();
+  skybox.fillBufferData(); //setup skybox  
 
-  //trees models setup
-  std::vector<std::vector<glm::mat4>> treeModelsVecs;
-  for (unsigned int i = 0; i < 3; i++)
-    treeModelsVecs.push_back(std::vector<glm::mat4>());
-  std::uniform_real_distribution<float> modelSizeDistribution(0.2f, 0.3f);
-  std::uniform_real_distribution<float> modelPositionDistribution(-0.2f, 0.2f);
-  std::default_random_engine randomizer;
-  unsigned int treeCounter = 0;
-  for (unsigned int y = 0; y < TILES_HEIGHT; y++)
-    {
-      for (unsigned int x = 0; x < TILES_WIDTH; x++)
-        {
-          auto& baseMap = baseMapGenerator.getMap();
-          auto& hillMap = hillMapGenerator.getMap();
-          if ((baseMap[y][x] == 0 && baseMap[y+1][x+1] == 0 && baseMap[y+1][x] == 0 && baseMap[y][x+1] == 0)
-              && !(hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0)
-              && rand() % 37 == 0)
-            {
-              glm::mat4 model;
-              model = glm::translate(model,
-                                     glm::vec3(-TILES_WIDTH / 2.0f + x + modelPositionDistribution(randomizer) + 0.5f,
-                                               0.0f,
-                                               -TILES_HEIGHT / 2.0f + y + modelPositionDistribution(randomizer) + 0.5f));
-              model = glm::rotate(model, glm::radians((float)(y * TILES_WIDTH + x * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
-              model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer)));
-              ++treeCounter;
-              treeModelsVecs[treeCounter % treeModelsVecs.size()].push_back(model);
-            }
-        }
-    }
-  std::vector<glm::mat4*> treeModels;
-  for (unsigned int i = 0; i < treeModelsVecs.size(); i++)
-    {
-      treeModels.push_back(new glm::mat4[treeModelsVecs[i].size()]);
-      for (unsigned int m = 0; m < treeModelsVecs[i].size(); m++)
-        {
-          treeModels[i][m] = treeModelsVecs[i][m];
-        }
-    }
-  tree1.loadInstances(treeModels[0], treeModelsVecs[0].size());
-  tree2.loadInstances(treeModels[1], treeModelsVecs[1].size());
-  tree3.loadInstances(treeModels[2], treeModelsVecs[2].size());
-
-  //hill trees models setup
-  std::vector<std::vector<glm::mat4>> hillTreeModelsVecs;
-  for (unsigned int i = 0; i < 2; i++)
-    hillTreeModelsVecs.push_back(std::vector<glm::mat4>());
-  unsigned int hillTreeCounter = 0;
-  for (unsigned int y = 0; y < TILES_HEIGHT; y++)
-    {
-      for (unsigned int x = 0; x < TILES_WIDTH; x++)
-        {
-          auto& hillMap = hillMapGenerator.getMap();
-          auto maxHeight = std::max(hillMap[y][x], std::max(hillMap[y][x+1], std::max(hillMap[y+1][x], hillMap[y+1][x+1])));
-          auto minHeight = std::min(hillMap[y][x], std::min(hillMap[y][x+1], std::min(hillMap[y+1][x], hillMap[y+1][x+1])));
-          auto slope = maxHeight - minHeight;
-          if (slope < 0.8f
-              && (hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0)
-              && rand() % 2 == 0)
-            {
-              bool indicesCrossed = false;
-              if ((hillMap[y][x+1] > 0 && hillMap[y][x] == 0 && hillMap[y+1][x] == 0 && hillMap[y+1][x+1] == 0)
-                  || (hillMap[y+1][x] > 0 && hillMap[y][x] == 0 && hillMap[y+1][x+1] == 0 && hillMap[y][x+1] == 0))
-                indicesCrossed = true;
-              glm::mat4 model;
-              glm::vec3 translation(
-                    -TILES_WIDTH / 2.0f + x + 0.5f + modelPositionDistribution(randomizer),
-                    hillMap[y][x] + (!indicesCrossed ?
-                      (hillMap[y+1][x+1] - hillMap[y][x]) / 2 : std::abs(hillMap[y][x+1] - hillMap[y+1][x]) / 2),
-                    -TILES_HEIGHT / 2.0f + y + 0.5f + modelPositionDistribution(randomizer));
-              model = glm::translate(model, translation);
-              model = glm::rotate(model, glm::radians((float)(y * TILES_WIDTH + x * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
-              model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer)));
-              ++hillTreeCounter;
-              hillTreeModelsVecs[hillTreeCounter % hillTreeModelsVecs.size()].push_back(model);
-            }
-        }
-    }
-  std::vector<glm::mat4*> hillTreeModels;
-  for (unsigned int i = 0; i < hillTreeModelsVecs.size(); i++)
-    {
-      hillTreeModels.push_back(new glm::mat4[hillTreeModelsVecs[i].size()]);
-      for (unsigned int m = 0; m < hillTreeModelsVecs[i].size(); m++)
-        {
-          hillTreeModels[i][m] = hillTreeModelsVecs[i][m];
-        }
-    }
-  hillTree1.loadInstances(hillTreeModels[0], hillTreeModelsVecs[0].size());
-  hillTree2.loadInstances(hillTreeModels[1], hillTreeModelsVecs[1].size());
+  //setup models
+  treeGenerator.setupPlainModels(baseMapGenerator.getMap(), hillMapGenerator.getMap()); //trees models setup
+  treeGenerator.setupHillModels(hillMapGenerator.getMap()); //hill trees models setup
 
   //print info
   std::cout << "Water tiles:\t" << waterMapGenerator.getTiles().size() << std::endl;
@@ -271,7 +187,7 @@ int main()
   //globals
   glm::mat4 model;
   glm::mat4 projection;
-  projection = glm::perspective(glm::radians(cam.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 1.0f, 500.0f);
+  projection = glm::perspective(glm::radians(cam.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 500.0f);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
   //MAIN LOOP
@@ -433,11 +349,7 @@ int main()
       modelShader.setMat4("projection", projection);
       modelShader.setMat4("view", view);
       modelShader.setVec3("viewPosition", viewPosition);
-      tree1.draw(modelShader);
-      tree2.draw(modelShader);
-      tree3.draw(modelShader);
-      hillTree1.draw(modelShader);
-      hillTree2.draw(modelShader);
+      treeGenerator.draw(modelShader);
 
       glfwPollEvents();
       glfwSwapBuffers(window);

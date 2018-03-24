@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     Skybox.cpp \
     GrassGenerator.cpp \
     Mesh.cpp \
-    Model.cpp
+    Model.cpp \
+    TreeGenerator.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -58,7 +59,8 @@ HEADERS += \
     Skybox.h \
     GrassGenerator.h \
     Mesh.h \
-    Model.h
+    Model.h \
+    TreeGenerator.h
 
 DISTFILES += \
     scene.vs \
