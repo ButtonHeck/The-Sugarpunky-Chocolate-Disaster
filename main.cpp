@@ -16,7 +16,6 @@
 #include "UnderwaterQuadMapGenerator.h"
 #include "BaseMapGenerator.h"
 #include "Skybox.h"
-#include "GrassGenerator.h"
 #include "Model.h"
 #include "TreeGenerator.h"
 
@@ -31,7 +30,6 @@ WaterMapGenerator waterMapGenerator;
 HillsMapGenerator hillMapGenerator(waterMapGenerator.getMap());
 UnderwaterQuadMapGenerator underwaterQuadGenerator;
 BaseMapGenerator baseMapGenerator(waterMapGenerator.getMap(), hillMapGenerator.getMap());
-GrassGenerator grassGenerator(baseMapGenerator, hillMapGenerator);
 Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
 
 int main()
@@ -52,7 +50,6 @@ int main()
   Shader base(PROJ_PATH + "/shaders/base.vs", PROJ_PATH + "/shaders/base.fs");
   Shader water(PROJ_PATH + "/shaders/water.vs", PROJ_PATH + "/shaders/water.fs");
   Shader sky(PROJ_PATH + "/shaders/skybox.vs", PROJ_PATH + "/shaders/skybox.fs");
-  Shader grass(PROJ_PATH + "/shaders/grass.vs", PROJ_PATH + "/shaders/grass.fs");
   Shader modelShader(PROJ_PATH + "/shaders/model.vs", PROJ_PATH + "/shaders/model.fs");
 
   //MODELS
@@ -84,8 +81,6 @@ int main()
   GLuint baseTextureNormal = textureLoader.loadTexture(PROJ_PATH + "/textures/base_normal.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE9);
   GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT);
-  glActiveTexture(GL_TEXTURE10);
-  GLuint grassTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/grass.png", GL_CLAMP_TO_EDGE);
   glActiveTexture(GL_TEXTURE11);
   GLuint baseTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base2.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE12);
@@ -127,8 +122,6 @@ int main()
   water.setInt("water_diffuse", 2);
   water.setInt("water_specular", 4);
   water.setVec3("lightDirTo", LIGHT_DIR_TO);
-  grass.use();
-  grass.setInt("grassTexture", 10);
   modelShader.use();
   modelShader.setVec3("lightDirTo", LIGHT_DIR_TO);
 
@@ -142,8 +135,6 @@ int main()
   baseMapGenerator.fillCellBufferData(); //generating data for 1x1 tile instance rendering
   waterMapGenerator.fillBufferData(); //fill water buffer
   underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
-  grassGenerator.prepareMap();
-  grassGenerator.fillBufferData();
   skybox.fillBufferData(); //setup skybox  
 
   //setup models
@@ -330,20 +321,6 @@ int main()
       glDepthFunc(GL_LESS);
       glEnable(GL_CULL_FACE);
 
-      //grass rendering
-//      grass.use();
-//      grass.setMat4("projection", projection);
-//      grass.setMat4("view", view);
-//      glDisable(GL_CULL_FACE);
-//      glEnable(GL_BLEND);
-//      for (unsigned int i = 0; i < grassGenerator.getNumVAOS() - 1; i++)
-//        {
-//          glBindVertexArray(grassGenerator.getVAO(i));
-//          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, grassGenerator.getNumInstancesPerVao());
-//        }
-//      glEnable(GL_CULL_FACE);
-//      glDisable(GL_BLEND);
-
       //trees rendering
       modelShader.use();
       modelShader.setMat4("projection", projection);
@@ -366,7 +343,6 @@ int main()
   glDeleteTextures(1, &hillTextureSpec);
   glDeleteTextures(1, &sandTextureSpec);
   glDeleteTextures(1, &baseTextureNormal);
-  glDeleteTextures(1, &grassTexture);
   glDeleteTextures(1, &baseTexture2);
   glDeleteTextures(1, &hillTexture2);
   glDeleteTextures(1, &sandTexture2);
@@ -374,14 +350,12 @@ int main()
   hillMapGenerator.deleteGLObjects();
   waterMapGenerator.deleteGLObjects();
   underwaterQuadGenerator.deleteGLObjects();
-  grassGenerator.deleteGLObjects();
   hills.cleanUp();
   underwater.cleanUp();
   water.cleanUp();
   sand.cleanUp();
   base.cleanUp();
   sky.cleanUp();
-  grass.cleanUp();
   modelShader.cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();

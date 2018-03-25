@@ -15,7 +15,6 @@ SOURCES += main.cpp \
     UnderwaterQuadMapGenerator.cpp \
     BaseMapGenerator.cpp \
     Skybox.cpp \
-    GrassGenerator.cpp \
     Mesh.cpp \
     Model.cpp \
     TreeGenerator.cpp
@@ -57,7 +56,6 @@ HEADERS += \
     UnderwaterQuadMapGenerator.h \
     BaseMapGenerator.h \
     Skybox.h \
-    GrassGenerator.h \
     Mesh.h \
     Model.h \
     TreeGenerator.h
@@ -99,10 +97,7 @@ DISTFILES += \
     textures/cubemap1fx/left.png \
     textures/cubemap1fx/right.png \
     textures/cubemap1fx/up.png \
-    shaders/grass.vs \
-    shaders/grass.fs \
     textures/base.jpg \
-    textures/grass.png \
     textures/base_normal.jpg \
     textures/base_specular.jpg \
     textures/base_test.jpg \
