@@ -26,7 +26,7 @@ void main()
     vec3 lightDir = normalize(-lightDirTo);
     vec4 sampledDiffuse =
         mix(mix(texture(base_diffuse, TexCoords), texture(base_diffuse2, TexCoords), texNormal.r),
-            mix(texture(hills_diffuse, TexCoords), texture(hills_diffuse2, TexCoords), texNormal.r),
+            mix(texture(hills_diffuse, TexCoords), texture(hills_diffuse2, TexCoords), texNormal.r * 1.5),
             min(max(0.0, PosHeight/1.5), 1.0));
     vec4 sampledSpecular =
         mix(texture(base_specular, TexCoords), texture(hills_specular, TexCoords), min(max(0.0, PosHeight/1.5), 1.0));
