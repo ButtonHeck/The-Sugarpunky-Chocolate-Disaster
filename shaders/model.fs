@@ -10,6 +10,7 @@ uniform sampler2D texture_diffuse;
 uniform sampler2D texture_specular;
 uniform vec3 viewPosition;
 uniform vec3 lightDirTo;
+uniform bool shadow;
 
 void main()
 {
@@ -33,4 +34,6 @@ void main()
     vec3 result = ambient + diffuse + specular;
 
     FragColor = vec4(result, sampledDiffuse.a);
+    if (shadow)
+        FragColor += clamp(FragColor * Normal.y / 4, -0.06, 0.03);
 }

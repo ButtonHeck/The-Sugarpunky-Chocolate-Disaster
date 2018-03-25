@@ -31,6 +31,7 @@ HillsMapGenerator hillMapGenerator(waterMapGenerator.getMap());
 UnderwaterQuadMapGenerator underwaterQuadGenerator;
 BaseMapGenerator baseMapGenerator(waterMapGenerator.getMap(), hillMapGenerator.getMap());
 Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
+bool shadow = false;
 
 int main()
 {
@@ -326,6 +327,7 @@ int main()
       modelShader.setMat4("projection", projection);
       modelShader.setMat4("view", view);
       modelShader.setVec3("viewPosition", viewPosition);
+      modelShader.setBool("shadow", shadow);
       treeGenerator.draw(modelShader);
 
       glfwPollEvents();

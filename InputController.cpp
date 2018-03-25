@@ -2,6 +2,7 @@
 
 extern GLFWwindow* window;
 extern Camera cam;
+extern bool shadow;
 bool firstMouseInput = true;
 float lastX, lastY;
 
@@ -25,6 +26,10 @@ void InputController::processKeyboard(float delta)
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS)
+    shadow = true;
+  if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS)
+    shadow = false;
 }
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)
