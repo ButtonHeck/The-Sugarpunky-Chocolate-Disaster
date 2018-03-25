@@ -31,7 +31,7 @@ HillsMapGenerator hillMapGenerator(waterMapGenerator.getMap());
 UnderwaterQuadMapGenerator underwaterQuadGenerator;
 BaseMapGenerator baseMapGenerator(waterMapGenerator.getMap(), hillMapGenerator.getMap());
 Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
-bool shadow = false;
+bool shadow = true;
 
 int main()
 {
