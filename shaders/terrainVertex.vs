@@ -9,11 +9,13 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 model;
 uniform bool instanceRendering;
+uniform vec3 lightDirTo;
 
 out vec2 TexCoords;
 out vec3 FragPos;
 out vec3 Normal;
 out float PosHeight;
+out vec3 LightDir;
 
 void main()
 {
@@ -27,4 +29,5 @@ void main()
     FragPos = vec3(Model * vec4(pos, 1.0));
     TexCoords = texCoords;
     PosHeight = pos.y;
+    LightDir = normalize(-lightDirTo);
 }
