@@ -45,11 +45,11 @@ int main()
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   //SHADER LOADING
-  Shader hills(PROJ_PATH + "/shaders/hills.vs", PROJ_PATH + "/shaders/hills.fs");
-  Shader sand(PROJ_PATH + "/shaders/sand.vs", PROJ_PATH + "/shaders/sand.fs");
-  Shader underwater(PROJ_PATH + "/shaders/underwater.vs", PROJ_PATH + "/shaders/underwater.fs");
-  Shader base(PROJ_PATH + "/shaders/base.vs", PROJ_PATH + "/shaders/base.fs");
-  Shader water(PROJ_PATH + "/shaders/water.vs", PROJ_PATH + "/shaders/water.fs");
+  Shader hills(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/hills.fs");
+  Shader sand(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/sand.fs");
+  Shader underwater(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/underwater.fs");
+  Shader base(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/base.fs");
+  Shader water(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/water.fs");
   Shader sky(PROJ_PATH + "/shaders/skybox.vs", PROJ_PATH + "/shaders/skybox.fs");
   Shader modelShader(PROJ_PATH + "/shaders/model.vs", PROJ_PATH + "/shaders/model.fs");
 
@@ -99,6 +99,7 @@ int main()
   hills.setInt("base_specular", 5);
   hills.setInt("hills_specular", 6);
   hills.setInt("base_normal", 8);
+  hills.setBool("instanceRendering", false);
   sand.use();
   sand.setFloat("waterLevel", WATER_LEVEL);
   sand.setInt("base_diffuse", 0);
@@ -109,6 +110,7 @@ int main()
   sand.setInt("sand_specular", 7);
   sand.setInt("base_normal", 8);
   sand.setVec3("lightDirTo", LIGHT_DIR_TO);
+  sand.setBool("instanceRendering", false);
   underwater.use();
   underwater.setInt("underwater_diffuse", 9);
   underwater.setInt("underwater_normal", 8);
@@ -119,10 +121,12 @@ int main()
   base.setInt("base_specular", 5);
   base.setInt("base_normal", 8);
   base.setVec3("lightDirTo", LIGHT_DIR_TO);
+  base.setBool("instanceRendering", true);
   water.use();
   water.setInt("water_diffuse", 2);
   water.setInt("water_specular", 4);
   water.setVec3("lightDirTo", LIGHT_DIR_TO);
+  water.setBool("instanceRendering", false);
   modelShader.use();
   modelShader.setVec3("lightDirTo", LIGHT_DIR_TO);
 

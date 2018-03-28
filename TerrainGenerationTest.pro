@@ -78,18 +78,13 @@ DISTFILES += \
     textures/cubemap1scaled/left.png \
     textures/cubemap1scaled/right.png \
     textures/cubemap1scaled/up.png \
-    shaders/water.vs \
     shaders/water.fs \
-    shaders/hills.vs \
     shaders/hills.fs \
     textures/hill.jpg \
     textures/hill_specular.jpg \
     textures/hill_test.jpg \
-    shaders/sand.vs \
     shaders/sand.fs \
-    shaders/base.vs \
     shaders/base.fs \
-    shaders/underwater.vs \
     shaders/underwater.fs \
     textures/cubemap1fx/back.png \
     textures/cubemap1fx/down.png \
@@ -129,7 +124,8 @@ DISTFILES += \
     models/hillTree2/hillTree2.obj \
     models/hillTree2/leaves.jpg \
     models/hillTree2/tree.jpg \
-    models/hillTree2/hillTree2.mtl
+    models/hillTree2/hillTree2.mtl \
+    shaders/terrainVertex.vs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

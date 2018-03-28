@@ -5,6 +5,7 @@ out vec4 FragColor;
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
+in float PosHeight;
 
 uniform sampler2D base_diffuse;
 uniform sampler2D base_diffuse2;
@@ -19,7 +20,6 @@ uniform vec3 lightDirTo;
 void main()
 {
     vec3 texNormal = texture(base_normal, vec2(FragPos.x / 768, FragPos.z / 768)).rgb;
-    float PosHeight = FragPos.y;
     float transitionRatio = clamp(0.0 + PosHeight * (1 / 0.66), 0.0, 1.0);
     vec3 normal = normalize(transitionRatio * Normal + (1.0 - transitionRatio) * texNormal);
     vec3 viewDir = normalize(viewPosition - FragPos);
