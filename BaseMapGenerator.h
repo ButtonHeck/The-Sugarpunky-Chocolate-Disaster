@@ -18,15 +18,18 @@ public:
   int getNumChunksInstances(int i);
   int getNumCellInstances();
 private:
-  GLuint instanceVao[5], instanceVbo[5], instanceEbo[5], instanceModelVbo[5];
+  GLuint instanceVao[NUM_BASE_TERRAIN_CHUNKS],
+         instanceVbo[NUM_BASE_TERRAIN_CHUNKS],
+         instanceEbo[NUM_BASE_TERRAIN_CHUNKS],
+         instanceModelVbo[NUM_BASE_TERRAIN_CHUNKS];
   GLuint cellVao, cellVbo, cellEbo, cellModelVbo;
   std::vector<std::vector<float>>& waterMap;
   std::vector<std::vector<float>>& hillMap;
-  std::vector<TerrainTile> baseChunkTiles[5];
+  std::vector<TerrainTile> baseChunkTiles[NUM_BASE_TERRAIN_CHUNKS];
   std::vector<std::vector<float>> chunkMap;
   std::vector<TerrainTile> cellTiles;
   std::default_random_engine randomizer;
-  int NUM_CHUNKS_INSTANCES[5];
+  int NUM_CHUNKS_INSTANCES[NUM_BASE_TERRAIN_CHUNKS];
   int NUM_CELL_INSTANCES;
   void generateMap();
   void smoothMap();

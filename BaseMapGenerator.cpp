@@ -6,7 +6,7 @@ BaseMapGenerator::BaseMapGenerator(std::vector<std::vector<float> > &waterMap, s
     waterMap(waterMap),
     hillMap(hillMap)
 {
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
     baseChunkTiles[i].reserve(NUM_TILES / BASE_TERRAIN_CHUNK_SIZES[i] * BASE_TERRAIN_CHUNK_SIZES[i]);
   initializeMap(chunkMap);
 }
@@ -17,7 +17,7 @@ void BaseMapGenerator::prepareMap()
   smoothMap();
   compressMap(2.0f, true);
   correctMapAtEdges();
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
     {
       splitMapToChunks(baseChunkTiles[i], BASE_TERRAIN_CHUNK_SIZES[i], (bool)i);
       baseChunkTiles[i].shrink_to_fit();
@@ -124,11 +124,11 @@ void BaseMapGenerator::fillBufferData()
 
 void BaseMapGenerator::fillChunkBufferData()
 {
-  glGenVertexArrays(5, instanceVao);
-  glGenBuffers(5, instanceVbo);
-  glGenBuffers(5, instanceEbo);
-  glGenBuffers(5, instanceModelVbo);
-  for (unsigned int vao = 0; vao < 5; vao++)
+  glGenVertexArrays(NUM_BASE_TERRAIN_CHUNKS, instanceVao);
+  glGenBuffers(NUM_BASE_TERRAIN_CHUNKS, instanceVbo);
+  glGenBuffers(NUM_BASE_TERRAIN_CHUNKS, instanceEbo);
+  glGenBuffers(NUM_BASE_TERRAIN_CHUNKS, instanceModelVbo);
+  for (unsigned int vao = 0; vao < NUM_BASE_TERRAIN_CHUNKS; vao++)
     {
       GLfloat baseChunkInstanceVertices[20] = {
           -1.0f, 0.0f,  1.0f, 0.0f,                                  0.0f,

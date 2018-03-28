@@ -230,7 +230,7 @@ int main()
       base.setMat4("projection", projection);
       base.setMat4("view", view);
       base.setVec3("viewPosition", viewPosition);
-      for (unsigned int vao = 0; vao < 5; vao++)
+      for (unsigned int vao = 0; vao < NUM_BASE_TERRAIN_CHUNKS; vao++)
         {
           glBindVertexArray(baseMapGenerator.getChunkVAO(vao));
           glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator.getNumChunksInstances(vao));
