@@ -327,9 +327,9 @@ void BaseMapGenerator::splitMapToChunks(std::vector<TerrainTile> &baseChunks, in
           bool emptyChunk = true, chunked = true;
           if (overlap)
             {
-              for (int y1 = y+1; y1 < y + chunkSize; y1++)
+              for (int y1 = y+1; y1 < y + chunkSize - 1; y1++)
                 {
-                  for (int x1 = x+1; x1 < x + chunkSize; x1++)
+                  for (int x1 = x+1; x1 < x + chunkSize - 1; x1++)
                     {
                       if (chunkMap[y1][x1] != DENY_CHUNK_RENDER_VALUE
                           || chunkMap[y1+1][x1] != DENY_CHUNK_RENDER_VALUE
