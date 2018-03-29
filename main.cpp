@@ -18,8 +18,10 @@
 #include "Skybox.h"
 #include "Model.h"
 #include "TreeGenerator.h"
+#include <chrono>
 
 GLFWwindow* initGLFW();
+void printMapsInfos();
 
 GLFWwindow* window;
 Timer timer;
@@ -35,7 +37,7 @@ bool shadow = true;
 
 int main()
 {
-  //GLOBAL SETUP
+  //GLOBAL SETUP (initializing GLFW take about 500ms)
   window = initGLFW();
   glewExperimental = GL_TRUE;
   glewInit();
@@ -44,7 +46,7 @@ int main()
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  //SHADER LOADING
+  //SHADER LOADING (take about 150-180ms for 7 shader programs)
   Shader hills(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/hills.fs");
   Shader sand(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/sand.fs");
   Shader underwater(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/underwater.fs");
@@ -53,7 +55,7 @@ int main()
   Shader sky(PROJ_PATH + "/shaders/skybox.vs", PROJ_PATH + "/shaders/skybox.fs");
   Shader modelShader(PROJ_PATH + "/shaders/model.vs", PROJ_PATH + "/shaders/model.fs");
 
-  //MODELS
+  //MODELS (take about 65ms per model)
   Model tree1(PROJ_PATH + "/models/tree1/tree1.obj", textureLoader);
   Model tree2(PROJ_PATH + "/models/tree2/tree2.obj", textureLoader);
   Model tree3(PROJ_PATH + "/models/tree3/tree3.obj", textureLoader);
@@ -61,7 +63,7 @@ int main()
   Model hillTree2(PROJ_PATH + "/models/hillTree2/hillTree2.obj", textureLoader);
   TreeGenerator treeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2});
 
-  //TEXTURE LOADING
+  //TEXTURE LOADING (take about 90ms per texture)
   glActiveTexture(GL_TEXTURE0);
   GLuint baseTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/base.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE1);
@@ -130,55 +132,46 @@ int main()
   modelShader.use();
   modelShader.setVec3("lightDirTo", LIGHT_DIR_TO);
 
-  //setup tiles
+  //setup tiles (all the pre-setup takes about 1600ms)
+  auto time = std::chrono::system_clock::now();
   waterMapGenerator.prepareMap(); //prepare water map
+  auto waterPrepareTime = std::chrono::system_clock::now();
   hillMapGenerator.prepareMap(); //generating hill height map
   hillMapGenerator.fillBufferData(); //fill hills buffer
+  auto hillPrepareTime = std::chrono::system_clock::now();
   baseMapGenerator.prepareMap(); //generating base terrain data
   baseMapGenerator.fillBufferData(); //fill base terrain vertex data
   baseMapGenerator.fillChunkBufferData(); //generating data for chunk instance rendering
   baseMapGenerator.fillCellBufferData(); //generating data for 1x1 tile instance rendering
+  auto basePrepareTime = std::chrono::system_clock::now();
   waterMapGenerator.fillBufferData(); //fill water buffer
+  auto waterFillBufferTime = std::chrono::system_clock::now();
   underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
   skybox.fillBufferData(); //setup skybox  
 
   //setup models
+  auto modelTimeBegin = std::chrono::system_clock::now();
   treeGenerator.setupPlainModels(baseMapGenerator.getMap(), hillMapGenerator.getMap()); //trees models setup
   treeGenerator.setupHillModels(hillMapGenerator.getMap()); //hill trees models setup
+  auto modelTimeEnd = std::chrono::system_clock::now();
 
-  //print info
-  std::cout << "Water tiles:\t" << waterMapGenerator.getTiles().size() << std::endl;
-  std::cout << "Hills tiles:\t" << hillMapGenerator.getTiles().size() << std::endl;
-  std::cout << "Base tiles:\t" << baseMapGenerator.getTiles().size() << std::endl;
-  for (unsigned int i = 0; i < 5; i++)
-    {
-      std::cout << "x" << BASE_TERRAIN_CHUNK_SIZES[i]
-                   << "\ttiles:\t"
-                   << baseMapGenerator.getChunkTiles(i).size() << "\t(instanced)"
-                   << std::endl;
-    }
-  std::cout << "1x1 \ttiles:\t"
-            << baseMapGenerator.getNumCellInstances() << "\t(instanced)"
-            << std::endl;
-  std::cout << "Summary: \t"
-            << (waterMapGenerator.getTiles().size()
-                + hillMapGenerator.getTiles().size()
-                + baseMapGenerator.getTiles().size()
-                + baseMapGenerator.getChunkTiles(0).size()
-                + baseMapGenerator.getChunkTiles(1).size()
-                + baseMapGenerator.getChunkTiles(2).size()
-                + baseMapGenerator.getChunkTiles(3).size()
-                + baseMapGenerator.getChunkTiles(4).size()
-                + baseMapGenerator.getNumCellInstances())
-            << std::endl;
-  std::cout << "Summary instanced: "
-            << (baseMapGenerator.getChunkTiles(0).size()
-                + baseMapGenerator.getChunkTiles(1).size()
-                + baseMapGenerator.getChunkTiles(2).size()
-                + baseMapGenerator.getChunkTiles(3).size()
-                + baseMapGenerator.getChunkTiles(4).size()
-                + baseMapGenerator.getNumCellInstances())
-            << std::endl;
+  //print info (durations and map infos)
+  std::cout << "Preparing water:\t\t"
+            << std::chrono::duration_cast<std::chrono::milliseconds>(waterPrepareTime - time).count()
+            << "ms\n";
+  std::cout << "Preparing hills:\t\t"
+            << std::chrono::duration_cast<std::chrono::milliseconds>(hillPrepareTime - waterPrepareTime).count()
+            << "ms\n";
+  std::cout << "Preparing base:\t\t\t"
+            << std::chrono::duration_cast<std::chrono::milliseconds>(basePrepareTime - hillPrepareTime).count()
+            << "ms\n";
+  std::cout << "Preparing water filling:\t"
+            << std::chrono::duration_cast<std::chrono::milliseconds>(waterFillBufferTime - basePrepareTime).count()
+            << "ms\n";
+  std::cout << "Preparing models:\t\t"
+            << std::chrono::duration_cast<std::chrono::milliseconds>(modelTimeEnd - modelTimeBegin).count()
+            << "ms\n";
+  printMapsInfos();
 
   //globals
   glm::mat4 model;
@@ -385,4 +378,42 @@ GLFWwindow* initGLFW()
   glfwSetCursorPosCallback(window, input.cursorCallback);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   return window;
+}
+
+void printMapsInfos()
+{
+  std::cout << "-----------------------------------------------------------\n";
+  std::cout << "Water tiles:\t" << waterMapGenerator.getTiles().size() << std::endl;
+  std::cout << "Hills tiles:\t" << hillMapGenerator.getTiles().size() << std::endl;
+  std::cout << "Base tiles:\t" << baseMapGenerator.getTiles().size() << std::endl;
+  for (unsigned int i = 0; i < 5; i++)
+    {
+      std::cout << "x" << BASE_TERRAIN_CHUNK_SIZES[i]
+                   << "\ttiles:\t"
+                   << baseMapGenerator.getChunkTiles(i).size() << "\t(instanced)"
+                   << std::endl;
+    }
+  std::cout << "1x1 \ttiles:\t"
+            << baseMapGenerator.getNumCellInstances() << "\t(instanced)"
+            << std::endl;
+  std::cout << "Summary: \t"
+            << (waterMapGenerator.getTiles().size()
+                + hillMapGenerator.getTiles().size()
+                + baseMapGenerator.getTiles().size()
+                + baseMapGenerator.getChunkTiles(0).size()
+                + baseMapGenerator.getChunkTiles(1).size()
+                + baseMapGenerator.getChunkTiles(2).size()
+                + baseMapGenerator.getChunkTiles(3).size()
+                + baseMapGenerator.getChunkTiles(4).size()
+                + baseMapGenerator.getNumCellInstances())
+            << std::endl;
+  std::cout << "Summary instanced: "
+            << (baseMapGenerator.getChunkTiles(0).size()
+                + baseMapGenerator.getChunkTiles(1).size()
+                + baseMapGenerator.getChunkTiles(2).size()
+                + baseMapGenerator.getChunkTiles(3).size()
+                + baseMapGenerator.getChunkTiles(4).size()
+                + baseMapGenerator.getNumCellInstances())
+            << std::endl;
+  std::cout << "-----------------------------------------------------------\n";
 }
