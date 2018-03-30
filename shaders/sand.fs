@@ -14,7 +14,6 @@ uniform sampler2D base_specular;
 uniform sampler2D base_normal;
 uniform sampler2D sand_diffuse;
 uniform sampler2D sand_diffuse2;
-uniform sampler2D sand_specular;
 uniform vec3 viewPosition;
 uniform float waterLevel;
 
@@ -31,7 +30,7 @@ void main()
                     mix(texture(base_diffuse, TexCoords), texture(base_diffuse2, TexCoords), texNormal.r),
                     max(min(PosHeight * 2.1 - waterLevel + (1.0 + waterLevel), 1.0), 0.0));
     vec4 sampledSpecular =
-                mix(texture(sand_specular, TexCoords),
+                mix(vec4(0.0),
                     texture(base_specular, TexCoords),
                     max(min(PosHeight * 2.1 - waterLevel + (1.0 + waterLevel), 1.0), 0.0));
     //diffuse shading
