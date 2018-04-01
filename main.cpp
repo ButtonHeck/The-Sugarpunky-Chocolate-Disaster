@@ -209,7 +209,7 @@ int main()
       glBindVertexArray(hillMapGenerator.getVAO());
       glDrawElements(GL_TRIANGLES, 6 * hillMapGenerator.getTiles().size(), GL_UNSIGNED_INT, 0);
 
-      //base terrain tiles
+      //sand terrain tiles
       sand.use();
       sand.setMat4("projection", projection);
       sand.setMat4("view", view);
@@ -394,35 +394,25 @@ void printMapsInfos()
   std::cout << "Water tiles:\t" << waterMapGenerator.getTiles().size() << std::endl;
   std::cout << "Hills tiles:\t" << hillMapGenerator.getTiles().size() << std::endl;
   std::cout << "Base tiles:\t" << baseMapGenerator.getTiles().size() << std::endl;
-  for (unsigned int i = 0; i < 5; i++)
+  int instanced = 0;
+  for (unsigned int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
     {
       std::cout << "x" << BASE_TERRAIN_CHUNK_SIZES[i]
                    << "\ttiles:\t"
                    << baseMapGenerator.getChunkTiles(i).size() << "\t(instanced)"
                    << std::endl;
+      instanced += baseMapGenerator.getChunkTiles(i).size();
     }
   std::cout << "1x1 \ttiles:\t"
             << baseMapGenerator.getNumCellInstances() << "\t(instanced)"
             << std::endl;
+  instanced += baseMapGenerator.getNumCellInstances();
   std::cout << "Summary: \t"
             << (waterMapGenerator.getTiles().size()
                 + hillMapGenerator.getTiles().size()
                 + baseMapGenerator.getTiles().size()
-                + baseMapGenerator.getChunkTiles(0).size()
-                + baseMapGenerator.getChunkTiles(1).size()
-                + baseMapGenerator.getChunkTiles(2).size()
-                + baseMapGenerator.getChunkTiles(3).size()
-                + baseMapGenerator.getChunkTiles(4).size()
-                + baseMapGenerator.getNumCellInstances())
-            << std::endl;
-  std::cout << "Summary instanced: "
-            << (baseMapGenerator.getChunkTiles(0).size()
-                + baseMapGenerator.getChunkTiles(1).size()
-                + baseMapGenerator.getChunkTiles(2).size()
-                + baseMapGenerator.getChunkTiles(3).size()
-                + baseMapGenerator.getChunkTiles(4).size()
-                + baseMapGenerator.getNumCellInstances())
-            << std::endl;
+                + instanced)
+            << "\t(" << instanced << " instanced)" << std::endl;
   std::cout << "-----------------------------------------------------------\n";
 }
 
