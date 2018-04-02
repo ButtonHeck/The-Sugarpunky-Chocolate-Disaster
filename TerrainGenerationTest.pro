@@ -124,9 +124,21 @@ DISTFILES += \
     models/hillTree2/leaves.jpg \
     models/hillTree2/tree.jpg \
     models/hillTree2/hillTree2.mtl \
-    shaders/terrainVertex.vs
+    shaders/terrainVertex.vs \
+    fonts/GentiumPlus-R.ttf \
+    shaders/font.vs \
+    shaders/font.fs \
+    fonts/Cabin-SemiBold.otf \
+    fonts/Cabin-Medium.otf
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
 INCLUDEPATH += $$PWD/../../../../../usr/local/include
 DEPENDPATH += $$PWD/../../../../../usr/local/include
+
+unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lfreetype
+
+INCLUDEPATH += $$PWD/../../../../../usr/local/include/freetype2
+DEPENDPATH += $$PWD/../../../../../usr/local/include/freetype2
+
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../../usr/local/lib/libfreetype.a

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -19,11 +20,14 @@
 #include "Model.h"
 #include "TreeGenerator.h"
 #include <chrono>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 GLFWwindow* initGLFW();
-void printMapsInfos();
 void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity,
                             GLsizei length, const GLchar* message, const void* userParam);
+void printMapsInfos();
+void renderText(Shader& shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color = glm::vec3(0.0f));
 
 GLFWwindow* window;
 Timer timer;
@@ -36,6 +40,14 @@ UnderwaterQuadMapGenerator underwaterQuadGenerator;
 BaseMapGenerator baseMapGenerator(waterMapGenerator.getMap(), hillMapGenerator.getMap());
 Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
 bool shadow = true;
+GLuint fontVBO, fontVAO;
+struct Character {
+  GLuint textureID;
+  glm::ivec2 size;
+  glm::ivec2 bearing;
+  FT_Pos advance;
+};
+std::map<GLchar, Character> characters;
 
 int main()
 {
@@ -56,6 +68,48 @@ int main()
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  FT_Library ft;
+  if (FT_Init_FreeType(&ft))
+    std::cerr << "FreeType error: could not init FreeType library\n";
+  FT_Face face;
+  if (FT_New_Face(ft, std::string(PROJ_PATH + "/fonts/Cabin-Medium.otf").c_str(), 0, &face))
+    std::cerr << "FreeType error: could not load font\n";
+  FT_Set_Pixel_Sizes(face, 0, 48);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  for (GLubyte c = 0; c < 128; c++)
+    {
+      if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+        {
+          std::cerr << "FreeType error: could not load glyph " << char(c) << "(" << c << ")\n";
+          continue;
+        }
+      GLuint glyphTexture;
+      glGenTextures(1, &glyphTexture);
+      glBindTexture(GL_TEXTURE_2D, glyphTexture);
+      glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            GL_RED,
+            face->glyph->bitmap.width,
+            face->glyph->bitmap.rows,
+            0,
+            GL_RED,
+            GL_UNSIGNED_BYTE,
+            face->glyph->bitmap.buffer);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      Character character = {
+        glyphTexture,
+        glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+        glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+        face->glyph->advance.x};
+      characters.insert(std::pair<GLchar, Character>(c, character));
+    }
+  FT_Done_Face(face);
+  FT_Done_FreeType(ft);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
   //SHADER LOADING (take about 150-180ms for 7 shader programs)
   Shader hills(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/hills.fs");
@@ -65,6 +119,7 @@ int main()
   Shader water(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/water.fs");
   Shader sky(PROJ_PATH + "/shaders/skybox.vs", PROJ_PATH + "/shaders/skybox.fs");
   Shader modelShader(PROJ_PATH + "/shaders/model.vs", PROJ_PATH + "/shaders/model.fs");
+  Shader fontShader(PROJ_PATH + "/shaders/font.vs", PROJ_PATH + "/shaders/font.fs");
 
   //MODELS (take about 65ms per model)
   Model tree1(PROJ_PATH + "/models/tree1/tree1.obj", textureLoader);
@@ -163,6 +218,17 @@ int main()
   treeGenerator.setupHillModels(hillMapGenerator.getMap()); //hill trees models setup
   auto modelTimeEnd = std::chrono::system_clock::now();
 
+  //setup font
+  glGenVertexArrays(1, &fontVAO);
+  glGenBuffers(1, &fontVBO);
+  glBindVertexArray(fontVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, fontVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray(0);
+
   //print info (durations and map infos)
   std::cout << "Preparing water:\t\t"
             << std::chrono::duration_cast<std::chrono::milliseconds>(waterPrepareTime - time).count()
@@ -186,12 +252,23 @@ int main()
   glm::mat4 projection;
   projection = glm::perspective(glm::radians(cam.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 500.0f);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  auto frameTime = std::chrono::high_resolution_clock::now();
+  auto currentTime = frameTime;
+  unsigned int frames = 0, fps = 0;
 
   //MAIN LOOP
   while(!glfwWindowShouldClose(window))
     {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       float delta = timer.tick();
+      frames++;
+      currentTime = std::chrono::high_resolution_clock::now();
+      if (std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - frameTime).count() > 1000)
+        {
+          frameTime = currentTime;
+          fps = frames;
+          frames = 0;
+        }
       input.processKeyboard(delta);
       glm::mat4 view = cam.getViewMatrix();
       glm::vec3 viewPosition = cam.getPosition();
@@ -335,6 +412,13 @@ int main()
       modelShader.setBool("shadow", shadow);
       treeGenerator.draw(modelShader);
 
+      //font rendering
+      glEnable(GL_BLEND);
+      glm::mat4 fontProjection = glm::ortho(0.0f, (float)SCR_WIDTH, 0.0f, (float)SCR_HEIGHT);
+      fontShader.use();
+      fontShader.setMat4("projection", fontProjection);
+      renderText(fontShader, "FPS: " + std::to_string(fps), 25.0f, (float)SCR_HEIGHT - 30.0f, 0.6f);
+
       glfwPollEvents();
       glfwSwapBuffers(window);
     }
@@ -457,4 +541,37 @@ void APIENTRY glDebugOutput(GLenum source,
     case GL_DEBUG_SEVERITY_NOTIFICATION: std::cout << "Severity: Notification"; break;
     }
   std::cout << "\n\n";
+}
+
+void renderText(Shader& shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
+{
+  shader.use();
+  shader.setVec3("textColor", color.r, color.g, color.b);
+  glActiveTexture(GL_TEXTURE0);
+  glBindVertexArray(fontVAO);
+  std::string::const_iterator c;
+  for (c = text.begin(); c != text.end(); c++)
+    {
+      Character ch = characters[*c];
+      GLfloat xpos = x + ch.bearing.x * scale;
+      GLfloat ypos = y - (ch.size.y - ch.bearing.y) * scale;
+      GLfloat w = ch.size.x * scale;
+      GLfloat h = ch.size.y * scale;
+      GLfloat vertices[6][4] = {
+        {xpos,  ypos+h, 0.0, 0.0},
+        {xpos,  ypos,   0.0, 1.0},
+        {xpos+w,ypos,   1.0, 1.0},
+        {xpos,  ypos+h, 0.0, 0.0},
+        {xpos+w,ypos,   1.0, 1.0},
+        {xpos+w,ypos+h, 1.0, 0.0}
+      };
+      glBindTexture(GL_TEXTURE_2D, ch.textureID);
+      glBindBuffer(GL_ARRAY_BUFFER, fontVBO);
+      glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+      x += (ch.advance >> 6) * scale;
+    }
+  glBindVertexArray(0);
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
