@@ -2,8 +2,13 @@
 
 extern GLFWwindow* window;
 extern Camera cam;
-extern bool shadow;
+extern bool renderShadowOnTrees;
+extern bool renderTreeModels;
+extern bool animateWater;
+extern bool renderDebugText;
+bool keysPressed[GLFW_KEY_LAST];
 bool firstMouseInput = true;
+bool polygonLineMode = false;
 float lastX, lastY;
 
 void InputController::processKeyboard(float delta)
@@ -22,14 +27,66 @@ void InputController::processKeyboard(float delta)
     cam.processKeyboardInput(delta, DOWN);
   if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     cam.processKeyboardInput(delta, UP);
-  if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS)
-    shadow = true;
-  if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS)
-    shadow = false;
+  //polygon mode
+  if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_F1])
+        {
+          polygonLineMode = !polygonLineMode;
+          glPolygonMode(GL_FRONT_AND_BACK, polygonLineMode ? GL_LINE : GL_FILL);
+          keysPressed[GLFW_KEY_F1] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_F1] = false;
+
+  //render shadow on tree leaves
+  if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_F2])
+        {
+          renderShadowOnTrees = !renderShadowOnTrees;
+          keysPressed[GLFW_KEY_F2] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_F2] = false;
+
+  //animate water
+  if (glfwGetKey(window, GLFW_KEY_F3) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_F3])
+        {
+          animateWater = !animateWater;
+          keysPressed[GLFW_KEY_F3] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_F3) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_F3] = false;
+
+  //render trees
+  if (glfwGetKey(window, GLFW_KEY_F4) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_F4])
+        {
+          renderTreeModels = !renderTreeModels;
+          keysPressed[GLFW_KEY_F4] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_F4) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_F4] = false;
+
+  //render debug text
+  if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_F5])
+        {
+          renderDebugText = !renderDebugText;
+          keysPressed[GLFW_KEY_F5] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_F5] = false;
 }
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)

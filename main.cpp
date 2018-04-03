@@ -37,7 +37,10 @@ UnderwaterQuadMapGenerator underwaterQuadGenerator;
 BaseMapGenerator baseMapGenerator(waterMapGenerator.getMap(), hillMapGenerator.getMap());
 Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
 FontManager fontManager("OCTAPOST_1.ttf");
-bool shadow = true;
+bool renderShadowOnTrees = true;
+bool renderTreeModels = true;
+bool animateWater = true;
+bool renderDebugText = true;
 
 int main()
 {
@@ -57,7 +60,6 @@ int main()
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   fontManager.loadFont();
 
   //SHADER LOADING (take about 150-180ms for 7 shader programs)
@@ -259,67 +261,70 @@ int main()
       std::vector<TerrainTile>& waterTiles = waterMapGenerator.getTiles();
       glBindVertexArray(waterMapGenerator.getVAO());
       glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTexture());
-      glBindBuffer(GL_ARRAY_BUFFER, waterMapGenerator.getVBO());
-      GLfloat* waterHeightOffsets = waterMapGenerator.getHeightOffsets();
-      double frameTime = glfwGetTime();
-      for (size_t i = 0; i < waterMapGenerator.WATER_HEIGHT_OFFSETS_SIZE; i+=2)
+      if (animateWater)
         {
-            waterHeightOffsets[i] = std::cos(frameTime * (i % 31) / 8) / 16 + WATER_LEVEL;
-            waterHeightOffsets[i+1] = std::sin(frameTime * (i% 29) / 8) / 16 + WATER_LEVEL;
-        }
-      GLfloat* temp = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-      unsigned int numWaterTiles = waterTiles.size();
-      glm::vec3 normalLR, normalUL;
-      for (unsigned int i = 0; i < numWaterTiles; ++i)
-        {
-          TerrainTile& tile = waterTiles[i];
-          float ll = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX];
-          float lr = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX + 1];
-          float ur = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX + 1];
-          float ul = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX];
-          *(temp+1+i*48) = ll;
-          *(temp+9+i*48) = lr;
-          *(temp+17+i*48) = ur;
-          *(temp+25+i*48) = ur;
-          *(temp+33+i*48) = ul;
-          *(temp+41+i*48) = ll;
-          normalLR = glm::cross(
-                glm::vec3(tile.mapX, ur, tile.mapY - 1)
-                -
-                glm::vec3(tile.mapX, lr, tile.mapY)
-                ,
-                glm::vec3(tile.mapX - 1, ll, tile.mapY)
-                -
-                glm::vec3(tile.mapX, lr, tile.mapY));
-          normalUL = glm::cross(
-                glm::vec3(tile.mapX - 1, ll, tile.mapY)
-                -
-                glm::vec3(tile.mapX - 1, ul, tile.mapY - 1)
-                ,
-                glm::vec3(tile.mapX, ur, tile.mapY - 1)
-                -
-                glm::vec3(tile.mapX - 1, ul, tile.mapY - 1));
-          *(temp+5+i*48) = normalLR.x;
-          *(temp+6+i*48) = normalLR.y;
-          *(temp+7+i*48) = normalLR.z;
-          *(temp+13+i*48) = normalLR.x;
-          *(temp+14+i*48) = normalLR.y;
-          *(temp+15+i*48) = normalLR.z;
-          *(temp+21+i*48) = normalLR.x;
-          *(temp+22+i*48) = normalLR.y;
-          *(temp+23+i*48) = normalLR.z;
+          glBindBuffer(GL_ARRAY_BUFFER, waterMapGenerator.getVBO());
+          GLfloat* waterHeightOffsets = waterMapGenerator.getHeightOffsets();
+          double frameTime = glfwGetTime();
+          for (size_t i = 0; i < waterMapGenerator.WATER_HEIGHT_OFFSETS_SIZE; i+=2)
+            {
+                waterHeightOffsets[i] = std::cos(frameTime * (i % 31) / 8) / 16 + WATER_LEVEL;
+                waterHeightOffsets[i+1] = std::sin(frameTime * (i% 29) / 8) / 16 + WATER_LEVEL;
+            }
+          GLfloat* temp = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+          unsigned int numWaterTiles = waterTiles.size();
+          glm::vec3 normalLR, normalUL;
+          for (unsigned int i = 0; i < numWaterTiles; ++i)
+            {
+              TerrainTile& tile = waterTiles[i];
+              float ll = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX];
+              float lr = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX + 1];
+              float ur = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX + 1];
+              float ul = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX];
+              *(temp+1+i*48) = ll;
+              *(temp+9+i*48) = lr;
+              *(temp+17+i*48) = ur;
+              *(temp+25+i*48) = ur;
+              *(temp+33+i*48) = ul;
+              *(temp+41+i*48) = ll;
+              normalLR = glm::cross(
+                    glm::vec3(tile.mapX, ur, tile.mapY - 1)
+                    -
+                    glm::vec3(tile.mapX, lr, tile.mapY)
+                    ,
+                    glm::vec3(tile.mapX - 1, ll, tile.mapY)
+                    -
+                    glm::vec3(tile.mapX, lr, tile.mapY));
+              normalUL = glm::cross(
+                    glm::vec3(tile.mapX - 1, ll, tile.mapY)
+                    -
+                    glm::vec3(tile.mapX - 1, ul, tile.mapY - 1)
+                    ,
+                    glm::vec3(tile.mapX, ur, tile.mapY - 1)
+                    -
+                    glm::vec3(tile.mapX - 1, ul, tile.mapY - 1));
+              *(temp+5+i*48) = normalLR.x;
+              *(temp+6+i*48) = normalLR.y;
+              *(temp+7+i*48) = normalLR.z;
+              *(temp+13+i*48) = normalLR.x;
+              *(temp+14+i*48) = normalLR.y;
+              *(temp+15+i*48) = normalLR.z;
+              *(temp+21+i*48) = normalLR.x;
+              *(temp+22+i*48) = normalLR.y;
+              *(temp+23+i*48) = normalLR.z;
 
-          *(temp+29+i*48) = normalUL.x;
-          *(temp+30+i*48) = normalUL.y;
-          *(temp+31+i*48) = normalUL.z;
-          *(temp+37+i*48) = normalUL.x;
-          *(temp+38+i*48) = normalUL.y;
-          *(temp+39+i*48) = normalUL.z;
-          *(temp+45+i*48) = normalUL.x;
-          *(temp+46+i*48) = normalUL.y;
-          *(temp+47+i*48) = normalUL.z;
+              *(temp+29+i*48) = normalUL.x;
+              *(temp+30+i*48) = normalUL.y;
+              *(temp+31+i*48) = normalUL.z;
+              *(temp+37+i*48) = normalUL.x;
+              *(temp+38+i*48) = normalUL.y;
+              *(temp+39+i*48) = normalUL.z;
+              *(temp+45+i*48) = normalUL.x;
+              *(temp+46+i*48) = normalUL.y;
+              *(temp+47+i*48) = normalUL.z;
+            }
+          glUnmapBuffer(GL_ARRAY_BUFFER);
         }
-      glUnmapBuffer(GL_ARRAY_BUFFER);
       glEnable(GL_BLEND);
       glDrawArrays(GL_TRIANGLES, 0, 6 * waterTiles.size());
       glDisable(GL_BLEND);
@@ -338,14 +343,20 @@ int main()
       glEnable(GL_CULL_FACE);
 
       //trees rendering
-      modelShader.use();
-      modelShader.setMat4("projectionView", projectionView);
-      modelShader.setVec3("viewPosition", viewPosition);
-      modelShader.setBool("shadow", shadow);
-      treeGenerator.draw(modelShader);
+      if (renderTreeModels)
+        {
+          modelShader.use();
+          modelShader.setMat4("projectionView", projectionView);
+          modelShader.setVec3("viewPosition", viewPosition);
+          modelShader.setBool("shadow", renderShadowOnTrees);
+          treeGenerator.draw(modelShader);
+        }
 
       //font rendering
-      fontManager.renderText(fontShader, "FPS: " + std::to_string(fps), 25.0f, (float)SCR_HEIGHT - 30.0f, 0.6f);
+      if (renderDebugText)
+        {
+          fontManager.renderText(fontShader, "FPS: " + std::to_string(fps), 25.0f, (float)SCR_HEIGHT - 30.0f, 0.6f);
+        }
 
       glfwPollEvents();
       glfwSwapBuffers(window);
