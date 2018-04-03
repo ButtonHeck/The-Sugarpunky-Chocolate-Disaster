@@ -88,6 +88,21 @@ glm::vec3 Camera::getDirection() const
   return Front;
 }
 
+glm::vec3 Camera::getFront() const
+{
+  return Front;
+}
+
+glm::vec3 Camera::getRight() const
+{
+  return Right;
+}
+
+glm::vec3 Camera::getUp() const
+{
+  return Up;
+}
+
 void Camera::updateVectors()
 {
   float x = std::cos(glm::radians(yaw)) * std::cos(glm::radians(pitch));

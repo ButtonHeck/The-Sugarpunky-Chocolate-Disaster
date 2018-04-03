@@ -60,6 +60,7 @@ int main()
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glLineWidth(3);
   fontManager.loadFont();
 
   //SHADER LOADING (take about 150-180ms for 7 shader programs)
@@ -71,6 +72,9 @@ int main()
   Shader sky(PROJ_PATH + "/shaders/skybox.vs", PROJ_PATH + "/shaders/skybox.fs");
   Shader modelShader(PROJ_PATH + "/shaders/model.vs", PROJ_PATH + "/shaders/model.fs");
   Shader fontShader(PROJ_PATH + "/shaders/font.vs", PROJ_PATH + "/shaders/font.fs");
+  Shader coordinateSystem(PROJ_PATH + "/shaders/coordinateSystem.vs",
+                          PROJ_PATH + "/shaders/coordinateSystem.gs",
+                          PROJ_PATH + "/shaders/coordinateSystem.fs");
 
   //MODELS (take about 65ms per model)
   Model tree1(PROJ_PATH + "/models/tree1/tree1.obj", textureLoader);
@@ -168,6 +172,27 @@ int main()
   treeGenerator.setupPlainModels(baseMapGenerator.getMap(), hillMapGenerator.getMap()); //trees models setup
   treeGenerator.setupHillModels(hillMapGenerator.getMap()); //hill trees models setup
   auto modelTimeEnd = std::chrono::system_clock::now();
+
+  //coordinate system setup
+  GLuint csVAO, csVBO;
+  glGenVertexArrays(1, &csVAO);
+  glGenBuffers(1, &csVBO);
+  glBindVertexArray(csVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, csVBO);
+  GLfloat csPoints[] = {
+      -0.9f, 0.7f, 0.0f, 0.08f, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
+      -0.9f, 0.7f, 0.0f, 0.0f,  0.08f, 0.0f,  0.0f, 1.0f, 0.0f,
+      -0.9f, 0.7f, 0.0f, 0.0f,  0.0f,  0.08f, 0.0f, 0.0f, 1.0f
+  };
+  glBufferData(GL_ARRAY_BUFFER, sizeof(csPoints), csPoints, GL_DYNAMIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   //print info (durations and map infos)
   std::cout << "Preparing water:\t\t"
@@ -355,7 +380,21 @@ int main()
       //font rendering
       if (renderDebugText)
         {
-          fontManager.renderText(fontShader, "FPS: " + std::to_string(fps), 25.0f, (float)SCR_HEIGHT - 30.0f, 0.6f);
+          fontManager.renderText(fontShader, "FPS: " + std::to_string(fps), 10.0f, (float)SCR_HEIGHT - 25.0f, 0.4f);
+          fontManager.renderText(fontShader,
+                                 "ViewPos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
+                                 + std::to_string(viewPosition.y).substr(0,6) + ": "
+                                 + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)SCR_HEIGHT - 50.0f, 0.4f);
+          fontManager.renderText(fontShader,
+                                 "ViewDir: " + std::to_string(cam.getDirection().x).substr(0,6) + ": "
+                                 + std::to_string(cam.getDirection().y).substr(0,6) + ": "
+                                 + std::to_string(cam.getDirection().z).substr(0,6), 10.0f, (float)SCR_HEIGHT - 75.0f, 0.4f);
+          coordinateSystem.use();
+          coordinateSystem.setMat4("view", view);
+          coordinateSystem.setFloat("aspectRatio", ASPECT_RATIO);
+          glBindVertexArray(csVAO);
+          glBindBuffer(GL_ARRAY_BUFFER, csVBO);
+          glDrawArrays(GL_POINTS, 0, 3);
         }
 
       glfwPollEvents();

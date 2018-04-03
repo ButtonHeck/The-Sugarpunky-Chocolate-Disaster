@@ -130,7 +130,10 @@ DISTFILES += \
     fonts/GentiumPlus-R.ttf \
     shaders/font.vs \
     shaders/font.fs \
-    fonts/OCTAPOST_1.ttf
+    fonts/OCTAPOST_1.ttf \
+    shaders/coordinateSystem.vs \
+    shaders/coordinateSystem.gs \
+    shaders/coordinateSystem.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

@@ -18,6 +18,27 @@ Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::strin
   glDeleteShader(fragment);
 }
 
+Shader::Shader(const std::string &vertexFile, const std::string &geometryFile, const std::string &fragmentFile)
+{
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, vertexFile);
+  GLuint geometry = loadShader(GL_GEOMETRY_SHADER, geometryFile);
+  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, fragmentFile);
+  ID = glCreateProgram();
+  glAttachShader(ID, vertex);
+  glAttachShader(ID, geometry);
+  glAttachShader(ID, fragment);
+  glLinkProgram(ID);
+  glGetProgramiv(ID, GL_LINK_STATUS, &status);
+  if (status != 1)
+    {
+      glGetProgramInfoLog(ID, 512, NULL, infoLog);
+      std::cout << infoLog << std::endl;
+    }
+  glDeleteShader(vertex);
+  glDeleteShader(geometry);
+  glDeleteShader(fragment);
+}
+
 void Shader::setInt(const std::__cxx11::string &uniformName, int value)
 {
   glUniform1i(glGetUniformLocation(ID, uniformName.c_str()), value);

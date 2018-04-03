@@ -27,6 +27,9 @@ public:
   float getZoom() const;
   glm::vec3 getPosition() const;
   glm::vec3 getDirection() const;
+  glm::vec3 getFront() const;
+  glm::vec3 getRight() const;
+  glm::vec3 getUp() const;
 private:
   void updateVectors();
   //options
