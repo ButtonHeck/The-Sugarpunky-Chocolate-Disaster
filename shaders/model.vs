@@ -7,8 +7,7 @@ layout (location = 3) in vec3 tangent;
 layout (location = 4) in vec3 bitangent;
 layout (location = 5) in mat4 model;
 
-uniform mat4 projection;
-uniform mat4 view;
+uniform mat4 projectionView;
 
 out vec3 FragPos;
 out vec2 TexCoords;
@@ -16,7 +15,7 @@ out vec3 Normal;
 
 void main()
 {
-    gl_Position = projection * view * model * vec4(pos, 1.0);
+    gl_Position = projectionView * model * vec4(pos, 1.0);
     TexCoords = texCoords;
     FragPos = vec3(model * vec4(pos, 1.0));
     Normal = mat3(transpose(inverse(model))) * normal;

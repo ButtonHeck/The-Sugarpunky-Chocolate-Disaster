@@ -72,7 +72,7 @@ int main()
   if (FT_Init_FreeType(&ft))
     std::cerr << "FreeType error: could not init FreeType library\n";
   FT_Face face;
-  if (FT_New_Face(ft, std::string(PROJ_PATH + "/fonts/Cabin-Medium.otf").c_str(), 0, &face))
+  if (FT_New_Face(ft, std::string(PROJ_PATH + "/fonts/OCTAPOST_1.ttf").c_str(), 0, &face))
     std::cerr << "FreeType error: could not load font\n";
   FT_Set_Pixel_Sizes(face, 0, 48);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -249,8 +249,8 @@ int main()
 
   //globals
   glm::mat4 model;
-  glm::mat4 projection;
-  projection = glm::perspective(glm::radians(cam.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 500.0f);
+  glm::mat4 projection = glm::perspective(glm::radians(cam.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 500.0f);
+  glm::mat4 fontProjection = glm::ortho(0.0f, (float)SCR_WIDTH, 0.0f, (float)SCR_HEIGHT);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   auto frameTime = std::chrono::high_resolution_clock::now();
   auto currentTime = frameTime;
@@ -261,7 +261,7 @@ int main()
     {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       float delta = timer.tick();
-      frames++;
+      ++frames;
       currentTime = std::chrono::high_resolution_clock::now();
       if (std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - frameTime).count() > 1000)
         {
@@ -272,6 +272,7 @@ int main()
       input.processKeyboard(delta);
       glm::mat4 view = cam.getViewMatrix();
       glm::vec3 viewPosition = cam.getPosition();
+      glm::mat4 projectionView = projection * view;
 
       //reset GL_TEXTURE0
       glActiveTexture(GL_TEXTURE0);
@@ -279,8 +280,7 @@ int main()
 
       //hill tiles
       hills.use();
-      hills.setMat4("projection", projection);
-      hills.setMat4("view", view);
+      hills.setMat4("projectionView", projectionView);
       hills.setMat4("model", model);
       hills.setVec3("viewPosition", viewPosition);
       glBindVertexArray(hillMapGenerator.getVAO());
@@ -288,8 +288,7 @@ int main()
 
       //sand terrain tiles
       sand.use();
-      sand.setMat4("projection", projection);
-      sand.setMat4("view", view);
+      sand.setMat4("projectionView", projectionView);
       sand.setMat4("model", model);
       sand.setVec3("viewPosition", viewPosition);
       glBindVertexArray(baseMapGenerator.getVAO());
@@ -297,16 +296,14 @@ int main()
 
       //underwater tile
       underwater.use();
-      underwater.setMat4("projection", projection);
-      underwater.setMat4("view", view);
+      underwater.setMat4("projectionView", projectionView);
       underwater.setMat4("model", model);
       glBindVertexArray(underwaterQuadGenerator.getVAO());
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
       //base terrain chunk tiles
       base.use();
-      base.setMat4("projection", projection);
-      base.setMat4("view", view);
+      base.setMat4("projectionView", projectionView);
       base.setVec3("viewPosition", viewPosition);
       for (unsigned int vao = 0; vao < NUM_BASE_TERRAIN_CHUNKS; vao++)
         {
@@ -319,9 +316,8 @@ int main()
 
       //water tiles
       water.use();
+      water.setMat4("projectionView", projectionView);
       water.setMat4("model", model);
-      water.setMat4("projection", projection);
-      water.setMat4("view", view);
       water.setVec3("viewPosition", viewPosition);
       std::vector<TerrainTile>& waterTiles = waterMapGenerator.getTiles();
       glBindVertexArray(waterMapGenerator.getVAO());
@@ -406,15 +402,13 @@ int main()
 
       //trees rendering
       modelShader.use();
-      modelShader.setMat4("projection", projection);
-      modelShader.setMat4("view", view);
+      modelShader.setMat4("projectionView", projectionView);
       modelShader.setVec3("viewPosition", viewPosition);
       modelShader.setBool("shadow", shadow);
       treeGenerator.draw(modelShader);
 
       //font rendering
       glEnable(GL_BLEND);
-      glm::mat4 fontProjection = glm::ortho(0.0f, (float)SCR_WIDTH, 0.0f, (float)SCR_HEIGHT);
       fontShader.use();
       fontShader.setMat4("projection", fontProjection);
       renderText(fontShader, "FPS: " + std::to_string(fps), 25.0f, (float)SCR_HEIGHT - 30.0f, 0.6f);
@@ -447,6 +441,7 @@ int main()
   base.cleanUp();
   sky.cleanUp();
   modelShader.cleanUp();
+  fontShader.cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();
 }

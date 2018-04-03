@@ -128,8 +128,7 @@ DISTFILES += \
     fonts/GentiumPlus-R.ttf \
     shaders/font.vs \
     shaders/font.fs \
-    fonts/Cabin-SemiBold.otf \
-    fonts/Cabin-Medium.otf
+    fonts/OCTAPOST_1.ttf
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

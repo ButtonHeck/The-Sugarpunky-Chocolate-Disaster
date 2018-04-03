@@ -5,9 +5,8 @@ layout (location = 1) in vec2 texCoords;
 layout (location = 2) in vec3 normal;
 layout (location = 3) in mat4 instanceModel;
 
-uniform mat4 view;
-uniform mat4 projection;
 uniform mat4 model;
+uniform mat4 projectionView;
 uniform bool instanceRendering;
 uniform vec3 lightDirTo;
 
@@ -24,7 +23,7 @@ void main()
         Model = instanceModel;
     else
         Model = model;
-    gl_Position = projection * view * Model * vec4(pos, 1.0);
+    gl_Position = projectionView * Model * vec4(pos, 1.0);
     Normal = mat3(transpose(inverse(Model))) * normal;
     FragPos = vec3(Model * vec4(pos, 1.0));
     TexCoords = texCoords;
