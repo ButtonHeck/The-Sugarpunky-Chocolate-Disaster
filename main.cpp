@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -18,8 +19,8 @@
 #include "Skybox.h"
 #include "Model.h"
 #include "TreeGenerator.h"
-#include <chrono>
 #include "FontManager.h"
+#include "CoordinateSystemRenderer.h"
 
 GLFWwindow* initGLFW();
 void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity,
@@ -37,6 +38,7 @@ UnderwaterQuadMapGenerator underwaterQuadGenerator;
 BaseMapGenerator baseMapGenerator(waterMapGenerator.getMap(), hillMapGenerator.getMap());
 Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
 FontManager fontManager("OCTAPOST_1.ttf");
+CoordinateSystemRenderer csRenderer;
 bool renderShadowOnTrees = true;
 bool renderTreeModels = true;
 bool animateWater = true;
@@ -166,33 +168,13 @@ int main()
   auto waterFillBufferTime = std::chrono::system_clock::now();
   underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
   skybox.fillBufferData(); //setup skybox  
+  csRenderer.fillBufferData(); //coordinate system setup
 
   //setup models
   auto modelTimeBegin = std::chrono::system_clock::now();
   treeGenerator.setupPlainModels(baseMapGenerator.getMap(), hillMapGenerator.getMap()); //trees models setup
   treeGenerator.setupHillModels(hillMapGenerator.getMap()); //hill trees models setup
-  auto modelTimeEnd = std::chrono::system_clock::now();
-
-  //coordinate system setup
-  GLuint csVAO, csVBO;
-  glGenVertexArrays(1, &csVAO);
-  glGenBuffers(1, &csVBO);
-  glBindVertexArray(csVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, csVBO);
-  GLfloat csPoints[] = {
-      -0.9f, 0.7f, 0.0f, 0.08f, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
-      -0.9f, 0.7f, 0.0f, 0.0f,  0.08f, 0.0f,  0.0f, 1.0f, 0.0f,
-      -0.9f, 0.7f, 0.0f, 0.0f,  0.0f,  0.08f, 0.0f, 0.0f, 1.0f
-  };
-  glBufferData(GL_ARRAY_BUFFER, sizeof(csPoints), csPoints, GL_DYNAMIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), 0);
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  auto modelTimeEnd = std::chrono::system_clock::now();  
 
   //print info (durations and map infos)
   std::cout << "Preparing water:\t\t"
@@ -389,12 +371,7 @@ int main()
                                  "ViewDir: " + std::to_string(cam.getDirection().x).substr(0,6) + ": "
                                  + std::to_string(cam.getDirection().y).substr(0,6) + ": "
                                  + std::to_string(cam.getDirection().z).substr(0,6), 10.0f, (float)SCR_HEIGHT - 75.0f, 0.4f);
-          coordinateSystem.use();
-          coordinateSystem.setMat4("view", view);
-          coordinateSystem.setFloat("aspectRatio", ASPECT_RATIO);
-          glBindVertexArray(csVAO);
-          glBindBuffer(GL_ARRAY_BUFFER, csVBO);
-          glDrawArrays(GL_POINTS, 0, 3);
+          csRenderer.draw(coordinateSystem, view);
         }
 
       glfwPollEvents();
@@ -419,6 +396,7 @@ int main()
   waterMapGenerator.deleteGLObjects();
   underwaterQuadGenerator.deleteGLObjects();
   fontManager.deleteGLObjects();
+  csRenderer.deleteGLObjects();
   hills.cleanUp();
   underwater.cleanUp();
   water.cleanUp();
@@ -427,6 +405,7 @@ int main()
   sky.cleanUp();
   modelShader.cleanUp();
   fontShader.cleanUp();
+  coordinateSystem.cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();
 }

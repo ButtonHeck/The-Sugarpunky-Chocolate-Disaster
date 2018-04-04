@@ -18,7 +18,8 @@ SOURCES += main.cpp \
     Mesh.cpp \
     Model.cpp \
     TreeGenerator.cpp \
-    FontManager.cpp
+    FontManager.cpp \
+    CoordinateSystemRenderer.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -60,7 +61,8 @@ HEADERS += \
     Mesh.h \
     Model.h \
     TreeGenerator.h \
-    FontManager.h
+    FontManager.h \
+    CoordinateSystemRenderer.h
 
 DISTFILES += \
     scene.vs \
