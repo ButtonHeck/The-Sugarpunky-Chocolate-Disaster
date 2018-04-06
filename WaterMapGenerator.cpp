@@ -168,7 +168,7 @@ void WaterMapGenerator::liftWaterLevel(float liftValue)
     }
 }
 
-void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel, unsigned int &numWaterTiles)
+void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigned int &numWaterTiles)
 {
   srand(time(NULL));
   bool startAxisFromX = rand() % 2 == 0;

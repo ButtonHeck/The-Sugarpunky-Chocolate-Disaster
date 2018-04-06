@@ -10,6 +10,7 @@ class MapGenerator
 {
 public:
   MapGenerator();
+  virtual ~MapGenerator() = default;
   void initializeMap(std::vector<std::vector<float>>& map);
   void resetAllGLBuffers();
   void setupGLBuffersAttributes();

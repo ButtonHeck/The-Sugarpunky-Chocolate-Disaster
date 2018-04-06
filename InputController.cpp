@@ -6,6 +6,7 @@ extern bool renderShadowOnTrees;
 extern bool renderTreeModels;
 extern bool animateWater;
 extern bool renderDebugText;
+extern bool recreateTerrain;
 bool keysPressed[GLFW_KEY_LAST];
 bool firstMouseInput = true;
 bool polygonLineMode = false;
@@ -87,6 +88,18 @@ void InputController::processKeyboard(float delta)
     }
   if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_F5] = false;
+
+  //recreate terrain
+  if (glfwGetKey(window, GLFW_KEY_F9) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_F9])
+        {
+          recreateTerrain = !recreateTerrain;
+          keysPressed[GLFW_KEY_F9] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_F9) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_F9] = false;
 }
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)

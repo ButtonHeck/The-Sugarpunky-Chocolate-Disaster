@@ -32,10 +32,10 @@ Timer timer;
 Camera cam(glm::vec3(0.0f, 3.0f, 0.0f));
 InputController input;
 TextureLoader textureLoader;
-WaterMapGenerator waterMapGenerator;
-HillsMapGenerator hillMapGenerator(waterMapGenerator.getMap());
+WaterMapGenerator* waterMapGenerator = new WaterMapGenerator();
+HillsMapGenerator* hillMapGenerator = new HillsMapGenerator(waterMapGenerator->getMap());
 UnderwaterQuadMapGenerator underwaterQuadGenerator;
-BaseMapGenerator baseMapGenerator(waterMapGenerator.getMap(), hillMapGenerator.getMap());
+BaseMapGenerator* baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
 Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
 FontManager fontManager("OCTAPOST_1.ttf");
 CoordinateSystemRenderer csRenderer;
@@ -43,6 +43,7 @@ bool renderShadowOnTrees = true;
 bool renderTreeModels = true;
 bool animateWater = true;
 bool renderDebugText = true;
+bool recreateTerrain = false;
 
 int main()
 {
@@ -62,7 +63,6 @@ int main()
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glLineWidth(3);
   fontManager.loadFont();
 
   //SHADER LOADING (take about 150-180ms for 7 shader programs)
@@ -154,17 +154,17 @@ int main()
 
   //setup tiles (all the pre-setup takes about 1600ms)
   auto time = std::chrono::system_clock::now();
-  waterMapGenerator.prepareMap(); //prepare water map
+  waterMapGenerator->prepareMap(); //prepare water map
   auto waterPrepareTime = std::chrono::system_clock::now();
-  hillMapGenerator.prepareMap(); //generating hill height map
-  hillMapGenerator.fillBufferData(); //fill hills buffer
+  hillMapGenerator->prepareMap(); //generating hill height map
+  hillMapGenerator->fillBufferData(); //fill hills buffer
   auto hillPrepareTime = std::chrono::system_clock::now();
-  baseMapGenerator.prepareMap(); //generating base terrain data
-  baseMapGenerator.fillBufferData(); //fill base terrain vertex data
-  baseMapGenerator.fillChunkBufferData(); //generating data for chunk instance rendering
-  baseMapGenerator.fillCellBufferData(); //generating data for 1x1 tile instance rendering
+  baseMapGenerator->prepareMap(); //generating base terrain data
+  baseMapGenerator->fillBufferData(); //fill base terrain vertex data
+  baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering
+  baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
   auto basePrepareTime = std::chrono::system_clock::now();
-  waterMapGenerator.fillBufferData(); //fill water buffer
+  waterMapGenerator->fillBufferData(); //fill water buffer
   auto waterFillBufferTime = std::chrono::system_clock::now();
   underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
   skybox.fillBufferData(); //setup skybox  
@@ -172,8 +172,8 @@ int main()
 
   //setup models
   auto modelTimeBegin = std::chrono::system_clock::now();
-  treeGenerator.setupPlainModels(baseMapGenerator.getMap(), hillMapGenerator.getMap()); //trees models setup
-  treeGenerator.setupHillModels(hillMapGenerator.getMap()); //hill trees models setup
+  treeGenerator.setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap()); //trees models setup
+  treeGenerator.setupHillModels(hillMapGenerator->getMap()); //hill trees models setup
   auto modelTimeEnd = std::chrono::system_clock::now();  
 
   //print info (durations and map infos)
@@ -219,6 +219,28 @@ int main()
       glm::mat4 view = cam.getViewMatrix();
       glm::vec3 viewPosition = cam.getPosition();
       glm::mat4 projectionView = projection * view;
+      glLineWidth(1);
+
+      if (recreateTerrain)
+        {
+          delete waterMapGenerator;
+          delete hillMapGenerator;
+          delete baseMapGenerator;
+          waterMapGenerator = new WaterMapGenerator();
+          hillMapGenerator = new HillsMapGenerator(waterMapGenerator->getMap());
+          baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
+          waterMapGenerator->prepareMap(); //prepare water map
+          hillMapGenerator->prepareMap(); //generating hill height map
+          hillMapGenerator->fillBufferData(); //fill hills buffer
+          baseMapGenerator->prepareMap(); //generating base terrain data
+          baseMapGenerator->fillBufferData(); //fill base terrain vertex data
+          baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering
+          baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
+          waterMapGenerator->fillBufferData(); //fill water buffer
+          treeGenerator.setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap()); //trees models setup
+          treeGenerator.setupHillModels(hillMapGenerator->getMap()); //hill trees models setup
+          recreateTerrain = false;
+        }
 
       //reset GL_TEXTURE0
       glActiveTexture(GL_TEXTURE0);
@@ -229,16 +251,16 @@ int main()
       hills.setMat4("projectionView", projectionView);
       hills.setMat4("model", model);
       hills.setVec3("viewPosition", viewPosition);
-      glBindVertexArray(hillMapGenerator.getVAO());
-      glDrawElements(GL_TRIANGLES, 6 * hillMapGenerator.getTiles().size(), GL_UNSIGNED_INT, 0);
+      glBindVertexArray(hillMapGenerator->getVAO());
+      glDrawElements(GL_TRIANGLES, 6 * hillMapGenerator->getTiles().size(), GL_UNSIGNED_INT, 0);
 
       //sand terrain tiles
       sand.use();
       sand.setMat4("projectionView", projectionView);
       sand.setMat4("model", model);
       sand.setVec3("viewPosition", viewPosition);
-      glBindVertexArray(baseMapGenerator.getVAO());
-      glDrawArrays(GL_TRIANGLES, 0, 6 * baseMapGenerator.getTiles().size());
+      glBindVertexArray(baseMapGenerator->getVAO());
+      glDrawArrays(GL_TRIANGLES, 0, 6 * baseMapGenerator->getTiles().size());
 
       //underwater tile
       underwater.use();
@@ -253,27 +275,27 @@ int main()
       base.setVec3("viewPosition", viewPosition);
       for (unsigned int vao = 0; vao < NUM_BASE_TERRAIN_CHUNKS; vao++)
         {
-          glBindVertexArray(baseMapGenerator.getChunkVAO(vao));
-          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator.getNumChunksInstances(vao));
+          glBindVertexArray(baseMapGenerator->getChunkVAO(vao));
+          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator->getNumChunksInstances(vao));
         }
       //base terrain 1x1 tiles
-      glBindVertexArray(baseMapGenerator.getCellVAO());
-      glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator.getNumCellInstances());
+      glBindVertexArray(baseMapGenerator->getCellVAO());
+      glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator->getNumCellInstances());
 
       //water tiles
       water.use();
       water.setMat4("projectionView", projectionView);
       water.setMat4("model", model);
       water.setVec3("viewPosition", viewPosition);
-      std::vector<TerrainTile>& waterTiles = waterMapGenerator.getTiles();
-      glBindVertexArray(waterMapGenerator.getVAO());
+      std::vector<TerrainTile>& waterTiles = waterMapGenerator->getTiles();
+      glBindVertexArray(waterMapGenerator->getVAO());
       glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTexture());
       if (animateWater)
         {
-          glBindBuffer(GL_ARRAY_BUFFER, waterMapGenerator.getVBO());
-          GLfloat* waterHeightOffsets = waterMapGenerator.getHeightOffsets();
+          glBindBuffer(GL_ARRAY_BUFFER, waterMapGenerator->getVBO());
+          GLfloat* waterHeightOffsets = waterMapGenerator->getHeightOffsets();
           double frameTime = glfwGetTime();
-          for (size_t i = 0; i < waterMapGenerator.WATER_HEIGHT_OFFSETS_SIZE; i+=2)
+          for (size_t i = 0; i < waterMapGenerator->WATER_HEIGHT_OFFSETS_SIZE; i+=2)
             {
                 waterHeightOffsets[i] = std::cos(frameTime * (i % 31) / 8) / 16 + WATER_LEVEL;
                 waterHeightOffsets[i+1] = std::sin(frameTime * (i% 29) / 8) / 16 + WATER_LEVEL;
@@ -371,6 +393,7 @@ int main()
                                  "ViewDir: " + std::to_string(cam.getDirection().x).substr(0,6) + ": "
                                  + std::to_string(cam.getDirection().y).substr(0,6) + ": "
                                  + std::to_string(cam.getDirection().z).substr(0,6), 10.0f, (float)SCR_HEIGHT - 75.0f, 0.4f);
+          glLineWidth(3);
           csRenderer.draw(coordinateSystem, view);
         }
 
@@ -391,9 +414,12 @@ int main()
   glDeleteTextures(1, &baseTexture2);
   glDeleteTextures(1, &hillTexture2);
   glDeleteTextures(1, &sandTexture2);
-  baseMapGenerator.deleteGLObjects();
-  hillMapGenerator.deleteGLObjects();
-  waterMapGenerator.deleteGLObjects();
+  baseMapGenerator->deleteGLObjects();
+  hillMapGenerator->deleteGLObjects();
+  waterMapGenerator->deleteGLObjects();
+  delete baseMapGenerator;
+  delete hillMapGenerator;
+  delete waterMapGenerator;
   underwaterQuadGenerator.deleteGLObjects();
   fontManager.deleteGLObjects();
   csRenderer.deleteGLObjects();
@@ -434,26 +460,26 @@ GLFWwindow* initGLFW()
 void printMapsInfos()
 {
   std::cout << "-----------------------------------------------------------\n";
-  std::cout << "Water tiles:\t" << waterMapGenerator.getTiles().size() << std::endl;
-  std::cout << "Hills tiles:\t" << hillMapGenerator.getTiles().size() << std::endl;
-  std::cout << "Base tiles:\t" << baseMapGenerator.getTiles().size() << std::endl;
+  std::cout << "Water tiles:\t" << waterMapGenerator->getTiles().size() << std::endl;
+  std::cout << "Hills tiles:\t" << hillMapGenerator->getTiles().size() << std::endl;
+  std::cout << "Base tiles:\t" << baseMapGenerator->getTiles().size() << std::endl;
   int instanced = 0;
   for (unsigned int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
     {
       std::cout << "x" << BASE_TERRAIN_CHUNK_SIZES[i]
                    << "\ttiles:\t"
-                   << baseMapGenerator.getChunkTiles(i).size() << "\t(instanced)"
+                   << baseMapGenerator->getChunkTiles(i).size() << "\t(instanced)"
                    << std::endl;
-      instanced += baseMapGenerator.getChunkTiles(i).size();
+      instanced += baseMapGenerator->getChunkTiles(i).size();
     }
   std::cout << "1x1 \ttiles:\t"
-            << baseMapGenerator.getNumCellInstances() << "\t(instanced)"
+            << baseMapGenerator->getNumCellInstances() << "\t(instanced)"
             << std::endl;
-  instanced += baseMapGenerator.getNumCellInstances();
+  instanced += baseMapGenerator->getNumCellInstances();
   std::cout << "Summary: \t"
-            << (waterMapGenerator.getTiles().size()
-                + hillMapGenerator.getTiles().size()
-                + baseMapGenerator.getTiles().size()
+            << (waterMapGenerator->getTiles().size()
+                + hillMapGenerator->getTiles().size()
+                + baseMapGenerator->getTiles().size()
                 + instanced)
             << "\t(" << instanced << " instanced)" << std::endl;
   std::cout << "-----------------------------------------------------------\n";
