@@ -7,9 +7,12 @@ extern bool renderTreeModels;
 extern bool animateWater;
 extern bool renderDebugText;
 extern bool recreateTerrain;
+extern bool saveRequest;
+extern bool loadRequest;
 bool keysPressed[GLFW_KEY_LAST];
 bool firstMouseInput = true;
 bool polygonLineMode = false;
+bool showMouse = false;
 float lastX, lastY;
 
 void InputController::processKeyboard(float delta)
@@ -100,6 +103,43 @@ void InputController::processKeyboard(float delta)
     }
   if (glfwGetKey(window, GLFW_KEY_F9) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_F9] = false;
+
+  //save request
+  if (glfwGetKey(window, GLFW_KEY_F10) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_F10])
+        {
+          saveRequest = !saveRequest;
+          keysPressed[GLFW_KEY_F10] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_F10) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_F10] = false;
+
+  //load request
+  if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_F11])
+        {
+          loadRequest = !loadRequest;
+          keysPressed[GLFW_KEY_F11] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_F11] = false;
+
+  //show mouse
+  if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_LEFT_CONTROL])
+        {
+          showMouse = !showMouse;
+          glfwSetInputMode(window, GLFW_CURSOR, showMouse ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+          keysPressed[GLFW_KEY_LEFT_CONTROL] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_LEFT_CONTROL] = false;
 }
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)

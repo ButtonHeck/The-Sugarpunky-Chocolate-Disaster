@@ -21,6 +21,7 @@
 #include "TreeGenerator.h"
 #include "FontManager.h"
 #include "CoordinateSystemRenderer.h"
+#include "SaveLoadManager.h"
 
 GLFWwindow* initGLFW();
 void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity,
@@ -39,11 +40,14 @@ BaseMapGenerator* baseMapGenerator = new BaseMapGenerator(waterMapGenerator->get
 Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
 FontManager fontManager("OCTAPOST_1.ttf");
 CoordinateSystemRenderer csRenderer;
+SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator);
 bool renderShadowOnTrees = true;
 bool renderTreeModels = true;
 bool animateWater = true;
 bool renderDebugText = true;
 bool recreateTerrain = false;
+bool saveRequest = false;
+bool loadRequest = false;
 
 int main()
 {
@@ -159,7 +163,7 @@ int main()
   hillMapGenerator->prepareMap(); //generating hill height map
   hillMapGenerator->fillBufferData(); //fill hills buffer
   auto hillPrepareTime = std::chrono::system_clock::now();
-  baseMapGenerator->prepareMap(); //generating base terrain data
+  baseMapGenerator->prepareMap(false); //generating base terrain data
   baseMapGenerator->fillBufferData(); //fill base terrain vertex data
   baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering
   baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
@@ -232,13 +236,15 @@ int main()
           waterMapGenerator->prepareMap(); //prepare water map
           hillMapGenerator->prepareMap(); //generating hill height map
           hillMapGenerator->fillBufferData(); //fill hills buffer
-          baseMapGenerator->prepareMap(); //generating base terrain data
+          baseMapGenerator->prepareMap(false); //generating base terrain data
           baseMapGenerator->fillBufferData(); //fill base terrain vertex data
           baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering
           baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
           waterMapGenerator->fillBufferData(); //fill water buffer
           treeGenerator.setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap()); //trees models setup
           treeGenerator.setupHillModels(hillMapGenerator->getMap()); //hill trees models setup
+          delete saveLoadManager;
+          saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator);
           recreateTerrain = false;
         }
 
@@ -397,6 +403,17 @@ int main()
           csRenderer.draw(coordinateSystem, view);
         }
 
+      if (saveRequest)
+        {
+          saveLoadManager->saveToFile(PROJ_PATH + "/saves/testSave.txt");
+          saveRequest = false;
+        }
+      if (loadRequest)
+        {
+          saveLoadManager->loadFromFile(PROJ_PATH + "/saves/testSave.txt");
+          loadRequest = false;
+        }
+
       glfwPollEvents();
       glfwSwapBuffers(window);
     }
@@ -420,6 +437,7 @@ int main()
   delete baseMapGenerator;
   delete hillMapGenerator;
   delete waterMapGenerator;
+  delete saveLoadManager;
   underwaterQuadGenerator.deleteGLObjects();
   fontManager.deleteGLObjects();
   csRenderer.deleteGLObjects();

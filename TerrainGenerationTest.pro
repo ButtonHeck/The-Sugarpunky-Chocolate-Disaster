@@ -19,7 +19,8 @@ SOURCES += main.cpp \
     Model.cpp \
     TreeGenerator.cpp \
     FontManager.cpp \
-    CoordinateSystemRenderer.cpp
+    CoordinateSystemRenderer.cpp \
+    SaveLoadManager.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -62,7 +63,8 @@ HEADERS += \
     Model.h \
     TreeGenerator.h \
     FontManager.h \
-    CoordinateSystemRenderer.h
+    CoordinateSystemRenderer.h \
+    SaveLoadManager.h
 
 DISTFILES += \
     scene.vs \

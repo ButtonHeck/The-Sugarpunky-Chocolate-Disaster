@@ -7,14 +7,18 @@ class BaseMapGenerator : public MapGenerator
 {
 public:
   BaseMapGenerator(std::vector<std::vector<float>>& waterMap, std::vector<std::vector<float>>& hillMap);
-  void prepareMap();
+  void prepareMap(bool loading);
   void fillBufferData();
   void fillChunkBufferData();
   void fillCellBufferData();
+  void split1x1Tiles();
+  void splitMapToChunks(std::vector<TerrainTile>& baseChunks, int chunkSize, bool overlap);
   void deleteGLObjects() override;
   std::vector<TerrainTile>& getChunkTiles(int i);
+  std::vector<TerrainTile>& getCellTiles();
   GLuint& getChunkVAO(int i);
   GLuint& getCellVAO();
+  std::vector<std::vector<float>>& getChunkMap();
   int getNumChunksInstances(int i);
   int getNumCellInstances();
 private:
@@ -35,9 +39,7 @@ private:
   void smoothMap();
   void correctMapAtEdges();
   void compressMap(float ratio, bool entireRange);
-  void splitMapToChunks(std::vector<TerrainTile>& baseChunks, int chunkSize, bool overlap);
   void removeUnderwaterTiles(float thresholdValue);
-  void split1x1Tiles();
 };
 
 #endif // BASEMAPGENERATOR_H

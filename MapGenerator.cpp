@@ -38,6 +38,7 @@ void MapGenerator::setupGLBuffersAttributes()
 
 void MapGenerator::createTiles(bool flat, bool createOnZeroTiles)
 {
+  tiles.clear();
   for (unsigned int y = 1; y < map.size(); y++)
     {
       for (unsigned int x = 1; x < map[0].size(); x++)
