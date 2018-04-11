@@ -18,14 +18,18 @@ void WaterMapGenerator::prepareMap()
       generateMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
     }
   std::cout << "water generation attempts:\t" << attempts << std::endl;
-}
-
-void WaterMapGenerator::fillBufferData()
-{
   addWaterNearbyBaseTerrain();
   fillSharpTerrainWithWater();
   createTiles(true, false);
   tiles.shrink_to_fit();
+}
+
+void WaterMapGenerator::fillBufferData()
+{
+//  addWaterNearbyBaseTerrain();
+//  fillSharpTerrainWithWater();
+//  createTiles(true, false);
+//  tiles.shrink_to_fit();
   const size_t VERTEX_DATA_LENGTH = tiles.size() * 48;
   GLfloat vertices[VERTEX_DATA_LENGTH];
   for (unsigned int i = 0; i < tiles.size(); i++)

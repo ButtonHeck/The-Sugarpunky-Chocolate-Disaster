@@ -7,7 +7,7 @@ class BaseMapGenerator : public MapGenerator
 {
 public:
   BaseMapGenerator(std::vector<std::vector<float>>& waterMap, std::vector<std::vector<float>>& hillMap);
-  void prepareMap(bool loading);
+  void prepareMap();
   void fillBufferData();
   void fillChunkBufferData();
   void fillCellBufferData();

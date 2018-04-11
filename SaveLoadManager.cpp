@@ -33,7 +33,7 @@ bool SaveLoadManager::saveToFile(const std::string &filename)
     {
       for (float& value : row)
         {
-          output << value << " ";
+          output << 0 << " ";
         }
     }
   for (std::vector<float>& row : hillMap)
@@ -94,13 +94,13 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
     }
   hillGenerator.createTiles(false, false);
   hillGenerator.fillBufferData();
-  baseGenerator.getCellTiles().clear();
   for (unsigned int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
     {
       baseGenerator.getChunkTiles(i).clear();
     }
-  baseGenerator.split1x1Tiles();
-  baseGenerator.createTiles(false, false);
+  baseGenerator.getTiles().clear();
+  baseGenerator.getCellTiles().clear();
+  baseGenerator.prepareMap();
   baseGenerator.fillBufferData();
   baseGenerator.fillChunkBufferData();
   baseGenerator.fillCellBufferData();

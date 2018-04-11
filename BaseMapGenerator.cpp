@@ -11,15 +11,12 @@ BaseMapGenerator::BaseMapGenerator(std::vector<std::vector<float> > &waterMap, s
   initializeMap(chunkMap);
 }
 
-void BaseMapGenerator::prepareMap(bool loading)
+void BaseMapGenerator::prepareMap()
 {
-  if (!loading)
-    {
-      generateMap();
-      smoothMap();
-      compressMap(2.0f, true);
-      correctMapAtEdges();
-    }
+  generateMap();
+  smoothMap();
+  compressMap(2.0f, true);
+  correctMapAtEdges();
   for (int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
     {
       splitMapToChunks(baseChunkTiles[i], BASE_TERRAIN_CHUNK_SIZES[i], (bool)i);
