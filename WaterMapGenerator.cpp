@@ -18,18 +18,19 @@ void WaterMapGenerator::prepareMap()
       generateMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
     }
   std::cout << "water generation attempts:\t" << attempts << std::endl;
+}
+
+void WaterMapGenerator::postPrepareMap()
+{
+  postProcessMap = map;
   addWaterNearbyBaseTerrain();
   fillSharpTerrainWithWater();
-  createTiles(true, false);
+  createTiles(true, false, postProcessMap);
   tiles.shrink_to_fit();
 }
 
 void WaterMapGenerator::fillBufferData()
 {
-//  addWaterNearbyBaseTerrain();
-//  fillSharpTerrainWithWater();
-//  createTiles(true, false);
-//  tiles.shrink_to_fit();
   const size_t VERTEX_DATA_LENGTH = tiles.size() * 48;
   GLfloat vertices[VERTEX_DATA_LENGTH];
   for (unsigned int i = 0; i < tiles.size(); i++)
@@ -114,7 +115,7 @@ void WaterMapGenerator::addWaterNearbyBaseTerrain()
       for (unsigned int x = 0; x < TILES_WIDTH; x++)
         {
           if (map[y+1][x] != 0)
-            map[y][x] = map[y+1][x];
+            postProcessMap[y][x] = map[y+1][x];
         }
     }
   //add water below the tile
@@ -123,7 +124,16 @@ void WaterMapGenerator::addWaterNearbyBaseTerrain()
       for (unsigned int x = 0; x < TILES_WIDTH; x++)
         {
           if (map[y-1][x] != 0)
-            map[y][x] = map[y-1][x];
+            postProcessMap[y][x] = map[y-1][x];
+        }
+    }
+  //add more water below the tile
+  for (unsigned int y = TILES_HEIGHT; y > 0; y--)
+    {
+      for (unsigned int x = 0; x < TILES_WIDTH; x++)
+        {
+          if (postProcessMap[y-1][x] != 0)
+            postProcessMap[y][x] = postProcessMap[y-1][x];
         }
     }
   //add water left to the tile
@@ -132,7 +142,7 @@ void WaterMapGenerator::addWaterNearbyBaseTerrain()
       for (unsigned int y = 0; y < TILES_HEIGHT; y++)
         {
           if (map[y][x+1] != 0)
-            map[y][x] = map[y][x+1];
+            postProcessMap[y][x] = map[y][x+1];
         }
     }
   //add water right to the tile
@@ -141,7 +151,16 @@ void WaterMapGenerator::addWaterNearbyBaseTerrain()
       for (unsigned int y = 0; y < TILES_HEIGHT; y++)
         {
           if (map[y][x-1] != 0)
-            map[y][x] = map[y][x-1];
+            postProcessMap[y][x] = map[y][x-1];
+        }
+    }
+  //add more water right to the tile
+  for (unsigned int x = TILES_WIDTH; x > 0; x--)
+    {
+      for (unsigned int y = 0; y < TILES_HEIGHT; y++)
+        {
+          if (postProcessMap[y][x-1] != 0)
+            postProcessMap[y][x] = postProcessMap[y][x-1];
         }
     }
 }
@@ -152,10 +171,10 @@ void WaterMapGenerator::fillSharpTerrainWithWater()
     {
       for (int x2 = 1; x2 < TILES_WIDTH - 1; x2++)
         {
-          if (map[y2][x2] == WATER_LEVEL)
+          if (postProcessMap[y2][x2] == WATER_LEVEL)
             continue;
-          if ((map[y2-1][x2] == WATER_LEVEL && map[y2+1][x2] == WATER_LEVEL) || (map[y2][x2-1] == WATER_LEVEL && map[y2][x2+1] == WATER_LEVEL))
-            map[y2][x2] = WATER_LEVEL;
+          if ((postProcessMap[y2-1][x2] == WATER_LEVEL && postProcessMap[y2+1][x2] == WATER_LEVEL) || (postProcessMap[y2][x2-1] == WATER_LEVEL && postProcessMap[y2][x2+1] == WATER_LEVEL))
+            postProcessMap[y2][x2] = WATER_LEVEL;
         }
     }
 }

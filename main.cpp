@@ -168,6 +168,7 @@ int main()
   baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering
   baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
   auto basePrepareTime = std::chrono::system_clock::now();
+  waterMapGenerator->postPrepareMap();
   waterMapGenerator->fillBufferData(); //fill water buffer
   auto waterFillBufferTime = std::chrono::system_clock::now();
   underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
@@ -240,6 +241,7 @@ int main()
           baseMapGenerator->fillBufferData(); //fill base terrain vertex data
           baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering
           baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
+          waterMapGenerator->postPrepareMap();
           waterMapGenerator->fillBufferData(); //fill water buffer
           treeGenerator.setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap()); //trees models setup
           treeGenerator.setupHillModels(hillMapGenerator->getMap()); //hill trees models setup

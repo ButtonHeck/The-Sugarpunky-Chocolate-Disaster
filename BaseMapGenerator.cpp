@@ -25,7 +25,7 @@ void BaseMapGenerator::prepareMap()
   removeUnderwaterTiles(UNDERWATER_REMOVAL_LEVEL);
   tiles.shrink_to_fit();
   split1x1Tiles();
-  createTiles(false, false);
+  createTiles(false, false, map);
 }
 
 void BaseMapGenerator::fillBufferData()

@@ -14,7 +14,7 @@ public:
   void initializeMap(std::vector<std::vector<float>>& map);
   void resetAllGLBuffers();
   void setupGLBuffersAttributes();
-  void createTiles(bool flat, bool createOnZeroTiles);
+  void createTiles(bool flat, bool createOnZeroTiles, std::vector<std::vector<float>>& map);
   std::vector<std::vector<float>>& getMap();
   std::vector<TerrainTile>& getTiles();
   GLuint& getVAO();

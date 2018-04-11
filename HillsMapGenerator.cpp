@@ -17,7 +17,7 @@ void HillsMapGenerator::prepareMap()
   smoothMapHeightChunks(0.6f, 0.05f, 0.05f);
   removeOrphanHills();
   smoothMapSinks();
-  createTiles(false, false);
+  createTiles(false, false, map);
   tiles.shrink_to_fit();
 }
 

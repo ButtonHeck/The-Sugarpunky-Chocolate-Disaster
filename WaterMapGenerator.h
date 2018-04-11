@@ -10,6 +10,7 @@ class WaterMapGenerator : public MapGenerator
 public:
   WaterMapGenerator();
   void prepareMap();
+  void postPrepareMap();
   void fillBufferData();
   GLfloat* getHeightOffsets();
   constexpr static int WATER_HEIGHT_OFFSETS_SIZE = NUM_TILES + TILES_WIDTH * 2;
@@ -20,6 +21,7 @@ private:
   void addWaterNearbyBaseTerrain();
   void fillSharpTerrainWithWater();
   void liftWaterLevel(float liftValue);
+  std::vector<std::vector<float>> postProcessMap;
 };
 
 #endif // WATERMAPGENERATOR_H

@@ -92,19 +92,16 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
           input >> value;
         }
     }
-  hillGenerator.createTiles(false, false);
+  hillGenerator.createTiles(false, false, hillGenerator.getMap());
   hillGenerator.fillBufferData();
   for (unsigned int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
-    {
-      baseGenerator.getChunkTiles(i).clear();
-    }
-  baseGenerator.getTiles().clear();
+    baseGenerator.getChunkTiles(i).clear();
   baseGenerator.getCellTiles().clear();
   baseGenerator.prepareMap();
   baseGenerator.fillBufferData();
   baseGenerator.fillChunkBufferData();
   baseGenerator.fillCellBufferData();
-  waterGenerator.createTiles(true, false);
+  waterGenerator.postPrepareMap();
   waterGenerator.fillBufferData();
   return true;
 }
