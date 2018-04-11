@@ -20,7 +20,12 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
 {
   std::vector<std::vector<glm::mat4>> treeModelsVecs;
   for (unsigned int i = 0; i < plainTrees.size(); i++)
-    treeModelsVecs.push_back(std::vector<glm::mat4>());
+    {
+      treeModelsVecs.push_back(std::vector<glm::mat4>());
+      if (!treeModels.empty())
+        delete[] treeModels[i];
+    }
+  treeModels.clear();
   std::uniform_real_distribution<float> modelSizeDistribution(0.2f, 0.3f);
   std::uniform_real_distribution<float> modelPositionDistribution(-0.3f, 0.3f);
   std::default_random_engine randomizer;
@@ -45,7 +50,9 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
             }
         }
     }
-  std::vector<glm::mat4*> treeModels;
+  if (treesAlreadyCreated)
+    delete[] numTrees;
+  numTrees = new unsigned int[plainTrees.size()];
   for (unsigned int i = 0; i < treeModelsVecs.size(); i++)
     {
       treeModels.push_back(new glm::mat4[treeModelsVecs[i].size()]);
@@ -53,11 +60,13 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
         {
           treeModels[i][m] = treeModelsVecs[i][m];
         }
+      numTrees[i] = treeModelsVecs[i].size();
     }
   for (unsigned int i = 0; i < plainTrees.size(); i++)
     {
-      plainTrees[i].loadInstances(treeModels[i], treeModelsVecs[i].size());
+      plainTrees[i].loadInstances(treeModels[i], numTrees[i]);
     }
+  treesAlreadyCreated = true;
 }
 
 void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
@@ -66,7 +75,12 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
   std::uniform_real_distribution<float> modelPositionDistribution(-0.2f, 0.2f);
   std::vector<std::vector<glm::mat4>> hillTreeModelsVecs;
   for (unsigned int i = 0; i < hillTrees.size(); i++)
-    hillTreeModelsVecs.push_back(std::vector<glm::mat4>());
+    {
+      hillTreeModelsVecs.push_back(std::vector<glm::mat4>());
+      if (!hillTreeModels.empty())
+        delete[] hillTreeModels[i];
+    }
+  hillTreeModels.clear();
   unsigned int hillTreeCounter = 0;
   for (unsigned int y = 0; y < TILES_HEIGHT; y++)
     {
@@ -97,7 +111,9 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
             }
         }
     }
-  std::vector<glm::mat4*> hillTreeModels;
+  if (hillTreesAlreadyCreated)
+    delete[] numHillTrees;
+  numHillTrees = new unsigned int[hillTrees.size()];
   for (unsigned int i = 0; i < hillTreeModelsVecs.size(); i++)
     {
       hillTreeModels.push_back(new glm::mat4[hillTreeModelsVecs[i].size()]);
@@ -105,9 +121,45 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
         {
           hillTreeModels[i][m] = hillTreeModelsVecs[i][m];
         }
+      numHillTrees[i] = hillTreeModelsVecs[i].size();
     }
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
-      hillTrees[i].loadInstances(hillTreeModels[i], hillTreeModelsVecs[i].size());
+      hillTrees[i].loadInstances(hillTreeModels[i], numHillTrees[i]);
+    }
+  hillTreesAlreadyCreated = true;
+}
+
+std::vector<glm::mat4 *> &TreeGenerator::getTreeModels()
+{
+  return treeModels;
+}
+
+std::vector<glm::mat4 *> &TreeGenerator::getHillTreeModels()
+{
+  return hillTreeModels;
+}
+
+void TreeGenerator::serialize(std::ofstream &out)
+{
+  for (unsigned int i = 0; i < treeModels.size(); i++)
+    {
+      out << numTrees[i] << " ";
+      for (unsigned int m = 0; m < numTrees[i]; m++)
+        {
+          float* matrixValues = (float*)glm::value_ptr(treeModels[i][m]);
+          for (unsigned int e = 0; e < 16; ++e)
+            out << matrixValues[e] << " ";
+        }
+    }
+  for (unsigned int i = 0; i < hillTreeModels.size(); i++)
+    {
+      out << numHillTrees[i] << " ";
+      for (unsigned int m = 0; m < numHillTrees[i]; m++)
+        {
+          float* matrixValues = (float*)glm::value_ptr(hillTreeModels[i][m]);
+          for (unsigned int e = 0; e < 16; ++e)
+            out << matrixValues[e] << " ";
+        }
     }
 }
