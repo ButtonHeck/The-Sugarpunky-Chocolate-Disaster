@@ -140,6 +140,26 @@ std::vector<glm::mat4 *> &TreeGenerator::getHillTreeModels()
   return hillTreeModels;
 }
 
+unsigned int TreeGenerator::getNumTrees(int i)
+{
+  return numTrees[i];
+}
+
+unsigned int TreeGenerator::getNumHillTrees(int i)
+{
+  return numHillTrees[i];
+}
+
+std::vector<Model> &TreeGenerator::getPlainTrees()
+{
+  return plainTrees;
+}
+
+std::vector<Model> &TreeGenerator::getHillTrees()
+{
+  return hillTrees;
+}
+
 void TreeGenerator::serialize(std::ofstream &out)
 {
   for (unsigned int i = 0; i < treeModels.size(); i++)

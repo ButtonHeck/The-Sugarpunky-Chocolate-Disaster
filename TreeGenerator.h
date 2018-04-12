@@ -18,6 +18,10 @@ public:
   void setupHillModels(std::vector<std::vector<float>>& hillMap);
   std::vector<glm::mat4*>& getTreeModels();
   std::vector<glm::mat4*>& getHillTreeModels();
+  unsigned int getNumTrees(int i);
+  unsigned int getNumHillTrees(int i);
+  std::vector<Model>& getPlainTrees();
+  std::vector<Model>& getHillTrees();
   void serialize(std::ofstream& out);
 private:
   std::vector<Model> plainTrees;

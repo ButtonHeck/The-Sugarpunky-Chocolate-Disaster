@@ -89,6 +89,7 @@ int main()
   Model hillTree1(PROJ_PATH + "/models/hillTree1/hillTree1.obj", textureLoader);
   Model hillTree2(PROJ_PATH + "/models/hillTree2/hillTree2.obj", textureLoader);
   TreeGenerator treeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2});
+  saveLoadManager->setTreeGenerator(treeGenerator);
 
   //TEXTURE LOADING (take about 90ms per texture)
   glActiveTexture(GL_TEXTURE0);
@@ -247,6 +248,7 @@ int main()
           treeGenerator.setupHillModels(hillMapGenerator->getMap()); //hill trees models setup
           delete saveLoadManager;
           saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator);
+          saveLoadManager->setTreeGenerator(treeGenerator);
           recreateTerrain = false;
         }
 

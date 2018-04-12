@@ -50,6 +50,7 @@ bool SaveLoadManager::saveToFile(const std::string &filename)
           output << value << " ";
         }
     }
+  treeGenerator->serialize(output);
   output.close();
   return true;
 }
@@ -92,6 +93,54 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
           input >> value;
         }
     }
+
+  std::vector<glm::mat4*> treeModels;
+  unsigned int numAllTrees[treeGenerator->getTreeModels().size()];
+  for (unsigned int i = 0; i < treeGenerator->getTreeModels().size(); i++)
+    {
+      unsigned int numTrees = 0;
+      input >> numTrees;
+      numAllTrees[i] = numTrees;
+      treeModels.push_back(new glm::mat4[numTrees]);
+      for (unsigned int t = 0; t < numTrees; t++)
+        {
+          glm::mat4 model;
+          float* modelData = (float*)glm::value_ptr(model);
+          for (unsigned int e = 0; e < 16; e++)
+            {
+              input >> modelData[e];
+            }
+          treeModels[i][t] = std::move(model);
+        }
+    }
+  std::vector<glm::mat4*> hillTreeModels;
+  unsigned int numAllHillTrees[treeGenerator->getHillTreeModels().size()];
+  for (unsigned int i = 0; i < treeGenerator->getHillTreeModels().size(); i++)
+    {
+      unsigned int numHillTrees = 0;
+      input >> numHillTrees;
+      numAllHillTrees[i] = numHillTrees;
+      hillTreeModels.push_back(new glm::mat4[numHillTrees]);
+      for (unsigned int m = 0; m < numHillTrees; m++)
+        {
+          glm::mat4 model;
+          float* modelData = (float*)glm::value_ptr(model);
+          for (unsigned int e = 0; e < 16; e++)
+            {
+              input >> modelData[e];
+            }
+          hillTreeModels[i][m] = std::move(model);
+        }
+    }
+  for (unsigned int i = 0; i < treeModels.size(); i++)
+    {
+      treeGenerator->getPlainTrees()[i].loadInstances(treeModels[i], numAllTrees[i]);
+    }
+  for (unsigned int i = 0; i < hillTreeModels.size(); i++)
+    {
+      treeGenerator->getHillTrees()[i].loadInstances(hillTreeModels[i], numAllHillTrees[i]);
+    }
+
   hillGenerator.createTiles(false, false, hillGenerator.getMap());
   hillGenerator.fillBufferData();
   for (unsigned int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
@@ -104,4 +153,9 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   waterGenerator.postPrepareMap();
   waterGenerator.fillBufferData();
   return true;
+}
+
+void SaveLoadManager::setTreeGenerator(TreeGenerator &treeGenerator)
+{
+  this->treeGenerator = &treeGenerator;
 }
