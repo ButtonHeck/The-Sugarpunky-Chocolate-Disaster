@@ -31,7 +31,7 @@ bool SaveLoadManager::saveToFile(const std::string &filename)
     }
   for (std::vector<float>& row : chunkMap)
     {
-      for (float& value : row)
+      for (float& unused : row)
         {
           output << 0 << " ";
         }
@@ -146,7 +146,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   for (unsigned int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
     baseGenerator.getChunkTiles(i).clear();
   baseGenerator.getCellTiles().clear();
-  baseGenerator.prepareMap();
+  baseGenerator.prepareMap(false);
   baseGenerator.fillBufferData();
   baseGenerator.fillChunkBufferData();
   baseGenerator.fillCellBufferData();

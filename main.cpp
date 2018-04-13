@@ -164,7 +164,7 @@ int main()
   hillMapGenerator->prepareMap(); //generating hill height map
   hillMapGenerator->fillBufferData(); //fill hills buffer
   auto hillPrepareTime = std::chrono::system_clock::now();
-  baseMapGenerator->prepareMap(); //generating base terrain data
+  baseMapGenerator->prepareMap(true); //generating base terrain data
   baseMapGenerator->fillBufferData(); //fill base terrain vertex data
   baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering
   baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
@@ -238,7 +238,7 @@ int main()
           waterMapGenerator->prepareMap(); //prepare water map
           hillMapGenerator->prepareMap(); //generating hill height map
           hillMapGenerator->fillBufferData(); //fill hills buffer
-          baseMapGenerator->prepareMap(); //generating base terrain data
+          baseMapGenerator->prepareMap(true); //generating base terrain data
           baseMapGenerator->fillBufferData(); //fill base terrain vertex data
           baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering
           baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering

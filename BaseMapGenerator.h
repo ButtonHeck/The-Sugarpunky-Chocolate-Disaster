@@ -7,7 +7,7 @@ class BaseMapGenerator : public MapGenerator
 {
 public:
   BaseMapGenerator(std::vector<std::vector<float>>& waterMap, std::vector<std::vector<float>>& hillMap);
-  void prepareMap();
+  void prepareMap(bool randomizeShoreFlag);
   void fillBufferData();
   void fillChunkBufferData();
   void fillCellBufferData();
@@ -37,6 +37,7 @@ private:
   int NUM_CELL_INSTANCES;
   void generateMap();
   void smoothMap();
+  void randomizeShore();
   void correctMapAtEdges();
   void compressMap(float ratio, bool entireRange);
   void removeUnderwaterTiles(float thresholdValue);

@@ -11,10 +11,12 @@ BaseMapGenerator::BaseMapGenerator(std::vector<std::vector<float> > &waterMap, s
   initializeMap(chunkMap);
 }
 
-void BaseMapGenerator::prepareMap()
+void BaseMapGenerator::prepareMap(bool randomizeShoreFlag)
 {
   generateMap();
   smoothMap();
+  if (randomizeShoreFlag)
+    randomizeShore();
   compressMap(2.0f, true);
   correctMapAtEdges();
   for (int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
@@ -273,7 +275,10 @@ void BaseMapGenerator::smoothMap()
             map[y][x] += WATER_LEVEL / 1.5f;
         }
     }
-  //slightly randomize shore line between base and water level
+}
+
+void BaseMapGenerator::randomizeShore()
+{
   std::uniform_real_distribution<float> distribution(-0.2f, 0.2f);
   for (unsigned int y = 0; y < TILES_HEIGHT; y++)
     {
