@@ -8,72 +8,102 @@ void WaterMapGenerator::prepareMap()
 {
   unsigned int numWaterTiles = 0;
   generateMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
+  unsigned int attempts = 0;
   while (numWaterTiles < TILES_WIDTH * (SHORE_SIZE_BASE + 2) * (SHORE_SIZE_BASE + 2) * 9
          || numWaterTiles > TILES_WIDTH * (SHORE_SIZE_BASE + 3) * (SHORE_SIZE_BASE + 3) * 9)
     {
+      ++attempts;
       numWaterTiles = 0;
       initializeMap(map);
       generateMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
     }
+  std::cout << "water generation attempts:\t" << attempts << std::endl;
+}
+
+void WaterMapGenerator::postPrepareMap()
+{
+  postProcessMap = map;
+  addWaterNearbyBaseTerrain();
+  fillSharpTerrainWithWater();
+  createTiles(true, false, postProcessMap);
+  tiles.shrink_to_fit();
 }
 
 void WaterMapGenerator::fillBufferData()
 {
-  addWaterNearbyBaseTerrain();
-  fillSharpTerrainWithWater();
-  createTiles(true, false);
-  tiles.shrink_to_fit();
-  const size_t VERTEX_DATA_LENGTH = tiles.size() * 20;
-  const size_t ELEMENT_DATA_LENGTH = tiles.size() * 6;
+  const size_t VERTEX_DATA_LENGTH = tiles.size() * 48;
   GLfloat vertices[VERTEX_DATA_LENGTH];
-  GLuint indices[ELEMENT_DATA_LENGTH];
   for (unsigned int i = 0; i < tiles.size(); i++)
     {
       TerrainTile& tile = tiles[i];
-      int offset = i * 20;
-      int indexArrayOffset = i * 6;
-      int index = i * 4;
-      //ll
+      int offset = i * 48;
+      //ll1
       vertices[offset] = -1- TILES_WIDTH / 2 + tile.mapX;
       vertices[offset+1] = tile.lowLeft;
       vertices[offset+2] = - TILES_HEIGHT / 2 + tile.mapY;
       vertices[offset+3] = 0.0f;
       vertices[offset+4] = 0.0f;
-      //lr
-      vertices[offset+5] = - TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+6] = tile.lowRight;
-      vertices[offset+7] = - TILES_HEIGHT / 2 + tile.mapY;
-      vertices[offset+8] = 1.0f;
-      vertices[offset+9] = 0.0f;
-      //ur
-      vertices[offset+10] = - TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+11] = tile.upperRight;
-      vertices[offset+12] = -1 - TILES_HEIGHT / 2 + tile.mapY;
-      vertices[offset+13] = 1.0f;
+      vertices[offset+5] = 0.0f;
+      vertices[offset+6] = 1.0f;
+      vertices[offset+7] = 0.0f;
+      //lr1
+      vertices[offset+8] = - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+9] = tile.lowRight;
+      vertices[offset+10] = - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+11] = 1.0f;
+      vertices[offset+12] = 0.0f;
+      vertices[offset+13] = 0.0f;
       vertices[offset+14] = 1.0f;
-      //ul
-      vertices[offset+15] = -1 - TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+16] = tile.upperLeft;
-      vertices[offset+17] = -1 - TILES_HEIGHT / 2 + tile.mapY;
-      vertices[offset+18] = 0.0f;
+      vertices[offset+15] = 0.0f;
+      //ur1
+      vertices[offset+16] = - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+17] = tile.upperRight;
+      vertices[offset+18] = -1 - TILES_HEIGHT / 2 + tile.mapY;
       vertices[offset+19] = 1.0f;
-
-      indices[indexArrayOffset] = index;
-      indices[indexArrayOffset+1] = index + 1;
-      indices[indexArrayOffset+2] = index + 2;
-      indices[indexArrayOffset+3] = index + 2;
-      indices[indexArrayOffset+4] = index + 3;
-      indices[indexArrayOffset+5] = index;
+      vertices[offset+20] = 1.0f;
+      vertices[offset+21] = 0.0f;
+      vertices[offset+22] = 1.0f;
+      vertices[offset+23] = 0.0f;
+      //ur2
+      vertices[offset+24] = - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+25] = tile.upperRight;
+      vertices[offset+26] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+27] = 1.0f;
+      vertices[offset+28] = 1.0f;
+      vertices[offset+29] = 0.0f;
+      vertices[offset+30] = 1.0f;
+      vertices[offset+31] = 0.0f;
+      //ul2
+      vertices[offset+32] = -1 - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+33] = tile.upperLeft;
+      vertices[offset+34] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+35] = 0.0f;
+      vertices[offset+36] = 1.0f;
+      vertices[offset+37] = 0.0f;
+      vertices[offset+38] = 1.0f;
+      vertices[offset+39] = 0.0f;
+      //ll2
+      vertices[offset+40] = -1- TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+41] = tile.lowLeft;
+      vertices[offset+42] = - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+43] = 0.0f;
+      vertices[offset+44] = 0.0f;
+      vertices[offset+45] = 0.0f;
+      vertices[offset+46] = 1.0f;
+      vertices[offset+47] = 0.0f;
     }
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
   glGenBuffers(1, &vbo);
   glGenBuffers(1, &ebo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
-  setupGLBuffersAttributes();
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
   resetAllGLBuffers();
 }
 
@@ -85,7 +115,7 @@ void WaterMapGenerator::addWaterNearbyBaseTerrain()
       for (unsigned int x = 0; x < TILES_WIDTH; x++)
         {
           if (map[y+1][x] != 0)
-            map[y][x] = map[y+1][x];
+            postProcessMap[y][x] = map[y+1][x];
         }
     }
   //add water below the tile
@@ -94,7 +124,16 @@ void WaterMapGenerator::addWaterNearbyBaseTerrain()
       for (unsigned int x = 0; x < TILES_WIDTH; x++)
         {
           if (map[y-1][x] != 0)
-            map[y][x] = map[y-1][x];
+            postProcessMap[y][x] = map[y-1][x];
+        }
+    }
+  //add more water below the tile
+  for (unsigned int y = TILES_HEIGHT; y > 0; y--)
+    {
+      for (unsigned int x = 0; x < TILES_WIDTH; x++)
+        {
+          if (postProcessMap[y-1][x] != 0)
+            postProcessMap[y][x] = postProcessMap[y-1][x];
         }
     }
   //add water left to the tile
@@ -103,7 +142,7 @@ void WaterMapGenerator::addWaterNearbyBaseTerrain()
       for (unsigned int y = 0; y < TILES_HEIGHT; y++)
         {
           if (map[y][x+1] != 0)
-            map[y][x] = map[y][x+1];
+            postProcessMap[y][x] = map[y][x+1];
         }
     }
   //add water right to the tile
@@ -112,7 +151,16 @@ void WaterMapGenerator::addWaterNearbyBaseTerrain()
       for (unsigned int y = 0; y < TILES_HEIGHT; y++)
         {
           if (map[y][x-1] != 0)
-            map[y][x] = map[y][x-1];
+            postProcessMap[y][x] = map[y][x-1];
+        }
+    }
+  //add more water right to the tile
+  for (unsigned int x = TILES_WIDTH; x > 0; x--)
+    {
+      for (unsigned int y = 0; y < TILES_HEIGHT; y++)
+        {
+          if (postProcessMap[y][x-1] != 0)
+            postProcessMap[y][x] = postProcessMap[y][x-1];
         }
     }
 }
@@ -123,10 +171,10 @@ void WaterMapGenerator::fillSharpTerrainWithWater()
     {
       for (int x2 = 1; x2 < TILES_WIDTH - 1; x2++)
         {
-          if (map[y2][x2] == WATER_LEVEL)
+          if (postProcessMap[y2][x2] == WATER_LEVEL)
             continue;
-          if ((map[y2-1][x2] == WATER_LEVEL && map[y2+1][x2] == WATER_LEVEL) || (map[y2][x2-1] == WATER_LEVEL && map[y2][x2+1] == WATER_LEVEL))
-            map[y2][x2] = WATER_LEVEL;
+          if ((postProcessMap[y2-1][x2] == WATER_LEVEL && postProcessMap[y2+1][x2] == WATER_LEVEL) || (postProcessMap[y2][x2-1] == WATER_LEVEL && postProcessMap[y2][x2+1] == WATER_LEVEL))
+            postProcessMap[y2][x2] = WATER_LEVEL;
         }
     }
 }
@@ -143,7 +191,7 @@ void WaterMapGenerator::liftWaterLevel(float liftValue)
     }
 }
 
-void WaterMapGenerator::generateMap(unsigned int shoreSizeBase, float waterLevel, unsigned int &numWaterTiles)
+void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigned int &numWaterTiles)
 {
   srand(time(NULL));
   bool startAxisFromX = rand() % 2 == 0;

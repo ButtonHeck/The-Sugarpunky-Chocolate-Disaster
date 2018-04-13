@@ -3,7 +3,7 @@
 Camera::Camera(glm::vec3 position)
   :
     zoom(40.0f),
-    moveSpeed(30),
+    moveSpeed(10),
     mouseSensitivity(0.05f),
     FPSmode(false),
     yaw(-90.0f),
@@ -86,6 +86,21 @@ glm::vec3 Camera::getPosition() const
 glm::vec3 Camera::getDirection() const
 {
   return Front;
+}
+
+glm::vec3 Camera::getFront() const
+{
+  return Front;
+}
+
+glm::vec3 Camera::getRight() const
+{
+  return Right;
+}
+
+glm::vec3 Camera::getUp() const
+{
+  return Up;
 }
 
 void Camera::updateVectors()

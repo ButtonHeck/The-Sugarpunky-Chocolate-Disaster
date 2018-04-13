@@ -36,8 +36,9 @@ void MapGenerator::setupGLBuffersAttributes()
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
 }
 
-void MapGenerator::createTiles(bool flat, bool createOnZeroTiles)
+void MapGenerator::createTiles(bool flat, bool createOnZeroTiles, std::vector<std::vector<float>>& map)
 {
+  tiles.clear();
   for (unsigned int y = 1; y < map.size(); y++)
     {
       for (unsigned int x = 1; x < map[0].size(); x++)
