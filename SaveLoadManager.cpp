@@ -132,14 +132,8 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
           hillTreeModels[i][m] = std::move(model);
         }
     }
-  for (unsigned int i = 0; i < treeModels.size(); i++)
-    {
-      treeGenerator->getPlainTrees()[i].loadInstances(treeModels[i], numAllTrees[i]);
-    }
-  for (unsigned int i = 0; i < hillTreeModels.size(); i++)
-    {
-      treeGenerator->getHillTrees()[i].loadInstances(hillTreeModels[i], numAllHillTrees[i]);
-    }
+  treeGenerator->updatePlainModels(treeModels, numAllTrees);
+  treeGenerator->updateHillModels(hillTreeModels, numAllHillTrees);
 
   hillGenerator.createTiles(false, false, hillGenerator.getMap());
   hillGenerator.fillBufferData();

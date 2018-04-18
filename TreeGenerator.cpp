@@ -69,6 +69,33 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
   treesAlreadyCreated = true;
 }
 
+void TreeGenerator::updatePlainModels(std::vector<glm::mat4 *> &models, unsigned int *numAllTrees)
+{
+  delete[] numTrees;
+  numTrees = new unsigned int[plainTrees.size()];
+  for (unsigned int i = 0; i < treeModels.size(); i++)
+    {
+      delete[] treeModels[i];
+    }
+  treeModels.clear();
+  for (unsigned int i = 0; i < models.size(); i++)
+    {
+      treeModels.push_back(new glm::mat4[numAllTrees[i]]);
+      numTrees[i] = numAllTrees[i];
+    }
+  for (unsigned int i = 0; i < treeModels.size(); i++)
+    {
+      for (unsigned int m = 0; m < numAllTrees[i]; m++)
+        {
+          treeModels[i][m] = models[i][m];
+        }
+    }
+  for (unsigned int i = 0; i < plainTrees.size(); i++)
+    {
+      plainTrees[i].loadInstances(treeModels[i], numTrees[i]);
+    }
+}
+
 void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
 {
   std::uniform_real_distribution<float> modelSizeDistribution(0.2f, 0.3f);
@@ -128,6 +155,33 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
       hillTrees[i].loadInstances(hillTreeModels[i], numHillTrees[i]);
     }
   hillTreesAlreadyCreated = true;
+}
+
+void TreeGenerator::updateHillModels(std::vector<glm::mat4 *> &models, unsigned int *numAllTrees)
+{
+  delete[] numHillTrees;
+  numHillTrees = new unsigned int[hillTrees.size()];
+  for (unsigned int i = 0; i < hillTreeModels.size(); i++)
+    {
+      delete[] hillTreeModels[i];
+    }
+  hillTreeModels.clear();
+  for (unsigned int i = 0; i < models.size(); i++)
+    {
+      hillTreeModels.push_back(new glm::mat4[numAllTrees[i]]);
+      numHillTrees[i] = numAllTrees[i];
+    }
+  for (unsigned int i = 0; i < hillTreeModels.size(); i++)
+    {
+      for (unsigned int m = 0; m < numAllTrees[i]; m++)
+        {
+          hillTreeModels[i][m] = models[i][m];
+        }
+    }
+  for (unsigned int i = 0; i < hillTrees.size(); i++)
+    {
+      hillTrees[i].loadInstances(hillTreeModels[i], numHillTrees[i]);
+    }
 }
 
 std::vector<glm::mat4 *> &TreeGenerator::getTreeModels()
