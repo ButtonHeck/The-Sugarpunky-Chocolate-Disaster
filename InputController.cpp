@@ -9,6 +9,7 @@ extern bool renderDebugText;
 extern bool recreateTerrain;
 extern bool saveRequest;
 extern bool loadRequest;
+extern bool showBuildable;
 bool keysPressed[GLFW_KEY_LAST];
 bool firstMouseInput = true;
 bool polygonLineMode = false;
@@ -91,6 +92,18 @@ void InputController::processKeyboard(float delta)
     }
   if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_F5] = false;
+
+  //show buildable
+  if (glfwGetKey(window, GLFW_KEY_F6) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_F6])
+        {
+          showBuildable = !showBuildable;
+          keysPressed[GLFW_KEY_F6] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_F6) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_F6] = false;
 
   //recreate terrain
   if (glfwGetKey(window, GLFW_KEY_F9) == GLFW_PRESS)

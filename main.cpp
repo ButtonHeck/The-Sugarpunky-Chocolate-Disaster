@@ -22,6 +22,7 @@
 #include "FontManager.h"
 #include "CoordinateSystemRenderer.h"
 #include "SaveLoadManager.h"
+#include "BuildableMapGenerator.h"
 
 GLFWwindow* initGLFW();
 void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity,
@@ -41,6 +42,7 @@ Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
 FontManager fontManager("OCTAPOST_1.ttf");
 CoordinateSystemRenderer csRenderer;
 SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator);
+BuildableMapGenerator buildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
 bool renderShadowOnTrees = true;
 bool renderTreeModels = true;
 bool animateWater = true;
@@ -48,6 +50,7 @@ bool renderDebugText = true;
 bool recreateTerrain = false;
 bool saveRequest = false;
 bool loadRequest = false;
+bool showBuildable = false;
 
 int main()
 {
@@ -81,6 +84,7 @@ int main()
   Shader coordinateSystem(PROJ_PATH + "/shaders/coordinateSystem.vs",
                           PROJ_PATH + "/shaders/coordinateSystem.gs",
                           PROJ_PATH + "/shaders/coordinateSystem.fs");
+  Shader buildableShader(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
 
   //MODELS (take about 65ms per model)
   Model tree1(PROJ_PATH + "/models/tree1/tree1.obj", textureLoader);
@@ -175,6 +179,8 @@ int main()
   underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
   skybox.fillBufferData(); //setup skybox  
   csRenderer.fillBufferData(); //coordinate system setup
+  buildableMapGenerator.prepareMap();
+  buildableMapGenerator.fillBufferData();
 
   //setup models
   auto modelTimeBegin = std::chrono::system_clock::now();
@@ -291,6 +297,16 @@ int main()
       //base terrain 1x1 tiles
       glBindVertexArray(baseMapGenerator->getCellVAO());
       glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator->getNumCellInstances());
+
+      //buildable tiles
+      if (showBuildable)
+        {
+          buildableShader.use();
+          buildableShader.setMat4("projectionView", projectionView);
+          buildableShader.setMat4("model", model);
+          glBindVertexArray(buildableMapGenerator.getVAO());
+          glDrawArrays(GL_TRIANGLES, 0, 6 * buildableMapGenerator.getTiles().size());
+        }
 
       //water tiles
       water.use();
@@ -438,6 +454,7 @@ int main()
   baseMapGenerator->deleteGLObjects();
   hillMapGenerator->deleteGLObjects();
   waterMapGenerator->deleteGLObjects();
+  buildableMapGenerator.deleteGLObjects();
   delete baseMapGenerator;
   delete hillMapGenerator;
   delete waterMapGenerator;
@@ -454,6 +471,7 @@ int main()
   modelShader.cleanUp();
   fontShader.cleanUp();
   coordinateSystem.cleanUp();
+  buildableShader.cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();
 }

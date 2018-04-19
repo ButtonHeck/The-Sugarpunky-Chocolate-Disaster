@@ -20,7 +20,8 @@ SOURCES += main.cpp \
     TreeGenerator.cpp \
     FontManager.cpp \
     CoordinateSystemRenderer.cpp \
-    SaveLoadManager.cpp
+    SaveLoadManager.cpp \
+    BuildableMapGenerator.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -64,7 +65,8 @@ HEADERS += \
     TreeGenerator.h \
     FontManager.h \
     CoordinateSystemRenderer.h \
-    SaveLoadManager.h
+    SaveLoadManager.h \
+    BuildableMapGenerator.h
 
 DISTFILES += \
     scene.vs \
@@ -137,7 +139,8 @@ DISTFILES += \
     fonts/OCTAPOST_1.ttf \
     shaders/coordinateSystem.vs \
     shaders/coordinateSystem.gs \
-    shaders/coordinateSystem.fs
+    shaders/coordinateSystem.fs \
+    shaders/buildableTiles.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
