@@ -140,7 +140,8 @@ DISTFILES += \
     shaders/coordinateSystem.vs \
     shaders/coordinateSystem.gs \
     shaders/coordinateSystem.fs \
-    shaders/buildableTiles.fs
+    shaders/buildableTiles.fs \
+    shaders/buildableTiles.vs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

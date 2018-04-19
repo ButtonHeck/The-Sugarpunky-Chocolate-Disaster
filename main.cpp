@@ -84,7 +84,7 @@ int main()
   Shader coordinateSystem(PROJ_PATH + "/shaders/coordinateSystem.vs",
                           PROJ_PATH + "/shaders/coordinateSystem.gs",
                           PROJ_PATH + "/shaders/coordinateSystem.fs");
-  Shader buildableShader(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
+  Shader buildableShader(PROJ_PATH + "/shaders/buildableTiles.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
 
   //MODELS (take about 65ms per model)
   Model tree1(PROJ_PATH + "/models/tree1/tree1.obj", textureLoader);
@@ -305,7 +305,9 @@ int main()
           buildableShader.setMat4("projectionView", projectionView);
           buildableShader.setMat4("model", model);
           glBindVertexArray(buildableMapGenerator.getVAO());
-          glDrawArrays(GL_TRIANGLES, 0, 6 * buildableMapGenerator.getTiles().size());
+          glEnable(GL_BLEND);
+          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, buildableMapGenerator.getNumInstances());
+          glDisable(GL_BLEND);
         }
 
       //water tiles

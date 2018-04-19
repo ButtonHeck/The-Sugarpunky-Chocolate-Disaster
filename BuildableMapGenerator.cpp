@@ -11,20 +11,20 @@ BuildableMapGenerator::BuildableMapGenerator(std::vector<std::vector<float> > &b
 
 void BuildableMapGenerator::prepareMap()
 {
-  for (unsigned int y = 1; y < TILES_HEIGHT - 1; y++)
+  for (unsigned int y = 2; y < TILES_HEIGHT; y++)
     {
-      for (unsigned int x = 1; x < TILES_WIDTH - 1; x++)
+      for (unsigned int x = 0; x < TILES_WIDTH - 1; x++)
         {
           if (baseMap[y][x] == 0
-              && baseMap[y+1][x] == 0
-              && baseMap[y+1][x+1] == 0
+              && baseMap[y-1][x] == 0
+              && baseMap[y-1][x+1] == 0
               && baseMap[y][x+1] == 0
               && hillMap[y][x] == 0
-              && hillMap[y+1][x] == 0
-              && hillMap[y+1][x+1] == 0
+              && hillMap[y-1][x] == 0
+              && hillMap[y-1][x+1] == 0
               && hillMap[y][x+1] == 0)
             {
-              map[y+1][x+1] = 0.01f;
+              map[y][x] = true;
             }
         }
     }
@@ -34,44 +34,51 @@ void BuildableMapGenerator::prepareMap()
 
 void BuildableMapGenerator::fillBufferData()
 {
-  const size_t VERTEX_DATA_LENGTH = tiles.size() * 18;
-  GLfloat vertices[VERTEX_DATA_LENGTH];
-  for (unsigned int i = 0; i < tiles.size(); i++)
-    {
-      TerrainTile& tile = tiles[i];
-      int offset = i * 18;
-      //ll1
-      vertices[offset] = -0.9f- TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+1] = tile.lowLeft;
-      vertices[offset+2] = -0.1f- TILES_HEIGHT / 2 + tile.mapY;
-      //lr1
-      vertices[offset+3] = -0.1f- TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+4] = tile.lowRight;
-      vertices[offset+5] = -0.1f- TILES_HEIGHT / 2 + tile.mapY;
-      //ur1
-      vertices[offset+6] = -0.1f- TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+7] = tile.upperRight;
-      vertices[offset+8] = -0.9f - TILES_HEIGHT / 2 + tile.mapY;
-      //ur2
-      vertices[offset+9] = -0.1f- TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+10] = tile.upperRight;
-      vertices[offset+11] = -0.9f - TILES_HEIGHT / 2 + tile.mapY;
-      //ul2
-      vertices[offset+12] = -0.9f - TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+13] = tile.upperLeft;
-      vertices[offset+14] = -0.9f - TILES_HEIGHT / 2 + tile.mapY;
-      //ll2
-      vertices[offset+15] = -0.9f- TILES_WIDTH / 2 + tile.mapX;
-      vertices[offset+16] = tile.lowLeft;
-      vertices[offset+17] = -0.1f- TILES_HEIGHT / 2 + tile.mapY;
-    }
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
   glGenBuffers(1, &vbo);
   glGenBuffers(1, &ebo);
+  glGenBuffers(1, &modelVbo);
+  GLfloat cellVertices[12] = {
+       0.0f, 0.01f,  0.9f,
+       0.9f, 0.01f,  0.9f,
+       0.9f, 0.01f,  0.0f,
+       0.0f, 0.01f,  0.0f
+  };
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(cellVertices), cellVertices, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+  num_instances = tiles.size();
+  glm::mat4* instanceModels = new glm::mat4[num_instances];
+  for (unsigned int i = 0; i < tiles.size(); i++)
+    {
+      glm::mat4 model;
+      TerrainTile& tile = tiles[i];
+      model = glm::translate(model, glm::vec3(-TILES_WIDTH / 2 + tile.mapX, 0.0f, -TILES_HEIGHT / 2 + tile.mapY - 1));
+      instanceModels[i] = model;
+    }
+  glBindBuffer(GL_ARRAY_BUFFER, modelVbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * tiles.size(), &instanceModels[0], GL_STATIC_DRAW);
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), 0);
+  glEnableVertexAttribArray(4);
+  glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(sizeof(glm::vec4)));
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4)));
+  glEnableVertexAttribArray(6);
+  glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4)));
+  glVertexAttribDivisor(3, 1);
+  glVertexAttribDivisor(4, 1);
+  glVertexAttribDivisor(5, 1);
+  glVertexAttribDivisor(6, 1);
+  delete[] instanceModels;
   resetAllGLBuffers();
+}
+
+GLuint &BuildableMapGenerator::getNumInstances()
+{
+  return num_instances;
 }

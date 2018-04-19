@@ -15,9 +15,12 @@ public:
   BuildableMapGenerator(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
   void prepareMap();
   void fillBufferData();
+  GLuint& getNumInstances();
 private:
   std::vector<std::vector<float>>& baseMap;
   std::vector<std::vector<float>>& hillMap;
+  GLuint modelVbo;
+  unsigned int num_instances;
 };
 
 #endif // BUILDABLEMAPGENERATOR_H
