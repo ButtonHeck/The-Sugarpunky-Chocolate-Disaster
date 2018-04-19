@@ -41,8 +41,8 @@ BaseMapGenerator* baseMapGenerator = new BaseMapGenerator(waterMapGenerator->get
 Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
 FontManager fontManager("OCTAPOST_1.ttf");
 CoordinateSystemRenderer csRenderer;
-SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator);
-BuildableMapGenerator buildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+BuildableMapGenerator* buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
 bool renderShadowOnTrees = true;
 bool renderTreeModels = true;
 bool animateWater = true;
@@ -179,8 +179,8 @@ int main()
   underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
   skybox.fillBufferData(); //setup skybox  
   csRenderer.fillBufferData(); //coordinate system setup
-  buildableMapGenerator.prepareMap();
-  buildableMapGenerator.fillBufferData();
+  buildableMapGenerator->prepareMap();
+  buildableMapGenerator->fillBufferData();
 
   //setup models
   auto modelTimeBegin = std::chrono::system_clock::now();
@@ -252,8 +252,12 @@ int main()
           waterMapGenerator->fillBufferData(); //fill water buffer
           treeGenerator.setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap()); //trees models setup
           treeGenerator.setupHillModels(hillMapGenerator->getMap()); //hill trees models setup
+          delete buildableMapGenerator;
+          buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+          buildableMapGenerator->prepareMap();
+          buildableMapGenerator->fillBufferData();
           delete saveLoadManager;
-          saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator);
+          saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
           saveLoadManager->setTreeGenerator(treeGenerator);
           recreateTerrain = false;
         }
@@ -304,9 +308,9 @@ int main()
           buildableShader.use();
           buildableShader.setMat4("projectionView", projectionView);
           buildableShader.setMat4("model", model);
-          glBindVertexArray(buildableMapGenerator.getVAO());
+          glBindVertexArray(buildableMapGenerator->getVAO());
           glEnable(GL_BLEND);
-          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, buildableMapGenerator.getNumInstances());
+          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, buildableMapGenerator->getNumInstances());
           glDisable(GL_BLEND);
         }
 
@@ -456,11 +460,12 @@ int main()
   baseMapGenerator->deleteGLObjects();
   hillMapGenerator->deleteGLObjects();
   waterMapGenerator->deleteGLObjects();
-  buildableMapGenerator.deleteGLObjects();
+  buildableMapGenerator->deleteGLObjects();
   delete baseMapGenerator;
   delete hillMapGenerator;
   delete waterMapGenerator;
   delete saveLoadManager;
+  delete buildableMapGenerator;
   underwaterQuadGenerator.deleteGLObjects();
   fontManager.deleteGLObjects();
   csRenderer.deleteGLObjects();

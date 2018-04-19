@@ -1,10 +1,11 @@
 #include "SaveLoadManager.h"
 
-SaveLoadManager::SaveLoadManager(BaseMapGenerator &baseGenerator, HillsMapGenerator &hillGenerator, WaterMapGenerator &waterGenerator)
+SaveLoadManager::SaveLoadManager(BaseMapGenerator &baseGenerator, HillsMapGenerator &hillGenerator, WaterMapGenerator &waterGenerator, BuildableMapGenerator *buildableGenerator)
   :
     baseGenerator(baseGenerator),
     hillGenerator(hillGenerator),
     waterGenerator(waterGenerator),
+    buildableGenerator(buildableGenerator),
     baseMap(baseGenerator.getMap()),
     hillMap(hillGenerator.getMap()),
     waterMap(waterGenerator.getMap()),
@@ -146,6 +147,10 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   baseGenerator.fillCellBufferData();
   waterGenerator.postPrepareMap();
   waterGenerator.fillBufferData();
+  delete buildableGenerator;
+  buildableGenerator = new BuildableMapGenerator(baseGenerator.getMap(), hillGenerator.getMap());
+  buildableGenerator->prepareMap();
+  buildableGenerator->fillBufferData();
   return true;
 }
 
