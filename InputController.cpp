@@ -10,10 +10,10 @@ extern bool recreateTerrain;
 extern bool saveRequest;
 extern bool loadRequest;
 extern bool showBuildable;
+extern bool showMouse;
 bool keysPressed[GLFW_KEY_LAST];
 bool firstMouseInput = true;
 bool polygonLineMode = false;
-bool showMouse = false;
 float lastX, lastY;
 
 void InputController::processKeyboard(float delta)
@@ -157,6 +157,12 @@ void InputController::processKeyboard(float delta)
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)
 {
+  if (showMouse)
+    {
+      lastX = x;
+      lastY = y;
+      return;
+    }
   if (firstMouseInput)
     {
       lastX = x;

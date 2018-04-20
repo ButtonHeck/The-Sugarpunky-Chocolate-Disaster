@@ -50,6 +50,7 @@ bool renderDebugText = true;
 bool recreateTerrain = false;
 bool saveRequest = false;
 bool loadRequest = false;
+bool showMouse = false;
 bool showBuildable = false;
 
 int main()
