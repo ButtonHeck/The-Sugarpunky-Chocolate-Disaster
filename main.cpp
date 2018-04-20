@@ -29,6 +29,9 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
                             GLsizei length, const GLchar* message, const void* userParam);
 void printMapsInfos();
 
+static int scr_width;
+static int scr_height;
+static float aspect_ratio;
 GLFWwindow* window;
 Timer timer;
 Camera cam(glm::vec3(0.0f, 3.0f, 0.0f));
@@ -39,7 +42,6 @@ HillsMapGenerator* hillMapGenerator = new HillsMapGenerator(waterMapGenerator->g
 UnderwaterQuadMapGenerator underwaterQuadGenerator;
 BaseMapGenerator* baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
 Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
-FontManager fontManager("OCTAPOST_1.ttf");
 CoordinateSystemRenderer csRenderer;
 BuildableMapGenerator* buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
 SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
@@ -71,6 +73,7 @@ int main()
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  FontManager fontManager("OCTAPOST_1.ttf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height));
   fontManager.loadFont();
 
   //SHADER LOADING (take about 150-180ms for 7 shader programs)
@@ -209,7 +212,7 @@ int main()
 
   //globals
   glm::mat4 model;
-  glm::mat4 projection = glm::perspective(glm::radians(cam.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 500.0f);
+  glm::mat4 projection = glm::perspective(glm::radians(cam.getZoom()), (float)scr_width / (float)scr_height, 0.1f, 500.0f);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   auto frameTime = std::chrono::high_resolution_clock::now();
   auto currentTime = frameTime;
@@ -417,17 +420,17 @@ int main()
       //font rendering
       if (renderDebugText)
         {
-          fontManager.renderText(fontShader, "FPS: " + std::to_string(fps), 10.0f, (float)SCR_HEIGHT - 25.0f, 0.4f);
+          fontManager.renderText(fontShader, "FPS: " + std::to_string(fps), 10.0f, (float)scr_height - 25.0f, 0.4f);
           fontManager.renderText(fontShader,
                                  "ViewPos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                                  + std::to_string(viewPosition.y).substr(0,6) + ": "
-                                 + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)SCR_HEIGHT - 50.0f, 0.4f);
+                                 + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 50.0f, 0.4f);
           fontManager.renderText(fontShader,
                                  "ViewDir: " + std::to_string(cam.getDirection().x).substr(0,6) + ": "
                                  + std::to_string(cam.getDirection().y).substr(0,6) + ": "
-                                 + std::to_string(cam.getDirection().z).substr(0,6), 10.0f, (float)SCR_HEIGHT - 75.0f, 0.4f);
+                                 + std::to_string(cam.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 75.0f, 0.4f);
           glLineWidth(3);
-          csRenderer.draw(coordinateSystem, view);
+          csRenderer.draw(coordinateSystem, view, aspect_ratio);
         }
 
       if (saveRequest)
@@ -498,7 +501,12 @@ GLFWwindow* initGLFW()
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
   glfwWindowHint(GLFW_SAMPLES, 2);
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-  GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Terrain Test", glfwGetPrimaryMonitor(), 0);
+  GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+  const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
+  scr_width = vidmode->width;
+  scr_height = vidmode->height;
+  aspect_ratio = (float)scr_width / (float)scr_height;
+  GLFWwindow* window = glfwCreateWindow(scr_width, scr_height, "Terrain Test", monitor, 0);
   glfwMakeContextCurrent(window);
   glfwSetCursorPosCallback(window, input.cursorCallback);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

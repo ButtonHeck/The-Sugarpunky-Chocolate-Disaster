@@ -12,7 +12,7 @@
 class FontManager
 {
 public:
-  FontManager(const std::string& fontfile);
+  FontManager(const std::string& fontfile, glm::mat4 projection);
   void loadFont();
   void renderText(Shader& shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color = glm::vec3(0.0f));
   GLuint& getVAO();
@@ -28,7 +28,7 @@ private:
     FT_Pos advance;
   };
   std::map<GLchar, Character> characters;
-  glm::mat4 fontProjection = glm::ortho(0.0f, (float)SCR_WIDTH, 0.0f, (float)SCR_HEIGHT);
+  glm::mat4 fontProjection;
 };
 
 #endif // FONTMANAGER_H

@@ -28,11 +28,11 @@ void CoordinateSystemRenderer::deleteGLObjects()
   glDeleteBuffers(1, &vbo);
 }
 
-void CoordinateSystemRenderer::draw(Shader &shader, glm::mat4 &view)
+void CoordinateSystemRenderer::draw(Shader &shader, glm::mat4 &view, float aspect_ratio)
 {
   shader.use();
   shader.setMat4("view", view);
-  shader.setFloat("aspectRatio", ASPECT_RATIO);
+  shader.setFloat("aspectRatio", aspect_ratio);
   glBindVertexArray(vao);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glDrawArrays(GL_POINTS, 0, 3);

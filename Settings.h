@@ -3,9 +3,9 @@
 #include <string>
 #include <glm/glm.hpp>
 
-constexpr int SCR_WIDTH = 1440;
-constexpr int SCR_HEIGHT = 900;
-constexpr float ASPECT_RATIO = (float)SCR_WIDTH / (float)SCR_HEIGHT;
+//static int SCR_WIDTH;
+//static int SCR_HEIGHT;
+//static float ASPECT_RATIO;
 constexpr int TILES_WIDTH = 384;
 constexpr int TILES_HEIGHT = 384;
 constexpr int NUM_TILES = TILES_WIDTH * TILES_HEIGHT;

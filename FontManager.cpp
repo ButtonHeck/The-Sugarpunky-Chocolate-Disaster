@@ -1,8 +1,9 @@
 #include "FontManager.h"
 
-FontManager::FontManager(const std::string &fontfile)
+FontManager::FontManager(const std::string &fontfile, glm::mat4 projection)
   :
-    filename(fontfile)
+    filename(fontfile),
+    fontProjection(projection)
 {
 
 }
