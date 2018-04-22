@@ -55,6 +55,9 @@ bool loadRequest = false;
 bool showMouse = false;
 bool showBuildable = false;
 
+double cursorScreenX = 0.0;
+double cursorScreenY = 0.0;
+
 int main()
 {
   //GLOBAL SETUP (initializing GLFW take about 500ms)
@@ -318,6 +321,11 @@ int main()
           glDisable(GL_BLEND);
         }
 
+      if (showMouse)
+        {
+          glfwGetCursorPos(window, &cursorScreenX, &cursorScreenY);
+        }
+
       //water tiles
       water.use();
       water.setMat4("projectionView", projectionView);
@@ -509,6 +517,7 @@ GLFWwindow* initGLFW()
   GLFWwindow* window = glfwCreateWindow(scr_width, scr_height, "Terrain Test", monitor, 0);
   glfwMakeContextCurrent(window);
   glfwSetCursorPosCallback(window, input.cursorCallback);
+  glfwSetMouseButtonCallback(window, input.cursorClickCallback);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   return window;
 }

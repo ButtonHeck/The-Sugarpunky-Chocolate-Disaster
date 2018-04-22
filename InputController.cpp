@@ -11,6 +11,8 @@ extern bool saveRequest;
 extern bool loadRequest;
 extern bool showBuildable;
 extern bool showMouse;
+extern double cursorScreenX;
+extern double cursorScreenY;
 bool keysPressed[GLFW_KEY_LAST];
 bool firstMouseInput = true;
 bool polygonLineMode = false;
@@ -174,5 +176,13 @@ void InputController::cursorCallback(GLFWwindow *, double x, double y)
   lastX = x;
   lastY = y;
   cam.processMouseCursor(dx, dy);
+}
+
+void InputController::cursorClickCallback(GLFWwindow *window, int button, int action, int mods)
+{
+  if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+      std::cout << "Mouse on screen: [" << cursorScreenX << " : " << cursorScreenY << "]\n";
+    }
 }
 
