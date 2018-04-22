@@ -54,9 +54,13 @@ bool saveRequest = false;
 bool loadRequest = false;
 bool showMouse = false;
 bool showBuildable = false;
-
 double cursorScreenX = 0.0;
 double cursorScreenY = 0.0;
+float camCenterX = 0.0f;
+float camCenterZ = 0.0f;
+int camCenterMapCoordX = 0;
+int camCenterMapCoordZ = 0;
+std::string tileType = "Flat";
 
 int main()
 {
@@ -324,6 +328,50 @@ int main()
       if (showMouse)
         {
           glfwGetCursorPos(window, &cursorScreenX, &cursorScreenY);
+          glm::vec3 cameraDirection = cam.getDirection();
+          float cameraDirectionY = cameraDirection.y;
+          if (cameraDirectionY < 0.0f)
+            {
+              float ratio = cam.getPosition().y / (-cameraDirectionY);
+              camCenterX = (cameraDirection.x * ratio) + cam.getPosition().x;
+              camCenterZ = (cameraDirection.z * ratio) + cam.getPosition().z;
+              bool outOfMap = false;
+              if (camCenterX <= -TILES_WIDTH/2)
+                {
+                  camCenterX = -TILES_WIDTH/2;
+                  outOfMap = true;
+                }
+              if (camCenterX > TILES_WIDTH/2)
+                {
+                  camCenterX = TILES_WIDTH/2;
+                  outOfMap = true;
+                }
+              if (camCenterZ <= -TILES_HEIGHT/2)
+                {
+                  camCenterZ = -TILES_HEIGHT/2;
+                  outOfMap = true;
+                }
+              if (camCenterZ > TILES_HEIGHT/2)
+                {
+                  camCenterZ = TILES_HEIGHT/2;
+                  outOfMap = true;
+                }
+              camCenterMapCoordX = (int)camCenterX + 192;
+              camCenterMapCoordZ = (int)camCenterZ + 192;
+              if (outOfMap)
+                tileType = "out of map";
+              else if (hillMapGenerator->getMap()[camCenterMapCoordZ][camCenterMapCoordX] != 0)
+                tileType = "Hills";
+              else if (waterMapGenerator->getMap()[camCenterMapCoordZ][camCenterMapCoordX] != 0)
+                {
+                  if (baseMapGenerator->getMap()[camCenterMapCoordZ][camCenterMapCoordX] == DENY_TILE_RENDER_VALUE)
+                    tileType = "Water";
+                  else
+                    tileType = "Sand";
+                }
+              else
+                tileType = "Flat";
+            }
         }
 
       //water tiles
@@ -437,6 +485,10 @@ int main()
                                  "ViewDir: " + std::to_string(cam.getDirection().x).substr(0,6) + ": "
                                  + std::to_string(cam.getDirection().y).substr(0,6) + ": "
                                  + std::to_string(cam.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 75.0f, 0.4f);
+          fontManager.renderText(fontShader,
+                                 "CamCenterAt: " + std::to_string(camCenterMapCoordX) + ": "
+                                 + std::to_string(camCenterMapCoordZ) + ", " + tileType,
+                                 10.0f, (float)scr_height - 100.0f, 0.4f);
           glLineWidth(3);
           csRenderer.draw(coordinateSystem, view, aspect_ratio);
         }

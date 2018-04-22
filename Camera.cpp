@@ -26,10 +26,10 @@ void Camera::processMouseCursor(float xOffset, float yOffset)
   yOffset *= mouseSensitivity;
   yaw -= xOffset;
   pitch -= yOffset;
-  if (pitch >= 89.0f)
-    pitch = 89.0f;
-  if (pitch <= -89.0f)
-    pitch = -89.0f;
+  if (pitch >= 89.9f)
+    pitch = 89.9f;
+  if (pitch <= -89.9f)
+    pitch = -89.9f;
   updateVectors();
 }
 
