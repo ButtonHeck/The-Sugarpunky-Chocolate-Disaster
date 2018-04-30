@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Camera.h"
+#include "Settings.h"
 
 class InputController
 {

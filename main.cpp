@@ -31,7 +31,7 @@ void printMapsInfos();
 
 int scr_width;
 int scr_height;
-static float aspect_ratio;
+float aspect_ratio;
 GLFWwindow* window;
 Timer timer;
 Camera cam(glm::vec3(0.0f, 3.0f, 0.0f));
@@ -429,8 +429,8 @@ int main()
           auxCamCenterMapCoordZ = (int)(TILES_HEIGHT + auxCamCenterZ) - TILES_HEIGHT / 2;
           if (auxCamCenterMapCoordZ < 1)
             auxCamCenterMapCoordZ = 1;
-          if (auxCamCenterMapCoordZ > TILES_HEIGHT - 2)
-            auxCamCenterMapCoordZ = TILES_HEIGHT - 2;
+          if (auxCamCenterMapCoordZ > TILES_HEIGHT - 1)
+            auxCamCenterMapCoordZ = TILES_HEIGHT - 1;
           if (auxOutOfMap)
             auxCamTileType = "out of map";
           else if (hillMapGenerator->getMap()[auxCamCenterMapCoordZ][auxCamCenterMapCoordX] != 0)
@@ -458,12 +458,12 @@ int main()
         }
 
       //selected tile
-      if (showMouse)
+      if (showMouse && buildableMapGenerator->getMap()[auxCamCenterMapCoordZ][auxCamCenterMapCoordX] != 0)
         {
           selectedTileShader.use();
           selectedTileShader.setMat4("projectionView", projectionView);
           glm::mat4 selectedModel;
-          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + auxCamCenterMapCoordX, 0.0f, -TILES_HEIGHT / 2 + auxCamCenterMapCoordZ));
+          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + auxCamCenterMapCoordX, 0.0f, -TILES_HEIGHT / 2 + auxCamCenterMapCoordZ - 1));
           selectedTileShader.setMat4("model", selectedModel);
           glBindVertexArray(selectedVAO);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

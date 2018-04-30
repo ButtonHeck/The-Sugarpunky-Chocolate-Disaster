@@ -14,13 +14,16 @@ extern bool showBuildable;
 extern bool showMouse;
 extern int scr_width;
 extern int scr_height;
+extern float aspect_ratio;
 bool keysPressed[GLFW_KEY_LAST];
+bool mouseKeysPressed[GLFW_MOUSE_BUTTON_LAST];
 bool firstMouseInput = true;
 bool cursorActivatedButUncentered = true;
 bool polygonLineMode = false;
 float lastX, lastY;
 double cursorScreenX = 0.0;
 double cursorScreenY = 0.0;
+double auxCamOnScreenX, auxCamOnScreenZ;
 
 void InputController::processKeyboard(float delta)
 {
@@ -164,31 +167,10 @@ void InputController::processKeyboard(float delta)
     }
   if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_F11] = false;
-
-  //show mouse
-  if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-    {
-      if (!keysPressed[GLFW_KEY_LEFT_CONTROL])
-        {
-          showMouse = !showMouse;
-          glfwSetInputMode(window, GLFW_CURSOR, showMouse ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-          cursorActivatedButUncentered = showMouse;
-          if (!showMouse)
-            {
-              auxCam.setPitch(cam.getPitch());
-              auxCam.setYaw(cam.getYaw());
-              auxCam.updateVectors();
-            }
-          keysPressed[GLFW_KEY_LEFT_CONTROL] = true;
-        }
-    }
-  if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)
-    keysPressed[GLFW_KEY_LEFT_CONTROL] = false;
 }
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)
 {
-  glfwGetCursorPos(window, &cursorScreenX, &cursorScreenY);
   if (showMouse)
     {
       if (cursorActivatedButUncentered)
@@ -197,6 +179,7 @@ void InputController::cursorCallback(GLFWwindow *, double x, double y)
           lastX = x;
           lastY = y;
           cursorActivatedButUncentered = false;
+          return;
         }
       float dx = lastX - x;
       float dy = y - lastY;
@@ -221,9 +204,23 @@ void InputController::cursorCallback(GLFWwindow *, double x, double y)
 
 void InputController::cursorClickCallback(GLFWwindow *window, int button, int action, int mods)
 {
-  if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+  if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
     {
-      std::cout << "Mouse on screen: [" << cursorScreenX << " : " << cursorScreenY << "]\n";
+      if (!mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT])
+        {
+          showMouse = !showMouse;
+          glfwSetInputMode(window, GLFW_CURSOR, showMouse ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+          cursorActivatedButUncentered = showMouse;
+          if (!showMouse)
+            {
+              auxCam.setPitch(cam.getPitch());
+              auxCam.setYaw(cam.getYaw());
+              auxCam.updateVectors();
+            }
+          mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT] = true;
+        }
     }
+  if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+    mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT] = false;
 }
 

@@ -9,7 +9,7 @@ Camera::Camera(glm::vec3 position)
     yaw(-90.0f),
     pitch(0.0f),
     Position(position),
-    Front(glm::vec3(0.0, -2.0, -1.0)),
+    Front(glm::vec3(0.0, 0.0, -1.0)),
     WorldUp(0.0, 1.0, 0.0)
 {
   updateVectors();
