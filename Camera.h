@@ -27,9 +27,13 @@ public:
   float getZoom() const;
   glm::vec3 getPosition() const;
   glm::vec3 getDirection() const;
+  void setPitch(float pitch);
+  void setYaw(float yaw);
   glm::vec3 getFront() const;
   glm::vec3 getRight() const;
   glm::vec3 getUp() const;
+  float getPitch();
+  float getYaw();
 private:
   void updateVectors();
   //options

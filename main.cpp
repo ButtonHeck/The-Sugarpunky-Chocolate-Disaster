@@ -29,12 +29,13 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
                             GLsizei length, const GLchar* message, const void* userParam);
 void printMapsInfos();
 
-static int scr_width;
-static int scr_height;
+int scr_width;
+int scr_height;
 static float aspect_ratio;
 GLFWwindow* window;
 Timer timer;
 Camera cam(glm::vec3(0.0f, 3.0f, 0.0f));
+Camera auxCam(glm::vec3(0.0f, 3.0f, 0.0f));
 InputController input;
 TextureLoader textureLoader;
 WaterMapGenerator* waterMapGenerator = new WaterMapGenerator();
@@ -325,6 +326,7 @@ int main()
           glDisable(GL_BLEND);
         }
 
+      //update cursor-to-map data
       if (showMouse)
         {
           glfwGetCursorPos(window, &cursorScreenX, &cursorScreenY);
@@ -489,6 +491,10 @@ int main()
                                  "CamCenterAt: " + std::to_string(camCenterMapCoordX) + ": "
                                  + std::to_string(camCenterMapCoordZ) + ", " + tileType,
                                  10.0f, (float)scr_height - 100.0f, 0.4f);
+          fontManager.renderText(fontShader,
+                                 "AuxCamViewDir: " + std::to_string(auxCam.getDirection().x).substr(0,6) + ": "
+                                 + std::to_string(auxCam.getDirection().y).substr(0,6) + ": "
+                                 + std::to_string(auxCam.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 125.0f, 0.4f);
           glLineWidth(3);
           csRenderer.draw(coordinateSystem, view, aspect_ratio);
         }

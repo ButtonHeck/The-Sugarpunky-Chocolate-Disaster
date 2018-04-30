@@ -2,6 +2,7 @@
 
 extern GLFWwindow* window;
 extern Camera cam;
+extern Camera auxCam;
 extern bool renderShadowOnTrees;
 extern bool renderTreeModels;
 extern bool animateWater;
@@ -13,8 +14,11 @@ extern bool showBuildable;
 extern bool showMouse;
 extern double cursorScreenX;
 extern double cursorScreenY;
+extern int scr_width;
+extern int scr_height;
 bool keysPressed[GLFW_KEY_LAST];
 bool firstMouseInput = true;
+bool cursorActivatedButUncentered = true;
 bool polygonLineMode = false;
 float lastX, lastY;
 
@@ -23,17 +27,35 @@ void InputController::processKeyboard(float delta)
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    cam.processKeyboardInput(delta, FORWARD);
+    {
+      cam.processKeyboardInput(delta, FORWARD);
+      auxCam.processKeyboardInput(delta, FORWARD);
+    }
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    cam.processKeyboardInput(delta, BACKWARD);
+    {
+      cam.processKeyboardInput(delta, BACKWARD);
+      auxCam.processKeyboardInput(delta, BACKWARD);
+    }
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    cam.processKeyboardInput(delta, LEFT);
+    {
+      cam.processKeyboardInput(delta, LEFT);
+      auxCam.processKeyboardInput(delta, LEFT);
+    }
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    cam.processKeyboardInput(delta, RIGHT);
+    {
+      cam.processKeyboardInput(delta, RIGHT);
+      auxCam.processKeyboardInput(delta, RIGHT);
+    }
   if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    cam.processKeyboardInput(delta, DOWN);
+    {
+      cam.processKeyboardInput(delta, DOWN);
+      auxCam.processKeyboardInput(delta, DOWN);
+    }
   if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-    cam.processKeyboardInput(delta, UP);
+    {
+      cam.processKeyboardInput(delta, UP);
+      auxCam.processKeyboardInput(delta, UP);
+    }
   //polygon mode
   if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS)
     {
@@ -150,6 +172,12 @@ void InputController::processKeyboard(float delta)
         {
           showMouse = !showMouse;
           glfwSetInputMode(window, GLFW_CURSOR, showMouse ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+          cursorActivatedButUncentered = showMouse;
+          if (!showMouse)
+            {
+              auxCam.setPitch(cam.getPitch());
+              auxCam.setYaw(cam.getYaw());
+            }
           keysPressed[GLFW_KEY_LEFT_CONTROL] = true;
         }
     }
@@ -161,8 +189,18 @@ void InputController::cursorCallback(GLFWwindow *, double x, double y)
 {
   if (showMouse)
     {
+      if (cursorActivatedButUncentered)
+        {
+          glfwSetCursorPos(window, scr_width / 2.0f, scr_height / 2.0f);
+          lastX = x;
+          lastY = y;
+          cursorActivatedButUncentered = false;
+        }
+      float dx = lastX - x;
+      float dy = y - lastY;
       lastX = x;
       lastY = y;
+      auxCam.processMouseCursor(dx, dy);
       return;
     }
   if (firstMouseInput)
@@ -176,6 +214,7 @@ void InputController::cursorCallback(GLFWwindow *, double x, double y)
   lastX = x;
   lastY = y;
   cam.processMouseCursor(dx, dy);
+  auxCam.processMouseCursor(dx, dy);
 }
 
 void InputController::cursorClickCallback(GLFWwindow *window, int button, int action, int mods)

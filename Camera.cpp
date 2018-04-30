@@ -88,6 +88,16 @@ glm::vec3 Camera::getDirection() const
   return Front;
 }
 
+void Camera::setPitch(float pitch)
+{
+  this->pitch = pitch;
+}
+
+void Camera::setYaw(float yaw)
+{
+  this->yaw = yaw;
+}
+
 glm::vec3 Camera::getFront() const
 {
   return Front;
@@ -101,6 +111,16 @@ glm::vec3 Camera::getRight() const
 glm::vec3 Camera::getUp() const
 {
   return Up;
+}
+
+float Camera::getPitch()
+{
+  return pitch;
+}
+
+float Camera::getYaw()
+{
+  return yaw;
 }
 
 void Camera::updateVectors()
