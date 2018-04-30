@@ -12,8 +12,6 @@ extern bool saveRequest;
 extern bool loadRequest;
 extern bool showBuildable;
 extern bool showMouse;
-extern double cursorScreenX;
-extern double cursorScreenY;
 extern int scr_width;
 extern int scr_height;
 bool keysPressed[GLFW_KEY_LAST];
@@ -21,6 +19,8 @@ bool firstMouseInput = true;
 bool cursorActivatedButUncentered = true;
 bool polygonLineMode = false;
 float lastX, lastY;
+double cursorScreenX = 0.0;
+double cursorScreenY = 0.0;
 
 void InputController::processKeyboard(float delta)
 {
@@ -177,6 +177,7 @@ void InputController::processKeyboard(float delta)
             {
               auxCam.setPitch(cam.getPitch());
               auxCam.setYaw(cam.getYaw());
+              auxCam.updateVectors();
             }
           keysPressed[GLFW_KEY_LEFT_CONTROL] = true;
         }
@@ -187,6 +188,7 @@ void InputController::processKeyboard(float delta)
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)
 {
+  glfwGetCursorPos(window, &cursorScreenX, &cursorScreenY);
   if (showMouse)
     {
       if (cursorActivatedButUncentered)

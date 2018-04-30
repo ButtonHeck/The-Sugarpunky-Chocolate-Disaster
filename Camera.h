@@ -34,8 +34,8 @@ public:
   glm::vec3 getUp() const;
   float getPitch();
   float getYaw();
-private:
   void updateVectors();
+private:
   //options
   float zoom, moveSpeed, mouseSensitivity;
   bool FPSmode;
