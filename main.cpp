@@ -350,13 +350,13 @@ int main()
           camCenterMapCoordX = (int)(TILES_WIDTH + camCenterX) - TILES_WIDTH / 2;
           if (camCenterMapCoordX < 1)
             camCenterMapCoordX = 1;
-          if (camCenterMapCoordX > TILES_WIDTH - 2)
-            camCenterMapCoordX = TILES_WIDTH - 2;
-          camCenterMapCoordZ = (int)(TILES_HEIGHT + camCenterZ) - TILES_HEIGHT / 2;
+          if (camCenterMapCoordX > TILES_WIDTH - 1)
+            camCenterMapCoordX = TILES_WIDTH - 1;
+          camCenterMapCoordZ = (int)(TILES_HEIGHT + camCenterZ) - TILES_HEIGHT / 2 + 1;
           if (camCenterMapCoordZ < 1)
             camCenterMapCoordZ = 1;
-          if (camCenterMapCoordZ > TILES_HEIGHT - 2)
-            camCenterMapCoordZ = TILES_HEIGHT - 2;
+          if (camCenterMapCoordZ > TILES_HEIGHT - 1)
+            camCenterMapCoordZ = TILES_HEIGHT - 1;
           if (outOfMap)
             tileType = "out of map";
           else if (hillMapGenerator->getMap()[camCenterMapCoordZ][camCenterMapCoordX] != 0)
@@ -402,9 +402,9 @@ int main()
           auxCamCenterMapCoordX = (int)(TILES_WIDTH + auxCamCenterX) - TILES_WIDTH / 2;
           if (auxCamCenterMapCoordX < 1)
             auxCamCenterMapCoordX = 1;
-          if (auxCamCenterMapCoordX > TILES_WIDTH - 2)
-            auxCamCenterMapCoordX = TILES_WIDTH - 2;
-          auxCamCenterMapCoordZ = (int)(TILES_HEIGHT + auxCamCenterZ) - TILES_HEIGHT / 2;
+          if (auxCamCenterMapCoordX > TILES_WIDTH - 1)
+            auxCamCenterMapCoordX = TILES_WIDTH - 1;
+          auxCamCenterMapCoordZ = (int)(TILES_HEIGHT + auxCamCenterZ) - TILES_HEIGHT / 2 + 1;
           if (auxCamCenterMapCoordZ < 1)
             auxCamCenterMapCoordZ = 1;
           if (auxCamCenterMapCoordZ > TILES_HEIGHT - 1)
@@ -436,12 +436,12 @@ int main()
         }
 
       //selected tile
-      if (showMouse && buildableMapGenerator->getMap()[camCenterMapCoordZ][camCenterMapCoordX] != 0)
+      if (showMouse && buildableMapGenerator->getMap()[auxCamCenterMapCoordZ][auxCamCenterMapCoordX] != 0)
         {
           selectedTileShader.use();
           selectedTileShader.setMat4("projectionView", projectionView);
           glm::mat4 selectedModel;
-          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + camCenterMapCoordX, 0.0f, -TILES_HEIGHT / 2 + camCenterMapCoordZ - 1));
+          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + auxCamCenterMapCoordX, 0.0f, -TILES_HEIGHT / 2 + auxCamCenterMapCoordZ));
           selectedTileShader.setMat4("model", selectedModel);
           glBindVertexArray(buildableMapGenerator->getSelectedTileVAO());
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
