@@ -34,8 +34,8 @@ int scr_height;
 float aspect_ratio;
 GLFWwindow* window;
 Timer timer;
-Camera cam(glm::vec3(0.0f, 3.0f, 0.0f));
-Camera auxCam(glm::vec3(0.0f, 3.0f, 0.0f));
+Camera camera(glm::vec3(0.0f, 3.0f, 0.0f));
+glm::vec3 cursorToViewportDirection;
 InputController input;
 TextureLoader textureLoader;
 WaterMapGenerator* waterMapGenerator = new WaterMapGenerator();
@@ -53,18 +53,18 @@ bool renderDebugText = true;
 bool recreateTerrain = false;
 bool saveRequest = false;
 bool loadRequest = false;
-bool showMouse = false;
+bool showCursor = false;
 bool showBuildable = false;
 float camCenterX = 0.0f;
 float camCenterZ = 0.0f;
-float auxCamCenterX = 0.0f;
-float auxCamCenterZ = 0.0f;
+float cursorOnMapX = 0.0f;
+float cursorOnMapZ = 0.0f;
 int camCenterMapCoordX = 0;
 int camCenterMapCoordZ = 0;
-int auxCamCenterMapCoordX = 0;
-int auxCamCenterMapCoordZ = 0;
-std::string tileType = "Flat";
-std::string auxCamTileType = "Flat";
+int cursorOnMapCoordX = 0;
+int cursorOnMapCoordZ = 0;
+std::string cameraTile = "Flat";
+std::string cursorTile = "Flat";
 
 int main()
 {
@@ -224,7 +224,7 @@ int main()
 
   //globals
   glm::mat4 model;
-  glm::mat4 projection = glm::perspective(glm::radians(cam.getZoom()), (float)scr_width / (float)scr_height, 0.1f, 500.0f);
+  glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   auto frameTime = std::chrono::high_resolution_clock::now();
   auto currentTime = frameTime;
@@ -244,8 +244,8 @@ int main()
           frames = 0;
         }
       input.processKeyboard(delta);
-      glm::mat4 view = cam.getViewMatrix();
-      glm::vec3 viewPosition = cam.getPosition();
+      glm::mat4 view = camera.getViewMatrix();
+      glm::vec3 viewPosition = camera.getPosition();
       glm::mat4 projectionView = projection * view;
       glLineWidth(1);
 
@@ -318,14 +318,14 @@ int main()
       glBindVertexArray(baseMapGenerator->getCellVAO());
       glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator->getNumCellInstances());
 
-      //update cursor-to-map data
-      glm::vec3 cameraDirection = cam.getDirection();
+      //update camera-and-cursor-to-map mappings
+      glm::vec3 cameraDirection = camera.getDirection();
       float cameraDirectionY = cameraDirection.y;
       if (cameraDirectionY < 0.0f)
         {
-          float ratio = cam.getPosition().y / (-cameraDirectionY);
-          camCenterX = (cameraDirection.x * ratio) + cam.getPosition().x;
-          camCenterZ = (cameraDirection.z * ratio) + cam.getPosition().z;
+          float ratio = camera.getPosition().y / (-cameraDirectionY);
+          camCenterX = (cameraDirection.x * ratio) + camera.getPosition().x;
+          camCenterZ = (cameraDirection.z * ratio) + camera.getPosition().z;
           bool outOfMap = false;
           if (camCenterX <= -TILES_WIDTH/2)
             {
@@ -358,70 +358,68 @@ int main()
           if (camCenterMapCoordZ > TILES_HEIGHT - 1)
             camCenterMapCoordZ = TILES_HEIGHT - 1;
           if (outOfMap)
-            tileType = "out of map";
+            cameraTile = "out of map";
           else if (hillMapGenerator->getMap()[camCenterMapCoordZ][camCenterMapCoordX] != 0)
-            tileType = "Hills";
+            cameraTile = "Hills";
           else if (waterMapGenerator->getMap()[camCenterMapCoordZ][camCenterMapCoordX] != 0)
             {
               if (baseMapGenerator->getMap()[camCenterMapCoordZ][camCenterMapCoordX] == DENY_TILE_RENDER_VALUE)
-                tileType = "Water";
+                cameraTile = "Water";
               else
-                tileType = "Sand";
+                cameraTile = "Sand";
             }
           else
-            tileType = "Flat";
+            cameraTile = "Flat";
         }
-      glm::vec3 auxCameraDirection = auxCam.getDirection();
-      float auxCameraDirectionY = auxCameraDirection.y;
-      if (auxCameraDirectionY < 0.0f)
+      if (cursorToViewportDirection.y < 0.0f)
         {
-          float auxRatio = cam.getPosition().y / (-auxCameraDirectionY);
-          auxCamCenterX = (auxCameraDirection.x * auxRatio) + cam.getPosition().x;
-          auxCamCenterZ = (auxCameraDirection.z * auxRatio) + cam.getPosition().z;
-          bool auxOutOfMap = false;
-          if (auxCamCenterX <= -TILES_WIDTH/2)
+          float ratio = camera.getPosition().y / (-cursorToViewportDirection.y);
+          cursorOnMapX = (cursorToViewportDirection.x * ratio) + camera.getPosition().x;
+          cursorOnMapZ = (cursorToViewportDirection.z * ratio) + camera.getPosition().z;
+          bool cursorOutOfMap = false;
+          if (cursorOnMapX <= -TILES_WIDTH/2)
             {
-              auxCamCenterX = -TILES_WIDTH/2;
-              auxOutOfMap = true;
+              cursorOnMapX = -TILES_WIDTH/2;
+              cursorOutOfMap = true;
             }
-          if (auxCamCenterX > TILES_WIDTH/2)
+          if (cursorOnMapX > TILES_WIDTH/2)
             {
-              auxCamCenterX = TILES_WIDTH/2;
-              auxOutOfMap = true;
+              cursorOnMapX = TILES_WIDTH/2;
+              cursorOutOfMap = true;
             }
-          if (auxCamCenterZ <= -TILES_HEIGHT/2)
+          if (cursorOnMapZ <= -TILES_HEIGHT/2)
             {
-              auxCamCenterZ = -TILES_HEIGHT/2;
-              auxOutOfMap = true;
+              cursorOnMapZ = -TILES_HEIGHT/2;
+              cursorOutOfMap = true;
             }
-          if (auxCamCenterZ > TILES_HEIGHT/2)
+          if (cursorOnMapZ > TILES_HEIGHT/2)
             {
-              auxCamCenterZ = TILES_HEIGHT/2;
-              auxOutOfMap = true;
+              cursorOnMapZ = TILES_HEIGHT/2;
+              cursorOutOfMap = true;
             }
-          auxCamCenterMapCoordX = (int)(TILES_WIDTH + auxCamCenterX) - TILES_WIDTH / 2;
-          if (auxCamCenterMapCoordX < 1)
-            auxCamCenterMapCoordX = 1;
-          if (auxCamCenterMapCoordX > TILES_WIDTH - 1)
-            auxCamCenterMapCoordX = TILES_WIDTH - 1;
-          auxCamCenterMapCoordZ = (int)(TILES_HEIGHT + auxCamCenterZ) - TILES_HEIGHT / 2 + 1;
-          if (auxCamCenterMapCoordZ < 1)
-            auxCamCenterMapCoordZ = 1;
-          if (auxCamCenterMapCoordZ > TILES_HEIGHT - 1)
-            auxCamCenterMapCoordZ = TILES_HEIGHT - 1;
-          if (auxOutOfMap)
-            auxCamTileType = "out of map";
-          else if (hillMapGenerator->getMap()[auxCamCenterMapCoordZ][auxCamCenterMapCoordX] != 0)
-            auxCamTileType = "Hills";
-          else if (waterMapGenerator->getMap()[auxCamCenterMapCoordZ][auxCamCenterMapCoordX] != 0)
+          cursorOnMapCoordX = (int)(TILES_WIDTH + cursorOnMapX) - TILES_WIDTH / 2;
+          if (cursorOnMapCoordX < 1)
+            cursorOnMapCoordX = 1;
+          if (cursorOnMapCoordX > TILES_WIDTH - 1)
+            cursorOnMapCoordX = TILES_WIDTH - 1;
+          cursorOnMapCoordZ = (int)(TILES_HEIGHT + cursorOnMapZ) - TILES_HEIGHT / 2 + 1;
+          if (cursorOnMapCoordZ < 1)
+            cursorOnMapCoordZ = 1;
+          if (cursorOnMapCoordZ > TILES_HEIGHT - 1)
+            cursorOnMapCoordZ = TILES_HEIGHT - 1;
+          if (cursorOutOfMap)
+            cursorTile = "out of map";
+          else if (hillMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
+            cursorTile = "Hills";
+          else if (waterMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
             {
-              if (baseMapGenerator->getMap()[auxCamCenterMapCoordZ][auxCamCenterMapCoordX] == DENY_TILE_RENDER_VALUE)
-                auxCamTileType = "Water";
+              if (baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] == DENY_TILE_RENDER_VALUE)
+                cursorTile = "Water";
               else
-                auxCamTileType = "Sand";
+                cursorTile = "Sand";
             }
           else
-            auxCamTileType = "Flat";
+            cursorTile = "Flat";
         }
 
       //buildable tiles
@@ -436,12 +434,12 @@ int main()
         }
 
       //selected tile
-      if (showMouse && buildableMapGenerator->getMap()[auxCamCenterMapCoordZ][auxCamCenterMapCoordX] != 0)
+      if (showCursor && buildableMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
         {
           selectedTileShader.use();
           selectedTileShader.setMat4("projectionView", projectionView);
           glm::mat4 selectedModel;
-          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + auxCamCenterMapCoordX, 0.0f, -TILES_HEIGHT / 2 + auxCamCenterMapCoordZ));
+          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + cursorOnMapCoordX, 0.0f, -TILES_HEIGHT / 2 + cursorOnMapCoordZ));
           selectedTileShader.setMat4("model", selectedModel);
           glBindVertexArray(buildableMapGenerator->getSelectedTileVAO());
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -549,27 +547,27 @@ int main()
       //font rendering
       if (renderDebugText)
         {
-          fontManager.renderText(fontShader, "FPS: " + std::to_string(fps), 10.0f, (float)scr_height - 25.0f, 0.4f);
+          fontManager.renderText(fontShader, "FPS: " + std::to_string(fps), 10.0f, (float)scr_height - 25.0f, 0.35f);
           fontManager.renderText(fontShader,
-                                 "ViewPos: " + std::to_string(viewPosition.x).substr(0,9) + ": "
-                                 + std::to_string(viewPosition.y).substr(0,9) + ": "
-                                 + std::to_string(viewPosition.z).substr(0,9), 10.0f, (float)scr_height - 50.0f, 0.4f);
+                                 "View pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
+                                 + std::to_string(viewPosition.y).substr(0,6) + ": "
+                                 + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 45.0f, 0.35f);
           fontManager.renderText(fontShader,
-                                 "ViewDir: " + std::to_string(cam.getDirection().x).substr(0,9) + ": "
-                                 + std::to_string(cam.getDirection().y).substr(0,9) + ": "
-                                 + std::to_string(cam.getDirection().z).substr(0,9), 10.0f, (float)scr_height - 75.0f, 0.4f);
+                                 "View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
+                                 + std::to_string(camera.getDirection().y).substr(0,6) + ": "
+                                 + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 65.0f, 0.35f);
           fontManager.renderText(fontShader,
-                                 "CamCenterAt: " + std::to_string(camCenterMapCoordX) + ": "
-                                 + std::to_string(camCenterMapCoordZ) + ", " + tileType,
-                                 10.0f, (float)scr_height - 100.0f, 0.4f);
+                                 "Camera at: " + std::to_string(camCenterMapCoordX) + ": "
+                                 + std::to_string(camCenterMapCoordZ) + ", " + cameraTile,
+                                 10.0f, (float)scr_height - 85.0f, 0.35f);
           fontManager.renderText(fontShader,
-                                 "AuxCamViewDir: " + std::to_string(auxCam.getDirection().x).substr(0,9) + ": "
-                                 + std::to_string(auxCam.getDirection().y).substr(0,9) + ": "
-                                 + std::to_string(auxCam.getDirection().z).substr(0,9), 10.0f, (float)scr_height - 125.0f, 0.4f);
+                                 "Cursor at: " + (!showCursor ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
+                                 + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
+                                 + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 105.0f, 0.35f);
           fontManager.renderText(fontShader,
-                                 "AuxCamCenterAt:" + std::to_string(auxCamCenterMapCoordX) + ": "
-                                 + std::to_string(auxCamCenterMapCoordZ) + ", " + auxCamTileType,
-                                 10.0f, (float)scr_height - 150.0f, 0.4f);
+                                 "Cursor on map: " + (!showCursor ? "inactive" : (std::to_string(cursorOnMapCoordX) + ": "
+                                 + std::to_string(cursorOnMapCoordZ) + ", " + cursorTile)),
+                                 10.0f, (float)scr_height - 125.0f, 0.35f);
           glLineWidth(3);
           csRenderer.draw(coordinateSystem, view, aspect_ratio);
         }

@@ -3,6 +3,8 @@
 #include <string>
 #include <glm/glm.hpp>
 
+constexpr float NEAR_PLANE = 0.1f;
+constexpr float FAR_PLANE = 500.0f;
 constexpr int TILES_WIDTH = 384;
 constexpr int TILES_HEIGHT = 384;
 constexpr int NUM_TILES = TILES_WIDTH * TILES_HEIGHT;

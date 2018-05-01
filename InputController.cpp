@@ -1,8 +1,8 @@
 #include "InputController.h"
 
 extern GLFWwindow* window;
-extern Camera cam;
-extern Camera auxCam;
+extern Camera camera;
+extern glm::vec3 cursorToViewportDirection;
 extern bool renderShadowOnTrees;
 extern bool renderTreeModels;
 extern bool animateWater;
@@ -11,7 +11,7 @@ extern bool recreateTerrain;
 extern bool saveRequest;
 extern bool loadRequest;
 extern bool showBuildable;
-extern bool showMouse;
+extern bool showCursor;
 extern int scr_width;
 extern int scr_height;
 extern float aspect_ratio;
@@ -23,42 +23,24 @@ bool polygonLineMode = false;
 float lastX, lastY;
 double cursorScreenX = 0.0;
 double cursorScreenY = 0.0;
-double auxCamOnScreenX, auxCamOnScreenZ;
 
 void InputController::processKeyboard(float delta)
 {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-      cam.processKeyboardInput(delta, FORWARD);
-      auxCam.processKeyboardInput(delta, FORWARD);
-    }
+    camera.processKeyboardInput(delta, FORWARD);
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-      cam.processKeyboardInput(delta, BACKWARD);
-      auxCam.processKeyboardInput(delta, BACKWARD);
-    }
+    camera.processKeyboardInput(delta, BACKWARD);
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-      cam.processKeyboardInput(delta, LEFT);
-      auxCam.processKeyboardInput(delta, LEFT);
-    }
+    camera.processKeyboardInput(delta, LEFT);
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-      cam.processKeyboardInput(delta, RIGHT);
-      auxCam.processKeyboardInput(delta, RIGHT);
-    }
+    camera.processKeyboardInput(delta, RIGHT);
   if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    {
-      cam.processKeyboardInput(delta, DOWN);
-      auxCam.processKeyboardInput(delta, DOWN);
-    }
+    camera.processKeyboardInput(delta, DOWN);
   if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-    {
-      cam.processKeyboardInput(delta, UP);
-      auxCam.processKeyboardInput(delta, UP);
-    }
+    camera.processKeyboardInput(delta, UP);
+
   //polygon mode
   if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS)
     {
@@ -171,20 +153,35 @@ void InputController::processKeyboard(float delta)
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)
 {
-  if (showMouse)
+  if (showCursor)
     {
       if (cursorActivatedButUncentered)
         {
           glfwSetCursorPos(window, scr_width / 2.0f, scr_height / 2.0f);
-          lastX = x;
-          lastY = y;
           cursorActivatedButUncentered = false;
         }
-      float dx = lastX - x;
-      float dy = y - lastY;
       lastX = x;
       lastY = y;
-      auxCam.processMouseCursor(dx, dy);
+      glfwGetCursorPos(window, &cursorScreenX, &cursorScreenY);
+      glm::vec3 view = camera.getDirection();
+      view = glm::normalize(view);
+      glm::vec3 h = camera.getRight();
+      h = glm::normalize(h);
+      glm::vec3 v = camera.getUp();
+      v = glm::normalize(v);
+      float fovRad = glm::radians(camera.getZoom());
+      float vLength = std::tan(fovRad / 2) * NEAR_PLANE;
+      float hLength = vLength * aspect_ratio;
+      h *= hLength;
+      v *= vLength;
+      cursorScreenX -= scr_width / 2;
+      cursorScreenY -= scr_height / 2;
+      cursorScreenX /= (scr_width / 2);
+      cursorScreenY /= (scr_height / 2);
+      glm::vec3 newPos = camera.getPosition() + view * NEAR_PLANE + h * (float)cursorScreenX - v * (float)cursorScreenY;
+      glm::vec3 newDir = newPos - camera.getPosition();
+      cursorToViewportDirection = newDir;
+      return;
     }
   if (firstMouseInput)
     {
@@ -196,8 +193,7 @@ void InputController::cursorCallback(GLFWwindow *, double x, double y)
   float dy = y - lastY;
   lastX = x;
   lastY = y;
-  cam.processMouseCursor(dx, dy);
-  auxCam.processMouseCursor(dx, dy);
+  camera.processMouseCursor(dx, dy);
 }
 
 void InputController::cursorClickCallback(GLFWwindow *window, int button, int action, int mods)
@@ -206,15 +202,9 @@ void InputController::cursorClickCallback(GLFWwindow *window, int button, int ac
     {
       if (!mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT])
         {
-          showMouse = !showMouse;
-          glfwSetInputMode(window, GLFW_CURSOR, showMouse ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-          cursorActivatedButUncentered = showMouse;
-          if (!showMouse)
-            {
-              auxCam.setPitch(cam.getPitch());
-              auxCam.setYaw(cam.getYaw());
-              auxCam.updateVectors();
-            }
+          showCursor = !showCursor;
+          glfwSetInputMode(window, GLFW_CURSOR, showCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+          cursorActivatedButUncentered = showCursor;
           mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT] = true;
         }
     }
