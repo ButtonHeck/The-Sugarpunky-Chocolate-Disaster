@@ -16,10 +16,13 @@ public:
   void prepareMap();
   void fillBufferData();
   GLuint& getNumInstances();
+  GLuint& getSelectedTileVAO();
+  void deleteGLObjects();
 private:
   std::vector<std::vector<float>>& baseMap;
   std::vector<std::vector<float>>& hillMap;
   GLuint modelVbo;
+  GLuint selectedVAO, selectedVBO, selectedEBO;
   unsigned int num_instances;
 };
 

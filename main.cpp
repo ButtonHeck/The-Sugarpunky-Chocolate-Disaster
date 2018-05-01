@@ -230,28 +230,6 @@ int main()
   auto currentTime = frameTime;
   unsigned int frames = 0, fps = 0;
 
-  //selected tile quad
-  GLfloat selectedTileVertices[12] = {
-    0.0f, 0.01f,  0.9f,
-    0.9f, 0.01f,  0.9f,
-    0.9f, 0.01f,  0.0f,
-    0.0f, 0.01f,  0.0f
-  };
-  GLuint selectedVAO, selectedVBO, selectedEBO;
-  glGenVertexArrays(1, &selectedVAO);
-  glBindVertexArray(selectedVAO);
-  glGenBuffers(1, &selectedVBO);
-  glGenBuffers(1, &selectedEBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, selectedEBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, selectedVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(selectedTileVertices), selectedTileVertices, GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
-  glBindVertexArray(0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-
   //MAIN LOOP
   while(!glfwWindowShouldClose(window))
     {
@@ -458,17 +436,16 @@ int main()
         }
 
       //selected tile
-      if (showMouse && buildableMapGenerator->getMap()[auxCamCenterMapCoordZ][auxCamCenterMapCoordX] != 0)
+      if (showMouse && buildableMapGenerator->getMap()[camCenterMapCoordZ][camCenterMapCoordX] != 0)
         {
           selectedTileShader.use();
           selectedTileShader.setMat4("projectionView", projectionView);
           glm::mat4 selectedModel;
-          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + auxCamCenterMapCoordX, 0.0f, -TILES_HEIGHT / 2 + auxCamCenterMapCoordZ - 1));
+          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + camCenterMapCoordX, 0.0f, -TILES_HEIGHT / 2 + camCenterMapCoordZ - 1));
           selectedTileShader.setMat4("model", selectedModel);
-          glBindVertexArray(selectedVAO);
+          glBindVertexArray(buildableMapGenerator->getSelectedTileVAO());
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         }
-
 
       //water tiles
       water.use();

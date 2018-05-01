@@ -179,14 +179,12 @@ void InputController::cursorCallback(GLFWwindow *, double x, double y)
           lastX = x;
           lastY = y;
           cursorActivatedButUncentered = false;
-          return;
         }
       float dx = lastX - x;
       float dy = y - lastY;
       lastX = x;
       lastY = y;
       auxCam.processMouseCursor(dx, dy);
-      return;
     }
   if (firstMouseInput)
     {

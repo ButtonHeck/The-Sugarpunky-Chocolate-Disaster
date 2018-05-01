@@ -76,9 +76,33 @@ void BuildableMapGenerator::fillBufferData()
   glVertexAttribDivisor(6, 1);
   delete[] instanceModels;
   resetAllGLBuffers();
+  glGenVertexArrays(1, &selectedVAO);
+  glGenBuffers(1, &selectedVBO);
+  glGenBuffers(1, &selectedEBO);
+  glBindVertexArray(selectedVAO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, selectedEBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, selectedVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(cellVertices), cellVertices, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+  resetAllGLBuffers();
 }
 
 GLuint &BuildableMapGenerator::getNumInstances()
 {
   return num_instances;
+}
+
+GLuint &BuildableMapGenerator::getSelectedTileVAO()
+{
+  return selectedVAO;
+}
+
+void BuildableMapGenerator::deleteGLObjects()
+{
+  glDeleteVertexArrays(1, &selectedVAO);
+  glDeleteBuffers(1, &modelVbo);
+  glDeleteBuffers(1, &selectedVBO);
+  glDeleteBuffers(1, &selectedEBO);
 }
