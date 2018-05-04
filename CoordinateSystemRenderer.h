@@ -12,7 +12,7 @@ public:
   CoordinateSystemRenderer() = default;
   void fillBufferData();
   void deleteGLObjects();
-  void draw(Shader& shader, glm::mat4& view, float aspect_ratio);
+  GLuint& getVAO();
 private:
   GLuint vao, vbo;
 };

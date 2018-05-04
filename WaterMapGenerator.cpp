@@ -8,16 +8,13 @@ void WaterMapGenerator::prepareMap()
 {
   unsigned int numWaterTiles = 0;
   generateMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
-  unsigned int attempts = 0;
   while (numWaterTiles < TILES_WIDTH * (SHORE_SIZE_BASE + 2) * (SHORE_SIZE_BASE + 2) * 9
          || numWaterTiles > TILES_WIDTH * (SHORE_SIZE_BASE + 3) * (SHORE_SIZE_BASE + 3) * 9)
     {
-      ++attempts;
       numWaterTiles = 0;
       initializeMap(map);
       generateMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
     }
-  std::cout << "water generation attempts:\t" << attempts << std::endl;
 }
 
 void WaterMapGenerator::postPrepareMap()

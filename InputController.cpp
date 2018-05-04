@@ -7,7 +7,7 @@ extern bool renderShadowOnTrees;
 extern bool renderTreeModels;
 extern bool animateWater;
 extern bool renderDebugText;
-extern bool recreateTerrain;
+extern bool recreateTerrainRequest;
 extern bool saveRequest;
 extern bool loadRequest;
 extern bool showBuildable;
@@ -18,7 +18,6 @@ extern float aspect_ratio;
 bool keysPressed[GLFW_KEY_LAST];
 bool mouseKeysPressed[GLFW_MOUSE_BUTTON_LAST];
 bool firstMouseInput = true;
-bool cursorActivatedButUncentered = true;
 bool polygonLineMode = false;
 float lastX, lastY;
 double cursorScreenX = 0.0;
@@ -119,7 +118,7 @@ void InputController::processKeyboard(float delta)
     {
       if (!keysPressed[GLFW_KEY_F9])
         {
-          recreateTerrain = !recreateTerrain;
+          recreateTerrainRequest = !recreateTerrainRequest;
           keysPressed[GLFW_KEY_F9] = true;
         }
     }
@@ -155,11 +154,6 @@ void InputController::cursorCallback(GLFWwindow *, double x, double y)
 {
   if (showCursor)
     {
-      if (cursorActivatedButUncentered)
-        {
-          glfwSetCursorPos(window, scr_width / 2.0f, scr_height / 2.0f);
-          cursorActivatedButUncentered = false;
-        }
       lastX = x;
       lastY = y;
       glfwGetCursorPos(window, &cursorScreenX, &cursorScreenY);
@@ -204,7 +198,9 @@ void InputController::cursorClickCallback(GLFWwindow *window, int button, int ac
         {
           showCursor = !showCursor;
           glfwSetInputMode(window, GLFW_CURSOR, showCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-          cursorActivatedButUncentered = showCursor;
+          glfwSetCursorPos(window, scr_width / 2.0f, scr_height / 2.0f);
+          lastX = scr_width / 2.0f;
+          lastY = scr_height / 2.0f;
           mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT] = true;
         }
     }

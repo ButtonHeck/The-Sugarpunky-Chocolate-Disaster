@@ -11,7 +11,6 @@
 #include "Camera.h"
 #include "InputController.h"
 #include "TextureLoader.h"
-#include "TerrainTile.h"
 #include "WaterMapGenerator.h"
 #include "HillsMapGenerator.h"
 #include "UnderwaterQuadMapGenerator.h"
@@ -28,6 +27,7 @@ GLFWwindow* initGLFW();
 void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity,
                             GLsizei length, const GLchar* message, const void* userParam);
 void printMapsInfos();
+void prepareTerrain();
 
 int scr_width;
 int scr_height;
@@ -50,20 +50,15 @@ bool renderShadowOnTrees = true;
 bool renderTreeModels = true;
 bool animateWater = true;
 bool renderDebugText = true;
-bool recreateTerrain = false;
+bool recreateTerrainRequest = false;
 bool saveRequest = false;
 bool loadRequest = false;
 bool showCursor = false;
 bool showBuildable = false;
-float camCenterX = 0.0f;
-float camCenterZ = 0.0f;
 float cursorOnMapX = 0.0f;
 float cursorOnMapZ = 0.0f;
-int camCenterMapCoordX = 0;
-int camCenterMapCoordZ = 0;
 int cursorOnMapCoordX = 0;
 int cursorOnMapCoordZ = 0;
-std::string cameraTile = "Flat";
 std::string cursorTile = "Flat";
 
 int main()
@@ -96,7 +91,7 @@ int main()
   Shader sky(PROJ_PATH + "/shaders/skybox.vs", PROJ_PATH + "/shaders/skybox.fs");
   Shader modelShader(PROJ_PATH + "/shaders/model.vs", PROJ_PATH + "/shaders/model.fs");
   Shader fontShader(PROJ_PATH + "/shaders/font.vs", PROJ_PATH + "/shaders/font.fs");
-  Shader coordinateSystem(PROJ_PATH + "/shaders/coordinateSystem.vs",
+  Shader csShader(PROJ_PATH + "/shaders/coordinateSystem.vs",
                           PROJ_PATH + "/shaders/coordinateSystem.gs",
                           PROJ_PATH + "/shaders/coordinateSystem.fs");
   Shader buildableShader(PROJ_PATH + "/shaders/buildableTiles.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
@@ -176,51 +171,15 @@ int main()
   water.setBool("instanceRendering", false);
   modelShader.use();
   modelShader.setVec3("lightDirTo", LIGHT_DIR_TO);
+  buildableShader.use();
+  buildableShader.setBool("cursorMode", false);
+  selectedTileShader.use();
+  selectedTileShader.setBool("cursorMode", true);
 
   //setup tiles (all the pre-setup takes about 1600ms)
-  auto time = std::chrono::system_clock::now();
-  waterMapGenerator->prepareMap(); //prepare water map
-  auto waterPrepareTime = std::chrono::system_clock::now();
-  hillMapGenerator->prepareMap(); //generating hill height map
-  hillMapGenerator->fillBufferData(); //fill hills buffer
-  auto hillPrepareTime = std::chrono::system_clock::now();
-  baseMapGenerator->prepareMap(true); //generating base terrain data
-  baseMapGenerator->fillBufferData(); //fill base terrain vertex data
-  baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering
-  baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
-  auto basePrepareTime = std::chrono::system_clock::now();
-  waterMapGenerator->postPrepareMap();
-  waterMapGenerator->fillBufferData(); //fill water buffer
-  auto waterFillBufferTime = std::chrono::system_clock::now();
-  underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
-  skybox.fillBufferData(); //setup skybox  
-  csRenderer.fillBufferData(); //coordinate system setup
-  buildableMapGenerator->prepareMap();
-  buildableMapGenerator->fillBufferData();
-
-  //setup models
-  auto modelTimeBegin = std::chrono::system_clock::now();
+  prepareTerrain();
   treeGenerator.setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap()); //trees models setup
   treeGenerator.setupHillModels(hillMapGenerator->getMap()); //hill trees models setup
-  auto modelTimeEnd = std::chrono::system_clock::now();  
-
-  //print info (durations and map infos)
-  std::cout << "Preparing water:\t\t"
-            << std::chrono::duration_cast<std::chrono::milliseconds>(waterPrepareTime - time).count()
-            << "ms\n";
-  std::cout << "Preparing hills:\t\t"
-            << std::chrono::duration_cast<std::chrono::milliseconds>(hillPrepareTime - waterPrepareTime).count()
-            << "ms\n";
-  std::cout << "Preparing base:\t\t\t"
-            << std::chrono::duration_cast<std::chrono::milliseconds>(basePrepareTime - hillPrepareTime).count()
-            << "ms\n";
-  std::cout << "Preparing water filling:\t"
-            << std::chrono::duration_cast<std::chrono::milliseconds>(waterFillBufferTime - basePrepareTime).count()
-            << "ms\n";
-  std::cout << "Preparing models:\t\t"
-            << std::chrono::duration_cast<std::chrono::milliseconds>(modelTimeEnd - modelTimeBegin).count()
-            << "ms\n";
-  printMapsInfos();
 
   //globals
   glm::mat4 model;
@@ -249,38 +208,24 @@ int main()
       glm::mat4 projectionView = projection * view;
       glLineWidth(1);
 
-      if (recreateTerrain)
+      if (recreateTerrainRequest)
         {
           delete waterMapGenerator;
           delete hillMapGenerator;
           delete baseMapGenerator;
+          delete buildableMapGenerator;
           waterMapGenerator = new WaterMapGenerator();
           hillMapGenerator = new HillsMapGenerator(waterMapGenerator->getMap());
           baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
-          waterMapGenerator->prepareMap(); //prepare water map
-          hillMapGenerator->prepareMap(); //generating hill height map
-          hillMapGenerator->fillBufferData(); //fill hills buffer
-          baseMapGenerator->prepareMap(true); //generating base terrain data
-          baseMapGenerator->fillBufferData(); //fill base terrain vertex data
-          baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering
-          baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
-          waterMapGenerator->postPrepareMap();
-          waterMapGenerator->fillBufferData(); //fill water buffer
+          buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+          prepareTerrain();
           treeGenerator.setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap()); //trees models setup
           treeGenerator.setupHillModels(hillMapGenerator->getMap()); //hill trees models setup
-          delete buildableMapGenerator;
-          buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-          buildableMapGenerator->prepareMap();
-          buildableMapGenerator->fillBufferData();
           delete saveLoadManager;
           saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
           saveLoadManager->setTreeGenerator(treeGenerator);
-          recreateTerrain = false;
+          recreateTerrainRequest = false;
         }
-
-      //reset GL_TEXTURE0
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, baseTexture);
 
       //hill tiles
       hills.use();
@@ -318,109 +263,44 @@ int main()
       glBindVertexArray(baseMapGenerator->getCellVAO());
       glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator->getNumCellInstances());
 
-      //update camera-and-cursor-to-map mappings
-      glm::vec3 cameraDirection = camera.getDirection();
-      float cameraDirectionY = cameraDirection.y;
-      if (cameraDirectionY < 0.0f)
-        {
-          float ratio = camera.getPosition().y / (-cameraDirectionY);
-          camCenterX = (cameraDirection.x * ratio) + camera.getPosition().x;
-          camCenterZ = (cameraDirection.z * ratio) + camera.getPosition().z;
-          bool outOfMap = false;
-          if (camCenterX <= -TILES_WIDTH/2)
-            {
-              camCenterX = -TILES_WIDTH/2;
-              outOfMap = true;
-            }
-          if (camCenterX > TILES_WIDTH/2)
-            {
-              camCenterX = TILES_WIDTH/2;
-              outOfMap = true;
-            }
-          if (camCenterZ <= -TILES_HEIGHT/2)
-            {
-              camCenterZ = -TILES_HEIGHT/2;
-              outOfMap = true;
-            }
-          if (camCenterZ > TILES_HEIGHT/2)
-            {
-              camCenterZ = TILES_HEIGHT/2;
-              outOfMap = true;
-            }
-          camCenterMapCoordX = (int)(TILES_WIDTH + camCenterX) - TILES_WIDTH / 2;
-          if (camCenterMapCoordX < 1)
-            camCenterMapCoordX = 1;
-          if (camCenterMapCoordX > TILES_WIDTH - 1)
-            camCenterMapCoordX = TILES_WIDTH - 1;
-          camCenterMapCoordZ = (int)(TILES_HEIGHT + camCenterZ) - TILES_HEIGHT / 2 + 1;
-          if (camCenterMapCoordZ < 1)
-            camCenterMapCoordZ = 1;
-          if (camCenterMapCoordZ > TILES_HEIGHT - 1)
-            camCenterMapCoordZ = TILES_HEIGHT - 1;
-          if (outOfMap)
-            cameraTile = "out of map";
-          else if (hillMapGenerator->getMap()[camCenterMapCoordZ][camCenterMapCoordX] != 0)
-            cameraTile = "Hills";
-          else if (waterMapGenerator->getMap()[camCenterMapCoordZ][camCenterMapCoordX] != 0)
-            {
-              if (baseMapGenerator->getMap()[camCenterMapCoordZ][camCenterMapCoordX] == DENY_TILE_RENDER_VALUE)
-                cameraTile = "Water";
-              else
-                cameraTile = "Sand";
-            }
-          else
-            cameraTile = "Flat";
-        }
+      //update cursor-to-map mappings
       if (cursorToViewportDirection.y < 0.0f)
         {
           float ratio = camera.getPosition().y / (-cursorToViewportDirection.y);
           cursorOnMapX = (cursorToViewportDirection.x * ratio) + camera.getPosition().x;
           cursorOnMapZ = (cursorToViewportDirection.z * ratio) + camera.getPosition().z;
           bool cursorOutOfMap = false;
-          if (cursorOnMapX <= -TILES_WIDTH/2)
-            {
-              cursorOnMapX = -TILES_WIDTH/2;
-              cursorOutOfMap = true;
-            }
-          if (cursorOnMapX > TILES_WIDTH/2)
-            {
-              cursorOnMapX = TILES_WIDTH/2;
-              cursorOutOfMap = true;
-            }
-          if (cursorOnMapZ <= -TILES_HEIGHT/2)
-            {
-              cursorOnMapZ = -TILES_HEIGHT/2;
-              cursorOutOfMap = true;
-            }
-          if (cursorOnMapZ > TILES_HEIGHT/2)
-            {
-              cursorOnMapZ = TILES_HEIGHT/2;
-              cursorOutOfMap = true;
-            }
+          cursorOnMapX = glm::clamp(cursorOnMapX, -TILES_WIDTH/2.0f, TILES_WIDTH/2.0f);
+          cursorOnMapZ = glm::clamp(cursorOnMapZ, -TILES_HEIGHT/2.0f, TILES_HEIGHT/2.0f);
+          if (cursorOnMapX == -TILES_WIDTH/2 || cursorOnMapX == TILES_WIDTH/2 ||
+              cursorOnMapZ == -TILES_HEIGHT/2 || cursorOnMapZ == TILES_HEIGHT/2)
+            cursorOutOfMap = true;
           cursorOnMapCoordX = (int)(TILES_WIDTH + cursorOnMapX) - TILES_WIDTH / 2;
-          if (cursorOnMapCoordX < 1)
-            cursorOnMapCoordX = 1;
-          if (cursorOnMapCoordX > TILES_WIDTH - 1)
-            cursorOnMapCoordX = TILES_WIDTH - 1;
-          cursorOnMapCoordZ = (int)(TILES_HEIGHT + cursorOnMapZ) - TILES_HEIGHT / 2 + 1;
-          if (cursorOnMapCoordZ < 1)
-            cursorOnMapCoordZ = 1;
-          if (cursorOnMapCoordZ > TILES_HEIGHT - 1)
-            cursorOnMapCoordZ = TILES_HEIGHT - 1;
+          cursorOnMapCoordX = glm::clamp(cursorOnMapCoordX, 1, TILES_WIDTH - 1);
+          cursorOnMapCoordZ = (int)(TILES_HEIGHT + cursorOnMapZ) - TILES_HEIGHT / 2;
+          cursorOnMapCoordZ = glm::clamp(cursorOnMapCoordZ, 1, TILES_HEIGHT - 1);
           if (cursorOutOfMap)
             cursorTile = "out of map";
-          else if (hillMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
+          else if (buildableMapGenerator->getMap()[cursorOnMapCoordZ+1][cursorOnMapCoordX] != 0)
+            cursorTile = "Flat";
+          else if (hillMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0 ||
+                   hillMapGenerator->getMap()[cursorOnMapCoordZ+1][cursorOnMapCoordX] != 0 ||
+                   hillMapGenerator->getMap()[cursorOnMapCoordZ+1][cursorOnMapCoordX+1] != 0 ||
+                   hillMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX+1] != 0)
             cursorTile = "Hills";
-          else if (waterMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
+          else
             {
-              if (baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] == DENY_TILE_RENDER_VALUE)
+              if (baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] == DENY_TILE_RENDER_VALUE ||
+                  baseMapGenerator->getMap()[cursorOnMapCoordZ+1][cursorOnMapCoordX] == DENY_TILE_RENDER_VALUE ||
+                  baseMapGenerator->getMap()[cursorOnMapCoordZ+1][cursorOnMapCoordX+1] == DENY_TILE_RENDER_VALUE ||
+                  baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX+1] == DENY_TILE_RENDER_VALUE)
                 cursorTile = "Water";
               else
-                cursorTile = "Sand";
+                cursorTile = "Shore";
             }
-          else
-            cursorTile = "Flat";
         }
+      else
+        cursorTile = "out of map";
 
       //buildable tiles
       if (showBuildable)
@@ -434,15 +314,17 @@ int main()
         }
 
       //selected tile
-      if (showCursor && buildableMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
+      if (showCursor && buildableMapGenerator->getMap()[cursorOnMapCoordZ+1][cursorOnMapCoordX] != 0)
         {
           selectedTileShader.use();
           selectedTileShader.setMat4("projectionView", projectionView);
           glm::mat4 selectedModel;
-          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + cursorOnMapCoordX, 0.0f, -TILES_HEIGHT / 2 + cursorOnMapCoordZ));
+          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + cursorOnMapCoordX, 0.0f, -TILES_HEIGHT / 2 + cursorOnMapCoordZ+1));
           selectedTileShader.setMat4("model", selectedModel);
           glBindVertexArray(buildableMapGenerator->getSelectedTileVAO());
+          glEnable(GL_BLEND);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+          glDisable(GL_BLEND);
         }
 
       //water tiles
@@ -528,7 +410,6 @@ int main()
       glDepthFunc(GL_LEQUAL);
       glDisable(GL_CULL_FACE);
       glBindVertexArray(skybox.getVAO());
-      glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTexture());
       glDrawArrays(GL_TRIANGLES, 0, 36);
       glDepthFunc(GL_LESS);
@@ -557,20 +438,24 @@ int main()
                                  + std::to_string(camera.getDirection().y).substr(0,6) + ": "
                                  + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 65.0f, 0.35f);
           fontManager.renderText(fontShader,
-                                 "Camera at: " + std::to_string(camCenterMapCoordX) + ": "
-                                 + std::to_string(camCenterMapCoordZ) + ", " + cameraTile,
-                                 10.0f, (float)scr_height - 85.0f, 0.35f);
-          fontManager.renderText(fontShader,
                                  "Cursor at: " + (!showCursor ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
                                  + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
-                                 + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 105.0f, 0.35f);
+                                 + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 85.0f, 0.35f);
           fontManager.renderText(fontShader,
                                  "Cursor on map: " + (!showCursor ? "inactive" : (std::to_string(cursorOnMapCoordX) + ": "
                                  + std::to_string(cursorOnMapCoordZ) + ", " + cursorTile)),
-                                 10.0f, (float)scr_height - 125.0f, 0.35f);
-          glLineWidth(3);
-          csRenderer.draw(coordinateSystem, view, aspect_ratio);
+                                 10.0f, (float)scr_height - 105.0f, 0.35f);
+          glLineWidth(2);
+          csShader.use();
+          csShader.setMat4("view", view);
+          csShader.setFloat("aspectRatio", aspect_ratio);
+          glBindVertexArray(csRenderer.getVAO());
+          glDrawArrays(GL_POINTS, 0, 3);
         }
+
+      //reset texture units to terrain textures after we done with models and text
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, baseTexture);
 
       if (saveRequest)
         {
@@ -620,11 +505,29 @@ int main()
   sky.cleanUp();
   modelShader.cleanUp();
   fontShader.cleanUp();
-  coordinateSystem.cleanUp();
+  csShader.cleanUp();
   buildableShader.cleanUp();
   selectedTileShader.cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();
+}
+
+void prepareTerrain()
+{
+  waterMapGenerator->prepareMap(); //prepare water map
+  hillMapGenerator->prepareMap(); //generating hill height map
+  hillMapGenerator->fillBufferData(); //fill hills buffer
+  baseMapGenerator->prepareMap(true); //generating base terrain data
+  baseMapGenerator->fillBufferData(); //fill base terrain vertex data
+  baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering
+  baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
+  waterMapGenerator->postPrepareMap();
+  waterMapGenerator->fillBufferData(); //fill water buffer
+  underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
+  skybox.fillBufferData(); //setup skybox
+  csRenderer.fillBufferData(); //coordinate system setup
+  buildableMapGenerator->prepareMap();
+  buildableMapGenerator->fillBufferData();
 }
 
 GLFWwindow* initGLFW()
@@ -639,7 +542,7 @@ GLFWwindow* initGLFW()
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-  glfwWindowHint(GLFW_SAMPLES, 2);
+  glfwWindowHint(GLFW_SAMPLES, 1);
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
   GLFWmonitor* monitor = glfwGetPrimaryMonitor();
   const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
@@ -656,7 +559,6 @@ GLFWwindow* initGLFW()
 
 void printMapsInfos()
 {
-  std::cout << "-----------------------------------------------------------\n";
   std::cout << "Water tiles:\t" << waterMapGenerator->getTiles().size() << std::endl;
   std::cout << "Hills tiles:\t" << hillMapGenerator->getTiles().size() << std::endl;
   std::cout << "Base tiles:\t" << baseMapGenerator->getTiles().size() << std::endl;

@@ -2,7 +2,12 @@
 
 out vec4 FragColor;
 
+uniform bool cursorMode;
+
 void main()
 {
-    FragColor = vec4(1.0, 0.8, 0.0, 0.5);
+    if (cursorMode)
+        FragColor = vec4(1.0, 0.5, 0.5, 0.5);
+    else
+        FragColor = vec4(1.0, 0.8, 0.0, 0.5);
 }

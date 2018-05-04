@@ -40,10 +40,10 @@ void BuildableMapGenerator::fillBufferData()
   glGenBuffers(1, &ebo);
   glGenBuffers(1, &modelVbo);
   GLfloat cellVertices[12] = {
-       0.0f, 0.01f,  0.0f,
-       0.9f, 0.01f,  0.0f,
-       0.9f, 0.01f,  -0.9f,
-       0.0f, 0.01f,  -0.9f
+       0.05f, 0.01f,  -0.05f,
+       0.95f, 0.01f,  -0.05f,
+       0.95f, 0.01f,  -0.95f,
+       0.05f, 0.01f,  -0.95f
   };
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
