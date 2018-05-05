@@ -24,10 +24,10 @@
 #include "BuildableMapGenerator.h"
 
 GLFWwindow* initGLFW();
+void prepareTerrain();
+void printMapsInfos();
 void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity,
                             GLsizei length, const GLchar* message, const void* userParam);
-void printMapsInfos();
-void prepareTerrain();
 
 int scr_width;
 int scr_height;
@@ -63,7 +63,7 @@ std::string cursorTile = "Flat";
 
 int main()
 {
-  //GLOBAL SETUP (initializing GLFW take about 500ms)
+  //initializing and presetup routines
   window = initGLFW();
   glewExperimental = GL_TRUE;
   glewInit();
@@ -82,7 +82,7 @@ int main()
   FontManager fontManager("OCTAPOST_1.ttf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height));
   fontManager.loadFont();
 
-  //SHADER LOADING (take about 150-180ms for 7 shader programs)
+  //shaders loading
   Shader hills(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/hills.fs");
   Shader sand(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/sand.fs");
   Shader underwater(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/underwater.fs");
@@ -96,8 +96,10 @@ int main()
                           PROJ_PATH + "/shaders/coordinateSystem.fs");
   Shader buildableShader(PROJ_PATH + "/shaders/buildableTiles.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
   Shader selectedTileShader(PROJ_PATH + "/shaders/selectedTile.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
+  std::vector<Shader> shaders =
+  {hills, sand, underwater, base, water, sky, modelShader, fontShader, csShader, buildableShader, selectedTileShader};
 
-  //MODELS (take about 65ms per model)
+  //models and model-related objects loading
   Model tree1(PROJ_PATH + "/models/tree1/tree1.obj", textureLoader);
   Model tree2(PROJ_PATH + "/models/tree2/tree2.obj", textureLoader);
   Model tree3(PROJ_PATH + "/models/tree3/tree3.obj", textureLoader);
@@ -106,7 +108,7 @@ int main()
   TreeGenerator treeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2});
   saveLoadManager->setTreeGenerator(treeGenerator);
 
-  //TEXTURE LOADING (take about 90ms per texture)
+  //textures loading
   glActiveTexture(GL_TEXTURE0);
   GLuint baseTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/base.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE1);
@@ -131,8 +133,11 @@ int main()
   GLuint baseTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base2.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE12);
   GLuint hillTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/hill2.jpg", GL_REPEAT);
+  std::vector<GLuint> textures =
+  {baseTexture, hillTexture, waterTexture, sandTexture, waterTextureSpec, baseTextureSpec, hillTextureSpec, baseTextureNormal,
+  underwaterSandTexture, sandTexture2, baseTexture2, hillTexture2};
 
-  //SHADERS SETUP
+  //shaders setup
   hills.use();
   hills.setVec3("lightDirTo", LIGHT_DIR_TO);
   hills.setInt("base_diffuse", 0);
@@ -176,12 +181,12 @@ int main()
   selectedTileShader.use();
   selectedTileShader.setBool("cursorMode", true);
 
-  //setup tiles (all the pre-setup takes about 1600ms)
+  //generating the terrain landscape data and filling related vertex/element buffers
   prepareTerrain();
-  treeGenerator.setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap()); //trees models setup
-  treeGenerator.setupHillModels(hillMapGenerator->getMap()); //hill trees models setup
+  treeGenerator.setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+  treeGenerator.setupHillModels(hillMapGenerator->getMap());
 
-  //globals
+  //etc
   glm::mat4 model;
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -276,23 +281,23 @@ int main()
               cursorOnMapZ == -TILES_HEIGHT/2 || cursorOnMapZ == TILES_HEIGHT/2)
             cursorOutOfMap = true;
           cursorOnMapCoordX = (int)(TILES_WIDTH + cursorOnMapX) - TILES_WIDTH / 2;
-          cursorOnMapCoordX = glm::clamp(cursorOnMapCoordX, 1, TILES_WIDTH - 1);
-          cursorOnMapCoordZ = (int)(TILES_HEIGHT + cursorOnMapZ) - TILES_HEIGHT / 2;
+          cursorOnMapCoordX = glm::clamp(cursorOnMapCoordX, 1, TILES_WIDTH - 2);
+          cursorOnMapCoordZ = (int)(TILES_HEIGHT + cursorOnMapZ) - TILES_HEIGHT / 2 + 1;
           cursorOnMapCoordZ = glm::clamp(cursorOnMapCoordZ, 1, TILES_HEIGHT - 1);
           if (cursorOutOfMap)
             cursorTile = "out of map";
-          else if (buildableMapGenerator->getMap()[cursorOnMapCoordZ+1][cursorOnMapCoordX] != 0)
+          else if (buildableMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
             cursorTile = "Flat";
           else if (hillMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0 ||
-                   hillMapGenerator->getMap()[cursorOnMapCoordZ+1][cursorOnMapCoordX] != 0 ||
-                   hillMapGenerator->getMap()[cursorOnMapCoordZ+1][cursorOnMapCoordX+1] != 0 ||
+                   hillMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX] != 0 ||
+                   hillMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX+1] != 0 ||
                    hillMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX+1] != 0)
             cursorTile = "Hills";
           else
             {
               if (baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] == DENY_TILE_RENDER_VALUE ||
-                  baseMapGenerator->getMap()[cursorOnMapCoordZ+1][cursorOnMapCoordX] == DENY_TILE_RENDER_VALUE ||
-                  baseMapGenerator->getMap()[cursorOnMapCoordZ+1][cursorOnMapCoordX+1] == DENY_TILE_RENDER_VALUE ||
+                  baseMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX] == DENY_TILE_RENDER_VALUE ||
+                  baseMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX+1] == DENY_TILE_RENDER_VALUE ||
                   baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX+1] == DENY_TILE_RENDER_VALUE)
                 cursorTile = "Water";
               else
@@ -313,13 +318,13 @@ int main()
           glDisable(GL_BLEND);
         }
 
-      //selected tile
-      if (showCursor && buildableMapGenerator->getMap()[cursorOnMapCoordZ+1][cursorOnMapCoordX] != 0)
+      //cursor selected tile
+      if (showCursor && buildableMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
         {
           selectedTileShader.use();
           selectedTileShader.setMat4("projectionView", projectionView);
           glm::mat4 selectedModel;
-          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + cursorOnMapCoordX, 0.0f, -TILES_HEIGHT / 2 + cursorOnMapCoordZ+1));
+          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + cursorOnMapCoordX, 0.0f, -TILES_HEIGHT / 2 + cursorOnMapCoordZ));
           selectedTileShader.setMat4("model", selectedModel);
           glBindVertexArray(buildableMapGenerator->getSelectedTileVAO());
           glEnable(GL_BLEND);
@@ -334,7 +339,6 @@ int main()
       water.setVec3("viewPosition", viewPosition);
       std::vector<TerrainTile>& waterTiles = waterMapGenerator->getTiles();
       glBindVertexArray(waterMapGenerator->getVAO());
-      glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTexture());
       if (animateWater)
         {
           glBindBuffer(GL_ARRAY_BUFFER, waterMapGenerator->getVBO());
@@ -443,7 +447,7 @@ int main()
                                  + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 85.0f, 0.35f);
           fontManager.renderText(fontShader,
                                  "Cursor on map: " + (!showCursor ? "inactive" : (std::to_string(cursorOnMapCoordX) + ": "
-                                 + std::to_string(cursorOnMapCoordZ) + ", " + cursorTile)),
+                                 + std::to_string(cursorOnMapCoordZ-1) + ", " + cursorTile)),
                                  10.0f, (float)scr_height - 105.0f, 0.35f);
           glLineWidth(2);
           csShader.use();
@@ -457,6 +461,7 @@ int main()
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, baseTexture);
 
+      //save/load routine
       if (saveRequest)
         {
           saveLoadManager->saveToFile(PROJ_PATH + "/saves/testSave.txt");
@@ -472,19 +477,9 @@ int main()
       glfwSwapBuffers(window);
     }
 
-  //CLEANUP
-  glDeleteTextures(1, &baseTexture);
-  glDeleteTextures(1, &hillTexture);
-  glDeleteTextures(1, &waterTexture);
-  glDeleteTextures(1, &sandTexture);
-  glDeleteTextures(1, &underwaterSandTexture);
-  glDeleteTextures(1, &waterTextureSpec);
-  glDeleteTextures(1, &baseTextureSpec);
-  glDeleteTextures(1, &hillTextureSpec);
-  glDeleteTextures(1, &baseTextureNormal);
-  glDeleteTextures(1, &baseTexture2);
-  glDeleteTextures(1, &hillTexture2);
-  glDeleteTextures(1, &sandTexture2);
+  //cleanup
+  for (GLuint& texture : textures)
+    glDeleteTextures(1, &texture);
   baseMapGenerator->deleteGLObjects();
   hillMapGenerator->deleteGLObjects();
   waterMapGenerator->deleteGLObjects();
@@ -497,17 +492,8 @@ int main()
   underwaterQuadGenerator.deleteGLObjects();
   fontManager.deleteGLObjects();
   csRenderer.deleteGLObjects();
-  hills.cleanUp();
-  underwater.cleanUp();
-  water.cleanUp();
-  sand.cleanUp();
-  base.cleanUp();
-  sky.cleanUp();
-  modelShader.cleanUp();
-  fontShader.cleanUp();
-  csShader.cleanUp();
-  buildableShader.cleanUp();
-  selectedTileShader.cleanUp();
+  for (Shader& shader: shaders)
+    shader.cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();
 }
@@ -588,9 +574,9 @@ void APIENTRY glDebugOutput(GLenum source,
                             GLenum type,
                             GLuint id,
                             GLenum severity,
-                            GLsizei length,
+                            GLsizei,
                             const GLchar* message,
-                            const void* userParam)
+                            const void*)
 {
   if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
   std::cout << "Debug message: (" << id << "): " << message << std::endl;
