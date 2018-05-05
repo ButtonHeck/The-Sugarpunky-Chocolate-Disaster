@@ -96,8 +96,8 @@ int main()
                           PROJ_PATH + "/shaders/coordinateSystem.fs");
   Shader buildableShader(PROJ_PATH + "/shaders/buildableTiles.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
   Shader selectedTileShader(PROJ_PATH + "/shaders/selectedTile.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
-  std::vector<Shader> shaders =
-  {hills, sand, underwater, base, water, sky, modelShader, fontShader, csShader, buildableShader, selectedTileShader};
+  std::vector<Shader*> shaders =
+  {&hills, &sand, &underwater, &base, &water, &sky, &modelShader, &fontShader, &csShader, &buildableShader, &selectedTileShader};
 
   //models and model-related objects loading
   Model tree1(PROJ_PATH + "/models/tree1/tree1.obj", textureLoader);
@@ -133,9 +133,9 @@ int main()
   GLuint baseTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base2.jpg", GL_REPEAT);
   glActiveTexture(GL_TEXTURE12);
   GLuint hillTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/hill2.jpg", GL_REPEAT);
-  std::vector<GLuint> textures =
-  {baseTexture, hillTexture, waterTexture, sandTexture, waterTextureSpec, baseTextureSpec, hillTextureSpec, baseTextureNormal,
-  underwaterSandTexture, sandTexture2, baseTexture2, hillTexture2};
+  std::vector<GLuint*> textures =
+  {&baseTexture, &hillTexture, &waterTexture, &sandTexture, &waterTextureSpec, &baseTextureSpec, &hillTextureSpec, &baseTextureNormal,
+  &underwaterSandTexture, &sandTexture2, &baseTexture2, &hillTexture2};
 
   //shaders setup
   hills.use();
@@ -478,8 +478,8 @@ int main()
     }
 
   //cleanup
-  for (GLuint& texture : textures)
-    glDeleteTextures(1, &texture);
+  for (unsigned int i = 0; i < textures.size(); i++)
+    glDeleteTextures(1, textures[i]);
   baseMapGenerator->deleteGLObjects();
   hillMapGenerator->deleteGLObjects();
   waterMapGenerator->deleteGLObjects();
@@ -492,8 +492,8 @@ int main()
   underwaterQuadGenerator.deleteGLObjects();
   fontManager.deleteGLObjects();
   csRenderer.deleteGLObjects();
-  for (Shader& shader: shaders)
-    shader.cleanUp();
+  for (Shader* shader: shaders)
+    shader->cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();
 }
