@@ -36,7 +36,7 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
         {
           if ((baseMap[y][x] == 0 && baseMap[y+1][x+1] == 0 && baseMap[y+1][x] == 0 && baseMap[y][x+1] == 0)
               && !(hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0)
-              && rand() % 31 == 0)
+              && rand() % 23 == 0)
             {
               glm::mat4 model;
               model = glm::translate(model,

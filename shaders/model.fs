@@ -14,9 +14,6 @@ uniform bool shadow;
 
 void main()
 {
-    float distanceToFragment = distance(FragPos, viewPosition);
-    if (distanceToFragment > 160.0)
-        discard;
     vec3 normal = normalize(Normal);
     vec3 viewDir = normalize(viewPosition - FragPos);
     vec3 lightDir = normalize(-lightDirTo);

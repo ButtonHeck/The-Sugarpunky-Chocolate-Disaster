@@ -46,6 +46,7 @@ Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
 CoordinateSystemRenderer csRenderer;
 BuildableMapGenerator* buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
 SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
+TreeGenerator* treeGenerator;
 bool renderShadowOnTrees = true;
 bool renderTreeModels = true;
 bool animateWater = true;
@@ -105,8 +106,8 @@ int main()
   Model tree3(PROJ_PATH + "/models/tree3/tree3.obj", textureLoader);
   Model hillTree1(PROJ_PATH + "/models/hillTree1/hillTree1.obj", textureLoader);
   Model hillTree2(PROJ_PATH + "/models/hillTree2/hillTree2.obj", textureLoader);
-  TreeGenerator treeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2});
-  saveLoadManager->setTreeGenerator(treeGenerator);
+  treeGenerator = new TreeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2});
+  saveLoadManager->setTreeGenerator(*treeGenerator);
 
   //textures loading
   glActiveTexture(GL_TEXTURE0);
@@ -183,10 +184,11 @@ int main()
 
   //generating the terrain landscape data and filling related vertex/element buffers
   prepareTerrain();
-  treeGenerator.setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-  treeGenerator.setupHillModels(hillMapGenerator->getMap());
+  treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+  treeGenerator->setupHillModels(hillMapGenerator->getMap());
 
   //etc
+  printMapsInfos();
   glm::mat4 model;
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -224,11 +226,11 @@ int main()
           baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
           buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
           prepareTerrain();
-          treeGenerator.setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap()); //trees models setup
-          treeGenerator.setupHillModels(hillMapGenerator->getMap()); //hill trees models setup
+          treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap()); //trees models setup
+          treeGenerator->setupHillModels(hillMapGenerator->getMap()); //hill trees models setup
           delete saveLoadManager;
           saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
-          saveLoadManager->setTreeGenerator(treeGenerator);
+          saveLoadManager->setTreeGenerator(*treeGenerator);
           recreateTerrainRequest = false;
         }
 
@@ -426,7 +428,7 @@ int main()
           modelShader.setMat4("projectionView", projectionView);
           modelShader.setVec3("viewPosition", viewPosition);
           modelShader.setBool("shadow", renderShadowOnTrees);
-          treeGenerator.draw(modelShader);
+          treeGenerator->draw(modelShader);
         }
 
       //font rendering
@@ -489,6 +491,7 @@ int main()
   delete waterMapGenerator;
   delete saveLoadManager;
   delete buildableMapGenerator;
+  delete treeGenerator;
   underwaterQuadGenerator.deleteGLObjects();
   fontManager.deleteGLObjects();
   csRenderer.deleteGLObjects();
@@ -528,7 +531,7 @@ GLFWwindow* initGLFW()
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-  glfwWindowHint(GLFW_SAMPLES, 1);
+  glfwWindowHint(GLFW_SAMPLES, 2);
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
   GLFWmonitor* monitor = glfwGetPrimaryMonitor();
   const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
@@ -567,6 +570,22 @@ void printMapsInfos()
                 + baseMapGenerator->getTiles().size()
                 + instanced)
             << "\t(" << instanced << " instanced)" << std::endl;
+  std::cout << "Trees on flat: ";
+  unsigned int numTrees = 0;
+  for (unsigned int i = 0; i < treeGenerator->getTreeModels().size(); i++)
+    {
+      numTrees += treeGenerator->getNumTrees(i);
+      std::cout << treeGenerator->getNumTrees(i) << ", ";
+    }
+  std::cout << "summary: " << numTrees << std::endl;
+  std::cout << "Trees on hills: ";
+  unsigned int numHillTrees = 0;
+  for (unsigned int i = 0; i < treeGenerator->getHillTreeModels().size(); i++)
+    {
+      numHillTrees += treeGenerator->getNumHillTrees(i);
+      std::cout << treeGenerator->getNumHillTrees(i) << ", ";
+    }
+  std::cout << "summary: " << numHillTrees << std::endl;
   std::cout << "-----------------------------------------------------------\n";
 }
 
