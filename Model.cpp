@@ -20,10 +20,10 @@ void Model::loadModel(const std::string &path)
   processNode(scene->mRootNode, scene);
 }
 
-void Model::draw(Shader shaderProgram)
+void Model::draw(Shader &shaderProgram, const glm::vec2& cameraPosition, std::vector<ModelChunk>& chunks)
 {
   for (auto i = 0; i < meshes.size(); i++)
-    meshes[i].draw(shaderProgram);
+    meshes[i].draw(shaderProgram, cameraPosition, chunks);
 }
 
 void Model::processNode(aiNode *node, const aiScene* scene)

@@ -5,13 +5,15 @@
 #include <assimp/scene.h>
 #include "Mesh.h"
 #include "TextureLoader.h"
+#include <vector>
+#include "ModelChunk.h"
 
 class Model
 {
 public:
   Model(const std::string& path, TextureLoader& textureLoader);
   void loadModel(const std::string& path);
-  void draw(Shader shaderProgram);
+  void draw(Shader& shaderProgram, const glm::vec2& cameraPosition, std::vector<ModelChunk>& chunks);
   void processNode(aiNode* node, const aiScene* scene);
   void loadInstances(glm::mat4* models, unsigned int numModels);
   Mesh processMesh(aiMesh* mesh, const aiScene* scene);

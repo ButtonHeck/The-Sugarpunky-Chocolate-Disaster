@@ -22,6 +22,7 @@
 #include "CoordinateSystemRenderer.h"
 #include "SaveLoadManager.h"
 #include "BuildableMapGenerator.h"
+#include "ModelChunk.h"
 
 GLFWwindow* initGLFW();
 void prepareTerrain();
@@ -58,8 +59,12 @@ bool showCursor = false;
 bool showBuildable = false;
 float cursorOnMapX = 0.0f;
 float cursorOnMapZ = 0.0f;
+float cameraOnMapX = 0.0f;
+float cameraOnMapZ = 0.0f;
 int cursorOnMapCoordX = 0;
 int cursorOnMapCoordZ = 0;
+int cameraOnMapCoordX = 0;
+int cameraOnMapCoordZ = 0;
 std::string cursorTile = "Flat";
 
 int main()
@@ -82,6 +87,17 @@ int main()
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   FontManager fontManager("OCTAPOST_1.ttf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height));
   fontManager.loadFont();
+  std::vector<ModelChunk> treeModelChunks;
+  std::vector<ModelChunk> hillTreeModelChunks;
+  for (unsigned int y = 0; y < TILES_HEIGHT; y += MODEL_CHUNK_SIZE)
+    {
+      for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
+        {
+          ModelChunk chunk(x, x + MODEL_CHUNK_SIZE, y, y + MODEL_CHUNK_SIZE);
+          treeModelChunks.push_back(chunk);
+          hillTreeModelChunks.push_back(chunk);
+        }
+    }
 
   //shaders loading
   Shader hills(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/hills.fs");
@@ -106,7 +122,7 @@ int main()
   Model tree3(PROJ_PATH + "/models/tree3/tree3.obj", textureLoader);
   Model hillTree1(PROJ_PATH + "/models/hillTree1/hillTree1.obj", textureLoader);
   Model hillTree2(PROJ_PATH + "/models/hillTree2/hillTree2.obj", textureLoader);
-  treeGenerator = new TreeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2});
+  treeGenerator = new TreeGenerator({tree1/*, tree2, tree3*/}, {hillTree1/*, hillTree2*/});
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
   //textures loading
@@ -184,8 +200,8 @@ int main()
 
   //generating the terrain landscape data and filling related vertex/element buffers
   prepareTerrain();
-  treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-  treeGenerator->setupHillModels(hillMapGenerator->getMap());
+  treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap(), treeModelChunks);
+  treeGenerator->setupHillModels(hillMapGenerator->getMap(), hillTreeModelChunks);
 
   //etc
   printMapsInfos();
@@ -226,8 +242,8 @@ int main()
           baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
           buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
           prepareTerrain();
-          treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap()); //trees models setup
-          treeGenerator->setupHillModels(hillMapGenerator->getMap()); //hill trees models setup
+          treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap(), treeModelChunks);
+          treeGenerator->setupHillModels(hillMapGenerator->getMap(), hillTreeModelChunks);
           delete saveLoadManager;
           saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
           saveLoadManager->setTreeGenerator(*treeGenerator);
@@ -308,6 +324,25 @@ int main()
         }
       else
         cursorTile = "out of map";
+
+      //update camera map position info
+      cameraOnMapX = camera.getPosition().x;
+      cameraOnMapZ = camera.getPosition().z;
+      cameraOnMapX = glm::clamp(cameraOnMapX, -TILES_WIDTH/2.0f, TILES_WIDTH/2.0f);
+      cameraOnMapZ = glm::clamp(cameraOnMapZ, -TILES_HEIGHT/2.0f, TILES_HEIGHT/2.0f);
+      cameraOnMapCoordX = (int)(TILES_WIDTH + cameraOnMapX) - TILES_WIDTH / 2;
+      cameraOnMapCoordX = glm::clamp(cameraOnMapCoordX, 0, TILES_WIDTH - 1);
+      cameraOnMapCoordZ = (int)(TILES_HEIGHT + cameraOnMapZ) - TILES_HEIGHT / 2;
+      cameraOnMapCoordZ = glm::clamp(cameraOnMapCoordZ, 0, TILES_HEIGHT - 1);
+      ModelChunk cameraChunk = treeModelChunks[0];
+      for (unsigned int i = 0; i < treeModelChunks.size(); i++)
+        {
+          if (treeModelChunks[i].containsPoint(glm::vec2(cameraOnMapCoordX, cameraOnMapCoordZ)))
+            {
+              cameraChunk = treeModelChunks[i];
+              break;
+            }
+        }
 
       //buildable tiles
       if (showBuildable)
@@ -428,7 +463,7 @@ int main()
           modelShader.setMat4("projectionView", projectionView);
           modelShader.setVec3("viewPosition", viewPosition);
           modelShader.setBool("shadow", renderShadowOnTrees);
-          treeGenerator->draw(modelShader);
+          treeGenerator->draw(modelShader, glm::vec2(cameraOnMapCoordX, cameraOnMapCoordZ), treeModelChunks, hillTreeModelChunks);
         }
 
       //font rendering
@@ -436,21 +471,28 @@ int main()
         {
           fontManager.renderText(fontShader, "FPS: " + std::to_string(fps), 10.0f, (float)scr_height - 25.0f, 0.35f);
           fontManager.renderText(fontShader,
-                                 "View pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
+                                 "camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                                  + std::to_string(viewPosition.y).substr(0,6) + ": "
                                  + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 45.0f, 0.35f);
           fontManager.renderText(fontShader,
+                                 "camera on map: " + std::to_string(cameraOnMapCoordX) + ": " + std::to_string(cameraOnMapCoordZ),
+                                 10.0f, (float)scr_height - 65.0f, 0.35f);
+          fontManager.renderText(fontShader,
                                  "View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
                                  + std::to_string(camera.getDirection().y).substr(0,6) + ": "
-                                 + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 65.0f, 0.35f);
+                                 + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 85.0f, 0.35f);
           fontManager.renderText(fontShader,
                                  "Cursor at: " + (!showCursor ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
                                  + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
-                                 + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 85.0f, 0.35f);
+                                 + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 105.0f, 0.35f);
           fontManager.renderText(fontShader,
                                  "Cursor on map: " + (!showCursor ? "inactive" : (std::to_string(cursorOnMapCoordX) + ": "
                                  + std::to_string(cursorOnMapCoordZ-1) + ", " + cursorTile)),
-                                 10.0f, (float)scr_height - 105.0f, 0.35f);
+                                 10.0f, (float)scr_height - 125.0f, 0.35f);
+          fontManager.renderText(fontShader,
+                                 "camera in chunk: x-" + std::to_string(cameraChunk.getLeft()) + ":" + std::to_string(cameraChunk.getRight())
+                                 + ", z-" + std::to_string(cameraChunk.getTop()) + ":" + std::to_string(cameraChunk.getBottom()),
+                                 10.0f, (float)scr_height - 145.0f, 0.35f);
           glLineWidth(2);
           csShader.use();
           csShader.setMat4("view", view);

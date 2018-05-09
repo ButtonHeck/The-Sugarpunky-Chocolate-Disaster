@@ -21,7 +21,8 @@ SOURCES += main.cpp \
     FontManager.cpp \
     CoordinateSystemRenderer.cpp \
     SaveLoadManager.cpp \
-    BuildableMapGenerator.cpp
+    BuildableMapGenerator.cpp \
+    ModelChunk.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -66,7 +67,8 @@ HEADERS += \
     FontManager.h \
     CoordinateSystemRenderer.h \
     SaveLoadManager.h \
-    BuildableMapGenerator.h
+    BuildableMapGenerator.h \
+    ModelChunk.h
 
 DISTFILES += \
     scene.vs \

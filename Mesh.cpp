@@ -65,7 +65,7 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Mesh::draw(Shader shader)
+void Mesh::draw(Shader &shader, const glm::vec2& cameraPosition, std::vector<ModelChunk>& chunks)
 {
   unsigned int diffuseNr = 1;
   unsigned int specularNr = 1;
@@ -89,7 +89,15 @@ void Mesh::draw(Shader shader)
       glBindTexture(GL_TEXTURE_2D, textures[i].id);
     }
   glBindVertexArray(VAO);
-  glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances);
+  for (unsigned int i = 0; i < chunks.size(); i++)
+    {
+      if (chunks[i].containsPoint(cameraPosition))
+        {
+          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0,
+                                              chunks[i].getNumInstances(), chunks[i].getInstanceOffset());
+        }
+    }
+//  glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances, 0);
   glBindVertexArray(0);
   glBindTexture(GL_TEXTURE_2D, 0);
 }

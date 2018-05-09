@@ -7,9 +7,9 @@ void CoordinateSystemRenderer::fillBufferData()
   glBindVertexArray(vao);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   GLfloat points[] = {
-      -0.92f, 0.66f, 0.0f, 0.08f, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
-      -0.92f, 0.66f, 0.0f, 0.0f,  0.08f, 0.0f,  0.0f, 1.0f, 0.0f,
-      -0.92f, 0.66f, 0.0f, 0.0f,  0.0f,  0.08f, 0.0f, 0.0f, 1.0f
+      -0.92f, 0.60f, 0.0f, 0.08f, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
+      -0.92f, 0.60f, 0.0f, 0.0f,  0.08f, 0.0f,  0.0f, 1.0f, 0.0f,
+      -0.92f, 0.60f, 0.0f, 0.0f,  0.0f,  0.08f, 0.0f, 0.0f, 1.0f
   };
   glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_DYNAMIC_DRAW);
   glEnableVertexAttribArray(0);
