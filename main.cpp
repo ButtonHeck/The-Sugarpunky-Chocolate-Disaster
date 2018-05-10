@@ -57,6 +57,7 @@ bool saveRequest = false;
 bool loadRequest = false;
 bool showCursor = false;
 bool showBuildable = false;
+bool modelRenderOptimize = true;
 float cursorOnMapX = 0.0f;
 float cursorOnMapZ = 0.0f;
 float cameraOnMapX = 0.0f;
@@ -89,15 +90,6 @@ int main()
   fontManager.loadFont();
   std::vector<ModelChunk> treeModelChunks;
   std::vector<ModelChunk> hillTreeModelChunks;
-  for (unsigned int y = 0; y < TILES_HEIGHT; y += MODEL_CHUNK_SIZE)
-    {
-      for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
-        {
-          ModelChunk chunk(x, x + MODEL_CHUNK_SIZE, y, y + MODEL_CHUNK_SIZE);
-          treeModelChunks.push_back(chunk);
-          hillTreeModelChunks.push_back(chunk);
-        }
-    }
 
   //shaders loading
   Shader hills(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/hills.fs");
@@ -463,7 +455,7 @@ int main()
           modelShader.setMat4("projectionView", projectionView);
           modelShader.setVec3("viewPosition", viewPosition);
           modelShader.setBool("shadow", renderShadowOnTrees);
-          treeGenerator->draw(modelShader, glm::vec2(cameraOnMapCoordX, cameraOnMapCoordZ), treeModelChunks, hillTreeModelChunks);
+          treeGenerator->draw(modelShader, glm::vec2(cameraOnMapCoordX, cameraOnMapCoordZ), treeModelChunks, hillTreeModelChunks, modelRenderOptimize);
         }
 
       //font rendering

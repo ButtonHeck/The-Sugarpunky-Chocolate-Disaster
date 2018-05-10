@@ -13,7 +13,7 @@ class Model
 public:
   Model(const std::string& path, TextureLoader& textureLoader);
   void loadModel(const std::string& path);
-  void draw(Shader& shaderProgram, const glm::vec2& cameraPosition, std::vector<ModelChunk>& chunks);
+  void draw(Shader& shaderProgram, const glm::vec2& cameraPosition, std::vector<ModelChunk>& chunks, unsigned int index, bool modelRenderOptimize);
   void processNode(aiNode* node, const aiScene* scene);
   void loadInstances(glm::mat4* models, unsigned int numModels);
   Mesh processMesh(aiMesh* mesh, const aiScene* scene);

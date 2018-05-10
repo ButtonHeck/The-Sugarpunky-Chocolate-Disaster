@@ -8,17 +8,32 @@ TreeGenerator::TreeGenerator(std::initializer_list<Model> plainModels, std::init
 
 }
 
-void TreeGenerator::draw(Shader &shader, const glm::vec2 &cameraPosition, std::vector<ModelChunk> &treeModelChunks, std::vector<ModelChunk> &hillTreeModelChunks)
+void TreeGenerator::draw(Shader &shader, const glm::vec2 &cameraPosition, std::vector<ModelChunk> &treeModelChunks, std::vector<ModelChunk> &hillTreeModelChunks, bool modelRenderOptimize)
 {
-  for (Model& model : plainTrees)
-    model.draw(shader, cameraPosition, treeModelChunks);
-  for (Model& model: hillTrees)
-    model.draw(shader, cameraPosition, hillTreeModelChunks);
+  for (unsigned int i = 0; i < plainTrees.size(); i++)
+    {
+      Model& model = plainTrees[i];
+      model.draw(shader, cameraPosition, treeModelChunks, i, modelRenderOptimize);
+    }
+  for (unsigned int i = 0; i < hillTrees.size(); i++)
+    {
+      Model& model = hillTrees[i];
+      model.draw(shader, cameraPosition, hillTreeModelChunks, i, modelRenderOptimize);
+    }
 }
 
 void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap,
                                      std::vector<ModelChunk>& chunks)
 {
+  chunks.clear();
+  for (unsigned int y = 0; y < TILES_HEIGHT; y += MODEL_CHUNK_SIZE)
+    {
+      for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
+        {
+          ModelChunk chunk(x, x + MODEL_CHUNK_SIZE, y, y + MODEL_CHUNK_SIZE);
+          chunks.push_back(chunk);
+        }
+    }
   std::vector<std::vector<glm::mat4>> treeModelsVecs;
   for (unsigned int i = 0; i < plainTrees.size(); i++)
     {
@@ -30,12 +45,21 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
   std::uniform_real_distribution<float> modelSizeDistribution(0.2f, 0.3f);
   std::uniform_real_distribution<float> modelPositionDistribution(-0.3f, 0.3f);
   std::default_random_engine randomizer;
-  unsigned int treeCounter = 0, chunkCounter = 0, instanceOffset = 0, numInstances = 0;
+  unsigned int treeCounter = 0, chunkCounter = 0;
+
+  std::vector<unsigned int> instanceOffsetsVector(plainTrees.size());
+  std::vector<unsigned int> numInstanceVector(plainTrees.size());
+  for (unsigned int i = 0; i < plainTrees.size(); i++)
+    {
+      instanceOffsetsVector.push_back(0);
+      numInstanceVector.push_back(0);
+    }
+
   for (unsigned int y = 0; y < TILES_HEIGHT; y += MODEL_CHUNK_SIZE)
     {
       for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
         {
-          numInstances = 0;
+          chunks.at(chunkCounter).setInstanceOffsets(instanceOffsetsVector);
           for (unsigned int y1 = y; y1 < y + MODEL_CHUNK_SIZE; y1++)
             {
               for (unsigned int x1 = x; x1 < x + MODEL_CHUNK_SIZE; x1++)
@@ -52,15 +76,18 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
                       model = glm::rotate(model, glm::radians((float)(y1 * TILES_WIDTH + x1 * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
                       model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer)));
                       treeModelsVecs[treeCounter % treeModelsVecs.size()].push_back(model);
+                      numInstanceVector[treeCounter % treeModelsVecs.size()] += 1;
+                      instanceOffsetsVector[treeCounter % treeModelsVecs.size()] += 1;
                       ++treeCounter;
-                      ++numInstances;
                     }
                 }
             }
-          chunks.at(chunkCounter).setInstanceOffset(instanceOffset / plainTrees.size());
-          chunks.at(chunkCounter).setNumInstances(numInstances / plainTrees.size());
+          chunks.at(chunkCounter).setNumInstances(numInstanceVector);
+          for (unsigned int i = 0; i < numInstanceVector.size(); i++)
+            {
+              numInstanceVector[i] = 0;
+            }
           ++chunkCounter;
-          instanceOffset += (treeCounter - instanceOffset);
         }
     }
   if (treesAlreadyCreated)
@@ -111,6 +138,15 @@ void TreeGenerator::updatePlainModels(std::vector<glm::mat4 *> &models, unsigned
 
 void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, std::vector<ModelChunk>& chunks)
 {
+  chunks.clear();
+  for (unsigned int y = 0; y < TILES_HEIGHT; y += MODEL_CHUNK_SIZE)
+    {
+      for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
+        {
+          ModelChunk chunk(x, x + MODEL_CHUNK_SIZE, y, y + MODEL_CHUNK_SIZE);
+          chunks.push_back(chunk);
+        }
+    }
   std::uniform_real_distribution<float> modelSizeDistribution(0.2f, 0.3f);
   std::uniform_real_distribution<float> modelPositionDistribution(-0.2f, 0.2f);
   std::vector<std::vector<glm::mat4>> hillTreeModelsVecs;
@@ -121,12 +157,21 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, s
         delete[] hillTreeModels[i];
     }
   hillTreeModels.clear();
-  unsigned int hillTreeCounter = 0, chunkCounter = 0, instanceOffset = 0, numInstances = 0;
+  unsigned int hillTreeCounter = 0, chunkCounter = 0;
+
+  std::vector<unsigned int> instanceOffsetsVector(hillTrees.size());
+  std::vector<unsigned int> numInstancesVector(hillTrees.size());
+  for (unsigned int i = 0; i < hillTrees.size(); i++)
+    {
+      instanceOffsetsVector.push_back(0);
+      numInstancesVector.push_back(0);
+    }
+
   for (unsigned int y = 0; y < TILES_HEIGHT; y += MODEL_CHUNK_SIZE)
     {
       for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
         {
-          numInstances = 0;
+          chunks.at(chunkCounter).setInstanceOffsets(instanceOffsetsVector);
           for (unsigned int y1 = y; y1 < y + MODEL_CHUNK_SIZE; y1++)
             {
               for (unsigned int x1 = x; x1 < x + MODEL_CHUNK_SIZE; x1++)
@@ -152,15 +197,18 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, s
                       model = glm::rotate(model, glm::radians((float)(y1 * TILES_WIDTH + x1 * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
                       model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer)));
                       hillTreeModelsVecs[hillTreeCounter % hillTreeModelsVecs.size()].push_back(model);
+                      numInstancesVector[hillTreeCounter % hillTreeModelsVecs.size()] += 1;
+                      instanceOffsetsVector[hillTreeCounter % hillTreeModelsVecs.size()] += 1;
                       ++hillTreeCounter;
-                      ++numInstances;
                     }
                 }
             }
-          chunks.at(chunkCounter).setInstanceOffset(instanceOffset / hillTrees.size());
-          chunks.at(chunkCounter).setNumInstances(numInstances / hillTrees.size());
+          chunks.at(chunkCounter).setNumInstances(numInstancesVector);
+          for (unsigned int i = 0; i < numInstancesVector.size(); i++)
+            {
+              numInstancesVector[i] = 0;
+            }
           ++chunkCounter;
-          instanceOffset += (hillTreeCounter - instanceOffset);
         }
     }
   if (hillTreesAlreadyCreated)

@@ -10,24 +10,26 @@ ModelChunk::ModelChunk(unsigned int left, unsigned int right, unsigned int top, 
 
 }
 
-void ModelChunk::setInstanceOffset(unsigned int instanceOffset)
+void ModelChunk::setInstanceOffsets(std::vector<unsigned int> &instanceOffsets)
 {
-  this->instanceOffset = instanceOffset;
+  for (unsigned int i = 0; i < instanceOffsets.size(); i++)
+    this->instanceOffsets.push_back(instanceOffsets[i]);
 }
 
-void ModelChunk::setNumInstances(unsigned int numInstances)
+void ModelChunk::setNumInstances(std::vector<unsigned int> &numInstances)
 {
-  this->numInstances = numInstances;
+  for (unsigned int i = 0; i < numInstances.size(); i++)
+    this->numInstances.push_back(numInstances[i]);
 }
 
-unsigned int ModelChunk::getInstanceOffset()
+unsigned int ModelChunk::getInstanceOffset(int index)
 {
-  return instanceOffset;
+  return instanceOffsets[index];
 }
 
-unsigned int ModelChunk::getNumInstances()
+unsigned int ModelChunk::getNumInstances(int index)
 {
-  return numInstances;
+  return numInstances[index];
 }
 
 bool ModelChunk::containsPoint(const glm::vec2 &position)

@@ -29,7 +29,7 @@ public:
   Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
   void setupMesh();
   void setupInstances(glm::mat4* models, unsigned int numModels);
-  void draw(Shader& shader, const glm::vec2& cameraPosition, std::vector<ModelChunk>& chunks);
+  void draw(Shader& shader, const glm::vec2& cameraPosition, std::vector<ModelChunk>& chunks, unsigned int index, bool modelRenderOptimize);
   unsigned int VAO;
 private:
   std::vector<Vertex> vertices;

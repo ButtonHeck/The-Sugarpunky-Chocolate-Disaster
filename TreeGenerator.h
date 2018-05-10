@@ -14,7 +14,7 @@ class TreeGenerator
 {
 public:
   TreeGenerator(std::initializer_list<Model> plainModels, std::initializer_list<Model> hillModels);
-  void draw(Shader& shader, const glm::vec2& cameraPosition, std::vector<ModelChunk>& treeModelChunks, std::vector<ModelChunk>& hillTreeModelChunks);
+  void draw(Shader& shader, const glm::vec2& cameraPosition, std::vector<ModelChunk>& treeModelChunks, std::vector<ModelChunk>& hillTreeModelChunks, bool modelRenderOptimize);
   void setupPlainModels(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap,
                         std::vector<ModelChunk>& chunks);
   void updatePlainModels(std::vector<glm::mat4*>& models, unsigned int* numAllTrees);

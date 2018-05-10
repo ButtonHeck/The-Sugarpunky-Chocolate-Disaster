@@ -12,6 +12,7 @@ extern bool saveRequest;
 extern bool loadRequest;
 extern bool showBuildable;
 extern bool showCursor;
+extern bool modelRenderOptimize;
 extern int scr_width;
 extern int scr_height;
 extern float aspect_ratio;
@@ -148,6 +149,18 @@ void InputController::processKeyboard(float delta)
     }
   if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_F11] = false;
+
+  //model rendering optimization
+  if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_R])
+        {
+          modelRenderOptimize = !modelRenderOptimize;
+          keysPressed[GLFW_KEY_R] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_R) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_R] = false;
 }
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)
