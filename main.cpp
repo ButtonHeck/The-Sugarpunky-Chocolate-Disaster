@@ -122,7 +122,7 @@ int main()
   Model tree3(PROJ_PATH + "/models/tree3/tree3.obj", textureLoader);
   Model hillTree1(PROJ_PATH + "/models/hillTree1/hillTree1.obj", textureLoader);
   Model hillTree2(PROJ_PATH + "/models/hillTree2/hillTree2.obj", textureLoader);
-  treeGenerator = new TreeGenerator({tree1/*, tree2, tree3*/}, {hillTree1/*, hillTree2*/});
+  treeGenerator = new TreeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2});
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
   //textures loading

@@ -57,8 +57,8 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
                     }
                 }
             }
-          chunks.at(chunkCounter).setInstanceOffset(instanceOffset);
-          chunks.at(chunkCounter).setNumInstances(numInstances);
+          chunks.at(chunkCounter).setInstanceOffset(instanceOffset / plainTrees.size());
+          chunks.at(chunkCounter).setNumInstances(numInstances / plainTrees.size());
           ++chunkCounter;
           instanceOffset += (treeCounter - instanceOffset);
         }
@@ -157,8 +157,8 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, s
                     }
                 }
             }
-          chunks.at(chunkCounter).setInstanceOffset(instanceOffset);
-          chunks.at(chunkCounter).setNumInstances(numInstances);
+          chunks.at(chunkCounter).setInstanceOffset(instanceOffset / hillTrees.size());
+          chunks.at(chunkCounter).setNumInstances(numInstances / hillTrees.size());
           ++chunkCounter;
           instanceOffset += (hillTreeCounter - instanceOffset);
         }

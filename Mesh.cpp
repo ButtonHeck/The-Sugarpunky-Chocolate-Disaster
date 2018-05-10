@@ -97,7 +97,6 @@ void Mesh::draw(Shader &shader, const glm::vec2& cameraPosition, std::vector<Mod
                                               chunks[i].getNumInstances(), chunks[i].getInstanceOffset());
         }
     }
-//  glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances, 0);
   glBindVertexArray(0);
   glBindTexture(GL_TEXTURE_2D, 0);
 }
