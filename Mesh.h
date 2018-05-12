@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include "Settings.h"
 #include "ModelChunk.h"
+#include "Camera.h"
+#include "glm/gtx/fast_square_root.hpp"
 
 struct Vertex
 {
@@ -29,7 +31,8 @@ public:
   Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
   void setupMesh();
   void setupInstances(glm::mat4* models, unsigned int numModels);
-  void draw(Shader& shader, const glm::vec2& cameraPosition, std::vector<ModelChunk>& chunks, unsigned int index, bool modelRenderOptimize);
+  void draw(Shader& shader, Camera& camera, std::vector<ModelChunk>& chunks, unsigned int index,
+            bool modelRenderOptimize, unsigned int chunkLoadingDistance);
   unsigned int VAO;
 private:
   std::vector<Vertex> vertices;

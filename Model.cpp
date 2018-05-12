@@ -20,10 +20,11 @@ void Model::loadModel(const std::string &path)
   processNode(scene->mRootNode, scene);
 }
 
-void Model::draw(Shader &shaderProgram, const glm::vec2& cameraPosition, std::vector<ModelChunk>& chunks, unsigned int index, bool modelRenderOptimize)
+void Model::draw(Shader &shaderProgram, Camera& camera, std::vector<ModelChunk>& chunks, unsigned int index,
+                 bool modelRenderOptimize, unsigned int chunkLoadingDistance)
 {
   for (unsigned int i = 0; i < meshes.size(); i++)
-    meshes[i].draw(shaderProgram, cameraPosition, chunks, index, modelRenderOptimize);
+    meshes[i].draw(shaderProgram, camera, chunks, index, modelRenderOptimize, chunkLoadingDistance);
 }
 
 void Model::processNode(aiNode *node, const aiScene* scene)

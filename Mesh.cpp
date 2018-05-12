@@ -65,7 +65,8 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Mesh::draw(Shader &shader, const glm::vec2& cameraPosition, std::vector<ModelChunk>& chunks, unsigned int index, bool modelRenderOptimize)
+void Mesh::draw(Shader &shader, Camera &camera, std::vector<ModelChunk>& chunks, unsigned int index,
+                bool modelRenderOptimize, unsigned int chunkLoadingDistance)
 {
   unsigned int diffuseNr = 1;
   unsigned int specularNr = 1;
@@ -89,21 +90,54 @@ void Mesh::draw(Shader &shader, const glm::vec2& cameraPosition, std::vector<Mod
       glBindTexture(GL_TEXTURE_2D, textures[i].id);
     }
   glBindVertexArray(VAO);
+
+  float cameraOnMapX = camera.getPosition().x;
+  float cameraOnMapZ = camera.getPosition().z;
+  cameraOnMapX = glm::clamp(cameraOnMapX, -TILES_WIDTH/2.0f, TILES_WIDTH/2.0f);
+  cameraOnMapZ = glm::clamp(cameraOnMapZ, -TILES_HEIGHT/2.0f, TILES_HEIGHT/2.0f);
+  int cameraOnMapCoordX = (int)(TILES_WIDTH + cameraOnMapX) - TILES_WIDTH / 2;
+  cameraOnMapCoordX = glm::clamp(cameraOnMapCoordX, 0, TILES_WIDTH - 1);
+  int cameraOnMapCoordZ = (int)(TILES_HEIGHT + cameraOnMapZ) - TILES_HEIGHT / 2;
+  cameraOnMapCoordZ = glm::clamp(cameraOnMapCoordZ, 0, TILES_HEIGHT - 1);
+  glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
+  glm::vec2 viewDirection = glm::vec2(camera.getDirection().x, camera.getDirection().z);
+  viewDirection = glm::fastNormalize(viewDirection);
+  float cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 70.0f;
+
   if (modelRenderOptimize)
     {
       for (unsigned int i = 0; i < chunks.size(); i++)
         {
-          if (chunks[i].containsPoint(cameraPosition))
+          if (chunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
             {
               glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0,
                                                   chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
+              continue;
             }
+          glm::vec2 directionToChunk = chunks[i].getMidPoint() - cameraPosition;
+          if (glm::fastLength(directionToChunk) > MODEL_CHUNK_SIZE * chunkLoadingDistance)
+            continue;
+          glm::vec2 directionToChunkUL = glm::vec2(chunks[i].getLeft() - 192.0f, chunks[i].getTop() - 192.0f) - cameraPosition;
+          glm::vec2 directionToChunkUR = glm::vec2(chunks[i].getRight() - 192.0f, chunks[i].getTop() - 192.0f) - cameraPosition;
+          glm::vec2 directionToChunkLR = glm::vec2(chunks[i].getRight() - 192.0f, chunks[i].getBottom() - 192.0f) - cameraPosition;
+          glm::vec2 directionToChunkLL = glm::vec2(chunks[i].getLeft() - 192.0f, chunks[i].getBottom() - 192.0f) - cameraPosition;
+          directionToChunkUL = glm::fastNormalize(directionToChunkUL);
+          directionToChunkUR = glm::fastNormalize(directionToChunkUR);
+          directionToChunkLR = glm::fastNormalize(directionToChunkLR);
+          directionToChunkLL = glm::fastNormalize(directionToChunkLL);
+          if (glm::dot(directionToChunkUL, viewDirection) > cameraCorrectedFOVDOT ||
+              glm::dot(directionToChunkUR, viewDirection) > cameraCorrectedFOVDOT ||
+              glm::dot(directionToChunkLR, viewDirection) > cameraCorrectedFOVDOT ||
+              glm::dot(directionToChunkLL, viewDirection) > cameraCorrectedFOVDOT)
+            glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0,
+                                                chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
         }
     }
   else
     {
       glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances, 0);
     }
+
   glBindVertexArray(0);
   glBindTexture(GL_TEXTURE_2D, 0);
 }

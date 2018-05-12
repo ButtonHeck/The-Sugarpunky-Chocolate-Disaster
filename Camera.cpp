@@ -2,9 +2,9 @@
 
 Camera::Camera(glm::vec3 position)
   :
-    zoom(40.0f),
-    moveSpeed(30),
-    mouseSensitivity(0.05f),
+    zoom(FOV),
+    moveSpeed(10),
+    mouseSensitivity(0.04f),
     FPSmode(false),
     yaw(-90.0f),
     pitch(0.0f),
@@ -28,8 +28,8 @@ void Camera::processMouseCursor(float xOffset, float yOffset)
   pitch -= yOffset;
   if (pitch >= 89.9f)
     pitch = 89.9f;
-  if (pitch <= -89.9f)
-    pitch = -89.9f;
+  if (pitch <= -65.0f)
+    pitch = -65.0f;
   updateVectors();
 }
 

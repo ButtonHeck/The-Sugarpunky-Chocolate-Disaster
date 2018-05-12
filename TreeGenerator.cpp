@@ -8,17 +8,18 @@ TreeGenerator::TreeGenerator(std::initializer_list<Model> plainModels, std::init
 
 }
 
-void TreeGenerator::draw(Shader &shader, const glm::vec2 &cameraPosition, std::vector<ModelChunk> &treeModelChunks, std::vector<ModelChunk> &hillTreeModelChunks, bool modelRenderOptimize)
+void TreeGenerator::draw(Shader &shader, Camera &camera, std::vector<ModelChunk> &treeModelChunks, std::vector<ModelChunk> &hillTreeModelChunks,
+                         bool modelRenderOptimize, unsigned int chunkLoadingDistance)
 {
   for (unsigned int i = 0; i < plainTrees.size(); i++)
     {
       Model& model = plainTrees[i];
-      model.draw(shader, cameraPosition, treeModelChunks, i, modelRenderOptimize);
+      model.draw(shader, camera, treeModelChunks, i, modelRenderOptimize, chunkLoadingDistance);
     }
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
       Model& model = hillTrees[i];
-      model.draw(shader, cameraPosition, hillTreeModelChunks, i, modelRenderOptimize);
+      model.draw(shader, camera, hillTreeModelChunks, i, modelRenderOptimize, chunkLoadingDistance);
     }
 }
 
@@ -31,7 +32,7 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
       for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
         {
           ModelChunk chunk(x, x + MODEL_CHUNK_SIZE, y, y + MODEL_CHUNK_SIZE);
-          chunks.push_back(chunk);
+          chunks.push_back(std::move(chunk));
         }
     }
   std::vector<std::vector<glm::mat4>> treeModelsVecs;
@@ -66,7 +67,7 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
                 {
                   if ((baseMap[y1][x1] == 0 && baseMap[y1+1][x1+1] == 0 && baseMap[y1+1][x1] == 0 && baseMap[y1][x1+1] == 0)
                       && !(hillMap[y1][x1] != 0 || hillMap[y1+1][x1+1] != 0 || hillMap[y1+1][x1] != 0 || hillMap[y1][x1+1] != 0)
-                      && rand() % 3 == 0)
+                      && rand() % 7 == 0)
                     {
                       glm::mat4 model;
                       model = glm::translate(model,
@@ -144,7 +145,7 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, s
       for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
         {
           ModelChunk chunk(x, x + MODEL_CHUNK_SIZE, y, y + MODEL_CHUNK_SIZE);
-          chunks.push_back(chunk);
+          chunks.push_back(std::move(chunk));
         }
     }
   std::uniform_real_distribution<float> modelSizeDistribution(0.2f, 0.3f);

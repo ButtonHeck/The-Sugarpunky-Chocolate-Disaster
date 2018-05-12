@@ -50,6 +50,7 @@ SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillM
 TreeGenerator* treeGenerator;
 std::vector<ModelChunk> treeModelChunks;
 std::vector<ModelChunk> hillTreeModelChunks;
+unsigned int chunkLoadingDistance = 8;
 bool renderShadowOnTrees = true;
 bool renderTreeModels = true;
 bool animateWater = true;
@@ -329,7 +330,7 @@ int main()
       ModelChunk cameraChunk = treeModelChunks[0];
       for (unsigned int i = 0; i < treeModelChunks.size(); i++)
         {
-          if (treeModelChunks[i].containsPoint(glm::vec2(cameraOnMapCoordX, cameraOnMapCoordZ)))
+          if (treeModelChunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
             {
               cameraChunk = treeModelChunks[i];
               break;
@@ -455,7 +456,8 @@ int main()
           modelShader.setMat4("projectionView", projectionView);
           modelShader.setVec3("viewPosition", viewPosition);
           modelShader.setBool("shadow", renderShadowOnTrees);
-          treeGenerator->draw(modelShader, glm::vec2(cameraOnMapCoordX, cameraOnMapCoordZ), treeModelChunks, hillTreeModelChunks, modelRenderOptimize);
+          treeGenerator->draw(modelShader, camera, treeModelChunks, hillTreeModelChunks,
+                              modelRenderOptimize, chunkLoadingDistance);
         }
 
       //font rendering

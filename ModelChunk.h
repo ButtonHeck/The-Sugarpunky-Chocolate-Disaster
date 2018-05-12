@@ -17,13 +17,15 @@ public:
   std::vector<unsigned int>& getInstanceOffsetVector();
   unsigned int getNumInstances(int index);
   std::vector<unsigned int>& getNumInstancesVector();
-  bool containsPoint(const glm::vec2& position);
+  bool containsPoint(float x, float y);
   unsigned int getLeft();
   unsigned int getRight();
   unsigned int getTop();
   unsigned int getBottom();
+  glm::vec2 getMidPoint();
 private:
   unsigned int left, right, top, bottom;
+  float midPointX, midPointY;
   std::vector<unsigned int> instanceOffsets;
   std::vector<unsigned int> numInstances;
 };
