@@ -14,7 +14,7 @@ SaveLoadManager::SaveLoadManager(BaseMapGenerator &baseGenerator, HillsMapGenera
 
 }
 
-bool SaveLoadManager::saveToFile(const std::string &filename)
+bool SaveLoadManager::saveToFile(const std::string &filename, std::vector<ModelChunk>& treeModelChunks, std::vector<ModelChunk>& hillTreeModelChunks)
 {
   std::ofstream output(filename);
   if (!output)
@@ -51,12 +51,12 @@ bool SaveLoadManager::saveToFile(const std::string &filename)
           output << value << " ";
         }
     }
-  treeGenerator->serialize(output);
+  treeGenerator->serialize(output, treeModelChunks, hillTreeModelChunks);
   output.close();
   return true;
 }
 
-bool SaveLoadManager::loadFromFile(const std::string &filename)
+bool SaveLoadManager::loadFromFile(const std::string &filename, std::vector<ModelChunk> &treeModelChunks, std::vector<ModelChunk> &hillTreeModelChunks)
 {
   std::ifstream input(filename);
   if (!input)
@@ -92,6 +92,37 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
       for (float& value : row)
         {
           input >> value;
+        }
+    }
+
+  for (unsigned int chunk = 0; chunk < treeModelChunks.size(); chunk++)
+    {
+      for (unsigned int i = 0; i < treeModelChunks[chunk].getNumInstancesVector().size(); i++)
+        {
+          unsigned int numInstances;
+          input >> numInstances;
+          treeModelChunks[chunk].setNumInstances(i, numInstances);
+        }
+      for (unsigned int i = 0; i < treeModelChunks[chunk].getInstanceOffsetVector().size(); i++)
+        {
+          unsigned int offset;
+          input >> offset;
+          treeModelChunks[chunk].setInstanceOffset(i, offset);
+        }
+    }
+  for (unsigned int chunk = 0; chunk < hillTreeModelChunks.size(); chunk++)
+    {
+      for (unsigned int i = 0; i < hillTreeModelChunks[chunk].getNumInstancesVector().size(); i++)
+        {
+          unsigned int numInstances;
+          input >> numInstances;
+          hillTreeModelChunks[chunk].setNumInstances(i, numInstances);
+        }
+      for (unsigned int i = 0; i < hillTreeModelChunks[chunk].getInstanceOffsetVector().size(); i++)
+        {
+          unsigned int offset;
+          input >> offset;
+          hillTreeModelChunks[chunk].setInstanceOffset(i, offset);
         }
     }
 

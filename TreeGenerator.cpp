@@ -59,7 +59,7 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
     {
       for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
         {
-          chunks.at(chunkCounter).setInstanceOffsets(instanceOffsetsVector);
+          chunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
           for (unsigned int y1 = y; y1 < y + MODEL_CHUNK_SIZE; y1++)
             {
               for (unsigned int x1 = x; x1 < x + MODEL_CHUNK_SIZE; x1++)
@@ -82,7 +82,7 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
                     }
                 }
             }
-          chunks.at(chunkCounter).setNumInstances(numInstanceVector);
+          chunks.at(chunkCounter).setNumInstancesVector(numInstanceVector);
           for (unsigned int i = 0; i < numInstanceVector.size(); i++)
             {
               numInstanceVector[i] = 0;
@@ -171,7 +171,7 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, s
     {
       for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
         {
-          chunks.at(chunkCounter).setInstanceOffsets(instanceOffsetsVector);
+          chunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
           for (unsigned int y1 = y; y1 < y + MODEL_CHUNK_SIZE; y1++)
             {
               for (unsigned int x1 = x; x1 < x + MODEL_CHUNK_SIZE; x1++)
@@ -203,7 +203,7 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, s
                     }
                 }
             }
-          chunks.at(chunkCounter).setNumInstances(numInstancesVector);
+          chunks.at(chunkCounter).setNumInstancesVector(numInstancesVector);
           for (unsigned int i = 0; i < numInstancesVector.size(); i++)
             {
               numInstancesVector[i] = 0;
@@ -287,8 +287,30 @@ std::vector<Model> &TreeGenerator::getHillTrees()
   return hillTrees;
 }
 
-void TreeGenerator::serialize(std::ofstream &out)
+void TreeGenerator::serialize(std::ofstream &out, std::vector<ModelChunk> &treeModelChunks, std::vector<ModelChunk> &hillTreeModelChunks)
 {
+  for (unsigned int chunk = 0; chunk < treeModelChunks.size(); chunk++)
+    {
+      for (unsigned int i = 0; i < treeModelChunks[chunk].getNumInstancesVector().size(); i++)
+        {
+          out << treeModelChunks[chunk].getNumInstances(i) << " ";
+        }
+      for (unsigned int i = 0; i < treeModelChunks[chunk].getInstanceOffsetVector().size(); i++)
+        {
+          out << treeModelChunks[chunk].getInstanceOffset(i) << " ";
+        }
+    }
+  for (unsigned int chunk = 0; chunk < hillTreeModelChunks.size(); chunk++)
+    {
+      for (unsigned int i = 0; i < hillTreeModelChunks[chunk].getNumInstancesVector().size(); i++)
+        {
+          out << hillTreeModelChunks[chunk].getNumInstances(i) << " ";
+        }
+      for (unsigned int i = 0; i < hillTreeModelChunks[chunk].getInstanceOffsetVector().size(); i++)
+        {
+          out << hillTreeModelChunks[chunk].getInstanceOffset(i) << " ";
+        }
+    }
   for (unsigned int i = 0; i < treeModels.size(); i++)
     {
       out << numTrees[i] << " ";

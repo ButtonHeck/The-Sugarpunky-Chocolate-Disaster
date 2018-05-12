@@ -48,6 +48,8 @@ CoordinateSystemRenderer csRenderer;
 BuildableMapGenerator* buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
 SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
 TreeGenerator* treeGenerator;
+std::vector<ModelChunk> treeModelChunks;
+std::vector<ModelChunk> hillTreeModelChunks;
 bool renderShadowOnTrees = true;
 bool renderTreeModels = true;
 bool animateWater = true;
@@ -88,8 +90,6 @@ int main()
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   FontManager fontManager("OCTAPOST_1.ttf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height));
   fontManager.loadFont();
-  std::vector<ModelChunk> treeModelChunks;
-  std::vector<ModelChunk> hillTreeModelChunks;
 
   //shaders loading
   Shader hills(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/hills.fs");
@@ -500,12 +500,12 @@ int main()
       //save/load routine
       if (saveRequest)
         {
-          saveLoadManager->saveToFile(PROJ_PATH + "/saves/testSave.txt");
+          saveLoadManager->saveToFile(PROJ_PATH + "/saves/testSave.txt", treeModelChunks, hillTreeModelChunks);
           saveRequest = false;
         }
       if (loadRequest)
         {
-          saveLoadManager->loadFromFile(PROJ_PATH + "/saves/testSave.txt");
+          saveLoadManager->loadFromFile(PROJ_PATH + "/saves/testSave.txt", treeModelChunks, hillTreeModelChunks);
           loadRequest = false;
         }
 

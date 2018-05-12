@@ -26,7 +26,7 @@ public:
   unsigned int getNumHillTrees(int i);
   std::vector<Model>& getPlainTrees();
   std::vector<Model>& getHillTrees();
-  void serialize(std::ofstream& out);
+  void serialize(std::ofstream& out, std::vector<ModelChunk>& treeModelChunks, std::vector<ModelChunk>& hillTreeModelChunks);
 private:
   std::vector<Model> plainTrees;
   std::vector<glm::mat4*> treeModels;
