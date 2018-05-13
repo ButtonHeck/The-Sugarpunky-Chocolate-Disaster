@@ -29,7 +29,7 @@ void main()
     float spec = pow(max(dot(reflect, viewDir), 0.0), 32.0);
 
     vec3 diffuse = diff * sampledDiffuse.rgb * 0.5 + 0.5 * sampledDiffuse.rgb;
-    vec3 specular = spec * sampledSpecular.rgb;
+    vec3 specular = spec * sampledSpecular.rgb * 3;
     vec3 result = diffuse + specular;
 
     FragColor = vec4(0.5 * result + 0.5 * skyFragColor.rgb, sampledDiffuse.a);

@@ -36,7 +36,7 @@ void MapGenerator::setupGLBuffersAttributes()
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
 }
 
-void MapGenerator::createTiles(bool flat, bool createOnZeroTiles, std::vector<std::vector<float>>& map)
+void MapGenerator::createTiles(bool flat, bool createOnZeroTiles, std::vector<std::vector<float>>& map, float offsetY)
 {
   tiles.clear();
   for (unsigned int y = 1; y < map.size(); y++)
@@ -58,14 +58,14 @@ void MapGenerator::createTiles(bool flat, bool createOnZeroTiles, std::vector<st
                 float ul;
                 if (!flat)
                   {
-                    ll = map[y][x-1];
+                    ll = map[y][x-1] + offsetY;
                     if (ll == DENY_TILE_RENDER_VALUE)
                       ll = map[y][x];
-                    lr = map[y][x];
-                    ur = map[y-1][x];
+                    lr = map[y][x] + offsetY;
+                    ur = map[y-1][x] + offsetY;
                     if (ur == DENY_TILE_RENDER_VALUE)
                       ur = map[y][x];
-                    ul = map[y-1][x-1];
+                    ul = map[y-1][x-1] + offsetY;
                     if (ul == DENY_TILE_RENDER_VALUE)
                       ul = map[y][x];
                   }

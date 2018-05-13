@@ -180,7 +180,7 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, s
                   auto maxHeight = std::max(hillMap[y1][x1], std::max(hillMap[y1][x1+1], std::max(hillMap[y1+1][x1], hillMap[y1+1][x1+1])));
                   auto minHeight = std::min(hillMap[y1][x1], std::min(hillMap[y1][x1+1], std::min(hillMap[y1+1][x1], hillMap[y1+1][x1+1])));
                   auto slope = maxHeight - minHeight;
-                  if (slope < 0.8f
+                  if (slope < 0.75f
                       && (hillMap[y1][x1] != 0 || hillMap[y1+1][x1+1] != 0 || hillMap[y1+1][x1] != 0 || hillMap[y1][x1+1] != 0)
                       && rand() % 2 == 0)
                     {
@@ -192,8 +192,10 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, s
                       glm::vec3 translation(
                             -TILES_WIDTH / 2.0f + x1 + 0.5f + modelPositionDistribution(randomizer),
                             hillMap[y1][x1] + (!indicesCrossed ?
-                              (hillMap[y1+1][x1+1] - hillMap[y1][x1]) / 2 : std::abs(hillMap[y1][x1+1] - hillMap[y1+1][x1]) / 2),
+                              (hillMap[y1+1][x1+1] - hillMap[y1][x1]) / 2 : std::abs(hillMap[y1][x1+1] - hillMap[y1+1][x1]) / 2) + HILLS_OFFSET_Y,
                             -TILES_HEIGHT / 2.0f + y1 + 0.5f + modelPositionDistribution(randomizer));
+                      if (translation.y < 0)
+                        continue;
                       model = glm::translate(model, translation);
                       model = glm::rotate(model, glm::radians((float)(y1 * TILES_WIDTH + x1 * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
                       model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer)));

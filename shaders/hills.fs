@@ -17,10 +17,11 @@ uniform sampler2D hills_diffuse2;
 uniform sampler2D hills_specular;
 uniform vec3 viewPosition;
 uniform vec3 lightDirTo;
+uniform int tilesDimension;
 
 void main()
 {
-    vec3 texNormal = texture(base_normal, vec2(FragPos.x / 768, FragPos.z / 768)).rgb;
+    vec3 texNormal = texture(base_normal, vec2(FragPos.x / tilesDimension + 0.5, FragPos.z / tilesDimension + 0.5)).rgb;
     float transitionRatio = clamp(0.0 + PosHeight * (1 / 0.66), 0.0, 1.0);
     vec3 normal = normalize(transitionRatio * Normal + (1.0 - transitionRatio) * texNormal);
     vec3 viewDir = normalize(viewPosition - FragPos);

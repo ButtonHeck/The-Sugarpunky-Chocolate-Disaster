@@ -16,12 +16,13 @@ uniform sampler2D sand_diffuse;
 uniform sampler2D sand_diffuse2;
 uniform vec3 viewPosition;
 uniform float waterLevel;
+uniform int tilesDimension;
 
 const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 
 void main()
 {
-    vec3 texNormal = texture(base_normal, vec2(FragPos.x / 768, FragPos.z / 768)).rgb;
+    vec3 texNormal = texture(base_normal, vec2(FragPos.x / tilesDimension + 0.5, FragPos.z / tilesDimension + 0.5)).rgb;
     float transitionRatio = clamp(1.0 + PosHeight * (1 / 0.5), 0.0, 1.0);
     vec3 normal = normalize((1.0 - transitionRatio) * Normal + transitionRatio * (NORMAL + texNormal));
     vec3 viewDir = normalize(viewPosition - FragPos);
@@ -39,7 +40,7 @@ void main()
     vec3 reflect = reflect(-LightDir, normal);
     float spec = pow(max(dot(reflect, viewDir), 0.0), 64.0);
 
-    vec3 diffuse = diff * sampledDiffuse.rgb * 0.33 + 0.67 * sampledDiffuse.rgb;
+    vec3 diffuse = (diff * sampledDiffuse.rgb * 0.33 + 0.67 * sampledDiffuse.rgb) * (1 + FragPos.y / 2.5);
     vec3 specular = spec * sampledSpecular.rgb;
     vec3 result = diffuse + specular;
 
