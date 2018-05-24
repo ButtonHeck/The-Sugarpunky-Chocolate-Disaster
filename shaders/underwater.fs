@@ -15,7 +15,7 @@ uniform int tilesDimension;
 void main()
 {
     float reliefTexture = texture(bottomRelief, vec2(FragPos.x / tilesDimension + 0.5, FragPos.z / tilesDimension + 0.5)).r * 1.1;
-    vec3 texNormal = texture(underwater_normal, vec2(FragPos.x / 192, FragPos.z / 192)).rgb;
+    vec3 texNormal = texture(underwater_normal, vec2(FragPos.x / (tilesDimension >> 2), FragPos.z / (tilesDimension >> 2))).rgb;
     vec3 normal = normalize(texNormal);
     vec3 viewDir = normalize(viewPosition - FragPos);
     vec4 sampledDiffuse = texture(underwater_diffuse, TexCoords);
