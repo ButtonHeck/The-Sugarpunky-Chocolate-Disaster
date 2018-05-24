@@ -210,43 +210,11 @@ int main()
   treeGenerator->setupHillModels(hillMapGenerator->getMap(), hillTreeModelChunks);
 
   //create underwater relief texture manually and bind it to related shader
-  GLubyte* textureData = new GLubyte[TILES_WIDTH * TILES_HEIGHT];
-  int left, right, top, bottom, waterCount;
-  for (int y = 1; y < TILES_HEIGHT; y++)
-    {
-      for (int x = 0; x < TILES_WIDTH - 1; x++)
-        {
-          left = glm::clamp(x - SHORE_SIZE_BASE - 3, 0, TILES_WIDTH - 1);
-          right = glm::clamp(x + SHORE_SIZE_BASE + 3, 0, TILES_WIDTH - 1);
-          top = glm::clamp(y - SHORE_SIZE_BASE - 3, 1, TILES_HEIGHT);
-          bottom = glm::clamp(y + SHORE_SIZE_BASE + 3, 0, TILES_HEIGHT);
-          waterCount = 0;
-          for (int y1 = top; y1 < bottom; y1++)
-            {
-              for (int x1 = left; x1 < right; x1++)
-                {
-                  if (waterMapGenerator->getMap()[y1][x1] != 0 &&
-                      waterMapGenerator->getMap()[y1-1][x1] != 0 &&
-                      waterMapGenerator->getMap()[y1-1][x1+1] != 0 &&
-                      waterMapGenerator->getMap()[y1][x1+1] != 0)
-                    ++waterCount;
-                }
-            }
-          textureData[y * TILES_WIDTH + x] = (GLubyte)waterCount;
-        }
-    }
-  GLuint underwaterReliefTexture;
-  glGenTextures(1, &underwaterReliefTexture);
-  glActiveTexture(GL_TEXTURE13);
-  glBindTexture(GL_TEXTURE_2D, underwaterReliefTexture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TILES_WIDTH, TILES_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, textureData);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  delete[] textureData;
+  GLuint underwaterReliefTextureUnit = 13;
+  GLuint underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, underwaterReliefTextureUnit);
   underwater.use();
-  underwater.setInt("bottomRelief", 13);
+  underwater.setInt("bottomRelief", underwaterReliefTextureUnit);
+  textures.push_back(&underwaterReliefTexture);
 
   //etc
   printMapsInfos();
@@ -293,6 +261,7 @@ int main()
           saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
           saveLoadManager->setTreeGenerator(*treeGenerator);
           recreateTerrainRequest = false;
+          underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, underwaterReliefTextureUnit);
         }
 
       //hill tiles
@@ -561,6 +530,7 @@ int main()
         {
           saveLoadManager->loadFromFile(PROJ_PATH + "/saves/testSave.txt", treeModelChunks, hillTreeModelChunks);
           loadRequest = false;
+          underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, underwaterReliefTextureUnit);
         }
 
       glfwPollEvents();
