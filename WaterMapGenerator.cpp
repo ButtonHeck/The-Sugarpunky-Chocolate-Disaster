@@ -22,7 +22,7 @@ void WaterMapGenerator::postPrepareMap()
   postProcessMap = map;
   addWaterNearbyBaseTerrain();
   fillSharpTerrainWithWater();
-  createTiles(true, false, postProcessMap);
+  createTiles(true, false, postProcessMap, 0);
   tiles.shrink_to_fit();
 }
 

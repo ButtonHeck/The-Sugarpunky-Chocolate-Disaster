@@ -27,7 +27,7 @@ void BaseMapGenerator::prepareMap(bool randomizeShoreFlag)
   removeUnderwaterTiles(UNDERWATER_REMOVAL_LEVEL);
   tiles.shrink_to_fit();
   split1x1Tiles();
-  createTiles(false, false, map);
+  createTiles(false, false, map, 0);
 }
 
 void BaseMapGenerator::fillBufferData()

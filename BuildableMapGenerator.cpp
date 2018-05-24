@@ -28,7 +28,7 @@ void BuildableMapGenerator::prepareMap()
             }
         }
     }
-  createTiles(true, false, map);
+  createTiles(true, false, map, 0);
   tiles.shrink_to_fit();
 }
 
