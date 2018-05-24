@@ -3,6 +3,9 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
+QMAKE_CXXFLAGS+= -fopenmp
+QMAKE_LFLAGS +=  -fopenmp
+
 SOURCES += main.cpp \
     Shader.cpp \
     Camera.cpp \
@@ -144,7 +147,11 @@ DISTFILES += \
     shaders/coordinateSystem.fs \
     shaders/buildableTiles.fs \
     shaders/buildableTiles.vs \
-    shaders/selectedTile.vs
+    shaders/selectedTile.vs \
+    models/hillTree3/hillTree3.obj \
+    models/hillTree3/leaves.jpg \
+    models/hillTree3/tree.jpg \
+    models/hillTree3/hillTree3.mtl
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

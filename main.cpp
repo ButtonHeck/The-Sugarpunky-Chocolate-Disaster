@@ -1,5 +1,6 @@
 #include <iostream>
 #include <chrono>
+#include <omp.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -92,6 +93,12 @@ int main()
   FontManager fontManager("OCTAPOST_1.ttf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height));
   fontManager.loadFont();
 
+  //make sure OpenMP is working
+  #pragma omp parallel num_threads(2)
+  {
+    std::cout << ("Hello from thread " + std::to_string(omp_get_thread_num()) + "\n");
+  }
+
   //shaders loading
   Shader hills(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/hills.fs");
   Shader sand(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/sand.fs");
@@ -115,7 +122,8 @@ int main()
   Model tree3(PROJ_PATH + "/models/tree3/tree3.obj", textureLoader);
   Model hillTree1(PROJ_PATH + "/models/hillTree1/hillTree1.obj", textureLoader);
   Model hillTree2(PROJ_PATH + "/models/hillTree2/hillTree2.obj", textureLoader);
-  treeGenerator = new TreeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2});
+  Model hillTree3(PROJ_PATH + "/models/hillTree3/hillTree3.obj", textureLoader);
+  treeGenerator = new TreeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2, hillTree3});
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
   //textures loading
@@ -213,9 +221,9 @@ int main()
           top = glm::clamp(y - SHORE_SIZE_BASE - 3, 1, TILES_HEIGHT);
           bottom = glm::clamp(y + SHORE_SIZE_BASE + 3, 0, TILES_HEIGHT);
           waterCount = 0;
-          for (unsigned int y1 = top; y1 < bottom; y1++)
+          for (int y1 = top; y1 < bottom; y1++)
             {
-              for (unsigned int x1 = left; x1 < right; x1++)
+              for (int x1 = left; x1 < right; x1++)
                 {
                   if (waterMapGenerator->getMap()[y1][x1] != 0 &&
                       waterMapGenerator->getMap()[y1-1][x1] != 0 &&
@@ -608,13 +616,13 @@ GLFWwindow* initGLFW()
       glfwTerminate();
     }
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-  glfwWindowHint(GLFW_SAMPLES, 2);
+  glfwWindowHint(GLFW_SAMPLES, 8);
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
   GLFWmonitor* monitor = glfwGetPrimaryMonitor();
   const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
+  std::cout << glfwGetVersionString() << std::endl;
   scr_width = vidmode->width;
   scr_height = vidmode->height;
   aspect_ratio = (float)scr_width / (float)scr_height;
@@ -628,6 +636,7 @@ GLFWwindow* initGLFW()
 
 void printMapsInfos()
 {
+  std::cout << "\n-----------------------------------------------------------\n";
   std::cout << "Water tiles:\t" << waterMapGenerator->getTiles().size() << std::endl;
   std::cout << "Hills tiles:\t" << hillMapGenerator->getTiles().size() << std::endl;
   std::cout << "Base tiles:\t" << baseMapGenerator->getTiles().size() << std::endl;
