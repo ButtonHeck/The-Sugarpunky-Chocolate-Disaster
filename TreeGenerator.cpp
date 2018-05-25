@@ -148,8 +148,8 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, s
           chunks.push_back(std::move(chunk));
         }
     }
-  std::uniform_real_distribution<float> modelSizeDistribution(0.2f, 0.3f);
-  std::uniform_real_distribution<float> modelPositionDistribution(-0.2f, 0.2f);
+  std::uniform_real_distribution<float> modelSizeDistribution(0.25f, 0.32f);
+  std::uniform_real_distribution<float> modelPositionDistribution(-0.5f, 0.5f);
   std::vector<std::vector<glm::mat4>> hillTreeModelsVecs;
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
@@ -189,11 +189,16 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, s
                           || (hillMap[y1+1][x1] > 0 && hillMap[y1][x1] == 0 && hillMap[y1+1][x1+1] == 0 && hillMap[y1][x1+1] == 0))
                         indicesCrossed = true;
                       glm::mat4 model;
+                      float offsetX = modelPositionDistribution(randomizer) * (1.0f - slope / 1.0f);
+                      float offsetZ = modelPositionDistribution(randomizer) * (1.0f - slope / 1.0f);
+                      float baseY = hillMap[y1][x1] + (!indicesCrossed ?
+                             (hillMap[y1+1][x1+1] - hillMap[y1][x1]) / 2 :
+                              std::abs(hillMap[y1][x1+1] - hillMap[y1+1][x1]) / 2)
+                            + HILLS_OFFSET_Y;
                       glm::vec3 translation(
-                            -TILES_WIDTH / 2.0f + x1 + 0.5f + modelPositionDistribution(randomizer),
-                            hillMap[y1][x1] + (!indicesCrossed ?
-                              (hillMap[y1+1][x1+1] - hillMap[y1][x1]) / 2 : std::abs(hillMap[y1][x1+1] - hillMap[y1+1][x1]) / 2) + HILLS_OFFSET_Y,
-                            -TILES_HEIGHT / 2.0f + y1 + 0.5f + modelPositionDistribution(randomizer));
+                            -TILES_WIDTH / 2.0f + x1 + 0.5f + offsetX,
+                            baseY,
+                            -TILES_HEIGHT / 2.0f + y1 + 0.5f + offsetZ);
                       if (translation.y < 0)
                         continue;
                       model = glm::translate(model, translation);
