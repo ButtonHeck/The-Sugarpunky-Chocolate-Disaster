@@ -39,7 +39,7 @@ private:
   void smoothMap();
   void randomizeShore();
   void correctMapAtEdges();
-  void compressMap(float ratio, bool entireRange);
+  void compressMap(float ratio);
   void removeUnderwaterTiles(float thresholdValue);
 };
 

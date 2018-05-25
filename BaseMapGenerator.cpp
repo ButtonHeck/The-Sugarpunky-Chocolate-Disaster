@@ -17,7 +17,7 @@ void BaseMapGenerator::prepareMap(bool randomizeShoreFlag)
   smoothMap();
   if (randomizeShoreFlag)
     randomizeShore();
-  compressMap(2.0f, true);
+  compressMap(2.0f);
   correctMapAtEdges();
   for (int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
     {
@@ -279,7 +279,7 @@ void BaseMapGenerator::smoothMap()
 
 void BaseMapGenerator::randomizeShore()
 {
-  std::uniform_real_distribution<float> distribution(-0.2f, 0.2f);
+  std::uniform_real_distribution<float> distribution(-0.24f, 0.24f);
   for (unsigned int y = 0; y < TILES_HEIGHT; y++)
     {
       for (unsigned int x = 0; x < TILES_WIDTH; x++)
@@ -310,13 +310,13 @@ void BaseMapGenerator::correctMapAtEdges()
     }
 }
 
-void BaseMapGenerator::compressMap(float ratio, bool entireRange)
+void BaseMapGenerator::compressMap(float ratio)
 {
   for (std::vector<float>& row : map)
     {
       for (float& height : row)
         {
-          if (height < 0 || entireRange)
+          if (height < 0)
             height /= ratio;
         }
     }
