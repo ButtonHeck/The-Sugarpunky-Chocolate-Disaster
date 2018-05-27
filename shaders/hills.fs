@@ -10,7 +10,6 @@ in vec3 LightDir;
 
 uniform sampler2D base_diffuse;
 uniform sampler2D base_diffuse2;
-uniform sampler2D base_specular;
 uniform sampler2D base_normal;
 uniform sampler2D hills_diffuse;
 uniform sampler2D hills_diffuse2;
@@ -30,7 +29,7 @@ void main()
             mix(texture(hills_diffuse, TexCoords), texture(hills_diffuse2, TexCoords), texNormal.r * 1.5),
             min(max(0.0, PosHeight/1.5), 1.0));
     vec4 sampledSpecular =
-        mix(texture(base_specular, TexCoords), texture(hills_specular, TexCoords), min(max(0.0, PosHeight/1.5), 1.0));
+        mix(vec4(0.0), texture(hills_specular, TexCoords), min(max(0.0, PosHeight/1.5), 1.0));
     //diffuse shading
     float diff = max(dot(normal, LightDir), 0.0);
     //specular shading

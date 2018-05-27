@@ -132,7 +132,6 @@ int main()
   GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water.png", GL_REPEAT, 2);
   GLuint sandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/sand.jpg", GL_REPEAT, 3);
   GLuint waterTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/water_specular.png", GL_REPEAT, 4);
-  GLuint baseTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/base_specular.jpg", GL_REPEAT, 5);
   GLuint hillTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/hill_specular.jpg", GL_REPEAT, 6);
   GLuint baseTextureNormal = textureLoader.loadTexture(PROJ_PATH + "/textures/base_normal.jpg", GL_REPEAT, 8);
   GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT, 9);
@@ -142,7 +141,7 @@ int main()
   GLuint baseTexture_x2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base_x2.jpg", GL_REPEAT, 14);
   GLuint baseTexture2_x2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base2_x2.jpg", GL_REPEAT, 15);
   std::vector<GLuint*> textures =
-  {&baseTexture, &hillTexture, &waterTexture, &sandTexture, &waterTextureSpec, &baseTextureSpec, &hillTextureSpec, &baseTextureNormal,
+  {&baseTexture, &hillTexture, &waterTexture, &sandTexture, &waterTextureSpec, &hillTextureSpec, &baseTextureNormal,
   &underwaterSandTexture, &sandTexture2, &baseTexture2, &hillTexture2, &baseTexture_x2, &baseTexture2_x2};
 
   //shaders setup
@@ -152,7 +151,6 @@ int main()
   hills.setInt("base_diffuse2", 15);
   hills.setInt("hills_diffuse", 1);
   hills.setInt("hills_diffuse2", 12);
-  hills.setInt("base_specular", 5);
   hills.setInt("hills_specular", 6);
   hills.setInt("base_normal", 8);
   hills.setInt("tilesDimension", TILES_WIDTH);
@@ -161,7 +159,6 @@ int main()
   sand.setFloat("waterLevel", WATER_LEVEL);
   sand.setInt("base_diffuse", 0);
   sand.setInt("base_diffuse2", 11);
-  sand.setInt("base_specular", 5);
   sand.setInt("sand_diffuse", 3);
   sand.setInt("sand_diffuse2", 10);
   sand.setInt("base_normal", 8);
@@ -176,7 +173,6 @@ int main()
   base.use();
   base.setInt("base_diffuse", 0);
   base.setInt("base_diffuse2", 11);
-  base.setInt("base_specular", 5);
   base.setInt("base_normal", 8);
   base.setInt("tilesDimension", TILES_WIDTH);
   base.setVec3("lightDirTo", LIGHT_DIR_TO);

@@ -94,7 +94,6 @@ DISTFILES += \
     shaders/underwater.fs \
     textures/base.jpg \
     textures/base_normal.jpg \
-    textures/base_specular.jpg \
     textures/water.png \
     textures/water_specular.png \
     textures/base2.jpg \
@@ -141,7 +140,6 @@ DISTFILES += \
     textures/base2.jpg \
     textures/base2_x2.jpg \
     textures/base_normal.jpg \
-    textures/base_specular.jpg \
     textures/base_x2.jpg \
     textures/hill.jpg \
     textures/hill2.jpg \
