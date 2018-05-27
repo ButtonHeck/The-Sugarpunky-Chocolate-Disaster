@@ -168,7 +168,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename, std::vector<Mode
   treeGenerator->updateHillModels(hillTreeModels, numAllHillTrees);
 
   hillGenerator.createTiles(false, false, hillGenerator.getMap(), HILLS_OFFSET_Y);
-  hillGenerator.fillBufferData();
+  hillGenerator.fillBufferData(false);
   for (unsigned int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
     baseGenerator.getChunkTiles(i).clear();
   baseGenerator.getCellTiles().clear();

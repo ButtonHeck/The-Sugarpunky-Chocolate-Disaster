@@ -137,11 +137,20 @@ DISTFILES += \
     models/hillTree3/leaves.jpg \
     models/hillTree3/tree.jpg \
     models/hillTree3/hillTree3.mtl \
-    textures/hills/hill.jpg \
-    textures/hills/LL.png \
-    textures/hills/LR.png \
-    textures/hills/UL.png \
-    textures/hills/UR.png
+    textures/base.jpg \
+    textures/base2.jpg \
+    textures/base2_x2.jpg \
+    textures/base_normal.jpg \
+    textures/base_specular.jpg \
+    textures/base_x2.jpg \
+    textures/hill.jpg \
+    textures/hill2.jpg \
+    textures/hill_specular.jpg \
+    textures/sand.jpg \
+    textures/sand2.jpg \
+    textures/underwater_sand.jpg \
+    textures/water.png \
+    textures/water_specular.png
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

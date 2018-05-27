@@ -139,15 +139,17 @@ int main()
   GLuint sandTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/sand2.jpg", GL_REPEAT, 10);
   GLuint baseTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base2.jpg", GL_REPEAT, 11);
   GLuint hillTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/hill2.jpg", GL_REPEAT, 12);
+  GLuint baseTexture_x2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base_x2.jpg", GL_REPEAT, 14);
+  GLuint baseTexture2_x2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base2_x2.jpg", GL_REPEAT, 15);
   std::vector<GLuint*> textures =
   {&baseTexture, &hillTexture, &waterTexture, &sandTexture, &waterTextureSpec, &baseTextureSpec, &hillTextureSpec, &baseTextureNormal,
-  &underwaterSandTexture, &sandTexture2, &baseTexture2, &hillTexture2};
+  &underwaterSandTexture, &sandTexture2, &baseTexture2, &hillTexture2, &baseTexture_x2, &baseTexture2_x2};
 
   //shaders setup
   hills.use();
   hills.setVec3("lightDirTo", LIGHT_DIR_TO);
-  hills.setInt("base_diffuse", 0);
-  hills.setInt("base_diffuse2", 11);
+  hills.setInt("base_diffuse", 14);
+  hills.setInt("base_diffuse2", 15);
   hills.setInt("hills_diffuse", 1);
   hills.setInt("hills_diffuse2", 12);
   hills.setInt("base_specular", 5);
@@ -551,7 +553,7 @@ void prepareTerrain()
 {
   waterMapGenerator->prepareMap(); //prepare water map
   hillMapGenerator->prepareMap(); //generating hill height map
-  hillMapGenerator->fillBufferData(); //fill hills buffer
+  hillMapGenerator->fillBufferData(false); //fill hills buffer
   baseMapGenerator->prepareMap(true); //generating base terrain data
   baseMapGenerator->fillBufferData(); //fill base terrain vertex data
   baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering

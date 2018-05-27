@@ -8,7 +8,7 @@ class HillsMapGenerator : public MapGenerator
 public:
   HillsMapGenerator(std::vector<std::vector<float>>& waterMap);
   void prepareMap();
-  void fillBufferData();
+  void fillBufferData(bool textureSlopeCorrection);
 private:
   std::vector<std::vector<float>>& waterMap;
   void generateMap(int cycles, float* max_height, HILL_DENSITY density);
