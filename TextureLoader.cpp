@@ -7,13 +7,14 @@ TextureLoader::TextureLoader()
   ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
 }
 
-GLuint TextureLoader::loadTexture(const std::string& path, GLenum wrapType)
+GLuint TextureLoader::loadTexture(const std::string& path, GLenum wrapType, GLuint textureUnit)
 {
   GLuint texture;
   glGenTextures(1, &texture);
+  glActiveTexture(GL_TEXTURE0 + textureUnit);
   glBindTexture(GL_TEXTURE_2D, texture);
   if (!ilLoadImage(path.c_str()))
-    printf("Error when loading grass texture\n");
+    printf("Error when loading texture", path);
   ILubyte* data = ilGetData();
   auto imageWidth = ilGetInteger(IL_IMAGE_WIDTH);
   auto imageHeight = ilGetInteger(IL_IMAGE_HEIGHT);
@@ -50,6 +51,31 @@ GLuint TextureLoader::loadCubemap(std::vector<std::string> &faces)
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  return texture;
+}
+
+GLuint TextureLoader::loadTextureArray(const std::string &path, GLenum wrapType, GLuint textureUnit)
+{
+  GLuint texture;
+  glGenTextures(1, &texture);
+  glActiveTexture(GL_TEXTURE0 + textureUnit);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
+  if (!ilLoadImage(path.c_str()))
+    printf("Error when loading texture: ", path);
+  ILubyte* data = ilGetData();
+  auto imageWidth = ilGetInteger(IL_IMAGE_WIDTH);
+  auto imageHeight = ilGetInteger(IL_IMAGE_HEIGHT);
+  auto imageFormat = ilGetInteger(IL_IMAGE_FORMAT);
+  glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, imageWidth, imageHeight, 4);
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,                            imageWidth / 2, imageHeight / 2, imageFormat, GL_UNSIGNED_BYTE, data);
+  glTexSubImage2D(GL_TEXTURE_2D, 0, imageWidth / 2, 0,               imageWidth / 2, imageHeight / 2, imageFormat, GL_UNSIGNED_BYTE, data);
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, imageHeight / 2,              imageWidth / 2, imageHeight / 2, imageFormat, GL_UNSIGNED_BYTE, data);
+  glTexSubImage2D(GL_TEXTURE_2D, 0, imageWidth / 2, imageHeight / 2, imageWidth / 2, imageHeight / 2, imageFormat, GL_UNSIGNED_BYTE, data);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, wrapType);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, wrapType);
+  ilDeleteImage(ilGetInteger(IL_ACTIVE_IMAGE));
   return texture;
 }
 

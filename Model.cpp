@@ -134,7 +134,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *material, aiTexture
           Texture texture;
           texture.type = typeName;
           std::string path = this->directory + '/' + std::string(texturePath.C_Str());
-          texture.id = textureLoader.loadTexture(path, GL_REPEAT);
+          texture.id = textureLoader.loadTexture(path, GL_REPEAT, 0);
           texture.path = texturePath.C_Str();
           textures.push_back(texture);
           textures_loaded.push_back(texture);

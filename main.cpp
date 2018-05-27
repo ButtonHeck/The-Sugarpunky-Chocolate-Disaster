@@ -44,7 +44,7 @@ WaterMapGenerator* waterMapGenerator = new WaterMapGenerator();
 HillsMapGenerator* hillMapGenerator = new HillsMapGenerator(waterMapGenerator->getMap());
 UnderwaterQuadMapGenerator underwaterQuadGenerator;
 BaseMapGenerator* baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
-Skybox skybox(PROJ_PATH + "/textures/cubemap1fx/", textureLoader);
+Skybox skybox(PROJ_PATH + "/textures/cubemap/", textureLoader);
 CoordinateSystemRenderer csRenderer;
 BuildableMapGenerator* buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
 SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
@@ -127,30 +127,18 @@ int main()
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
   //textures loading
-  glActiveTexture(GL_TEXTURE0);
-  GLuint baseTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/baseHQ.jpg", GL_REPEAT);
-  glActiveTexture(GL_TEXTURE1);
-  GLuint hillTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/hill.jpg", GL_REPEAT);
-  glActiveTexture(GL_TEXTURE2);
-  GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/waterHQ.png", GL_REPEAT);
-  glActiveTexture(GL_TEXTURE3);
-  GLuint sandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/sandHQ.jpg", GL_REPEAT);
-  glActiveTexture(GL_TEXTURE4);
-  GLuint waterTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/water_specularHQ.png", GL_REPEAT);
-  glActiveTexture(GL_TEXTURE5);
-  GLuint baseTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/base_specular.jpg", GL_REPEAT);
-  glActiveTexture(GL_TEXTURE6);
-  GLuint hillTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/hill_specular.jpg", GL_REPEAT);
-  glActiveTexture(GL_TEXTURE8);
-  GLuint baseTextureNormal = textureLoader.loadTexture(PROJ_PATH + "/textures/base_normal.jpg", GL_REPEAT);
-  glActiveTexture(GL_TEXTURE9);
-  GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT);
-  glActiveTexture(GL_TEXTURE10);
-  GLuint sandTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/sandHQ2.jpg", GL_REPEAT);
-  glActiveTexture(GL_TEXTURE11);
-  GLuint baseTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base2HQ.jpg", GL_REPEAT);
-  glActiveTexture(GL_TEXTURE12);
-  GLuint hillTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/hill2.jpg", GL_REPEAT);
+  GLuint baseTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/base.jpg", GL_REPEAT, 0);
+  GLuint hillTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/hill.jpg", GL_REPEAT, 1);
+  GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water.png", GL_REPEAT, 2);
+  GLuint sandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/sand.jpg", GL_REPEAT, 3);
+  GLuint waterTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/water_specular.png", GL_REPEAT, 4);
+  GLuint baseTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/base_specular.jpg", GL_REPEAT, 5);
+  GLuint hillTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/hill_specular.jpg", GL_REPEAT, 6);
+  GLuint baseTextureNormal = textureLoader.loadTexture(PROJ_PATH + "/textures/base_normal.jpg", GL_REPEAT, 8);
+  GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT, 9);
+  GLuint sandTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/sand2.jpg", GL_REPEAT, 10);
+  GLuint baseTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base2.jpg", GL_REPEAT, 11);
+  GLuint hillTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/hill2.jpg", GL_REPEAT, 12);
   std::vector<GLuint*> textures =
   {&baseTexture, &hillTexture, &waterTexture, &sandTexture, &waterTextureSpec, &baseTextureSpec, &hillTextureSpec, &baseTextureNormal,
   &underwaterSandTexture, &sandTexture2, &baseTexture2, &hillTexture2};

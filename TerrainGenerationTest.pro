@@ -77,39 +77,24 @@ DISTFILES += \
     scene.vs \
     textures/sand.jpg \
     textures/underwater_sand.jpg \
-    textures/cubemap1/back.png \
-    textures/cubemap1/down.png \
-    textures/cubemap1/front.png \
-    textures/cubemap1/left.png \
-    textures/cubemap1/right.png \
-    textures/cubemap1/up.png \
+    textures/cubemap/back.png \
+    textures/cubemap/down.png \
+    textures/cubemap/front.png \
+    textures/cubemap/left.png \
+    textures/cubemap/right.png \
+    textures/cubemap/up.png \
     shaders/skybox.vs \
     shaders/skybox.fs \
-    textures/cubemap1scaled/back.png \
-    textures/cubemap1scaled/down.png \
-    textures/cubemap1scaled/front.png \
-    textures/cubemap1scaled/left.png \
-    textures/cubemap1scaled/right.png \
-    textures/cubemap1scaled/up.png \
     shaders/water.fs \
     shaders/hills.fs \
     textures/hill.jpg \
     textures/hill_specular.jpg \
-    textures/hill_test.jpg \
     shaders/sand.fs \
     shaders/base.fs \
     shaders/underwater.fs \
-    textures/cubemap1fx/back.png \
-    textures/cubemap1fx/down.png \
-    textures/cubemap1fx/front.png \
-    textures/cubemap1fx/left.png \
-    textures/cubemap1fx/right.png \
-    textures/cubemap1fx/up.png \
     textures/base.jpg \
     textures/base_normal.jpg \
     textures/base_specular.jpg \
-    textures/base_test.jpg \
-    textures/water.jpg \
     textures/water.png \
     textures/water_specular.png \
     textures/base2.jpg \
@@ -151,7 +136,12 @@ DISTFILES += \
     models/hillTree3/hillTree3.obj \
     models/hillTree3/leaves.jpg \
     models/hillTree3/tree.jpg \
-    models/hillTree3/hillTree3.mtl
+    models/hillTree3/hillTree3.mtl \
+    textures/hills/hill.jpg \
+    textures/hills/LL.png \
+    textures/hills/LR.png \
+    textures/hills/UL.png \
+    textures/hills/UR.png
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
