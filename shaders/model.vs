@@ -8,15 +8,23 @@ layout (location = 4) in vec3 bitangent;
 layout (location = 5) in mat4 model;
 
 uniform mat4 projectionView;
+uniform vec3 viewPosition;
+uniform vec3 lightDirTo;
 
-out vec3 FragPos;
 out vec2 TexCoords;
 out vec3 Normal;
+out float Diff;
+out float Spec;
 
 void main()
 {
     gl_Position = projectionView * model * vec4(pos, 1.0);
     TexCoords = texCoords;
-    FragPos = vec3(model * vec4(pos, 1.0));
-    Normal = mat3(transpose(inverse(model))) * normal;
+    vec3 FragPos = vec3(model * vec4(pos, 1.0));
+    Normal = normalize(mat3(transpose(inverse(model))) * normal);
+    vec3 ViewDir = normalize(viewPosition - FragPos);
+    vec3 LightDir = normalize(-lightDirTo);
+    Diff = max(dot(Normal, LightDir), 0.0);
+    vec3 Reflect = reflect(-LightDir, Normal);
+    Spec = pow(max(dot(Reflect, ViewDir), 0.0), 8.0) * 0.33;
 }
