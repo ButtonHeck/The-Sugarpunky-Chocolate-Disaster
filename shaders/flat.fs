@@ -4,20 +4,17 @@ out vec4 FragColor;
 
 in vec3 FragPos;
 in vec2 TexCoords;
-in float PosHeight;
 in vec3 LightDir;
 
 uniform sampler2D base_diffuse;
 uniform sampler2D base_diffuse2;
 uniform sampler2D base_normal;
-uniform vec3 viewPosition;
 uniform int tilesDimension;
 
 void main()
 {
     vec3 texNormal = texture(base_normal, vec2(FragPos.x / tilesDimension + 0.5, FragPos.z / tilesDimension + 0.5)).rgb;
     vec3 normal = normalize(vec3(0.0, 1.0, 0.0) + texNormal);
-    vec3 viewDir = normalize(viewPosition - FragPos);
     vec4 sampledDiffuse = mix(texture(base_diffuse, TexCoords), texture(base_diffuse2, TexCoords), texNormal.r);
     //diffuse shading
     float diff = max(dot(normal, LightDir), 0.0);

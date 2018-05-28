@@ -100,7 +100,6 @@ DISTFILES += \
     shaders/water.fs \
     shaders/hills.fs \
     shaders/sand.fs \
-    shaders/base.fs \
     shaders/underwater.fs \
     shaders/model.vs \
     shaders/model.fs \
@@ -137,7 +136,9 @@ DISTFILES += \
     models/hillTree3/tree.jpg \
     models/hillTree3/hillTree3.mtl \
     fonts/GentiumPlus-R.ttf \
-    fonts/OCTAPOST_1.ttf
+    fonts/OCTAPOST_1.ttf \
+    shaders/flat.vs \
+    shaders/flat.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
