@@ -10,12 +10,14 @@ uniform vec3 lightDirTo;
 
 out vec2 TexCoords;
 out vec3 FragPos;
-out vec3 LightDir;
+out float Diff;
+
+const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 
 void main()
 {
     gl_Position = projectionView * instanceModel * vec4(pos, 1.0);
     FragPos = vec3(instanceModel * vec4(pos, 1.0));
     TexCoords = texCoords;
-    LightDir = normalize(-lightDirTo);
+    Diff = dot(NORMAL, normalize(-lightDirTo));
 }
