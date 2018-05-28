@@ -74,8 +74,19 @@ HEADERS += \
     ModelChunk.h
 
 DISTFILES += \
-    scene.vs \
+    textures/base.jpg \
+    textures/base2.jpg \
+    textures/base_normal.jpg \
+    textures/base2_x2.jpg \
+    textures/base_x2.jpg \
+    textures/underwater_sand.jpg \
     textures/sand.jpg \
+    textures/sand2.jpg \
+    textures/hill.jpg \
+    textures/hill2.jpg \
+    textures/hill_specular.jpg \
+    textures/water.png \
+    textures/water_specular.png \
     textures/underwater_sand.jpg \
     textures/cubemap/back.png \
     textures/cubemap/down.png \
@@ -83,24 +94,24 @@ DISTFILES += \
     textures/cubemap/left.png \
     textures/cubemap/right.png \
     textures/cubemap/up.png \
+    shaders/terrainVertex.vs \
     shaders/skybox.vs \
     shaders/skybox.fs \
     shaders/water.fs \
     shaders/hills.fs \
-    textures/hill.jpg \
-    textures/hill_specular.jpg \
     shaders/sand.fs \
     shaders/base.fs \
     shaders/underwater.fs \
-    textures/base.jpg \
-    textures/base_normal.jpg \
-    textures/water.png \
-    textures/water_specular.png \
-    textures/base2.jpg \
-    textures/hill2.jpg \
-    textures/sand2.jpg \
     shaders/model.vs \
     shaders/model.fs \
+    shaders/font.vs \
+    shaders/font.fs \
+    shaders/coordinateSystem.vs \
+    shaders/coordinateSystem.gs \
+    shaders/coordinateSystem.fs \
+    shaders/buildableTiles.fs \
+    shaders/buildableTiles.vs \
+    shaders/selectedTile.vs \
     models/tree1/tree1.obj \
     models/tree1/leaves.jpg \
     models/tree1/tree.jpg \
@@ -121,34 +132,12 @@ DISTFILES += \
     models/hillTree2/leaves.jpg \
     models/hillTree2/tree.jpg \
     models/hillTree2/hillTree2.mtl \
-    shaders/terrainVertex.vs \
-    fonts/GentiumPlus-R.ttf \
-    shaders/font.vs \
-    shaders/font.fs \
-    fonts/OCTAPOST_1.ttf \
-    shaders/coordinateSystem.vs \
-    shaders/coordinateSystem.gs \
-    shaders/coordinateSystem.fs \
-    shaders/buildableTiles.fs \
-    shaders/buildableTiles.vs \
-    shaders/selectedTile.vs \
     models/hillTree3/hillTree3.obj \
     models/hillTree3/leaves.jpg \
     models/hillTree3/tree.jpg \
     models/hillTree3/hillTree3.mtl \
-    textures/base.jpg \
-    textures/base2.jpg \
-    textures/base2_x2.jpg \
-    textures/base_normal.jpg \
-    textures/base_x2.jpg \
-    textures/hill.jpg \
-    textures/hill2.jpg \
-    textures/hill_specular.jpg \
-    textures/sand.jpg \
-    textures/sand2.jpg \
-    textures/underwater_sand.jpg \
-    textures/water.png \
-    textures/water_specular.png
+    fonts/GentiumPlus-R.ttf \
+    fonts/OCTAPOST_1.ttf
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
