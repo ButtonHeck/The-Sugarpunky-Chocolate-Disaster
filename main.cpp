@@ -104,7 +104,7 @@ int main()
   Shader sand(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/sand.fs");
   Shader underwater(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/underwater.fs");
   Shader flat(PROJ_PATH + "/shaders/flat.vs", PROJ_PATH + "/shaders/flat.fs");
-  Shader water(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/water.fs");
+  Shader water(PROJ_PATH + "/shaders/water.vs", PROJ_PATH + "/shaders/water.fs");
   Shader sky(PROJ_PATH + "/shaders/skybox.vs", PROJ_PATH + "/shaders/skybox.fs");
   Shader modelShader(PROJ_PATH + "/shaders/model.vs", PROJ_PATH + "/shaders/model.fs");
   Shader fontShader(PROJ_PATH + "/shaders/font.vs", PROJ_PATH + "/shaders/font.fs");
@@ -180,7 +180,6 @@ int main()
   water.setInt("water_specular", 4);
   water.setInt("tilesDimension", TILES_WIDTH);
   water.setVec3("lightDirTo", LIGHT_DIR_TO);
-  water.setBool("instanceRendering", false);
   modelShader.use();
   modelShader.setVec3("lightDirTo", LIGHT_DIR_TO);
   buildableShader.use();

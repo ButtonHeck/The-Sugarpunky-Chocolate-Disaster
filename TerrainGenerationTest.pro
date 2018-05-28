@@ -139,7 +139,8 @@ DISTFILES += \
     fonts/OCTAPOST_1.ttf \
     shaders/flat.vs \
     shaders/flat.fs \
-    shaders/hills.vs
+    shaders/hills.vs \
+    shaders/water.vs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
