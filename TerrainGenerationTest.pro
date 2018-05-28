@@ -138,7 +138,8 @@ DISTFILES += \
     fonts/GentiumPlus-R.ttf \
     fonts/OCTAPOST_1.ttf \
     shaders/flat.vs \
-    shaders/flat.fs
+    shaders/flat.fs \
+    shaders/hills.vs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

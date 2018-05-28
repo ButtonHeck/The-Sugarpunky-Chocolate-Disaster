@@ -100,7 +100,7 @@ int main()
   }
 
   //shaders loading
-  Shader hills(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/hills.fs");
+  Shader hills(PROJ_PATH + "/shaders/hills.vs", PROJ_PATH + "/shaders/hills.fs");
   Shader sand(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/sand.fs");
   Shader underwater(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/underwater.fs");
   Shader flat(PROJ_PATH + "/shaders/flat.vs", PROJ_PATH + "/shaders/flat.fs");
@@ -154,7 +154,6 @@ int main()
   hills.setInt("hills_specular", 6);
   hills.setInt("base_normal", 8);
   hills.setInt("tilesDimension", TILES_WIDTH);
-  hills.setBool("instanceRendering", false);
   sand.use();
   sand.setFloat("waterLevel", WATER_LEVEL);
   sand.setInt("base_diffuse", 0);
