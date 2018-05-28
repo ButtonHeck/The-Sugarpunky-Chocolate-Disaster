@@ -149,7 +149,7 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, s
         }
     }
   std::uniform_real_distribution<float> modelSizeDistribution(0.25f, 0.32f);
-  std::uniform_real_distribution<float> modelPositionDistribution(-0.5f, 0.5f);
+  std::uniform_real_distribution<float> modelPositionDistribution(-0.45f, 0.45f);
   std::vector<std::vector<glm::mat4>> hillTreeModelsVecs;
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
