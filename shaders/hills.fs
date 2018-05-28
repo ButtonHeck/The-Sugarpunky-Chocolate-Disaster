@@ -32,11 +32,12 @@ void main()
         mix(vec4(0.0), texture(hills_specular, TexCoords), min(max(0.0, PosHeight/1.5), 1.0));
     //diffuse shading
     float diff = max(dot(normal, LightDir), 0.0);
+    float diffBase = max(dot(normalize(vec3(0.0, 1.0, 0.0) + texNormal), LightDir), 0.0);
     //specular shading
     vec3 reflect = reflect(-LightDir, normal);
     float spec = pow(max(dot(reflect, viewDir), 0.0), 64.0);
 
-    vec3 diffuse = diff * sampledDiffuse.rgb * 0.4 + 0.6 * sampledDiffuse.rgb;
+    vec3 diffuse = mix(diffBase, diff, min(max(0.0, PosHeight/1.5), 1.0)) * sampledDiffuse.rgb * 0.4 + 0.6 * sampledDiffuse.rgb;
     vec3 specular = spec * sampledSpecular.rgb;
     vec3 result = diffuse + specular;
 
