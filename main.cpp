@@ -101,7 +101,7 @@ int main()
 
   //shaders loading
   Shader hills(PROJ_PATH + "/shaders/hills.vs", PROJ_PATH + "/shaders/hills.fs");
-  Shader sand(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/sand.fs");
+  Shader sand(PROJ_PATH + "/shaders/sand.vs", PROJ_PATH + "/shaders/sand.fs");
   Shader underwater(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/underwater.fs");
   Shader flat(PROJ_PATH + "/shaders/flat.vs", PROJ_PATH + "/shaders/flat.fs");
   Shader water(PROJ_PATH + "/shaders/water.vs", PROJ_PATH + "/shaders/water.fs");
@@ -163,7 +163,6 @@ int main()
   sand.setInt("base_normal", 8);
   sand.setInt("tilesDimension", TILES_WIDTH);
   sand.setVec3("lightDirTo", LIGHT_DIR_TO);
-  sand.setBool("instanceRendering", false);
   underwater.use();
   underwater.setInt("underwater_diffuse", 9);
   underwater.setInt("underwater_normal", 8);
