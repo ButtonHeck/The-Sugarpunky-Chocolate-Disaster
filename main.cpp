@@ -103,7 +103,7 @@ int main()
   Shader hills(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/hills.fs");
   Shader sand(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/sand.fs");
   Shader underwater(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/underwater.fs");
-  Shader base(PROJ_PATH + "/shaders/flat.vs", PROJ_PATH + "/shaders/flat.fs");
+  Shader flat(PROJ_PATH + "/shaders/flat.vs", PROJ_PATH + "/shaders/flat.fs");
   Shader water(PROJ_PATH + "/shaders/terrainVertex.vs", PROJ_PATH + "/shaders/water.fs");
   Shader sky(PROJ_PATH + "/shaders/skybox.vs", PROJ_PATH + "/shaders/skybox.fs");
   Shader modelShader(PROJ_PATH + "/shaders/model.vs", PROJ_PATH + "/shaders/model.fs");
@@ -114,7 +114,7 @@ int main()
   Shader buildableShader(PROJ_PATH + "/shaders/buildableTiles.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
   Shader selectedTileShader(PROJ_PATH + "/shaders/selectedTile.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
   std::vector<Shader*> shaders =
-  {&hills, &sand, &underwater, &base, &water, &sky, &modelShader, &fontShader, &csShader, &buildableShader, &selectedTileShader};
+  {&hills, &sand, &underwater, &flat, &water, &sky, &modelShader, &fontShader, &csShader, &buildableShader, &selectedTileShader};
 
   //models and model-related objects loading
   Model tree1(PROJ_PATH + "/models/tree1/tree1.obj", textureLoader);
@@ -170,13 +170,12 @@ int main()
   underwater.setInt("underwater_normal", 8);
   underwater.setInt("tilesDimension", TILES_WIDTH);
   underwater.setVec3("lightDirTo", LIGHT_DIR_TO);
-  base.use();
-  base.setInt("base_diffuse", 0);
-  base.setInt("base_diffuse2", 11);
-  base.setInt("base_normal", 8);
-  base.setInt("tilesDimension", TILES_WIDTH);
-  base.setVec3("lightDirTo", LIGHT_DIR_TO);
-  base.setBool("instanceRendering", true);
+  flat.use();
+  flat.setInt("base_diffuse", 0);
+  flat.setInt("base_diffuse2", 11);
+  flat.setInt("base_normal", 8);
+  flat.setInt("tilesDimension", TILES_WIDTH);
+  flat.setVec3("lightDirTo", LIGHT_DIR_TO);
   water.use();
   water.setInt("water_diffuse", 2);
   water.setInt("water_specular", 4);
@@ -274,9 +273,9 @@ int main()
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
       //base terrain chunk tiles
-      base.use();
-      base.setMat4("projectionView", projectionView);
-      base.setVec3("viewPosition", viewPosition);
+      flat.use();
+      flat.setMat4("projectionView", projectionView);
+      flat.setVec3("viewPosition", viewPosition);
       for (unsigned int vao = 0; vao < NUM_BASE_TERRAIN_CHUNKS; vao++)
         {
           glBindVertexArray(baseMapGenerator->getChunkVAO(vao));

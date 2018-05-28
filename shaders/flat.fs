@@ -9,6 +9,7 @@ in vec3 LightDir;
 uniform sampler2D base_diffuse;
 uniform sampler2D base_diffuse2;
 uniform sampler2D base_normal;
+uniform vec3 viewPosition;
 uniform int tilesDimension;
 
 void main()
