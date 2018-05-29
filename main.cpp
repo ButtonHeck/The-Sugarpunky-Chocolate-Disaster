@@ -170,11 +170,11 @@ int main()
   underwater.setInt("u_mapDimension", TILES_WIDTH);
   underwater.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   flat.use();
-  flat.setInt("base_diffuse", FLAT);
-  flat.setInt("base_diffuse2", FLAT_2);
-  flat.setInt("base_normal", NORMAL_MAP);
-  flat.setInt("tilesDimension", TILES_WIDTH);
-  flat.setVec3("lightDirTo", LIGHT_DIR_TO);
+  flat.setInt("u_flat_diffuse", FLAT);
+  flat.setInt("u_flat_diffuse2", FLAT_2);
+  flat.setInt("u_normal_map", NORMAL_MAP);
+  flat.setInt("u_mapDimension", TILES_WIDTH);
+  flat.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   water.use();
   water.setInt("u_water_diffuse", WATER);
   water.setInt("u_water_specular", WATER_SPECULAR);
@@ -272,8 +272,7 @@ int main()
 
       //base terrain chunk tiles
       flat.use();
-      flat.setMat4("projectionView", projectionView);
-      flat.setVec3("viewPosition", viewPosition);
+      flat.setMat4("u_projectionView", projectionView);
       for (unsigned int vao = 0; vao < NUM_BASE_TERRAIN_CHUNKS; vao++)
         {
           glBindVertexArray(baseMapGenerator->getChunkVAO(vao));
