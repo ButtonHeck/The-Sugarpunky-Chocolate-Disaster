@@ -165,10 +165,10 @@ int main()
   shore.setInt("u_mapDimension", TILES_WIDTH);
   shore.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   underwater.use();
-  underwater.setInt("underwater_diffuse", UNDERWATER);
-  underwater.setInt("underwater_normal", NORMAL_MAP);
-  underwater.setInt("tilesDimension", TILES_WIDTH);
-  underwater.setVec3("lightDirTo", LIGHT_DIR_TO);
+  underwater.setInt("u_underwater_diffuse", UNDERWATER);
+  underwater.setInt("u_normal_map", NORMAL_MAP);
+  underwater.setInt("u_mapDimension", TILES_WIDTH);
+  underwater.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   flat.use();
   flat.setInt("base_diffuse", FLAT);
   flat.setInt("base_diffuse2", FLAT_2);
@@ -197,7 +197,7 @@ int main()
   //create underwater relief texture manually and bind it to related shader
   GLuint underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF);
   underwater.use();
-  underwater.setInt("bottomRelief", UNDERWATER_RELIEF);
+  underwater.setInt("u_bottomRelief_diffuse", UNDERWATER_RELIEF);
   textures.push_back(&underwaterReliefTexture);
 
   //etc
@@ -265,8 +265,8 @@ int main()
 
       //underwater tile
       underwater.use();
-      underwater.setMat4("projectionView", projectionView);
-      underwater.setMat4("model", model);
+      underwater.setMat4("u_projectionView", projectionView);
+      underwater.setMat4("u_model", model);
       glBindVertexArray(underwaterQuadGenerator.getVAO());
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

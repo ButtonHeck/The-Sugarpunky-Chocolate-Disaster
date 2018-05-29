@@ -1,25 +1,26 @@
 #version 450
 
-layout (location = 0) in vec3 pos;
-layout (location = 1) in vec2 texCoords;
+layout (location = 0) in vec3 i_pos;
+layout (location = 1) in vec2 i_texCoords;
 
-uniform mat4 model;
-uniform mat4 projectionView;
-uniform vec3 lightDirTo;
-uniform sampler2D underwater_normal;
-uniform int tilesDimension;
+uniform mat4        u_model;
+uniform mat4        u_projectionView;
+uniform vec3        u_lightDir;
+uniform sampler2D   u_normal_map;
+uniform int         u_mapDimension;
 
-out vec2 TexCoords;
-out vec3 FragPos;
-out float Diff;
+out vec2  v_TexCoords;
+out vec3  v_FragPos;
+out float v_DiffuseComponent;
 
 void main()
 {
-    gl_Position = projectionView * model * vec4(pos, 1.0);
-    FragPos = vec3(model * vec4(pos, 1.0));
-    TexCoords = texCoords;
-    vec3 LightDir = normalize(-lightDirTo);
-    vec3 TexNormal = texture(underwater_normal, vec2(FragPos.x / (tilesDimension >> 2), FragPos.z / (tilesDimension >> 2))).rgb;
-    vec3 Normal = normalize(TexNormal);
-    Diff = max(dot(Normal, LightDir), 0.0);
+    gl_Position = u_projectionView * u_model * vec4(i_pos, 1.0);
+    v_FragPos = vec3(u_model * vec4(i_pos, 1.0));
+    v_TexCoords = i_texCoords;
+    vec3 FlatNormal = texture(u_normal_map, vec2(v_FragPos.x / (u_mapDimension >> 2), v_FragPos.z / (u_mapDimension >> 2))).rgb;
+    vec3 ShadingNormal = normalize(FlatNormal);
+
+    //diffuse
+    v_DiffuseComponent = max(dot(ShadingNormal, u_lightDir), 0.0);
 }

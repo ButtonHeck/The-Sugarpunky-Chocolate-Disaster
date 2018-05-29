@@ -1,19 +1,19 @@
 #version 450
 
-out vec4 FragColor;
+out vec4 o_FragColor;
 
-in vec3 FragPos;
-in vec2 TexCoords;
-in float Diff;
+in vec3  v_FragPos;
+in vec2  v_TexCoords;
+in float v_DiffuseComponent;
 
-uniform sampler2D underwater_diffuse;
-uniform sampler2D bottomRelief;
-uniform int tilesDimension;
+uniform sampler2D u_underwater_diffuse;
+uniform sampler2D u_bottomRelief_diffuse;
+uniform int       u_mapDimension;
 
 void main()
 {
-    float reliefTexture = texture(bottomRelief, vec2(FragPos.x / tilesDimension + 0.5, FragPos.z / tilesDimension + 0.5)).r * 1.1;
-    vec4 sampledDiffuse = texture(underwater_diffuse, TexCoords);
-    vec3 diffuse = Diff * sampledDiffuse.rgb * (1.0 - reliefTexture);
-    FragColor = vec4(diffuse, sampledDiffuse.a);
+    float reliefAttenuation = 1.0 - texture(u_bottomRelief_diffuse, vec2(v_FragPos.x / u_mapDimension + 0.5, v_FragPos.z / u_mapDimension + 0.5)).r * 1.1;
+    vec4 sampledDiffuse = texture(u_underwater_diffuse, v_TexCoords);
+    vec3 diffuseColor = v_DiffuseComponent * sampledDiffuse.rgb * reliefAttenuation;
+    o_FragColor = vec4(diffuseColor, sampledDiffuse.a);
 }
