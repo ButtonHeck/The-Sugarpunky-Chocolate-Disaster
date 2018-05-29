@@ -1,30 +1,33 @@
 #version 450
 
-layout (location = 0) in vec3 pos;
-layout (location = 1) in vec3 normal;
-layout (location = 2) in vec2 texCoords;
-layout (location = 3) in vec3 tangent;
-layout (location = 4) in vec3 bitangent;
-layout (location = 5) in mat4 model;
+layout (location = 0) in vec3 i_pos;
+layout (location = 1) in vec3 i_normal;
+layout (location = 2) in vec2 i_texCoords;
+layout (location = 3) in vec3 i_tangent;
+layout (location = 4) in vec3 i_bitangent;
+layout (location = 5) in mat4 i_model;
 
-uniform mat4 projectionView;
-uniform vec3 viewPosition;
-uniform vec3 lightDirTo;
+uniform mat4 u_projectionView;
+uniform vec3 u_viewPosition;
+uniform vec3 u_lightDir;
 
-out vec2 TexCoords;
-out vec3 Normal;
-out float Diff;
-out float Spec;
+out vec2  v_TexCoords;
+out vec3  v_Normal;
+out float v_DiffuseComponent;
+out float v_SpecularComponent;
 
 void main()
 {
-    gl_Position = projectionView * model * vec4(pos, 1.0);
-    TexCoords = texCoords;
-    vec3 FragPos = vec3(model * vec4(pos, 1.0));
-    Normal = normalize(mat3(transpose(inverse(model))) * normal);
-    vec3 ViewDir = normalize(viewPosition - FragPos);
-    vec3 LightDir = normalize(-lightDirTo);
-    Diff = max(dot(Normal, LightDir), 0.0);
-    vec3 Reflect = reflect(-LightDir, Normal);
-    Spec = pow(max(dot(Reflect, ViewDir), 0.0), 8.0) * 0.33;
+    gl_Position = u_projectionView * i_model * vec4(i_pos, 1.0);
+    v_TexCoords = i_texCoords;
+    vec3 FragPos = vec3(i_model * vec4(i_pos, 1.0));
+    v_Normal = normalize(mat3(transpose(inverse(i_model))) * i_normal);
+
+    //diffuse
+    v_DiffuseComponent = max(dot(v_Normal, u_lightDir), 0.0);
+
+    //specular
+    vec3 Reflect = reflect(-u_lightDir, v_Normal);
+    vec3 ViewDir = normalize(u_viewPosition - FragPos);
+    v_SpecularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 8.0) * 0.33;
 }

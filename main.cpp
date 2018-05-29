@@ -183,7 +183,7 @@ int main()
   sky.use();
   sky.setInt("skybox", SKYBOX);
   modelShader.use();
-  modelShader.setVec3("lightDirTo", LIGHT_DIR_TO);
+  modelShader.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   buildableShader.use();
   buildableShader.setBool("cursorMode", false);
   selectedTileShader.use();
@@ -456,9 +456,9 @@ int main()
       if (renderTreeModels)
         {
           modelShader.use();
-          modelShader.setMat4("projectionView", projectionView);
-          modelShader.setVec3("viewPosition", viewPosition);
-          modelShader.setBool("shadow", renderShadowOnTrees);
+          modelShader.setMat4("u_projectionView", projectionView);
+          modelShader.setVec3("u_viewPosition", viewPosition);
+          modelShader.setBool("u_shadow", renderShadowOnTrees);
           treeGenerator->draw(modelShader, camera, treeModelChunks, hillTreeModelChunks,
                               modelRenderOptimize, chunkLoadingDistance);
         }
