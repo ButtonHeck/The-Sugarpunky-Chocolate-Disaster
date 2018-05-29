@@ -185,9 +185,9 @@ int main()
   modelShader.use();
   modelShader.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   buildableShader.use();
-  buildableShader.setBool("cursorMode", false);
+  buildableShader.setBool("u_cursorMode", false);
   selectedTileShader.use();
-  selectedTileShader.setBool("cursorMode", true);
+  selectedTileShader.setBool("u_cursorMode", true);
 
   //generating the terrain landscape data and filling related vertex/element buffers
   prepareTerrain();
@@ -344,7 +344,7 @@ int main()
       if (showBuildable)
         {
           buildableShader.use();
-          buildableShader.setMat4("projectionView", projectionView);
+          buildableShader.setMat4("u_projectionView", projectionView);
           glBindVertexArray(buildableMapGenerator->getVAO());
           glEnable(GL_BLEND);
           glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, buildableMapGenerator->getNumInstances());
@@ -355,10 +355,10 @@ int main()
       if (showCursor && buildableMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
         {
           selectedTileShader.use();
-          selectedTileShader.setMat4("projectionView", projectionView);
+          selectedTileShader.setMat4("u_projectionView", projectionView);
           glm::mat4 selectedModel;
           selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + cursorOnMapCoordX, 0.0f, -TILES_HEIGHT / 2 + cursorOnMapCoordZ));
-          selectedTileShader.setMat4("model", selectedModel);
+          selectedTileShader.setMat4("u_model", selectedModel);
           glBindVertexArray(buildableMapGenerator->getSelectedTileVAO());
           glEnable(GL_BLEND);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

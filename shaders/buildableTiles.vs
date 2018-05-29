@@ -1,11 +1,11 @@
 #version 450
 
-layout (location = 0) in vec3 pos;
-layout (location = 3) in mat4 model;
+layout (location = 0) in vec3 i_pos;
+layout (location = 3) in mat4 i_model;
 
-uniform mat4 projectionView;
+uniform mat4 u_projectionView;
 
 void main()
 {
-    gl_Position = projectionView * model * vec4(pos, 1.0);
+    gl_Position = u_projectionView * i_model * vec4(i_pos, 1.0);
 }
