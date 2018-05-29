@@ -203,7 +203,7 @@ void InputController::cursorCallback(GLFWwindow *, double x, double y)
   camera.processMouseCursor(dx, dy);
 }
 
-void InputController::cursorClickCallback(GLFWwindow *window, int button, int action, int mods)
+void InputController::cursorClickCallback(GLFWwindow *window, int button, int action, int)
 {
   if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
     {

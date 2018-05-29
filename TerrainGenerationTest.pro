@@ -74,14 +74,7 @@ HEADERS += \
     ModelChunk.h
 
 DISTFILES += \
-    textures/base.jpg \
-    textures/base2.jpg \
-    textures/base_normal.jpg \
-    textures/base2_x2.jpg \
-    textures/base_x2.jpg \
     textures/underwater_sand.jpg \
-    textures/sand.jpg \
-    textures/sand2.jpg \
     textures/hill.jpg \
     textures/hill2.jpg \
     textures/hill_specular.jpg \
@@ -94,12 +87,10 @@ DISTFILES += \
     textures/cubemap/left.png \
     textures/cubemap/right.png \
     textures/cubemap/up.png \
-    shaders/terrainVertex.vs \
     shaders/skybox.vs \
     shaders/skybox.fs \
     shaders/water.fs \
     shaders/hills.fs \
-    shaders/sand.fs \
     shaders/underwater.fs \
     shaders/model.vs \
     shaders/model.fs \
@@ -141,8 +132,16 @@ DISTFILES += \
     shaders/flat.fs \
     shaders/hills.vs \
     shaders/water.vs \
-    shaders/sand.vs \
-    shaders/underwater.vs
+    shaders/underwater.vs \
+    shaders/shore.fs \
+    shaders/shore.vs \
+    textures/shore.jpg \
+    textures/shore2.jpg \
+    textures/flat.jpg \
+    textures/flat2.jpg \
+    textures/flat2_x2.jpg \
+    textures/flat_x2.jpg \
+    textures/normalMap.jpg
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

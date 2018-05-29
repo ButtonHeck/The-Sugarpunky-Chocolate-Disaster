@@ -32,10 +32,8 @@ bool SaveLoadManager::saveToFile(const std::string &filename, std::vector<ModelC
     }
   for (std::vector<float>& row : chunkMap)
     {
-      for (float& unused : row)
-        {
-          output << 0 << " ";
-        }
+      for (unsigned int i = 0; i < row.size(); i++)
+        output << 0 << " ";
     }
   for (std::vector<float>& row : hillMap)
     {

@@ -101,7 +101,7 @@ int main()
 
   //shaders loading
   Shader hills(PROJ_PATH + "/shaders/hills.vs", PROJ_PATH + "/shaders/hills.fs");
-  Shader sand(PROJ_PATH + "/shaders/sand.vs", PROJ_PATH + "/shaders/sand.fs");
+  Shader shore(PROJ_PATH + "/shaders/shore.vs", PROJ_PATH + "/shaders/shore.fs");
   Shader underwater(PROJ_PATH + "/shaders/underwater.vs", PROJ_PATH + "/shaders/underwater.fs");
   Shader flat(PROJ_PATH + "/shaders/flat.vs", PROJ_PATH + "/shaders/flat.fs");
   Shader water(PROJ_PATH + "/shaders/water.vs", PROJ_PATH + "/shaders/water.fs");
@@ -114,7 +114,7 @@ int main()
   Shader buildableShader(PROJ_PATH + "/shaders/buildableTiles.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
   Shader selectedTileShader(PROJ_PATH + "/shaders/selectedTile.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
   std::vector<Shader*> shaders =
-  {&hills, &sand, &underwater, &flat, &water, &sky, &modelShader, &fontShader, &csShader, &buildableShader, &selectedTileShader};
+  {&hills, &shore, &underwater, &flat, &water, &sky, &modelShader, &fontShader, &csShader, &buildableShader, &selectedTileShader};
 
   //models and model-related objects loading
   Model tree1(PROJ_PATH + "/models/tree1/tree1.obj", textureLoader);
@@ -127,56 +127,56 @@ int main()
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
   //textures loading
-  GLuint baseTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/base.jpg", GL_REPEAT, 0);
-  GLuint hillTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/hill.jpg", GL_REPEAT, 1);
-  GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water.png", GL_REPEAT, 2);
-  GLuint sandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/sand.jpg", GL_REPEAT, 3);
-  GLuint waterTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/water_specular.png", GL_REPEAT, 4);
-  GLuint hillTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/hill_specular.jpg", GL_REPEAT, 6);
-  GLuint baseTextureNormal = textureLoader.loadTexture(PROJ_PATH + "/textures/base_normal.jpg", GL_REPEAT, 8);
-  GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT, 9);
-  GLuint sandTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/sand2.jpg", GL_REPEAT, 10);
-  GLuint baseTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base2.jpg", GL_REPEAT, 11);
-  GLuint hillTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/hill2.jpg", GL_REPEAT, 12);
-  GLuint baseTexture_x2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base_x2.jpg", GL_REPEAT, 14);
-  GLuint baseTexture2_x2 = textureLoader.loadTexture(PROJ_PATH + "/textures/base2_x2.jpg", GL_REPEAT, 15);
+  GLuint flatTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/flat.jpg", GL_REPEAT, FLAT);
+  GLuint flatTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/flat2.jpg", GL_REPEAT, FLAT_2);
+  GLuint flatTexture_x2 = textureLoader.loadTexture(PROJ_PATH + "/textures/flat_x2.jpg", GL_REPEAT, FLAT_x2);
+  GLuint flatTexture2_x2 = textureLoader.loadTexture(PROJ_PATH + "/textures/flat2_x2.jpg", GL_REPEAT, FLAT_2_x2);
+  GLuint normalMapTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/normalMap.jpg", GL_REPEAT, NORMAL_MAP);
+  GLuint hillTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/hill.jpg", GL_REPEAT, HILL);
+  GLuint hillTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/hill2.jpg", GL_REPEAT, HILL_2);
+  GLuint hillTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/hill_specular.jpg", GL_REPEAT, HILL_SPECULAR);
+  GLuint shoreTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/shore.jpg", GL_REPEAT, SHORE);
+  GLuint shoreTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/shore2.jpg", GL_REPEAT, SHORE_2);
+  GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT, UNDERWATER);
+  GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water.png", GL_REPEAT, WATER);
+  GLuint waterTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/water_specular.png", GL_REPEAT, WATER_SPECULAR);
   std::vector<GLuint*> textures =
-  {&baseTexture, &hillTexture, &waterTexture, &sandTexture, &waterTextureSpec, &hillTextureSpec, &baseTextureNormal,
-  &underwaterSandTexture, &sandTexture2, &baseTexture2, &hillTexture2, &baseTexture_x2, &baseTexture2_x2};
+  {&flatTexture, &hillTexture, &waterTexture, &shoreTexture, &waterTextureSpec, &hillTextureSpec, &normalMapTexture,
+  &underwaterSandTexture, &shoreTexture2, &flatTexture2, &hillTexture2, &flatTexture_x2, &flatTexture2_x2};
 
   //shaders setup
   hills.use();
-  hills.setVec3("lightDirTo", LIGHT_DIR_TO);
-  hills.setInt("base_diffuse", 14);
-  hills.setInt("base_diffuse2", 15);
-  hills.setInt("hills_diffuse", 1);
-  hills.setInt("hills_diffuse2", 12);
-  hills.setInt("hills_specular", 6);
-  hills.setInt("base_normal", 8);
-  hills.setInt("tilesDimension", TILES_WIDTH);
-  sand.use();
-  sand.setFloat("waterLevel", WATER_LEVEL);
-  sand.setInt("base_diffuse", 0);
-  sand.setInt("base_diffuse2", 11);
-  sand.setInt("sand_diffuse", 3);
-  sand.setInt("sand_diffuse2", 10);
-  sand.setInt("base_normal", 8);
-  sand.setInt("tilesDimension", TILES_WIDTH);
-  sand.setVec3("lightDirTo", LIGHT_DIR_TO);
+  hills.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
+  hills.setInt("u_flat_diffuse", FLAT_x2);
+  hills.setInt("u_flat_diffuse2", FLAT_2_x2);
+  hills.setInt("u_hills_diffuse", HILL);
+  hills.setInt("u_hills_diffuse2", HILL_2);
+  hills.setInt("u_hills_specular", HILL_SPECULAR);
+  hills.setInt("u_normal_map", NORMAL_MAP);
+  hills.setInt("u_mapDimension", TILES_WIDTH);
+  shore.use();
+  shore.setFloat("waterLevel", WATER_LEVEL);
+  shore.setInt("base_diffuse", FLAT);
+  shore.setInt("base_diffuse2", FLAT_2);
+  shore.setInt("sand_diffuse", SHORE);
+  shore.setInt("sand_diffuse2", SHORE_2);
+  shore.setInt("base_normal", NORMAL_MAP);
+  shore.setInt("tilesDimension", TILES_WIDTH);
+  shore.setVec3("lightDirTo", LIGHT_DIR_TO);
   underwater.use();
-  underwater.setInt("underwater_diffuse", 9);
-  underwater.setInt("underwater_normal", 8);
+  underwater.setInt("underwater_diffuse", UNDERWATER);
+  underwater.setInt("underwater_normal", NORMAL_MAP);
   underwater.setInt("tilesDimension", TILES_WIDTH);
   underwater.setVec3("lightDirTo", LIGHT_DIR_TO);
   flat.use();
-  flat.setInt("base_diffuse", 0);
-  flat.setInt("base_diffuse2", 11);
-  flat.setInt("base_normal", 8);
+  flat.setInt("base_diffuse", FLAT);
+  flat.setInt("base_diffuse2", FLAT_2);
+  flat.setInt("base_normal", NORMAL_MAP);
   flat.setInt("tilesDimension", TILES_WIDTH);
   flat.setVec3("lightDirTo", LIGHT_DIR_TO);
   water.use();
-  water.setInt("water_diffuse", 2);
-  water.setInt("water_specular", 4);
+  water.setInt("water_diffuse", WATER);
+  water.setInt("water_specular", WATER_SPECULAR);
   water.setInt("tilesDimension", TILES_WIDTH);
   water.setVec3("lightDirTo", LIGHT_DIR_TO);
   modelShader.use();
@@ -192,10 +192,9 @@ int main()
   treeGenerator->setupHillModels(hillMapGenerator->getMap(), hillTreeModelChunks);
 
   //create underwater relief texture manually and bind it to related shader
-  GLuint underwaterReliefTextureUnit = 13;
-  GLuint underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, underwaterReliefTextureUnit);
+  GLuint underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF);
   underwater.use();
-  underwater.setInt("bottomRelief", underwaterReliefTextureUnit);
+  underwater.setInt("bottomRelief", UNDERWATER_RELIEF);
   textures.push_back(&underwaterReliefTexture);
 
   //etc
@@ -243,22 +242,22 @@ int main()
           saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
           saveLoadManager->setTreeGenerator(*treeGenerator);
           recreateTerrainRequest = false;
-          underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, underwaterReliefTextureUnit);
+          underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF);
         }
 
       //hill tiles
       hills.use();
-      hills.setMat4("projectionView", projectionView);
-      hills.setMat4("model", model);
-      hills.setVec3("viewPosition", viewPosition);
+      hills.setMat4("u_projectionView", projectionView);
+      hills.setMat4("u_model", model);
+      hills.setVec3("u_viewPosition", viewPosition);
       glBindVertexArray(hillMapGenerator->getVAO());
       glDrawElements(GL_TRIANGLES, 6 * hillMapGenerator->getTiles().size(), GL_UNSIGNED_INT, 0);
 
       //sand terrain tiles
-      sand.use();
-      sand.setMat4("projectionView", projectionView);
-      sand.setMat4("model", model);
-      sand.setVec3("viewPosition", viewPosition);
+      shore.use();
+      shore.setMat4("projectionView", projectionView);
+      shore.setMat4("model", model);
+      shore.setVec3("viewPosition", viewPosition);
       glBindVertexArray(baseMapGenerator->getVAO());
       glDrawArrays(GL_TRIANGLES, 0, 6 * baseMapGenerator->getTiles().size());
 
@@ -382,7 +381,7 @@ int main()
                 waterHeightOffsets[i] = std::cos(frameTime * (i % 31) / 8) / 16 + WATER_LEVEL;
                 waterHeightOffsets[i+1] = std::sin(frameTime * (i% 29) / 8) / 16 + WATER_LEVEL;
             }
-          GLfloat* temp = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+          GLfloat* waterVertexCoordinatePointer = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
           unsigned int numWaterTiles = waterTiles.size();
           glm::vec3 normalLR, normalUL;
           for (unsigned int i = 0; i < numWaterTiles; ++i)
@@ -392,12 +391,12 @@ int main()
               float lr = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX + 1];
               float ur = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX + 1];
               float ul = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX];
-              *(temp+1+i*48) = ll;
-              *(temp+9+i*48) = lr;
-              *(temp+17+i*48) = ur;
-              *(temp+25+i*48) = ur;
-              *(temp+33+i*48) = ul;
-              *(temp+41+i*48) = ll;
+              *(waterVertexCoordinatePointer+1+i*48) = ll;
+              *(waterVertexCoordinatePointer+9+i*48) = lr;
+              *(waterVertexCoordinatePointer+17+i*48) = ur;
+              *(waterVertexCoordinatePointer+25+i*48) = ur;
+              *(waterVertexCoordinatePointer+33+i*48) = ul;
+              *(waterVertexCoordinatePointer+41+i*48) = ll;
               normalLR = glm::cross(
                     glm::vec3(tile.mapX, ur, tile.mapY - 1)
                     -
@@ -414,25 +413,25 @@ int main()
                     glm::vec3(tile.mapX, ur, tile.mapY - 1)
                     -
                     glm::vec3(tile.mapX - 1, ul, tile.mapY - 1));
-              *(temp+5+i*48) = normalLR.x;
-              *(temp+6+i*48) = normalLR.y;
-              *(temp+7+i*48) = normalLR.z;
-              *(temp+13+i*48) = normalLR.x;
-              *(temp+14+i*48) = normalLR.y;
-              *(temp+15+i*48) = normalLR.z;
-              *(temp+21+i*48) = normalLR.x;
-              *(temp+22+i*48) = normalLR.y;
-              *(temp+23+i*48) = normalLR.z;
+              *(waterVertexCoordinatePointer+5+i*48) = normalLR.x;
+              *(waterVertexCoordinatePointer+6+i*48) = normalLR.y;
+              *(waterVertexCoordinatePointer+7+i*48) = normalLR.z;
+              *(waterVertexCoordinatePointer+13+i*48) = normalLR.x;
+              *(waterVertexCoordinatePointer+14+i*48) = normalLR.y;
+              *(waterVertexCoordinatePointer+15+i*48) = normalLR.z;
+              *(waterVertexCoordinatePointer+21+i*48) = normalLR.x;
+              *(waterVertexCoordinatePointer+22+i*48) = normalLR.y;
+              *(waterVertexCoordinatePointer+23+i*48) = normalLR.z;
 
-              *(temp+29+i*48) = normalUL.x;
-              *(temp+30+i*48) = normalUL.y;
-              *(temp+31+i*48) = normalUL.z;
-              *(temp+37+i*48) = normalUL.x;
-              *(temp+38+i*48) = normalUL.y;
-              *(temp+39+i*48) = normalUL.z;
-              *(temp+45+i*48) = normalUL.x;
-              *(temp+46+i*48) = normalUL.y;
-              *(temp+47+i*48) = normalUL.z;
+              *(waterVertexCoordinatePointer+29+i*48) = normalUL.x;
+              *(waterVertexCoordinatePointer+30+i*48) = normalUL.y;
+              *(waterVertexCoordinatePointer+31+i*48) = normalUL.z;
+              *(waterVertexCoordinatePointer+37+i*48) = normalUL.x;
+              *(waterVertexCoordinatePointer+38+i*48) = normalUL.y;
+              *(waterVertexCoordinatePointer+39+i*48) = normalUL.z;
+              *(waterVertexCoordinatePointer+45+i*48) = normalUL.x;
+              *(waterVertexCoordinatePointer+46+i*48) = normalUL.y;
+              *(waterVertexCoordinatePointer+47+i*48) = normalUL.z;
             }
           glUnmapBuffer(GL_ARRAY_BUFFER);
         }
@@ -499,8 +498,8 @@ int main()
         }
 
       //reset texture units to terrain textures after we done with models and text
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, baseTexture);
+      glActiveTexture(GL_TEXTURE0 + FLAT);
+      glBindTexture(GL_TEXTURE_2D, flatTexture);
 
       //save/load routine
       if (saveRequest)
@@ -512,7 +511,7 @@ int main()
         {
           saveLoadManager->loadFromFile(PROJ_PATH + "/saves/testSave.txt", treeModelChunks, hillTreeModelChunks);
           loadRequest = false;
-          underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, underwaterReliefTextureUnit);
+          underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF);
         }
 
       glfwPollEvents();

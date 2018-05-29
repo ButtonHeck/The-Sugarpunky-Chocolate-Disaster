@@ -1,5 +1,6 @@
 #ifndef SETTINGS
 #define SETTINGS
+#include <GL/glew.h>
 #include <string>
 #include <glm/glm.hpp>
 
@@ -27,6 +28,24 @@ const glm::vec3 LIGHT_DIR_TO = glm::vec3(-0.2f, -0.15f, -0.08f);
 enum HILL_DENSITY
 {
   THIN, MEDIUM, DENSE
+};
+
+enum TEXTURE_UNITS
+{
+  FLAT = 0,
+  FLAT_2 = 1,
+  FLAT_x2 = 2,
+  FLAT_2_x2 = 3,
+  NORMAL_MAP = 4,
+  HILL = 5,
+  HILL_2 = 6,
+  HILL_SPECULAR = 7,
+  SHORE = 8,
+  SHORE_2 = 9,
+  UNDERWATER = 10,
+  WATER = 11,
+  WATER_SPECULAR = 12,
+  UNDERWATER_RELIEF = 13
 };
 #endif // SETTINGS
 
