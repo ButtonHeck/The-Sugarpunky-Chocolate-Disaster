@@ -157,14 +157,13 @@ int main()
   hills.setInt("u_normal_map", NORMAL_MAP);
   hills.setInt("u_mapDimension", TILES_WIDTH);
   shore.use();
-  shore.setFloat("waterLevel", WATER_LEVEL);
-  shore.setInt("base_diffuse", FLAT);
-  shore.setInt("base_diffuse2", FLAT_2);
-  shore.setInt("sand_diffuse", SHORE);
-  shore.setInt("sand_diffuse2", SHORE_2);
-  shore.setInt("base_normal", NORMAL_MAP);
-  shore.setInt("tilesDimension", TILES_WIDTH);
-  shore.setVec3("lightDirTo", LIGHT_DIR_TO);
+  shore.setInt("u_flat_diffuse", FLAT);
+  shore.setInt("u_flat_diffuse2", FLAT_2);
+  shore.setInt("u_sand_diffuse", SHORE);
+  shore.setInt("u_sand_diffuse2", SHORE_2);
+  shore.setInt("u_normal_map", NORMAL_MAP);
+  shore.setInt("u_mapDimension", TILES_WIDTH);
+  shore.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   underwater.use();
   underwater.setInt("underwater_diffuse", UNDERWATER);
   underwater.setInt("underwater_normal", NORMAL_MAP);
@@ -257,11 +256,10 @@ int main()
       glBindVertexArray(hillMapGenerator->getVAO());
       glDrawElements(GL_TRIANGLES, 6 * hillMapGenerator->getTiles().size(), GL_UNSIGNED_INT, 0);
 
-      //sand terrain tiles
+      //shore terrain tiles
       shore.use();
-      shore.setMat4("projectionView", projectionView);
-      shore.setMat4("model", model);
-      shore.setVec3("viewPosition", viewPosition);
+      shore.setMat4("u_projectionView", projectionView);
+      shore.setMat4("u_model", model);
       glBindVertexArray(baseMapGenerator->getVAO());
       glDrawArrays(GL_TRIANGLES, 0, 6 * baseMapGenerator->getTiles().size());
 

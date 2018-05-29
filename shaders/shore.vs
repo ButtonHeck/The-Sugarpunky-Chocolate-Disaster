@@ -1,34 +1,37 @@
 #version 450
 
-layout (location = 0) in vec3 pos;
-layout (location = 1) in vec2 texCoords;
-layout (location = 2) in vec3 normal;
+layout (location = 0) in vec3 i_pos;
+layout (location = 1) in vec2 i_texCoords;
+layout (location = 2) in vec3 i_normal;
 
-uniform mat4 model;
-uniform mat4 projectionView;
-uniform vec3 lightDirTo;
-uniform sampler2D base_normal;
-uniform int tilesDimension;
+uniform mat4      u_model;
+uniform mat4      u_projectionView;
+uniform vec3      u_lightDir;
+uniform sampler2D u_normal_map;
+uniform int       u_mapDimension;
 
-out vec2 TexCoords;
-out vec3 FragPos;
-out float PosHeight;
-out float TextureMixRatio;
-out float Diff;
+out vec2  v_TexCoords;
+out vec3  v_FragPos;
+out float v_PosHeight;
+out float v_TextureMixRatio;
+out float v_DiffuseComponent;
 
 const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
+const float POSITION_HEIGHT_MULTIPLIER = 2.1;
 
 void main()
 {
-    gl_Position = projectionView * model * vec4(pos, 1.0);
-    vec3 Normal = mat3(transpose(inverse(model))) * normal;
-    FragPos = vec3(model * vec4(pos, 1.0));
-    TexCoords = texCoords;
-    PosHeight = pos.y;
-    vec3 LightDir = normalize(-lightDirTo);
-    float TransitionRatio = clamp(1.0 + PosHeight * (1 / 0.5), 0.0, 1.0);
-    vec3 texNormal = texture(base_normal, vec2(FragPos.x / tilesDimension + 0.5, FragPos.z / tilesDimension + 0.5)).rgb;
-    vec3 NormalCorrected = normalize((1.0 - TransitionRatio) * Normal + TransitionRatio * (NORMAL + texNormal));
-    TextureMixRatio = texNormal.r;
-    Diff = max(dot(NormalCorrected, LightDir), 0.0);
+    gl_Position = u_projectionView * u_model * vec4(i_pos, 1.0);
+    v_FragPos = vec3(u_model * vec4(i_pos, 1.0));
+    v_TexCoords = i_texCoords;
+    v_PosHeight = i_pos.y * POSITION_HEIGHT_MULTIPLIER;
+
+    vec3 ShoreNormal = mat3(transpose(inverse(u_model))) * i_normal;
+    vec3 FlatNormal = texture(u_normal_map, vec2(v_FragPos.x / u_mapDimension + 0.5, v_FragPos.z / u_mapDimension + 0.5)).rgb;
+    float TransitionRatio = clamp(1.0 + v_PosHeight, 0.0, 1.0);
+    vec3 ShadingNormal = normalize((1.0 - TransitionRatio) * ShoreNormal + TransitionRatio * (NORMAL + FlatNormal));
+    v_TextureMixRatio = FlatNormal.r;
+
+    //diffuse
+    v_DiffuseComponent = max(dot(ShadingNormal, u_lightDir), 0.0);
 }
