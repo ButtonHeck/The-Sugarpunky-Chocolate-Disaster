@@ -141,7 +141,8 @@ DISTFILES += \
     shaders/flat.fs \
     shaders/hills.vs \
     shaders/water.vs \
-    shaders/sand.vs
+    shaders/sand.vs \
+    shaders/underwater.vs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
