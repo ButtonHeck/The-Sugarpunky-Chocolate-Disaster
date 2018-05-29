@@ -140,9 +140,11 @@ int main()
   GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT, UNDERWATER);
   GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water.png", GL_REPEAT, WATER);
   GLuint waterTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/water_specular.png", GL_REPEAT, WATER_SPECULAR);
+  glActiveTexture(GL_TEXTURE0 + SKYBOX);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTexture());
   std::vector<GLuint*> textures =
   {&flatTexture, &hillTexture, &waterTexture, &shoreTexture, &waterTextureSpec, &hillTextureSpec, &normalMapTexture,
-  &underwaterSandTexture, &shoreTexture2, &flatTexture2, &hillTexture2, &flatTexture_x2, &flatTexture2_x2};
+  &underwaterSandTexture, &shoreTexture2, &flatTexture2, &hillTexture2, &flatTexture_x2, &flatTexture2_x2, &skybox.getTexture()};
 
   //shaders setup
   hills.use();
@@ -175,10 +177,12 @@ int main()
   flat.setInt("tilesDimension", TILES_WIDTH);
   flat.setVec3("lightDirTo", LIGHT_DIR_TO);
   water.use();
-  water.setInt("water_diffuse", WATER);
-  water.setInt("water_specular", WATER_SPECULAR);
-  water.setInt("tilesDimension", TILES_WIDTH);
-  water.setVec3("lightDirTo", LIGHT_DIR_TO);
+  water.setInt("u_water_diffuse", WATER);
+  water.setInt("u_water_specular", WATER_SPECULAR);
+  water.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
+  water.setInt("u_skybox", SKYBOX);
+  sky.use();
+  sky.setInt("skybox", SKYBOX);
   modelShader.use();
   modelShader.setVec3("lightDirTo", LIGHT_DIR_TO);
   buildableShader.use();
@@ -366,9 +370,9 @@ int main()
 
       //water tiles
       water.use();
-      water.setMat4("projectionView", projectionView);
-      water.setMat4("model", model);
-      water.setVec3("viewPosition", viewPosition);
+      water.setMat4("u_projectionView", projectionView);
+      water.setMat4("u_model", model);
+      water.setVec3("u_viewPosition", viewPosition);
       std::vector<TerrainTile>& waterTiles = waterMapGenerator->getTiles();
       glBindVertexArray(waterMapGenerator->getVAO());
       if (animateWater)

@@ -1,25 +1,25 @@
 #version 450
 
-out vec4 FragColor;
+out vec4 o_FragColor;
 
-in vec2 TexCoords;
-in vec3 R;
-in float Diff;
-in float Spec;
+in vec2  v_TexCoords;
+in vec3  v_SkyboxCoords;
+in float v_DiffuseComponent;
+in float v_SpecularComponent;
 
-uniform sampler2D water_diffuse;
-uniform sampler2D water_specular;
-uniform samplerCube skybox;
+uniform sampler2D   u_water_diffuse;
+uniform sampler2D   u_water_specular;
+uniform samplerCube u_skybox;
 
 void main()
 {
-    vec4 skyFragColor = vec4(texture(skybox, R).rgb, 1.0);
-    vec4 sampledDiffuse = texture(water_diffuse, TexCoords);
-    vec4 sampledSpecular = texture(water_specular, TexCoords);
+    vec4 sampledDiffuseSkybox = vec4(texture(u_skybox, v_SkyboxCoords).rgb, 1.0);
+    vec4 sampledDiffuse = texture(u_water_diffuse, v_TexCoords);
+    vec4 sampledSpecular = texture(u_water_specular, v_TexCoords);
 
-    vec3 diffuse = Diff * sampledDiffuse.rgb * 0.4 + 0.6 * sampledDiffuse.rgb;
-    vec3 specular = Spec * sampledSpecular.rgb * 3;
-    vec3 result = diffuse + specular;
+    vec3 diffuseColor = sampledDiffuse.rgb * (v_DiffuseComponent * 0.4 + 0.6);
+    vec3 specularColor = v_SpecularComponent * sampledSpecular.rgb;
+    vec3 resultColor = diffuseColor + specularColor;
 
-    FragColor = vec4(0.5 * result + 0.5 * skyFragColor.rgb, sampledDiffuse.a);
+    o_FragColor = vec4(0.5 * (resultColor + sampledDiffuseSkybox.rgb), sampledDiffuse.a);
 }
