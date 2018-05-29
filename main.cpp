@@ -181,7 +181,7 @@ int main()
   water.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   water.setInt("u_skybox", SKYBOX);
   sky.use();
-  sky.setInt("skybox", SKYBOX);
+  sky.setInt("u_skybox", SKYBOX);
   modelShader.use();
   modelShader.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   buildableShader.use();
@@ -442,8 +442,8 @@ int main()
 
       //Skybox rendering
       sky.use();
-      sky.setMat4("view", glm::mat4(glm::mat3(view)));
-      sky.setMat4("projection", projection);
+      sky.setMat4("u_view", glm::mat4(glm::mat3(view)));
+      sky.setMat4("u_projection", projection);
       glDepthFunc(GL_LEQUAL);
       glDisable(GL_CULL_FACE);
       glBindVertexArray(skybox.getVAO());

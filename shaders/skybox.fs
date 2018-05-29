@@ -1,12 +1,12 @@
 #version 450
 
-out vec4 FragColor;
+out vec4 o_FragColor;
 
-in vec3 TexCoords;
+in vec3 v_TexCoords;
 
-uniform samplerCube skybox;
+uniform samplerCube u_skybox;
 
 void main()
 {
-    FragColor = texture(skybox, TexCoords);
+    o_FragColor = texture(u_skybox, v_TexCoords);
 }
