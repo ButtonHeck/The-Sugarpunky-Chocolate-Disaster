@@ -67,8 +67,8 @@ void FontManager::renderText(Shader &shader, std::string text, GLfloat x, GLfloa
 {
   glEnable(GL_BLEND);
   shader.use();
-  shader.setMat4("projection", fontProjection);
-  shader.setVec3("textColor", color.r, color.g, color.b);
+  shader.setMat4("u_projection", fontProjection);
+  shader.setVec3("u_textColor", color.r, color.g, color.b);
   glActiveTexture(GL_TEXTURE0);
   glBindVertexArray(vao);
   std::string::const_iterator c;
