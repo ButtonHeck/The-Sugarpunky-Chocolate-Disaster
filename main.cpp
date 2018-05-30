@@ -202,7 +202,6 @@ int main()
 
   //etc
   printMapsInfos();
-  glm::mat4 model;
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   auto frameTime = std::chrono::high_resolution_clock::now();
@@ -251,7 +250,6 @@ int main()
       //hill tiles
       hills.use();
       hills.setMat4("u_projectionView", projectionView);
-      hills.setMat4("u_model", model);
       hills.setVec3("u_viewPosition", viewPosition);
       glBindVertexArray(hillMapGenerator->getVAO());
       glDrawElements(GL_TRIANGLES, 6 * hillMapGenerator->getTiles().size(), GL_UNSIGNED_INT, 0);
@@ -259,14 +257,12 @@ int main()
       //shore terrain tiles
       shore.use();
       shore.setMat4("u_projectionView", projectionView);
-      shore.setMat4("u_model", model);
       glBindVertexArray(baseMapGenerator->getVAO());
       glDrawArrays(GL_TRIANGLES, 0, 6 * baseMapGenerator->getTiles().size());
 
       //underwater tile
       underwater.use();
       underwater.setMat4("u_projectionView", projectionView);
-      underwater.setMat4("u_model", model);
       glBindVertexArray(underwaterQuadGenerator.getVAO());
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -368,7 +364,6 @@ int main()
       //water tiles
       water.use();
       water.setMat4("u_projectionView", projectionView);
-      water.setMat4("u_model", model);
       water.setVec3("u_viewPosition", viewPosition);
       std::vector<TerrainTile>& waterTiles = waterMapGenerator->getTiles();
       glBindVertexArray(waterMapGenerator->getVAO());
