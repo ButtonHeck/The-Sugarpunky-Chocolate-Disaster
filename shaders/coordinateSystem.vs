@@ -1,19 +1,19 @@
 #version 450
 
-layout (location = 0) in vec3 pos;
-layout (location = 1) in vec3 direction;
-layout (location = 2) in vec3 color;
+layout (location = 0) in vec3 i_pos;
+layout (location = 1) in vec3 i_direction;
+layout (location = 2) in vec3 i_color;
 
-out vec3 gColor;
-out vec3 gDirection;
+out vec3 v_gColor;
+out vec3 v_gDirection;
 
-uniform mat4 view;
-uniform float aspectRatio;
+uniform mat4  u_view;
+uniform float u_aspectRatio;
 
 void main()
 {
-    gl_Position = vec4(pos, 1.0);
-    gColor = color;
-    gDirection = mat3(view) * direction;
-    gDirection.x /= aspectRatio;
+    gl_Position = vec4(i_pos, 1.0);
+    v_gColor = i_color;
+    v_gDirection = mat3(u_view) * i_direction;
+    v_gDirection.x /= u_aspectRatio;
 }

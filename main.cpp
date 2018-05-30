@@ -487,8 +487,8 @@ int main()
                                  10.0f, (float)scr_height - 145.0f, 0.35f);
           glLineWidth(2);
           csShader.use();
-          csShader.setMat4("view", view);
-          csShader.setFloat("aspectRatio", aspect_ratio);
+          csShader.setMat4("u_view", view);
+          csShader.setFloat("u_aspectRatio", aspect_ratio);
           glBindVertexArray(csRenderer.getVAO());
           glDrawArrays(GL_POINTS, 0, 3);
         }
