@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <unordered_map>
 
 class Shader
 {
@@ -30,6 +31,7 @@ private:
   GLuint ID;
   int status;
   char infoLog[512];
+  std::unordered_map<std::string, GLint> uniformCache;
 };
 
 #endif // SHADERPROGRAM_H

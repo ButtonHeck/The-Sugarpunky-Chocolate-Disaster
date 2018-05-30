@@ -41,17 +41,23 @@ Shader::Shader(const std::string &vertexFile, const std::string &geometryFile, c
 
 void Shader::setInt(const std::__cxx11::string &uniformName, int value)
 {
-  glUniform1i(glGetUniformLocation(ID, uniformName.c_str()), value);
+  if (uniformCache.find(uniformName) == uniformCache.end())
+    uniformCache[uniformName.c_str()] = glGetUniformLocation(ID, uniformName.c_str());
+  glUniform1i(uniformCache[uniformName.c_str()], value);
 }
 
 void Shader::setFloat(const std::__cxx11::string &uniformName, float value)
 {
-  glUniform1f(glGetUniformLocation(ID, uniformName.c_str()), value);
+  if (uniformCache.find(uniformName) == uniformCache.end())
+    uniformCache[uniformName.c_str()] = glGetUniformLocation(ID, uniformName.c_str());
+  glUniform1f(uniformCache[uniformName.c_str()], value);
 }
 
 void Shader::setBool(const std::__cxx11::string &uniformName, bool value)
 {
-  glUniform1i(glGetUniformLocation(ID, uniformName.c_str()), value);
+  if (uniformCache.find(uniformName) == uniformCache.end())
+    uniformCache[uniformName.c_str()] = glGetUniformLocation(ID, uniformName.c_str());
+  glUniform1i(uniformCache[uniformName.c_str()], value);
 }
 
 void Shader::setVec3(const std::__cxx11::string &uniformName, glm::vec3 vec)
@@ -61,7 +67,9 @@ void Shader::setVec3(const std::__cxx11::string &uniformName, glm::vec3 vec)
 
 void Shader::setVec3(const std::__cxx11::string &uniformName, float x, float y, float z)
 {
-  glUniform3f(glGetUniformLocation(ID, uniformName.c_str()), x, y, z);
+  if (uniformCache.find(uniformName) == uniformCache.end())
+    uniformCache[uniformName.c_str()] = glGetUniformLocation(ID, uniformName.c_str());
+  glUniform3f(uniformCache[uniformName.c_str()], x, y, z);
 }
 
 void Shader::setVec2(const std::__cxx11::string &uniformName, glm::vec2 vec)
@@ -71,12 +79,16 @@ void Shader::setVec2(const std::__cxx11::string &uniformName, glm::vec2 vec)
 
 void Shader::setVec2(const std::__cxx11::string &uniformName, float x, float y)
 {
-  glUniform2f(glGetUniformLocation(ID, uniformName.c_str()), x, y);
+  if (uniformCache.find(uniformName) == uniformCache.end())
+    uniformCache[uniformName.c_str()] = glGetUniformLocation(ID, uniformName.c_str());
+  glUniform2f(uniformCache[uniformName.c_str()], x, y);
 }
 
 void Shader::setMat4(const std::__cxx11::string &uniformName, glm::mat4 mat)
 {
-  glUniformMatrix4fv(glGetUniformLocation(ID, uniformName.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+  if (uniformCache.find(uniformName) == uniformCache.end())
+    uniformCache[uniformName.c_str()] = glGetUniformLocation(ID, uniformName.c_str());
+  glUniformMatrix4fv(uniformCache[uniformName.c_str()], 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 GLuint Shader::getID() const
