@@ -11,10 +11,9 @@ class TextureLoader
 {
 public:
   TextureLoader();
-  GLuint loadTexture(const std::string& path, GLenum wrapType, GLuint textureUnit);
-  GLuint loadCubemap(std::vector<std::string>& faces);
-  GLuint loadTextureArray(const std::string& path, GLenum wrapType, GLuint textureUnit);
-  GLuint createUnderwaterReliefTexture(WaterMapGenerator* waterMapGenerator, GLuint textureUnit);
+  GLuint loadTexture(const std::string& path, GLuint textureUnit, GLenum wrapType, GLint magFilter, GLint minFilter);
+  GLuint loadCubemap(std::vector<std::string>& faces, GLuint textureUnit);
+  GLuint createUnderwaterReliefTexture(WaterMapGenerator* waterMapGenerator, GLuint textureUnit, GLint magFilter, GLint minFilter);
 };
 
 #endif // TEXTURELOADER_H

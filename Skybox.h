@@ -8,7 +8,7 @@
 class Skybox
 {
 public:
-  Skybox(const std::string& directory, TextureLoader& loader);
+  Skybox(const std::string& directory, TextureLoader& loader, GLuint textureUnit);
   void fillBufferData();
   void deleteGLObjects();
   GLuint& getVAO();
@@ -17,6 +17,7 @@ public:
 private:
   const std::string directory;
   TextureLoader& loader;
+  GLuint textureUnit;
   std::vector<std::string> faces;
   GLuint texture;
   GLuint vao, vbo;

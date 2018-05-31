@@ -44,7 +44,7 @@ WaterMapGenerator* waterMapGenerator = new WaterMapGenerator();
 HillsMapGenerator* hillMapGenerator = new HillsMapGenerator(waterMapGenerator->getMap());
 UnderwaterQuadMapGenerator underwaterQuadGenerator;
 BaseMapGenerator* baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
-Skybox skybox(PROJ_PATH + "/textures/cubemap/", textureLoader);
+Skybox skybox(PROJ_PATH + "/textures/cubemap/", textureLoader, SKYBOX);
 CoordinateSystemRenderer csRenderer;
 BuildableMapGenerator* buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
 SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
@@ -127,21 +127,19 @@ int main()
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
   //textures loading
-  GLuint flatTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/flat.jpg", GL_REPEAT, FLAT);
-  GLuint flatTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/flat2.jpg", GL_REPEAT, FLAT_2);
-  GLuint flatTexture_x2 = textureLoader.loadTexture(PROJ_PATH + "/textures/flat_x2.jpg", GL_REPEAT, FLAT_x2);
-  GLuint flatTexture2_x2 = textureLoader.loadTexture(PROJ_PATH + "/textures/flat2_x2.jpg", GL_REPEAT, FLAT_2_x2);
-  GLuint normalMapTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/normalMap.jpg", GL_REPEAT, NORMAL_MAP);
-  GLuint hillTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/hill.jpg", GL_REPEAT, HILL);
-  GLuint hillTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/hill2.jpg", GL_REPEAT, HILL_2);
-  GLuint hillTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/hill_specular.jpg", GL_REPEAT, HILL_SPECULAR);
-  GLuint shoreTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/shore.jpg", GL_REPEAT, SHORE);
-  GLuint shoreTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/shore2.jpg", GL_REPEAT, SHORE_2);
-  GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", GL_REPEAT, UNDERWATER);
-  GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water.png", GL_REPEAT, WATER);
-  GLuint waterTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/water_specular.png", GL_REPEAT, WATER_SPECULAR);
-  glActiveTexture(GL_TEXTURE0 + SKYBOX);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTexture());
+  GLuint flatTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/flat.jpg", FLAT, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  GLuint flatTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/flat2.jpg", FLAT_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  GLuint flatTexture_x2 = textureLoader.loadTexture(PROJ_PATH + "/textures/flat_x2.jpg", FLAT_x2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  GLuint flatTexture2_x2 = textureLoader.loadTexture(PROJ_PATH + "/textures/flat2_x2.jpg", FLAT_2_x2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  GLuint normalMapTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/normalMap.jpg", NORMAL_MAP, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  GLuint hillTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/hill.jpg", HILL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  GLuint hillTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/hill2.jpg", HILL_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  GLuint hillTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/hill_specular.jpg", HILL_SPECULAR, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  GLuint shoreTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/shore.jpg", SHORE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  GLuint shoreTexture2 = textureLoader.loadTexture(PROJ_PATH + "/textures/shore2.jpg", SHORE_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  GLuint underwaterSandTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/underwater_sand.jpg", UNDERWATER, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  GLuint waterTexture = textureLoader.loadTexture(PROJ_PATH + "/textures/water.png", WATER, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  GLuint waterTextureSpec = textureLoader.loadTexture(PROJ_PATH + "/textures/water_specular.png", WATER_SPECULAR, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
   std::vector<GLuint*> textures =
   {&flatTexture, &hillTexture, &waterTexture, &shoreTexture, &waterTextureSpec, &hillTextureSpec, &normalMapTexture,
   &underwaterSandTexture, &shoreTexture2, &flatTexture2, &hillTexture2, &flatTexture_x2, &flatTexture2_x2, &skybox.getTexture()};
@@ -195,7 +193,7 @@ int main()
   treeGenerator->setupHillModels(hillMapGenerator->getMap(), hillTreeModelChunks);
 
   //create underwater relief texture manually and bind it to related shader
-  GLuint underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF);
+  GLuint underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF, GL_LINEAR, GL_LINEAR);
   underwater.use();
   underwater.setInt("u_bottomRelief_diffuse", UNDERWATER_RELIEF);
   textures.push_back(&underwaterReliefTexture);
@@ -244,7 +242,7 @@ int main()
           saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
           saveLoadManager->setTreeGenerator(*treeGenerator);
           recreateTerrainRequest = false;
-          underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF);
+          underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF, GL_LINEAR, GL_LINEAR);
         }
 
       //hill tiles
@@ -442,7 +440,6 @@ int main()
       glDepthFunc(GL_LEQUAL);
       glDisable(GL_CULL_FACE);
       glBindVertexArray(skybox.getVAO());
-      glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTexture());
       glDrawArrays(GL_TRIANGLES, 0, 36);
       glDepthFunc(GL_LESS);
       glEnable(GL_CULL_FACE);
@@ -507,7 +504,7 @@ int main()
         {
           saveLoadManager->loadFromFile(PROJ_PATH + "/saves/testSave.txt", treeModelChunks, hillTreeModelChunks);
           loadRequest = false;
-          underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF);
+          underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF, GL_LINEAR, GL_LINEAR);
         }
 
       glfwPollEvents();
@@ -556,12 +553,9 @@ void prepareTerrain()
 
 GLFWwindow* initGLFW()
 {
-  glfwSetErrorCallback([](int, const char* msg){printf("Error while loading GLFW: %s", msg);});
+  glfwSetErrorCallback([](int, const char* msg){printf("Error with GLFW: %s", msg);});
   if (!glfwInit())
-    {
-      std::cerr << "Error while loading GLFW\n";
-      glfwTerminate();
-    }
+    throw std::runtime_error("Error while loading GLFW\n");
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);

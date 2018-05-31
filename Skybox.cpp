@@ -1,9 +1,10 @@
 #include "Skybox.h"
 
-Skybox::Skybox(const std::string &directory, TextureLoader& loader)
+Skybox::Skybox(const std::string &directory, TextureLoader& loader, GLuint textureUnit)
   :
     directory(directory),
-    loader(loader)
+    loader(loader),
+    textureUnit(textureUnit)
 {
   faces.assign(
   {
@@ -18,7 +19,7 @@ Skybox::Skybox(const std::string &directory, TextureLoader& loader)
 
 void Skybox::fillBufferData()
 {
-  texture = loader.loadCubemap(faces);
+  texture = loader.loadCubemap(faces, textureUnit);
   glGenVertexArrays(1, &vao);
   glGenBuffers(1, &vbo);
   glBindVertexArray(vao);

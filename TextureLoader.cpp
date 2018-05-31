@@ -7,7 +7,7 @@ TextureLoader::TextureLoader()
   ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
 }
 
-GLuint TextureLoader::loadTexture(const std::string& path, GLenum wrapType, GLuint textureUnit)
+GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, GLenum wrapType, GLint magFilter, GLint minFilter)
 {
   GLuint texture;
   glGenTextures(1, &texture);
@@ -21,19 +21,20 @@ GLuint TextureLoader::loadTexture(const std::string& path, GLenum wrapType, GLui
   auto imageFormat = ilGetInteger(IL_IMAGE_FORMAT);
   glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, imageWidth, imageHeight, 0, imageFormat, GL_UNSIGNED_BYTE, data);
   glGenerateMipmap(GL_TEXTURE_2D);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapType);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapType);
   ilDeleteImage(ilGetInteger(IL_ACTIVE_IMAGE));
   return texture;
 }
 
-GLuint TextureLoader::loadCubemap(std::vector<std::string> &faces)
+GLuint TextureLoader::loadCubemap(std::vector<std::string> &faces, GLuint textureUnit)
 {
   ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
   GLuint texture;
   glGenTextures(1, &texture);
+  glActiveTexture(GL_TEXTURE0 + textureUnit);
   glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
   for (unsigned int i = 0; i < faces.size(); i++)
     {
@@ -54,32 +55,7 @@ GLuint TextureLoader::loadCubemap(std::vector<std::string> &faces)
   return texture;
 }
 
-GLuint TextureLoader::loadTextureArray(const std::string &path, GLenum wrapType, GLuint textureUnit)
-{
-  GLuint texture;
-  glGenTextures(1, &texture);
-  glActiveTexture(GL_TEXTURE0 + textureUnit);
-  glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
-  if (!ilLoadImage(path.c_str()))
-    printf("Error when loading texture: %s\n", path.c_str());
-  ILubyte* data = ilGetData();
-  auto imageWidth = ilGetInteger(IL_IMAGE_WIDTH);
-  auto imageHeight = ilGetInteger(IL_IMAGE_HEIGHT);
-  auto imageFormat = ilGetInteger(IL_IMAGE_FORMAT);
-  glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, imageWidth, imageHeight, 4);
-  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,                            imageWidth / 2, imageHeight / 2, imageFormat, GL_UNSIGNED_BYTE, data);
-  glTexSubImage2D(GL_TEXTURE_2D, 0, imageWidth / 2, 0,               imageWidth / 2, imageHeight / 2, imageFormat, GL_UNSIGNED_BYTE, data);
-  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, imageHeight / 2,              imageWidth / 2, imageHeight / 2, imageFormat, GL_UNSIGNED_BYTE, data);
-  glTexSubImage2D(GL_TEXTURE_2D, 0, imageWidth / 2, imageHeight / 2, imageWidth / 2, imageHeight / 2, imageFormat, GL_UNSIGNED_BYTE, data);
-  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, wrapType);
-  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, wrapType);
-  ilDeleteImage(ilGetInteger(IL_ACTIVE_IMAGE));
-  return texture;
-}
-
-GLuint TextureLoader::createUnderwaterReliefTexture(WaterMapGenerator *waterMapGenerator, GLuint textureUnit)
+GLuint TextureLoader::createUnderwaterReliefTexture(WaterMapGenerator *waterMapGenerator, GLuint textureUnit, GLint magFilter, GLint minFilter)
 {
   GLuint underwaterReliefTexture;
   GLubyte* textureData = new GLubyte[TILES_WIDTH * TILES_HEIGHT];
@@ -111,8 +87,8 @@ GLuint TextureLoader::createUnderwaterReliefTexture(WaterMapGenerator *waterMapG
   glActiveTexture(GL_TEXTURE0 + textureUnit);
   glBindTexture(GL_TEXTURE_2D, underwaterReliefTexture);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TILES_WIDTH, TILES_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, textureData);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   delete[] textureData;
