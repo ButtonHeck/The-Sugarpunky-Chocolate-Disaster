@@ -370,10 +370,11 @@ int main()
           glBindBuffer(GL_ARRAY_BUFFER, waterMapGenerator->getVBO());
           GLfloat* waterHeightOffsets = waterMapGenerator->getHeightOffsets();
           double frameTime = glfwGetTime();
+          double offsetMultiplier = frameTime / 8;
           for (size_t i = 0; i < waterMapGenerator->WATER_HEIGHT_OFFSETS_SIZE; i+=2)
             {
-                waterHeightOffsets[i] = std::cos(frameTime * (i % 31) / 8) / 16 + WATER_LEVEL;
-                waterHeightOffsets[i+1] = std::sin(frameTime * (i% 29) / 8) / 16 + WATER_LEVEL;
+                waterHeightOffsets[i] = std::cos(offsetMultiplier * (i % 31)) / 16 + WATER_LEVEL;
+                waterHeightOffsets[i+1] = std::sin(offsetMultiplier * (i% 29)) / 16 + WATER_LEVEL;
             }
           GLfloat* waterVertexCoordinatePointer = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
           unsigned int numWaterTiles = waterTiles.size();
@@ -381,51 +382,38 @@ int main()
           for (unsigned int i = 0; i < numWaterTiles; ++i)
             {
               TerrainTile& tile = waterTiles[i];
-              float ll = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX];
-              float lr = waterHeightOffsets[(tile.mapY+1) * TILES_WIDTH + tile.mapX + 1];
-              float ur = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX + 1];
-              float ul = waterHeightOffsets[tile.mapY * TILES_WIDTH + tile.mapX];
-              *(waterVertexCoordinatePointer+1+i*48) = ll;
-              *(waterVertexCoordinatePointer+9+i*48) = lr;
-              *(waterVertexCoordinatePointer+17+i*48) = ur;
-              *(waterVertexCoordinatePointer+25+i*48) = ur;
-              *(waterVertexCoordinatePointer+33+i*48) = ul;
-              *(waterVertexCoordinatePointer+41+i*48) = ll;
-              normalLR = glm::cross(
-                    glm::vec3(tile.mapX, ur, tile.mapY - 1)
-                    -
-                    glm::vec3(tile.mapX, lr, tile.mapY)
-                    ,
-                    glm::vec3(tile.mapX - 1, ll, tile.mapY)
-                    -
-                    glm::vec3(tile.mapX, lr, tile.mapY));
-              normalUL = glm::cross(
-                    glm::vec3(tile.mapX - 1, ll, tile.mapY)
-                    -
-                    glm::vec3(tile.mapX - 1, ul, tile.mapY - 1)
-                    ,
-                    glm::vec3(tile.mapX, ur, tile.mapY - 1)
-                    -
-                    glm::vec3(tile.mapX - 1, ul, tile.mapY - 1));
-              *(waterVertexCoordinatePointer+5+i*48) = normalLR.x;
-              *(waterVertexCoordinatePointer+6+i*48) = normalLR.y;
-              *(waterVertexCoordinatePointer+7+i*48) = normalLR.z;
-              *(waterVertexCoordinatePointer+13+i*48) = normalLR.x;
-              *(waterVertexCoordinatePointer+14+i*48) = normalLR.y;
-              *(waterVertexCoordinatePointer+15+i*48) = normalLR.z;
-              *(waterVertexCoordinatePointer+21+i*48) = normalLR.x;
-              *(waterVertexCoordinatePointer+22+i*48) = normalLR.y;
-              *(waterVertexCoordinatePointer+23+i*48) = normalLR.z;
+              unsigned int pointerOffsetWithStride = i * 48;
+              unsigned int heightOffsetWithStrideForLow = (tile.mapY+1) * TILES_WIDTH;
+              unsigned int heightOffsetWithStrideForUpper = tile.mapY * TILES_WIDTH;
 
-              *(waterVertexCoordinatePointer+29+i*48) = normalUL.x;
-              *(waterVertexCoordinatePointer+30+i*48) = normalUL.y;
-              *(waterVertexCoordinatePointer+31+i*48) = normalUL.z;
-              *(waterVertexCoordinatePointer+37+i*48) = normalUL.x;
-              *(waterVertexCoordinatePointer+38+i*48) = normalUL.y;
-              *(waterVertexCoordinatePointer+39+i*48) = normalUL.z;
-              *(waterVertexCoordinatePointer+45+i*48) = normalUL.x;
-              *(waterVertexCoordinatePointer+46+i*48) = normalUL.y;
-              *(waterVertexCoordinatePointer+47+i*48) = normalUL.z;
+              float ll = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX];
+              float lr = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + 1];
+              float ur = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX + 1];
+              float ul = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX];
+
+              normalLR = glm::vec3(ll - lr, 1, ur - lr); //just do the calculations manually (UR-LR x LL-LR and LL-UL x UR-UL)
+              normalUL = glm::vec3(ul - ur, 1, ul - ll);
+
+              *(waterVertexCoordinatePointer+1+pointerOffsetWithStride) = ll;
+              *(waterVertexCoordinatePointer+9+pointerOffsetWithStride) = lr;
+              *(waterVertexCoordinatePointer+17+pointerOffsetWithStride) = ur;
+              *(waterVertexCoordinatePointer+25+pointerOffsetWithStride) = ur;
+              *(waterVertexCoordinatePointer+33+pointerOffsetWithStride) = ul;
+              *(waterVertexCoordinatePointer+41+pointerOffsetWithStride) = ll;
+
+              *(waterVertexCoordinatePointer+5+pointerOffsetWithStride) = normalLR.x;
+              *(waterVertexCoordinatePointer+7+pointerOffsetWithStride) = normalLR.z;
+              *(waterVertexCoordinatePointer+13+pointerOffsetWithStride) = normalLR.x;
+              *(waterVertexCoordinatePointer+15+pointerOffsetWithStride) = normalLR.z;
+              *(waterVertexCoordinatePointer+21+pointerOffsetWithStride) = normalLR.x;
+              *(waterVertexCoordinatePointer+23+pointerOffsetWithStride) = normalLR.z;
+
+              *(waterVertexCoordinatePointer+29+pointerOffsetWithStride) = normalUL.x;
+              *(waterVertexCoordinatePointer+31+pointerOffsetWithStride) = normalUL.z;
+              *(waterVertexCoordinatePointer+37+pointerOffsetWithStride) = normalUL.x;
+              *(waterVertexCoordinatePointer+39+pointerOffsetWithStride) = normalUL.z;
+              *(waterVertexCoordinatePointer+45+pointerOffsetWithStride) = normalUL.x;
+              *(waterVertexCoordinatePointer+47+pointerOffsetWithStride) = normalUL.z;
             }
           glUnmapBuffer(GL_ARRAY_BUFFER);
         }
