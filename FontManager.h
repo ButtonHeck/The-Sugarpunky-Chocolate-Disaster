@@ -12,9 +12,8 @@
 class FontManager
 {
 public:
-  FontManager(const std::string& fontfile, glm::mat4 projection);
-  void loadFont();
-  void renderText(Shader& shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color = glm::vec3(0.0f));
+  FontManager(const std::string& fontfile, glm::mat4 projection, Shader* shader);
+  void renderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color = glm::vec3(0.0f));
   GLuint& getVAO();
   GLuint& getVBO();
   void deleteGLObjects();
@@ -29,6 +28,7 @@ private:
   };
   std::map<GLchar, Character> characters;
   glm::mat4 fontProjection;
+  Shader* shader;
 };
 
 #endif // FONTMANAGER_H

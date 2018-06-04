@@ -90,8 +90,6 @@ int main()
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  FontManager fontManager("OCTAPOST_1.ttf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height));
-  fontManager.loadFont();
 
   //make sure OpenMP is working
   #pragma omp parallel num_threads(2)
@@ -115,6 +113,9 @@ int main()
   Shader selectedTileShader(PROJ_PATH + "/shaders/selectedTile.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
   std::vector<Shader*> shaders =
   {&hills, &shore, &underwater, &flat, &water, &sky, &modelShader, &fontShader, &csShader, &buildableShader, &selectedTileShader};
+
+  //setup font
+  FontManager fontManager("OCTAPOST_1.ttf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), &fontShader);
 
   //models and model-related objects loading
   Model tree1(PROJ_PATH + "/models/tree1/tree1.obj", textureLoader);
@@ -446,28 +447,22 @@ int main()
       //font rendering
       if (renderDebugText)
         {
-          fontManager.renderText(fontShader, "FPS: " + std::to_string(fps), 10.0f, (float)scr_height - 25.0f, 0.35f);
-          fontManager.renderText(fontShader,
-                                 "camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
+          fontManager.renderText("FPS: " + std::to_string(fps), 10.0f, (float)scr_height - 25.0f, 0.35f);
+          fontManager.renderText("camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                                  + std::to_string(viewPosition.y).substr(0,6) + ": "
                                  + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 45.0f, 0.35f);
-          fontManager.renderText(fontShader,
-                                 "camera on map: " + std::to_string(cameraOnMapCoordX) + ": " + std::to_string(cameraOnMapCoordZ),
+          fontManager.renderText("camera on map: " + std::to_string(cameraOnMapCoordX) + ": " + std::to_string(cameraOnMapCoordZ),
                                  10.0f, (float)scr_height - 65.0f, 0.35f);
-          fontManager.renderText(fontShader,
-                                 "View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
+          fontManager.renderText("View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
                                  + std::to_string(camera.getDirection().y).substr(0,6) + ": "
                                  + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 85.0f, 0.35f);
-          fontManager.renderText(fontShader,
-                                 "Cursor at: " + (!showCursor ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
+          fontManager.renderText("Cursor at: " + (!showCursor ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
                                  + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
                                  + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 105.0f, 0.35f);
-          fontManager.renderText(fontShader,
-                                 "Cursor on map: " + (!showCursor ? "inactive" : (std::to_string(cursorOnMapCoordX) + ": "
+          fontManager.renderText("Cursor on map: " + (!showCursor ? "inactive" : (std::to_string(cursorOnMapCoordX) + ": "
                                  + std::to_string(cursorOnMapCoordZ-1) + ", " + cursorTile)),
                                  10.0f, (float)scr_height - 125.0f, 0.35f);
-          fontManager.renderText(fontShader,
-                                 "camera in chunk: x-" + std::to_string(cameraChunk.getLeft()) + ":" + std::to_string(cameraChunk.getRight())
+          fontManager.renderText("camera in chunk: x-" + std::to_string(cameraChunk.getLeft()) + ":" + std::to_string(cameraChunk.getRight())
                                  + ", z-" + std::to_string(cameraChunk.getTop()) + ":" + std::to_string(cameraChunk.getBottom()),
                                  10.0f, (float)scr_height - 145.0f, 0.35f);
           glLineWidth(2);

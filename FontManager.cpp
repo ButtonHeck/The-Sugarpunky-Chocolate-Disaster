@@ -1,14 +1,10 @@
 #include "FontManager.h"
 
-FontManager::FontManager(const std::string &fontfile, glm::mat4 projection)
+FontManager::FontManager(const std::string &fontfile, glm::mat4 projection, Shader* shader)
   :
     filename(fontfile),
-    fontProjection(projection)
-{
-
-}
-
-void FontManager::loadFont()
+    fontProjection(projection),
+    shader(shader)
 {
   FT_Library ft;
   if (FT_Init_FreeType(&ft))
@@ -63,12 +59,12 @@ void FontManager::loadFont()
   glBindVertexArray(0);
 }
 
-void FontManager::renderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
+void FontManager::renderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
 {
   glEnable(GL_BLEND);
-  shader.use();
-  shader.setMat4("u_projection", fontProjection);
-  shader.setVec3("u_textColor", color.r, color.g, color.b);
+  shader->use();
+  shader->setMat4("u_projection", fontProjection);
+  shader->setVec3("u_textColor", color.r, color.g, color.b);
   glActiveTexture(GL_TEXTURE0);
   glBindVertexArray(vao);
   std::string::const_iterator c;
