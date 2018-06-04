@@ -32,7 +32,7 @@ public:
   void setupMesh();
   void setupInstances(glm::mat4* models, unsigned int numModels);
   void draw(Shader& shader, Camera& camera, std::vector<ModelChunk>& chunks, unsigned int index,
-            bool modelRenderOptimize, unsigned int chunkLoadingDistance);
+            bool modelRenderOptimize, unsigned int CHUNK_LOADING_DISTANCE);
   unsigned int VAO;
 private:
   std::vector<Vertex> vertices;

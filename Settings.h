@@ -21,6 +21,7 @@ constexpr int BASE_TERRAIN_CHUNK_SIZES[] = {128, 64, 32, 16, 8, 4};
 constexpr int NUM_BASE_TERRAIN_CHUNKS = sizeof(BASE_TERRAIN_CHUNK_SIZES) / sizeof(int);
 constexpr int SHORE_SIZE_BASE = 4;
 constexpr unsigned int MODEL_CHUNK_SIZE = 16;
+constexpr unsigned int CHUNK_LOADING_DISTANCE = 8;
 constexpr unsigned int QUAD_INDICES[6] = {0,1,2,2,3,0};
 const std::string PROJ_PATH("/home/ilya/QtProjects/MyOpenGL/TerrainGenerationTest");
 const glm::vec3 LIGHT_DIR_TO = glm::vec3(-0.2f, -0.15f, -0.08f);

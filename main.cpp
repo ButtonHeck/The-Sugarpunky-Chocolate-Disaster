@@ -51,7 +51,6 @@ SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillM
 TreeGenerator* treeGenerator;
 std::vector<ModelChunk> treeModelChunks;
 std::vector<ModelChunk> hillTreeModelChunks;
-unsigned int chunkLoadingDistance = 8;
 bool renderShadowOnTrees = true;
 bool renderTreeModels = true;
 bool animateWater = true;
@@ -62,15 +61,10 @@ bool loadRequest = false;
 bool showCursor = false;
 bool showBuildable = false;
 bool modelRenderOptimize = true;
-float cursorOnMapX = 0.0f;
-float cursorOnMapZ = 0.0f;
 float cameraOnMapX = 0.0f;
 float cameraOnMapZ = 0.0f;
-int cursorOnMapCoordX = 0;
-int cursorOnMapCoordZ = 0;
 int cameraOnMapCoordX = 0;
 int cameraOnMapCoordZ = 0;
-std::string cursorTile = "Flat";
 
 int main()
 {
@@ -278,53 +272,13 @@ int main()
       glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator->getNumCellInstances());
 
       //update cursor-to-map mappings
-      if (cursorToViewportDirection.y < 0.0f)
-        {
-          float ratio = camera.getPosition().y / (-cursorToViewportDirection.y);
-          cursorOnMapX = (cursorToViewportDirection.x * ratio) + camera.getPosition().x;
-          cursorOnMapZ = (cursorToViewportDirection.z * ratio) + camera.getPosition().z;
-          bool cursorOutOfMap = false;
-          cursorOnMapX = glm::clamp(cursorOnMapX, -TILES_WIDTH/2.0f, TILES_WIDTH/2.0f);
-          cursorOnMapZ = glm::clamp(cursorOnMapZ, -TILES_HEIGHT/2.0f, TILES_HEIGHT/2.0f);
-          if (cursorOnMapX == -TILES_WIDTH/2 || cursorOnMapX == TILES_WIDTH/2 ||
-              cursorOnMapZ == -TILES_HEIGHT/2 || cursorOnMapZ == TILES_HEIGHT/2)
-            cursorOutOfMap = true;
-          cursorOnMapCoordX = (int)(TILES_WIDTH + cursorOnMapX) - TILES_WIDTH / 2;
-          cursorOnMapCoordX = glm::clamp(cursorOnMapCoordX, 1, TILES_WIDTH - 2);
-          cursorOnMapCoordZ = (int)(TILES_HEIGHT + cursorOnMapZ) - TILES_HEIGHT / 2 + 1;
-          cursorOnMapCoordZ = glm::clamp(cursorOnMapCoordZ, 1, TILES_HEIGHT - 1);
-          if (cursorOutOfMap)
-            cursorTile = "out of map";
-          else if (buildableMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
-            cursorTile = "Flat";
-          else if (hillMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0 ||
-                   hillMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX] != 0 ||
-                   hillMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX+1] != 0 ||
-                   hillMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX+1] != 0)
-            cursorTile = "Hills";
-          else
-            {
-              if (baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] == DENY_TILE_RENDER_VALUE ||
-                  baseMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX] == DENY_TILE_RENDER_VALUE ||
-                  baseMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX+1] == DENY_TILE_RENDER_VALUE ||
-                  baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX+1] == DENY_TILE_RENDER_VALUE)
-                cursorTile = "Water";
-              else
-                cursorTile = "Shore";
-            }
-        }
-      else
-        cursorTile = "out of map";
+      input.updateCursorMappingCoordinates(camera, baseMapGenerator, hillMapGenerator, buildableMapGenerator);
 
       //update camera map position info
-      cameraOnMapX = camera.getPosition().x;
-      cameraOnMapZ = camera.getPosition().z;
-      cameraOnMapX = glm::clamp(cameraOnMapX, -TILES_WIDTH/2.0f, TILES_WIDTH/2.0f);
-      cameraOnMapZ = glm::clamp(cameraOnMapZ, -TILES_HEIGHT/2.0f, TILES_HEIGHT/2.0f);
-      cameraOnMapCoordX = (int)(TILES_WIDTH + cameraOnMapX) - TILES_WIDTH / 2;
-      cameraOnMapCoordX = glm::clamp(cameraOnMapCoordX, 0, TILES_WIDTH - 1);
-      cameraOnMapCoordZ = (int)(TILES_HEIGHT + cameraOnMapZ) - TILES_HEIGHT / 2;
-      cameraOnMapCoordZ = glm::clamp(cameraOnMapCoordZ, 0, TILES_HEIGHT - 1);
+      cameraOnMapX = glm::clamp(camera.getPosition().x, -TILES_WIDTH/2.0f, TILES_WIDTH/2.0f);
+      cameraOnMapZ = glm::clamp(camera.getPosition().z, -TILES_HEIGHT/2.0f, TILES_HEIGHT/2.0f);
+      cameraOnMapCoordX = glm::clamp((int)(TILES_WIDTH + cameraOnMapX) - TILES_WIDTH / 2, 0, TILES_WIDTH - 1);
+      cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - TILES_HEIGHT / 2, 0, TILES_HEIGHT - 1);
       ModelChunk cameraChunk = treeModelChunks[0];
       for (unsigned int i = 0; i < treeModelChunks.size(); i++)
         {
@@ -347,12 +301,12 @@ int main()
         }
 
       //cursor selected tile
-      if (showCursor && buildableMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
+      if (showCursor && buildableMapGenerator->getMap()[input.getCursorMapZ()][input.getCursorMapX()] != 0)
         {
           selectedTileShader.use();
           selectedTileShader.setMat4("u_projectionView", projectionView);
           glm::mat4 selectedModel;
-          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + cursorOnMapCoordX, 0.0f, -TILES_HEIGHT / 2 + cursorOnMapCoordZ));
+          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + input.getCursorMapX(), 0.0f, -TILES_HEIGHT / 2 + input.getCursorMapZ()));
           selectedTileShader.setMat4("u_model", selectedModel);
           glBindVertexArray(buildableMapGenerator->getSelectedTileVAO());
           glEnable(GL_BLEND);
@@ -441,7 +395,7 @@ int main()
           modelShader.setVec3("u_viewPosition", viewPosition);
           modelShader.setBool("u_shadow", renderShadowOnTrees);
           treeGenerator->draw(modelShader, camera, treeModelChunks, hillTreeModelChunks,
-                              modelRenderOptimize, chunkLoadingDistance);
+                              modelRenderOptimize, CHUNK_LOADING_DISTANCE);
         }
 
       //font rendering
@@ -459,8 +413,8 @@ int main()
           fontManager.renderText("Cursor at: " + (!showCursor ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
                                  + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
                                  + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 105.0f, 0.35f);
-          fontManager.renderText("Cursor on map: " + (!showCursor ? "inactive" : (std::to_string(cursorOnMapCoordX) + ": "
-                                 + std::to_string(cursorOnMapCoordZ-1) + ", " + cursorTile)),
+          fontManager.renderText("Cursor on map: " + (!showCursor ? "inactive" : (std::to_string(input.getCursorMapX()) + ": "
+                                 + std::to_string(input.getCursorMapZ()-1) + ", " + input.getCursorTileName())),
                                  10.0f, (float)scr_height - 125.0f, 0.35f);
           fontManager.renderText("camera in chunk: x-" + std::to_string(cameraChunk.getLeft()) + ":" + std::to_string(cameraChunk.getRight())
                                  + ", z-" + std::to_string(cameraChunk.getTop()) + ":" + std::to_string(cameraChunk.getBottom()),
