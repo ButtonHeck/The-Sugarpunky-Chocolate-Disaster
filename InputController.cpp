@@ -230,19 +230,19 @@ void InputController::updateCursorMappingCoordinates(Camera &camera,
     {
       float ratio = camera.getPosition().y / (-cursorToViewportDirection.y);
       bool cursorOutOfMap = false;
-      cursorOnMapX = glm::clamp((cursorToViewportDirection.x * ratio) + camera.getPosition().x, -TILES_WIDTH/2.0f, TILES_WIDTH/2.0f);
-      cursorOnMapZ = glm::clamp((cursorToViewportDirection.z * ratio) + camera.getPosition().z, -TILES_HEIGHT/2.0f, TILES_HEIGHT/2.0f);
-      if (cursorOnMapX == -TILES_WIDTH/2 || cursorOnMapX == TILES_WIDTH/2 ||
-          cursorOnMapZ == -TILES_HEIGHT/2 || cursorOnMapZ == TILES_HEIGHT/2)
+      cursorOnMapX = glm::clamp((cursorToViewportDirection.x * ratio) + camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
+      cursorOnMapZ = glm::clamp((cursorToViewportDirection.z * ratio) + camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
+      if (cursorOnMapX == -HALF_TILES_WIDTH || cursorOnMapX == HALF_TILES_WIDTH ||
+          cursorOnMapZ == -HALF_TILES_HEIGHT || cursorOnMapZ == HALF_TILES_HEIGHT)
         cursorOutOfMap = true;
       if (cursorOutOfMap)
         {
           cursorTileName = "out of map";
           return;
         }
-      cursorOnMapCoordX = (int)(TILES_WIDTH + cursorOnMapX) - TILES_WIDTH / 2;
+      cursorOnMapCoordX = (int)(TILES_WIDTH + cursorOnMapX) - HALF_TILES_WIDTH;
       cursorOnMapCoordX = glm::clamp(cursorOnMapCoordX, 1, TILES_WIDTH - 2);
-      cursorOnMapCoordZ = (int)(TILES_HEIGHT + cursorOnMapZ) - TILES_HEIGHT / 2 + 1;
+      cursorOnMapCoordZ = (int)(TILES_HEIGHT + cursorOnMapZ) - HALF_TILES_HEIGHT + 1;
       cursorOnMapCoordZ = glm::clamp(cursorOnMapCoordZ, 1, TILES_HEIGHT - 1);
       if (buildableMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
         cursorTileName = "Flat";

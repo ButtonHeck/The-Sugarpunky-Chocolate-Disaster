@@ -7,8 +7,8 @@ ModelChunk::ModelChunk(unsigned int left, unsigned int right, unsigned int top, 
     top(top),
     bottom(bottom)
 {
-  midPointX = -TILES_WIDTH/2 + (right - left) / 2.0f + left;
-  midPointY = -TILES_HEIGHT/2 + (bottom - top) / 2.0f + top;
+  midPointX = -HALF_TILES_WIDTH + (right - left) / 2.0f + left;
+  midPointY = -HALF_TILES_HEIGHT + (bottom - top) / 2.0f + top;
 }
 
 void ModelChunk::setInstanceOffsetsVector(std::vector<unsigned int> &instanceOffsets)

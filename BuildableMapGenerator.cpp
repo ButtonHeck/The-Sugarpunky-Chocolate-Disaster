@@ -57,7 +57,7 @@ void BuildableMapGenerator::fillBufferData()
     {
       glm::mat4 model;
       TerrainTile& tile = tiles[i];
-      model = glm::translate(model, glm::vec3(-TILES_WIDTH / 2 + tile.mapX, 0.0f, -TILES_HEIGHT / 2 + tile.mapY));
+      model = glm::translate(model, glm::vec3(- HALF_TILES_WIDTH + tile.mapX, 0.0f, -HALF_TILES_HEIGHT + tile.mapY));
       instanceModels[i] = model;
     }
   glBindBuffer(GL_ARRAY_BUFFER, modelVbo);

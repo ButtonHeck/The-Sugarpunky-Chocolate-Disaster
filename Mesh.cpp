@@ -93,11 +93,11 @@ void Mesh::draw(Shader &shader, Camera &camera, std::vector<ModelChunk>& chunks,
 
   float cameraOnMapX = camera.getPosition().x;
   float cameraOnMapZ = camera.getPosition().z;
-  cameraOnMapX = glm::clamp(cameraOnMapX, -TILES_WIDTH/2.0f, TILES_WIDTH/2.0f);
-  cameraOnMapZ = glm::clamp(cameraOnMapZ, -TILES_HEIGHT/2.0f, TILES_HEIGHT/2.0f);
-  int cameraOnMapCoordX = (int)(TILES_WIDTH + cameraOnMapX) - TILES_WIDTH / 2;
+  cameraOnMapX = glm::clamp(cameraOnMapX, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
+  cameraOnMapZ = glm::clamp(cameraOnMapZ, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
+  int cameraOnMapCoordX = (int)(TILES_WIDTH + cameraOnMapX) - HALF_TILES_WIDTH;
   cameraOnMapCoordX = glm::clamp(cameraOnMapCoordX, 0, TILES_WIDTH - 1);
-  int cameraOnMapCoordZ = (int)(TILES_HEIGHT + cameraOnMapZ) - TILES_HEIGHT / 2;
+  int cameraOnMapCoordZ = (int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT;
   cameraOnMapCoordZ = glm::clamp(cameraOnMapCoordZ, 0, TILES_HEIGHT - 1);
   glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
   glm::vec2 viewDirection = glm::vec2(camera.getDirection().x, camera.getDirection().z);

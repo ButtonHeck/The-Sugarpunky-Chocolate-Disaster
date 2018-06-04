@@ -136,8 +136,8 @@ void Camera::updateVectors()
 
 const ModelChunk Camera::getChunk(const std::vector<ModelChunk>& chunks)
 {
-  mapCoordX = glm::clamp((int)(TILES_WIDTH + glm::clamp(Position.x, -TILES_WIDTH/2.0f, TILES_WIDTH/2.0f)) - TILES_WIDTH / 2, 0, TILES_WIDTH - 1);
-  mapCoordZ = glm::clamp((int)(TILES_HEIGHT + glm::clamp(Position.z, -TILES_HEIGHT/2.0f, TILES_HEIGHT/2.0f)) - TILES_HEIGHT / 2, 0, TILES_HEIGHT - 1);
+  mapCoordX = glm::clamp((int)(TILES_WIDTH + glm::clamp(Position.x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH)) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
+  mapCoordZ = glm::clamp((int)(TILES_HEIGHT + glm::clamp(Position.z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT)) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
   ModelChunk chunk = chunks[0];
   for (unsigned int i = 0; i < chunks.size(); i++)
     {

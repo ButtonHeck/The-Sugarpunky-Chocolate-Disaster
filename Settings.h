@@ -10,6 +10,8 @@ constexpr float FOV = 40.0f;
 constexpr float FOV_DOT_PRODUCT = std::cos(glm::radians(FOV));
 constexpr int TILES_WIDTH = 384;
 constexpr int TILES_HEIGHT = 384;
+constexpr int HALF_TILES_WIDTH = TILES_WIDTH / 2;
+constexpr int HALF_TILES_HEIGHT = TILES_HEIGHT / 2;
 constexpr int NUM_TILES = TILES_WIDTH * TILES_HEIGHT;
 constexpr float WATER_LEVEL = -0.75f;
 constexpr int DENY_TILE_RENDER_VALUE = -10;
@@ -23,6 +25,8 @@ constexpr int SHORE_SIZE_BASE = 4;
 constexpr unsigned int MODEL_CHUNK_SIZE = 16;
 constexpr unsigned int CHUNK_LOADING_DISTANCE = 8;
 constexpr unsigned int QUAD_INDICES[6] = {0,1,2,2,3,0};
+constexpr bool HILLS_TEXTURE_MAPPING_SLOPE_CORRECTION = true;
+constexpr bool BASE_TERRAIN_RANDOMIZE_SHORE_FORM = true;
 const std::string PROJ_PATH("/home/ilya/QtProjects/MyOpenGL/TerrainGenerationTest");
 const glm::vec3 LIGHT_DIR_TO = glm::vec3(-0.2f, -0.15f, -0.08f);
 

@@ -55,54 +55,54 @@ void BaseMapGenerator::fillBufferData()
             -
             glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1));
       //ll1
-      vertices[offset] =   -1- TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset] =   -1- HALF_TILES_WIDTH + tile.mapX;
       vertices[offset+1] = tile.lowLeft;
-      vertices[offset+2] = - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+2] = - HALF_TILES_HEIGHT + tile.mapY;
       vertices[offset+3] = 0.0f;
       vertices[offset+4] = 0.0f;
       vertices[offset+5] = normal1.x;
       vertices[offset+6] = normal1.y;
       vertices[offset+7] = normal1.z;
       //lr1
-      vertices[offset+8] =  - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+8] =  - HALF_TILES_WIDTH + tile.mapX;
       vertices[offset+9] =  tile.lowRight;
-      vertices[offset+10] = - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+10] = - HALF_TILES_HEIGHT + tile.mapY;
       vertices[offset+11] = 1.0f;
       vertices[offset+12] = 0.0f;
       vertices[offset+13] = normal1.x;
       vertices[offset+14] = normal1.y;
       vertices[offset+15] = normal1.z;
       //ur1
-      vertices[offset+16] = - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+16] = - HALF_TILES_WIDTH + tile.mapX;
       vertices[offset+17] = tile.upperRight;
-      vertices[offset+18] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+18] = -1 - HALF_TILES_HEIGHT + tile.mapY;
       vertices[offset+19] = 1.0f;
       vertices[offset+20] = 1.0f;
       vertices[offset+21] = normal1.x;
       vertices[offset+22] = normal1.y;
       vertices[offset+23] = normal1.z;
       //ur2
-      vertices[offset+24] = - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+24] = - HALF_TILES_WIDTH + tile.mapX;
       vertices[offset+25] = tile.upperRight;
-      vertices[offset+26] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+26] = -1 - HALF_TILES_HEIGHT + tile.mapY;
       vertices[offset+27] = 1.0f;
       vertices[offset+28] = 1.0f;
       vertices[offset+29] = normal2.x;
       vertices[offset+30] = normal2.y;
       vertices[offset+31] = normal2.z;
       //ul2
-      vertices[offset+32] = -1 - TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+32] = -1 - HALF_TILES_WIDTH + tile.mapX;
       vertices[offset+33] = tile.upperLeft;
-      vertices[offset+34] = -1 - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+34] = -1 - HALF_TILES_HEIGHT + tile.mapY;
       vertices[offset+35] = 0.0f;
       vertices[offset+36] = 1.0f;
       vertices[offset+37] = normal2.x;
       vertices[offset+38] = normal2.y;
       vertices[offset+39] = normal2.z;
       //ll2
-      vertices[offset+40] = -1- TILES_WIDTH / 2 + tile.mapX;
+      vertices[offset+40] = -1- HALF_TILES_WIDTH + tile.mapX;
       vertices[offset+41] = tile.lowLeft;
-      vertices[offset+42] = - TILES_HEIGHT / 2 + tile.mapY;
+      vertices[offset+42] = - HALF_TILES_HEIGHT + tile.mapY;
       vertices[offset+43] = 0.0f;
       vertices[offset+44] = 0.0f;
       vertices[offset+45] = normal2.x;
@@ -154,7 +154,7 @@ void BaseMapGenerator::fillChunkBufferData()
         {
           glm::mat4 model;
           TerrainTile& tile = baseTerrainChunk[i];
-          model = glm::translate(model, glm::vec3(- TILES_WIDTH / 2 + tile.mapX + BASE_TERRAIN_CHUNK_SIZES[vao] / 2, 0.0f, - TILES_HEIGHT / 2 + tile.mapY + BASE_TERRAIN_CHUNK_SIZES[vao] / 2));
+          model = glm::translate(model, glm::vec3(- HALF_TILES_WIDTH + tile.mapX + BASE_TERRAIN_CHUNK_SIZES[vao] / 2, 0.0f, - HALF_TILES_HEIGHT + tile.mapY + BASE_TERRAIN_CHUNK_SIZES[vao] / 2));
           model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZES[vao] / 2, 0.0f, BASE_TERRAIN_CHUNK_SIZES[vao] / 2));
           baseInstanceChunkModels[i] = model;
         }
@@ -204,7 +204,7 @@ void BaseMapGenerator::fillCellBufferData()
     {
       glm::mat4 model;
       TerrainTile& tile = cellTiles[i];
-      model = glm::translate(model, glm::vec3(-TILES_WIDTH / 2 + tile.mapX, 0.0f, -TILES_HEIGHT / 2 + tile.mapY - 1));
+      model = glm::translate(model, glm::vec3(- HALF_TILES_WIDTH + tile.mapX, 0.0f, -HALF_TILES_HEIGHT + tile.mapY - 1));
       cellInstanceModels[i] = model;
     }
   glBindBuffer(GL_ARRAY_BUFFER, cellModelVbo);

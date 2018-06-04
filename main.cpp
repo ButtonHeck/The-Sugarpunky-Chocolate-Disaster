@@ -15,9 +15,7 @@
 #include "WaterMapGenerator.h"
 #include "HillsMapGenerator.h"
 #include "UnderwaterQuadMapGenerator.h"
-#include "BaseMapGenerator.h"
 #include "Skybox.h"
-#include "Model.h"
 #include "TreeGenerator.h"
 #include "FontManager.h"
 #include "CoordinateSystemRenderer.h"
@@ -28,8 +26,7 @@
 GLFWwindow* initGLFW();
 void prepareTerrain();
 void printMapsInfos();
-void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity,
-                            GLsizei length, const GLchar* message, const void* userParam);
+void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar* message, const void*);
 
 int scr_width;
 int scr_height;
@@ -73,7 +70,7 @@ int main()
     {
       glEnable(GL_DEBUG_OUTPUT);
       glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-      glDebugMessageCallback(glDebugOutput, nullptr);
+      glDebugMessageCallback(glDebugCallback, nullptr);
       glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
   glEnable(GL_CULL_FACE);
@@ -99,7 +96,7 @@ int main()
                           PROJ_PATH + "/shaders/coordinateSystem.gs",
                           PROJ_PATH + "/shaders/coordinateSystem.fs");
   Shader buildableShader(PROJ_PATH + "/shaders/buildableTiles.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
-  Shader selectedTileShader(PROJ_PATH + "/shaders/selectedTile.vs", PROJ_PATH + "/shaders/buildableTiles.fs");
+  Shader selectedTileShader(PROJ_PATH + "/shaders/selectedTile.vs", PROJ_PATH + "/shaders/selectedTile.fs");
   std::vector<Shader*> shaders =
   {&hills, &shore, &underwater, &flat, &water, &sky, &modelShader, &fontShader, &csShader, &buildableShader, &selectedTileShader};
 
@@ -173,10 +170,6 @@ int main()
   sky.setInt("u_skybox", SKYBOX);
   modelShader.use();
   modelShader.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  buildableShader.use();
-  buildableShader.setBool("u_cursorMode", false);
-  selectedTileShader.use();
-  selectedTileShader.setBool("u_cursorMode", true);
 
   //generating the terrain landscape data and filling related vertex/element buffers
   prepareTerrain();
@@ -286,7 +279,7 @@ int main()
               selectedTileShader.use();
               selectedTileShader.setMat4("u_projectionView", projectionView);
               glm::mat4 selectedModel;
-              selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + input.getCursorMapX(), 0.0f, -TILES_HEIGHT / 2 + input.getCursorMapZ()));
+              selectedModel = glm::translate(selectedModel, glm::vec3(-HALF_TILES_WIDTH + input.getCursorMapX(), 0.0f, -HALF_TILES_HEIGHT + input.getCursorMapZ()));
               selectedTileShader.setMat4("u_model", selectedModel);
               glBindVertexArray(buildableMapGenerator->getSelectedTileVAO());
               glEnable(GL_BLEND);
@@ -310,7 +303,7 @@ int main()
           for (size_t i = 0; i < waterMapGenerator->WATER_HEIGHT_OFFSETS_SIZE; i+=2)
             {
                 waterHeightOffsets[i] = std::cos(offsetMultiplier * (i % 31)) / 16 + WATER_LEVEL;
-                waterHeightOffsets[i+1] = std::sin(offsetMultiplier * (i% 29)) / 16 + WATER_LEVEL;
+                waterHeightOffsets[i+1] = std::sin(offsetMultiplier * (i % 29)) / 16 + WATER_LEVEL;
             }
           GLfloat* waterVertexCoordinatePointer = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
           unsigned int numWaterTiles = waterTiles.size();
@@ -451,8 +444,8 @@ void prepareTerrain()
 {
   waterMapGenerator->prepareMap(); //prepare water map
   hillMapGenerator->prepareMap(); //generating hill height map
-  hillMapGenerator->fillBufferData(false); //fill hills buffer
-  baseMapGenerator->prepareMap(true); //generating base terrain data
+  hillMapGenerator->fillBufferData(!HILLS_TEXTURE_MAPPING_SLOPE_CORRECTION); //fill hills buffer
+  baseMapGenerator->prepareMap(BASE_TERRAIN_RANDOMIZE_SHORE_FORM); //generating base terrain data
   baseMapGenerator->fillBufferData(); //fill base terrain vertex data
   baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering
   baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
@@ -532,7 +525,7 @@ void printMapsInfos()
   std::cout << "-----------------------------------------------------------\n";
 }
 
-void APIENTRY glDebugOutput(GLenum source,
+void APIENTRY glDebugCallback(GLenum source,
                             GLenum type,
                             GLuint id,
                             GLenum severity,

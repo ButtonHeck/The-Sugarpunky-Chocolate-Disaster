@@ -71,9 +71,9 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
                     {
                       glm::mat4 model;
                       model = glm::translate(model,
-                                             glm::vec3(-TILES_WIDTH / 2.0f + x1 + modelPositionDistribution(randomizer) + 0.5f,
+                                             glm::vec3(-(float)HALF_TILES_WIDTH + x1 + modelPositionDistribution(randomizer) + 0.5f,
                                                        0.0f,
-                                                       -TILES_HEIGHT / 2.0f + y1 + modelPositionDistribution(randomizer) + 0.5f));
+                                                       -(float)HALF_TILES_HEIGHT + y1 + modelPositionDistribution(randomizer) + 0.5f));
                       model = glm::rotate(model, glm::radians((float)(y1 * TILES_WIDTH + x1 * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
                       model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer)));
                       treeModelsVecs[treeCounter % treeModelsVecs.size()].push_back(model);
@@ -196,9 +196,9 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, s
                               std::abs(hillMap[y1][x1+1] - hillMap[y1+1][x1]) / 2)
                             + HILLS_OFFSET_Y;
                       glm::vec3 translation(
-                            -TILES_WIDTH / 2.0f + x1 + 0.5f + offsetX,
+                            -(float)HALF_TILES_WIDTH + x1 + 0.5f + offsetX,
                             baseY,
-                            -TILES_HEIGHT / 2.0f + y1 + 0.5f + offsetZ);
+                            -(float)HALF_TILES_HEIGHT + y1 + 0.5f + offsetZ);
                       if (translation.y < 0)
                         continue;
                       model = glm::translate(model, translation);

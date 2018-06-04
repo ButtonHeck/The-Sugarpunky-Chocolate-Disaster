@@ -141,7 +141,8 @@ DISTFILES += \
     textures/flat2.jpg \
     textures/flat2_x2.jpg \
     textures/flat_x2.jpg \
-    textures/normalMap.jpg
+    textures/normalMap.jpg \
+    shaders/selectedTile.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
