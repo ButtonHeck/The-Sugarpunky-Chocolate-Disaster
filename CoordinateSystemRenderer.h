@@ -9,12 +9,12 @@
 class CoordinateSystemRenderer
 {
 public:
-  CoordinateSystemRenderer() = default;
-  void fillBufferData();
+  CoordinateSystemRenderer(Shader* shader);
   void deleteGLObjects();
-  GLuint& getVAO();
+  void draw(const glm::mat4& view, float aspect_ratio);
 private:
   GLuint vao, vbo;
+  Shader* shader;
 };
 
 #endif // COORDINATESYSTEMRENDERER_H

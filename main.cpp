@@ -45,7 +45,6 @@ HillsMapGenerator* hillMapGenerator = new HillsMapGenerator(waterMapGenerator->g
 UnderwaterQuadMapGenerator underwaterQuadGenerator;
 BaseMapGenerator* baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
 Skybox skybox(PROJ_PATH + "/textures/cubemap/", textureLoader, SKYBOX);
-CoordinateSystemRenderer csRenderer;
 BuildableMapGenerator* buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
 SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
 TreeGenerator* treeGenerator;
@@ -104,8 +103,9 @@ int main()
   std::vector<Shader*> shaders =
   {&hills, &shore, &underwater, &flat, &water, &sky, &modelShader, &fontShader, &csShader, &buildableShader, &selectedTileShader};
 
-  //setup font
+  //setup debug visual output objects
   FontManager fontManager("OCTAPOST_1.ttf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), &fontShader);
+  CoordinateSystemRenderer csRenderer(&csShader);
 
   //models and model-related objects loading
   Model tree1(PROJ_PATH + "/models/tree1/tree1.obj", textureLoader);
@@ -214,7 +214,6 @@ int main()
       glm::mat4 view = camera.getViewMatrix();
       glm::vec3 viewPosition = camera.getPosition();
       glm::mat4 projectionView = projection * view;
-      glLineWidth(1);
 
       if (recreateTerrainRequest)
         {
@@ -267,9 +266,6 @@ int main()
       glBindVertexArray(baseMapGenerator->getCellVAO());
       glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator->getNumCellInstances());
 
-      //update cursor-to-map mappings
-      input.updateCursorMappingCoordinates(camera, baseMapGenerator, hillMapGenerator, buildableMapGenerator);
-
       //buildable tiles
       if (showBuildable)
         {
@@ -282,17 +278,21 @@ int main()
         }
 
       //cursor selected tile
-      if (showCursor && buildableMapGenerator->getMap()[input.getCursorMapZ()][input.getCursorMapX()] != 0)
+      if (showCursor)
         {
-          selectedTileShader.use();
-          selectedTileShader.setMat4("u_projectionView", projectionView);
-          glm::mat4 selectedModel;
-          selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + input.getCursorMapX(), 0.0f, -TILES_HEIGHT / 2 + input.getCursorMapZ()));
-          selectedTileShader.setMat4("u_model", selectedModel);
-          glBindVertexArray(buildableMapGenerator->getSelectedTileVAO());
-          glEnable(GL_BLEND);
-          glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-          glDisable(GL_BLEND);
+          input.updateCursorMappingCoordinates(camera, baseMapGenerator, hillMapGenerator, buildableMapGenerator);
+          if (buildableMapGenerator->getMap()[input.getCursorMapZ()][input.getCursorMapX()] != 0)
+            {
+              selectedTileShader.use();
+              selectedTileShader.setMat4("u_projectionView", projectionView);
+              glm::mat4 selectedModel;
+              selectedModel = glm::translate(selectedModel, glm::vec3(-TILES_WIDTH / 2 + input.getCursorMapX(), 0.0f, -TILES_HEIGHT / 2 + input.getCursorMapZ()));
+              selectedTileShader.setMat4("u_model", selectedModel);
+              glBindVertexArray(buildableMapGenerator->getSelectedTileVAO());
+              glEnable(GL_BLEND);
+              glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+              glDisable(GL_BLEND);
+            }
         }
 
       //water tiles
@@ -401,12 +401,7 @@ int main()
           fontManager.renderText("camera in chunk: x-" + std::to_string(cameraChunk.getLeft()) + ":" + std::to_string(cameraChunk.getRight())
                                  + ", z-" + std::to_string(cameraChunk.getTop()) + ":" + std::to_string(cameraChunk.getBottom()),
                                  10.0f, (float)scr_height - 145.0f, 0.35f);
-          glLineWidth(2);
-          csShader.use();
-          csShader.setMat4("u_view", view);
-          csShader.setFloat("u_aspectRatio", aspect_ratio);
-          glBindVertexArray(csRenderer.getVAO());
-          glDrawArrays(GL_POINTS, 0, 3);
+          csRenderer.draw(view ,aspect_ratio);
         }
 
       //reset texture units to terrain textures after we done with models and text
@@ -465,7 +460,6 @@ void prepareTerrain()
   waterMapGenerator->fillBufferData(); //fill water buffer
   underwaterQuadGenerator.fillBufferData(); //generating underwater flat tile
   skybox.fillBufferData(); //setup skybox
-  csRenderer.fillBufferData(); //coordinate system setup
   buildableMapGenerator->prepareMap();
   buildableMapGenerator->fillBufferData();
 }

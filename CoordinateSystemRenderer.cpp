@@ -1,6 +1,8 @@
 #include "CoordinateSystemRenderer.h"
 
-void CoordinateSystemRenderer::fillBufferData()
+CoordinateSystemRenderer::CoordinateSystemRenderer(Shader *shader)
+  :
+    shader(shader)
 {
   glGenVertexArrays(1, &vao);
   glGenBuffers(1, &vbo);
@@ -28,7 +30,13 @@ void CoordinateSystemRenderer::deleteGLObjects()
   glDeleteBuffers(1, &vbo);
 }
 
-GLuint &CoordinateSystemRenderer::getVAO()
+void CoordinateSystemRenderer::draw(const glm::mat4 &view, float aspect_ratio)
 {
-  return vao;
+  glLineWidth(2);
+  shader->use();
+  shader->setMat4("u_view", view);
+  shader->setFloat("u_aspectRatio", aspect_ratio);
+  glBindVertexArray(vao);
+  glDrawArrays(GL_POINTS, 0, 3);
+  glLineWidth(1);
 }
