@@ -53,7 +53,7 @@ std::vector<unsigned int> &ModelChunk::getNumInstancesVector()
   return numInstances;
 }
 
-bool ModelChunk::containsPoint(float x, float y)
+bool ModelChunk::containsPoint(float x, float y) const
 {
   if (y >= top && y < bottom)
     {

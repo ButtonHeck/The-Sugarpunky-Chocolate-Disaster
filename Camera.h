@@ -4,6 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Settings.h"
+#include "ModelChunk.h"
 
 enum Movement_Direction
 {
@@ -36,6 +37,9 @@ public:
   float getPitch();
   float getYaw();
   void updateVectors();
+  const ModelChunk getChunk(const std::vector<ModelChunk>& chunks);
+  int getMapCoordX() const;
+  int getMapCoordZ() const;
 private:
   //options
   float zoom, moveSpeed, mouseSensitivity;
@@ -44,6 +48,8 @@ private:
   float yaw, pitch;
   //direction vectors
   glm::vec3 Position, Front, Right, Up, WorldUp;
+  int mapCoordX = 0;
+  int mapCoordZ = 0;
 };
 
 #endif // CAMERA_H

@@ -133,3 +133,29 @@ void Camera::updateVectors()
   Right = glm::normalize(glm::cross(Front, WorldUp));
   Up = glm::normalize(glm::cross(Right, Front));
 }
+
+const ModelChunk Camera::getChunk(const std::vector<ModelChunk>& chunks)
+{
+  mapCoordX = glm::clamp((int)(TILES_WIDTH + glm::clamp(Position.x, -TILES_WIDTH/2.0f, TILES_WIDTH/2.0f)) - TILES_WIDTH / 2, 0, TILES_WIDTH - 1);
+  mapCoordZ = glm::clamp((int)(TILES_HEIGHT + glm::clamp(Position.z, -TILES_HEIGHT/2.0f, TILES_HEIGHT/2.0f)) - TILES_HEIGHT / 2, 0, TILES_HEIGHT - 1);
+  ModelChunk chunk = chunks[0];
+  for (unsigned int i = 0; i < chunks.size(); i++)
+    {
+      if (chunks[i].containsPoint(mapCoordX, mapCoordZ))
+        {
+          chunk = chunks[i];
+          break;
+        }
+    }
+  return chunk;
+}
+
+int Camera::getMapCoordX() const
+{
+  return mapCoordX;
+}
+
+int Camera::getMapCoordZ() const
+{
+  return mapCoordZ;
+}

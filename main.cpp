@@ -61,10 +61,6 @@ bool loadRequest = false;
 bool showCursor = false;
 bool showBuildable = false;
 bool modelRenderOptimize = true;
-float cameraOnMapX = 0.0f;
-float cameraOnMapZ = 0.0f;
-int cameraOnMapCoordX = 0;
-int cameraOnMapCoordZ = 0;
 
 int main()
 {
@@ -274,21 +270,6 @@ int main()
       //update cursor-to-map mappings
       input.updateCursorMappingCoordinates(camera, baseMapGenerator, hillMapGenerator, buildableMapGenerator);
 
-      //update camera map position info
-      cameraOnMapX = glm::clamp(camera.getPosition().x, -TILES_WIDTH/2.0f, TILES_WIDTH/2.0f);
-      cameraOnMapZ = glm::clamp(camera.getPosition().z, -TILES_HEIGHT/2.0f, TILES_HEIGHT/2.0f);
-      cameraOnMapCoordX = glm::clamp((int)(TILES_WIDTH + cameraOnMapX) - TILES_WIDTH / 2, 0, TILES_WIDTH - 1);
-      cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - TILES_HEIGHT / 2, 0, TILES_HEIGHT - 1);
-      ModelChunk cameraChunk = treeModelChunks[0];
-      for (unsigned int i = 0; i < treeModelChunks.size(); i++)
-        {
-          if (treeModelChunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
-            {
-              cameraChunk = treeModelChunks[i];
-              break;
-            }
-        }
-
       //buildable tiles
       if (showBuildable)
         {
@@ -401,11 +382,12 @@ int main()
       //font rendering
       if (renderDebugText)
         {
+          ModelChunk cameraChunk = camera.getChunk(treeModelChunks);
           fontManager.renderText("FPS: " + std::to_string(fps), 10.0f, (float)scr_height - 25.0f, 0.35f);
           fontManager.renderText("camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                                  + std::to_string(viewPosition.y).substr(0,6) + ": "
                                  + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 45.0f, 0.35f);
-          fontManager.renderText("camera on map: " + std::to_string(cameraOnMapCoordX) + ": " + std::to_string(cameraOnMapCoordZ),
+          fontManager.renderText("camera on map: " + std::to_string(camera.getMapCoordX()) + ": " + std::to_string(camera.getMapCoordZ()),
                                  10.0f, (float)scr_height - 65.0f, 0.35f);
           fontManager.renderText("View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
                                  + std::to_string(camera.getDirection().y).substr(0,6) + ": "

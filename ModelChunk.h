@@ -17,7 +17,7 @@ public:
   std::vector<unsigned int>& getInstanceOffsetVector();
   unsigned int getNumInstances(int index);
   std::vector<unsigned int>& getNumInstancesVector();
-  bool containsPoint(float x, float y);
+  bool containsPoint(float x, float y) const;
   unsigned int getLeft();
   unsigned int getRight();
   unsigned int getTop();
