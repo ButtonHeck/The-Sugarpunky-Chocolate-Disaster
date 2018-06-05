@@ -9,7 +9,6 @@ class Skybox
 {
 public:
   Skybox(const std::string& directory, TextureLoader& loader, GLuint textureUnit);
-  void fillBufferData();
   void deleteGLObjects();
   GLuint& getVAO();
   GLuint& getTexture();

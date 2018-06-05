@@ -15,10 +15,6 @@ Skybox::Skybox(const std::string &directory, TextureLoader& loader, GLuint textu
           directory + "back.png",
           directory + "front.png"
         });
-}
-
-void Skybox::fillBufferData()
-{
   texture = loader.loadCubemap(faces, textureUnit);
   glGenVertexArrays(1, &vao);
   glGenBuffers(1, &vbo);

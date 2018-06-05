@@ -25,7 +25,8 @@ SOURCES += main.cpp \
     CoordinateSystemRenderer.cpp \
     SaveLoadManager.cpp \
     BuildableMapGenerator.cpp \
-    ModelChunk.cpp
+    ModelChunk.cpp \
+    Settings.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
