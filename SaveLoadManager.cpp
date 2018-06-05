@@ -170,7 +170,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename, std::vector<Mode
   for (unsigned int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
     baseGenerator.getChunkTiles(i).clear();
   baseGenerator.getCellTiles().clear();
-  baseGenerator.prepareMap(!BASE_TERRAIN_RANDOMIZE_SHORE_FORM);
+  baseGenerator.prepareMap(BASE_TERRAIN_RANDOMIZE_SHORE_FORM);
   baseGenerator.fillBufferData();
   baseGenerator.fillChunkBufferData();
   baseGenerator.fillCellBufferData();
