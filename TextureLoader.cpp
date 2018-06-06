@@ -7,14 +7,15 @@ TextureLoader::TextureLoader()
   ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
 }
 
-GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, GLenum wrapType, GLint magFilter, GLint minFilter)
+GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, GLenum wrapType, GLint magFilter, GLint minFilter, bool includeCWD)
 {
   GLuint texture;
   glGenTextures(1, &texture);
   glActiveTexture(GL_TEXTURE0 + textureUnit);
   glBindTexture(GL_TEXTURE_2D, texture);
-  if (!ilLoadImage(path.c_str()))
-    printf("Error when loading texture: %s\n", path.c_str());
+  std::string fullPath = includeCWD ? std::string(CWD + path) : path;
+  if (!ilLoadImage(fullPath.c_str()))
+    printf("Error when loading texture: %s\n", fullPath.c_str());
   ILubyte* data = ilGetData();
   auto imageWidth = ilGetInteger(IL_IMAGE_WIDTH);
   auto imageHeight = ilGetInteger(IL_IMAGE_HEIGHT);

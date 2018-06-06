@@ -2,8 +2,8 @@
 
 Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::string &fragmentFile)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, vertexFile);
-  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, fragmentFile);
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(CWD + vertexFile));
+  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(CWD + fragmentFile));
   ID = glCreateProgram();
   glAttachShader(ID, vertex);
   glAttachShader(ID, fragment);
@@ -20,9 +20,9 @@ Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::strin
 
 Shader::Shader(const std::string &vertexFile, const std::string &geometryFile, const std::string &fragmentFile)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, vertexFile);
-  GLuint geometry = loadShader(GL_GEOMETRY_SHADER, geometryFile);
-  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, fragmentFile);
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(CWD + vertexFile));
+  GLuint geometry = loadShader(GL_GEOMETRY_SHADER, std::string(CWD + geometryFile));
+  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(CWD + fragmentFile));
   ID = glCreateProgram();
   glAttachShader(ID, vertex);
   glAttachShader(ID, geometry);

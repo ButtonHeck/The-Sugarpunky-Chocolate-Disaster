@@ -8,6 +8,7 @@
 #include <vector>
 #include "ModelChunk.h"
 #include "Camera.h"
+#include "Settings.h"
 
 class Model
 {

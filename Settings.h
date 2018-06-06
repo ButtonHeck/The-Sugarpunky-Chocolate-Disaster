@@ -31,6 +31,7 @@ constexpr unsigned int QUAD_INDICES[6] = {0,1,2,2,3,0};
 constexpr bool HILLS_TEXTURE_MAPPING_SLOPE_CORRECTION = true;
 constexpr bool BASE_TERRAIN_RANDOMIZE_SHORE_FORM = true;
 const std::string CWD = getProjectDirectory();
+constexpr bool INCLUDE_CWD = true;
 const glm::vec3 LIGHT_DIR_TO = glm::vec3(-0.2f, -0.15f, -0.08f);
 
 enum HILL_DENSITY

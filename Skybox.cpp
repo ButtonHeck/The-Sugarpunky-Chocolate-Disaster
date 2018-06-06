@@ -2,18 +2,18 @@
 
 Skybox::Skybox(const std::string &directory, TextureLoader& loader, GLuint textureUnit)
   :
-    directory(directory),
+    directory(std::string(CWD + directory)),
     loader(loader),
     textureUnit(textureUnit)
 {
   faces.assign(
   {
-    directory + "right.png",
-          directory + "left.png",
-          directory + "up.png",
-          directory + "down.png",
-          directory + "back.png",
-          directory + "front.png"
+    this->directory + "right.png",
+          this->directory + "left.png",
+          this->directory + "up.png",
+          this->directory + "down.png",
+          this->directory + "back.png",
+          this->directory + "front.png"
         });
   texture = loader.loadCubemap(faces, textureUnit);
   glGenVertexArrays(1, &vao);
