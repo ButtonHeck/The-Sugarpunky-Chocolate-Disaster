@@ -112,13 +112,28 @@ void Mesh::draw(Shader &shader, Camera &camera, std::vector<ModelChunk>& chunks,
           if (glm::length(directionToChunk) > MODEL_CHUNK_SIZE * chunkLoadingDistance)
             continue;
           glm::vec2 directionToChunkUL =  glm::normalize(glm::vec2(chunks[i].getLeft() - (float)HALF_TILES_WIDTH, chunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+          if (glm::dot(directionToChunkUL, viewDirection) > cameraCorrectedFOVDOT)
+            {
+              glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0,
+                                                  chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
+              continue;
+            }
           glm::vec2 directionToChunkUR =  glm::normalize(glm::vec2(chunks[i].getRight() - (float)HALF_TILES_WIDTH, chunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+          if (glm::dot(directionToChunkUR, viewDirection) > cameraCorrectedFOVDOT)
+            {
+              glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0,
+                                                  chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
+              continue;
+            }
           glm::vec2 directionToChunkLR =  glm::normalize(glm::vec2(chunks[i].getRight() - (float)HALF_TILES_WIDTH, chunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+          if (glm::dot(directionToChunkLR, viewDirection) > cameraCorrectedFOVDOT)
+            {
+              glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0,
+                                                  chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
+              continue;
+            }
           glm::vec2 directionToChunkLL =  glm::normalize(glm::vec2(chunks[i].getLeft() - (float)HALF_TILES_WIDTH, chunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-          if (glm::dot(directionToChunkUL, viewDirection) > cameraCorrectedFOVDOT ||
-              glm::dot(directionToChunkUR, viewDirection) > cameraCorrectedFOVDOT ||
-              glm::dot(directionToChunkLR, viewDirection) > cameraCorrectedFOVDOT ||
-              glm::dot(directionToChunkLL, viewDirection) > cameraCorrectedFOVDOT)
+          if (glm::dot(directionToChunkLL, viewDirection) > cameraCorrectedFOVDOT)
             glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0,
                                                 chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
         }
