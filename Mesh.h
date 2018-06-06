@@ -6,7 +6,6 @@
 #include "Settings.h"
 #include "ModelChunk.h"
 #include "Camera.h"
-#include "glm/gtx/fast_square_root.hpp"
 
 struct Vertex
 {

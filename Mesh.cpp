@@ -91,21 +91,15 @@ void Mesh::draw(Shader &shader, Camera &camera, std::vector<ModelChunk>& chunks,
     }
   glBindVertexArray(VAO);
 
-  float cameraOnMapX = camera.getPosition().x;
-  float cameraOnMapZ = camera.getPosition().z;
-  cameraOnMapX = glm::clamp(cameraOnMapX, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
-  cameraOnMapZ = glm::clamp(cameraOnMapZ, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
-  int cameraOnMapCoordX = (int)(TILES_WIDTH + cameraOnMapX) - HALF_TILES_WIDTH;
-  cameraOnMapCoordX = glm::clamp(cameraOnMapCoordX, 0, TILES_WIDTH - 1);
-  int cameraOnMapCoordZ = (int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT;
-  cameraOnMapCoordZ = glm::clamp(cameraOnMapCoordZ, 0, TILES_HEIGHT - 1);
-  glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
-  glm::vec2 viewDirection = glm::vec2(camera.getDirection().x, camera.getDirection().z);
-  viewDirection = glm::fastNormalize(viewDirection);
-  float cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 70.0f;
-
   if (modelRenderOptimize)
     {
+      float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
+      float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
+      int cameraOnMapCoordX = glm::clamp((int)(TILES_WIDTH + cameraOnMapX) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
+      int cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
+      glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
+      glm::vec2 viewDirection = glm::normalize(glm::vec2(camera.getDirection().x, camera.getDirection().z));
+      float cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 70.0f;
       for (unsigned int i = 0; i < chunks.size(); i++)
         {
           if (chunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
@@ -115,16 +109,12 @@ void Mesh::draw(Shader &shader, Camera &camera, std::vector<ModelChunk>& chunks,
               continue;
             }
           glm::vec2 directionToChunk = chunks[i].getMidPoint() - cameraPosition;
-          if (glm::fastLength(directionToChunk) > MODEL_CHUNK_SIZE * chunkLoadingDistance)
+          if (glm::length(directionToChunk) > MODEL_CHUNK_SIZE * chunkLoadingDistance)
             continue;
-          glm::vec2 directionToChunkUL = glm::vec2(chunks[i].getLeft() - 192.0f, chunks[i].getTop() - 192.0f) - cameraPosition;
-          glm::vec2 directionToChunkUR = glm::vec2(chunks[i].getRight() - 192.0f, chunks[i].getTop() - 192.0f) - cameraPosition;
-          glm::vec2 directionToChunkLR = glm::vec2(chunks[i].getRight() - 192.0f, chunks[i].getBottom() - 192.0f) - cameraPosition;
-          glm::vec2 directionToChunkLL = glm::vec2(chunks[i].getLeft() - 192.0f, chunks[i].getBottom() - 192.0f) - cameraPosition;
-          directionToChunkUL = glm::fastNormalize(directionToChunkUL);
-          directionToChunkUR = glm::fastNormalize(directionToChunkUR);
-          directionToChunkLR = glm::fastNormalize(directionToChunkLR);
-          directionToChunkLL = glm::fastNormalize(directionToChunkLL);
+          glm::vec2 directionToChunkUL =  glm::normalize(glm::vec2(chunks[i].getLeft() - (float)HALF_TILES_WIDTH, chunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+          glm::vec2 directionToChunkUR =  glm::normalize(glm::vec2(chunks[i].getRight() - (float)HALF_TILES_WIDTH, chunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+          glm::vec2 directionToChunkLR =  glm::normalize(glm::vec2(chunks[i].getRight() - (float)HALF_TILES_WIDTH, chunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+          glm::vec2 directionToChunkLL =  glm::normalize(glm::vec2(chunks[i].getLeft() - (float)HALF_TILES_WIDTH, chunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
           if (glm::dot(directionToChunkUL, viewDirection) > cameraCorrectedFOVDOT ||
               glm::dot(directionToChunkUR, viewDirection) > cameraCorrectedFOVDOT ||
               glm::dot(directionToChunkLR, viewDirection) > cameraCorrectedFOVDOT ||
