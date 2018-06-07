@@ -242,8 +242,7 @@ int main()
       //base terrain chunk tiles
       flat.use();
       flat.setMat4("u_projectionView", projectionView);
-      glBindVertexArray(baseMapGenerator->getChunkVAO());
-      glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator->getNumChunksInstances());
+      baseMapGenerator->drawChunks(camera);
       //base terrain 1x1 tiles
       glBindVertexArray(baseMapGenerator->getCellVAO());
       glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator->getNumCellInstances());

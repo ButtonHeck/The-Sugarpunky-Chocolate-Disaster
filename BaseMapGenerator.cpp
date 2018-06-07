@@ -316,6 +316,8 @@ void BaseMapGenerator::compressMap(float ratio)
 
 void BaseMapGenerator::splitMapToChunks(int chunkSize)
 {
+  baseChunks.clear();
+  unsigned int chunkOffset = 0;
   for (int y = 0; y < TILES_HEIGHT - chunkSize + 1; y += chunkSize)
     {
       for (int x = 0; x < TILES_WIDTH - chunkSize + 1; x += chunkSize)
@@ -348,6 +350,8 @@ void BaseMapGenerator::splitMapToChunks(int chunkSize)
                     }
                 }
               baseChunkTiles.emplace_back(x, y, 0, 0, 0, 0, false);
+              baseChunks.emplace_back(x, x + CHUNK_SIZE, y, y + CHUNK_SIZE, chunkOffset);
+              ++chunkOffset;
             }
         }
     }
@@ -406,6 +410,47 @@ void BaseMapGenerator::deleteGLObjects()
   glDeleteBuffers(1, &cellVbo);
   glDeleteBuffers(1, &cellEbo);
   glDeleteBuffers(1, &cellModelVbo);
+}
+
+void BaseMapGenerator::drawChunks(Camera &camera)
+{
+  glBindVertexArray(instanceVao);
+  float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
+  float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
+  int cameraOnMapCoordX = glm::clamp((int)(TILES_WIDTH + cameraOnMapX) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
+  int cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
+  glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
+  glm::vec2 viewDirection = glm::normalize(glm::vec2(camera.getDirection().x, camera.getDirection().z));
+  float cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 20.0f;
+  for (unsigned int i = 0; i < baseChunks.size(); i++)
+    {
+      if (baseChunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
+        {
+          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
+          continue;
+        }
+      glm::vec2 directionToChunkUL =  glm::normalize(glm::vec2(baseChunks[i].getLeft() - (float)HALF_TILES_WIDTH, baseChunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+      if (glm::dot(directionToChunkUL, viewDirection) > cameraCorrectedFOVDOT)
+        {
+          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
+          continue;
+        }
+      glm::vec2 directionToChunkUR =  glm::normalize(glm::vec2(baseChunks[i].getRight() - (float)HALF_TILES_WIDTH, baseChunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+      if (glm::dot(directionToChunkUR, viewDirection) > cameraCorrectedFOVDOT)
+        {
+          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
+          continue;
+        }
+      glm::vec2 directionToChunkLR =  glm::normalize(glm::vec2(baseChunks[i].getRight() - (float)HALF_TILES_WIDTH, baseChunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+      if (glm::dot(directionToChunkLR, viewDirection) > cameraCorrectedFOVDOT)
+        {
+          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
+          continue;
+        }
+      glm::vec2 directionToChunkLL =  glm::normalize(glm::vec2(baseChunks[i].getLeft() - (float)HALF_TILES_WIDTH, baseChunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+      if (glm::dot(directionToChunkLL, viewDirection) > cameraCorrectedFOVDOT)
+          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
+    }
 }
 
 std::vector<TerrainTile> &BaseMapGenerator::getChunkTiles()

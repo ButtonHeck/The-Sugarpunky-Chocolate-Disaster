@@ -99,7 +99,7 @@ void Mesh::draw(Shader &shader, Camera &camera, std::vector<ModelChunk>& chunks,
       int cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
       glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
       glm::vec2 viewDirection = glm::normalize(glm::vec2(camera.getDirection().x, camera.getDirection().z));
-      float cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 70.0f;
+      float cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 50.0f;
       for (unsigned int i = 0; i < chunks.size(); i++)
         {
           if (chunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))

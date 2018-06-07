@@ -2,6 +2,8 @@
 #define BASEMAPGENERATOR_H
 #include "MapGenerator.h"
 #include <random>
+#include "BaseTerrainChunk.h"
+#include "Camera.h"
 
 class BaseMapGenerator : public MapGenerator
 {
@@ -14,6 +16,7 @@ public:
   void split1x1Tiles();
   void splitMapToChunks(int chunkSize);
   void deleteGLObjects() override;
+  void drawChunks(Camera& camera);
   std::vector<TerrainTile>& getChunkTiles();
   std::vector<TerrainTile>& getCellTiles();
   GLuint& getChunkVAO();
@@ -30,6 +33,7 @@ private:
   std::vector<std::vector<float>> chunkMap;
   std::vector<TerrainTile> cellTiles;
   std::default_random_engine randomizer;
+  std::vector<BaseTerrainChunk> baseChunks;
   int NUM_CHUNKS_INSTANCES;
   int NUM_CELL_INSTANCES;
   void generateMap();
