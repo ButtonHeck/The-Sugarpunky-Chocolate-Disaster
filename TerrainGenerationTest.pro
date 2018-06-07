@@ -26,7 +26,8 @@ SOURCES += main.cpp \
     SaveLoadManager.cpp \
     BuildableMapGenerator.cpp \
     ModelChunk.cpp \
-    Settings.cpp
+    Settings.cpp \
+    Chunk.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -72,7 +73,8 @@ HEADERS += \
     CoordinateSystemRenderer.h \
     SaveLoadManager.h \
     BuildableMapGenerator.h \
-    ModelChunk.h
+    ModelChunk.h \
+    Chunk.h
 
 DISTFILES += \
     textures/underwater_sand.jpg \

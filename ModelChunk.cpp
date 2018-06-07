@@ -2,13 +2,9 @@
 
 ModelChunk::ModelChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom)
   :
-    left(left),
-    right(right),
-    top(top),
-    bottom(bottom)
+    Chunk(left, right, top, bottom)
 {
-  midPointX = -HALF_TILES_WIDTH + (right - left) / 2.0f + left;
-  midPointY = -HALF_TILES_HEIGHT + (bottom - top) / 2.0f + top;
+
 }
 
 void ModelChunk::setInstanceOffsetsVector(std::vector<unsigned int> &instanceOffsets)
@@ -51,42 +47,4 @@ unsigned int ModelChunk::getNumInstances(int index)
 std::vector<unsigned int> &ModelChunk::getNumInstancesVector()
 {
   return numInstances;
-}
-
-bool ModelChunk::containsPoint(float x, float y) const
-{
-  if (y >= top && y < bottom)
-    {
-      if (x >= left && x < right)
-        return true;
-      else
-        return false;
-    }
-  else
-    return false;
-}
-
-unsigned int ModelChunk::getLeft()
-{
-  return left;
-}
-
-unsigned int ModelChunk::getRight()
-{
-  return right;
-}
-
-unsigned int ModelChunk::getTop()
-{
-  return top;
-}
-
-unsigned int ModelChunk::getBottom()
-{
-  return bottom;
-}
-
-glm::vec2 ModelChunk::getMidPoint()
-{
-  return glm::vec2(midPointX, midPointY);
 }
