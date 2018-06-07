@@ -27,11 +27,11 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
                                      std::vector<ModelChunk>& chunks)
 {
   chunks.clear();
-  for (unsigned int y = 0; y < TILES_HEIGHT; y += MODEL_CHUNK_SIZE)
+  for (unsigned int y = 0; y < TILES_HEIGHT; y += CHUNK_SIZE)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
+      for (unsigned int x = 0; x < TILES_WIDTH; x += CHUNK_SIZE)
         {
-          ModelChunk chunk(x, x + MODEL_CHUNK_SIZE, y, y + MODEL_CHUNK_SIZE);
+          ModelChunk chunk(x, x + CHUNK_SIZE, y, y + CHUNK_SIZE);
           chunks.push_back(std::move(chunk));
         }
     }
@@ -56,14 +56,14 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
       numInstanceVector.push_back(0);
     }
 
-  for (unsigned int y = 0; y < TILES_HEIGHT; y += MODEL_CHUNK_SIZE)
+  for (unsigned int y = 0; y < TILES_HEIGHT; y += CHUNK_SIZE)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
+      for (unsigned int x = 0; x < TILES_WIDTH; x += CHUNK_SIZE)
         {
           chunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
-          for (unsigned int y1 = y; y1 < y + MODEL_CHUNK_SIZE; y1++)
+          for (unsigned int y1 = y; y1 < y + CHUNK_SIZE; y1++)
             {
-              for (unsigned int x1 = x; x1 < x + MODEL_CHUNK_SIZE; x1++)
+              for (unsigned int x1 = x; x1 < x + CHUNK_SIZE; x1++)
                 {
                   if ((baseMap[y1][x1] == 0 && baseMap[y1+1][x1+1] == 0 && baseMap[y1+1][x1] == 0 && baseMap[y1][x1+1] == 0)
                       && !(hillMap[y1][x1] != 0 || hillMap[y1+1][x1+1] != 0 || hillMap[y1+1][x1] != 0 || hillMap[y1][x1+1] != 0)
@@ -140,11 +140,11 @@ void TreeGenerator::updatePlainModels(std::vector<glm::mat4 *> &models, unsigned
 void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, std::vector<ModelChunk>& chunks)
 {
   chunks.clear();
-  for (unsigned int y = 0; y < TILES_HEIGHT; y += MODEL_CHUNK_SIZE)
+  for (unsigned int y = 0; y < TILES_HEIGHT; y += CHUNK_SIZE)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
+      for (unsigned int x = 0; x < TILES_WIDTH; x += CHUNK_SIZE)
         {
-          ModelChunk chunk(x, x + MODEL_CHUNK_SIZE, y, y + MODEL_CHUNK_SIZE);
+          ModelChunk chunk(x, x + CHUNK_SIZE, y, y + CHUNK_SIZE);
           chunks.push_back(std::move(chunk));
         }
     }
@@ -168,14 +168,14 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap, s
       numInstancesVector.push_back(0);
     }
 
-  for (unsigned int y = 0; y < TILES_HEIGHT; y += MODEL_CHUNK_SIZE)
+  for (unsigned int y = 0; y < TILES_HEIGHT; y += CHUNK_SIZE)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x += MODEL_CHUNK_SIZE)
+      for (unsigned int x = 0; x < TILES_WIDTH; x += CHUNK_SIZE)
         {
           chunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
-          for (unsigned int y1 = y; y1 < y + MODEL_CHUNK_SIZE; y1++)
+          for (unsigned int y1 = y; y1 < y + CHUNK_SIZE; y1++)
             {
-              for (unsigned int x1 = x; x1 < x + MODEL_CHUNK_SIZE; x1++)
+              for (unsigned int x1 = x; x1 < x + CHUNK_SIZE; x1++)
                 {
                   auto maxHeight = std::max(hillMap[y1][x1], std::max(hillMap[y1][x1+1], std::max(hillMap[y1+1][x1], hillMap[y1+1][x1+1])));
                   auto minHeight = std::min(hillMap[y1][x1], std::min(hillMap[y1][x1+1], std::min(hillMap[y1+1][x1], hillMap[y1+1][x1+1])));

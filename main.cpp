@@ -242,11 +242,8 @@ int main()
       //base terrain chunk tiles
       flat.use();
       flat.setMat4("u_projectionView", projectionView);
-      for (unsigned int vao = 0; vao < NUM_BASE_TERRAIN_CHUNKS; vao++)
-        {
-          glBindVertexArray(baseMapGenerator->getChunkVAO(vao));
-          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator->getNumChunksInstances(vao));
-        }
+      glBindVertexArray(baseMapGenerator->getChunkVAO());
+      glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator->getNumChunksInstances());
       //base terrain 1x1 tiles
       glBindVertexArray(baseMapGenerator->getCellVAO());
       glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, baseMapGenerator->getNumCellInstances());
@@ -478,14 +475,11 @@ void printMapsInfos()
   std::cout << "Hills tiles:\t" << hillMapGenerator->getTiles().size() << std::endl;
   std::cout << "Base tiles:\t" << baseMapGenerator->getTiles().size() << std::endl;
   int instanced = 0;
-  for (unsigned int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
-    {
-      std::cout << "x" << BASE_TERRAIN_CHUNK_SIZES[i]
-                   << "\ttiles:\t"
-                   << baseMapGenerator->getChunkTiles(i).size() << "\t(instanced)"
-                   << std::endl;
-      instanced += baseMapGenerator->getChunkTiles(i).size();
-    }
+  std::cout << "x" << CHUNK_SIZE
+               << "\ttiles:\t"
+               << baseMapGenerator->getChunkTiles().size() << "\t(instanced)"
+               << std::endl;
+  instanced += baseMapGenerator->getChunkTiles().size();
   std::cout << "1x1 \ttiles:\t"
             << baseMapGenerator->getNumCellInstances() << "\t(instanced)"
             << std::endl;

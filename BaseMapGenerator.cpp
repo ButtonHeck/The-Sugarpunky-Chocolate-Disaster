@@ -6,8 +6,7 @@ BaseMapGenerator::BaseMapGenerator(std::vector<std::vector<float> > &waterMap, s
     waterMap(waterMap),
     hillMap(hillMap)
 {
-  for (int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
-    baseChunkTiles[i].reserve(NUM_TILES / BASE_TERRAIN_CHUNK_SIZES[i] * BASE_TERRAIN_CHUNK_SIZES[i]);
+  baseChunkTiles.reserve(NUM_TILES / CHUNK_SIZE * CHUNK_SIZE);
   initializeMap(chunkMap);
 }
 
@@ -19,11 +18,8 @@ void BaseMapGenerator::prepareMap(bool randomizeShoreFlag)
     randomizeShore();
   compressMap(2.0f);
   correctMapAtEdges();
-  for (int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
-    {
-      splitMapToChunks(baseChunkTiles[i], BASE_TERRAIN_CHUNK_SIZES[i], (bool)i);
-      baseChunkTiles[i].shrink_to_fit();
-    }
+  splitMapToChunks(baseChunkTiles, CHUNK_SIZE, false);
+  baseChunkTiles.shrink_to_fit();
   removeUnderwaterTiles(UNDERWATER_REMOVAL_LEVEL);
   tiles.shrink_to_fit();
   split1x1Tiles();
@@ -126,55 +122,51 @@ void BaseMapGenerator::fillBufferData()
 
 void BaseMapGenerator::fillChunkBufferData()
 {
-  glGenVertexArrays(NUM_BASE_TERRAIN_CHUNKS, instanceVao);
-  glGenBuffers(NUM_BASE_TERRAIN_CHUNKS, instanceVbo);
-  glGenBuffers(NUM_BASE_TERRAIN_CHUNKS, instanceEbo);
-  glGenBuffers(NUM_BASE_TERRAIN_CHUNKS, instanceModelVbo);
-  for (unsigned int vao = 0; vao < NUM_BASE_TERRAIN_CHUNKS; vao++)
+  glGenVertexArrays(1, &instanceVao);
+  glGenBuffers(1, &instanceVbo);
+  glGenBuffers(1, &instanceEbo);
+  glGenBuffers(1, &instanceModelVbo);
+  GLfloat baseChunkInstanceVertices[20] = {
+      -1.0f, 0.0f,  1.0f, 0.0f,               0.0f,
+       1.0f, 0.0f,  1.0f, (float)CHUNK_SIZE,  0.0f,
+       1.0f, 0.0f, -1.0f, (float)CHUNK_SIZE,  (float)CHUNK_SIZE,
+      -1.0f, 0.0f, -1.0f, 0.0f,               (float)CHUNK_SIZE
+  };
+  glBindVertexArray(instanceVao);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, instanceEbo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, instanceVbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(baseChunkInstanceVertices), baseChunkInstanceVertices, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  NUM_CHUNKS_INSTANCES = baseChunkTiles.size();
+  glm::mat4* baseInstanceChunkModels = new glm::mat4[NUM_CHUNKS_INSTANCES];
+  for (unsigned int i = 0; i < baseChunkTiles.size(); i++)
     {
-      GLfloat baseChunkInstanceVertices[20] = {
-          -1.0f, 0.0f,  1.0f, 0.0f,                                  0.0f,
-           1.0f, 0.0f,  1.0f, (float)BASE_TERRAIN_CHUNK_SIZES[vao],  0.0f,
-           1.0f, 0.0f, -1.0f, (float)BASE_TERRAIN_CHUNK_SIZES[vao],  (float)BASE_TERRAIN_CHUNK_SIZES[vao],
-          -1.0f, 0.0f, -1.0f, 0.0f,                                  (float)BASE_TERRAIN_CHUNK_SIZES[vao]
-      };
-      glBindVertexArray(instanceVao[vao]);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, instanceEbo[vao]);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
-      glBindBuffer(GL_ARRAY_BUFFER, instanceVbo[vao]);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(baseChunkInstanceVertices), baseChunkInstanceVertices, GL_STATIC_DRAW);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
-      glEnableVertexAttribArray(1);
-      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-      NUM_CHUNKS_INSTANCES[vao] = baseChunkTiles[vao].size();
-      glm::mat4* baseInstanceChunkModels = new glm::mat4[NUM_CHUNKS_INSTANCES[vao]];
-      std::vector<TerrainTile>& baseTerrainChunk = baseChunkTiles[vao];
-      for (unsigned int i = 0; i < baseTerrainChunk.size(); i++)
-        {
-          glm::mat4 model;
-          TerrainTile& tile = baseTerrainChunk[i];
-          model = glm::translate(model, glm::vec3(- HALF_TILES_WIDTH + tile.mapX + BASE_TERRAIN_CHUNK_SIZES[vao] / 2, 0.0f, - HALF_TILES_HEIGHT + tile.mapY + BASE_TERRAIN_CHUNK_SIZES[vao] / 2));
-          model = glm::scale(model, glm::vec3(BASE_TERRAIN_CHUNK_SIZES[vao] / 2, 0.0f, BASE_TERRAIN_CHUNK_SIZES[vao] / 2));
-          baseInstanceChunkModels[i] = model;
-        }
-      glBindBuffer(GL_ARRAY_BUFFER, instanceModelVbo[vao]);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * baseTerrainChunk.size(), &baseInstanceChunkModels[0], GL_STATIC_DRAW);
-      glEnableVertexAttribArray(3);
-      glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), 0);
-      glEnableVertexAttribArray(4);
-      glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(sizeof(glm::vec4)));
-      glEnableVertexAttribArray(5);
-      glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4)));
-      glEnableVertexAttribArray(6);
-      glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4)));
-      glVertexAttribDivisor(3, 1);
-      glVertexAttribDivisor(4, 1);
-      glVertexAttribDivisor(5, 1);
-      glVertexAttribDivisor(6, 1);
-      resetAllGLBuffers();
-      delete[] baseInstanceChunkModels;
+      glm::mat4 model;
+      TerrainTile& tile = baseChunkTiles[i];
+      model = glm::translate(model, glm::vec3(- HALF_TILES_WIDTH + tile.mapX + CHUNK_SIZE / 2, 0.0f, - HALF_TILES_HEIGHT + tile.mapY + CHUNK_SIZE / 2));
+      model = glm::scale(model, glm::vec3(CHUNK_SIZE / 2, 0.0f, CHUNK_SIZE / 2));
+      baseInstanceChunkModels[i] = model;
     }
+  glBindBuffer(GL_ARRAY_BUFFER, instanceModelVbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * baseChunkTiles.size(), &baseInstanceChunkModels[0], GL_STATIC_DRAW);
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), 0);
+  glEnableVertexAttribArray(4);
+  glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(sizeof(glm::vec4)));
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4)));
+  glEnableVertexAttribArray(6);
+  glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4)));
+  glVertexAttribDivisor(3, 1);
+  glVertexAttribDivisor(4, 1);
+  glVertexAttribDivisor(5, 1);
+  glVertexAttribDivisor(6, 1);
+  resetAllGLBuffers();
+  delete[] baseInstanceChunkModels;
 }
 
 void BaseMapGenerator::fillCellBufferData()
@@ -324,7 +316,7 @@ void BaseMapGenerator::compressMap(float ratio)
 
 void BaseMapGenerator::splitMapToChunks(std::vector<TerrainTile> &baseChunks, int chunkSize, bool overlap)
 {
-  int step = overlap ? chunkSize / 2 : chunkSize - 1;
+  int step = overlap ? chunkSize / 2 : chunkSize;
   for (int y = 0; y < TILES_HEIGHT - step - 1; y += step)
     {
       for (int x = 0; x < TILES_WIDTH - step - 1; x += step)
@@ -424,19 +416,19 @@ void BaseMapGenerator::split1x1Tiles()
 void BaseMapGenerator::deleteGLObjects()
 {
   MapGenerator::deleteGLObjects();
-  glDeleteVertexArrays(5, instanceVao);
-  glDeleteBuffers(5, instanceVbo);
-  glDeleteBuffers(5, instanceEbo);
-  glDeleteBuffers(5, instanceModelVbo);
+  glDeleteVertexArrays(1, &instanceVao);
+  glDeleteBuffers(1, &instanceVbo);
+  glDeleteBuffers(1, &instanceEbo);
+  glDeleteBuffers(1, &instanceModelVbo);
   glDeleteVertexArrays(1, &cellVao);
   glDeleteBuffers(1, &cellVbo);
   glDeleteBuffers(1, &cellEbo);
   glDeleteBuffers(1, &cellModelVbo);
 }
 
-std::vector<TerrainTile> &BaseMapGenerator::getChunkTiles(int i)
+std::vector<TerrainTile> &BaseMapGenerator::getChunkTiles()
 {
-  return baseChunkTiles[i];
+  return baseChunkTiles;
 }
 
 std::vector<TerrainTile> &BaseMapGenerator::getCellTiles()
@@ -444,9 +436,9 @@ std::vector<TerrainTile> &BaseMapGenerator::getCellTiles()
   return cellTiles;
 }
 
-GLuint &BaseMapGenerator::getChunkVAO(int i)
+GLuint &BaseMapGenerator::getChunkVAO()
 {
-  return instanceVao[i];
+  return instanceVao;
 }
 
 GLuint &BaseMapGenerator::getCellVAO()
@@ -459,9 +451,9 @@ std::vector<std::vector<float> > &BaseMapGenerator::getChunkMap()
   return chunkMap;
 }
 
-int BaseMapGenerator::getNumChunksInstances(int i)
+int BaseMapGenerator::getNumChunksInstances()
 {
-  return NUM_CHUNKS_INSTANCES[i];
+  return NUM_CHUNKS_INSTANCES;
 }
 
 int BaseMapGenerator::getNumCellInstances()

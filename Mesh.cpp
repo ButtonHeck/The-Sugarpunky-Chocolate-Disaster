@@ -109,7 +109,7 @@ void Mesh::draw(Shader &shader, Camera &camera, std::vector<ModelChunk>& chunks,
               continue;
             }
           glm::vec2 directionToChunk = chunks[i].getMidPoint() - cameraPosition;
-          if (glm::length(directionToChunk) > MODEL_CHUNK_SIZE * chunkLoadingDistance)
+          if (glm::length(directionToChunk) > CHUNK_SIZE * chunkLoadingDistance)
             continue;
           glm::vec2 directionToChunkUL =  glm::normalize(glm::vec2(chunks[i].getLeft() - (float)HALF_TILES_WIDTH, chunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
           if (glm::dot(directionToChunkUL, viewDirection) > cameraCorrectedFOVDOT)

@@ -167,8 +167,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename, std::vector<Mode
 
   hillGenerator.createTiles(false, false, hillGenerator.getMap(), HILLS_OFFSET_Y);
   hillGenerator.fillBufferData(!HILLS_TEXTURE_MAPPING_SLOPE_CORRECTION);
-  for (unsigned int i = 0; i < NUM_BASE_TERRAIN_CHUNKS; i++)
-    baseGenerator.getChunkTiles(i).clear();
+  baseGenerator.getChunkTiles().clear();
   baseGenerator.getCellTiles().clear();
   baseGenerator.prepareMap(BASE_TERRAIN_RANDOMIZE_SHORE_FORM);
   baseGenerator.fillBufferData();
