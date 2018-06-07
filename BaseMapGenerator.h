@@ -12,7 +12,7 @@ public:
   void fillChunkBufferData();
   void fillCellBufferData();
   void split1x1Tiles();
-  void splitMapToChunks(std::vector<TerrainTile>& baseChunks, int chunkSize, bool overlap);
+  void splitMapToChunks(int chunkSize);
   void deleteGLObjects() override;
   std::vector<TerrainTile>& getChunkTiles();
   std::vector<TerrainTile>& getCellTiles();

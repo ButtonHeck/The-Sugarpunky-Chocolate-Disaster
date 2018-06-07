@@ -18,7 +18,7 @@ void BaseMapGenerator::prepareMap(bool randomizeShoreFlag)
     randomizeShore();
   compressMap(2.0f);
   correctMapAtEdges();
-  splitMapToChunks(baseChunkTiles, CHUNK_SIZE, false);
+  splitMapToChunks(CHUNK_SIZE);
   baseChunkTiles.shrink_to_fit();
   removeUnderwaterTiles(UNDERWATER_REMOVAL_LEVEL);
   tiles.shrink_to_fit();
@@ -314,31 +314,13 @@ void BaseMapGenerator::compressMap(float ratio)
     }
 }
 
-void BaseMapGenerator::splitMapToChunks(std::vector<TerrainTile> &baseChunks, int chunkSize, bool overlap)
+void BaseMapGenerator::splitMapToChunks(int chunkSize)
 {
-  int step = overlap ? chunkSize / 2 : chunkSize;
-  for (int y = 0; y < TILES_HEIGHT - step - 1; y += step)
+  for (int y = 0; y < TILES_HEIGHT - chunkSize + 1; y += chunkSize)
     {
-      for (int x = 0; x < TILES_WIDTH - step - 1; x += step)
+      for (int x = 0; x < TILES_WIDTH - chunkSize + 1; x += chunkSize)
         {
-          bool emptyChunk = true, chunked = true;
-          if (overlap)
-            {
-              for (int y1 = y+1; y1 < y + chunkSize - 1; y1++)
-                {
-                  for (int x1 = x+1; x1 < x + chunkSize - 1; x1++)
-                    {
-                      if (chunkMap[y1][x1] != DENY_CHUNK_RENDER_VALUE
-                          || chunkMap[y1+1][x1] != DENY_CHUNK_RENDER_VALUE
-                          || chunkMap[y1][x1+1] != DENY_CHUNK_RENDER_VALUE
-                          || chunkMap[y1+1][x1+1] != DENY_CHUNK_RENDER_VALUE)
-                        {
-                          chunked = false;
-                          break;
-                        }
-                    }
-                }
-            }
+          bool emptyChunk = true;
           for (int y1 = y; y1 < y + chunkSize; y1++)
             {
               for (int x1 = x; x1 < x + chunkSize; x1++)
@@ -355,7 +337,7 @@ void BaseMapGenerator::splitMapToChunks(std::vector<TerrainTile> &baseChunks, in
               if (!emptyChunk)
                 break;
             }
-          if (emptyChunk && (!chunked || !overlap))
+          if (emptyChunk)
             {
               for (int ydel = y + 1; ydel < y + chunkSize; ydel++)
                 {
@@ -365,7 +347,7 @@ void BaseMapGenerator::splitMapToChunks(std::vector<TerrainTile> &baseChunks, in
                       chunkMap[ydel][xdel] = DENY_CHUNK_RENDER_VALUE;
                     }
                 }
-              baseChunks.emplace_back(x, y, 0, 0, 0, 0, false);
+              baseChunkTiles.emplace_back(x, y, 0, 0, 0, 0, false);
             }
         }
     }
