@@ -230,7 +230,8 @@ int main()
       //shore terrain tiles
       shore.use();
       shore.setMat4("u_projectionView", projectionView);
-      baseMapGenerator->drawShore(camera);
+      baseMapGenerator->updateDrawVariables(camera);
+      baseMapGenerator->drawShore();
 
       //underwater tile
       underwater.use();
@@ -241,8 +242,8 @@ int main()
       //base terrain chunk tiles
       flat.use();
       flat.setMat4("u_projectionView", projectionView);
-      baseMapGenerator->drawChunks(camera);
-      baseMapGenerator->drawCells(camera);
+      baseMapGenerator->drawChunks();
+      baseMapGenerator->drawCells();
 
       //buildable tiles
       if (showBuildable)

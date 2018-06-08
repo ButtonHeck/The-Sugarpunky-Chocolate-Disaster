@@ -7,13 +7,3 @@ BaseTerrainChunk::BaseTerrainChunk(unsigned int left, unsigned int right, unsign
 {
 
 }
-
-void BaseTerrainChunk::setInstanceOffset(unsigned int offset)
-{
-  this->instanceOffset = offset;
-}
-
-unsigned int BaseTerrainChunk::getInstanceOffset() const
-{
-  return instanceOffset;
-}

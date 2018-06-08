@@ -12,4 +12,14 @@ private:
   unsigned int instanceOffset;
 };
 
+inline void BaseTerrainChunk::setInstanceOffset(unsigned int offset)
+{
+  this->instanceOffset = offset;
+}
+
+inline unsigned int BaseTerrainChunk::getInstanceOffset() const
+{
+  return instanceOffset;
+}
+
 #endif // BASETERRAINCHUNK_H

@@ -12,4 +12,14 @@ private:
   unsigned int numInstances;
 };
 
+inline void CellChunk::setNumInstances(unsigned int instances)
+{
+  this->numInstances = instances;
+}
+
+inline unsigned int CellChunk::getNumInstances() const
+{
+  return numInstances;
+}
+
 #endif // CELLCHUNK_H

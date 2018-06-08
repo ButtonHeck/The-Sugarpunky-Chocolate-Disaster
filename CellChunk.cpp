@@ -7,13 +7,3 @@ CellChunk::CellChunk(unsigned int left, unsigned int right, unsigned int top, un
 {
 
 }
-
-void CellChunk::setNumInstances(unsigned int instances)
-{
-  this->numInstances = instances;
-}
-
-unsigned int CellChunk::getNumInstances() const
-{
-  return numInstances;
-}

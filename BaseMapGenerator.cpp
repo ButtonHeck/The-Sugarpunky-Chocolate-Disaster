@@ -40,22 +40,8 @@ void BaseMapGenerator::fillBufferData()
         {
           TerrainTile& tile = tiles[shoreChunks[i].getInstanceOffset() + c];
           int offset = c * 48;
-          normal1 = glm::cross(
-                glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1)
-                -
-                glm::vec3(tile.mapX, tile.lowRight, tile.mapY)
-                ,
-                glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY)
-                -
-                glm::vec3(tile.mapX, tile.lowRight, tile.mapY));
-          normal2 = glm::cross(
-                glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY)
-                -
-                glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1)
-                ,
-                glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1)
-                -
-                glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1));
+          normal1 = glm::vec3(tile.lowLeft - tile.lowRight, 1, tile.upperRight - tile.lowRight);
+          normal2 = glm::vec3(tile.upperLeft - tile.upperRight, 1, tile.upperLeft - tile.lowLeft);
           //ll1
           vertices[offset] =   -1- HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+1] = tile.lowLeft;
@@ -477,16 +463,9 @@ void BaseMapGenerator::deleteGLObjects()
     }
 }
 
-void BaseMapGenerator::drawChunks(Camera &camera)
+void BaseMapGenerator::drawChunks()
 {
   glBindVertexArray(instanceVao);
-  float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
-  float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
-  int cameraOnMapCoordX = glm::clamp((int)(TILES_WIDTH + cameraOnMapX) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
-  int cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
-  glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
-  glm::vec2 viewDirection = glm::normalize(glm::vec2(camera.getDirection().x, camera.getDirection().z));
-  float cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 20.0f;
   for (unsigned int i = 0; i < baseChunks.size(); i++)
     {
       if (baseChunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
@@ -518,16 +497,9 @@ void BaseMapGenerator::drawChunks(Camera &camera)
     }
 }
 
-void BaseMapGenerator::drawCells(Camera &camera)
+void BaseMapGenerator::drawCells()
 {
   glBindVertexArray(cellVao);
-  float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
-  float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
-  int cameraOnMapCoordX = glm::clamp((int)(TILES_WIDTH + cameraOnMapX) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
-  int cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
-  glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
-  glm::vec2 viewDirection = glm::normalize(glm::vec2(camera.getDirection().x, camera.getDirection().z));
-  float cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 20.0f;
   for (unsigned int i = 0; i < cellChunks.size(); i++)
     {
       if (cellChunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
@@ -559,15 +531,8 @@ void BaseMapGenerator::drawCells(Camera &camera)
     }
 }
 
-void BaseMapGenerator::drawShore(Camera &camera)
+void BaseMapGenerator::drawShore()
 {
-  float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
-  float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
-  int cameraOnMapCoordX = glm::clamp((int)(TILES_WIDTH + cameraOnMapX) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
-  int cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
-  glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
-  glm::vec2 viewDirection = glm::normalize(glm::vec2(camera.getDirection().x, camera.getDirection().z));
-  float cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 20.0f;
   for (unsigned int i = 0; i < shoreChunks.size(); i++)
     {
       if (shoreChunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
@@ -639,4 +604,15 @@ int BaseMapGenerator::getNumChunksInstances()
 int BaseMapGenerator::getNumCellInstances()
 {
   return NUM_CELL_INSTANCES;
+}
+
+void BaseMapGenerator::updateDrawVariables(Camera &camera)
+{
+  float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
+  float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
+  cameraOnMapCoordX = glm::clamp((int)(TILES_WIDTH + cameraOnMapX) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
+  cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
+  cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
+  viewDirection = glm::normalize(glm::vec2(camera.getDirection().x, camera.getDirection().z));
+  cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 20.0f;
 }
