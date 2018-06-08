@@ -23,101 +23,107 @@ void BaseMapGenerator::prepareMap(bool randomizeShoreFlag)
   removeUnderwaterTiles(UNDERWATER_REMOVAL_LEVEL);
   tiles.shrink_to_fit();
   split1x1Tiles(CHUNK_SIZE);
-  createTiles(false, false, map, 0);
+  splitShoreToChunks(CHUNK_SIZE);
 }
 
 void BaseMapGenerator::fillBufferData()
 {
-  GLfloat vertices[tiles.size() * 48];
-  glm::vec3 normal1, normal2;
-  for (unsigned int c = 0; c < tiles.size(); c++)
+  unsigned int numChunks = shoreChunks.size();
+  for (unsigned int i = 0; i < numChunks; i++)
     {
-      TerrainTile& tile = tiles[c];
-      int offset = c * 48;
-      normal1 = glm::cross(
-            glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1)
-            -
-            glm::vec3(tile.mapX, tile.lowRight, tile.mapY)
-            ,
-            glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY)
-            -
-            glm::vec3(tile.mapX, tile.lowRight, tile.mapY));
-      normal2 = glm::cross(
-            glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY)
-            -
-            glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1)
-            ,
-            glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1)
-            -
-            glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1));
-      //ll1
-      vertices[offset] =   -1- HALF_TILES_WIDTH + tile.mapX;
-      vertices[offset+1] = tile.lowLeft;
-      vertices[offset+2] = - HALF_TILES_HEIGHT + tile.mapY;
-      vertices[offset+3] = 0.0f;
-      vertices[offset+4] = 0.0f;
-      vertices[offset+5] = normal1.x;
-      vertices[offset+6] = normal1.y;
-      vertices[offset+7] = normal1.z;
-      //lr1
-      vertices[offset+8] =  - HALF_TILES_WIDTH + tile.mapX;
-      vertices[offset+9] =  tile.lowRight;
-      vertices[offset+10] = - HALF_TILES_HEIGHT + tile.mapY;
-      vertices[offset+11] = 1.0f;
-      vertices[offset+12] = 0.0f;
-      vertices[offset+13] = normal1.x;
-      vertices[offset+14] = normal1.y;
-      vertices[offset+15] = normal1.z;
-      //ur1
-      vertices[offset+16] = - HALF_TILES_WIDTH + tile.mapX;
-      vertices[offset+17] = tile.upperRight;
-      vertices[offset+18] = -1 - HALF_TILES_HEIGHT + tile.mapY;
-      vertices[offset+19] = 1.0f;
-      vertices[offset+20] = 1.0f;
-      vertices[offset+21] = normal1.x;
-      vertices[offset+22] = normal1.y;
-      vertices[offset+23] = normal1.z;
-      //ur2
-      vertices[offset+24] = - HALF_TILES_WIDTH + tile.mapX;
-      vertices[offset+25] = tile.upperRight;
-      vertices[offset+26] = -1 - HALF_TILES_HEIGHT + tile.mapY;
-      vertices[offset+27] = 1.0f;
-      vertices[offset+28] = 1.0f;
-      vertices[offset+29] = normal2.x;
-      vertices[offset+30] = normal2.y;
-      vertices[offset+31] = normal2.z;
-      //ul2
-      vertices[offset+32] = -1 - HALF_TILES_WIDTH + tile.mapX;
-      vertices[offset+33] = tile.upperLeft;
-      vertices[offset+34] = -1 - HALF_TILES_HEIGHT + tile.mapY;
-      vertices[offset+35] = 0.0f;
-      vertices[offset+36] = 1.0f;
-      vertices[offset+37] = normal2.x;
-      vertices[offset+38] = normal2.y;
-      vertices[offset+39] = normal2.z;
-      //ll2
-      vertices[offset+40] = -1- HALF_TILES_WIDTH + tile.mapX;
-      vertices[offset+41] = tile.lowLeft;
-      vertices[offset+42] = - HALF_TILES_HEIGHT + tile.mapY;
-      vertices[offset+43] = 0.0f;
-      vertices[offset+44] = 0.0f;
-      vertices[offset+45] = normal2.x;
-      vertices[offset+46] = normal2.y;
-      vertices[offset+47] = normal2.z;
+      shoreVaos.push_back(0);
+      shoreVbos.push_back(0);
+      unsigned int numTiles = shoreChunks[i].getNumInstances();
+      GLfloat vertices[numTiles * 48];
+      glm::vec3 normal1, normal2;
+      for (unsigned int c = 0; c < numTiles; c++)
+        {
+          TerrainTile& tile = tiles[shoreChunks[i].getInstanceOffset() + c];
+          int offset = c * 48;
+          normal1 = glm::cross(
+                glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1)
+                -
+                glm::vec3(tile.mapX, tile.lowRight, tile.mapY)
+                ,
+                glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY)
+                -
+                glm::vec3(tile.mapX, tile.lowRight, tile.mapY));
+          normal2 = glm::cross(
+                glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY)
+                -
+                glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1)
+                ,
+                glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1)
+                -
+                glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1));
+          //ll1
+          vertices[offset] =   -1- HALF_TILES_WIDTH + tile.mapX;
+          vertices[offset+1] = tile.lowLeft;
+          vertices[offset+2] = - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[offset+3] = 0.0f;
+          vertices[offset+4] = 0.0f;
+          vertices[offset+5] = normal1.x;
+          vertices[offset+6] = normal1.y;
+          vertices[offset+7] = normal1.z;
+          //lr1
+          vertices[offset+8] =  - HALF_TILES_WIDTH + tile.mapX;
+          vertices[offset+9] =  tile.lowRight;
+          vertices[offset+10] = - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[offset+11] = 1.0f;
+          vertices[offset+12] = 0.0f;
+          vertices[offset+13] = normal1.x;
+          vertices[offset+14] = normal1.y;
+          vertices[offset+15] = normal1.z;
+          //ur1
+          vertices[offset+16] = - HALF_TILES_WIDTH + tile.mapX;
+          vertices[offset+17] = tile.upperRight;
+          vertices[offset+18] = -1 - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[offset+19] = 1.0f;
+          vertices[offset+20] = 1.0f;
+          vertices[offset+21] = normal1.x;
+          vertices[offset+22] = normal1.y;
+          vertices[offset+23] = normal1.z;
+          //ur2
+          vertices[offset+24] = - HALF_TILES_WIDTH + tile.mapX;
+          vertices[offset+25] = tile.upperRight;
+          vertices[offset+26] = -1 - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[offset+27] = 1.0f;
+          vertices[offset+28] = 1.0f;
+          vertices[offset+29] = normal2.x;
+          vertices[offset+30] = normal2.y;
+          vertices[offset+31] = normal2.z;
+          //ul2
+          vertices[offset+32] = -1 - HALF_TILES_WIDTH + tile.mapX;
+          vertices[offset+33] = tile.upperLeft;
+          vertices[offset+34] = -1 - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[offset+35] = 0.0f;
+          vertices[offset+36] = 1.0f;
+          vertices[offset+37] = normal2.x;
+          vertices[offset+38] = normal2.y;
+          vertices[offset+39] = normal2.z;
+          //ll2
+          vertices[offset+40] = -1- HALF_TILES_WIDTH + tile.mapX;
+          vertices[offset+41] = tile.lowLeft;
+          vertices[offset+42] = - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[offset+43] = 0.0f;
+          vertices[offset+44] = 0.0f;
+          vertices[offset+45] = normal2.x;
+          vertices[offset+46] = normal2.y;
+          vertices[offset+47] = normal2.z;
+        }
+      glGenVertexArrays(1, &(shoreVaos[i]));
+      glGenBuffers(1, &(shoreVbos[i]));
+      glBindVertexArray(shoreVaos[i]);
+      glBindBuffer(GL_ARRAY_BUFFER, shoreVbos[i]);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
+      glEnableVertexAttribArray(1);
+      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+      glEnableVertexAttribArray(2);
+      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
+      resetAllGLBuffers();
     }
-  glGenVertexArrays(1, &vao);
-  glGenBuffers(1, &vbo);
-  glGenBuffers(1, &ebo);
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
-  resetAllGLBuffers();
 }
 
 void BaseMapGenerator::fillChunkBufferData()
@@ -357,6 +363,47 @@ void BaseMapGenerator::splitMapToChunks(int chunkSize)
     }
 }
 
+void BaseMapGenerator::splitShoreToChunks(int chunkSize)
+{
+  tiles.clear();
+  shoreChunks.clear();
+  unsigned int offset = 0;
+  for (unsigned int y = 0; y <TILES_HEIGHT - chunkSize + 1; y += chunkSize)
+    {
+      for (unsigned int x = 0; x < TILES_WIDTH - chunkSize + 1; x += chunkSize)
+        {
+          unsigned int instances = 0;
+          for (unsigned int y1 = y + 1; y1 < y + chunkSize + 1; y1++)
+            {
+              for (unsigned int x1 = x + 1; x1 < x + chunkSize + 1; x1++)
+                {
+                  if (map[y1][x1] == DENY_TILE_RENDER_VALUE)
+                    continue;
+                  bool toCreate = map[y1][x1] != 0 || map[y1-1][x1] != 0 || map[y1][x1-1] != 0 || map[y1-1][x1-1] != 0;
+                    if (toCreate)
+                      {
+                        float ll = map[y1][x1-1];
+                        if (ll == DENY_TILE_RENDER_VALUE)
+                          ll = map[y1][x1];
+                        float lr = map[y1][x1];
+                        float ur = map[y1-1][x1];
+                        if (ur == DENY_TILE_RENDER_VALUE)
+                          ur = map[y1][x1];
+                        float ul = map[y1-1][x1-1];
+                        if (ul == DENY_TILE_RENDER_VALUE)
+                          ul = map[y1][x1];
+                        tiles.emplace_back(x1, y1, ll, lr, ur, ul);
+                        instances++;
+                      }
+                }
+            }
+          if (instances != 0)
+            shoreChunks.emplace_back(x, x + chunkSize, y, y + chunkSize, offset, instances);
+          offset += instances;
+        }
+    }
+}
+
 void BaseMapGenerator::removeUnderwaterTiles(float thresholdValue)
 {
   for (unsigned int y = 1; y < TILES_HEIGHT - 1; y++)
@@ -423,6 +470,11 @@ void BaseMapGenerator::deleteGLObjects()
   glDeleteBuffers(1, &cellVbo);
   glDeleteBuffers(1, &cellEbo);
   glDeleteBuffers(1, &cellModelVbo);
+  for (unsigned int i = 0; i < shoreVaos.size(); i++)
+    {
+      glDeleteVertexArrays(1, &(shoreVaos[i]));
+      glDeleteBuffers(1, &(shoreVbos[i]));
+    }
 }
 
 void BaseMapGenerator::drawChunks(Camera &camera)
@@ -504,6 +556,53 @@ void BaseMapGenerator::drawCells(Camera &camera)
       glm::vec2 directionToChunkLL =  glm::normalize(glm::vec2(cellChunks[i].getLeft() - (float)HALF_TILES_WIDTH, cellChunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
       if (glm::dot(directionToChunkLL, viewDirection) > cameraCorrectedFOVDOT)
         glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
+    }
+}
+
+void BaseMapGenerator::drawShore(Camera &camera)
+{
+  float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
+  float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
+  int cameraOnMapCoordX = glm::clamp((int)(TILES_WIDTH + cameraOnMapX) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
+  int cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
+  glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
+  glm::vec2 viewDirection = glm::normalize(glm::vec2(camera.getDirection().x, camera.getDirection().z));
+  float cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 20.0f;
+  for (unsigned int i = 0; i < shoreChunks.size(); i++)
+    {
+      if (shoreChunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
+        {
+          glBindVertexArray(shoreVaos[i]);
+          glDrawArrays(GL_TRIANGLES, 0, 6 * shoreChunks[i].getNumInstances());
+          continue;
+        }
+      glm::vec2 directionToChunkUL =  glm::normalize(glm::vec2(shoreChunks[i].getLeft() - (float)HALF_TILES_WIDTH, shoreChunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+      if (glm::dot(directionToChunkUL, viewDirection) > cameraCorrectedFOVDOT)
+        {
+          glBindVertexArray(shoreVaos[i]);
+          glDrawArrays(GL_TRIANGLES, 0, 6 * shoreChunks[i].getNumInstances());
+          continue;
+        }
+      glm::vec2 directionToChunkUR =  glm::normalize(glm::vec2(shoreChunks[i].getRight() - (float)HALF_TILES_WIDTH, shoreChunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+      if (glm::dot(directionToChunkUR, viewDirection) > cameraCorrectedFOVDOT)
+        {
+          glBindVertexArray(shoreVaos[i]);
+          glDrawArrays(GL_TRIANGLES, 0, 6 * shoreChunks[i].getNumInstances());
+          continue;
+        }
+      glm::vec2 directionToChunkLR =  glm::normalize(glm::vec2(shoreChunks[i].getRight() - (float)HALF_TILES_WIDTH, shoreChunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+      if (glm::dot(directionToChunkLR, viewDirection) > cameraCorrectedFOVDOT)
+        {
+          glBindVertexArray(shoreVaos[i]);
+          glDrawArrays(GL_TRIANGLES, 0, 6 * shoreChunks[i].getNumInstances());
+          continue;
+        }
+      glm::vec2 directionToChunkLL =  glm::normalize(glm::vec2(shoreChunks[i].getLeft() - (float)HALF_TILES_WIDTH, shoreChunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+      if (glm::dot(directionToChunkLL, viewDirection) > cameraCorrectedFOVDOT)
+        {
+          glBindVertexArray(shoreVaos[i]);
+          glDrawArrays(GL_TRIANGLES, 0, 6 * shoreChunks[i].getNumInstances());
+        }
     }
 }
 

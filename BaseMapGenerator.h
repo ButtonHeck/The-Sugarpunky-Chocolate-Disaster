@@ -16,9 +16,11 @@ public:
   void fillCellBufferData();
   void split1x1Tiles(int chunkSize);
   void splitMapToChunks(int chunkSize);
+  void splitShoreToChunks(int chunkSize);
   void deleteGLObjects() override;
   void drawChunks(Camera& camera);
   void drawCells(Camera& camera);
+  void drawShore(Camera& camera);
   std::vector<TerrainTile>& getChunkTiles();
   std::vector<TerrainTile>& getCellTiles();
   GLuint& getChunkVAO();
@@ -29,6 +31,7 @@ public:
 private:
   GLuint instanceVao, instanceVbo, instanceEbo, instanceModelVbo;
   GLuint cellVao, cellVbo, cellEbo, cellModelVbo;
+  std::vector<GLuint> shoreVaos, shoreVbos;
   std::vector<std::vector<float>>& waterMap;
   std::vector<std::vector<float>>& hillMap;
   std::vector<TerrainTile> baseChunkTiles;
@@ -37,6 +40,7 @@ private:
   std::default_random_engine randomizer;
   std::vector<BaseTerrainChunk> baseChunks;
   std::vector<CellChunk> cellChunks;
+  std::vector<CellChunk> shoreChunks;
   int NUM_CHUNKS_INSTANCES;
   int NUM_CELL_INSTANCES;
   void generateMap();

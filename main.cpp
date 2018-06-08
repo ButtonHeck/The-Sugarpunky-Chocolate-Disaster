@@ -230,8 +230,7 @@ int main()
       //shore terrain tiles
       shore.use();
       shore.setMat4("u_projectionView", projectionView);
-      glBindVertexArray(baseMapGenerator->getVAO());
-      glDrawArrays(GL_TRIANGLES, 0, 6 * baseMapGenerator->getTiles().size());
+      baseMapGenerator->drawShore(camera);
 
       //underwater tile
       underwater.use();
