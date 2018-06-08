@@ -28,7 +28,8 @@ SOURCES += main.cpp \
     ModelChunk.cpp \
     Settings.cpp \
     Chunk.cpp \
-    BaseTerrainChunk.cpp
+    BaseTerrainChunk.cpp \
+    CellChunk.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -76,7 +77,8 @@ HEADERS += \
     BuildableMapGenerator.h \
     ModelChunk.h \
     Chunk.h \
-    BaseTerrainChunk.h
+    BaseTerrainChunk.h \
+    CellChunk.h
 
 DISTFILES += \
     textures/underwater_sand.jpg \

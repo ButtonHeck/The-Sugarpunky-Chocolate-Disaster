@@ -22,7 +22,7 @@ void BaseMapGenerator::prepareMap(bool randomizeShoreFlag)
   baseChunkTiles.shrink_to_fit();
   removeUnderwaterTiles(UNDERWATER_REMOVAL_LEVEL);
   tiles.shrink_to_fit();
-  split1x1Tiles();
+  split1x1Tiles(CHUNK_SIZE);
   createTiles(false, false, map, 0);
 }
 
@@ -350,7 +350,7 @@ void BaseMapGenerator::splitMapToChunks(int chunkSize)
                     }
                 }
               baseChunkTiles.emplace_back(x, y, 0, 0, 0, 0, false);
-              baseChunks.emplace_back(x, x + CHUNK_SIZE, y, y + CHUNK_SIZE, chunkOffset);
+              baseChunks.emplace_back(x, x + chunkSize, y, y + chunkSize, chunkOffset);
               ++chunkOffset;
             }
         }
@@ -377,24 +377,37 @@ void BaseMapGenerator::removeUnderwaterTiles(float thresholdValue)
     }
 }
 
-void BaseMapGenerator::split1x1Tiles()
+void BaseMapGenerator::split1x1Tiles(int chunkSize)
 {
-  for (unsigned int y = 1; y <= TILES_HEIGHT; y++)
+  cellChunks.clear();
+  unsigned int offset = 0;
+  for (unsigned int y = 0; y < TILES_HEIGHT - chunkSize + 1; y += chunkSize)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x++)
+      for (unsigned int x = 0; x < TILES_WIDTH - chunkSize + 1; x += chunkSize)
         {
-          if ((map[y][x] == 0
-               && map[y-1][x] == 0
-               && map[y-1][x+1] == 0
-               && map[y][x+1] == 0)
-              &&
-              (chunkMap[y][x] != DENY_CHUNK_RENDER_VALUE
-               && chunkMap[y-1][x] != DENY_CHUNK_RENDER_VALUE
-               && chunkMap[y-1][x+1] != DENY_CHUNK_RENDER_VALUE
-               && chunkMap[y][x+1] != DENY_CHUNK_RENDER_VALUE))
+          unsigned int instances = 0;
+          for (unsigned int y1 = y+1; y1 < y + chunkSize + 1; y1++)
             {
-              cellTiles.emplace_back(x, y, 0, 0, 0, 0, false);
+              for (unsigned int x1 = x; x1 < x + chunkSize; x1++)
+                {
+                  if ((map[y1][x1] == 0
+                       && map[y1-1][x1] == 0
+                       && map[y1-1][x1+1] == 0
+                       && map[y1][x1+1] == 0)
+                      &&
+                      (chunkMap[y1][x1] != DENY_CHUNK_RENDER_VALUE
+                       && chunkMap[y1-1][x1] != DENY_CHUNK_RENDER_VALUE
+                       && chunkMap[y1-1][x1+1] != DENY_CHUNK_RENDER_VALUE
+                       && chunkMap[y1][x1+1] != DENY_CHUNK_RENDER_VALUE))
+                    {
+                      cellTiles.emplace_back(x1, y1, 0, 0, 0, 0, false);
+                      instances++;
+                    }
+                }
             }
+          if (instances != 0)
+            cellChunks.emplace_back(x, x+chunkSize, y, y+chunkSize, offset, instances);
+          offset += instances;
         }
     }
 }
@@ -450,6 +463,47 @@ void BaseMapGenerator::drawChunks(Camera &camera)
       glm::vec2 directionToChunkLL =  glm::normalize(glm::vec2(baseChunks[i].getLeft() - (float)HALF_TILES_WIDTH, baseChunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
       if (glm::dot(directionToChunkLL, viewDirection) > cameraCorrectedFOVDOT)
           glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
+    }
+}
+
+void BaseMapGenerator::drawCells(Camera &camera)
+{
+  glBindVertexArray(cellVao);
+  float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
+  float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
+  int cameraOnMapCoordX = glm::clamp((int)(TILES_WIDTH + cameraOnMapX) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
+  int cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
+  glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
+  glm::vec2 viewDirection = glm::normalize(glm::vec2(camera.getDirection().x, camera.getDirection().z));
+  float cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 20.0f;
+  for (unsigned int i = 0; i < cellChunks.size(); i++)
+    {
+      if (cellChunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
+        {
+          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
+          continue;
+        }
+      glm::vec2 directionToChunkUL =  glm::normalize(glm::vec2(cellChunks[i].getLeft() - (float)HALF_TILES_WIDTH, cellChunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+      if (glm::dot(directionToChunkUL, viewDirection) > cameraCorrectedFOVDOT)
+        {
+          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
+          continue;
+        }
+      glm::vec2 directionToChunkUR =  glm::normalize(glm::vec2(cellChunks[i].getRight() - (float)HALF_TILES_WIDTH, cellChunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+      if (glm::dot(directionToChunkUR, viewDirection) > cameraCorrectedFOVDOT)
+        {
+          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
+          continue;
+        }
+      glm::vec2 directionToChunkLR =  glm::normalize(glm::vec2(cellChunks[i].getRight() - (float)HALF_TILES_WIDTH, cellChunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+      if (glm::dot(directionToChunkLR, viewDirection) > cameraCorrectedFOVDOT)
+        {
+          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
+          continue;
+        }
+      glm::vec2 directionToChunkLL =  glm::normalize(glm::vec2(cellChunks[i].getLeft() - (float)HALF_TILES_WIDTH, cellChunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
+      if (glm::dot(directionToChunkLL, viewDirection) > cameraCorrectedFOVDOT)
+        glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
     }
 }
 

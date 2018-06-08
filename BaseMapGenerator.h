@@ -3,6 +3,7 @@
 #include "MapGenerator.h"
 #include <random>
 #include "BaseTerrainChunk.h"
+#include "CellChunk.h"
 #include "Camera.h"
 
 class BaseMapGenerator : public MapGenerator
@@ -13,10 +14,11 @@ public:
   void fillBufferData();
   void fillChunkBufferData();
   void fillCellBufferData();
-  void split1x1Tiles();
+  void split1x1Tiles(int chunkSize);
   void splitMapToChunks(int chunkSize);
   void deleteGLObjects() override;
   void drawChunks(Camera& camera);
+  void drawCells(Camera& camera);
   std::vector<TerrainTile>& getChunkTiles();
   std::vector<TerrainTile>& getCellTiles();
   GLuint& getChunkVAO();
@@ -34,6 +36,7 @@ private:
   std::vector<TerrainTile> cellTiles;
   std::default_random_engine randomizer;
   std::vector<BaseTerrainChunk> baseChunks;
+  std::vector<CellChunk> cellChunks;
   int NUM_CHUNKS_INSTANCES;
   int NUM_CELL_INSTANCES;
   void generateMap();
