@@ -279,62 +279,11 @@ int main()
       water.use();
       water.setMat4("u_projectionView", projectionView);
       water.setVec3("u_viewPosition", viewPosition);
-      std::vector<TerrainTile>& waterTiles = waterMapGenerator->getTiles();
       glBindVertexArray(waterMapGenerator->getVAO());
       if (animateWater)
-        {
-          glBindBuffer(GL_ARRAY_BUFFER, waterMapGenerator->getVBO());
-          GLfloat* waterHeightOffsets = waterMapGenerator->getHeightOffsets();
-          double frameTime = glfwGetTime();
-          double offsetMultiplier = frameTime / 8;
-          for (size_t i = 0; i < waterMapGenerator->WATER_HEIGHT_OFFSETS_SIZE; i+=2)
-            {
-                waterHeightOffsets[i] = std::cos(offsetMultiplier * (i % 31)) / 16 + WATER_LEVEL;
-                waterHeightOffsets[i+1] = std::sin(offsetMultiplier * (i % 29)) / 16 + WATER_LEVEL;
-            }
-          GLfloat* waterVertexCoordinatePointer = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-          unsigned int numWaterTiles = waterTiles.size();
-          glm::vec3 normalLR, normalUL;
-          for (unsigned int i = 0; i < numWaterTiles; ++i)
-            {
-              TerrainTile& tile = waterTiles[i];
-              unsigned int pointerOffsetWithStride = i * 48;
-              unsigned int heightOffsetWithStrideForLow = (tile.mapY+1) * TILES_WIDTH;
-              unsigned int heightOffsetWithStrideForUpper = tile.mapY * TILES_WIDTH;
-
-              float ll = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX];
-              float lr = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + 1];
-              float ur = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX + 1];
-              float ul = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX];
-
-              normalLR = glm::vec3(ll - lr, 1, ur - lr); //just do the calculations manually (UR-LR x LL-LR and LL-UL x UR-UL)
-              normalUL = glm::vec3(ul - ur, 1, ul - ll);
-
-              *(waterVertexCoordinatePointer+1+pointerOffsetWithStride) = ll;
-              *(waterVertexCoordinatePointer+9+pointerOffsetWithStride) = lr;
-              *(waterVertexCoordinatePointer+17+pointerOffsetWithStride) = ur;
-              *(waterVertexCoordinatePointer+25+pointerOffsetWithStride) = ur;
-              *(waterVertexCoordinatePointer+33+pointerOffsetWithStride) = ul;
-              *(waterVertexCoordinatePointer+41+pointerOffsetWithStride) = ll;
-
-              *(waterVertexCoordinatePointer+5+pointerOffsetWithStride) = normalLR.x;
-              *(waterVertexCoordinatePointer+7+pointerOffsetWithStride) = normalLR.z;
-              *(waterVertexCoordinatePointer+13+pointerOffsetWithStride) = normalLR.x;
-              *(waterVertexCoordinatePointer+15+pointerOffsetWithStride) = normalLR.z;
-              *(waterVertexCoordinatePointer+21+pointerOffsetWithStride) = normalLR.x;
-              *(waterVertexCoordinatePointer+23+pointerOffsetWithStride) = normalLR.z;
-
-              *(waterVertexCoordinatePointer+29+pointerOffsetWithStride) = normalUL.x;
-              *(waterVertexCoordinatePointer+31+pointerOffsetWithStride) = normalUL.z;
-              *(waterVertexCoordinatePointer+37+pointerOffsetWithStride) = normalUL.x;
-              *(waterVertexCoordinatePointer+39+pointerOffsetWithStride) = normalUL.z;
-              *(waterVertexCoordinatePointer+45+pointerOffsetWithStride) = normalUL.x;
-              *(waterVertexCoordinatePointer+47+pointerOffsetWithStride) = normalUL.z;
-            }
-          glUnmapBuffer(GL_ARRAY_BUFFER);
-        }
+        waterMapGenerator->updateAnimationFrame();
       glEnable(GL_BLEND);
-      glDrawArrays(GL_TRIANGLES, 0, 6 * waterTiles.size());
+      glDrawArrays(GL_TRIANGLES, 0, 6 * waterMapGenerator->getTiles().size());
       glDisable(GL_BLEND);
 
       //Skybox rendering
