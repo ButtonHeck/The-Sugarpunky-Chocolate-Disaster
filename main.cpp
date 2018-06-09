@@ -52,7 +52,8 @@ bool saveRequest = false;
 bool loadRequest = false;
 bool showCursor = false;
 bool showBuildable = false;
-bool modelRenderOptimize = true;
+bool modelsFrustumCulling = true;
+bool hillsFrustumCulling = true;
 
 int main()
 {
@@ -220,30 +221,30 @@ int main()
           underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF, GL_LINEAR, GL_LINEAR);
         }
 
-      //hill tiles
+      //hill chunks drawing
       hills.use();
       hills.setMat4("u_projectionView", projectionView);
       hills.setVec3("u_viewPosition", viewPosition);
-      glBindVertexArray(hillMapGenerator->getVAO());
-      glDrawElements(GL_TRIANGLES, 6 * hillMapGenerator->getTiles().size(), GL_UNSIGNED_INT, 0);
+      hillMapGenerator->updateDrawVariables(camera);
+      hillMapGenerator->drawChunks(hillsFrustumCulling);
 
-      //shore terrain tiles
+      //shore terrain chunks drawing
       shore.use();
       shore.setMat4("u_projectionView", projectionView);
       baseMapGenerator->updateDrawVariables(camera);
       baseMapGenerator->drawShore();
+
+      //flat terrain chunks drawing
+      flat.use();
+      flat.setMat4("u_projectionView", projectionView);
+      baseMapGenerator->drawChunks();
+      baseMapGenerator->drawCells();
 
       //underwater tile
       underwater.use();
       underwater.setMat4("u_projectionView", projectionView);
       glBindVertexArray(underwaterQuadGenerator.getVAO());
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-      //base terrain chunk tiles
-      flat.use();
-      flat.setMat4("u_projectionView", projectionView);
-      baseMapGenerator->drawChunks();
-      baseMapGenerator->drawCells();
 
       //buildable tiles
       if (showBuildable)
@@ -347,7 +348,7 @@ int main()
       glDepthFunc(GL_LESS);
       glEnable(GL_CULL_FACE);
 
-      //trees rendering
+      //trees chunks rendering
       if (renderTreeModels)
         {
           modelShader.use();
@@ -355,7 +356,7 @@ int main()
           modelShader.setVec3("u_viewPosition", viewPosition);
           modelShader.setBool("u_shadow", renderShadowOnTrees);
           treeGenerator->draw(modelShader, camera, treeModelChunks, hillTreeModelChunks,
-                              modelRenderOptimize, CHUNK_LOADING_DISTANCE);
+                              modelsFrustumCulling, CHUNK_LOADING_DISTANCE);
         }
 
       //font rendering

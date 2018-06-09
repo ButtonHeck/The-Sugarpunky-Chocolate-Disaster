@@ -354,14 +354,14 @@ void BaseMapGenerator::splitShoreToChunks(int chunkSize)
   tiles.clear();
   shoreChunks.clear();
   unsigned int offset = 0;
-  for (unsigned int y = 0; y <TILES_HEIGHT - chunkSize + 1; y += chunkSize)
+  for (int y = 0; y <TILES_HEIGHT - chunkSize + 1; y += chunkSize)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH - chunkSize + 1; x += chunkSize)
+      for (int x = 0; x < TILES_WIDTH - chunkSize + 1; x += chunkSize)
         {
           unsigned int instances = 0;
-          for (unsigned int y1 = y + 1; y1 < y + chunkSize + 1; y1++)
+          for (int y1 = y + 1; y1 < y + chunkSize + 1; y1++)
             {
-              for (unsigned int x1 = x + 1; x1 < x + chunkSize + 1; x1++)
+              for (int x1 = x + 1; x1 < x + chunkSize + 1; x1++)
                 {
                   if (map[y1][x1] == DENY_TILE_RENDER_VALUE)
                     continue;
@@ -414,14 +414,14 @@ void BaseMapGenerator::split1x1Tiles(int chunkSize)
 {
   cellChunks.clear();
   unsigned int offset = 0;
-  for (unsigned int y = 0; y < TILES_HEIGHT - chunkSize + 1; y += chunkSize)
+  for (int y = 0; y < TILES_HEIGHT - chunkSize + 1; y += chunkSize)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH - chunkSize + 1; x += chunkSize)
+      for (int x = 0; x < TILES_WIDTH - chunkSize + 1; x += chunkSize)
         {
           unsigned int instances = 0;
-          for (unsigned int y1 = y+1; y1 < y + chunkSize + 1; y1++)
+          for (int y1 = y+1; y1 < y + chunkSize + 1; y1++)
             {
-              for (unsigned int x1 = x; x1 < x + chunkSize; x1++)
+              for (int x1 = x; x1 < x + chunkSize; x1++)
                 {
                   if ((map[y1][x1] == 0
                        && map[y1-1][x1] == 0
