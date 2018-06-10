@@ -225,7 +225,7 @@ int main()
       //shore terrain chunks drawing
       shore.use();
       shore.setMat4("u_projectionView", projectionView);
-      renderer.drawShore(baseMapGenerator);
+      renderer.drawShore(baseMapGenerator, viewFrustum);
 
       //flat terrain chunks drawing
       flat.use();

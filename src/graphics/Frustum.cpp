@@ -58,3 +58,13 @@ void Frustum::updateFrustum(glm::mat4 &projectionView)
   frustumPlanes[FRUSTUM_FRONT].w = clip[15] + clip[14];
   normalizePlane(FRUSTUM_FRONT);
 }
+
+bool Frustum::isInside(float x, float y, float z)
+{
+  for (unsigned int i = 0; i < 6; i++)
+    {
+      if (frustumPlanes[i].x * x + frustumPlanes[i].y * y + frustumPlanes[i].z * z + frustumPlanes[i].w <= 0)
+        return false;
+    }
+  return true;
+}

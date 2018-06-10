@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include "src/graphics/Shader.h"
 #include "src/graphics/Camera.h"
+#include "src/graphics/Frustum.h"
 #include "src/generator/HillsMapGenerator.h"
 #include "src/generator/BaseMapGenerator.h"
 #include "src/generator/UnderwaterQuadMapGenerator.h"
@@ -17,7 +18,7 @@ public:
   Renderer(Camera& camera);
   void updateDrawVariables();
   void drawHills(HillsMapGenerator* generator, bool enableFrustumCulling);
-  void drawShore(BaseMapGenerator* generator);
+  void drawShore(BaseMapGenerator* generator, Frustum& frustum);
   void drawFlatTerrain(BaseMapGenerator* generator);
   void drawUnderwaterQuad(UnderwaterQuadMapGenerator* generator);
   void drawBuildableTiles(BuildableMapGenerator* generator);
