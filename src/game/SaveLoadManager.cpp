@@ -14,7 +14,7 @@ SaveLoadManager::SaveLoadManager(BaseMapGenerator &baseGenerator, HillsMapGenera
 
 }
 
-bool SaveLoadManager::saveToFile(const std::string &filename)
+bool SaveLoadManager::saveToFile(const std::string &filename, std::vector<ModelChunk>& treeModelChunks, std::vector<ModelChunk>& hillTreeModelChunks)
 {
   std::ofstream output(filename);
   if (!output)
@@ -49,7 +49,7 @@ bool SaveLoadManager::saveToFile(const std::string &filename)
           output << value << " ";
         }
     }
-  treeGenerator->serialize(output);
+  treeGenerator->serialize(output, treeModelChunks, hillTreeModelChunks);
   output.close();
   return true;
 }

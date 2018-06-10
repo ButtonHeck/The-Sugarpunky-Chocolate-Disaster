@@ -27,7 +27,6 @@ SOURCES += src/game/main.cpp \
     src/model/Mesh.cpp \
     src/model/Model.cpp \
     src/model/TerrainTile.cpp \
-    src/model/ModelManager.cpp \
     src/chunk/ModelChunk.cpp \
     src/chunk/Chunk.cpp \
     src/chunk/BaseTerrainChunk.cpp \
@@ -78,7 +77,6 @@ HEADERS += \
     src/model/TerrainTile.h \
     src/model/Mesh.h \
     src/model/Model.h \
-    src/model/ModelManager.h \
     src/chunk/ModelChunk.h \
     src/chunk/Chunk.h \
     src/chunk/BaseTerrainChunk.h \
@@ -153,7 +151,8 @@ DISTFILES += \
     res/textures/flat2_x2.jpg \
     res/textures/flat_x2.jpg \
     res/textures/normalMap.jpg \
-    res/shaders/selectedTile.fs
+    res/shaders/selectedTile.fs \
+    res/saves/testSave.txt
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

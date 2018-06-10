@@ -20,7 +20,6 @@
 #include "src/generator/UnderwaterQuadMapGenerator.h"
 #include "src/generator/TreeGenerator.h"
 #include "src/generator/BuildableMapGenerator.h"
-#include "src/model/ModelManager.h"
 #include "src/chunk/ModelChunk.h"
 
 GLFWwindow* initGLFW();
@@ -38,7 +37,6 @@ Renderer renderer(camera);
 glm::vec3 cursorToViewportDirection;
 InputController input;
 TextureLoader textureLoader;
-ModelManager modelManager;
 WaterMapGenerator* waterMapGenerator = new WaterMapGenerator();
 HillsMapGenerator* hillMapGenerator = new HillsMapGenerator(waterMapGenerator->getMap());
 BaseMapGenerator* baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
@@ -104,14 +102,19 @@ int main()
   CoordinateSystemRenderer csRenderer(&csShader);
 
   //models and model-related objects loading
-  treeGenerator = new TreeGenerator(modelManager.getPlainTreesPathsList(), modelManager.getHillTreesPathsList(), textureLoader,
-                                    treeModelChunks, hillTreeModelChunks);
+  Model tree1("/models/tree1/tree1.obj", textureLoader);
+  Model tree2("/models/tree2/tree2.obj", textureLoader);
+  Model tree3("/models/tree3/tree3.obj", textureLoader);
+  Model hillTree1("/models/hillTree1/hillTree1.obj", textureLoader);
+  Model hillTree2("/models/hillTree2/hillTree2.obj", textureLoader);
+  Model hillTree3("/models/hillTree3/hillTree3.obj", textureLoader);
+  treeGenerator = new TreeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2, hillTree3});
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
   //generating the terrain landscape data and filling related vertex/element buffers
   prepareTerrain();
-  treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-  treeGenerator->setupHillModels(hillMapGenerator->getMap());
+  treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap(), treeModelChunks);
+  treeGenerator->setupHillModels(hillMapGenerator->getMap(), hillTreeModelChunks);
   UnderwaterQuadMapGenerator underwaterQuadGenerator;
   Skybox skybox("/textures/cubemap/", textureLoader, SKYBOX);
 
@@ -201,8 +204,8 @@ int main()
           baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
           buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
           prepareTerrain();
-          treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-          treeGenerator->setupHillModels(hillMapGenerator->getMap());
+          treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap(), treeModelChunks);
+          treeGenerator->setupHillModels(hillMapGenerator->getMap(), hillTreeModelChunks);
           delete saveLoadManager;
           saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
           saveLoadManager->setTreeGenerator(*treeGenerator);
@@ -273,7 +276,7 @@ int main()
           modelShader.setMat4("u_projectionView", projectionView);
           modelShader.setVec3("u_viewPosition", viewPosition);
           modelShader.setBool("u_shadow", renderShadowOnTrees);
-          renderer.drawTrees(treeGenerator, modelShader, modelsFrustumCulling);
+          renderer.drawTrees(treeGenerator, modelShader, modelsFrustumCulling, treeModelChunks, hillTreeModelChunks);
         }
 
       //font rendering
@@ -308,7 +311,7 @@ int main()
       //save/load routine
       if (saveRequest)
         {
-          saveLoadManager->saveToFile(RES_DIR + "/saves/testSave.txt");
+          saveLoadManager->saveToFile(RES_DIR + "/saves/testSave.txt", treeModelChunks, hillTreeModelChunks);
           saveRequest = false;
         }
       if (loadRequest)

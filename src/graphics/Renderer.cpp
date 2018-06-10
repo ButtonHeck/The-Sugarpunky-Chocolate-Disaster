@@ -220,12 +220,11 @@ void Renderer::drawSkybox(Skybox *skybox)
   glEnable(GL_CULL_FACE);
 }
 
-void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFrustumCulling)
+void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFrustumCulling,
+                         std::vector<ModelChunk>& treeModelChunks, std::vector<ModelChunk>& hillTreeModelChunks)
 {
   auto plainTrees = generator->getPlainTrees();
   auto hillTrees = generator->getHillTrees();
-  auto treeModelChunks = generator->getTreeModelChunks();
-  auto hillTreeModelChunks = generator->getHillTreeModelChunks();
   for (unsigned int i = 0; i < plainTrees.size(); i++)
     {
       Model& model = plainTrees[i];
