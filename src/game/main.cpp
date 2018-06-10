@@ -15,6 +15,7 @@
 #include "src/graphics/Skybox.h"
 #include "src/graphics/FontManager.h"
 #include "src/graphics/CoordinateSystemRenderer.h"
+#include "src/graphics/Frustum.h"
 #include "src/generator/WaterMapGenerator.h"
 #include "src/generator/HillsMapGenerator.h"
 #include "src/generator/UnderwaterQuadMapGenerator.h"
@@ -34,6 +35,7 @@ GLFWwindow* window;
 Timer timer;
 Camera camera(glm::vec3(0.0f, 3.0f, 0.0f));
 Renderer renderer(camera);
+Frustum viewFrustum;
 glm::vec3 cursorToViewportDirection;
 InputController input;
 TextureLoader textureLoader;
@@ -192,6 +194,7 @@ int main()
       glm::vec3 viewPosition = camera.getPosition();
       glm::mat4 projectionView = projection * view;
       renderer.updateDrawVariables();
+      viewFrustum.updateFrustum(projectionView);
 
       if (recreateTerrainRequest)
         {

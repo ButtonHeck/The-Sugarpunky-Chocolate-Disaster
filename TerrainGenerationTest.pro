@@ -30,7 +30,8 @@ SOURCES += src/game/main.cpp \
     src/chunk/ModelChunk.cpp \
     src/chunk/Chunk.cpp \
     src/chunk/BaseTerrainChunk.cpp \
-    src/chunk/CellChunk.cpp
+    src/chunk/CellChunk.cpp \
+    src/graphics/Frustum.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -80,7 +81,8 @@ HEADERS += \
     src/chunk/ModelChunk.h \
     src/chunk/Chunk.h \
     src/chunk/BaseTerrainChunk.h \
-    src/chunk/CellChunk.h
+    src/chunk/CellChunk.h \
+    src/graphics/Frustum.h
 
 DISTFILES += \
     res/textures/underwater_sand.jpg \
