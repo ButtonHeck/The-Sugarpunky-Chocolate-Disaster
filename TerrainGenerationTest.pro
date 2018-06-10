@@ -152,7 +152,8 @@ DISTFILES += \
     res/textures/flat_x2.jpg \
     res/textures/normalMap.jpg \
     res/shaders/selectedTile.fs \
-    res/saves/testSave.txt
+    res/saves/testSave.txt \
+    res/fonts/Laconic_Bold.otf
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

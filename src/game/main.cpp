@@ -98,7 +98,7 @@ int main()
   {&hills, &shore, &underwater, &flat, &water, &sky, &modelShader, &fontShader, &csShader, &buildableShader, &selectedTileShader};
 
   //setup debug visual output objects
-  FontManager fontManager("OCTAPOST_1.ttf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), &fontShader);
+  FontManager fontManager("Laconic_Bold.otf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), &fontShader);
   CoordinateSystemRenderer csRenderer(&csShader);
 
   //models and model-related objects loading
@@ -284,10 +284,10 @@ int main()
         {
           ModelChunk cameraChunk = camera.getChunk(treeModelChunks);
           fontManager.renderText("FPS: " + std::to_string(timer.getFPS()), 10.0f, (float)scr_height - 25.0f, 0.35f);
-          fontManager.renderText("camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
+          fontManager.renderText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                                  + std::to_string(viewPosition.y).substr(0,6) + ": "
                                  + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 45.0f, 0.35f);
-          fontManager.renderText("camera on map: " + std::to_string(camera.getMapCoordX()) + ": " + std::to_string(camera.getMapCoordZ()),
+          fontManager.renderText("Camera on map: " + std::to_string(camera.getMapCoordX()) + ": " + std::to_string(camera.getMapCoordZ()),
                                  10.0f, (float)scr_height - 65.0f, 0.35f);
           fontManager.renderText("View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
                                  + std::to_string(camera.getDirection().y).substr(0,6) + ": "
@@ -298,7 +298,7 @@ int main()
           fontManager.renderText("Cursor on map: " + (!showCursor ? "inactive" : (std::to_string(input.getCursorMapX()) + ": "
                                  + std::to_string(input.getCursorMapZ()-1) + ", " + input.getCursorTileName())),
                                  10.0f, (float)scr_height - 125.0f, 0.35f);
-          fontManager.renderText("camera in chunk: x-" + std::to_string(cameraChunk.getLeft()) + ":" + std::to_string(cameraChunk.getRight())
+          fontManager.renderText("Camera in chunk: x-" + std::to_string(cameraChunk.getLeft()) + ":" + std::to_string(cameraChunk.getRight())
                                  + ", z-" + std::to_string(cameraChunk.getTop()) + ":" + std::to_string(cameraChunk.getBottom()),
                                  10.0f, (float)scr_height - 145.0f, 0.35f);
           csRenderer.draw(view ,aspect_ratio);
