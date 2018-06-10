@@ -308,12 +308,12 @@ int main()
       //save/load routine
       if (saveRequest)
         {
-          saveLoadManager->saveToFile(CWD + "/saves/testSave.txt");
+          saveLoadManager->saveToFile(RES_DIR + "/saves/testSave.txt");
           saveRequest = false;
         }
       if (loadRequest)
         {
-          saveLoadManager->loadFromFile(CWD + "/saves/testSave.txt", treeModelChunks, hillTreeModelChunks);
+          saveLoadManager->loadFromFile(RES_DIR + "/saves/testSave.txt", treeModelChunks, hillTreeModelChunks);
           loadRequest = false;
           underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF, GL_LINEAR, GL_LINEAR);
         }

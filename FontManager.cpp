@@ -10,7 +10,7 @@ FontManager::FontManager(const std::string &fontfile, glm::mat4 projection, Shad
   if (FT_Init_FreeType(&ft))
     std::cerr << "FreeType error: could not init FreeType library\n";
   FT_Face face;
-  if (FT_New_Face(ft, std::string(CWD + "/fonts/" + filename).c_str(), 0, &face))
+  if (FT_New_Face(ft, std::string(RES_DIR + "/fonts/" + filename).c_str(), 0, &face))
     std::cerr << "FreeType error: could not load font\n";
   FT_Set_Pixel_Sizes(face, 0, 48);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);

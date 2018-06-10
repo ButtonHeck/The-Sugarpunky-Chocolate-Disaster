@@ -13,7 +13,7 @@ GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, G
   glGenTextures(1, &texture);
   glActiveTexture(GL_TEXTURE0 + textureUnit);
   glBindTexture(GL_TEXTURE_2D, texture);
-  std::string fullPath = includeCWD ? std::string(CWD + path) : path;
+  std::string fullPath = includeCWD ? std::string(RES_DIR + path) : path;
   if (!ilLoadImage(fullPath.c_str()))
     printf("Error when loading texture: %s\n", fullPath.c_str());
   ILubyte* data = ilGetData();

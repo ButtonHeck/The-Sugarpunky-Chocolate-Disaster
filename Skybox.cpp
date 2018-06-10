@@ -2,7 +2,7 @@
 
 Skybox::Skybox(const std::string &directory, TextureLoader& loader, GLuint textureUnit)
   :
-    directory(std::string(CWD + directory)),
+    directory(std::string(RES_DIR + directory)),
     loader(loader),
     textureUnit(textureUnit)
 {

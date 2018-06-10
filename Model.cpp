@@ -5,7 +5,7 @@ Model::Model(const std::string& path, TextureLoader& textureLoader)
   :
     textureLoader(textureLoader)
 {
-  loadModel(std::string(CWD + path));
+  loadModel(std::string(RES_DIR + path));
 }
 
 void Model::loadModel(const std::string &path)
@@ -134,7 +134,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *material, aiTexture
           Texture texture;
           texture.type = typeName;
           std::string path = this->directory + '/' + std::string(texturePath.C_Str());
-          texture.id = textureLoader.loadTexture(path, 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, !INCLUDE_CWD);
+          texture.id = textureLoader.loadTexture(path, 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, !INCLUDE_RES_DIR);
           texture.path = texturePath.C_Str();
           textures.push_back(texture);
           textures_loaded.push_back(texture);
