@@ -28,14 +28,6 @@ void MapGenerator::resetAllGLBuffers()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void MapGenerator::setupGLBuffersAttributes()
-{
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-}
-
 void MapGenerator::createTiles(bool flat, bool createOnZeroTiles, std::vector<std::vector<float>>& map, float offsetY)
 {
   tiles.clear();

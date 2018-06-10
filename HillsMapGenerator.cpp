@@ -244,53 +244,14 @@ void HillsMapGenerator::splitToChunks(int chunkSize)
     }
 }
 
-void HillsMapGenerator::drawChunks(bool enableFrustumCulling)
+std::vector<CellChunk> &HillsMapGenerator::getChunks()
 {
-  if (!enableFrustumCulling)
-    {
-      for (unsigned int i = 0; i < chunks.size(); i++)
-        {
-          glBindVertexArray(vaos[i]);
-          glDrawElements(GL_TRIANGLES, 6 * chunks[i].getNumInstances(), GL_UNSIGNED_INT, 0);
-        }
-      return;
-    }
-  for (unsigned int i = 0; i < chunks.size(); i++)
-    {
-      if (chunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
-        {
-          glBindVertexArray(vaos[i]);
-          glDrawElements(GL_TRIANGLES, 6 * chunks[i].getNumInstances(), GL_UNSIGNED_INT, 0);
-          continue;
-        }
-      glm::vec2 directionToChunkUL =  glm::normalize(glm::vec2(chunks[i].getLeft() - (float)HALF_TILES_WIDTH, chunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkUL, viewDirection) > cameraCorrectedFOVDOT)
-        {
-          glBindVertexArray(vaos[i]);
-          glDrawElements(GL_TRIANGLES, 6 * chunks[i].getNumInstances(), GL_UNSIGNED_INT, 0);
-          continue;
-        }
-      glm::vec2 directionToChunkUR =  glm::normalize(glm::vec2(chunks[i].getRight() - (float)HALF_TILES_WIDTH, chunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkUR, viewDirection) > cameraCorrectedFOVDOT)
-        {
-          glBindVertexArray(vaos[i]);
-          glDrawElements(GL_TRIANGLES, 6 * chunks[i].getNumInstances(), GL_UNSIGNED_INT, 0);
-          continue;
-        }
-      glm::vec2 directionToChunkLR =  glm::normalize(glm::vec2(chunks[i].getRight() - (float)HALF_TILES_WIDTH, chunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkLR, viewDirection) > cameraCorrectedFOVDOT)
-        {
-          glBindVertexArray(vaos[i]);
-          glDrawElements(GL_TRIANGLES, 6 * chunks[i].getNumInstances(), GL_UNSIGNED_INT, 0);
-          continue;
-        }
-      glm::vec2 directionToChunkLL =  glm::normalize(glm::vec2(chunks[i].getLeft() - (float)HALF_TILES_WIDTH, chunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkLL, viewDirection) > cameraCorrectedFOVDOT)
-        {
-          glBindVertexArray(vaos[i]);
-          glDrawElements(GL_TRIANGLES, 6 * chunks[i].getNumInstances(), GL_UNSIGNED_INT, 0);
-        }
-    }
+  return chunks;
+}
+
+GLuint &HillsMapGenerator::getChunkVao(int i)
+{
+  return vaos[i];
 }
 
 void HillsMapGenerator::deleteGLObjects()
@@ -302,17 +263,6 @@ void HillsMapGenerator::deleteGLObjects()
       glDeleteBuffers(1, &(vbos[i]));
       glDeleteBuffers(1, &(ebos[i]));
     }
-}
-
-void HillsMapGenerator::updateDrawVariables(Camera &camera)
-{
-  float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
-  float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
-  cameraOnMapCoordX = glm::clamp((int)(TILES_WIDTH + cameraOnMapX) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
-  cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
-  cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
-  viewDirection = glm::normalize(glm::vec2(camera.getDirection().x, camera.getDirection().z));
-  cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 20.0f;
 }
 
 void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY density)

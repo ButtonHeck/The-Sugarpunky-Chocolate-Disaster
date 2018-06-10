@@ -20,6 +20,7 @@
 #include "SaveLoadManager.h"
 #include "BuildableMapGenerator.h"
 #include "ModelChunk.h"
+#include "Renderer.h"
 
 GLFWwindow* initGLFW();
 void prepareTerrain();
@@ -32,6 +33,7 @@ float aspect_ratio;
 GLFWwindow* window;
 Timer timer;
 Camera camera(glm::vec3(0.0f, 3.0f, 0.0f));
+Renderer renderer(camera);
 glm::vec3 cursorToViewportDirection;
 InputController input;
 TextureLoader textureLoader;
@@ -106,13 +108,13 @@ int main()
   Model hillTree1("/models/hillTree1/hillTree1.obj", textureLoader);
   Model hillTree2("/models/hillTree2/hillTree2.obj", textureLoader);
   Model hillTree3("/models/hillTree3/hillTree3.obj", textureLoader);
-  treeGenerator = new TreeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2, hillTree3});
+  treeGenerator = new TreeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2, hillTree3}, treeModelChunks, hillTreeModelChunks);
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
   //generating the terrain landscape data and filling related vertex/element buffers
   prepareTerrain();
-  treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap(), treeModelChunks);
-  treeGenerator->setupHillModels(hillMapGenerator->getMap(), hillTreeModelChunks);
+  treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+  treeGenerator->setupHillModels(hillMapGenerator->getMap());
   UnderwaterQuadMapGenerator underwaterQuadGenerator;
   Skybox skybox("/textures/cubemap/", textureLoader, SKYBOX);
 
@@ -200,6 +202,7 @@ int main()
       glm::mat4 view = camera.getViewMatrix();
       glm::vec3 viewPosition = camera.getPosition();
       glm::mat4 projectionView = projection * view;
+      renderer.updateDrawVariables();
 
       if (recreateTerrainRequest)
         {
@@ -212,8 +215,8 @@ int main()
           baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
           buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
           prepareTerrain();
-          treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap(), treeModelChunks);
-          treeGenerator->setupHillModels(hillMapGenerator->getMap(), hillTreeModelChunks);
+          treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+          treeGenerator->setupHillModels(hillMapGenerator->getMap());
           delete saveLoadManager;
           saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
           saveLoadManager->setTreeGenerator(*treeGenerator);
@@ -225,36 +228,29 @@ int main()
       hills.use();
       hills.setMat4("u_projectionView", projectionView);
       hills.setVec3("u_viewPosition", viewPosition);
-      hillMapGenerator->updateDrawVariables(camera);
-      hillMapGenerator->drawChunks(hillsFrustumCulling);
+      renderer.drawHills(hillMapGenerator, hillsFrustumCulling);
 
       //shore terrain chunks drawing
       shore.use();
       shore.setMat4("u_projectionView", projectionView);
-      baseMapGenerator->updateDrawVariables(camera);
-      baseMapGenerator->drawShore();
+      renderer.drawShore(baseMapGenerator);
 
       //flat terrain chunks drawing
       flat.use();
       flat.setMat4("u_projectionView", projectionView);
-      baseMapGenerator->drawChunks();
-      baseMapGenerator->drawCells();
+      renderer.drawFlatTerrain(baseMapGenerator);
 
       //underwater tile
       underwater.use();
       underwater.setMat4("u_projectionView", projectionView);
-      glBindVertexArray(underwaterQuadGenerator.getVAO());
-      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+      renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
 
       //buildable tiles
       if (showBuildable)
         {
           buildableShader.use();
           buildableShader.setMat4("u_projectionView", projectionView);
-          glBindVertexArray(buildableMapGenerator->getVAO());
-          glEnable(GL_BLEND);
-          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, buildableMapGenerator->getNumInstances());
-          glDisable(GL_BLEND);
+          renderer.drawBuildableTiles(buildableMapGenerator);
         }
 
       //cursor selected tile
@@ -268,10 +264,7 @@ int main()
               glm::mat4 selectedModel;
               selectedModel = glm::translate(selectedModel, glm::vec3(-HALF_TILES_WIDTH + input.getCursorMapX(), 0.0f, -HALF_TILES_HEIGHT + input.getCursorMapZ()));
               selectedTileShader.setMat4("u_model", selectedModel);
-              glBindVertexArray(buildableMapGenerator->getSelectedTileVAO());
-              glEnable(GL_BLEND);
-              glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-              glDisable(GL_BLEND);
+              renderer.drawSelectedTile(buildableMapGenerator);
             }
         }
 
@@ -279,23 +272,13 @@ int main()
       water.use();
       water.setMat4("u_projectionView", projectionView);
       water.setVec3("u_viewPosition", viewPosition);
-      glBindVertexArray(waterMapGenerator->getVAO());
-      if (animateWater)
-        waterMapGenerator->updateAnimationFrame();
-      glEnable(GL_BLEND);
-      glDrawArrays(GL_TRIANGLES, 0, 6 * waterMapGenerator->getTiles().size());
-      glDisable(GL_BLEND);
+      renderer.drawWater(waterMapGenerator, animateWater);
 
       //Skybox rendering
       sky.use();
       sky.setMat4("u_view", glm::mat4(glm::mat3(view)));
       sky.setMat4("u_projection", projection);
-      glDepthFunc(GL_LEQUAL);
-      glDisable(GL_CULL_FACE);
-      glBindVertexArray(skybox.getVAO());
-      glDrawArrays(GL_TRIANGLES, 0, 36);
-      glDepthFunc(GL_LESS);
-      glEnable(GL_CULL_FACE);
+      renderer.drawSkybox(&skybox);
 
       //trees chunks rendering
       if (renderTreeModels)
@@ -304,8 +287,7 @@ int main()
           modelShader.setMat4("u_projectionView", projectionView);
           modelShader.setVec3("u_viewPosition", viewPosition);
           modelShader.setBool("u_shadow", renderShadowOnTrees);
-          treeGenerator->draw(modelShader, camera, treeModelChunks, hillTreeModelChunks,
-                              modelsFrustumCulling, CHUNK_LOADING_DISTANCE);
+          renderer.drawTrees(treeGenerator, modelShader, modelsFrustumCulling);
         }
 
       //font rendering
@@ -340,7 +322,7 @@ int main()
       //save/load routine
       if (saveRequest)
         {
-          saveLoadManager->saveToFile(CWD + "/saves/testSave.txt", treeModelChunks, hillTreeModelChunks);
+          saveLoadManager->saveToFile(CWD + "/saves/testSave.txt");
           saveRequest = false;
         }
       if (loadRequest)

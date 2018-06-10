@@ -18,18 +18,18 @@ public:
   void splitMapToChunks(int chunkSize);
   void splitShoreToChunks(int chunkSize);
   void deleteGLObjects() override;
-  void drawChunks();
-  void drawCells();
-  void drawShore();
+  std::vector<CellChunk>& getShoreChunks();
+  std::vector<BaseTerrainChunk>& getFlatChunks();
+  std::vector<CellChunk>& getCellChunks();
   std::vector<TerrainTile>& getChunkTiles();
   std::vector<TerrainTile>& getCellTiles();
+  GLuint& getShoreVao(int i);
+  GLuint& getInstanceVao();
   GLuint& getChunkVAO();
   GLuint& getCellVAO();
   std::vector<std::vector<float>>& getChunkMap();
   int getNumChunksInstances();
   int getNumCellInstances();
-  //for draw commands
-  void updateDrawVariables(Camera& camera);
 private:
   GLuint instanceVao, instanceVbo, instanceEbo, instanceModelVbo;
   GLuint cellVao, cellVbo, cellEbo, cellModelVbo;
@@ -51,11 +51,6 @@ private:
   void correctMapAtEdges();
   void compressMap(float ratio);
   void removeUnderwaterTiles(float thresholdValue);
-  //variables for rendering
-  int cameraOnMapCoordX, cameraOnMapCoordZ;
-  glm::vec2 cameraPosition;
-  glm::vec2 viewDirection;
-  float cameraCorrectedFOVDOT;
 };
 
 #endif // BASEMAPGENERATOR_H

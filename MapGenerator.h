@@ -13,7 +13,6 @@ public:
   virtual ~MapGenerator() = default;
   void initializeMap(std::vector<std::vector<float>>& map);
   void resetAllGLBuffers();
-  void setupGLBuffersAttributes();
   void createTiles(bool flat, bool createOnZeroTiles, std::vector<std::vector<float>>& map, float offsetY);
   std::vector<std::vector<float>>& getMap();
   std::vector<TerrainTile>& getTiles();

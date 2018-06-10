@@ -12,10 +12,9 @@ public:
   void prepareMap();
   void fillBufferData(bool textureSlopeCorrection);
   void splitToChunks(int chunkSize);
-  void drawChunks(bool enableFrustumCulling);
+  std::vector<CellChunk>& getChunks();
+  GLuint& getChunkVao(int i);
   void deleteGLObjects();
-  //for draw commands
-  void updateDrawVariables(Camera& camera);
 private:
   std::vector<std::vector<float>>& waterMap;
   std::vector<CellChunk> chunks;
@@ -28,11 +27,6 @@ private:
   void removeOrphanHills();
   bool isOrphanAt(int x, int y);
   void smoothMapSinks();
-  //variables for rendering
-  int cameraOnMapCoordX, cameraOnMapCoordZ;
-  glm::vec2 cameraPosition;
-  glm::vec2 viewDirection;
-  float cameraCorrectedFOVDOT;
 };
 
 #endif // HILLSMAPGENERATOR_H
