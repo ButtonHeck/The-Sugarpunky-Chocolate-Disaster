@@ -181,23 +181,12 @@ int main()
   printMapsInfos();
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  auto frameTime = std::chrono::high_resolution_clock::now();
-  auto currentTime = frameTime;
-  unsigned int frames = 0, fps = 0;
 
   //MAIN LOOP
   while(!glfwWindowShouldClose(window))
     {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       float delta = timer.tick();
-      ++frames;
-      currentTime = std::chrono::high_resolution_clock::now();
-      if (std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - frameTime).count() > 1000)
-        {
-          frameTime = currentTime;
-          fps = frames;
-          frames = 0;
-        }
       input.processKeyboard(delta);
       glm::mat4 view = camera.getViewMatrix();
       glm::vec3 viewPosition = camera.getPosition();
@@ -294,7 +283,7 @@ int main()
       if (renderDebugText)
         {
           ModelChunk cameraChunk = camera.getChunk(treeModelChunks);
-          fontManager.renderText("FPS: " + std::to_string(fps), 10.0f, (float)scr_height - 25.0f, 0.35f);
+          fontManager.renderText("FPS: " + std::to_string(timer.getFPS()), 10.0f, (float)scr_height - 25.0f, 0.35f);
           fontManager.renderText("camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                                  + std::to_string(viewPosition.y).substr(0,6) + ": "
                                  + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 45.0f, 0.35f);
