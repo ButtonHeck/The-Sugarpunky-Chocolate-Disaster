@@ -30,7 +30,8 @@ SOURCES += main.cpp \
     Chunk.cpp \
     BaseTerrainChunk.cpp \
     CellChunk.cpp \
-    Renderer.cpp
+    Renderer.cpp \
+    ModelManager.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -80,7 +81,8 @@ HEADERS += \
     Chunk.h \
     BaseTerrainChunk.h \
     CellChunk.h \
-    Renderer.h
+    Renderer.h \
+    ModelManager.h
 
 DISTFILES += \
     textures/underwater_sand.jpg \

@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "InputController.h"
 #include "TextureLoader.h"
+#include "ModelManager.h"
 #include "WaterMapGenerator.h"
 #include "HillsMapGenerator.h"
 #include "UnderwaterQuadMapGenerator.h"
@@ -37,6 +38,7 @@ Renderer renderer(camera);
 glm::vec3 cursorToViewportDirection;
 InputController input;
 TextureLoader textureLoader;
+ModelManager modelManager;
 WaterMapGenerator* waterMapGenerator = new WaterMapGenerator();
 HillsMapGenerator* hillMapGenerator = new HillsMapGenerator(waterMapGenerator->getMap());
 BaseMapGenerator* baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
@@ -102,13 +104,8 @@ int main()
   CoordinateSystemRenderer csRenderer(&csShader);
 
   //models and model-related objects loading
-  Model tree1("/models/tree1/tree1.obj", textureLoader);
-  Model tree2("/models/tree2/tree2.obj", textureLoader);
-  Model tree3("/models/tree3/tree3.obj", textureLoader);
-  Model hillTree1("/models/hillTree1/hillTree1.obj", textureLoader);
-  Model hillTree2("/models/hillTree2/hillTree2.obj", textureLoader);
-  Model hillTree3("/models/hillTree3/hillTree3.obj", textureLoader);
-  treeGenerator = new TreeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2, hillTree3}, treeModelChunks, hillTreeModelChunks);
+  treeGenerator = new TreeGenerator(modelManager.getPlainTreesPathsList(), modelManager.getHillTreesPathsList(), textureLoader,
+                                    treeModelChunks, hillTreeModelChunks);
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
   //generating the terrain landscape data and filling related vertex/element buffers

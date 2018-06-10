@@ -1,14 +1,18 @@
 #include "TreeGenerator.h"
 
-TreeGenerator::TreeGenerator(std::initializer_list<Model> plainModels, std::initializer_list<Model> hillModels,
-                             std::vector<ModelChunk>& treeModelChunks, std::vector<ModelChunk>& hillTreeModelChunks)
+TreeGenerator::TreeGenerator(std::vector<std::string> plainModelsPaths,
+                             std::vector<std::string> hillModelsPaths,
+                             TextureLoader &textureLoader,
+                             std::vector<ModelChunk>& treeModelChunks,
+                             std::vector<ModelChunk>& hillTreeModelChunks)
   :
-    plainTrees(plainModels),
-    hillTrees(hillModels),
     treeModelChunks(treeModelChunks),
     hillTreeModelChunks(hillTreeModelChunks)
 {
-
+  for (auto& path : plainModelsPaths)
+    plainTrees.emplace_back(path, textureLoader);
+  for (auto& path : hillModelsPaths)
+    hillTrees.emplace_back(path, textureLoader);
 }
 
 void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
