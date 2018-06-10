@@ -7,28 +7,14 @@ layout (location = 2) in vec3 i_normal;
 uniform mat4 u_projectionView;
 uniform vec3 u_lightDir;
 uniform vec3 u_viewPosition;
-uniform vec4 u_frustumPlanes[4]; //back and front planes sucks!
 
 out vec2  v_TexCoords;
 out vec3  v_SkyboxCoords;
 out float v_DiffuseComponent;
 out float v_SpecularComponent;
-out int   v_visible;
-
-//frustum culling function itself
-int cullThisSonOfaBitch()
-{
-    for (int i = 0; i < 4; i++)
-    {
-        if (dot(u_frustumPlanes[i].xyz, i_pos) <= -u_frustumPlanes[i].w)
-          return 0;
-    }
-  return 1;
-}
 
 void main()
 {
-    v_visible = cullThisSonOfaBitch();
     gl_Position = u_projectionView * vec4(i_pos, 1.0);
     v_TexCoords = i_texCoords;
 

@@ -20,6 +20,7 @@ public:
   Frustum();
   void updateFrustum(glm::mat4& projectionView);
   bool isInside(float x, float y, float z);
+  glm::vec4 getPlane(FrustumSide side);
 private:
   void normalizePlane(FrustumSide side);
   std::vector<glm::vec4> frustumPlanes;

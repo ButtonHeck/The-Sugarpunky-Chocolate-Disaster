@@ -14,6 +14,7 @@ extern bool showBuildable;
 extern bool showCursor;
 extern bool modelsFrustumCulling;
 extern bool hillsFrustumCulling;
+extern bool waterFrustumCulling;
 extern int scr_width;
 extern int scr_height;
 extern float aspect_ratio;
@@ -174,6 +175,18 @@ void InputController::processKeyboard(float delta)
     }
   if (glfwGetKey(window, GLFW_KEY_T) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_T] = false;
+
+  //water rendering optimization
+  if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_Y])
+        {
+          waterFrustumCulling = !waterFrustumCulling;
+          keysPressed[GLFW_KEY_Y] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_Y] = false;
 }
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)

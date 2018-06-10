@@ -84,6 +84,13 @@ void Shader::setVec2(const std::__cxx11::string &uniformName, float x, float y)
   glUniform2f(uniformCache[uniformName.c_str()], x, y);
 }
 
+void Shader::setVec4(const std::string &uniformName, glm::vec4 vec)
+{
+  if (uniformCache.find(uniformName) == uniformCache.end())
+    uniformCache[uniformName.c_str()] = glGetUniformLocation(ID, uniformName.c_str());
+  glUniform4f(uniformCache[uniformName.c_str()], vec.x, vec.y, vec.z, vec.w);
+}
+
 void Shader::setMat4(const std::__cxx11::string &uniformName, glm::mat4 mat)
 {
   if (uniformCache.find(uniformName) == uniformCache.end())

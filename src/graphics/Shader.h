@@ -22,6 +22,7 @@ public:
   void setVec3(const std::string& uniformName, float x, float y, float z);
   void setVec2(const std::string& uniformName, glm::vec2 vec);
   void setVec2(const std::string& uniformName, float x, float y);
+  void setVec4(const std::string& uniformName, glm::vec4 vec);
   void setMat4(const std::string& uniformName, glm::mat4 mat);
   GLuint getID() const;
   void use() const;

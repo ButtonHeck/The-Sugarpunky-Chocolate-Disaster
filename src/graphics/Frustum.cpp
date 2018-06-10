@@ -68,3 +68,8 @@ bool Frustum::isInside(float x, float y, float z)
     }
   return true;
 }
+
+glm::vec4 Frustum::getPlane(FrustumSide side)
+{
+  return frustumPlanes[side];
+}

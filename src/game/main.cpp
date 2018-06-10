@@ -58,6 +58,7 @@ bool showCursor = false;
 bool showBuildable = false;
 bool modelsFrustumCulling = true;
 bool hillsFrustumCulling = true;
+bool waterFrustumCulling = true;
 
 int main()
 {
@@ -89,7 +90,8 @@ int main()
   Shader shore("/shaders/shore.vs", "/shaders/shore.fs");
   Shader underwater("/shaders/underwater.vs", "/shaders/underwater.fs");
   Shader flat("/shaders/flat.vs", "/shaders/flat.fs");
-  Shader water("/shaders/water.vs", "/shaders/water.fs");
+  Shader water("/shaders/water.vs", "/shaders/water.gs", "/shaders/water.fs");
+  Shader water_noFC("/shaders/water_noFC.vs", "/shaders/water_noFC.fs");
   Shader sky("/shaders/skybox.vs", "/shaders/skybox.fs");
   Shader modelShader("/shaders/model.vs", "/shaders/model.fs");
   Shader fontShader("/shaders/font.vs", "/shaders/font.fs");
@@ -174,6 +176,11 @@ int main()
   water.setInt("u_water_specular", WATER_SPECULAR);
   water.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   water.setInt("u_skybox", SKYBOX);
+  water_noFC.use();
+  water_noFC.setInt("u_water_diffuse", WATER);
+  water_noFC.setInt("u_water_specular", WATER_SPECULAR);
+  water_noFC.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
+  water_noFC.setInt("u_skybox", SKYBOX);
   sky.use();
   sky.setInt("u_skybox", SKYBOX);
   modelShader.use();
@@ -182,6 +189,7 @@ int main()
   //etc
   printMapsInfos();
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
+  glm::mat4 projectionFC = glm::perspective(glm::radians(20.0f), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
   //MAIN LOOP
@@ -193,6 +201,7 @@ int main()
       glm::mat4 view = camera.getViewMatrix();
       glm::vec3 viewPosition = camera.getPosition();
       glm::mat4 projectionView = projection * view;
+      glm::mat4 projectionViewFC = projectionFC * view;
       renderer.updateDrawVariables();
       viewFrustum.updateFrustum(projectionView);
 
@@ -261,9 +270,22 @@ int main()
         }
 
       //water tiles
-      water.use();
-      water.setMat4("u_projectionView", projectionView);
-      water.setVec3("u_viewPosition", viewPosition);
+      if (waterFrustumCulling)
+        {
+          water.use();
+          water.setMat4("u_projectionView", projectionView);
+          water.setVec3("u_viewPosition", viewPosition);
+          water.setVec4("u_frustumPlanes[0]", viewFrustum.getPlane(FRUSTUM_LEFT));
+          water.setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
+          water.setVec4("u_frustumPlanes[2]", viewFrustum.getPlane(FRUSTUM_BOTTOM));
+          water.setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
+        }
+      else
+        {
+          water_noFC.use();
+          water_noFC.setMat4("u_projectionView", projectionView);
+          water_noFC.setVec3("u_viewPosition", viewPosition);
+        }
       renderer.drawWater(waterMapGenerator, animateWater);
 
       //Skybox rendering
@@ -304,6 +326,7 @@ int main()
           fontManager.renderText("Camera in chunk: x-" + std::to_string(cameraChunk.getLeft()) + ":" + std::to_string(cameraChunk.getRight())
                                  + ", z-" + std::to_string(cameraChunk.getTop()) + ":" + std::to_string(cameraChunk.getBottom()),
                                  10.0f, (float)scr_height - 145.0f, 0.35f);
+          fontManager.renderText("Water culling: " + (waterFrustumCulling ? std::string("On") : std::string("Off")), 10.0f, 10.0f, 0.35f);
           csRenderer.draw(view ,aspect_ratio);
         }
 

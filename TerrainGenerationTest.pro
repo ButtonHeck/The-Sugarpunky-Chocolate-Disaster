@@ -155,7 +155,10 @@ DISTFILES += \
     res/textures/normalMap.jpg \
     res/shaders/selectedTile.fs \
     res/saves/testSave.txt \
-    res/fonts/Laconic_Bold.otf
+    res/fonts/Laconic_Bold.otf \
+    res/shaders/water.gs \
+    res/shaders/water_noFC.vs \
+    res/shaders/water_noFC.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
