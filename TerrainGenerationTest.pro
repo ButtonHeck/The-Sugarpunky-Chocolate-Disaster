@@ -6,32 +6,32 @@ CONFIG -= qt
 QMAKE_CXXFLAGS+= -fopenmp
 QMAKE_LFLAGS +=  -fopenmp
 
-SOURCES += main.cpp \
-    Shader.cpp \
-    Camera.cpp \
-    TextureLoader.cpp \
-    TerrainTile.cpp \
-    InputController.cpp \
-    MapGenerator.cpp \
-    WaterMapGenerator.cpp \
-    HillsMapGenerator.cpp \
-    UnderwaterQuadMapGenerator.cpp \
-    BaseMapGenerator.cpp \
-    Skybox.cpp \
-    Mesh.cpp \
-    Model.cpp \
-    TreeGenerator.cpp \
-    FontManager.cpp \
-    CoordinateSystemRenderer.cpp \
-    SaveLoadManager.cpp \
-    BuildableMapGenerator.cpp \
-    ModelChunk.cpp \
-    Settings.cpp \
-    Chunk.cpp \
-    BaseTerrainChunk.cpp \
-    CellChunk.cpp \
-    Renderer.cpp \
-    ModelManager.cpp
+SOURCES += src/game/main.cpp \
+    src/game/Settings.cpp \
+    src/game/InputController.cpp \
+    src/game/SaveLoadManager.cpp \
+    src/graphics/Shader.cpp \
+    src/graphics/Camera.cpp \
+    src/graphics/TextureLoader.cpp \
+    src/graphics/Skybox.cpp \
+    src/graphics/Renderer.cpp \
+    src/graphics/FontManager.cpp \
+    src/graphics/CoordinateSystemRenderer.cpp \
+    src/generator/MapGenerator.cpp \
+    src/generator/WaterMapGenerator.cpp \
+    src/generator/HillsMapGenerator.cpp \
+    src/generator/UnderwaterQuadMapGenerator.cpp \
+    src/generator/BaseMapGenerator.cpp \
+    src/generator/TreeGenerator.cpp \
+    src/generator/BuildableMapGenerator.cpp \
+    src/model/Mesh.cpp \
+    src/model/Model.cpp \
+    src/model/TerrainTile.cpp \
+    src/model/ModelManager.cpp \
+    src/chunk/ModelChunk.cpp \
+    src/chunk/Chunk.cpp \
+    src/chunk/BaseTerrainChunk.cpp \
+    src/chunk/CellChunk.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -57,32 +57,32 @@ DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../../usr/lib/x86_64-linux-gnu/libIL.a
 
 HEADERS += \
-    Timer.h \
-    Settings.h \
-    Shader.h \
-    Camera.h \
-    TextureLoader.h \
-    TerrainTile.h \
-    InputController.h \
-    MapGenerator.h \
-    WaterMapGenerator.h \
-    HillsMapGenerator.h \
-    UnderwaterQuadMapGenerator.h \
-    BaseMapGenerator.h \
-    Skybox.h \
-    Mesh.h \
-    Model.h \
-    TreeGenerator.h \
-    FontManager.h \
-    CoordinateSystemRenderer.h \
-    SaveLoadManager.h \
-    BuildableMapGenerator.h \
-    ModelChunk.h \
-    Chunk.h \
-    BaseTerrainChunk.h \
-    CellChunk.h \
-    Renderer.h \
-    ModelManager.h
+    src/game/Timer.h \
+    src/game/Settings.h \
+    src/game/InputController.h \
+    src/game/SaveLoadManager.h \
+    src/graphics/Shader.h \
+    src/graphics/Camera.h \
+    src/graphics/TextureLoader.h \
+    src/graphics/Renderer.h \
+    src/graphics/Skybox.h \
+    src/graphics/FontManager.h \
+    src/graphics/CoordinateSystemRenderer.h \
+    src/generator/MapGenerator.h \
+    src/generator/WaterMapGenerator.h \
+    src/generator/HillsMapGenerator.h \
+    src/generator/UnderwaterQuadMapGenerator.h \
+    src/generator/BaseMapGenerator.h \
+    src/generator/TreeGenerator.h \
+    src/generator/BuildableMapGenerator.h \
+    src/model/TerrainTile.h \
+    src/model/Mesh.h \
+    src/model/Model.h \
+    src/model/ModelManager.h \
+    src/chunk/ModelChunk.h \
+    src/chunk/Chunk.h \
+    src/chunk/BaseTerrainChunk.h \
+    src/chunk/CellChunk.h
 
 DISTFILES += \
     res/textures/underwater_sand.jpg \
