@@ -100,7 +100,7 @@ int main()
   Shader buildableShader("/shaders/buildableTiles.vs", "/shaders/buildableTiles.fs");
   Shader selectedTileShader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs");
   std::vector<Shader*> shaders =
-  {&hills, &shore, &underwater, &flat, &water, &sky, &modelShader, &fontShader, &csShader, &buildableShader, &selectedTileShader};
+  {&hills, &hills_noFC, &shore, &underwater, &flat, &water, &water_noFC, &sky, &modelShader, &fontShader, &csShader, &buildableShader, &selectedTileShader};
 
   //setup debug visual output objects
   FontManager fontManager("Laconic_Bold.otf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), &fontShader);
@@ -235,11 +235,24 @@ int main()
           underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF, GL_LINEAR, GL_LINEAR);
         }
 
-      //hill chunks drawing
-      hills_noFC.use();
-      hills_noFC.setMat4("u_projectionView", projectionView);
-      hills_noFC.setVec3("u_viewPosition", viewPosition);
-      renderer.drawHills(hillMapGenerator, hillsFrustumCulling);
+      //hills rendering
+      if (hillsFrustumCulling)
+        {
+          hills.use();
+          hills.setMat4("u_projectionView", projectionView);
+          hills.setVec3("u_viewPosition", viewPosition);
+          hills.setVec4("u_frustumPlanes[0]", viewFrustum.getPlane(FRUSTUM_LEFT));
+          hills.setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
+          hills.setVec4("u_frustumPlanes[2]", viewFrustum.getPlane(FRUSTUM_BOTTOM));
+          hills.setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
+        }
+      else
+        {
+          hills_noFC.use();
+          hills_noFC.setMat4("u_projectionView", projectionView);
+          hills_noFC.setVec3("u_viewPosition", viewPosition);
+        }
+      renderer.drawHills(hillMapGenerator);
 
       //shore terrain chunks drawing
       shore.use();
@@ -279,7 +292,7 @@ int main()
             }
         }
 
-      //water tiles
+      //water rendering
       if (waterFrustumCulling)
         {
           water.use();
@@ -337,6 +350,7 @@ int main()
                                  + ", z-" + std::to_string(cameraChunk.getTop()) + ":" + std::to_string(cameraChunk.getBottom()),
                                  10.0f, (float)scr_height - 145.0f, 0.35f);
           fontManager.renderText("Water culling: " + (waterFrustumCulling ? std::string("On") : std::string("Off")), 10.0f, 10.0f, 0.35f);
+          fontManager.renderText("Hills culling: " + (hillsFrustumCulling ? std::string("On") : std::string("Off")), 10.0f, 25.0f, 0.35f);
           csRenderer.draw(view ,aspect_ratio);
         }
 

@@ -22,11 +22,11 @@ out float vg_SpecularComponent;
 
 void main()
 {
-    vg_DiffuseComponentHill = v_DiffuseComponentHill[0];
-    vg_DiffuseComponentFlat = v_DiffuseComponentFlat[0];
-    vg_SpecularComponent = v_SpecularComponent[0];
     if (v_visible[0] == 1)
     {
+        vg_DiffuseComponentHill = v_DiffuseComponentHill[0];
+        vg_DiffuseComponentFlat = v_DiffuseComponentFlat[0];
+        vg_SpecularComponent = v_SpecularComponent[0];
         gl_Position = gl_in[0].gl_Position;
         vg_TexCoords = v_TexCoords[0];
         vg_PosHeight = v_PosHeight[0];
@@ -36,6 +36,9 @@ void main()
     }
     if (v_visible[1] == 1)
     {
+        vg_DiffuseComponentHill = v_DiffuseComponentHill[1];
+        vg_DiffuseComponentFlat = v_DiffuseComponentFlat[1];
+        vg_SpecularComponent = v_SpecularComponent[1];
         gl_Position = gl_in[1].gl_Position;
         vg_TexCoords = v_TexCoords[1];
         vg_PosHeight = v_PosHeight[1];
@@ -45,6 +48,9 @@ void main()
     }
     if (v_visible[2] == 1)
     {
+        vg_DiffuseComponentHill = v_DiffuseComponentHill[2];
+        vg_DiffuseComponentFlat = v_DiffuseComponentFlat[2];
+        vg_SpecularComponent = v_SpecularComponent[2];
         gl_Position = gl_in[2].gl_Position;
         vg_TexCoords = v_TexCoords[2];
         vg_PosHeight = v_PosHeight[2];

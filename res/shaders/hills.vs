@@ -22,7 +22,7 @@ out int   v_visible;
 
 const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 const float TRANSITION_RATIO_MULTIPLIER = 1.5;
-const int TILE_RADIUS = 1;
+const float TILE_RADIUS = sqrt(2);
 
 //frustum culling function itself
 int cullThisSonOfaBitch()

@@ -165,7 +165,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename, std::vector<Mode
   treeGenerator->updatePlainModels(treeModels, numAllTrees);
   treeGenerator->updateHillModels(hillTreeModels, numAllHillTrees);
 
-  hillGenerator.splitToChunks(CHUNK_SIZE);
+  hillGenerator.createTiles();
   hillGenerator.fillBufferData(!HILLS_TEXTURE_MAPPING_SLOPE_CORRECTION);
   baseGenerator.getChunkTiles().clear();
   baseGenerator.getCellTiles().clear();

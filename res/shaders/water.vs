@@ -15,7 +15,7 @@ out float v_DiffuseComponent;
 out float v_SpecularComponent;
 out int   v_visible;
 
-const int TILE_RADIUS = 1;
+const float TILE_RADIUS = sqrt(2);
 
 //frustum culling function itself
 int cullThisSonOfaBitch()

@@ -17,7 +17,7 @@ class Renderer
 public:
   Renderer(Camera& camera);
   void updateDrawVariables();
-  void drawHills(HillsMapGenerator* generator, bool enableFrustumCulling);
+  void drawHills(HillsMapGenerator* generator);
   void drawShore(BaseMapGenerator* generator, Frustum& frustum);
   void drawFlatTerrain(BaseMapGenerator* generator);
   void drawUnderwaterQuad(UnderwaterQuadMapGenerator* generator);

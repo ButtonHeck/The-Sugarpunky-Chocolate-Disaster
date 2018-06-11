@@ -18,55 +18,10 @@ void Renderer::updateDrawVariables()
   cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 20.0f;
 }
 
-void Renderer::drawHills(HillsMapGenerator *generator, bool enableFrustumCulling)
+void Renderer::drawHills(HillsMapGenerator *generator)
 {
-  auto chunks = generator->getChunks();
-  if (!enableFrustumCulling)
-    {
-      for (unsigned int i = 0; i < chunks.size(); i++)
-        {
-          glBindVertexArray(generator->getChunkVao(i));
-          glDrawElements(GL_TRIANGLES, 6 * chunks[i].getNumInstances(), GL_UNSIGNED_INT, 0);
-        }
-      return;
-    }
-  for (unsigned int i = 0; i < chunks.size(); i++)
-    {
-      GLuint vao = generator->getChunkVao(i);
-      if (chunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
-        {
-          glBindVertexArray(vao);
-          glDrawElements(GL_TRIANGLES, 6 * chunks[i].getNumInstances(), GL_UNSIGNED_INT, 0);
-          continue;
-        }
-      glm::vec2 directionToChunkUL =  glm::normalize(glm::vec2(chunks[i].getLeft() - (float)HALF_TILES_WIDTH, chunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkUL, viewDirection) > cameraCorrectedFOVDOT)
-        {
-          glBindVertexArray(vao);
-          glDrawElements(GL_TRIANGLES, 6 * chunks[i].getNumInstances(), GL_UNSIGNED_INT, 0);
-          continue;
-        }
-      glm::vec2 directionToChunkUR =  glm::normalize(glm::vec2(chunks[i].getRight() - (float)HALF_TILES_WIDTH, chunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkUR, viewDirection) > cameraCorrectedFOVDOT)
-        {
-          glBindVertexArray(vao);
-          glDrawElements(GL_TRIANGLES, 6 * chunks[i].getNumInstances(), GL_UNSIGNED_INT, 0);
-          continue;
-        }
-      glm::vec2 directionToChunkLR =  glm::normalize(glm::vec2(chunks[i].getRight() - (float)HALF_TILES_WIDTH, chunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkLR, viewDirection) > cameraCorrectedFOVDOT)
-        {
-          glBindVertexArray(vao);
-          glDrawElements(GL_TRIANGLES, 6 * chunks[i].getNumInstances(), GL_UNSIGNED_INT, 0);
-          continue;
-        }
-      glm::vec2 directionToChunkLL =  glm::normalize(glm::vec2(chunks[i].getLeft() - (float)HALF_TILES_WIDTH, chunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkLL, viewDirection) > cameraCorrectedFOVDOT)
-        {
-          glBindVertexArray(vao);
-          glDrawElements(GL_TRIANGLES, 6 * chunks[i].getNumInstances(), GL_UNSIGNED_INT, 0);
-        }
-    }
+    glBindVertexArray(generator->getVAO());
+    glDrawElements(GL_TRIANGLES, 6 * generator->getTiles().size(), GL_UNSIGNED_INT, 0);
 }
 
 void Renderer::drawShore(BaseMapGenerator *generator, Frustum &frustum)
