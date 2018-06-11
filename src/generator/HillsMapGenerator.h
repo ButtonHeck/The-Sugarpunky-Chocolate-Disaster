@@ -3,7 +3,6 @@
 #include "MapGenerator.h"
 #include <random>
 #include "src/graphics/Camera.h"
-#include "src/chunk/CellChunk.h"
 
 class HillsMapGenerator : public MapGenerator
 {

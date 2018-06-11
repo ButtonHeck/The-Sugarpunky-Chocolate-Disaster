@@ -2,8 +2,7 @@
 #define BASEMAPGENERATOR_H
 #include "MapGenerator.h"
 #include <random>
-#include "src/chunk/BaseTerrainChunk.h"
-#include "src/chunk/CellChunk.h"
+#include "src/chunk/TerrainChunk.h"
 #include "src/graphics/Camera.h"
 
 class BaseMapGenerator : public MapGenerator
@@ -19,9 +18,9 @@ public:
   void splitMapToChunks(int chunkSize);
   void splitShoreToChunks(int chunkSize);
   void deleteGLObjects() override;
-  std::vector<CellChunk>& getShoreChunks();
-  std::vector<BaseTerrainChunk>& getFlatChunks();
-  std::vector<CellChunk>& getCellChunks();
+  std::vector<TerrainChunk>& getShoreChunks();
+  std::vector<TerrainChunk>& getFlatChunks();
+  std::vector<TerrainChunk>& getCellChunks();
   std::vector<TerrainTile>& getChunkTiles();
   std::vector<TerrainTile>& getCellTiles();
   GLuint& getShoreVao(int i);
@@ -41,9 +40,9 @@ private:
   std::vector<std::vector<float>> chunkMap;
   std::vector<TerrainTile> cellTiles;
   std::default_random_engine randomizer;
-  std::vector<BaseTerrainChunk> baseChunks;
-  std::vector<CellChunk> cellChunks;
-  std::vector<CellChunk> shoreChunks;
+  std::vector<TerrainChunk> baseChunks;
+  std::vector<TerrainChunk> cellChunks;
+  std::vector<TerrainChunk> shoreChunks;
   int NUM_CHUNKS_INSTANCES;
   int NUM_CELL_INSTANCES;
   void generateMap();

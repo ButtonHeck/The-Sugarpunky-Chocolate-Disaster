@@ -347,7 +347,7 @@ void BaseMapGenerator::splitMapToChunks(int chunkSize)
                     }
                 }
               baseChunkTiles.emplace_back(x, y, 0, 0, 0, 0, false);
-              baseChunks.emplace_back(x, x + chunkSize, y, y + chunkSize, chunkOffset);
+              baseChunks.emplace_back(x, x + chunkSize, y, y + chunkSize, chunkOffset, 1);
               ++chunkOffset;
             }
         }
@@ -468,7 +468,7 @@ void BaseMapGenerator::deleteGLObjects()
     }
 }
 
-std::vector<CellChunk> &BaseMapGenerator::getShoreChunks()
+std::vector<TerrainChunk> &BaseMapGenerator::getShoreChunks()
 {
   return shoreChunks;
 }
@@ -478,12 +478,12 @@ GLuint &BaseMapGenerator::getShoreVao(int i)
   return shoreVaos[i];
 }
 
-std::vector<BaseTerrainChunk> &BaseMapGenerator::getFlatChunks()
+std::vector<TerrainChunk> &BaseMapGenerator::getFlatChunks()
 {
   return baseChunks;
 }
 
-std::vector<CellChunk> &BaseMapGenerator::getCellChunks()
+std::vector<TerrainChunk> &BaseMapGenerator::getCellChunks()
 {
   return cellChunks;
 }

@@ -17,6 +17,7 @@ SOURCES += src/game/main.cpp \
     src/graphics/Renderer.cpp \
     src/graphics/FontManager.cpp \
     src/graphics/CoordinateSystemRenderer.cpp \
+    src/graphics/Frustum.cpp \
     src/generator/MapGenerator.cpp \
     src/generator/WaterMapGenerator.cpp \
     src/generator/HillsMapGenerator.cpp \
@@ -29,9 +30,7 @@ SOURCES += src/game/main.cpp \
     src/model/TerrainTile.cpp \
     src/chunk/ModelChunk.cpp \
     src/chunk/Chunk.cpp \
-    src/chunk/BaseTerrainChunk.cpp \
-    src/chunk/CellChunk.cpp \
-    src/graphics/Frustum.cpp
+    src/chunk/TerrainChunk.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -68,6 +67,7 @@ HEADERS += \
     src/graphics/Skybox.h \
     src/graphics/FontManager.h \
     src/graphics/CoordinateSystemRenderer.h \
+    src/graphics/Frustum.h \
     src/generator/MapGenerator.h \
     src/generator/WaterMapGenerator.h \
     src/generator/HillsMapGenerator.h \
@@ -80,9 +80,7 @@ HEADERS += \
     src/model/Model.h \
     src/chunk/ModelChunk.h \
     src/chunk/Chunk.h \
-    src/chunk/BaseTerrainChunk.h \
-    src/chunk/CellChunk.h \
-    src/graphics/Frustum.h
+    src/chunk/TerrainChunk.h
 
 DISTFILES += \
     res/textures/underwater_sand.jpg \
@@ -139,6 +137,7 @@ DISTFILES += \
     res/models/hillTree3/hillTree3.mtl \
     res/fonts/GentiumPlus-R.ttf \
     res/fonts/OCTAPOST_1.ttf \
+    res/fonts/Laconic_Bold.otf \
     res/shaders/flat.vs \
     res/shaders/flat.fs \
     res/shaders/hills.vs \
@@ -155,7 +154,6 @@ DISTFILES += \
     res/textures/normalMap.jpg \
     res/shaders/selectedTile.fs \
     res/saves/testSave.txt \
-    res/fonts/Laconic_Bold.otf \
     res/shaders/water.gs \
     res/shaders/water_noFC.vs \
     res/shaders/water_noFC.fs \
