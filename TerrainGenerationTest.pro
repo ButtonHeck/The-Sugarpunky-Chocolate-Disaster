@@ -30,7 +30,8 @@ SOURCES += src/game/main.cpp \
     src/model/TerrainTile.cpp \
     src/chunk/ModelChunk.cpp \
     src/chunk/Chunk.cpp \
-    src/chunk/TerrainChunk.cpp
+    src/chunk/TerrainChunk.cpp \
+    src/graphics/TextureManager.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -80,7 +81,8 @@ HEADERS += \
     src/model/Model.h \
     src/chunk/ModelChunk.h \
     src/chunk/Chunk.h \
-    src/chunk/TerrainChunk.h
+    src/chunk/TerrainChunk.h \
+    src/graphics/TextureManager.h
 
 DISTFILES += \
     res/textures/underwater_sand.jpg \
