@@ -199,7 +199,6 @@ int main()
   //etc
   printMapsInfos();
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
-  glm::mat4 projectionFC = glm::perspective(glm::radians(20.0f), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
   //MAIN LOOP
@@ -211,8 +210,6 @@ int main()
       glm::mat4 view = camera.getViewMatrix();
       glm::vec3 viewPosition = camera.getPosition();
       glm::mat4 projectionView = projection * view;
-      glm::mat4 projectionViewFC = projectionFC * view;
-      renderer.updateDrawVariables();
       viewFrustum.updateFrustum(projectionView);
 
       if (recreateTerrainRequest)
@@ -262,7 +259,7 @@ int main()
       //flat terrain chunks drawing
       flat.use();
       flat.setMat4("u_projectionView", projectionView);
-      renderer.drawFlatTerrain(baseMapGenerator);
+      renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
 
       //underwater tile
       underwater.use();
@@ -350,7 +347,8 @@ int main()
                                  + ", z-" + std::to_string(cameraChunk.getTop()) + ":" + std::to_string(cameraChunk.getBottom()),
                                  10.0f, (float)scr_height - 145.0f, 0.35f);
           fontManager.renderText("Water culling: " + (waterFrustumCulling ? std::string("On") : std::string("Off")), 10.0f, 10.0f, 0.35f);
-          fontManager.renderText("Hills culling: " + (hillsFrustumCulling ? std::string("On") : std::string("Off")), 10.0f, 25.0f, 0.35f);
+          fontManager.renderText("Hills culling: " + (hillsFrustumCulling ? std::string("On") : std::string("Off")), 10.0f, 30.0f, 0.35f);
+          fontManager.renderText("Trees culling: " + (modelsFrustumCulling ? std::string("On") : std::string("Off")), 10.0f, 50.0f, 0.35f);
           csRenderer.draw(view ,aspect_ratio);
         }
 

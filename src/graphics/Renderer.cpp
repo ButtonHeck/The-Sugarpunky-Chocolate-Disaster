@@ -7,17 +7,6 @@ Renderer::Renderer(Camera &camera)
 
 }
 
-void Renderer::updateDrawVariables()
-{
-  float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
-  float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
-  cameraOnMapCoordX = glm::clamp((int)(TILES_WIDTH + cameraOnMapX) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
-  cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
-  cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
-  viewDirection = glm::normalize(glm::vec2(camera.getDirection().x, camera.getDirection().z));
-  cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 20.0f;
-}
-
 void Renderer::drawHills(HillsMapGenerator *generator)
 {
     glBindVertexArray(generator->getVAO());
@@ -35,25 +24,26 @@ void Renderer::drawShore(BaseMapGenerator *generator, Frustum &frustum)
       glm::vec2 chunkLR = glm::vec2(chunkMidPoint.x + CHUNK_SIZE / 2.0f, chunkMidPoint.y + CHUNK_SIZE / 2.0f);
       glm::vec2 chunkUR = glm::vec2(chunkMidPoint.x + CHUNK_SIZE / 2.0f, chunkMidPoint.y - CHUNK_SIZE / 2.0f);
       glm::vec2 chunkUL = glm::vec2(chunkMidPoint.x - CHUNK_SIZE / 2.0f, chunkMidPoint.y - CHUNK_SIZE / 2.0f);
-      if (frustum.isInside(chunkLL.x, 0.0f, chunkLL.y))
+      float radius = CHUNK_SIZE / 2.0f * glm::sqrt(2);
+      if (frustum.isInside(chunkLL.x, 0.0f, chunkLL.y, radius))
         {
           glBindVertexArray(vao);
           glDrawArrays(GL_TRIANGLES, 0, 6 * shoreChunks[i].getNumInstances());
           continue;
         }
-      if (frustum.isInside(chunkLR.x, 0.0f, chunkLR.y))
+      if (frustum.isInside(chunkLR.x, 0.0f, chunkLR.y, radius))
         {
           glBindVertexArray(vao);
           glDrawArrays(GL_TRIANGLES, 0, 6 * shoreChunks[i].getNumInstances());
           continue;
         }
-      if (frustum.isInside(chunkUR.x, 0.0f, chunkUR.y))
+      if (frustum.isInside(chunkUR.x, 0.0f, chunkUR.y, radius))
         {
           glBindVertexArray(vao);
           glDrawArrays(GL_TRIANGLES, 0, 6 * shoreChunks[i].getNumInstances());
           continue;
         }
-      if (frustum.isInside(chunkUL.x, 0.0f, chunkUL.y))
+      if (frustum.isInside(chunkUL.x, 0.0f, chunkUL.y, radius))
         {
           glBindVertexArray(vao);
           glDrawArrays(GL_TRIANGLES, 0, 6 * shoreChunks[i].getNumInstances());
@@ -61,69 +51,62 @@ void Renderer::drawShore(BaseMapGenerator *generator, Frustum &frustum)
     }
 }
 
-void Renderer::drawFlatTerrain(BaseMapGenerator *generator)
+void Renderer::drawFlatTerrain(BaseMapGenerator *generator, Frustum& frustum)
 {
   glBindVertexArray(generator->getChunkVAO());
   auto baseChunks = generator->getFlatChunks();
+  float radius = CHUNK_SIZE / 2.0f * glm::sqrt(2);
   for (unsigned int i = 0; i < baseChunks.size(); i++)
     {
-      if (baseChunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
+      glm::vec2 chunkMidPoint = baseChunks[i].getMidPoint();
+      glm::vec2 chunkLL = glm::vec2(chunkMidPoint.x - CHUNK_SIZE / 2.0f, chunkMidPoint.y + CHUNK_SIZE / 2.0f);
+      glm::vec2 chunkLR = glm::vec2(chunkMidPoint.x + CHUNK_SIZE / 2.0f, chunkMidPoint.y + CHUNK_SIZE / 2.0f);
+      glm::vec2 chunkUR = glm::vec2(chunkMidPoint.x + CHUNK_SIZE / 2.0f, chunkMidPoint.y - CHUNK_SIZE / 2.0f);
+      glm::vec2 chunkUL = glm::vec2(chunkMidPoint.x - CHUNK_SIZE / 2.0f, chunkMidPoint.y - CHUNK_SIZE / 2.0f);
+      if (frustum.isInside(chunkLL.x, 0.0f, chunkLL.y, radius))
         {
           glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
           continue;
         }
-      glm::vec2 directionToChunkUL =  glm::normalize(glm::vec2(baseChunks[i].getLeft() - (float)HALF_TILES_WIDTH, baseChunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkUL, viewDirection) > cameraCorrectedFOVDOT)
+      if (frustum.isInside(chunkLR.x, 0.0f, chunkLR.y, radius))
         {
           glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
           continue;
         }
-      glm::vec2 directionToChunkUR =  glm::normalize(glm::vec2(baseChunks[i].getRight() - (float)HALF_TILES_WIDTH, baseChunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkUR, viewDirection) > cameraCorrectedFOVDOT)
+      if (frustum.isInside(chunkUR.x, 0.0f, chunkUR.y, radius))
         {
           glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
           continue;
         }
-      glm::vec2 directionToChunkLR =  glm::normalize(glm::vec2(baseChunks[i].getRight() - (float)HALF_TILES_WIDTH, baseChunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkLR, viewDirection) > cameraCorrectedFOVDOT)
-        {
-          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
-          continue;
-        }
-      glm::vec2 directionToChunkLL =  glm::normalize(glm::vec2(baseChunks[i].getLeft() - (float)HALF_TILES_WIDTH, baseChunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkLL, viewDirection) > cameraCorrectedFOVDOT)
-          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
+      if (frustum.isInside(chunkUL.x, 0.0f, chunkUL.y, radius))
+        glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
     }
 
   glBindVertexArray(generator->getCellVAO());
   auto cellChunks = generator->getCellChunks();
   for (unsigned int i = 0; i < cellChunks.size(); i++)
     {
-      if (cellChunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
+      glm::vec2 chunkMidPoint = cellChunks[i].getMidPoint();
+      glm::vec2 chunkLL = glm::vec2(chunkMidPoint.x - CHUNK_SIZE / 2.0f, chunkMidPoint.y + CHUNK_SIZE / 2.0f);
+      glm::vec2 chunkLR = glm::vec2(chunkMidPoint.x + CHUNK_SIZE / 2.0f, chunkMidPoint.y + CHUNK_SIZE / 2.0f);
+      glm::vec2 chunkUR = glm::vec2(chunkMidPoint.x + CHUNK_SIZE / 2.0f, chunkMidPoint.y - CHUNK_SIZE / 2.0f);
+      glm::vec2 chunkUL = glm::vec2(chunkMidPoint.x - CHUNK_SIZE / 2.0f, chunkMidPoint.y - CHUNK_SIZE / 2.0f);
+      if (frustum.isInside(chunkLL.x, 0.0f, chunkLL.y, radius))
         {
           glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
           continue;
         }
-      glm::vec2 directionToChunkUL =  glm::normalize(glm::vec2(cellChunks[i].getLeft() - (float)HALF_TILES_WIDTH, cellChunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkUL, viewDirection) > cameraCorrectedFOVDOT)
+      if (frustum.isInside(chunkLR.x, 0.0f, chunkLR.y, radius))
         {
           glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
           continue;
         }
-      glm::vec2 directionToChunkUR =  glm::normalize(glm::vec2(cellChunks[i].getRight() - (float)HALF_TILES_WIDTH, cellChunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkUR, viewDirection) > cameraCorrectedFOVDOT)
+      if (frustum.isInside(chunkUR.x, 0.0f, chunkUR.y, radius))
         {
           glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
           continue;
         }
-      glm::vec2 directionToChunkLR =  glm::normalize(glm::vec2(cellChunks[i].getRight() - (float)HALF_TILES_WIDTH, cellChunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkLR, viewDirection) > cameraCorrectedFOVDOT)
-        {
-          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
-          continue;
-        }
-      glm::vec2 directionToChunkLL =  glm::normalize(glm::vec2(cellChunks[i].getLeft() - (float)HALF_TILES_WIDTH, cellChunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-      if (glm::dot(directionToChunkLL, viewDirection) > cameraCorrectedFOVDOT)
+      if (frustum.isInside(chunkUL.x, 0.0f, chunkUL.y, radius))
         glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
     }
 }

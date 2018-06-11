@@ -16,10 +16,9 @@ class Renderer
 {
 public:
   Renderer(Camera& camera);
-  void updateDrawVariables();
   void drawHills(HillsMapGenerator* generator);
   void drawShore(BaseMapGenerator* generator, Frustum& frustum);
-  void drawFlatTerrain(BaseMapGenerator* generator);
+  void drawFlatTerrain(BaseMapGenerator* generator, Frustum& frustum);
   void drawUnderwaterQuad(UnderwaterQuadMapGenerator* generator);
   void drawBuildableTiles(BuildableMapGenerator* generator);
   void drawSelectedTile(BuildableMapGenerator* generator);
@@ -29,10 +28,6 @@ public:
                  std::vector<ModelChunk>& treeModelChunks, std::vector<ModelChunk>& hillTreeModelChunks);
 private:
   Camera& camera;
-  int cameraOnMapCoordX, cameraOnMapCoordZ;
-  glm::vec2 cameraPosition;
-  glm::vec2 viewDirection;
-  float cameraCorrectedFOVDOT;
 };
 
 #endif // RENDERER_H
