@@ -7,6 +7,7 @@
 #include "src/game/Timer.h"
 #include "src/game/InputController.h"
 #include "src/game/SaveLoadManager.h"
+#include "src/game/Options.h"
 #include "src/graphics/Shader.h"
 #include "src/graphics/Camera.h"
 #include "src/graphics/TextureLoader.h"
@@ -37,6 +38,7 @@ Camera camera(glm::vec3(0.0f, 3.0f, 0.0f));
 Renderer renderer(camera);
 Frustum viewFrustum;
 glm::vec3 cursorToViewportDirection;
+Options options;
 InputController input;
 TextureLoader textureLoader;
 WaterMapGenerator* waterMapGenerator = new WaterMapGenerator();
@@ -47,18 +49,6 @@ SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillM
 TreeGenerator* treeGenerator;
 std::vector<ModelChunk> treeModelChunks;
 std::vector<ModelChunk> hillTreeModelChunks;
-bool renderShadowOnTrees = true;
-bool renderTreeModels = true;
-bool animateWater = true;
-bool renderDebugText = true;
-bool recreateTerrainRequest = false;
-bool saveRequest = false;
-bool loadRequest = false;
-bool showCursor = false;
-bool showBuildable = false;
-bool modelsFrustumCulling = true;
-bool hillsFrustumCulling = true;
-bool waterFrustumCulling = true;
 
 int main()
 {
@@ -191,7 +181,7 @@ int main()
       glm::mat4 projectionView = projection * view;
       viewFrustum.updateFrustum(projectionView);
 
-      if (recreateTerrainRequest)
+      if (options.get(RECREATE_TERRAIN_REQUEST))
         {
           delete waterMapGenerator;
           delete hillMapGenerator;
@@ -207,12 +197,12 @@ int main()
           delete saveLoadManager;
           saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
           saveLoadManager->setTreeGenerator(*treeGenerator);
-          recreateTerrainRequest = false;
+          options.set(RECREATE_TERRAIN_REQUEST, false);
           textureManager.createUnderwaterReliefTexture(waterMapGenerator);
         }
 
       //hills rendering
-      if (hillsFrustumCulling)
+      if (options.get(HILLS_FC))
         {
           hills.use();
           hills.setMat4("u_projectionView", projectionView);
@@ -246,7 +236,7 @@ int main()
       renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
 
       //buildable tiles
-      if (showBuildable)
+      if (options.get(SHOW_BUILDABLE))
         {
           buildableShader.use();
           buildableShader.setMat4("u_projectionView", projectionView);
@@ -254,7 +244,7 @@ int main()
         }
 
       //cursor selected tile
-      if (showCursor)
+      if (options.get(SHOW_CURSOR))
         {
           input.updateCursorMappingCoordinates(camera, baseMapGenerator, hillMapGenerator, buildableMapGenerator);
           if (buildableMapGenerator->getMap()[input.getCursorMapZ()][input.getCursorMapX()] != 0)
@@ -269,7 +259,7 @@ int main()
         }
 
       //water rendering
-      if (waterFrustumCulling)
+      if (options.get(WATER_FC))
         {
           water.use();
           water.setMat4("u_projectionView", projectionView);
@@ -285,7 +275,7 @@ int main()
           water_noFC.setMat4("u_projectionView", projectionView);
           water_noFC.setVec3("u_viewPosition", viewPosition);
         }
-      renderer.drawWater(waterMapGenerator, animateWater);
+      renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER));
 
       //Skybox rendering
       sky.use();
@@ -294,17 +284,17 @@ int main()
       renderer.drawSkybox(&skybox);
 
       //trees chunks rendering
-      if (renderTreeModels)
+      if (options.get(RENDER_TREE_MODELS))
         {
           modelShader.use();
           modelShader.setMat4("u_projectionView", projectionView);
           modelShader.setVec3("u_viewPosition", viewPosition);
-          modelShader.setBool("u_shadow", renderShadowOnTrees);
-          renderer.drawTrees(treeGenerator, modelShader, modelsFrustumCulling, treeModelChunks, hillTreeModelChunks);
+          modelShader.setBool("u_shadow", options.get(RENDER_SHADOW_ON_TREES));
+          renderer.drawTrees(treeGenerator, modelShader, options.get(MODELS_FC), treeModelChunks, hillTreeModelChunks);
         }
 
       //font rendering
-      if (renderDebugText)
+      if (options.get(RENDER_DEBUG_TEXT))
         {
           ModelChunk cameraChunk = camera.getChunk(treeModelChunks);
           fontManager.renderText("FPS: " + std::to_string(timer.getFPS()), 10.0f, (float)scr_height - 25.0f, 0.35f);
@@ -316,18 +306,18 @@ int main()
           fontManager.renderText("View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
                                  + std::to_string(camera.getDirection().y).substr(0,6) + ": "
                                  + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 85.0f, 0.35f);
-          fontManager.renderText("Cursor at: " + (!showCursor ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
+          fontManager.renderText("Cursor at: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
                                  + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
                                  + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 105.0f, 0.35f);
-          fontManager.renderText("Cursor on map: " + (!showCursor ? "inactive" : (std::to_string(input.getCursorMapX()) + ": "
+          fontManager.renderText("Cursor on map: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(input.getCursorMapX()) + ": "
                                  + std::to_string(input.getCursorMapZ()-1) + ", " + input.getCursorTileName())),
                                  10.0f, (float)scr_height - 125.0f, 0.35f);
           fontManager.renderText("Camera in chunk: x-" + std::to_string(cameraChunk.getLeft()) + ":" + std::to_string(cameraChunk.getRight())
                                  + ", z-" + std::to_string(cameraChunk.getTop()) + ":" + std::to_string(cameraChunk.getBottom()),
                                  10.0f, (float)scr_height - 145.0f, 0.35f);
-          fontManager.renderText("Water culling: " + (waterFrustumCulling ? std::string("On") : std::string("Off")), 10.0f, 10.0f, 0.35f);
-          fontManager.renderText("Hills culling: " + (hillsFrustumCulling ? std::string("On") : std::string("Off")), 10.0f, 30.0f, 0.35f);
-          fontManager.renderText("Trees culling: " + (modelsFrustumCulling ? std::string("On") : std::string("Off")), 10.0f, 50.0f, 0.35f);
+          fontManager.renderText("Water culling: " + (options.get(WATER_FC) ? std::string("On") : std::string("Off")), 10.0f, 10.0f, 0.35f);
+          fontManager.renderText("Hills culling: " + (options.get(HILLS_FC) ? std::string("On") : std::string("Off")), 10.0f, 30.0f, 0.35f);
+          fontManager.renderText("Trees culling: " + (options.get(MODELS_FC) ? std::string("On") : std::string("Off")), 10.0f, 50.0f, 0.35f);
           csRenderer.draw(view, aspect_ratio);
         }
 
@@ -336,15 +326,15 @@ int main()
       glBindTexture(GL_TEXTURE_2D, textureManager.getTexture(FLAT));
 
       //save/load routine
-      if (saveRequest)
+      if (options.get(SAVE_REQUEST))
         {
           saveLoadManager->saveToFile(RES_DIR + "/saves/testSave.txt", treeModelChunks, hillTreeModelChunks);
-          saveRequest = false;
+          options.set(SAVE_REQUEST, false);
         }
-      if (loadRequest)
+      if (options.get(LOAD_REQUEST))
         {
           saveLoadManager->loadFromFile(RES_DIR + "/saves/testSave.txt", treeModelChunks, hillTreeModelChunks);
-          loadRequest = false;
+          options.set(LOAD_REQUEST, false);
           textureManager.createUnderwaterReliefTexture(waterMapGenerator);
         }
 

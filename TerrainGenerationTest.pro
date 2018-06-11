@@ -7,6 +7,7 @@ SOURCES += src/game/main.cpp \
     src/game/Settings.cpp \
     src/game/InputController.cpp \
     src/game/SaveLoadManager.cpp \
+    src/game/Options.cpp \
     src/graphics/Shader.cpp \
     src/graphics/Camera.cpp \
     src/graphics/TextureLoader.cpp \
@@ -15,6 +16,7 @@ SOURCES += src/game/main.cpp \
     src/graphics/FontManager.cpp \
     src/graphics/CoordinateSystemRenderer.cpp \
     src/graphics/Frustum.cpp \
+    src/graphics/TextureManager.cpp \
     src/generator/MapGenerator.cpp \
     src/generator/WaterMapGenerator.cpp \
     src/generator/HillsMapGenerator.cpp \
@@ -27,8 +29,7 @@ SOURCES += src/game/main.cpp \
     src/model/TerrainTile.cpp \
     src/chunk/ModelChunk.cpp \
     src/chunk/Chunk.cpp \
-    src/chunk/TerrainChunk.cpp \
-    src/graphics/TextureManager.cpp
+    src/chunk/TerrainChunk.cpp
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
@@ -58,6 +59,7 @@ HEADERS += \
     src/game/Settings.h \
     src/game/InputController.h \
     src/game/SaveLoadManager.h \
+    src/game/Options.h \
     src/graphics/Shader.h \
     src/graphics/Camera.h \
     src/graphics/TextureLoader.h \
@@ -66,6 +68,7 @@ HEADERS += \
     src/graphics/FontManager.h \
     src/graphics/CoordinateSystemRenderer.h \
     src/graphics/Frustum.h \
+    src/graphics/TextureManager.h \
     src/generator/MapGenerator.h \
     src/generator/WaterMapGenerator.h \
     src/generator/HillsMapGenerator.h \
@@ -78,8 +81,7 @@ HEADERS += \
     src/model/Model.h \
     src/chunk/ModelChunk.h \
     src/chunk/Chunk.h \
-    src/chunk/TerrainChunk.h \
-    src/graphics/TextureManager.h
+    src/chunk/TerrainChunk.h
 
 DISTFILES += \
     res/textures/underwater_sand.jpg \

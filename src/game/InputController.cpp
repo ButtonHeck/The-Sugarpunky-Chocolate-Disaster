@@ -3,18 +3,7 @@
 extern GLFWwindow* window;
 extern Camera camera;
 extern glm::vec3 cursorToViewportDirection;
-extern bool renderShadowOnTrees;
-extern bool renderTreeModels;
-extern bool animateWater;
-extern bool renderDebugText;
-extern bool recreateTerrainRequest;
-extern bool saveRequest;
-extern bool loadRequest;
-extern bool showBuildable;
-extern bool showCursor;
-extern bool modelsFrustumCulling;
-extern bool hillsFrustumCulling;
-extern bool waterFrustumCulling;
+extern Options options;
 extern int scr_width;
 extern int scr_height;
 extern float aspect_ratio;
@@ -61,7 +50,7 @@ void InputController::processKeyboard(float delta)
     {
       if (!keysPressed[GLFW_KEY_F2])
         {
-          renderShadowOnTrees = !renderShadowOnTrees;
+          options.switchOpt(RENDER_SHADOW_ON_TREES);
           keysPressed[GLFW_KEY_F2] = true;
         }
     }
@@ -73,7 +62,7 @@ void InputController::processKeyboard(float delta)
     {
       if (!keysPressed[GLFW_KEY_F3])
         {
-          animateWater = !animateWater;
+          options.switchOpt(ANIMATE_WATER);
           keysPressed[GLFW_KEY_F3] = true;
         }
     }
@@ -85,7 +74,7 @@ void InputController::processKeyboard(float delta)
     {
       if (!keysPressed[GLFW_KEY_F4])
         {
-          renderTreeModels = !renderTreeModels;
+          options.switchOpt(RENDER_TREE_MODELS);
           keysPressed[GLFW_KEY_F4] = true;
         }
     }
@@ -97,7 +86,7 @@ void InputController::processKeyboard(float delta)
     {
       if (!keysPressed[GLFW_KEY_F5])
         {
-          renderDebugText = !renderDebugText;
+          options.switchOpt(RENDER_DEBUG_TEXT);
           keysPressed[GLFW_KEY_F5] = true;
         }
     }
@@ -109,7 +98,7 @@ void InputController::processKeyboard(float delta)
     {
       if (!keysPressed[GLFW_KEY_F6])
         {
-          showBuildable = !showBuildable;
+          options.switchOpt(SHOW_BUILDABLE);
           keysPressed[GLFW_KEY_F6] = true;
         }
     }
@@ -121,7 +110,7 @@ void InputController::processKeyboard(float delta)
     {
       if (!keysPressed[GLFW_KEY_F9])
         {
-          recreateTerrainRequest = !recreateTerrainRequest;
+          options.switchOpt(RECREATE_TERRAIN_REQUEST);
           keysPressed[GLFW_KEY_F9] = true;
         }
     }
@@ -133,7 +122,7 @@ void InputController::processKeyboard(float delta)
     {
       if (!keysPressed[GLFW_KEY_F10])
         {
-          saveRequest = !saveRequest;
+          options.switchOpt(SAVE_REQUEST);
           keysPressed[GLFW_KEY_F10] = true;
         }
     }
@@ -145,7 +134,7 @@ void InputController::processKeyboard(float delta)
     {
       if (!keysPressed[GLFW_KEY_F11])
         {
-          loadRequest = !loadRequest;
+          options.switchOpt(LOAD_REQUEST);
           keysPressed[GLFW_KEY_F11] = true;
         }
     }
@@ -157,7 +146,7 @@ void InputController::processKeyboard(float delta)
     {
       if (!keysPressed[GLFW_KEY_R])
         {
-          modelsFrustumCulling = !modelsFrustumCulling;
+          options.switchOpt(MODELS_FC);
           keysPressed[GLFW_KEY_R] = true;
         }
     }
@@ -169,7 +158,7 @@ void InputController::processKeyboard(float delta)
     {
       if (!keysPressed[GLFW_KEY_T])
         {
-          hillsFrustumCulling = !hillsFrustumCulling;
+          options.switchOpt(HILLS_FC);
           keysPressed[GLFW_KEY_T] = true;
         }
     }
@@ -181,7 +170,7 @@ void InputController::processKeyboard(float delta)
     {
       if (!keysPressed[GLFW_KEY_Y])
         {
-          waterFrustumCulling = !waterFrustumCulling;
+          options.switchOpt(WATER_FC);
           keysPressed[GLFW_KEY_Y] = true;
         }
     }
@@ -191,7 +180,7 @@ void InputController::processKeyboard(float delta)
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)
 {
-  if (showCursor)
+  if (options.get(SHOW_CURSOR))
     {
       lastX = x;
       lastY = y;
@@ -235,8 +224,8 @@ void InputController::cursorClickCallback(GLFWwindow *window, int button, int ac
     {
       if (!mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT])
         {
-          showCursor = !showCursor;
-          glfwSetInputMode(window, GLFW_CURSOR, showCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+          options.switchOpt(SHOW_CURSOR);
+          glfwSetInputMode(window, GLFW_CURSOR, options.get(SHOW_CURSOR) ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
           glfwSetCursorPos(window, scr_width / 2.0f, scr_height / 2.0f);
           lastX = scr_width / 2.0f;
           lastY = scr_height / 2.0f;
@@ -252,7 +241,7 @@ void InputController::updateCursorMappingCoordinates(Camera &camera,
                                         HillsMapGenerator *hillMapGenerator,
                                         BuildableMapGenerator *buildableMapGenerator)
 {
-  if (showCursor && cursorToViewportDirection.y < 0.0f)
+  if (options.get(SHOW_CURSOR) && cursorToViewportDirection.y < 0.0f)
     {
       float ratio = camera.getPosition().y / (-cursorToViewportDirection.y);
       bool cursorOutOfMap = false;

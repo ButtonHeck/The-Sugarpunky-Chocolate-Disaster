@@ -5,6 +5,7 @@
 #include <iostream>
 #include "src/graphics/Camera.h"
 #include "src/game/Settings.h"
+#include "src/game/Options.h"
 #include <glm/glm.hpp>
 #include "src/generator/BaseMapGenerator.h"
 #include "src/generator/HillsMapGenerator.h"
