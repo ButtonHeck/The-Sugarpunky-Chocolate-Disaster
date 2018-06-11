@@ -17,6 +17,7 @@ SOURCES += src/game/main.cpp \
     src/graphics/CoordinateSystemRenderer.cpp \
     src/graphics/Frustum.cpp \
     src/graphics/TextureManager.cpp \
+    src/graphics/ShaderManager.cpp \
     src/generator/MapGenerator.cpp \
     src/generator/WaterMapGenerator.cpp \
     src/generator/HillsMapGenerator.cpp \
@@ -61,6 +62,7 @@ HEADERS += \
     src/game/SaveLoadManager.h \
     src/game/Options.h \
     src/graphics/Shader.h \
+    src/graphics/ShaderManager.h \
     src/graphics/Camera.h \
     src/graphics/TextureLoader.h \
     src/graphics/Renderer.h \

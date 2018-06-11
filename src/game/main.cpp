@@ -8,7 +8,7 @@
 #include "src/game/InputController.h"
 #include "src/game/SaveLoadManager.h"
 #include "src/game/Options.h"
-#include "src/graphics/Shader.h"
+#include "src/graphics/ShaderManager.h"
 #include "src/graphics/Camera.h"
 #include "src/graphics/TextureLoader.h"
 #include "src/graphics/TextureManager.h"
@@ -70,25 +70,11 @@ int main()
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 
   //shaders loading
-  Shader hills("/shaders/hills.vs", "/shaders/hills.gs", "/shaders/hills.fs");
-  Shader hills_noFC("/shaders/hills_noFC.vs", "/shaders/hills_noFC.fs");
-  Shader shore("/shaders/shore.vs", "/shaders/shore.fs");
-  Shader underwater("/shaders/underwater.vs", "/shaders/underwater.fs");
-  Shader flat("/shaders/flat.vs", "/shaders/flat.fs");
-  Shader water("/shaders/water.vs", "/shaders/water.gs", "/shaders/water.fs");
-  Shader water_noFC("/shaders/water_noFC.vs", "/shaders/water_noFC.fs");
-  Shader sky("/shaders/skybox.vs", "/shaders/skybox.fs");
-  Shader modelShader("/shaders/model.vs", "/shaders/model.fs");
-  Shader fontShader("/shaders/font.vs", "/shaders/font.fs");
-  Shader csShader("/shaders/coordinateSystem.vs", "/shaders/coordinateSystem.gs", "/shaders/coordinateSystem.fs");
-  Shader buildableShader("/shaders/buildableTiles.vs", "/shaders/buildableTiles.fs");
-  Shader selectedTileShader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs");
-  std::vector<Shader*> shaders =
-  {&hills, &hills_noFC, &shore, &underwater, &flat, &water, &water_noFC, &sky, &modelShader, &fontShader, &csShader, &buildableShader, &selectedTileShader};
+  ShaderManager shaderManager;
 
   //setup debug visual output objects
-  FontManager fontManager("Laconic_Bold.otf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), &fontShader);
-  CoordinateSystemRenderer csRenderer(&csShader);
+  FontManager fontManager("Laconic_Bold.otf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), &shaderManager.get(SHADER_FONT));
+  CoordinateSystemRenderer csRenderer(&shaderManager.get(SHADER_CS));
 
   //models and model-related objects loading
   Model tree1("/models/tree1/tree1.obj", textureLoader);
@@ -112,58 +98,7 @@ int main()
   textureManager.createUnderwaterReliefTexture(waterMapGenerator);
 
   //shaders setup
-  hills.use();
-  hills.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  hills.setInt("u_flat_diffuse", FLAT_x2);
-  hills.setInt("u_flat_diffuse2", FLAT_2_x2);
-  hills.setInt("u_hills_diffuse", HILL);
-  hills.setInt("u_hills_diffuse2", HILL_2);
-  hills.setInt("u_hills_specular", HILL_SPECULAR);
-  hills.setInt("u_normal_map", NORMAL_MAP);
-  hills.setInt("u_mapDimension", TILES_WIDTH);
-  hills_noFC.use();
-  hills_noFC.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  hills_noFC.setInt("u_flat_diffuse", FLAT_x2);
-  hills_noFC.setInt("u_flat_diffuse2", FLAT_2_x2);
-  hills_noFC.setInt("u_hills_diffuse", HILL);
-  hills_noFC.setInt("u_hills_diffuse2", HILL_2);
-  hills_noFC.setInt("u_hills_specular", HILL_SPECULAR);
-  hills_noFC.setInt("u_normal_map", NORMAL_MAP);
-  hills_noFC.setInt("u_mapDimension", TILES_WIDTH);
-  shore.use();
-  shore.setInt("u_flat_diffuse", FLAT);
-  shore.setInt("u_flat_diffuse2", FLAT_2);
-  shore.setInt("u_sand_diffuse", SHORE);
-  shore.setInt("u_sand_diffuse2", SHORE_2);
-  shore.setInt("u_normal_map", NORMAL_MAP);
-  shore.setInt("u_mapDimension", TILES_WIDTH);
-  shore.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  underwater.use();
-  underwater.setInt("u_underwater_diffuse", UNDERWATER);
-  underwater.setInt("u_normal_map", NORMAL_MAP);
-  underwater.setInt("u_mapDimension", TILES_WIDTH);
-  underwater.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  underwater.setInt("u_bottomRelief_diffuse", UNDERWATER_RELIEF);
-  flat.use();
-  flat.setInt("u_flat_diffuse", FLAT);
-  flat.setInt("u_flat_diffuse2", FLAT_2);
-  flat.setInt("u_normal_map", NORMAL_MAP);
-  flat.setInt("u_mapDimension", TILES_WIDTH);
-  flat.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  water.use();
-  water.setInt("u_water_diffuse", WATER);
-  water.setInt("u_water_specular", WATER_SPECULAR);
-  water.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  water.setInt("u_skybox", SKYBOX);
-  water_noFC.use();
-  water_noFC.setInt("u_water_diffuse", WATER);
-  water_noFC.setInt("u_water_specular", WATER_SPECULAR);
-  water_noFC.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  water_noFC.setInt("u_skybox", SKYBOX);
-  sky.use();
-  sky.setInt("u_skybox", SKYBOX);
-  modelShader.use();
-  modelShader.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
+  shaderManager.setupConstantUniforms();
 
   //etc
   printMapsInfos();
@@ -202,44 +137,25 @@ int main()
         }
 
       //hills rendering
-      if (options.get(HILLS_FC))
-        {
-          hills.use();
-          hills.setMat4("u_projectionView", projectionView);
-          hills.setVec3("u_viewPosition", viewPosition);
-          hills.setVec4("u_frustumPlanes[0]", viewFrustum.getPlane(FRUSTUM_LEFT));
-          hills.setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
-          hills.setVec4("u_frustumPlanes[2]", viewFrustum.getPlane(FRUSTUM_BOTTOM));
-          hills.setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
-        }
-      else
-        {
-          hills_noFC.use();
-          hills_noFC.setMat4("u_projectionView", projectionView);
-          hills_noFC.setVec3("u_viewPosition", viewPosition);
-        }
+      shaderManager.updateHillsShaders(options.get(HILLS_FC), projectionView, viewPosition, viewFrustum);
       renderer.drawHills(hillMapGenerator);
 
       //shore terrain chunks drawing
-      shore.use();
-      shore.setMat4("u_projectionView", projectionView);
+      shaderManager.updateShoreShader(projectionView);
       renderer.drawShore(baseMapGenerator, viewFrustum);
 
       //flat terrain chunks drawing
-      flat.use();
-      flat.setMat4("u_projectionView", projectionView);
+      shaderManager.updateFlatShader(projectionView);
       renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
 
       //underwater tile
-      underwater.use();
-      underwater.setMat4("u_projectionView", projectionView);
+      shaderManager.updateUnderwaterShader(projectionView);
       renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
 
       //buildable tiles
       if (options.get(SHOW_BUILDABLE))
         {
-          buildableShader.use();
-          buildableShader.setMat4("u_projectionView", projectionView);
+          shaderManager.updateBuildableShader(projectionView);
           renderer.drawBuildableTiles(buildableMapGenerator);
         }
 
@@ -249,48 +165,27 @@ int main()
           input.updateCursorMappingCoordinates(camera, baseMapGenerator, hillMapGenerator, buildableMapGenerator);
           if (buildableMapGenerator->getMap()[input.getCursorMapZ()][input.getCursorMapX()] != 0)
             {
-              selectedTileShader.use();
-              selectedTileShader.setMat4("u_projectionView", projectionView);
               glm::mat4 selectedModel;
               selectedModel = glm::translate(selectedModel, glm::vec3(-HALF_TILES_WIDTH + input.getCursorMapX(), 0.0f, -HALF_TILES_HEIGHT + input.getCursorMapZ()));
-              selectedTileShader.setMat4("u_model", selectedModel);
+              shaderManager.updateSelectedShader(projectionView, selectedModel);
               renderer.drawSelectedTile(buildableMapGenerator);
             }
         }
 
       //water rendering
-      if (options.get(WATER_FC))
-        {
-          water.use();
-          water.setMat4("u_projectionView", projectionView);
-          water.setVec3("u_viewPosition", viewPosition);
-          water.setVec4("u_frustumPlanes[0]", viewFrustum.getPlane(FRUSTUM_LEFT));
-          water.setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
-          water.setVec4("u_frustumPlanes[2]", viewFrustum.getPlane(FRUSTUM_BOTTOM));
-          water.setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
-        }
-      else
-        {
-          water_noFC.use();
-          water_noFC.setMat4("u_projectionView", projectionView);
-          water_noFC.setVec3("u_viewPosition", viewPosition);
-        }
+      shaderManager.updateWaterShaders(options.get(WATER_FC), projectionView, viewPosition, viewFrustum);
       renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER));
 
       //Skybox rendering
-      sky.use();
-      sky.setMat4("u_view", glm::mat4(glm::mat3(view)));
-      sky.setMat4("u_projection", projection);
+      glm::mat4 skyView = glm::mat4(glm::mat3(view));
+      shaderManager.updateSkyShader(skyView, projection);
       renderer.drawSkybox(&skybox);
 
       //trees chunks rendering
       if (options.get(RENDER_TREE_MODELS))
         {
-          modelShader.use();
-          modelShader.setMat4("u_projectionView", projectionView);
-          modelShader.setVec3("u_viewPosition", viewPosition);
-          modelShader.setBool("u_shadow", options.get(RENDER_SHADOW_ON_TREES));
-          renderer.drawTrees(treeGenerator, modelShader, options.get(MODELS_FC), treeModelChunks, hillTreeModelChunks);
+          shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES));
+          renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC), treeModelChunks, hillTreeModelChunks);
         }
 
       //font rendering
@@ -344,14 +239,13 @@ int main()
 
   //cleanup
   textureManager.deleteTextures();
+  shaderManager.deleteShaders();
   delete baseMapGenerator;
   delete hillMapGenerator;
   delete waterMapGenerator;
   delete saveLoadManager;
   delete buildableMapGenerator;
   delete treeGenerator;
-  for (Shader* shader: shaders)
-    shader->cleanUp();
   glfwDestroyWindow(window);
   glfwTerminate();
 }
