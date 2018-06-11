@@ -4,6 +4,11 @@ WaterMapGenerator::WaterMapGenerator()
   :
     MapGenerator(){}
 
+WaterMapGenerator::~WaterMapGenerator()
+{
+  deleteGLObjects();
+}
+
 void WaterMapGenerator::prepareMap()
 {
   unsigned int numWaterTiles = 0;

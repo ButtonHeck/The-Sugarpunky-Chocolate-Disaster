@@ -13,6 +13,7 @@ class FontManager
 {
 public:
   FontManager(const std::string& fontfile, glm::mat4 projection, Shader* shader);
+  ~FontManager();
   void renderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color = glm::vec3(0.0f));
   GLuint& getVAO();
   GLuint& getVBO();

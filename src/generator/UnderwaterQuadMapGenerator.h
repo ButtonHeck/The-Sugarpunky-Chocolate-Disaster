@@ -6,6 +6,7 @@ class UnderwaterQuadMapGenerator : public MapGenerator
 {
 public:
   UnderwaterQuadMapGenerator();
+  ~UnderwaterQuadMapGenerator();
 };
 
 #endif // UNDERWATERQUADMAPGENERATOR_H

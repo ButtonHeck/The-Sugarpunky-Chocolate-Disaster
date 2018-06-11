@@ -376,19 +376,12 @@ int main()
   //cleanup
   for (unsigned int i = 0; i < textures.size(); i++)
     glDeleteTextures(1, textures[i]);
-  baseMapGenerator->deleteGLObjects();
-  hillMapGenerator->deleteGLObjects();
-  waterMapGenerator->deleteGLObjects();
-  buildableMapGenerator->deleteGLObjects();
   delete baseMapGenerator;
   delete hillMapGenerator;
   delete waterMapGenerator;
   delete saveLoadManager;
   delete buildableMapGenerator;
   delete treeGenerator;
-  underwaterQuadGenerator.deleteGLObjects();
-  fontManager.deleteGLObjects();
-  csRenderer.deleteGLObjects();
   for (Shader* shader: shaders)
     shader->cleanUp();
   glfwDestroyWindow(window);

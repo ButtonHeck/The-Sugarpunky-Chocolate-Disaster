@@ -9,6 +9,7 @@ class HillsMapGenerator : public MapGenerator
 {
 public:
   HillsMapGenerator(std::vector<std::vector<float>>& waterMap);
+  ~HillsMapGenerator();
   void prepareMap();
   void fillBufferData(bool textureSlopeCorrection);
   void createTiles();

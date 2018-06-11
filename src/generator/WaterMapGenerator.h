@@ -9,6 +9,7 @@ class WaterMapGenerator : public MapGenerator
 {
 public:
   WaterMapGenerator();
+  ~WaterMapGenerator();
   void prepareMap();
   void postPrepareMap();
   void fillBufferData();

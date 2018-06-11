@@ -24,6 +24,11 @@ CoordinateSystemRenderer::CoordinateSystemRenderer(Shader *shader)
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+CoordinateSystemRenderer::~CoordinateSystemRenderer()
+{
+  deleteGLObjects();
+}
+
 void CoordinateSystemRenderer::deleteGLObjects()
 {
   glDeleteVertexArrays(1, &vao);

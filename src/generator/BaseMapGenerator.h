@@ -10,6 +10,7 @@ class BaseMapGenerator : public MapGenerator
 {
 public:
   BaseMapGenerator(std::vector<std::vector<float>>& waterMap, std::vector<std::vector<float>>& hillMap);
+  ~BaseMapGenerator();
   void prepareMap(bool randomizeShoreFlag);
   void fillBufferData();
   void fillChunkBufferData();

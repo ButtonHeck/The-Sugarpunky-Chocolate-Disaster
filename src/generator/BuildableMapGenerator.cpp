@@ -9,6 +9,11 @@ BuildableMapGenerator::BuildableMapGenerator(std::vector<std::vector<float> > &b
 
 }
 
+BuildableMapGenerator::~BuildableMapGenerator()
+{
+  deleteGLObjects();
+}
+
 void BuildableMapGenerator::prepareMap()
 {
   for (unsigned int y = 2; y < TILES_HEIGHT; y++)

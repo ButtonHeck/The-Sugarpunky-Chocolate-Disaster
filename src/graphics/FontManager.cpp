@@ -59,6 +59,11 @@ FontManager::FontManager(const std::string &fontfile, glm::mat4 projection, Shad
   glBindVertexArray(0);
 }
 
+FontManager::~FontManager()
+{
+  deleteGLObjects();
+}
+
 void FontManager::renderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
 {
   glEnable(GL_BLEND);

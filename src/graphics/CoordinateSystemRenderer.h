@@ -10,6 +10,7 @@ class CoordinateSystemRenderer
 {
 public:
   CoordinateSystemRenderer(Shader* shader);
+  ~CoordinateSystemRenderer();
   void deleteGLObjects();
   void draw(const glm::mat4& view, float aspect_ratio);
 private:

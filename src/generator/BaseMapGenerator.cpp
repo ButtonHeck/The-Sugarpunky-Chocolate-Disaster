@@ -10,6 +10,11 @@ BaseMapGenerator::BaseMapGenerator(std::vector<std::vector<float> > &waterMap, s
   initializeMap(chunkMap);
 }
 
+BaseMapGenerator::~BaseMapGenerator()
+{
+  deleteGLObjects();
+}
+
 void BaseMapGenerator::prepareMap(bool randomizeShoreFlag)
 {
   generateMap();

@@ -6,6 +6,11 @@ HillsMapGenerator::HillsMapGenerator(std::vector<std::vector<float> > &waterMap)
     waterMap(waterMap)
 {}
 
+HillsMapGenerator::~HillsMapGenerator()
+{
+  deleteGLObjects();
+}
+
 void HillsMapGenerator::prepareMap()
 {
   float max_height = 0.0f;
