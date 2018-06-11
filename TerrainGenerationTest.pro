@@ -158,7 +158,10 @@ DISTFILES += \
     res/fonts/Laconic_Bold.otf \
     res/shaders/water.gs \
     res/shaders/water_noFC.vs \
-    res/shaders/water_noFC.fs
+    res/shaders/water_noFC.fs \
+    res/shaders/hills_noFC.vs \
+    res/shaders/hills_noFC.fs \
+    res/shaders/hills.gs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

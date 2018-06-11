@@ -9,7 +9,6 @@ uniform vec3        u_lightDir;
 uniform int         u_mapDimension;
 uniform sampler2D   u_normal_map;
 uniform vec3        u_viewPosition;
-uniform vec4        u_frustumPlanes[4]; //back and front planes sucks!
 
 out vec2  v_TexCoords;
 out float v_PosHeight;
@@ -18,26 +17,12 @@ out float v_DiffuseComponentFlat;
 out float v_TextureFlatMixRatio;
 out float v_TextureHillMixRatio;
 out float v_SpecularComponent;
-out int   v_visible;
 
 const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 const float TRANSITION_RATIO_MULTIPLIER = 1.5;
-const int TILE_RADIUS = 1;
-
-//frustum culling function itself
-int cullThisSonOfaBitch()
-{
-    for (int i = 0; i < 4; i++)
-    {
-        if (dot(u_frustumPlanes[i].xyz, i_pos) <= -u_frustumPlanes[i].w - TILE_RADIUS)
-          return 0;
-    }
-  return 1;
-}
 
 void main()
 {
-    v_visible = cullThisSonOfaBitch();
     gl_Position = u_projectionView * vec4(i_pos, 1.0);
     v_TexCoords = i_texCoords;
     v_PosHeight = i_pos.y / TRANSITION_RATIO_MULTIPLIER;

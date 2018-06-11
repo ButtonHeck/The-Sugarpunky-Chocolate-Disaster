@@ -15,12 +15,14 @@ out float v_DiffuseComponent;
 out float v_SpecularComponent;
 out int   v_visible;
 
+const int TILE_RADIUS = 1;
+
 //frustum culling function itself
 int cullThisSonOfaBitch()
 {
     for (int i = 0; i < 4; i++)
     {
-        if (dot(u_frustumPlanes[i].xyz, i_pos) <= -u_frustumPlanes[i].w)
+        if (dot(u_frustumPlanes[i].xyz, i_pos) <= -u_frustumPlanes[i].w - TILE_RADIUS)
           return 0;
     }
   return 1;

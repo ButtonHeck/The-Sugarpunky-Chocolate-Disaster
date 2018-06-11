@@ -86,7 +86,8 @@ int main()
   }
 
   //shaders loading
-  Shader hills("/shaders/hills.vs", "/shaders/hills.fs");
+  Shader hills("/shaders/hills.vs", "/shaders/hills.gs", "/shaders/hills.fs");
+  Shader hills_noFC("/shaders/hills_noFC.vs", "/shaders/hills_noFC.fs");
   Shader shore("/shaders/shore.vs", "/shaders/shore.fs");
   Shader underwater("/shaders/underwater.vs", "/shaders/underwater.fs");
   Shader flat("/shaders/flat.vs", "/shaders/flat.fs");
@@ -151,6 +152,15 @@ int main()
   hills.setInt("u_hills_specular", HILL_SPECULAR);
   hills.setInt("u_normal_map", NORMAL_MAP);
   hills.setInt("u_mapDimension", TILES_WIDTH);
+  hills_noFC.use();
+  hills_noFC.setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
+  hills_noFC.setInt("u_flat_diffuse", FLAT_x2);
+  hills_noFC.setInt("u_flat_diffuse2", FLAT_2_x2);
+  hills_noFC.setInt("u_hills_diffuse", HILL);
+  hills_noFC.setInt("u_hills_diffuse2", HILL_2);
+  hills_noFC.setInt("u_hills_specular", HILL_SPECULAR);
+  hills_noFC.setInt("u_normal_map", NORMAL_MAP);
+  hills_noFC.setInt("u_mapDimension", TILES_WIDTH);
   shore.use();
   shore.setInt("u_flat_diffuse", FLAT);
   shore.setInt("u_flat_diffuse2", FLAT_2);
@@ -226,9 +236,9 @@ int main()
         }
 
       //hill chunks drawing
-      hills.use();
-      hills.setMat4("u_projectionView", projectionView);
-      hills.setVec3("u_viewPosition", viewPosition);
+      hills_noFC.use();
+      hills_noFC.setMat4("u_projectionView", projectionView);
+      hills_noFC.setVec3("u_viewPosition", viewPosition);
       renderer.drawHills(hillMapGenerator, hillsFrustumCulling);
 
       //shore terrain chunks drawing
