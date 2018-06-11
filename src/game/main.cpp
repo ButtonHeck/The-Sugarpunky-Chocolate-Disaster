@@ -121,7 +121,7 @@ int main()
   treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap(), treeModelChunks);
   treeGenerator->setupHillModels(hillMapGenerator->getMap(), hillTreeModelChunks);
   UnderwaterQuadMapGenerator underwaterQuadGenerator;
-  Skybox skybox("/textures/cubemap/", textureLoader, SKYBOX);
+  Skybox skybox;
 
   //textures loading
   GLuint flatTexture = textureLoader.loadTexture("/textures/flat.jpg", FLAT, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
@@ -138,9 +138,10 @@ int main()
   GLuint waterTexture = textureLoader.loadTexture("/textures/water.png", WATER, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
   GLuint waterTextureSpec = textureLoader.loadTexture("/textures/water_specular.png", WATER_SPECULAR, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
   GLuint underwaterReliefTexture = textureLoader.createUnderwaterReliefTexture(waterMapGenerator, UNDERWATER_RELIEF, GL_LINEAR, GL_LINEAR);
+  GLuint skyboxTexture = textureLoader.loadCubemap("/textures/cubemap/", SKYBOX);
   std::vector<GLuint*> textures =
   {&flatTexture, &hillTexture, &waterTexture, &shoreTexture, &waterTextureSpec, &hillTextureSpec, &normalMapTexture,
-  &underwaterSandTexture, &shoreTexture2, &flatTexture2, &hillTexture2, &flatTexture_x2, &flatTexture2_x2, &skybox.getTexture(), &underwaterReliefTexture};
+  &underwaterSandTexture, &shoreTexture2, &flatTexture2, &hillTexture2, &flatTexture_x2, &flatTexture2_x2, &underwaterReliefTexture, &skyboxTexture};
 
   //shaders setup
   hills.use();

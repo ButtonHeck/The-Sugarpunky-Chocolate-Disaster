@@ -30,8 +30,18 @@ GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, G
   return texture;
 }
 
-GLuint TextureLoader::loadCubemap(std::vector<std::string> &faces, GLuint textureUnit)
+GLuint TextureLoader::loadCubemap(const std::string& directory, GLuint textureUnit)
 {
+  std::vector<std::string> faces;
+  faces.assign(
+  {
+          RES_DIR + directory + "right.png",
+          RES_DIR + directory + "left.png",
+          RES_DIR + directory + "up.png",
+          RES_DIR + directory + "down.png",
+          RES_DIR + directory + "back.png",
+          RES_DIR + directory + "front.png"
+        });
   ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
   GLuint texture;
   glGenTextures(1, &texture);

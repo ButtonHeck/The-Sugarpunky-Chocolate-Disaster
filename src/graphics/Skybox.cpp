@@ -1,21 +1,7 @@
 #include "src/graphics/Skybox.h"
 
-Skybox::Skybox(const std::string &directory, TextureLoader& loader, GLuint textureUnit)
-  :
-    directory(std::string(RES_DIR + directory)),
-    loader(loader),
-    textureUnit(textureUnit)
+Skybox::Skybox()
 {
-  faces.assign(
-  {
-    this->directory + "right.png",
-          this->directory + "left.png",
-          this->directory + "up.png",
-          this->directory + "down.png",
-          this->directory + "back.png",
-          this->directory + "front.png"
-        });
-  texture = loader.loadCubemap(faces, textureUnit);
   glGenVertexArrays(1, &vao);
   glGenBuffers(1, &vbo);
   glBindVertexArray(vao);
@@ -27,6 +13,11 @@ Skybox::Skybox(const std::string &directory, TextureLoader& loader, GLuint textu
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+Skybox::~Skybox()
+{
+  deleteGLObjects();
+}
+
 void Skybox::deleteGLObjects()
 {
   glDeleteVertexArrays(1, &vao);
@@ -36,9 +27,4 @@ void Skybox::deleteGLObjects()
 GLuint &Skybox::getVAO()
 {
   return vao;
-}
-
-GLuint &Skybox::getTexture()
-{
-  return texture;
 }
