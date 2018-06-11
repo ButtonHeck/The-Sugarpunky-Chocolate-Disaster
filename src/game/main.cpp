@@ -1,6 +1,5 @@
 #include <iostream>
 #include <chrono>
-#include <omp.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -79,12 +78,6 @@ int main()
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-
-  //make sure OpenMP is working
-  #pragma omp parallel num_threads(2)
-  {
-    std::cout << ("Hello from thread " + std::to_string(omp_get_thread_num()) + "\n");
-  }
 
   //shaders loading
   Shader hills("/shaders/hills.vs", "/shaders/hills.gs", "/shaders/hills.fs");

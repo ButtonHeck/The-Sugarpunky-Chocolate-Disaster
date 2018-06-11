@@ -3,9 +3,6 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-QMAKE_CXXFLAGS+= -fopenmp
-QMAKE_LFLAGS +=  -fopenmp
-
 SOURCES += src/game/main.cpp \
     src/game/Settings.cpp \
     src/game/InputController.cpp \
