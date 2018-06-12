@@ -53,8 +53,8 @@ void Renderer::drawShore(BaseMapGenerator *generator, Frustum &frustum)
 
 void Renderer::drawFlatTerrain(BaseMapGenerator *generator, Frustum& frustum)
 {
-  glBindVertexArray(generator->getChunkVAO());
-  auto baseChunks = generator->getFlatChunks();
+  glBindVertexArray(generator->getSquareVAO());
+  auto baseChunks = generator->getSquareChunks();
   float radius = CHUNK_SIZE / 2.0f * glm::sqrt(2);
   for (unsigned int i = 0; i < baseChunks.size(); i++)
     {

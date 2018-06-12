@@ -169,11 +169,11 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
 
   hillGenerator.createTiles();
   hillGenerator.fillBufferData(!HILLS_TEXTURE_MAPPING_SLOPE_CORRECTION);
-  baseGenerator.getChunkTiles().clear();
+  baseGenerator.getSquareTiles().clear();
   baseGenerator.getCellTiles().clear();
   baseGenerator.prepareMap(BASE_TERRAIN_RANDOMIZE_SHORE_FORM);
-  baseGenerator.fillBufferData();
-  baseGenerator.fillChunkBufferData();
+  baseGenerator.fillShoreBufferData();
+  baseGenerator.fillSquareBufferData();
   baseGenerator.fillCellBufferData();
   waterGenerator.postPrepareMap();
   waterGenerator.fillBufferData();

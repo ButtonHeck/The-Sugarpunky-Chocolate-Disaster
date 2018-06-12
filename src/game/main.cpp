@@ -249,8 +249,8 @@ void prepareTerrain()
   hillMapGenerator->prepareMap(); //generating hill height map
   hillMapGenerator->fillBufferData(!HILLS_TEXTURE_MAPPING_SLOPE_CORRECTION); //fill hills buffer
   baseMapGenerator->prepareMap(BASE_TERRAIN_RANDOMIZE_SHORE_FORM); //generating base terrain data
-  baseMapGenerator->fillBufferData(); //fill base terrain vertex data
-  baseMapGenerator->fillChunkBufferData(); //generating data for chunk instance rendering
+  baseMapGenerator->fillShoreBufferData(); //fill base terrain vertex data
+  baseMapGenerator->fillSquareBufferData(); //generating data for chunk instance rendering
   baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
   waterMapGenerator->postPrepareMap();
   waterMapGenerator->fillBufferData(); //fill water buffer
@@ -289,21 +289,15 @@ void printMapsInfos()
   std::cout << "Hills tiles:\t" << hillMapGenerator->getTiles().size() << std::endl;
   std::cout << "Base tiles:\t" << baseMapGenerator->getTiles().size() << std::endl;
   int instanced = 0;
-  std::cout << "x" << CHUNK_SIZE
-               << "\ttiles:\t"
-               << baseMapGenerator->getChunkTiles().size() << "\t(instanced)"
-               << std::endl;
-  instanced += baseMapGenerator->getChunkTiles().size();
-  std::cout << "1x1 \ttiles:\t"
-            << baseMapGenerator->getNumCellInstances() << "\t(instanced)"
-            << std::endl;
+  std::cout << "x" << CHUNK_SIZE << "\ttiles:\t" << baseMapGenerator->getSquareTiles().size() << "\t(instanced)\n";
+  instanced += baseMapGenerator->getSquareTiles().size();
+  std::cout << "1x1 \ttiles:\t" << baseMapGenerator->getNumCellInstances() << "\t(instanced)\n";
   instanced += baseMapGenerator->getNumCellInstances();
   std::cout << "Summary: \t"
             << (waterMapGenerator->getTiles().size()
                 + hillMapGenerator->getTiles().size()
                 + baseMapGenerator->getTiles().size()
-                + instanced)
-            << "\t(" << instanced << " instanced)" << std::endl;
+                + instanced) << "\t(" << instanced << " instanced)\n";
   std::cout << "Trees on flat: ";
   unsigned int numTrees = 0;
   for (unsigned int i = 0; i < treeGenerator->getTreeModels().size(); i++)
@@ -335,33 +329,30 @@ void APIENTRY glDebugCallback(GLenum source,
   std::cout << "Debug message: (" << id << "): " << message << std::endl;
   switch(source)
     {
-    case GL_DEBUG_SOURCE_API: std::cout << "Source: API"; break;
-    case GL_DEBUG_SOURCE_WINDOW_SYSTEM: std::cout << "Source: Window System"; break;
-    case GL_DEBUG_SOURCE_SHADER_COMPILER: std::cout << "Source: Shader Compiler"; break;
-    case GL_DEBUG_SOURCE_THIRD_PARTY: std::cout << "Source: Third Party"; break;
-    case GL_DEBUG_SOURCE_APPLICATION: std::cout << "Source: Application"; break;
-    case GL_DEBUG_SOURCE_OTHER: std::cout << "Source: Other"; break;
+    case GL_DEBUG_SOURCE_API: std::cout << "Source: API\n"; break;
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM: std::cout << "Source: Window System\n"; break;
+    case GL_DEBUG_SOURCE_SHADER_COMPILER: std::cout << "Source: Shader Compiler\n"; break;
+    case GL_DEBUG_SOURCE_THIRD_PARTY: std::cout << "Source: Third Party\n"; break;
+    case GL_DEBUG_SOURCE_APPLICATION: std::cout << "Source: Application\n"; break;
+    case GL_DEBUG_SOURCE_OTHER: std::cout << "Source: Other\n"; break;
     }
-  std::cout << std::endl;
   switch(type)
     {
-    case GL_DEBUG_TYPE_ERROR: std::cout << "Type: Error"; break;
-    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: std::cout << "Type: Deprecated behaviour"; break;
-    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: std::cout << "Type: Undefined behaviour"; break;
-    case GL_DEBUG_TYPE_PORTABILITY: std::cout << "Type: Portability"; break;
-    case GL_DEBUG_TYPE_PERFORMANCE: std::cout << "Type: Performance"; break;
-    case GL_DEBUG_TYPE_MARKER: std::cout << "Type: Marker"; break;
-    case GL_DEBUG_TYPE_PUSH_GROUP: std::cout << "Type: Push Group"; break;
-    case GL_DEBUG_TYPE_POP_GROUP: std::cout << "Type: Pop Group"; break;
-    case GL_DEBUG_TYPE_OTHER: std::cout << "Type: Other"; break;
+    case GL_DEBUG_TYPE_ERROR: std::cout << "Type: Error\n"; break;
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: std::cout << "Type: Deprecated behaviour\n"; break;
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: std::cout << "Type: Undefined behaviour\n"; break;
+    case GL_DEBUG_TYPE_PORTABILITY: std::cout << "Type: Portability\n"; break;
+    case GL_DEBUG_TYPE_PERFORMANCE: std::cout << "Type: Performance\n"; break;
+    case GL_DEBUG_TYPE_MARKER: std::cout << "Type: Marker\n"; break;
+    case GL_DEBUG_TYPE_PUSH_GROUP: std::cout << "Type: Push Group\n"; break;
+    case GL_DEBUG_TYPE_POP_GROUP: std::cout << "Type: Pop Group\n"; break;
+    case GL_DEBUG_TYPE_OTHER: std::cout << "Type: Other\n"; break;
     }
-  std::cout << std::endl;
   switch(severity)
     {
-    case GL_DEBUG_SEVERITY_HIGH: std::cout << "Severity: High"; break;
-    case GL_DEBUG_SEVERITY_MEDIUM: std::cout << "Severity: Medium"; break;
-    case GL_DEBUG_SEVERITY_LOW: std::cout << "Severity: Low"; break;
-    case GL_DEBUG_SEVERITY_NOTIFICATION: std::cout << "Severity: Notification"; break;
+    case GL_DEBUG_SEVERITY_HIGH: std::cout << "Severity: High\n\n"; break;
+    case GL_DEBUG_SEVERITY_MEDIUM: std::cout << "Severity: Medium\n\n"; break;
+    case GL_DEBUG_SEVERITY_LOW: std::cout << "Severity: Low\n\n"; break;
+    case GL_DEBUG_SEVERITY_NOTIFICATION: std::cout << "Severity: Notification\n\n"; break;
     }
-  std::cout << "\n\n";
 }
