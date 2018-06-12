@@ -3,7 +3,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "src/model/TerrainTile.h"
 #include "src/generator/BaseMapGenerator.h"
 #include "src/generator/HillsMapGenerator.h"
 #include "src/generator/WaterMapGenerator.h"

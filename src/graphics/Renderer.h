@@ -1,15 +1,16 @@
 #ifndef RENDERER_H
 #define RENDERER_H
-#include <glm/glm.hpp>
+#include <glm/vec2.hpp>
+#include <glm/detail/func_exponential.hpp>
 #include "src/graphics/Shader.h"
 #include "src/graphics/Camera.h"
 #include "src/graphics/Frustum.h"
+#include "src/graphics/Skybox.h"
 #include "src/generator/HillsMapGenerator.h"
 #include "src/generator/BaseMapGenerator.h"
 #include "src/generator/UnderwaterQuadMapGenerator.h"
 #include "src/generator/BuildableMapGenerator.h"
 #include "src/generator/WaterMapGenerator.h"
-#include "src/graphics/Skybox.h"
 #include "src/generator/TreeGenerator.h"
 
 class Renderer

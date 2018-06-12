@@ -4,10 +4,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <GL/glew.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <unordered_map>
+#include <GL/glew.h>
+#include <glm/gtc/type_ptr.hpp>
 #include "src/game/Settings.h"
 
 class Shader

@@ -1,7 +1,5 @@
 #ifndef TERRAIN_TILE_H
 #define TERRAIN_TILE_H
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 struct TerrainTile
 {

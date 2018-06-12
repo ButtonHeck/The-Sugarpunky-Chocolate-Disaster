@@ -2,14 +2,13 @@
 #define TREEGENERATOR_H
 #include <vector>
 #include <fstream>
-#include "src/model/Model.h"
-#include "src/graphics/Shader.h"
-#include "src/game/Settings.h"
-#include <glm/glm.hpp>
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <random>
+#include "src/game/Settings.h"
+#include "src/model/Model.h"
 #include "src/chunk/ModelChunk.h"
-#include "src/graphics/Camera.h"
 
 class TreeGenerator
 {

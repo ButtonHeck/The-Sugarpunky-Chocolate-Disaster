@@ -1,10 +1,6 @@
 #ifndef SKYBOX_H
 #define SKYBOX_H
-#include "src/graphics/TextureLoader.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <vector>
-#include "src/game/Settings.h"
+#include <GL/glew.h>
 
 class Skybox
 {

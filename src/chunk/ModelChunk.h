@@ -1,8 +1,5 @@
 #ifndef MODELCHUNK_H
 #define MODELCHUNK_H
-#include "src/game/Settings.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include "Chunk.h"
 
@@ -14,13 +11,55 @@ public:
   void setInstanceOffset(unsigned int index, unsigned int offset);
   void setNumInstancesVector(std::vector<unsigned int>& numInstances);
   void setNumInstances(unsigned int index, unsigned int instances);
-  unsigned int getInstanceOffset(int index);
+  unsigned int getInstanceOffset(int index) const;
   std::vector<unsigned int>& getInstanceOffsetVector();
-  unsigned int getNumInstances(int index);
+  unsigned int getNumInstances(int index) const;
   std::vector<unsigned int>& getNumInstancesVector();
 private:
   std::vector<unsigned int> instanceOffsets;
   std::vector<unsigned int> numInstances;
 };
+
+inline void ModelChunk::setInstanceOffsetsVector(std::vector<unsigned int> &instanceOffsets)
+{
+  for (unsigned int i = 0; i < instanceOffsets.size(); i++)
+    this->instanceOffsets.push_back(instanceOffsets[i]);
+}
+
+inline void ModelChunk::setInstanceOffset(unsigned int index, unsigned int offset)
+{
+  instanceOffsets[index] = offset;
+}
+
+inline void ModelChunk::setNumInstancesVector(std::vector<unsigned int> &numInstances)
+{
+  for (unsigned int i = 0; i < numInstances.size(); i++)
+    this->numInstances.push_back(numInstances[i]);
+}
+
+inline void ModelChunk::setNumInstances(unsigned int index, unsigned int instances)
+{
+  numInstances[index] = instances;
+}
+
+inline unsigned int ModelChunk::getInstanceOffset(int index) const
+{
+  return instanceOffsets[index];
+}
+
+inline std::vector<unsigned int> &ModelChunk::getInstanceOffsetVector()
+{
+  return instanceOffsets;
+}
+
+inline unsigned int ModelChunk::getNumInstances(int index) const
+{
+  return numInstances[index];
+}
+
+inline std::vector<unsigned int> &ModelChunk::getNumInstancesVector()
+{
+  return numInstances;
+}
 
 #endif // MODELCHUNK_H

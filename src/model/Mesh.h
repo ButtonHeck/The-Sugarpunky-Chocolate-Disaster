@@ -1,8 +1,12 @@
 #ifndef MESH_H
 #define MESH_H
-#include "src/graphics/Shader.h"
 #include <vector>
-#include <glm/glm.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/detail/func_common.hpp>
+#include <glm/detail/func_geometric.hpp>
+#include "src/graphics/Shader.h"
 #include "src/game/Settings.h"
 #include "src/chunk/ModelChunk.h"
 #include "src/graphics/Camera.h"
@@ -31,7 +35,7 @@ public:
   void setupMesh();
   void setupInstances(glm::mat4* models, unsigned int numModels);
   void draw(Shader& shader, Camera& camera, std::vector<ModelChunk>& chunks, unsigned int index,
-            bool modelRenderOptimize, unsigned int CHUNK_LOADING_DISTANCE);
+            bool modelRenderOptimize, unsigned int chunkLoadingDistance);
   unsigned int VAO;
 private:
   std::vector<Vertex> vertices;

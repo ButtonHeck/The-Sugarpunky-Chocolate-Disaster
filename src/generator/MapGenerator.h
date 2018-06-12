@@ -4,7 +4,6 @@
 #include <GL/glew.h>
 #include "src/model/TerrainTile.h"
 #include "src/game/Settings.h"
-#include "src/graphics/Shader.h"
 
 class MapGenerator
 {

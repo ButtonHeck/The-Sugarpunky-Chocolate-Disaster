@@ -1,9 +1,10 @@
 #ifndef BASEMAPGENERATOR_H
 #define BASEMAPGENERATOR_H
-#include "MapGenerator.h"
 #include <random>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include "MapGenerator.h"
 #include "src/chunk/TerrainChunk.h"
-#include "src/graphics/Camera.h"
 
 class BaseMapGenerator : public MapGenerator
 {

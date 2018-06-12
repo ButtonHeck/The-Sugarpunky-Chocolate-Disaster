@@ -1,6 +1,6 @@
 #ifndef CHUNK_H
 #define CHUNK_H
-#include <glm/glm.hpp>
+#include <glm/vec2.hpp>
 #include "src/game/Settings.h"
 
 class Chunk

@@ -2,7 +2,6 @@
 #define HILLSMAPGENERATOR_H
 #include "MapGenerator.h"
 #include <random>
-#include "src/graphics/Camera.h"
 
 class HillsMapGenerator : public MapGenerator
 {

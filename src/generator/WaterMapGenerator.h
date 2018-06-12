@@ -2,8 +2,6 @@
 #define WATERMAPGENERATOR_H
 #include "MapGenerator.h"
 #include <GLFW/glfw3.h>
-#include <GL/glew.h>
-#include <chrono>
 
 class WaterMapGenerator : public MapGenerator
 {

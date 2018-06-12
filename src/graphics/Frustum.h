@@ -1,6 +1,5 @@
 #ifndef FRUSTUM_H
 #define FRUSTUM_H
-#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
 

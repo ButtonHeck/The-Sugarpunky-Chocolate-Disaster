@@ -2,11 +2,10 @@
 #define INPUTCONTROLLER_H
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
+#include <glm/vec3.hpp>
 #include "src/graphics/Camera.h"
 #include "src/game/Settings.h"
 #include "src/game/Options.h"
-#include <glm/glm.hpp>
 #include "src/generator/BaseMapGenerator.h"
 #include "src/generator/HillsMapGenerator.h"
 #include "src/generator/BuildableMapGenerator.h"

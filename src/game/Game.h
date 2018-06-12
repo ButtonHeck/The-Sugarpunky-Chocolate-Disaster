@@ -2,22 +2,23 @@
 #define GAME_H
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 #include "src/game/Settings.h"
 #include "src/game/Timer.h"
-#include "src/graphics/Camera.h"
-#include "src/graphics/Renderer.h"
-#include "src/graphics/Frustum.h"
 #include "src/game/Options.h"
 #include "src/game/InputController.h"
 #include "src/game/SaveLoadManager.h"
+#include "src/graphics/Camera.h"
+#include "src/graphics/Renderer.h"
+#include "src/graphics/Frustum.h"
 #include "src/graphics/ShaderManager.h"
 #include "src/graphics/FontManager.h"
 #include "src/graphics/CoordinateSystemRenderer.h"
-#include "src/model/Model.h"
-#include "src/generator/UnderwaterQuadMapGenerator.h"
 #include "src/graphics/Skybox.h"
 #include "src/graphics/TextureManager.h"
+#include "src/generator/UnderwaterQuadMapGenerator.h"
+#include "src/model/Model.h"
 
 class Game
 {

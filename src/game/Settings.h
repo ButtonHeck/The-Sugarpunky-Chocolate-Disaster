@@ -2,7 +2,9 @@
 #define SETTINGS
 #include <GL/glew.h>
 #include <string>
-#include <glm/glm.hpp>
+#include <glm/vec3.hpp>
+#include <glm/detail/func_trigonometric.hpp>
+#include <cmath>
 #include <unistd.h>
 
 std::string getProjectDirectory();

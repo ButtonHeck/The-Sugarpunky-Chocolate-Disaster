@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <string>
 #include <vector>
+#include <glm/common.hpp>
 #include "src/game/Settings.h"
 #include "src/generator/WaterMapGenerator.h"
 

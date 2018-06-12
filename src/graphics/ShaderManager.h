@@ -1,7 +1,9 @@
 #ifndef SHADERMANAGER_H
 #define SHADERMANAGER_H
 #include <vector>
-#include <glm/glm.hpp>
+#include <glm/detail/func_geometric.hpp>
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 #include "Shader.h"
 #include "src/game/Settings.h"
 #include "Frustum.h"
