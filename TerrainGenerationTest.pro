@@ -4,6 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += src/game/main.cpp \
+    src/game/Game.cpp \
     src/game/Settings.cpp \
     src/game/InputController.cpp \
     src/game/SaveLoadManager.cpp \
@@ -56,6 +57,7 @@ DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../../usr/lib/x86_64-linux-gnu/libIL.a
 
 HEADERS += \
+    src/game/Game.h \
     src/game/Timer.h \
     src/game/Settings.h \
     src/game/InputController.h \
