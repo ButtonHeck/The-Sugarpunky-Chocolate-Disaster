@@ -15,9 +15,9 @@ class TreeGenerator
 {
 public:
   TreeGenerator(std::initializer_list<Model> plainTrees, std::initializer_list<Model> hillTrees);
-  void setupPlainModels(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap, std::vector<ModelChunk>& chunks);
+  void setupPlainModels(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
   void updatePlainModels(std::vector<glm::mat4*>& models, unsigned int* numAllTrees);
-  void setupHillModels(std::vector<std::vector<float>>& hillMap, std::vector<ModelChunk>& chunks);
+  void setupHillModels(std::vector<std::vector<float>>& hillMap);
   void updateHillModels(std::vector<glm::mat4*>& models, unsigned int* numAllTrees);
   std::vector<glm::mat4*>& getTreeModels();
   std::vector<glm::mat4*>& getHillTreeModels();
@@ -25,7 +25,9 @@ public:
   unsigned int getNumHillTrees(int i);
   std::vector<Model>& getPlainTrees();
   std::vector<Model>& getHillTrees();
-  void serialize(std::ofstream& out, std::vector<ModelChunk>& treeModelChunks, std::vector<ModelChunk>& hillTreeModelChunks);
+  std::vector<ModelChunk>& getTreeModelChunks();
+  std::vector<ModelChunk>& getHillTreeModelChunks();
+  void serialize(std::ofstream& out);
 private:
   std::vector<Model> plainTrees;
   std::vector<glm::mat4*> treeModels;
@@ -36,6 +38,8 @@ private:
   std::default_random_engine randomizer;
   bool treesAlreadyCreated = false;
   bool hillTreesAlreadyCreated = false;
+  std::vector<ModelChunk> treeModelChunks;
+  std::vector<ModelChunk> hillTreeModelChunks;
 };
 
 #endif // TREEGENERATOR_H

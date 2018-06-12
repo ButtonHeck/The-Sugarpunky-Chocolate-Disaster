@@ -14,7 +14,7 @@ SaveLoadManager::SaveLoadManager(BaseMapGenerator &baseGenerator, HillsMapGenera
 
 }
 
-bool SaveLoadManager::saveToFile(const std::string &filename, std::vector<ModelChunk>& treeModelChunks, std::vector<ModelChunk>& hillTreeModelChunks)
+bool SaveLoadManager::saveToFile(const std::string &filename)
 {
   std::ofstream output(filename);
   if (!output)
@@ -49,12 +49,12 @@ bool SaveLoadManager::saveToFile(const std::string &filename, std::vector<ModelC
           output << value << " ";
         }
     }
-  treeGenerator->serialize(output, treeModelChunks, hillTreeModelChunks);
+  treeGenerator->serialize(output);
   output.close();
   return true;
 }
 
-bool SaveLoadManager::loadFromFile(const std::string &filename, std::vector<ModelChunk> &treeModelChunks, std::vector<ModelChunk> &hillTreeModelChunks)
+bool SaveLoadManager::loadFromFile(const std::string &filename)
 {
   std::ifstream input(filename);
   if (!input)
@@ -93,6 +93,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename, std::vector<Mode
         }
     }
 
+  std::vector<ModelChunk>& treeModelChunks = treeGenerator->getTreeModelChunks();
   for (unsigned int chunk = 0; chunk < treeModelChunks.size(); chunk++)
     {
       for (unsigned int i = 0; i < treeModelChunks[chunk].getNumInstancesVector().size(); i++)
@@ -108,6 +109,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename, std::vector<Mode
           treeModelChunks[chunk].setInstanceOffset(i, offset);
         }
     }
+  std::vector<ModelChunk>& hillTreeModelChunks = treeGenerator->getHillTreeModelChunks();
   for (unsigned int chunk = 0; chunk < hillTreeModelChunks.size(); chunk++)
     {
       for (unsigned int i = 0; i < hillTreeModelChunks[chunk].getNumInstancesVector().size(); i++)

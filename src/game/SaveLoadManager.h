@@ -15,8 +15,8 @@ class SaveLoadManager
 {
 public:
   SaveLoadManager(BaseMapGenerator& baseGenerator, HillsMapGenerator& hillGenerator, WaterMapGenerator& waterGenerator, BuildableMapGenerator* buildableGenerator);
-  bool saveToFile(const std::string& filename, std::vector<ModelChunk>& treeModelChunks, std::vector<ModelChunk>& hillTreeModelChunks);
-  bool loadFromFile(const std::string& filename, std::vector<ModelChunk>& treeModelChunks, std::vector<ModelChunk>& hillTreeModelChunks);
+  bool saveToFile(const std::string& filename);
+  bool loadFromFile(const std::string& filename);
   void setTreeGenerator(TreeGenerator& treeGenerator);
 private:
   BaseMapGenerator& baseGenerator;

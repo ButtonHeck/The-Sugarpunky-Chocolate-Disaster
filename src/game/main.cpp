@@ -22,7 +22,6 @@
 #include "src/generator/UnderwaterQuadMapGenerator.h"
 #include "src/generator/TreeGenerator.h"
 #include "src/generator/BuildableMapGenerator.h"
-#include "src/chunk/ModelChunk.h"
 
 GLFWwindow* initGLFW();
 void prepareTerrain();
@@ -47,8 +46,6 @@ BaseMapGenerator* baseMapGenerator = new BaseMapGenerator(waterMapGenerator->get
 BuildableMapGenerator* buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
 SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
 TreeGenerator* treeGenerator;
-std::vector<ModelChunk> treeModelChunks;
-std::vector<ModelChunk> hillTreeModelChunks;
 
 int main()
 {
@@ -88,8 +85,8 @@ int main()
 
   //generating the terrain landscape data and filling related vertex/element buffers
   prepareTerrain();
-  treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap(), treeModelChunks);
-  treeGenerator->setupHillModels(hillMapGenerator->getMap(), hillTreeModelChunks);
+  treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+  treeGenerator->setupHillModels(hillMapGenerator->getMap());
   UnderwaterQuadMapGenerator underwaterQuadGenerator;
   Skybox skybox;
 
@@ -127,8 +124,8 @@ int main()
           baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
           buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
           prepareTerrain();
-          treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap(), treeModelChunks);
-          treeGenerator->setupHillModels(hillMapGenerator->getMap(), hillTreeModelChunks);
+          treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+          treeGenerator->setupHillModels(hillMapGenerator->getMap());
           delete saveLoadManager;
           saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
           saveLoadManager->setTreeGenerator(*treeGenerator);
@@ -185,13 +182,12 @@ int main()
       if (options.get(RENDER_TREE_MODELS))
         {
           shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES));
-          renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC), treeModelChunks, hillTreeModelChunks);
+          renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC));
         }
 
       //font rendering
       if (options.get(RENDER_DEBUG_TEXT))
         {
-          ModelChunk cameraChunk = camera.getChunk(treeModelChunks);
           fontManager.renderText("FPS: " + std::to_string(timer.getFPS()), 10.0f, (float)scr_height - 25.0f, 0.35f);
           fontManager.renderText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                                  + std::to_string(viewPosition.y).substr(0,6) + ": "
@@ -207,9 +203,6 @@ int main()
           fontManager.renderText("Cursor on map: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(input.getCursorMapX()) + ": "
                                  + std::to_string(input.getCursorMapZ()-1) + ", " + input.getCursorTileName())),
                                  10.0f, (float)scr_height - 125.0f, 0.35f);
-          fontManager.renderText("Camera in chunk: x-" + std::to_string(cameraChunk.getLeft()) + ":" + std::to_string(cameraChunk.getRight())
-                                 + ", z-" + std::to_string(cameraChunk.getTop()) + ":" + std::to_string(cameraChunk.getBottom()),
-                                 10.0f, (float)scr_height - 145.0f, 0.35f);
           fontManager.renderText("Water culling: " + (options.get(WATER_FC) ? std::string("On") : std::string("Off")), 10.0f, 10.0f, 0.35f);
           fontManager.renderText("Hills culling: " + (options.get(HILLS_FC) ? std::string("On") : std::string("Off")), 10.0f, 30.0f, 0.35f);
           fontManager.renderText("Trees culling: " + (options.get(MODELS_FC) ? std::string("On") : std::string("Off")), 10.0f, 50.0f, 0.35f);
@@ -223,12 +216,12 @@ int main()
       //save/load routine
       if (options.get(SAVE_REQUEST))
         {
-          saveLoadManager->saveToFile(RES_DIR + "/saves/testSave.txt", treeModelChunks, hillTreeModelChunks);
+          saveLoadManager->saveToFile(RES_DIR + "/saves/testSave.txt");
           options.set(SAVE_REQUEST, false);
         }
       if (options.get(LOAD_REQUEST))
         {
-          saveLoadManager->loadFromFile(RES_DIR + "/saves/testSave.txt", treeModelChunks, hillTreeModelChunks);
+          saveLoadManager->loadFromFile(RES_DIR + "/saves/testSave.txt");
           options.set(LOAD_REQUEST, false);
           textureManager.createUnderwaterReliefTexture(waterMapGenerator);
         }

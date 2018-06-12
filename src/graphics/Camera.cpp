@@ -134,28 +134,12 @@ void Camera::updateVectors()
   Up = glm::normalize(glm::cross(Right, Front));
 }
 
-const ModelChunk Camera::getChunk(const std::vector<ModelChunk>& chunks)
-{
-  mapCoordX = glm::clamp((int)(TILES_WIDTH + glm::clamp(Position.x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH)) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
-  mapCoordZ = glm::clamp((int)(TILES_HEIGHT + glm::clamp(Position.z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT)) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
-  ModelChunk chunk = chunks[0];
-  for (unsigned int i = 0; i < chunks.size(); i++)
-    {
-      if (chunks[i].containsPoint(mapCoordX, mapCoordZ))
-        {
-          chunk = chunks[i];
-          break;
-        }
-    }
-  return chunk;
-}
-
 int Camera::getMapCoordX() const
 {
-  return mapCoordX;
+  return glm::clamp((int)(TILES_WIDTH + glm::clamp(Position.x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH)) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
 }
 
 int Camera::getMapCoordZ() const
 {
-  return mapCoordZ;
+  return glm::clamp((int)(TILES_HEIGHT + glm::clamp(Position.z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT)) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
 }
