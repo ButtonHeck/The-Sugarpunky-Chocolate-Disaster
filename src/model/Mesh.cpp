@@ -65,7 +65,6 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-//todo: frustum culling using Frustum class
 void Mesh::draw(Shader &shader, Camera &camera, std::vector<ModelChunk>& chunks, unsigned int index,
                 bool modelRenderOptimize, unsigned int chunkLoadingDistance)
 {
