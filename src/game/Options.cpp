@@ -15,7 +15,8 @@ Options::Options()
     {SHOW_BUILDABLE, false},
     {MODELS_FC, true},
     {HILLS_FC, true},
-    {WATER_FC, true}
+    {WATER_FC, true},
+    {HDR, false}
   });
 }
 

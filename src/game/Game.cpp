@@ -14,13 +14,15 @@ Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& op
     baseMapGenerator(new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap())),
     buildableMapGenerator(new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap())),
     saveLoadManager(new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator)),
-    fontManager(new FontManager("Laconic_Bold.otf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), &shaderManager.get(SHADER_FONT)))
+    fontManager(new FontManager("Laconic_Bold.otf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), &shaderManager.get(SHADER_FONT))),
+    textureManager(new TextureManager(textureLoader, scr_width, scr_height))
 {
 }
 
 Game::~Game()
 {
-  textureManager.deleteTextures();
+  textureManager->deleteTextures();
+  delete textureManager;
   shaderManager.deleteShaders();
   delete baseMapGenerator;
   delete hillMapGenerator;
@@ -53,8 +55,9 @@ void Game::setupVariables()
   treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
   treeGenerator->setupHillModels(hillMapGenerator->getMap());
 
-  textureManager.createUnderwaterReliefTexture(waterMapGenerator);
+  textureManager->createUnderwaterReliefTexture(waterMapGenerator);
   shaderManager.setupConstantUniforms();
+  prepareHDRvao();
 }
 
 void Game::prepareTerrain()
@@ -72,8 +75,56 @@ void Game::prepareTerrain()
   buildableMapGenerator->fillBufferData();
 }
 
+void Game::prepareHDRvao()
+{
+  float screenVertices[] = {
+      -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+       1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+       1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+
+       1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+      -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+      -1.0f, -1.0f, 0.0f, 0.0f, 0.0f
+  };
+  glGenVertexArrays(1, &hdrVao);
+  glGenBuffers(1, &hdrVbo);
+  glBindVertexArray(hdrVao);
+  glBindBuffer(GL_ARRAY_BUFFER, hdrVbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(screenVertices), &screenVertices, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  glGenFramebuffers(1, &hdrFbo);
+  GLuint depthRbo;
+  glGenRenderbuffers(1, &depthRbo);
+  glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, scr_width, scr_height);
+  glBindFramebuffer(GL_FRAMEBUFFER, hdrFbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureManager->getTexture(FRAME_TEXTURE), 0);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    std::cout << "HDR Framebuffer is not complete\n";
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Game::drawHDRFrame()
+{
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  shaderManager.get(SHADER_HDR).use();
+  glBindVertexArray(hdrVao);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
 void Game::loop()
 {
+  bool HDRon = options.get(HDR);
+  if (HDRon)
+    glBindFramebuffer(GL_FRAMEBUFFER, hdrFbo);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   float delta = timer.tick();
   input.processKeyboard(delta);
@@ -99,7 +150,7 @@ void Game::loop()
       saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
       saveLoadManager->setTreeGenerator(*treeGenerator);
       options.set(RECREATE_TERRAIN_REQUEST, false);
-      textureManager.createUnderwaterReliefTexture(waterMapGenerator);
+      textureManager->createUnderwaterReliefTexture(waterMapGenerator);
     }
 
   //hills rendering
@@ -180,7 +231,7 @@ void Game::loop()
 
   //reset texture units to terrain textures after we done with models and text
   glActiveTexture(GL_TEXTURE0 + FLAT);
-  glBindTexture(GL_TEXTURE_2D, textureManager.getTexture(FLAT));
+  glBindTexture(GL_TEXTURE_2D, textureManager->getTexture(FLAT));
 
   //save/load routine
   if (options.get(SAVE_REQUEST))
@@ -192,8 +243,12 @@ void Game::loop()
     {
       saveLoadManager->loadFromFile(RES_DIR + "/saves/testSave.txt");
       options.set(LOAD_REQUEST, false);
-      textureManager.createUnderwaterReliefTexture(waterMapGenerator);
+      textureManager->createUnderwaterReliefTexture(waterMapGenerator);
     }
+
+  //apply HDR if the flag is set
+  if (HDRon)
+    drawHDRFrame();
 
   glfwPollEvents();
   glfwSwapBuffers(window);

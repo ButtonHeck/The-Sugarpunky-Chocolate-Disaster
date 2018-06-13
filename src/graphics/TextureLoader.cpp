@@ -19,14 +19,37 @@ GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, G
   ILubyte* data = ilGetData();
   auto imageWidth = ilGetInteger(IL_IMAGE_WIDTH);
   auto imageHeight = ilGetInteger(IL_IMAGE_HEIGHT);
-  auto imageFormat = ilGetInteger(IL_IMAGE_FORMAT);
-  glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, imageWidth, imageHeight, 0, imageFormat, GL_UNSIGNED_BYTE, data);
+  auto imageChannels = ilGetInteger(IL_IMAGE_CHANNELS);
+  GLenum internalFormat, dataFormat;
+  if (imageChannels == 4)
+    {
+      internalFormat = TEXTURE_SRGB ? GL_SRGB_ALPHA : GL_RGBA;
+      dataFormat = GL_RGBA;
+    }
+  else if (imageChannels == 3)
+    {
+      internalFormat = TEXTURE_SRGB ? GL_SRGB : GL_RGB;
+      dataFormat = GL_RGB;
+    }
+  glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, imageWidth, imageHeight, 0, dataFormat, GL_UNSIGNED_BYTE, data);
   glGenerateMipmap(GL_TEXTURE_2D);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapType);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapType);
   ilDeleteImage(ilGetInteger(IL_ACTIVE_IMAGE));
+  return texture;
+}
+
+GLuint TextureLoader::createFrameTexture(int width, int height, GLuint textureUnit)
+{
+  GLuint texture;
+  glGenTextures(1, &texture);
+  glActiveTexture(GL_TEXTURE0 + textureUnit);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   return texture;
 }
 
@@ -55,7 +78,8 @@ GLuint TextureLoader::loadCubemap(const std::string& directory, GLuint textureUn
       auto width = ilGetInteger(IL_IMAGE_WIDTH);
       auto height = ilGetInteger(IL_IMAGE_HEIGHT);
       ILubyte* data = ilGetData();
-      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+      GLenum internalFormat = TEXTURE_SRGB ? GL_SRGB : GL_RGB;
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
       ilDeleteImage(ilGetInteger(IL_ACTIVE_IMAGE));
     }
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

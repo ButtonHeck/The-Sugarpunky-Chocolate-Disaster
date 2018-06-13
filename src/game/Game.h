@@ -27,6 +27,8 @@ public:
   ~Game();
   void setupVariables();
   void prepareTerrain();
+  void prepareHDRvao();
+  void drawHDRFrame();
   void loop();
 private:
   int scr_width;
@@ -52,8 +54,9 @@ private:
   CoordinateSystemRenderer csRenderer = CoordinateSystemRenderer(&shaderManager.get(SHADER_CS));
   UnderwaterQuadMapGenerator underwaterQuadGenerator;
   Skybox skybox;
-  TextureManager textureManager = TextureManager(textureLoader);
+  TextureManager* textureManager;
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
+  GLuint hdrVao, hdrVbo, hdrFbo;
 };
 
 #endif // GAME_H

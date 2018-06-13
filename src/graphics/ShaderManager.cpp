@@ -16,7 +16,8 @@ ShaderManager::ShaderManager()
     {SHADER_FONT,       Shader("/shaders/font.vs", "/shaders/font.fs")},
     {SHADER_CS,         Shader("/shaders/coordinateSystem.vs", "/shaders/coordinateSystem.gs", "/shaders/coordinateSystem.fs")},
     {SHADER_BUILDABLE,  Shader("/shaders/buildableTiles.vs", "/shaders/buildableTiles.fs")},
-    {SHADER_SELECTED,   Shader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs")}
+    {SHADER_SELECTED,   Shader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs")},
+    {SHADER_HDR,        Shader("/shaders/hdr.vs", "/shaders/hdr.fs")}
         });
 }
 
@@ -91,6 +92,11 @@ void ShaderManager::setupConstantUniforms()
   shader = &shaders[SHADER_MODELS].second;
   shader->use();
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
+
+  shader = &shaders[SHADER_HDR].second;
+  shader->use();
+  shader->setFloat("u_exposure", 1.0f);
+  shader->setInt("u_frameTexture", FRAME_TEXTURE);
 }
 
 Shader &ShaderManager::get(SHADER_TYPE type)

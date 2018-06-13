@@ -15,7 +15,8 @@ enum OPTION
   SHOW_BUILDABLE = 8,
   MODELS_FC = 9,
   HILLS_FC = 10,
-  WATER_FC = 11
+  WATER_FC = 11,
+  HDR = 12
 };
 
 class Options
