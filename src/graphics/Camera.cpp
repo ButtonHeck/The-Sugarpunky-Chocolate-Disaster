@@ -43,7 +43,7 @@ void Camera::processMouseScroll(float yOffset)
   updateVectors();
 }
 
-void Camera::processKeyboardInput(float delta, Movement_Direction dir)
+void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir)
 {
   float velocity = delta * moveSpeed;
   if (dir == FORWARD)

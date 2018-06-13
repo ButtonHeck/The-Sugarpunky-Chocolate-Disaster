@@ -2,7 +2,7 @@
 #define OPTIONS_H
 #include <vector>
 
-enum Option
+enum OPTION
 {
   RENDER_SHADOW_ON_TREES = 0,
   RENDER_TREE_MODELS = 1,
@@ -22,11 +22,11 @@ class Options
 {
 public:
   Options();
-  bool get(Option value);
-  void set(Option value, bool flag);
-  void switchOpt(Option value);
+  bool get(OPTION value);
+  void set(OPTION value, bool flag);
+  void switchOpt(OPTION value);
 private:
-  std::vector<std::pair<Option, bool>> options;
+  std::vector<std::pair<OPTION, bool>> options;
 };
 
 #endif // OPTIONS_H

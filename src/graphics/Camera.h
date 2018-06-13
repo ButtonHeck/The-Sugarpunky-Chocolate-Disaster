@@ -9,7 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "src/game/Settings.h"
 
-enum Movement_Direction
+enum MOVE_DIRECTION
 {
   FORWARD,
   BACKWARD,
@@ -27,7 +27,7 @@ public:
   glm::mat4 getViewMatrix() const;
   void processMouseCursor(float xOffset, float yOffset);
   void processMouseScroll(float yOffset);
-  void processKeyboardInput(float delta, Movement_Direction dir);
+  void processKeyboardInput(float delta, MOVE_DIRECTION dir);
   void setFPSmode(bool on);
   float getZoom() const;
   glm::vec3 getPosition() const;

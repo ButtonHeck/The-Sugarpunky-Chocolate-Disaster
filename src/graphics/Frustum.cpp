@@ -8,7 +8,7 @@ Frustum::Frustum()
     }
 }
 
-void Frustum::normalizePlane(FrustumSide side)
+void Frustum::normalizePlane(FRUSTUM_SIDE side)
 {
   float magnitude = (float)glm::sqrt(frustumPlanes[side].x * frustumPlanes[side].x +
                                      frustumPlanes[side].y * frustumPlanes[side].y +
@@ -69,7 +69,7 @@ bool Frustum::isInside(float x, float y, float z, float radius)
   return true;
 }
 
-glm::vec4 Frustum::getPlane(FrustumSide side)
+glm::vec4 Frustum::getPlane(FRUSTUM_SIDE side)
 {
   return frustumPlanes[side];
 }

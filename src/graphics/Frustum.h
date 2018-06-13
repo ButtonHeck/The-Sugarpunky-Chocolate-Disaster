@@ -3,7 +3,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
 
-enum FrustumSide
+enum FRUSTUM_SIDE
 {
   FRUSTUM_RIGHT = 0,
   FRUSTUM_LEFT = 1,
@@ -19,9 +19,9 @@ public:
   Frustum();
   void updateFrustum(glm::mat4& projectionView);
   bool isInside(float x, float y, float z, float radius);
-  glm::vec4 getPlane(FrustumSide side);
+  glm::vec4 getPlane(FRUSTUM_SIDE side);
 private:
-  void normalizePlane(FrustumSide side);
+  void normalizePlane(FRUSTUM_SIDE side);
   std::vector<glm::vec4> frustumPlanes;
 };
 

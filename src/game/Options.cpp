@@ -19,17 +19,17 @@ Options::Options()
   });
 }
 
-bool Options::get(Option value)
+bool Options::get(OPTION value)
 {
   return options[value].second;
 }
 
-void Options::set(Option value, bool flag)
+void Options::set(OPTION value, bool flag)
 {
   options[value].second = flag;
 }
 
-void Options::switchOpt(Option value)
+void Options::switchOpt(OPTION value)
 {
   options[value].second = !options[value].second;
 }

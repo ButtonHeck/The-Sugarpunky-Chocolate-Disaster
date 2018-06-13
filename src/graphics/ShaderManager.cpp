@@ -93,7 +93,7 @@ void ShaderManager::setupConstantUniforms()
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
 }
 
-Shader &ShaderManager::get(ShaderType type)
+Shader &ShaderManager::get(SHADER_TYPE type)
 {
   return shaders[type].second;
 }

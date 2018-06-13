@@ -8,7 +8,7 @@
 #include "src/game/Settings.h"
 #include "Frustum.h"
 
-enum ShaderType
+enum SHADER_TYPE
 {
   SHADER_HILLS = 0,
   SHADER_HILLS_NOFC = 1,
@@ -30,7 +30,7 @@ class ShaderManager
 public:
   ShaderManager();
   void setupConstantUniforms();
-  Shader& get(ShaderType type);
+  Shader& get(SHADER_TYPE type);
   void updateHillsShaders(bool enableFC, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum);
   void updateShoreShader(glm::mat4& projectionView);
   void updateFlatShader(glm::mat4& projectionView);
@@ -42,7 +42,7 @@ public:
   void updateModelShader(glm::mat4& projectionView, glm::vec3& viewPosition, bool shadowOnTrees);
   void deleteShaders();
 private:
-  std::vector<std::pair<ShaderType, Shader>> shaders;
+  std::vector<std::pair<SHADER_TYPE, Shader>> shaders;
 };
 
 #endif // SHADERMANAGER_H
