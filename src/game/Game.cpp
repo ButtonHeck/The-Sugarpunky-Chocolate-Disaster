@@ -82,8 +82,9 @@ void Game::prepareTerrain()
 
 void Game::prepareMS_FBO()
 {
-  glGenFramebuffers(1, &msFBO);
-  glBindFramebuffer(GL_FRAMEBUFFER, msFBO);
+  //multisample
+  glGenFramebuffers(1, &multisampleFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, multisampleFBO);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, textureManager->get(FRAME_MS_TEXTURE), 0);
   GLuint msDepthRbo;
   glGenRenderbuffers(1, &msDepthRbo);
@@ -94,11 +95,17 @@ void Game::prepareMS_FBO()
     std::cout << "MS Framebuffer is not complete\n";
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-  //intermediate FBO
-  glGenFramebuffers(1, &blitFBO);
-  glBindFramebuffer(GL_FRAMEBUFFER, blitFBO);
+  //intermediate FBO (or direct off-screen FBO without multisampling)
+  glGenFramebuffers(1, &screenFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, screenFBO);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          HDR_ENABLED ? textureManager->get(FRAME_HDR_TEXTURE) : textureManager->get(FRAME_TEXTURE), 0);
+  //we don't need depth data if we use this FBO as intermediate, but we DO need it if theres no multisampling
+  GLuint screenDepthRbo;
+  glGenRenderbuffers(1, &screenDepthRbo);
+  glBindRenderbuffer(GL_RENDERBUFFER, screenDepthRbo);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, scr_width, scr_height);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, screenDepthRbo);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     std::cout << "Intermediate Framebuffer is not complete\n";
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -128,11 +135,19 @@ void Game::prepareScreenVAO()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Game::drawFrameToScreenRectangle(bool enableHDR)
+void Game::drawFrameToScreenRectangle(bool enableHDR, bool enableMS)
 {
-  glBindFramebuffer(GL_READ_FRAMEBUFFER, msFBO);
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, blitFBO);
-  glBlitFramebuffer(0, 0, scr_width, scr_height, 0, 0, scr_width, scr_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+  if (enableMS)
+    {
+      glBindFramebuffer(GL_READ_FRAMEBUFFER, multisampleFBO);
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, screenFBO);
+      glBlitFramebuffer(0, 0, scr_width, scr_height, 0, 0, scr_width, scr_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    }
+  else
+    {
+      glBindFramebuffer(GL_READ_FRAMEBUFFER, screenFBO);
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    }
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glClear(GL_COLOR_BUFFER_BIT);
   if (enableHDR)
@@ -148,13 +163,19 @@ void Game::drawFrameToScreenRectangle(bool enableHDR)
 void Game::loop()
 {
   /*
-   * If the MULTISAMPLE_ENABLE option is true we don't need to do anything else
+   * If the MULTISAMPLE_ENABLE option is true we only need to rebind fbo to use one with MS
    * because the msFBO is already configured to use multisample generated texture
    * with a MULTISAMPLES number of sampling (check Settings.h). If the MULTISAMPLE_ENABLE set to false
-   * we just do a call for glDisable(GL_MULTISAMPLE) thus effectively bypassing the multitexturing routine
-   * (check InputController.cpp)
+   * we just bind another one fbo without MS (that is also used as read buffer and then used for buffer blitting
+   * to the default fbo IF the ms enabled), moreover, we do not need to do blitting,
+   * because the fbo itself already contains all the data drawn into it
+   * and it could be used by default fbo immediately
    */
-  glBindFramebuffer(GL_FRAMEBUFFER, msFBO);
+  bool multisamplingEnabled = options.get(MULTISAMPLE_ENABLE);
+  if (multisamplingEnabled)
+    glBindFramebuffer(GL_FRAMEBUFFER, multisampleFBO);
+  else
+    glBindFramebuffer(GL_FRAMEBUFFER, screenFBO);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   float delta = timer.tick();
   input.processKeyboard(delta);
@@ -182,10 +203,6 @@ void Game::loop()
       options.set(RECREATE_TERRAIN_REQUEST, false);
       textureManager->createUnderwaterReliefTexture(waterMapGenerator);
     }
-
-  //reset texture units to terrain textures after we done with models and text
-  glActiveTexture(GL_TEXTURE0 + FLAT);
-  glBindTexture(GL_TEXTURE_2D, textureManager->get(FLAT));
 
   //hills rendering
   shaderManager.updateHillsShaders(options.get(HILLS_FC), projectionView, viewPosition, viewFrustum);
@@ -276,8 +293,12 @@ void Game::loop()
       textureManager->createUnderwaterReliefTexture(waterMapGenerator);
     }
 
-  //apply HDR if the flag is set
-  drawFrameToScreenRectangle(HDR_ENABLED);
+  //reset texture units to terrain textures after we done with models and text
+  glActiveTexture(GL_TEXTURE0 + FLAT);
+  glBindTexture(GL_TEXTURE_2D, textureManager->get(FLAT));
+
+  //render result onto the default FBO and apply HDR/MS if the flags are set
+  drawFrameToScreenRectangle(HDR_ENABLED, multisamplingEnabled);
 
   glfwPollEvents();
   glfwSwapBuffers(window);

@@ -29,7 +29,7 @@ public:
   void prepareTerrain();
   void prepareMS_FBO();
   void prepareScreenVAO();
-  void drawFrameToScreenRectangle(bool enableHDR);
+  void drawFrameToScreenRectangle(bool enableHDR, bool enableMS);
   void loop();
 private:
   int scr_width;
@@ -57,7 +57,7 @@ private:
   Skybox skybox;
   TextureManager* textureManager;
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
-  GLuint screenVAO, screenVBO, msFBO, blitFBO;
+  GLuint screenVAO, screenVBO, multisampleFBO, screenFBO;
 };
 
 #endif // GAME_H
