@@ -96,7 +96,7 @@ void ShaderManager::setupConstantUniforms()
 
   shader = &shaders[SHADER_HDR].second;
   shader->use();
-  shader->setFloat("u_exposure", 1.0f);
+  shader->setFloat("u_exposure", 2.2f);
   shader->setInt("u_frameTexture", FRAME_HDR_TEXTURE);
 
   shader = &shaders[SHADER_MS_TO_DEFAULT].second;

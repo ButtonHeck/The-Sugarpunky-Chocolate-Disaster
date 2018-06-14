@@ -25,7 +25,7 @@ void main()
     vec4 sampledSpecular =
         mix(vec4(0.0), texture(u_hills_specular, vg_TexCoords), min(max(0.0, vg_PosHeight), 1.0));
 
-    vec3 diffuseColor = sampledDiffuse.rgb * (mix(vg_DiffuseComponentFlat, vg_DiffuseComponentHill, min(max(0.0, vg_PosHeight), 1.0)) * 0.4 + 0.6);
+    vec3 diffuseColor = sampledDiffuse.rgb * (mix(vg_DiffuseComponentFlat, vg_DiffuseComponentHill, min(max(0.0, vg_PosHeight), 1.0)) * 0.5 + 0.5);
     vec3 specularColor = vg_SpecularComponent * sampledSpecular.rgb;
     vec3 resultColor = diffuseColor + specularColor;
 

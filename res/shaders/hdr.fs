@@ -9,7 +9,7 @@ in vec2 v_TexCoords;
 
 void main()
 {
-    const float gamma = 2.2;
+    const float gamma = 1.4;
     vec3 hdrColor = texture(u_frameTexture, v_TexCoords).rgb;
 
     //exposure tone mapping

@@ -2,6 +2,7 @@
 
 Options::Options()
 {
+  //all the "...REQUEST" variables should initially be false
   options.assign(
   {
     {RENDER_SHADOW_ON_TREES, true},
@@ -16,8 +17,7 @@ Options::Options()
     {MODELS_FC, true},
     {HILLS_FC, true},
     {WATER_FC, true},
-    {HDR, false},
-    {MULTISAMPLE_ENABLE, true},
+    {MULTISAMPLE_ENABLE, true}
   });
 }
 

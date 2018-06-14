@@ -16,8 +16,7 @@ enum OPTION
   MODELS_FC = 9,
   HILLS_FC = 10,
   WATER_FC = 11,
-  HDR = 12,
-  MULTISAMPLE_ENABLE = 13
+  MULTISAMPLE_ENABLE = 12
 };
 
 class Options

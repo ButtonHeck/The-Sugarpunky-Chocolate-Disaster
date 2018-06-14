@@ -17,7 +17,7 @@ void main()
     vec4 sampledDiffuse = texture(u_water_diffuse, vg_TexCoords);
     vec4 sampledSpecular = texture(u_water_specular, vg_TexCoords);
 
-    vec3 diffuseColor = sampledDiffuse.rgb * (vg_DiffuseComponent * 0.4 + 0.6);
+    vec3 diffuseColor = sampledDiffuse.rgb * (vg_DiffuseComponent * 0.5 + 0.5);
     vec3 specularColor = vg_SpecularComponent * sampledSpecular.rgb;
     vec3 resultColor = diffuseColor + specularColor;
 

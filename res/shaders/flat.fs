@@ -21,7 +21,7 @@ void main()
 
     //diffuse
     float diffuseComponent = max(dot(ShadingNormal, v_LightDir), 0.0);
-    vec3 diffuseColor = sampledDiffuse.rgb * (diffuseComponent * 0.4 + 0.6);
+    vec3 diffuseColor = sampledDiffuse.rgb * (diffuseComponent * 0.5 + 0.5);
 
     vec3 resultColor = diffuseColor;
     o_FragColor = vec4(resultColor, sampledDiffuse.a);

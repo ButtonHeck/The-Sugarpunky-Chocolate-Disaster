@@ -177,18 +177,6 @@ void InputController::processKeyboard(float delta)
   if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_Y] = false;
 
-  //HDR
-  if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-    {
-      if (!keysPressed[GLFW_KEY_Q])
-        {
-          options.switchOpt(HDR);
-          keysPressed[GLFW_KEY_Q] = true;
-        }
-    }
-  if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_RELEASE)
-    keysPressed[GLFW_KEY_Q] = false;
-
   //Multisampling
   if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
     {
