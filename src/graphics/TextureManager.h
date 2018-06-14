@@ -10,7 +10,7 @@ class TextureManager
 public:
   TextureManager(TextureLoader& loader, int width, int height);
   void createUnderwaterReliefTexture(WaterMapGenerator* generator);
-  GLuint& getTexture(int unit);
+  GLuint& get(int unit);
   void deleteTextures();
 private:
   TextureLoader& loader;

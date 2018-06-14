@@ -16,7 +16,8 @@ Options::Options()
     {MODELS_FC, true},
     {HILLS_FC, true},
     {WATER_FC, true},
-    {HDR, false}
+    {HDR, false},
+    {MULTISAMPLE_ENABLE, true},
   });
 }
 

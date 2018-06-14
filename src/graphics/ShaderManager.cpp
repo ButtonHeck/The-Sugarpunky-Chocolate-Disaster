@@ -4,20 +4,21 @@ ShaderManager::ShaderManager()
 {
   shaders.assign(
   {
-    {SHADER_HILLS,      Shader("/shaders/hills.vs", "/shaders/hills.gs", "/shaders/hills.fs")},
-    {SHADER_HILLS_NOFC, Shader("/shaders/hills_noFC.vs", "/shaders/hills_noFC.fs")},
-    {SHADER_SHORE,      Shader("/shaders/shore.vs", "/shaders/shore.fs")},
-    {SHADER_UNDERWATER, Shader("/shaders/underwater.vs", "/shaders/underwater.fs")},
-    {SHADER_FLAT,       Shader("/shaders/flat.vs", "/shaders/flat.fs")},
-    {SHADER_WATER,      Shader("/shaders/water.vs", "/shaders/water.gs", "/shaders/water.fs")},
-    {SHADER_WATER_NOFC, Shader("/shaders/water_noFC.vs", "/shaders/water_noFC.fs")},
-    {SHADER_SKY,        Shader("/shaders/skybox.vs", "/shaders/skybox.fs")},
-    {SHADER_MODELS,     Shader("/shaders/model.vs", "/shaders/model.fs")},
-    {SHADER_FONT,       Shader("/shaders/font.vs", "/shaders/font.fs")},
-    {SHADER_CS,         Shader("/shaders/coordinateSystem.vs", "/shaders/coordinateSystem.gs", "/shaders/coordinateSystem.fs")},
-    {SHADER_BUILDABLE,  Shader("/shaders/buildableTiles.vs", "/shaders/buildableTiles.fs")},
-    {SHADER_SELECTED,   Shader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs")},
-    {SHADER_HDR,        Shader("/shaders/hdr.vs", "/shaders/hdr.fs")}
+    {SHADER_HILLS,          Shader("/shaders/hills.vs", "/shaders/hills.gs", "/shaders/hills.fs")},
+    {SHADER_HILLS_NOFC,     Shader("/shaders/hills_noFC.vs", "/shaders/hills_noFC.fs")},
+    {SHADER_SHORE,          Shader("/shaders/shore.vs", "/shaders/shore.fs")},
+    {SHADER_UNDERWATER,     Shader("/shaders/underwater.vs", "/shaders/underwater.fs")},
+    {SHADER_FLAT,           Shader("/shaders/flat.vs", "/shaders/flat.fs")},
+    {SHADER_WATER,          Shader("/shaders/water.vs", "/shaders/water.gs", "/shaders/water.fs")},
+    {SHADER_WATER_NOFC,     Shader("/shaders/water_noFC.vs", "/shaders/water_noFC.fs")},
+    {SHADER_SKY,            Shader("/shaders/skybox.vs", "/shaders/skybox.fs")},
+    {SHADER_MODELS,         Shader("/shaders/model.vs", "/shaders/model.fs")},
+    {SHADER_FONT,           Shader("/shaders/font.vs", "/shaders/font.fs")},
+    {SHADER_CS,             Shader("/shaders/coordinateSystem.vs", "/shaders/coordinateSystem.gs", "/shaders/coordinateSystem.fs")},
+    {SHADER_BUILDABLE,      Shader("/shaders/buildableTiles.vs", "/shaders/buildableTiles.fs")},
+    {SHADER_SELECTED,       Shader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs")},
+    {SHADER_HDR,            Shader("/shaders/hdr.vs", "/shaders/hdr.fs")},
+    {SHADER_MS_TO_DEFAULT,  Shader("/shaders/MS_toDefault.vs", "/shader/MS_toDefault.fs")}
         });
 }
 
@@ -96,6 +97,10 @@ void ShaderManager::setupConstantUniforms()
   shader = &shaders[SHADER_HDR].second;
   shader->use();
   shader->setFloat("u_exposure", 1.0f);
+  shader->setInt("u_frameTexture", FRAME_TEXTURE);
+
+  shader = &shaders[SHADER_MS_TO_DEFAULT].second;
+  shader->use();
   shader->setInt("u_frameTexture", FRAME_TEXTURE);
 }
 

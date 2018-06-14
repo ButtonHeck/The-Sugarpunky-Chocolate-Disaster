@@ -188,6 +188,18 @@ void InputController::processKeyboard(float delta)
     }
   if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_Q] = false;
+
+  //Multisampling
+  if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_M])
+        {
+          options.switchOpt(MULTISAMPLE_ENABLE);
+          keysPressed[GLFW_KEY_M] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_M) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_M] = false;
 }
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)

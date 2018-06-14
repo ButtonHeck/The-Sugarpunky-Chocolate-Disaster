@@ -166,7 +166,9 @@ DISTFILES += \
     res/shaders/hills_noFC.fs \
     res/shaders/hills.gs \
     res/shaders/hdr.vs \
-    res/shaders/hdr.fs
+    res/shaders/hdr.fs \
+    res/shaders/MS_toDefault.vs \
+    res/shaders/MS_toDefault.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

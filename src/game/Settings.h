@@ -31,6 +31,7 @@ constexpr unsigned int QUAD_INDICES[6] = {0,1,2,2,3,0};
 constexpr bool HILLS_TEXTURE_MAPPING_SLOPE_CORRECTION = true;
 constexpr bool BASE_TERRAIN_RANDOMIZE_SHORE_FORM = true;
 constexpr bool TEXTURE_SRGB = false;
+constexpr unsigned int MULTISAMPLES = 8;
 const std::string RES_DIR = getProjectDirectory() + "/res";
 constexpr bool INCLUDE_RES_DIR = true;
 const glm::vec3 LIGHT_DIR_TO = glm::vec3(-0.2f, -0.15f, -0.08f);
@@ -57,7 +58,9 @@ enum TEXTURE_UNITS
   WATER_SPECULAR = 12,
   UNDERWATER_RELIEF = 13,
   SKYBOX = 14,
-  FRAME_TEXTURE = 15
+  FRAME_HDR_TEXTURE = 15,
+  FRAME_MS_TEXTURE = 16,
+  FRAME_TEXTURE = 17
 };
 #endif // SETTINGS
 
