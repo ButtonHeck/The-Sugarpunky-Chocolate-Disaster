@@ -17,8 +17,8 @@ ShaderManager::ShaderManager()
     {SHADER_CS,             Shader("/shaders/coordinateSystem.vs", "/shaders/coordinateSystem.gs", "/shaders/coordinateSystem.fs")},
     {SHADER_BUILDABLE,      Shader("/shaders/buildableTiles.vs", "/shaders/buildableTiles.fs")},
     {SHADER_SELECTED,       Shader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs")},
-    {SHADER_HDR,            Shader("/shaders/hdr.vs", "/shaders/hdr.fs")},
-    {SHADER_MS_TO_DEFAULT,  Shader("/shaders/MS_toDefault.vs", "/shader/MS_toDefault.fs")}
+    {SHADER_MS_TO_DEFAULT,  Shader("/shaders/MS_toDefault.vs", "/shaders/MS_toDefault.fs")},
+    {SHADER_HDR,            Shader("/shaders/hdr.vs", "/shaders/hdr.fs")}
         });
 }
 
@@ -97,7 +97,7 @@ void ShaderManager::setupConstantUniforms()
   shader = &shaders[SHADER_HDR].second;
   shader->use();
   shader->setFloat("u_exposure", 1.0f);
-  shader->setInt("u_frameTexture", FRAME_TEXTURE);
+  shader->setInt("u_frameTexture", FRAME_HDR_TEXTURE);
 
   shader = &shaders[SHADER_MS_TO_DEFAULT].second;
   shader->use();

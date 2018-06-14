@@ -36,7 +36,10 @@ void Game::setupVariables()
 {
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
-  glEnable(GL_MULTISAMPLE);
+  if (options.get(MULTISAMPLE_ENABLE))
+    glEnable(GL_MULTISAMPLE);
+  else
+    glDisable(GL_MULTISAMPLE);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glfwSetCursorPosCallback(window, input.cursorCallback);
   glfwSetMouseButtonCallback(window, input.cursorClickCallback);
@@ -58,7 +61,9 @@ void Game::setupVariables()
 
   textureManager->createUnderwaterReliefTexture(waterMapGenerator);
   shaderManager.setupConstantUniforms();
-  prepareHDRvao();
+  prepareScreenVAO();
+  prepareHDR_FBO();
+  prepareMS_FBO();
 }
 
 void Game::prepareTerrain()
@@ -76,11 +81,25 @@ void Game::prepareTerrain()
   buildableMapGenerator->fillBufferData();
 }
 
-void Game::prepareHDRvao()
+void Game::prepareHDR_FBO()
 {
-  //multisampling FBO
-  glGenFramebuffers(1, &msFbo);
-  glBindFramebuffer(GL_FRAMEBUFFER, msFbo);
+  glGenFramebuffers(1, &hdrFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureManager->get(FRAME_HDR_TEXTURE), 0);
+  GLuint depthRbo;
+  glGenRenderbuffers(1, &depthRbo);
+  glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, scr_width, scr_height);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    std::cout << "HDR Framebuffer is not complete\n";
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Game::prepareMS_FBO()
+{
+  glGenFramebuffers(1, &msFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, msFBO);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, textureManager->get(FRAME_MS_TEXTURE), 0);
   GLuint msDepthRbo;
   glGenRenderbuffers(1, &msDepthRbo);
@@ -92,32 +111,16 @@ void Game::prepareHDRvao()
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   //intermediate FBO
-  glGenFramebuffers(1, &blitFbo);
-  glBindFramebuffer(GL_FRAMEBUFFER, blitFbo);
+  glGenFramebuffers(1, &blitFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, blitFBO);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureManager->get(FRAME_TEXTURE), 0);
-  GLuint blitRbo;
-  glGenRenderbuffers(1, &blitRbo);
-  glBindRenderbuffer(GL_RENDERBUFFER, blitRbo);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, scr_width, scr_height);
-  glBindRenderbuffer(GL_RENDERBUFFER, 0);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, blitRbo);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     std::cout << "Intermediate Framebuffer is not complete\n";
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
-  //HDR FBO
-//  glGenFramebuffers(1, &hdrFbo);
-//  glBindFramebuffer(GL_FRAMEBUFFER, hdrFbo);
-//  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureManager->getTexture(FRAME_HDR_TEXTURE), 0);
-//  GLuint depthRbo;
-//  glGenRenderbuffers(1, &depthRbo);
-//  glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
-//  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, scr_width, scr_height);
-//  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
-//  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-//    std::cout << "HDR Framebuffer is not complete\n";
-//  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+void Game::prepareScreenVAO()
+{
   float screenVertices[] = {
       -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
        1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
@@ -127,10 +130,10 @@ void Game::prepareHDRvao()
       -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
       -1.0f, -1.0f, 0.0f, 0.0f, 0.0f
   };
-  glGenVertexArrays(1, &hdrVao);
-  glGenBuffers(1, &hdrVbo);
-  glBindVertexArray(hdrVao);
-  glBindBuffer(GL_ARRAY_BUFFER, hdrVbo);
+  glGenVertexArrays(1, &screenVAO);
+  glGenBuffers(1, &screenVBO);
+  glBindVertexArray(screenVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(screenVertices), &screenVertices, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -145,18 +148,29 @@ void Game::drawHDRFrame()
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   shaderManager.get(SHADER_HDR).use();
-  glBindVertexArray(hdrVao);
+  glBindVertexArray(screenVAO);
   glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void Game::drawMultisampledFrame()
+{
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, msFBO);
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, blitFBO);
+  glBlitFramebuffer(0, 0, scr_width, scr_height, 0, 0, scr_width, scr_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glClear(GL_COLOR_BUFFER_BIT);
+  shaderManager.get(SHADER_MS_TO_DEFAULT).use();
+  glBindVertexArray(screenVAO);
+  glDisable(GL_DEPTH_TEST);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+  glEnable(GL_DEPTH_TEST);
 }
 
 void Game::loop()
 {
-  bool HDRon = options.get(HDR);
-  if (HDRon)
-    {
-      //glBindFramebuffer(GL_FRAMEBUFFER, hdrFbo);
-      glBindFramebuffer(GL_FRAMEBUFFER, msFbo);
-    }
+  bool MSon = options.get(MULTISAMPLE_ENABLE);
+  if (MSon)
+    glBindFramebuffer(GL_FRAMEBUFFER, msFBO);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   float delta = timer.tick();
   input.processKeyboard(delta);
@@ -184,6 +198,10 @@ void Game::loop()
       options.set(RECREATE_TERRAIN_REQUEST, false);
       textureManager->createUnderwaterReliefTexture(waterMapGenerator);
     }
+
+  //reset texture units to terrain textures after we done with models and text
+  glActiveTexture(GL_TEXTURE0 + FLAT);
+  glBindTexture(GL_TEXTURE_2D, textureManager->get(FLAT));
 
   //hills rendering
   shaderManager.updateHillsShaders(options.get(HILLS_FC), projectionView, viewPosition, viewFrustum);
@@ -274,25 +292,11 @@ void Game::loop()
       textureManager->createUnderwaterReliefTexture(waterMapGenerator);
     }
 
-  //apply HDR if the flag is set
-  if (HDRon)
+  //apply multisampling if the flag is set
+  if (MSon)
     {
-      //drawHDRFrame();
-      glBindFramebuffer(GL_READ_FRAMEBUFFER, msFbo);
-      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, blitFbo);
-      glBlitFramebuffer(0, 0, scr_width, scr_height, 0, 0, scr_width, scr_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
-      glDisable(GL_DEPTH_TEST);
-      glClear(GL_COLOR_BUFFER_BIT);
-      shaderManager.get(SHADER_HDR).use();
-      glBindVertexArray(hdrVao);
-      glDrawArrays(GL_TRIANGLES, 0, 6);
-      glEnable(GL_DEPTH_TEST);
+      drawMultisampledFrame();
     }
-
-  //reset texture units to terrain textures after we done with models and text
-  glActiveTexture(GL_TEXTURE0 + FLAT);
-  glBindTexture(GL_TEXTURE_2D, textureManager->get(FLAT));
 
   glfwPollEvents();
   glfwSwapBuffers(window);

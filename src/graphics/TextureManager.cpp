@@ -18,9 +18,9 @@ TextureManager::TextureManager(TextureLoader &loader, int width, int height)
   textures[WATER] = loader.loadTexture("/textures/water.png", WATER, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
   textures[WATER_SPECULAR] = loader.loadTexture("/textures/water_specular.png", WATER_SPECULAR, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
   textures[SKYBOX] = loader.loadCubemap("/textures/cubemap/", SKYBOX);
-  textures[FRAME_HDR_TEXTURE] = loader.createFrameHDRTexture(width, height, FRAME_HDR_TEXTURE);
   textures[FRAME_MS_TEXTURE] = loader.createFrameMSTexture(width, height, MULTISAMPLES, FRAME_MS_TEXTURE);
   textures[FRAME_TEXTURE] = loader.createFrameTexture(width, height, FRAME_TEXTURE);
+  textures[FRAME_HDR_TEXTURE] = loader.createFrameHDRTexture(width, height, FRAME_HDR_TEXTURE);
 }
 
 void TextureManager::createUnderwaterReliefTexture(WaterMapGenerator *generator)

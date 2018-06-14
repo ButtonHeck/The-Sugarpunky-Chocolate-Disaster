@@ -195,6 +195,10 @@ void InputController::processKeyboard(float delta)
       if (!keysPressed[GLFW_KEY_M])
         {
           options.switchOpt(MULTISAMPLE_ENABLE);
+          if (options.get(MULTISAMPLE_ENABLE))
+            glEnable(GL_MULTISAMPLE);
+          else
+            glDisable(GL_MULTISAMPLE);
           keysPressed[GLFW_KEY_M] = true;
         }
     }
