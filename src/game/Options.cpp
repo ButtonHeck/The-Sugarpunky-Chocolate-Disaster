@@ -17,7 +17,8 @@ Options::Options()
     {MODELS_FC, true},
     {HILLS_FC, true},
     {WATER_FC, true},
-    {MULTISAMPLE_ENABLE, true}
+    {MULTISAMPLE_ENABLE, true},
+    {SHADOW_ENABLE, true}
   });
 }
 

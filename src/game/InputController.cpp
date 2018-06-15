@@ -192,6 +192,18 @@ void InputController::processKeyboard(float delta)
     }
   if (glfwGetKey(window, GLFW_KEY_M) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_M] = false;
+
+  //Shadows
+  if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_Q])
+        {
+          options.switchOpt(SHADOW_ENABLE);
+          keysPressed[GLFW_KEY_Q] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_Q] = false;
 }
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)

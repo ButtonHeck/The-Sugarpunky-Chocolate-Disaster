@@ -297,39 +297,40 @@ void Game::drawFrameObjects()
 void Game::drawFrameObjectsDepthmap()
 {
   glm::mat4 view = camera.getViewMatrix();
-  glm::vec3 viewPosition = camera.getPosition();
   glm::mat4 projectionView = projection * view;
   viewFrustum.updateFrustum(projectionView);
   glCullFace(GL_FRONT);
 
   //hills rendering
-  shaderManager.updateHillsShaders(options.get(HILLS_FC), projectionView, viewPosition, viewFrustum);
+  shaderManager.get(SHADER_SHADOW_HILLS).use();
   renderer.drawHills(hillMapGenerator);
 
   //shore terrain chunks drawing
-  shaderManager.updateShoreShader(projectionView);
+  shaderManager.get(SHADER_SHADOW_SHORE).use();
   renderer.drawShore(baseMapGenerator, viewFrustum);
 
   //flat terrain chunks drawing
-  shaderManager.updateFlatShader(projectionView);
+  shaderManager.get(SHADER_SHADOW_FLAT).use();
   renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
 
   //underwater tile
-  shaderManager.updateUnderwaterShader(projectionView);
+  shaderManager.get(SHADER_SHADOW_UNDERWATER).use();
   renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
 
   //water rendering
-  shaderManager.updateWaterShaders(options.get(WATER_FC), projectionView, viewPosition, viewFrustum);
+  shaderManager.get(SHADER_SHADOW_WATER).use();
   renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER));
 
   //trees chunks rendering
   if (options.get(RENDER_TREE_MODELS))
     {
-      shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES));
+      shaderManager.get(SHADER_SHADOW_MODELS).use();
       renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), false);
     }
 
   glCullFace(GL_BACK);
+  glActiveTexture(GL_TEXTURE0 + FLAT);
+  glBindTexture(GL_TEXTURE_2D, textureManager->get(FLAT));
 }
 
 void Game::loop()
@@ -343,6 +344,17 @@ void Game::loop()
    * because the fbo itself already contains all the data drawn into it
    * and it could be used by default fbo immediately
    */
+  bool shadowsEnabled = options.get(SHADOW_ENABLE);
+  if (shadowsEnabled)
+    {
+      glViewport(0, 0, DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
+      glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+      glClear(GL_DEPTH_BUFFER_BIT);
+      drawFrameObjectsDepthmap();
+      glViewport(0, 0, scr_width, scr_height);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
   bool multisamplingEnabled = options.get(MULTISAMPLE_ENABLE);
   if (multisamplingEnabled)
     glBindFramebuffer(GL_FRAMEBUFFER, multisampleFBO);

@@ -140,7 +140,7 @@ void Mesh::draw(Shader &shader, Camera &camera, std::vector<ModelChunk>& chunks,
     }
   else
     {
-      glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances, 0);
+      glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances);
     }
 
   glBindVertexArray(0);
