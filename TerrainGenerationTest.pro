@@ -168,7 +168,14 @@ DISTFILES += \
     res/shaders/hdr.vs \
     res/shaders/hdr.fs \
     res/shaders/MS_toDefault.vs \
-    res/shaders/MS_toDefault.fs
+    res/shaders/MS_toDefault.fs \
+    res/shaders/_depth.fs \
+    res/shaders/flat_shadow.vs \
+    res/shaders/hills_shadow.vs \
+    res/shaders/model_shadow.vs \
+    res/shaders/shore_shadow.vs \
+    res/shaders/underwater_shadow.vs \
+    res/shaders/water_shadow.vs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

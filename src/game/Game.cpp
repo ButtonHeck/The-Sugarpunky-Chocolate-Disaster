@@ -173,25 +173,8 @@ void Game::drawFrameToScreenRectangle(bool enableHDR, bool enableMS)
   glEnable(GL_DEPTH_TEST);
 }
 
-void Game::loop()
+void Game::drawFrameObjects()
 {
-  /*
-   * If the MULTISAMPLE_ENABLE option is true we only need to rebind fbo to use one with MS
-   * because the msFBO is already configured to use multisample generated texture
-   * with a MULTISAMPLES number of sampling (check Settings.h). If the MULTISAMPLE_ENABLE set to false
-   * we just bind another one fbo without MS (that is also used as read buffer and then used for buffer blitting
-   * to the default fbo IF the ms enabled), moreover, we do not need to do blitting,
-   * because the fbo itself already contains all the data drawn into it
-   * and it could be used by default fbo immediately
-   */
-  bool multisamplingEnabled = options.get(MULTISAMPLE_ENABLE);
-  if (multisamplingEnabled)
-    glBindFramebuffer(GL_FRAMEBUFFER, multisampleFBO);
-  else
-    glBindFramebuffer(GL_FRAMEBUFFER, screenFBO);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  float delta = timer.tick();
-  input.processKeyboard(delta);
   glm::mat4 view = camera.getViewMatrix();
   glm::vec3 viewPosition = camera.getPosition();
   glm::mat4 projectionView = projection * view;
@@ -309,6 +292,67 @@ void Game::loop()
   //reset texture units to terrain textures after we done with models and text
   glActiveTexture(GL_TEXTURE0 + FLAT);
   glBindTexture(GL_TEXTURE_2D, textureManager->get(FLAT));
+}
+
+void Game::drawFrameObjectsDepthmap()
+{
+  glm::mat4 view = camera.getViewMatrix();
+  glm::vec3 viewPosition = camera.getPosition();
+  glm::mat4 projectionView = projection * view;
+  viewFrustum.updateFrustum(projectionView);
+  glCullFace(GL_FRONT);
+
+  //hills rendering
+  shaderManager.updateHillsShaders(options.get(HILLS_FC), projectionView, viewPosition, viewFrustum);
+  renderer.drawHills(hillMapGenerator);
+
+  //shore terrain chunks drawing
+  shaderManager.updateShoreShader(projectionView);
+  renderer.drawShore(baseMapGenerator, viewFrustum);
+
+  //flat terrain chunks drawing
+  shaderManager.updateFlatShader(projectionView);
+  renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
+
+  //underwater tile
+  shaderManager.updateUnderwaterShader(projectionView);
+  renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
+
+  //water rendering
+  shaderManager.updateWaterShaders(options.get(WATER_FC), projectionView, viewPosition, viewFrustum);
+  renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER));
+
+  //trees chunks rendering
+  if (options.get(RENDER_TREE_MODELS))
+    {
+      shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES));
+      renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), false);
+    }
+
+  glCullFace(GL_BACK);
+}
+
+void Game::loop()
+{
+  /*
+   * If the MULTISAMPLE_ENABLE option is true we only need to rebind fbo to use one with MS
+   * because the msFBO is already configured to use multisample generated texture
+   * with a MULTISAMPLES number of sampling (check Settings.h). If the MULTISAMPLE_ENABLE set to false
+   * we just bind another one fbo without MS (that is also used as read buffer and then used for buffer blitting
+   * to the default fbo IF the ms enabled), moreover, we do not need to do blitting,
+   * because the fbo itself already contains all the data drawn into it
+   * and it could be used by default fbo immediately
+   */
+  bool multisamplingEnabled = options.get(MULTISAMPLE_ENABLE);
+  if (multisamplingEnabled)
+    glBindFramebuffer(GL_FRAMEBUFFER, multisampleFBO);
+  else
+    glBindFramebuffer(GL_FRAMEBUFFER, screenFBO);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  float delta = timer.tick();
+  input.processKeyboard(delta);
+
+  drawFrameObjects();
 
   //render result onto the default FBO and apply HDR/MS if the flags are set
   drawFrameToScreenRectangle(HDR_ENABLED, multisamplingEnabled);

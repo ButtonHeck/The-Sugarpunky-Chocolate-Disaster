@@ -31,6 +31,8 @@ public:
   void prepareDepthMapFBO();
   void prepareScreenVAO();
   void drawFrameToScreenRectangle(bool enableHDR, bool enableMS);
+  void drawFrameObjects();
+  void drawFrameObjectsDepthmap();
   void loop();
 private:
   int scr_width;

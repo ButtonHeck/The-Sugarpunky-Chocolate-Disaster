@@ -4,21 +4,27 @@ ShaderManager::ShaderManager()
 {
   shaders.assign(
   {
-    {SHADER_HILLS,          Shader("/shaders/hills.vs", "/shaders/hills.gs", "/shaders/hills.fs")},
-    {SHADER_HILLS_NOFC,     Shader("/shaders/hills_noFC.vs", "/shaders/hills_noFC.fs")},
-    {SHADER_SHORE,          Shader("/shaders/shore.vs", "/shaders/shore.fs")},
-    {SHADER_UNDERWATER,     Shader("/shaders/underwater.vs", "/shaders/underwater.fs")},
-    {SHADER_FLAT,           Shader("/shaders/flat.vs", "/shaders/flat.fs")},
-    {SHADER_WATER,          Shader("/shaders/water.vs", "/shaders/water.gs", "/shaders/water.fs")},
-    {SHADER_WATER_NOFC,     Shader("/shaders/water_noFC.vs", "/shaders/water_noFC.fs")},
-    {SHADER_SKY,            Shader("/shaders/skybox.vs", "/shaders/skybox.fs")},
-    {SHADER_MODELS,         Shader("/shaders/model.vs", "/shaders/model.fs")},
-    {SHADER_FONT,           Shader("/shaders/font.vs", "/shaders/font.fs")},
-    {SHADER_CS,             Shader("/shaders/coordinateSystem.vs", "/shaders/coordinateSystem.gs", "/shaders/coordinateSystem.fs")},
-    {SHADER_BUILDABLE,      Shader("/shaders/buildableTiles.vs", "/shaders/buildableTiles.fs")},
-    {SHADER_SELECTED,       Shader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs")},
-    {SHADER_MS_TO_DEFAULT,  Shader("/shaders/MS_toDefault.vs", "/shaders/MS_toDefault.fs")},
-    {SHADER_HDR,            Shader("/shaders/hdr.vs", "/shaders/hdr.fs")}
+    {SHADER_HILLS,              Shader("/shaders/hills.vs", "/shaders/hills.gs", "/shaders/hills.fs")},
+    {SHADER_HILLS_NOFC,         Shader("/shaders/hills_noFC.vs", "/shaders/hills_noFC.fs")},
+    {SHADER_SHORE,              Shader("/shaders/shore.vs", "/shaders/shore.fs")},
+    {SHADER_UNDERWATER,         Shader("/shaders/underwater.vs", "/shaders/underwater.fs")},
+    {SHADER_FLAT,               Shader("/shaders/flat.vs", "/shaders/flat.fs")},
+    {SHADER_WATER,              Shader("/shaders/water.vs", "/shaders/water.gs", "/shaders/water.fs")},
+    {SHADER_WATER_NOFC,         Shader("/shaders/water_noFC.vs", "/shaders/water_noFC.fs")},
+    {SHADER_SKY,                Shader("/shaders/skybox.vs", "/shaders/skybox.fs")},
+    {SHADER_MODELS,             Shader("/shaders/model.vs", "/shaders/model.fs")},
+    {SHADER_FONT,               Shader("/shaders/font.vs", "/shaders/font.fs")},
+    {SHADER_CS,                 Shader("/shaders/coordinateSystem.vs", "/shaders/coordinateSystem.gs", "/shaders/coordinateSystem.fs")},
+    {SHADER_BUILDABLE,          Shader("/shaders/buildableTiles.vs", "/shaders/buildableTiles.fs")},
+    {SHADER_SELECTED,           Shader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs")},
+    {SHADER_MS_TO_DEFAULT,      Shader("/shaders/MS_toDefault.vs", "/shaders/MS_toDefault.fs")},
+    {SHADER_HDR,                Shader("/shaders/hdr.vs", "/shaders/hdr.fs")},
+    {SHADER_SHADOW_FLAT,        Shader("/shaders/flat_shadow.vs", "/shaders/_depth.fs")},
+    {SHADER_SHADOW_HILLS,       Shader("/shaders/hills_shadow.vs", "/shaders/_depth.fs")},
+    {SHADER_SHADOW_MODELS,      Shader("/shaders/model_shadow.vs", "/shaders/_depth.fs")},
+    {SHADER_SHADOW_SHORE,       Shader("/shaders/shore_shadow.vs", "/shaders/_depth.fs")},
+    {SHADER_SHADOW_UNDERWATER,  Shader("/shaders/underwater_shadow.vs", "/shaders/_depth.fs")},
+    {SHADER_SHADOW_WATER,       Shader("/shaders/water_shadow.vs", "/shaders/_depth.fs")},
         });
 }
 
@@ -102,6 +108,31 @@ void ShaderManager::setupConstantUniforms()
   shader = &shaders[SHADER_MS_TO_DEFAULT].second;
   shader->use();
   shader->setInt("u_frameTexture", FRAME_TEXTURE);
+
+  //below we setup shadow shader uniforms
+  shader = &shaders[SHADER_SHADOW_FLAT].second;
+  shader->use();
+  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
+
+  shader = &shaders[SHADER_SHADOW_HILLS].second;
+  shader->use();
+  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
+
+  shader = &shaders[SHADER_SHADOW_MODELS].second;
+  shader->use();
+  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
+
+  shader = &shaders[SHADER_SHADOW_SHORE].second;
+  shader->use();
+  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
+
+  shader = &shaders[SHADER_SHADOW_UNDERWATER].second;
+  shader->use();
+  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
+
+  shader = &shaders[SHADER_SHADOW_WATER].second;
+  shader->use();
+  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
 }
 
 Shader &ShaderManager::get(SHADER_TYPE type)
