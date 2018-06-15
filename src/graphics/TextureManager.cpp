@@ -21,6 +21,7 @@ TextureManager::TextureManager(TextureLoader &loader, int width, int height)
   textures[FRAME_MS_TEXTURE] = loader.createFrameMSTexture(width, height, MULTISAMPLES, FRAME_MS_TEXTURE);
   textures[FRAME_TEXTURE] = loader.createFrameTexture(width, height, FRAME_TEXTURE);
   textures[FRAME_HDR_TEXTURE] = loader.createFrameHDRTexture(width, height, FRAME_HDR_TEXTURE);
+  textures[DEPTH_MAP] = loader.createDepthMapTexture(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT, DEPTH_MAP);
 }
 
 void TextureManager::createUnderwaterReliefTexture(WaterMapGenerator *generator)

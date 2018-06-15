@@ -63,6 +63,7 @@ void Game::setupVariables()
   shaderManager.setupConstantUniforms();
   prepareScreenVAO();
   prepareMS_FBO();
+  prepareDepthMapFBO();
 }
 
 void Game::prepareTerrain()
@@ -108,6 +109,18 @@ void Game::prepareMS_FBO()
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, screenDepthRbo);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     std::cout << "Intermediate Framebuffer is not complete\n";
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Game::prepareDepthMapFBO()
+{
+  glGenFramebuffers(1, &depthMapFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureManager->get(DEPTH_MAP), 0);
+  glDrawBuffer(GL_NONE);
+  glReadBuffer(GL_NONE);
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    std::cout << "Depthmap framebuffer is not complete\n";
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

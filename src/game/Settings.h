@@ -4,6 +4,7 @@
 #include <string>
 #include <glm/vec3.hpp>
 #include <glm/detail/func_trigonometric.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <cmath>
 #include <unistd.h>
 
@@ -11,6 +12,8 @@ std::string getProjectDirectory();
 
 constexpr float NEAR_PLANE = 0.1f;
 constexpr float FAR_PLANE = 500.0f;
+constexpr float NEAR_PLANE_SHADOWING = 1.0f;
+constexpr float FAR_PLANE_SHADOWING = 750.0f;
 constexpr float FOV = 40.0f;
 constexpr float FOV_DOT_PRODUCT = std::cos(glm::radians(FOV));
 constexpr int TILES_WIDTH = 384;
@@ -35,7 +38,14 @@ constexpr bool TEXTURE_SRGB = HDR_ENABLED;
 constexpr unsigned int MULTISAMPLES = 8;
 const std::string RES_DIR = getProjectDirectory() + "/res";
 constexpr bool INCLUDE_RES_DIR = true;
+//constants for shadow calculations
 const glm::vec3 LIGHT_DIR_TO = glm::vec3(-0.2f, -0.15f, -0.08f);
+const glm::vec3 LIGHT_POS = glm::vec3(328.0f, 254.0f, 311.0f);
+const glm::mat4 LIGHT_PROJECTION = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, NEAR_PLANE_SHADOWING, FAR_PLANE_SHADOWING);
+const glm::mat4 LIGHT_VIEW = glm::lookAt(LIGHT_POS, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+const glm::mat4 LIGHT_SPACE_MATRIX = LIGHT_PROJECTION * LIGHT_VIEW;
+constexpr int DEPTH_MAP_TEXTURE_WIDTH = 4096;
+constexpr int DEPTH_MAP_TEXTURE_HEIGHT = 4096;
 
 enum HILL_DENSITY
 {
@@ -61,7 +71,8 @@ enum TEXTURE_UNITS
   SKYBOX = 14,
   FRAME_MS_TEXTURE = 15,
   FRAME_TEXTURE = 16,
-  FRAME_HDR_TEXTURE = 17
+  FRAME_HDR_TEXTURE = 17,
+  DEPTH_MAP = 18
 };
 #endif // SETTINGS
 
