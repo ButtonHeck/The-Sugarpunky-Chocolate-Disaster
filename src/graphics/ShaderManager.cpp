@@ -65,6 +65,8 @@ void ShaderManager::setupConstantUniforms()
   shader->setInt("u_normal_map", NORMAL_MAP);
   shader->setInt("u_mapDimension", TILES_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
+  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
+  shader->setInt("u_shadowMap", DEPTH_MAP);
 
   shader = &shaders[SHADER_UNDERWATER].second;
   shader->use();

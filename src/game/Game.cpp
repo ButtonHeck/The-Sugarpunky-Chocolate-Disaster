@@ -314,8 +314,8 @@ void Game::drawFrameObjectsDepthmap()
   renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
 
   //underwater tile
-  shaderManager.get(SHADER_SHADOW_UNDERWATER).use();
-  renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
+//  shaderManager.get(SHADER_SHADOW_UNDERWATER).use();
+//  renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
 
   //water rendering
   shaderManager.get(SHADER_SHADOW_WATER).use();
