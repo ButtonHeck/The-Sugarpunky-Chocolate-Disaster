@@ -105,6 +105,8 @@ void ShaderManager::setupConstantUniforms()
   shader = &shaders[SHADER_MODELS].second;
   shader->use();
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
+  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
+  shader->setInt("u_shadowMap", DEPTH_MAP);
 
   shader = &shaders[SHADER_HDR].second;
   shader->use();
