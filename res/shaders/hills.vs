@@ -10,6 +10,7 @@ uniform int         u_mapDimension;
 uniform sampler2D   u_normal_map;
 uniform vec3        u_viewPosition;
 uniform vec4        u_frustumPlanes[4]; //back and front planes sucks!
+uniform mat4        u_lightSpaceMatrix;
 
 out vec2  v_TexCoords;
 out float v_PosHeight;
@@ -19,6 +20,8 @@ out float v_TextureFlatMixRatio;
 out float v_TextureHillMixRatio;
 out float v_SpecularComponent;
 out int   v_visible;
+out vec4  v_FragPosLightSpace;
+out vec3  v_Normal;
 
 const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 const float TRANSITION_RATIO_MULTIPLIER = 1.5;
@@ -41,6 +44,7 @@ void main()
     gl_Position = u_projectionView * vec4(i_pos, 1.0);
     v_TexCoords = i_texCoords;
     v_PosHeight = i_pos.y / TRANSITION_RATIO_MULTIPLIER;
+    v_FragPosLightSpace = u_lightSpaceMatrix * vec4(i_pos, 1.0);
 
     //"normal" vector fetched from the global normal map (same as flat terrain normal), it is used for randomization of some variables
     vec3 FlatNormal = texture(u_normal_map, vec2(i_pos.x / u_mapDimension + 0.5, i_pos.z / u_mapDimension + 0.5)).rgb;
@@ -51,6 +55,7 @@ void main()
     float TransitionRatio = clamp(0.0 + i_pos.y * TRANSITION_RATIO_MULTIPLIER, 0.0, 1.0);
     //calculate the actual normal vector which then is used for shading
     vec3 ShadingNormal = normalize(TransitionRatio * i_normal + (1.0 - TransitionRatio) * FlatNormal);
+    v_Normal = ShadingNormal;
 
     //diffuse component
     v_DiffuseComponentHill = max(dot(ShadingNormal, u_lightDir), 0.0);

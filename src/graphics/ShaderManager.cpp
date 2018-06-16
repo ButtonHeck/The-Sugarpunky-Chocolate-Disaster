@@ -40,6 +40,8 @@ void ShaderManager::setupConstantUniforms()
   shader->setInt("u_hills_specular", HILL_SPECULAR);
   shader->setInt("u_normal_map", NORMAL_MAP);
   shader->setInt("u_mapDimension", TILES_WIDTH);
+  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
+  shader->setInt("u_shadowMap", DEPTH_MAP);
 
   shader = &shaders[SHADER_HILLS_NOFC].second;
   shader->use();
@@ -51,6 +53,8 @@ void ShaderManager::setupConstantUniforms()
   shader->setInt("u_hills_specular", HILL_SPECULAR);
   shader->setInt("u_normal_map", NORMAL_MAP);
   shader->setInt("u_mapDimension", TILES_WIDTH);
+  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
+  shader->setInt("u_shadowMap", DEPTH_MAP);
 
   shader = &shaders[SHADER_SHORE].second;
   shader->use();

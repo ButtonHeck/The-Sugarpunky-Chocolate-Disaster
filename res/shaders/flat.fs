@@ -14,26 +14,31 @@ uniform int       u_mapDimension;
 uniform sampler2D u_shadowMap;
 
 const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
+const float SHADOW_BIAS = 0.00025;
+const vec2 POISSON_DISK[4] = vec2[](
+  vec2( -0.94201624, -0.39906216 ),
+  vec2( 0.94558609, -0.76890725 ),
+  vec2( -0.094184101, -0.92938870 ),
+  vec2( 0.34495938, 0.29387760 )
+);
 
 float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
 {
-    //perform perspective divide, unnecessary for orthographic projection
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     //transform from [-1;1] to [0;1]
-    projCoords = projCoords * 0.5 + 0.5;
+    vec3 projCoords = fragPosLightSpace.xyz * 0.5 + 0.5;
     float closestDepth = texture(u_shadowMap, projCoords.xy).r;
     float currentDepth = projCoords.z;
     float shadow = 0.0f;
     vec2 texelSize = 1.0 / textureSize(u_shadowMap, 0);
-    for (int x = -2; x <= 2; ++x)
+
+    //poisson filtering
+    for (int i = 0; i < 4; i++)
     {
-        for (int y = -2; y <= 2; ++y)
-        {
-            float pcfDepth = texture(u_shadowMap, projCoords.xy + vec2(x,y) * texelSize).r;
-            shadow += currentDepth > pcfDepth ? 1.0 : 0.0;
-        }
+        float poissonDiskDepth = texture(u_shadowMap, projCoords.xy + POISSON_DISK[i] * texelSize).r;
+        shadow += currentDepth - SHADOW_BIAS > poissonDiskDepth ? 1.0 : 0.0;
     }
-    shadow /= 25.0;
+    shadow /= 4.0;
+
     if (projCoords.z > 1.0)
         shadow = 0.0;
     return shadow;

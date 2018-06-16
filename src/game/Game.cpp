@@ -299,7 +299,7 @@ void Game::drawFrameObjectsDepthmap()
   glm::mat4 view = camera.getViewMatrix();
   glm::mat4 projectionView = projection * view;
   viewFrustum.updateFrustum(projectionView);
-  glCullFace(GL_FRONT);
+  glDisable(GL_CULL_FACE); //or set front face culling
 
   //hills rendering
   shaderManager.get(SHADER_SHADOW_HILLS).use();
@@ -328,7 +328,7 @@ void Game::drawFrameObjectsDepthmap()
       renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), false);
     }
 
-  glCullFace(GL_BACK);
+  glEnable(GL_CULL_FACE); //or set back face culling
   glActiveTexture(GL_TEXTURE0 + FLAT);
   glBindTexture(GL_TEXTURE_2D, textureManager->get(FLAT));
 }
