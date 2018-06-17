@@ -37,7 +37,7 @@ float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
     float closestDepth = texture(u_shadowMap, projCoords.xy).r;
     float currentDepth = projCoords.z;
     float shadow = 0.0;
-    float bias = max(0.0007 * (1.0 - dot(normal, u_lightDir)), 0.00007);
+    float bias = max(0.0006 * (1.0 - dot(normal, u_lightDir)), 0.0004);
     vec2 texelSize = 1.0 / textureSize(u_shadowMap, 0);
 
     if (FILTER_TYPE == 1)
@@ -46,7 +46,7 @@ float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
         for (int i = 0; i < 4; i++)
         {
             float poissonDiskDepth = texture(u_shadowMap, projCoords.xy + POISSON_DISK[i] * texelSize).r;
-            shadow += currentDepth - bias > poissonDiskDepth ? 1.0 : 0.0;
+            shadow += currentDepth - bias / 2.0 > poissonDiskDepth ? 1.0 : 0.0;
         }
         shadow /= (4.0 - POISSON_SHADOW_VALUE_GAIN); //slightly hack equation to more dark shadowing
     }
