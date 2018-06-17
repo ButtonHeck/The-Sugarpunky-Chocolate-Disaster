@@ -16,6 +16,7 @@ uniform sampler2D u_sand_diffuse;
 uniform sampler2D u_sand_diffuse2;
 uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
+uniform bool      u_shadowEnable;
 
 const vec2 POISSON_DISK[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
@@ -31,7 +32,7 @@ float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
     float closestDepth = texture(u_shadowMap, projCoords.xy).r;
     float currentDepth = projCoords.z;
     float shadow = 0.0f;
-    float bias = max(0.0005 * (1.0 - dot(normal, u_lightDir)), 0.00005);
+    float bias = max(0.0007 * (1.0 - dot(normal, u_lightDir)), 0.00007);
     vec2 texelSize = 1.0 / textureSize(u_shadowMap, 0);
 
     //poisson filtering
@@ -53,9 +54,18 @@ void main()
                 mix(mix(texture(u_sand_diffuse, v_TexCoords), texture(u_sand_diffuse2, v_TexCoords), v_TextureMixRatio),
                     mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), v_TextureMixRatio),
                     max(min(v_PosHeight + 1.0, 1.0), 0.0));
-    float shadowInfluence = calculateShadowComponent(v_FragPosLightSpace, v_Normal);
-    vec3 diffuseColor = sampledDiffuse.rgb * ((1.0 - shadowInfluence) * v_DiffuseComponent * 0.5 + 0.5) * (1 + v_FragPos.y / 2.5);
-    vec3 resultColor = diffuseColor;
 
+    vec3 diffuseColor;
+    if (u_shadowEnable)
+    {
+        float shadowInfluence = calculateShadowComponent(v_FragPosLightSpace, v_Normal);
+        diffuseColor = sampledDiffuse.rgb * ((1.0 - shadowInfluence) * v_DiffuseComponent * 0.5 + 0.5) * (1 + v_FragPos.y / 2.5);
+    }
+    else
+    {
+        diffuseColor = sampledDiffuse.rgb * (v_DiffuseComponent * 0.5 + 0.5) * (1 + v_FragPos.y / 2.5);
+    }
+
+    vec3 resultColor = diffuseColor;
     o_FragColor = vec4(resultColor, sampledDiffuse.a);
 }

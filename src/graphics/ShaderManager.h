@@ -39,15 +39,15 @@ public:
   ShaderManager();
   void setupConstantUniforms();
   Shader& get(SHADER_TYPE type);
-  void updateHillsShaders(bool enableFC, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum);
-  void updateShoreShader(glm::mat4& projectionView);
-  void updateFlatShader(glm::mat4& projectionView);
+  void updateHillsShaders(bool enableFC, bool enableShadows, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum);
+  void updateShoreShader(glm::mat4& projectionView, bool enableShadows);
+  void updateFlatShader(glm::mat4& projectionView, bool enableShadows);
   void updateUnderwaterShader(glm::mat4& projectionView);
   void updateBuildableShader(glm::mat4& projectionView);
   void updateSelectedShader(glm::mat4& projectionView, glm::mat4& selectedModel);
   void updateWaterShaders(bool enableFC, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum);
   void updateSkyShader(glm::mat4& view, glm::mat4& projection);
-  void updateModelShader(glm::mat4& projectionView, glm::vec3& viewPosition, bool shadowOnTrees);
+  void updateModelShader(glm::mat4& projectionView, glm::vec3& viewPosition, bool shadowOnTrees, bool enableShadows);
   void deleteShaders();
 private:
   std::vector<std::pair<SHADER_TYPE, Shader>> shaders;

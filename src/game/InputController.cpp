@@ -111,6 +111,7 @@ void InputController::processKeyboard(float delta)
       if (!keysPressed[GLFW_KEY_F9])
         {
           options.switchOpt(RECREATE_TERRAIN_REQUEST);
+          options.set(CREATE_SHADOW_MAP_REQUEST, true);
           keysPressed[GLFW_KEY_F9] = true;
         }
     }
@@ -135,6 +136,7 @@ void InputController::processKeyboard(float delta)
       if (!keysPressed[GLFW_KEY_F11])
         {
           options.switchOpt(LOAD_REQUEST);
+          options.set(CREATE_SHADOW_MAP_REQUEST, true);
           keysPressed[GLFW_KEY_F11] = true;
         }
     }
@@ -147,6 +149,7 @@ void InputController::processKeyboard(float delta)
       if (!keysPressed[GLFW_KEY_R])
         {
           options.switchOpt(MODELS_FC);
+          options.set(CREATE_SHADOW_MAP_REQUEST, true);
           keysPressed[GLFW_KEY_R] = true;
         }
     }

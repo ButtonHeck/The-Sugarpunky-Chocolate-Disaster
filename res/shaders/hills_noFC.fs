@@ -19,6 +19,7 @@ uniform sampler2D u_hills_diffuse2;
 uniform sampler2D u_hills_specular;
 uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
+uniform bool      u_shadowEnable;
 
 const int  FILTER_TYPE = v_PosHeight > 0.4 ? 1 : 0;
 const float POISSON_SHADOW_VALUE_GAIN = clamp((v_PosHeight - 0.4) / 4.0, 0.0, 1.0);
@@ -76,10 +77,20 @@ void main()
             min(max(0.0, v_PosHeight), 1.0));
     vec4 sampledSpecular =
         mix(vec4(0.0), texture(u_hills_specular, v_TexCoords), min(max(0.0, v_PosHeight), 1.0));
-    float shadowComponent = calculateShadowComponent(v_FragPosLightSpace, v_Normal);
 
-    vec3 diffuseColor = sampledDiffuse.rgb *
-        ((1.0 - shadowComponent) * mix(v_DiffuseComponentFlat, v_DiffuseComponentHill, min(max(0.0, v_PosHeight), 1.0)) * 0.5 + 0.5);
+    vec3 diffuseColor;
+    if (u_shadowEnable)
+    {
+        float shadowComponent = calculateShadowComponent(v_FragPosLightSpace, v_Normal);
+        diffuseColor = sampledDiffuse.rgb *
+            ((1.0 - shadowComponent) * mix(v_DiffuseComponentFlat, v_DiffuseComponentHill, min(max(0.0, v_PosHeight), 1.0)) * 0.5 + 0.5);
+    }
+    else
+    {
+        diffuseColor = sampledDiffuse.rgb *
+            (mix(v_DiffuseComponentFlat, v_DiffuseComponentHill, min(max(0.0, v_PosHeight), 1.0)) * 0.5 + 0.5);
+    }
+
     vec3 specularColor = v_SpecularComponent * sampledSpecular.rgb;
     vec3 resultColor = diffuseColor + specularColor;
 

@@ -61,6 +61,7 @@ private:
   TextureManager* textureManager;
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
   GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO;
+  unsigned int frameCounter = 0;
 };
 
 #endif // GAME_H

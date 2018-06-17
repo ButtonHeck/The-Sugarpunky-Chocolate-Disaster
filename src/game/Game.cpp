@@ -201,15 +201,15 @@ void Game::drawFrameObjects()
     }
 
   //hills rendering
-  shaderManager.updateHillsShaders(options.get(HILLS_FC), projectionView, viewPosition, viewFrustum);
+  shaderManager.updateHillsShaders(options.get(HILLS_FC), options.get(SHADOW_ENABLE), projectionView, viewPosition, viewFrustum);
   renderer.drawHills(hillMapGenerator);
 
   //shore terrain chunks drawing
-  shaderManager.updateShoreShader(projectionView);
+  shaderManager.updateShoreShader(projectionView, options.get(SHADOW_ENABLE));
   renderer.drawShore(baseMapGenerator, viewFrustum);
 
   //flat terrain chunks drawing
-  shaderManager.updateFlatShader(projectionView);
+  shaderManager.updateFlatShader(projectionView, options.get(SHADOW_ENABLE));
   renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
 
   //underwater tile
@@ -248,7 +248,7 @@ void Game::drawFrameObjects()
   //trees chunks rendering
   if (options.get(RENDER_TREE_MODELS))
     {
-      shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES));
+      shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE));
       renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC));
     }
 
@@ -313,10 +313,6 @@ void Game::drawFrameObjectsDepthmap()
   shaderManager.get(SHADER_SHADOW_FLAT).use();
   renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
 
-  //underwater tile
-//  shaderManager.get(SHADER_SHADOW_UNDERWATER).use();
-//  renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
-
   //water rendering
   shaderManager.get(SHADER_SHADOW_WATER).use();
   renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER));
@@ -325,7 +321,7 @@ void Game::drawFrameObjectsDepthmap()
   if (options.get(RENDER_TREE_MODELS))
     {
       shaderManager.get(SHADER_SHADOW_MODELS).use();
-      renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), false);
+      renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC));
     }
 
   glEnable(GL_CULL_FACE); //or set back face culling
@@ -344,8 +340,7 @@ void Game::loop()
    * because the fbo itself already contains all the data drawn into it
    * and it could be used by default fbo immediately
    */
-  bool shadowsEnabled = options.get(SHADOW_ENABLE);
-  if (shadowsEnabled)
+  if ((options.get(CREATE_SHADOW_MAP_REQUEST) || frameCounter % 16 == 0) && options.get(SHADOW_ENABLE))
     {
       glViewport(0, 0, DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
       glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -353,6 +348,7 @@ void Game::loop()
       drawFrameObjectsDepthmap();
       glViewport(0, 0, scr_width, scr_height);
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      options.set(CREATE_SHADOW_MAP_REQUEST, false);
     }
 
   bool multisamplingEnabled = options.get(MULTISAMPLE_ENABLE);
@@ -371,4 +367,5 @@ void Game::loop()
 
   glfwPollEvents();
   glfwSwapBuffers(window);
+  ++frameCounter;
 }

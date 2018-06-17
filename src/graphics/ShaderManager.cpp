@@ -150,7 +150,7 @@ Shader &ShaderManager::get(SHADER_TYPE type)
   return shaders[type].second;
 }
 
-void ShaderManager::updateHillsShaders(bool enableFC, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
+void ShaderManager::updateHillsShaders(bool enableFC, bool enableShadows, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
 {
   Shader* shader;
   if (enableFC)
@@ -163,6 +163,7 @@ void ShaderManager::updateHillsShaders(bool enableFC, glm::mat4 &projectionView,
       shader->setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
       shader->setVec4("u_frustumPlanes[2]", viewFrustum.getPlane(FRUSTUM_BOTTOM));
       shader->setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
+      shader->setBool("u_shadowEnable", enableShadows);
     }
   else
     {
@@ -170,21 +171,24 @@ void ShaderManager::updateHillsShaders(bool enableFC, glm::mat4 &projectionView,
       shader->use();
       shader->setMat4("u_projectionView", projectionView);
       shader->setVec3("u_viewPosition", viewPosition);
+      shader->setBool("u_shadowEnable", enableShadows);
     }
 }
 
-void ShaderManager::updateShoreShader(glm::mat4 &projectionView)
+void ShaderManager::updateShoreShader(glm::mat4 &projectionView, bool enableShadows)
 {
   Shader* shader = &shaders[SHADER_SHORE].second;
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
+  shader->setBool("u_shadowEnable", enableShadows);
 }
 
-void ShaderManager::updateFlatShader(glm::mat4 &projectionView)
+void ShaderManager::updateFlatShader(glm::mat4 &projectionView, bool enableShadows)
 {
   Shader* shader = &shaders[SHADER_FLAT].second;
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
+  shader->setBool("u_shadowEnable", enableShadows);
 }
 
 void ShaderManager::updateUnderwaterShader(glm::mat4 &projectionView)
@@ -240,13 +244,14 @@ void ShaderManager::updateSkyShader(glm::mat4 &view, glm::mat4 &projection)
   shader->setMat4("u_projection", projection);
 }
 
-void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &viewPosition, bool shadowOnTrees)
+void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &viewPosition, bool shadowOnTrees, bool enableShadows)
 {
   Shader* shader = &shaders[SHADER_MODELS].second;
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
   shader->setVec3("u_viewPosition", viewPosition);
   shader->setBool("u_shadow", shadowOnTrees);
+  shader->setBool("u_shadowEnable", enableShadows);
 }
 
 void ShaderManager::deleteShaders()

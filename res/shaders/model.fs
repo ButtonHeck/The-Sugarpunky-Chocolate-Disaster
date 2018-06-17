@@ -13,6 +13,7 @@ uniform sampler2D u_texture_specular;
 uniform bool      u_shadow;
 uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
+uniform bool      u_shadowEnable;
 
 const vec2 POISSON_DISK[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
@@ -48,9 +49,17 @@ void main()
 {
     vec4 sampledDiffuse = texture(u_texture_diffuse, v_TexCoords);
     vec4 sampledSpecular = texture(u_texture_specular, v_TexCoords);
-    float shadowInfluence = calculateShadowComponent(v_FragPosLightSpace, v_Normal);
     vec3 ambientColor = 0.2 * sampledDiffuse.rgb;
-    vec3 diffuseColor = sampledDiffuse.rgb * ((1.0 - shadowInfluence) * v_DiffuseComponent * 0.6 + 0.4);
+    vec3 diffuseColor;
+    if (u_shadowEnable)
+    {
+        float shadowInfluence = calculateShadowComponent(v_FragPosLightSpace, v_Normal);
+        diffuseColor = sampledDiffuse.rgb * ((1.0 - shadowInfluence) * v_DiffuseComponent * 0.6 + 0.4);
+    }
+    else
+    {
+        diffuseColor = sampledDiffuse.rgb * (v_DiffuseComponent * 0.6 + 0.4);
+    }
     vec3 specularColor = v_SpecularComponent * sampledSpecular.rgb;
     vec3 resultColor = ambientColor + diffuseColor + specularColor;
 

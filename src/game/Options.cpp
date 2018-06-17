@@ -2,7 +2,6 @@
 
 Options::Options()
 {
-  //all the "...REQUEST" variables should initially be false
   options.assign(
   {
     {RENDER_SHADOW_ON_TREES, true},
@@ -18,7 +17,8 @@ Options::Options()
     {HILLS_FC, true},
     {WATER_FC, true},
     {MULTISAMPLE_ENABLE, true},
-    {SHADOW_ENABLE, true}
+    {SHADOW_ENABLE, true},
+    {CREATE_SHADOW_MAP_REQUEST, true}
   });
 }
 
