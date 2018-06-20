@@ -22,7 +22,7 @@ uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
 
 const int  FILTER_TYPE = vg_PosHeight > 0.4 ? 1 : 0;
-const float POISSON_SHADOW_VALUE_GAIN = clamp((vg_PosHeight - 0.4) / 4.0, 0.0, 1.0);
+const float POISSON_SHADOW_VALUE_GAIN = clamp((vg_PosHeight - 0.4) / 1.5, 0.0, 1.5);
 const vec2 POISSON_DISK[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
   vec2( 0.94558609, -0.76890725 ),
@@ -48,7 +48,7 @@ float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
             float poissonDiskDepth = texture(u_shadowMap, projCoords.xy + POISSON_DISK[i] * texelSize).r;
             shadow += currentDepth - bias / 2.0 > poissonDiskDepth ? 1.0 : 0.0;
         }
-        shadow /= (4.0 - POISSON_SHADOW_VALUE_GAIN); //slightly hack equation to more dark shadowing
+        shadow /= (4.3 - POISSON_SHADOW_VALUE_GAIN); //slightly hack equation to more dark shadowing
     }
     else
     {
