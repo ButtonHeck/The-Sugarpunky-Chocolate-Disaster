@@ -8,11 +8,13 @@ in vec3  v_SkyboxCoords[];
 in float v_DiffuseComponent[];
 in float v_SpecularComponent[];
 in int   v_visible[];
+in vec3  v_FragPos[];
 
 out vec2  vg_TexCoords;
 out vec3  vg_SkyboxCoords;
 out float vg_DiffuseComponent;
 out float vg_SpecularComponent;
+out vec3  vg_FragPos;
 
 void main()
 {
@@ -25,6 +27,7 @@ void main()
         gl_Position = gl_in[0].gl_Position;
         vg_TexCoords = v_TexCoords[0];
         vg_SkyboxCoords = v_SkyboxCoords[0];
+        vg_FragPos = v_FragPos[0];
         EmitVertex();
     }
     if (v_visible[1] == 1)
@@ -32,6 +35,7 @@ void main()
         gl_Position = gl_in[1].gl_Position;
         vg_TexCoords = v_TexCoords[1];
         vg_SkyboxCoords = v_SkyboxCoords[1];
+        vg_FragPos = v_FragPos[1];
         EmitVertex();
     }
     if (v_visible[2] == 1)
@@ -39,6 +43,7 @@ void main()
         gl_Position = gl_in[2].gl_Position;
         vg_TexCoords = v_TexCoords[2];
         vg_SkyboxCoords = v_SkyboxCoords[2];
+        vg_FragPos = v_FragPos[2];
         EmitVertex();
     }
     EndPrimitive();
