@@ -82,8 +82,8 @@ void main()
     if (u_shadowEnable)
     {
         float shadowComponent = calculateShadowComponent(vg_FragPosLightSpace, vg_Normal);
-        diffuseColor = sampledDiffuse.rgb *
-            ((1.0 - shadowComponent) * mix(vg_DiffuseComponentFlat, vg_DiffuseComponentHill, min(max(0.0, vg_PosHeight), 1.0)) * 0.5 + 0.5);
+        diffuseColor = (1.0 - shadowComponent * 0.3) * sampledDiffuse.rgb *
+            (mix(vg_DiffuseComponentFlat, vg_DiffuseComponentHill, min(max(0.0, vg_PosHeight), 1.0)) * 0.5 + 0.5);
     }
     else
     {

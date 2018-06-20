@@ -9,7 +9,6 @@ uniform vec3 u_lightDir;
 uniform vec3 u_viewPosition;
 uniform vec4 u_frustumPlanes[4]; //back and front planes sucks!
 
-out vec2  v_TexCoords;
 out vec3  v_SkyboxCoords;
 out float v_DiffuseComponent;
 out float v_SpecularComponent;
@@ -33,7 +32,6 @@ void main()
 {
     v_visible = cullThisSonOfaBitch();
     gl_Position = u_projectionView * vec4(i_pos, 1.0);
-    v_TexCoords = i_texCoords;
     v_FragPos = i_pos;
 
     //diffuse

@@ -2,7 +2,6 @@
 
 out vec4 o_FragColor;
 
-in vec2  vg_TexCoords;
 in vec3  vg_SkyboxCoords;
 in float vg_DiffuseComponent;
 in float vg_SpecularComponent;
