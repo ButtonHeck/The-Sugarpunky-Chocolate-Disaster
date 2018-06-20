@@ -70,7 +70,7 @@ void ShaderManager::setupConstantUniforms()
 
   shader = &shaders[SHADER_UNDERWATER].second;
   shader->use();
-  shader->setInt("u_underwater_diffuse", UNDERWATER);
+  shader->setInt("u_underwater_diffuse", SHORE);
   shader->setInt("u_normal_map", NORMAL_MAP);
   shader->setInt("u_mapDimension", TILES_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));

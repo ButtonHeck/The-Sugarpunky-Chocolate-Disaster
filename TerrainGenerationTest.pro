@@ -88,13 +88,11 @@ HEADERS += \
     src/chunk/TerrainChunk.h
 
 DISTFILES += \
-    res/textures/underwater_sand.jpg \
     res/textures/hill.jpg \
     res/textures/hill2.jpg \
     res/textures/hill_specular.jpg \
     res/textures/water.png \
     res/textures/water_specular.png \
-    res/textures/underwater_sand.jpg \
     res/textures/cubemap/back.png \
     res/textures/cubemap/down.png \
     res/textures/cubemap/front.png \
