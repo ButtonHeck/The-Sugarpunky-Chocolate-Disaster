@@ -22,5 +22,5 @@ void main()
     vec3 specularColor = vg_SpecularComponent * KISSEL_COLOR;
     vec3 resultColor = diffuseColor + specularColor - colorAttenuation;
 
-    o_FragColor = vec4(0.9 * resultColor + 0.1 * sampledDiffuseSkybox.rgb, 0.7);
+    o_FragColor = vec4(0.925 * resultColor + 0.075 * sampledDiffuseSkybox.rgr, 0.7);
 }

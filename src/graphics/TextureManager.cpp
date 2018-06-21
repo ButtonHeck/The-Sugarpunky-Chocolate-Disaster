@@ -9,8 +9,8 @@ TextureManager::TextureManager(TextureLoader &loader, int width, int height)
   textures[FLAT_x2] = loader.loadTexture("/textures/flat_x2.jpg", FLAT_x2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
   textures[FLAT_2_x2] = loader.loadTexture("/textures/flat2_x2.jpg", FLAT_2_x2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
   textures[NORMAL_MAP] = loader.loadTexture("/textures/normalMap.jpg", NORMAL_MAP, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-  textures[HILL] = loader.loadTexture("/textures/hill.jpg", HILL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-  textures[HILL_2] = loader.loadTexture("/textures/hill2.jpg", HILL_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  textures[HILL] = loader.loadTexture("/textures/hill2.jpg", HILL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  textures[HILL_2] = loader.loadTexture("/textures/hill.jpg", HILL_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
   textures[HILL_SPECULAR] = loader.loadTexture("/textures/hill_specular.jpg", HILL_SPECULAR, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
   textures[SHORE] = loader.loadTexture("/textures/shore.jpg", SHORE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
   textures[SHORE_2] = loader.loadTexture("/textures/shore2.jpg", SHORE_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
