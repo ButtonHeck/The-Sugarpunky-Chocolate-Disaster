@@ -21,15 +21,6 @@ uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
 
-const int  FILTER_TYPE = v_PosHeight > 0.4 ? 1 : 0;
-const float POISSON_SHADOW_VALUE_GAIN = clamp((v_PosHeight - 0.4) / 1.5, 0.0, 1.5);
-const vec2 POISSON_DISK[4] = vec2[](
-  vec2( -0.94201624, -0.39906216 ),
-  vec2( 0.94558609, -0.76890725 ),
-  vec2( -0.094184101, -0.92938870 ),
-  vec2( 0.34495938, 0.29387760 )
-);
-
 float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
 {
     //transform from [-1;1] to [0;1]
@@ -40,29 +31,16 @@ float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
     float bias = max(0.0006 * (1.0 - dot(normal, u_lightDir)), 0.0004);
     vec2 texelSize = 1.0 / textureSize(u_shadowMap, 0);
 
-    if (FILTER_TYPE == 1)
+    //PCF filtering
+    for (int x = -1; x <= 1; ++x)
     {
-        //poisson filtering
-        for (int i = 0; i < 4; i++)
+        for (int y = -2; y <= 2; ++y)
         {
-            float poissonDiskDepth = texture(u_shadowMap, projCoords.xy + POISSON_DISK[i] * texelSize).r;
-            shadow += currentDepth - bias / 2.0 > poissonDiskDepth ? 1.0 : 0.0;
+            float pcfDepth = texture(u_shadowMap, projCoords.xy + vec2(x,y) * texelSize).r;
+            shadow += currentDepth - bias * 0.66 > pcfDepth ? 1.0 : 0.0;
         }
-        shadow /= (4.3 - POISSON_SHADOW_VALUE_GAIN); //slightly hack equation to more dark shadowing
     }
-    else
-    {
-        //PCF filtering
-        for (int x = -2; x <= 2; ++x)
-        {
-            for (int y = -2; y <= 2; ++y)
-            {
-                float pcfDepth = texture(u_shadowMap, projCoords.xy + vec2(x,y) * texelSize).r;
-                shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
-            }
-        }
-        shadow /= 25.0;
-    }
+    shadow /= 15.0;
 
     if (projCoords.z > 1.0)
         shadow = 0.0;
