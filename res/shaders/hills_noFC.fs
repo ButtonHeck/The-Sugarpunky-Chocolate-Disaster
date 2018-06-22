@@ -29,7 +29,7 @@ float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
     float currentDepth = projCoords.z;
     float shadow = 0.0;
     float bias = max(0.0006 * (1.0 - dot(normal, u_lightDir)), 0.0004);
-    vec2 texelSize = 1.0 / textureSize(u_shadowMap, 0);
+    vec2 texelSize = (2.5 - dot(normal, u_lightDir) * 2.5) / textureSize(u_shadowMap, 0);
 
     //PCF filtering
     for (int x = -1; x <= 1; ++x)
