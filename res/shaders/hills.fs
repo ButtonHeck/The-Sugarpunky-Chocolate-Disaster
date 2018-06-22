@@ -21,6 +21,8 @@ uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
 
+const float TEXEL_SIZE_MULTIPLIER_OFFSET = 1.0 + clamp((vg_PosHeight * 10.0), 0.0, 1.5);
+
 float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
 {
     //transform from [-1;1] to [0;1]
@@ -28,8 +30,8 @@ float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
     float closestDepth = texture(u_shadowMap, projCoords.xy).r;
     float currentDepth = projCoords.z;
     float shadow = 0.0;
-    float bias = max(0.0006 * (1.0 - dot(normal, u_lightDir)), 0.0004);
-    vec2 texelSize = (2.5 - dot(normal, u_lightDir) * 2.5) / textureSize(u_shadowMap, 0);
+    float bias = max(0.0006 * (1.0 - dot(normal, u_lightDir)), 0.0004) * 0.66;
+    vec2 texelSize = (TEXEL_SIZE_MULTIPLIER_OFFSET - dot(normal, u_lightDir) * TEXEL_SIZE_MULTIPLIER_OFFSET) / textureSize(u_shadowMap, 0);
 
     //PCF filtering
     for (int x = -1; x <= 1; ++x)
@@ -37,7 +39,7 @@ float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
         for (int y = -2; y <= 2; ++y)
         {
             float pcfDepth = texture(u_shadowMap, projCoords.xy + vec2(x,y) * texelSize).r;
-            shadow += currentDepth - bias * 0.66 > pcfDepth ? 1.0 : 0.0;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
         }
     }
     shadow /= 15.0;
