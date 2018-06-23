@@ -34,6 +34,7 @@ constexpr bool BASE_TERRAIN_RANDOMIZE_SHORE_FORM = true;
 constexpr bool HDR_ENABLED = true;
 constexpr bool TEXTURE_SRGB = HDR_ENABLED;
 constexpr unsigned int MULTISAMPLES = 8;
+constexpr float ANISOTROPY = 2.0f;
 const std::string RES_DIR = getProjectDirectory() + "/res";
 constexpr bool INCLUDE_RES_DIR = true;
 //constants for shadow calculations
@@ -64,14 +65,12 @@ enum TEXTURE_UNITS
   HILL_SPECULAR = 7,
   SHORE = 8,
   SHORE_2 = 9,
-  WATER = 10,
-  WATER_SPECULAR = 11,
-  UNDERWATER_RELIEF = 12,
-  SKYBOX = 13,
-  FRAME_MS_TEXTURE = 14,
-  FRAME_TEXTURE = 15,
-  FRAME_HDR_TEXTURE = 16,
-  DEPTH_MAP = 17
+  UNDERWATER_RELIEF = 10,
+  SKYBOX = 11,
+  FRAME_MS_TEXTURE = 12,
+  FRAME_TEXTURE = 13,
+  FRAME_HDR_TEXTURE = 14,
+  DEPTH_MAP = 15
 };
 #endif // SETTINGS
 

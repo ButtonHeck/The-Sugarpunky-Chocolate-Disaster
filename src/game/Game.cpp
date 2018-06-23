@@ -36,6 +36,7 @@ void Game::setupVariables()
 {
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
+  glDisable(GL_DITHER);
   if (options.get(MULTISAMPLE_ENABLE))
     glEnable(GL_MULTISAMPLE);
   else

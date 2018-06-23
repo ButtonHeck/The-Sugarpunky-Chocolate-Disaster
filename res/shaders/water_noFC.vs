@@ -8,15 +8,15 @@ uniform mat4 u_projectionView;
 uniform vec3 u_lightDir;
 uniform vec3 u_viewPosition;
 
-out vec2  v_TexCoords;
 out vec3  v_SkyboxCoords;
 out float v_DiffuseComponent;
 out float v_SpecularComponent;
+out vec3  v_FragPos;
 
 void main()
 {
     gl_Position = u_projectionView * vec4(i_pos, 1.0);
-    v_TexCoords = i_texCoords;
+    v_FragPos = i_pos;
 
     //diffuse
     v_DiffuseComponent = max(dot(i_normal, u_lightDir), 0.0);
@@ -24,8 +24,8 @@ void main()
     //specular
     vec3 ViewDir = normalize(u_viewPosition - i_pos);
     vec3 Reflect = reflect(-u_lightDir, i_normal);
-    v_SpecularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 32.0) * 3;
+    v_SpecularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 16.0) * 0.375;
 
     //reflect skybox component
-    v_SkyboxCoords = reflect(-ViewDir, normalize(0.5 * i_normal + vec3(0.0, 1.0, 0.0)));
+    v_SkyboxCoords = reflect(-ViewDir, normalize(0.25 * i_normal + vec3(0.0, 1.0, 0.0)));
 }

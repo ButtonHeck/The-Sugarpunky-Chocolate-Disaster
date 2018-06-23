@@ -37,6 +37,7 @@ GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, G
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapType);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapType);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, ANISOTROPY);
   ilDeleteImage(ilGetInteger(IL_ACTIVE_IMAGE));
   return texture;
 }

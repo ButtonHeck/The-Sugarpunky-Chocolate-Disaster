@@ -95,10 +95,10 @@ void ShaderManager::setupConstantUniforms()
 
   shader = &shaders[SHADER_WATER_NOFC].second;
   shader->use();
-  shader->setInt("u_water_diffuse", WATER);
-  shader->setInt("u_water_specular", WATER_SPECULAR);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setInt("u_skybox", SKYBOX);
+  shader->setInt("u_normal_map", NORMAL_MAP);
+  shader->setInt("u_mapDimension", TILES_WIDTH * 4);
 
   shader = &shaders[SHADER_SKY].second;
   shader->use();
