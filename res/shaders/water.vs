@@ -1,8 +1,7 @@
 #version 450
 
 layout (location = 0) in vec3 i_pos;
-layout (location = 1) in vec2 i_texCoords;
-layout (location = 2) in vec3 i_normal;
+layout (location = 1) in vec3 i_normal;
 
 uniform mat4 u_projectionView;
 uniform vec3 u_lightDir;
