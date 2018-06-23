@@ -52,7 +52,19 @@ void Game::setupVariables()
   Model hillTree1("/models/hillTree1/hillTree1.obj", textureLoader);
   Model hillTree2("/models/hillTree2/hillTree2.obj", textureLoader);
   Model hillTree3("/models/hillTree3/hillTree3.obj", textureLoader);
-  treeGenerator = new TreeGenerator({tree1, tree2, tree3}, {hillTree1, hillTree2, hillTree3});
+  Model hillTree4("/models/hillTree4/hillTree4.obj", textureLoader);
+  Model hillTree5("/models/hillTree5/hillTree5.obj", textureLoader);
+  Model hillTree6("/models/hillTree6/hillTree6.obj", textureLoader);
+  Model hillTree7("/models/hillTree7/hillTree7.obj", textureLoader);
+  Model hillTree8("/models/hillTree1/hillTree1.obj", textureLoader);
+  Model hillTree9("/models/hillTree3/hillTree3.obj", textureLoader);
+  Model hillTree10("/models/hillTree7/hillTree7.obj", textureLoader);
+  Model hillTree11("/models/hillTree1/hillTree1.obj", textureLoader);
+  Model hillTree12("/models/hillTree3/hillTree3.obj", textureLoader);
+  Model hillTree13("/models/hillTree7/hillTree7.obj", textureLoader);
+  treeGenerator = new TreeGenerator({tree1, tree2, tree3},
+      {hillTree1, hillTree2, hillTree3, hillTree4, hillTree5, hillTree6, hillTree7,
+       hillTree8, hillTree9, hillTree10, hillTree11, hillTree12, hillTree13});
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
   prepareTerrain();

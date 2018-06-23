@@ -99,6 +99,13 @@ DISTFILES += \
     res/textures/cubemap/left.png \
     res/textures/cubemap/right.png \
     res/textures/cubemap/up.png \
+    res/textures/shore.jpg \
+    res/textures/shore2.jpg \
+    res/textures/flat.jpg \
+    res/textures/flat2.jpg \
+    res/textures/flat2_x2.jpg \
+    res/textures/flat_x2.jpg \
+    res/textures/normalMap.jpg \
     res/shaders/skybox.vs \
     res/shaders/skybox.fs \
     res/shaders/water.fs \
@@ -114,30 +121,6 @@ DISTFILES += \
     res/shaders/buildableTiles.fs \
     res/shaders/buildableTiles.vs \
     res/shaders/selectedTile.vs \
-    res/models/tree1/tree1.obj \
-    res/models/tree1/leaves.jpg \
-    res/models/tree1/tree.jpg \
-    res/models/tree1/tree1.mtl \
-    res/models/tree2/tree2.obj \
-    res/models/tree2/leaves.jpg \
-    res/models/tree2/tree.jpg \
-    res/models/tree2/tree2.mtl \
-    res/models/tree3/tree3.obj \
-    res/models/tree3/leaves.jpg \
-    res/models/tree3/tree.jpg \
-    res/models/tree3/tree3.mtl \
-    res/models/hillTree1/hillTree1.obj \
-    res/models/hillTree1/leaves.jpg \
-    res/models/hillTree1/tree.jpg \
-    res/models/hillTree1/hillTree1.mtl \
-    res/models/hillTree2/hillTree2.obj \
-    res/models/hillTree2/leaves.jpg \
-    res/models/hillTree2/tree.jpg \
-    res/models/hillTree2/hillTree2.mtl \
-    res/models/hillTree3/hillTree3.obj \
-    res/models/hillTree3/leaves.jpg \
-    res/models/hillTree3/tree.jpg \
-    res/models/hillTree3/hillTree3.mtl \
     res/fonts/GentiumPlus-R.ttf \
     res/fonts/OCTAPOST_1.ttf \
     res/fonts/Laconic_Bold.otf \
@@ -148,13 +131,6 @@ DISTFILES += \
     res/shaders/underwater.vs \
     res/shaders/shore.fs \
     res/shaders/shore.vs \
-    res/textures/shore.jpg \
-    res/textures/shore2.jpg \
-    res/textures/flat.jpg \
-    res/textures/flat2.jpg \
-    res/textures/flat2_x2.jpg \
-    res/textures/flat_x2.jpg \
-    res/textures/normalMap.jpg \
     res/shaders/selectedTile.fs \
     res/saves/testSave.txt \
     res/shaders/water.gs \
@@ -173,7 +149,55 @@ DISTFILES += \
     res/shaders/model_shadow.vs \
     res/shaders/shore_shadow.vs \
     res/shaders/underwater_shadow.vs \
-    res/shaders/water_shadow.vs
+    res/shaders/water_shadow.vs \
+    res/models/hillTree1/hillTree1.obj \
+    res/models/hillTree2/hillTree2.obj \
+    res/models/hillTree3/hillTree3.obj \
+    res/models/hillTree4/hillTree4.obj \
+    res/models/hillTree5/hillTree5.obj \
+    res/models/hillTree6/hillTree6.obj \
+    res/models/hillTree7/hillTree7.obj \
+    res/models/tree1/tree1.obj \
+    res/models/tree2/tree2.obj \
+    res/models/tree3/tree3.obj \
+    res/models/hillTree1/tree.jpg \
+    res/models/hillTree2/tree.jpg \
+    res/models/hillTree3/tree.jpg \
+    res/models/hillTree4/tree.jpg \
+    res/models/hillTree5/tree.jpg \
+    res/models/hillTree6/tree.jpg \
+    res/models/hillTree7/tree.jpg \
+    res/models/tree1/leaves.jpg \
+    res/models/tree1/tree.jpg \
+    res/models/tree2/leaves.jpg \
+    res/models/tree2/tree.jpg \
+    res/models/tree3/leaves.jpg \
+    res/models/tree3/tree.jpg \
+    res/models/hillTree1/foliage.png \
+    res/models/hillTree2/foliage1.png \
+    res/models/hillTree2/foliage2.png \
+    res/models/hillTree2/foliage3.png \
+    res/models/hillTree2/foliage4.png \
+    res/models/hillTree3/foliage.png \
+    res/models/hillTree4/foliage1.png \
+    res/models/hillTree4/foliage2.png \
+    res/models/hillTree4/foliage3.png \
+    res/models/hillTree4/foliage4.png \
+    res/models/hillTree5/cookie-foliage.png \
+    res/models/hillTree5/foliage.png \
+    res/models/hillTree6/cookie-foliage.png \
+    res/models/hillTree6/foliage.png \
+    res/models/hillTree7/foliage.png \
+    res/models/hillTree1/hillTree1.mtl \
+    res/models/hillTree2/hillTree2.mtl \
+    res/models/hillTree3/hillTree3.mtl \
+    res/models/hillTree4/hillTree4.mtl \
+    res/models/hillTree5/hillTree5.mtl \
+    res/models/hillTree6/hillTree6.mtl \
+    res/models/hillTree7/hillTree7.mtl \
+    res/models/tree1/tree1.mtl \
+    res/models/tree2/tree2.mtl \
+    res/models/tree3/tree3.mtl
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

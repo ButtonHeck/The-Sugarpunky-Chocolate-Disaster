@@ -1,16 +1,27 @@
-# Blender MTL File: 'hillTree3.blend'
-# Material Count: 2
+# Blender MTL File: 'hillTree5.blend'
+# Material Count: 3
 
-newmtl foliage
+newmtl choc-foliage
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
-Ks 0.261468 0.261468 0.261468
+Ks 0.240157 0.240157 0.240157
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
 map_Kd foliage.png
+
+newmtl cookie-foliage
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.224409 0.224409 0.224409
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd cookie-foliage.png
 
 newmtl wood
 Ns 96.078431

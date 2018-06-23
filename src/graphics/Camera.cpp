@@ -3,7 +3,7 @@
 Camera::Camera(glm::vec3 position)
   :
     zoom(FOV),
-    moveSpeed(20),
+    moveSpeed(8),
     mouseSensitivity(0.04f),
     FPSmode(false),
     yaw(-90.0f),
