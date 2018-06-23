@@ -13,6 +13,7 @@ in float v_SpecularComponent[];
 in int   v_visible[];
 in vec4  v_FragPosLightSpace[];
 in vec3  v_Normal[];
+in vec3  v_ProjectedCoords[];
 
 out vec2  vg_TexCoords;
 out float vg_PosHeight;
@@ -23,6 +24,7 @@ out float vg_TextureHillMixRatio;
 out float vg_SpecularComponent;
 out vec4  vg_FragPosLightSpace;
 out vec3  vg_Normal;
+out vec3  vg_ProjectedCoords;
 
 void main()
 {
@@ -38,6 +40,7 @@ void main()
         vg_TextureHillMixRatio = v_TextureHillMixRatio[0];
         vg_FragPosLightSpace = v_FragPosLightSpace[0];
         vg_Normal = v_Normal[0];
+        vg_ProjectedCoords = v_ProjectedCoords[0];
         EmitVertex();
     }
     if (v_visible[1] == 1)
@@ -52,6 +55,7 @@ void main()
         vg_TextureHillMixRatio = v_TextureHillMixRatio[1];
         vg_FragPosLightSpace = v_FragPosLightSpace[1];
         vg_Normal = v_Normal[1];
+        vg_ProjectedCoords = v_ProjectedCoords[1];
         EmitVertex();
     }
     if (v_visible[2] == 1)
@@ -66,6 +70,7 @@ void main()
         vg_TextureHillMixRatio = v_TextureHillMixRatio[2];
         vg_FragPosLightSpace = v_FragPosLightSpace[2];
         vg_Normal = v_Normal[2];
+        vg_ProjectedCoords = v_ProjectedCoords[2];
         EmitVertex();
     }
     EndPrimitive();

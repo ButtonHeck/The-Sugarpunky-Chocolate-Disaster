@@ -52,10 +52,10 @@ void main()
     if (u_shadowEnable)
     {
         float shadowComponent = calculateShadowComponent(v_FragPosLightSpace, NORMAL);
-        diffuseColor = shadowComponent * sampledDiffuse.rgb * (diffuseComponent * 0.5 + 0.5);
+        diffuseColor = shadowComponent * mix(sampledDiffuse.rgb * diffuseComponent, sampledDiffuse.rgb, 0.5);
     }
     else
-        diffuseColor = sampledDiffuse.rgb * (diffuseComponent * 0.5 + 0.5);
+        diffuseColor = mix(sampledDiffuse.rgb * diffuseComponent, sampledDiffuse.rgb, 0.5);
 
     vec3 resultColor = diffuseColor;
     o_FragColor = vec4(resultColor, sampledDiffuse.a);
