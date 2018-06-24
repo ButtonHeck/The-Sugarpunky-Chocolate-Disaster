@@ -7,7 +7,7 @@ layout (location = 2) in vec3 i_normal;
 uniform mat4      u_projectionView;
 uniform vec3      u_lightDir;
 uniform sampler2D u_normal_map;
-uniform int       u_mapDimension;
+uniform float     u_mapDimension;
 uniform mat4      u_lightSpaceMatrix;
 
 out vec2  v_TexCoords;
@@ -16,7 +16,7 @@ out float v_PosHeight;
 out float v_TextureMixRatio;
 out float v_DiffuseComponent;
 out vec3  v_Normal;
-out vec4  v_FragPosLightSpace;
+out vec3  v_ProjectedCoords;
 
 const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 const float POSITION_HEIGHT_MULTIPLIER = 2.1;
@@ -27,11 +27,12 @@ void main()
     v_FragPos = i_pos;
     v_TexCoords = i_texCoords;
     v_PosHeight = i_pos.y * POSITION_HEIGHT_MULTIPLIER;
-    v_FragPosLightSpace = u_lightSpaceMatrix * vec4(v_FragPos, 1.0);
+    vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(v_FragPos, 1.0);
+    v_ProjectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
 
-    vec3 FlatNormal = texture(u_normal_map, vec2(v_FragPos.x / u_mapDimension + 0.5, v_FragPos.z / u_mapDimension + 0.5)).rgb;
+    vec3 FlatNormal = texture(u_normal_map, v_FragPos.xz * u_mapDimension + 0.5).rgb;
     float TransitionRatio = clamp(1.0 + v_PosHeight, 0.0, 1.0);
-    vec3 ShadingNormal = normalize((1.0 - TransitionRatio) * i_normal + TransitionRatio * (NORMAL + FlatNormal));
+    vec3 ShadingNormal = normalize(mix(i_normal, NORMAL + FlatNormal, TransitionRatio));
     v_Normal = ShadingNormal;
     v_TextureMixRatio = FlatNormal.r;
 

@@ -18,7 +18,6 @@ out float v_DiffuseComponentFlat;
 out float v_TextureFlatMixRatio;
 out float v_TextureHillMixRatio;
 out float v_SpecularComponent;
-out vec4  v_FragPosLightSpace;
 out vec3  v_Normal;
 out vec3  v_ProjectedCoords;
 
@@ -31,8 +30,8 @@ void main()
     gl_Position = u_projectionView * vec4(i_pos, 1.0);
     v_TexCoords = i_texCoords;
     v_PosHeight = i_pos.y * TRANSITION_RATIO_MULTIPLIER_INVERSE;
-    v_FragPosLightSpace = u_lightSpaceMatrix * vec4(i_pos, 1.0);
-    v_ProjectedCoords = v_FragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
+    vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(i_pos, 1.0);
+    v_ProjectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
 
     //"normal" vector fetched from the global normal map (same as flat terrain normal), it is used for randomization of some variables
     vec3 FlatNormal = texture(u_normal_map, i_pos.xz * u_mapDimension + 0.5).rgb;

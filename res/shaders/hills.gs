@@ -11,7 +11,6 @@ in float v_TextureFlatMixRatio[];
 in float v_TextureHillMixRatio[];
 in float v_SpecularComponent[];
 in int   v_visible[];
-in vec4  v_FragPosLightSpace[];
 in vec3  v_Normal[];
 in vec3  v_ProjectedCoords[];
 
@@ -22,7 +21,6 @@ out float vg_DiffuseComponentFlat;
 out float vg_TextureFlatMixRatio;
 out float vg_TextureHillMixRatio;
 out float vg_SpecularComponent;
-out vec4  vg_FragPosLightSpace;
 out vec3  vg_Normal;
 out vec3  vg_ProjectedCoords;
 
@@ -38,7 +36,6 @@ void main()
         vg_PosHeight = v_PosHeight[0];
         vg_TextureFlatMixRatio = v_TextureFlatMixRatio[0];
         vg_TextureHillMixRatio = v_TextureHillMixRatio[0];
-        vg_FragPosLightSpace = v_FragPosLightSpace[0];
         vg_Normal = v_Normal[0];
         vg_ProjectedCoords = v_ProjectedCoords[0];
         EmitVertex();
@@ -53,7 +50,6 @@ void main()
         vg_PosHeight = v_PosHeight[1];
         vg_TextureFlatMixRatio = v_TextureFlatMixRatio[1];
         vg_TextureHillMixRatio = v_TextureHillMixRatio[1];
-        vg_FragPosLightSpace = v_FragPosLightSpace[1];
         vg_Normal = v_Normal[1];
         vg_ProjectedCoords = v_ProjectedCoords[1];
         EmitVertex();
@@ -68,7 +64,6 @@ void main()
         vg_PosHeight = v_PosHeight[2];
         vg_TextureFlatMixRatio = v_TextureFlatMixRatio[2];
         vg_TextureHillMixRatio = v_TextureHillMixRatio[2];
-        vg_FragPosLightSpace = v_FragPosLightSpace[2];
         vg_Normal = v_Normal[2];
         vg_ProjectedCoords = v_ProjectedCoords[2];
         EmitVertex();

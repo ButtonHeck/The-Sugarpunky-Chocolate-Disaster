@@ -12,11 +12,7 @@ uniform sampler2D   u_shadowMap;
 out vec2 v_TexCoords;
 out vec3 v_FragPos;
 out vec3 v_LightDir;
-out vec4 v_FragPosLightSpace;
-out vec2 v_TexelSize;
 out vec3 v_ProjectedCoords;
-
-const vec2 TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 
 void main()
 {
@@ -24,7 +20,6 @@ void main()
     v_FragPos = vec3(i_instanceModel * vec4(i_pos, 1.0));
     v_TexCoords = i_texCoords;
     v_LightDir = u_lightDir;
-    v_FragPosLightSpace = u_lightSpaceMatrix * vec4(v_FragPos, 1.0);
-    v_TexelSize = TEXEL_SIZE;
-    v_ProjectedCoords = v_FragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
+    vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(v_FragPos, 1.0);
+    v_ProjectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
 }

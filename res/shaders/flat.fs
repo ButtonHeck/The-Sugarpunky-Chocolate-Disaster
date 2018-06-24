@@ -5,8 +5,6 @@ out vec4 o_FragColor;
 in vec3 v_FragPos;
 in vec2 v_TexCoords;
 in vec3 v_LightDir;
-in vec4 v_FragPosLightSpace;
-in vec2 v_TexelSize;
 in vec3 v_ProjectedCoords;
 
 uniform sampler2D u_flat_diffuse;
@@ -16,6 +14,8 @@ uniform float     u_mapDimension;
 uniform sampler2D u_shadowMap;
 uniform bool      u_shadowEnable;
 
+const vec2 TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
+const float DIFFUSE_MIX = 0.5;
 const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 const float SHADOW_INFLUENCE = 0.3;
 const float SHADOW_BIAS = 0.00025;
@@ -26,7 +26,7 @@ const vec2 POISSON_DISK[4] = vec2[](
   vec2( 0.34495938, 0.29387760 )
 );
 
-float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
+float calculateShadowComponent()
 {
     float closestDepth = texture(u_shadowMap, v_ProjectedCoords.xy).r;
     float currentDepth = v_ProjectedCoords.z;
@@ -35,7 +35,7 @@ float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
     //poisson filtering
     for (int i = 0; i < 4; i++)
     {
-        float poissonDiskDepth = texture(u_shadowMap, v_ProjectedCoords.xy + POISSON_DISK[i] * v_TexelSize).r;
+        float poissonDiskDepth = texture(u_shadowMap, v_ProjectedCoords.xy + POISSON_DISK[i] * TEXEL_SIZE).r;
         shadow += currentDepth - SHADOW_BIAS > poissonDiskDepth ? 0.25 : 0.0;
     }
     return (1.0 - shadow * SHADOW_INFLUENCE);
@@ -51,11 +51,11 @@ void main()
     float diffuseComponent = max(dot(ShadingNormal, v_LightDir), 0.0);
     if (u_shadowEnable)
     {
-        float shadowComponent = calculateShadowComponent(v_FragPosLightSpace, NORMAL);
-        diffuseColor = shadowComponent * mix(sampledDiffuse.rgb * diffuseComponent, sampledDiffuse.rgb, 0.5);
+        float shadowComponent = calculateShadowComponent();
+        diffuseColor = shadowComponent * mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX);
     }
     else
-        diffuseColor = mix(sampledDiffuse.rgb * diffuseComponent, sampledDiffuse.rgb, 0.5);
+        diffuseColor = mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX);
 
     vec3 resultColor = diffuseColor;
     o_FragColor = vec4(resultColor, sampledDiffuse.a);

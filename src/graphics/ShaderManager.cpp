@@ -63,7 +63,7 @@ void ShaderManager::setupConstantUniforms()
   shader->setInt("u_sand_diffuse", SHORE);
   shader->setInt("u_sand_diffuse2", SHORE_2);
   shader->setInt("u_normal_map", NORMAL_MAP);
-  shader->setInt("u_mapDimension", TILES_WIDTH);
+  shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", DEPTH_MAP);
@@ -72,7 +72,7 @@ void ShaderManager::setupConstantUniforms()
   shader->use();
   shader->setInt("u_underwater_diffuse", SHORE);
   shader->setInt("u_normal_map", NORMAL_MAP);
-  shader->setInt("u_mapDimension", TILES_WIDTH);
+  shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setInt("u_bottomRelief_diffuse", UNDERWATER_RELIEF);
 
@@ -91,14 +91,14 @@ void ShaderManager::setupConstantUniforms()
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setInt("u_skybox", SKYBOX);
   shader->setInt("u_normal_map", NORMAL_MAP);
-  shader->setInt("u_mapDimension", TILES_WIDTH * 4);
+  shader->setFloat("u_mapDimension", 1.0f / (TILES_WIDTH * 4));
 
   shader = &shaders[SHADER_WATER_NOFC].second;
   shader->use();
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setInt("u_skybox", SKYBOX);
   shader->setInt("u_normal_map", NORMAL_MAP);
-  shader->setInt("u_mapDimension", TILES_WIDTH * 4);
+  shader->setFloat("u_mapDimension", 1.0f / (TILES_WIDTH * 4));
 
   shader = &shaders[SHADER_SKY].second;
   shader->use();

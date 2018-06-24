@@ -9,7 +9,6 @@ in float v_TextureHillMixRatio;
 in float v_DiffuseComponentHill;
 in float v_DiffuseComponentFlat;
 in float v_SpecularComponent;
-in vec4  v_FragPosLightSpace;
 in vec3  v_Normal;
 in vec3  v_ProjectedCoords;
 
@@ -25,8 +24,9 @@ uniform bool      u_shadowEnable;
 const float TEXEL_SIZE_MULTIPLIER_OFFSET = 1.0 + clamp((v_PosHeight * 10.0), 0.0, 1.5);
 const vec2  TEXTURE_TEXEL_UNIT = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.3;
+const float DIFFUSE_MIX = 0.5;
 
-float calculateShadowComponent(vec4 fragPosLightSpace, vec3 normal)
+float calculateShadowComponent(vec3 normal)
 {
     float closestDepth = texture(u_shadowMap, v_ProjectedCoords.xy).r;
     float currentDepth = v_ProjectedCoords.z;
@@ -59,11 +59,11 @@ void main()
     float diffuseComponent = mix(v_DiffuseComponentFlat, v_DiffuseComponentHill, clamp(v_PosHeight, 0.0, 1.0));
     if (u_shadowEnable)
     {
-        float shadowComponent = calculateShadowComponent(v_FragPosLightSpace, v_Normal);
-        diffuseColor = shadowComponent * mix(sampledDiffuse.rgb * diffuseComponent, sampledDiffuse.rgb, 0.5);
+        float shadowComponent = calculateShadowComponent(v_Normal);
+        diffuseColor = shadowComponent * mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX);
     }
     else
-        diffuseColor = mix(sampledDiffuse.rgb * diffuseComponent, sampledDiffuse.rgb, 0.5);
+        diffuseColor = mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX);
 
     vec3 specularColor = v_SpecularComponent * sampledSpecular.rgb;
     vec3 resultColor = diffuseColor + specularColor;
