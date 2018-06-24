@@ -16,14 +16,12 @@ out vec3  vg_FragPos;
 
 void main()
 {
-    //diffuse and specular components are the same for each three vertices (cause Gouraud shading)
-    //so we don't need to reassign it in every vertex
-    vg_DiffuseComponent = v_DiffuseComponent[0];
-    vg_SpecularComponent = v_SpecularComponent[0];
     if (v_visible[0] == 1)
     {
         gl_Position = gl_in[0].gl_Position;
         vg_SkyboxCoords = v_SkyboxCoords[0];
+        vg_DiffuseComponent = v_DiffuseComponent[0];
+        vg_SpecularComponent = v_SpecularComponent[0];
         vg_FragPos = v_FragPos[0];
         EmitVertex();
     }
@@ -31,6 +29,8 @@ void main()
     {
         gl_Position = gl_in[1].gl_Position;
         vg_SkyboxCoords = v_SkyboxCoords[1];
+        vg_DiffuseComponent = v_DiffuseComponent[1];
+        vg_SpecularComponent = v_SpecularComponent[1];
         vg_FragPos = v_FragPos[1];
         EmitVertex();
     }
@@ -38,6 +38,8 @@ void main()
     {
         gl_Position = gl_in[2].gl_Position;
         vg_SkyboxCoords = v_SkyboxCoords[2];
+        vg_DiffuseComponent = v_DiffuseComponent[2];
+        vg_SpecularComponent = v_SpecularComponent[2];
         vg_FragPos = v_FragPos[2];
         EmitVertex();
     }

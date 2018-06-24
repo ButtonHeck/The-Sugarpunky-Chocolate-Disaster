@@ -508,11 +508,11 @@ void WaterMapGenerator::updateAnimationFrame()
 {
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   double frameTime = glfwGetTime();
-  double offsetMultiplier = frameTime / 8;
+  double offsetMultiplier = frameTime * 0.1;
   for (size_t i = 0; i < WATER_HEIGHT_OFFSETS_SIZE; i+=2)
     {
-        waterHeightOffsets[i] = std::cos(offsetMultiplier * (i % 31)) / 16 + WATER_LEVEL;
-        waterHeightOffsets[i+1] = std::sin(offsetMultiplier * (i % 29)) / 16 + WATER_LEVEL;
+        waterHeightOffsets[i] = std::cos(offsetMultiplier * (i % 31)) * 0.0625 + WATER_LEVEL;
+        waterHeightOffsets[i+1] = std::sin(offsetMultiplier * (i % 29)) * 0.0689 + WATER_LEVEL;
     }
   GLfloat* waterVertexCoordinatePointer = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
   unsigned int numWaterTiles = tiles.size();

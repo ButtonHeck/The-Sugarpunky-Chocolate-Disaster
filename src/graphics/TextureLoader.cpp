@@ -133,7 +133,8 @@ GLuint TextureLoader::createUnderwaterReliefTexture(WaterMapGenerator *waterMapG
 {
   GLuint underwaterReliefTexture;
   GLubyte* textureData = new GLubyte[TILES_WIDTH * TILES_HEIGHT];
-  int left, right, top, bottom, waterCount;
+  int left, right, top, bottom;
+  float waterCount;
   for (int y = 1; y < TILES_HEIGHT; y++)
     {
       for (int x = 0; x < TILES_WIDTH - 1; x++)
@@ -151,7 +152,7 @@ GLuint TextureLoader::createUnderwaterReliefTexture(WaterMapGenerator *waterMapG
                       waterMapGenerator->getMap()[y1-1][x1] != 0 &&
                       waterMapGenerator->getMap()[y1-1][x1+1] != 0 &&
                       waterMapGenerator->getMap()[y1][x1+1] != 0)
-                    ++waterCount;
+                    waterCount += 1.0 - ((SHORE_SIZE_BASE - 4) * 0.25);
                 }
             }
           textureData[y * TILES_WIDTH + x] = (GLubyte)waterCount;

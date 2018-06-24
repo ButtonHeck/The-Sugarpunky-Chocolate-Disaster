@@ -14,6 +14,7 @@ void main()
 {
     float reliefAttenuation = 1.0 - texture(u_bottomRelief_diffuse, v_FragPos.xz * u_mapDimension + 0.5).r * 1.1;
     vec4 sampledDiffuse = texture(u_underwater_diffuse, v_TexCoords);
+    sampledDiffuse.g -= (reliefAttenuation * 0.025 + 0.025);
     vec3 diffuseColor = v_DiffuseComponent * sampledDiffuse.rgb * reliefAttenuation;
     o_FragColor = vec4(diffuseColor, sampledDiffuse.a);
 }

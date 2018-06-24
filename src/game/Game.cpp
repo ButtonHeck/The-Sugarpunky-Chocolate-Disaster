@@ -251,7 +251,7 @@ void Game::drawFrameObjects()
 
   //water rendering
   shaderManager.updateWaterShaders(options.get(WATER_FC), projectionView, viewPosition, viewFrustum);
-  renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER));
+  renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER) && frameCounter % 2 == 0);
 
   //Skybox rendering
   glm::mat4 skyView = glm::mat4(glm::mat3(view));
@@ -328,7 +328,7 @@ void Game::drawFrameObjectsDepthmap()
 
   //water rendering
   shaderManager.get(SHADER_SHADOW_WATER).use();
-  renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER));
+  renderer.drawWater(waterMapGenerator, false);
 
   //trees chunks rendering
   if (options.get(RENDER_TREE_MODELS))
@@ -373,6 +373,7 @@ void Game::loop()
   float delta = timer.tick();
   input.processKeyboard(delta);
 
+  //render our world onto separate FBO as usual
   drawFrameObjects();
 
   //render result onto the default FBO and apply HDR/MS if the flags are set
