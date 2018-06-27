@@ -48,8 +48,18 @@ void Game::setupVariables()
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
   Model tree1("/models/tree1/tree1.obj", textureLoader);
+  Model tree1_2("/models/tree1_2/tree1_2.obj", textureLoader);
   Model tree2("/models/tree2/tree2.obj", textureLoader);
+  Model tree2_2("/models/tree2_2/tree2_2.obj", textureLoader);
   Model tree3("/models/tree3/tree3.obj", textureLoader);
+  Model tree3_2("/models/tree3_2/tree3_2.obj", textureLoader);
+  Model tree4("/models/tree4/tree4.obj", textureLoader);
+  Model tree5("/models/tree5/tree5.obj", textureLoader);
+  Model tree5_2("/models/tree5_2/tree5_2.obj", textureLoader);
+  Model tree6("/models/tree6/tree6.obj", textureLoader);
+  Model tree6_2("/models/tree6_2/tree6_2.obj", textureLoader);
+  Model tree7("/models/tree7/tree7.obj", textureLoader);
+  Model tree8("/models/tree8/tree8.obj", textureLoader);
   Model hillTree1("/models/hillTree1/hillTree1.obj", textureLoader);
   Model hillTree2("/models/hillTree2/hillTree2.obj", textureLoader);
   Model hillTree3("/models/hillTree3/hillTree3.obj", textureLoader);
@@ -63,7 +73,8 @@ void Game::setupVariables()
   Model hillTree11("/models/hillTree1/hillTree1.obj", textureLoader);
   Model hillTree12("/models/hillTree3/hillTree3.obj", textureLoader);
   Model hillTree13("/models/hillTree7/hillTree7.obj", textureLoader);
-  treeGenerator = new TreeGenerator({tree1, tree2, tree3},
+  treeGenerator = new TreeGenerator({tree1, tree1_2, tree2, tree2_2, tree3, tree3_2, tree4, tree5, tree5_2,
+                                     tree6, tree6_2, tree7, tree8},
       {hillTree1, hillTree2, hillTree3, hillTree4, hillTree5, hillTree6, hillTree7,
        hillTree8, hillTree9, hillTree10, hillTree11, hillTree12, hillTree13});
   saveLoadManager->setTreeGenerator(*treeGenerator);
@@ -222,8 +233,11 @@ void Game::drawFrameObjects()
   renderer.drawShore(baseMapGenerator, viewFrustum);
 
   //flat terrain chunks drawing
-  shaderManager.updateFlatShader(projectionView, options.get(SHADOW_ENABLE));
-  renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
+  if (options.get(RENDER_FLAT_TERRAIN))
+    {
+      shaderManager.updateFlatShader(projectionView, options.get(SHADOW_ENABLE));
+      renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
+    }
 
   //underwater tile
   shaderManager.updateUnderwaterShader(projectionView);
@@ -250,8 +264,11 @@ void Game::drawFrameObjects()
     }
 
   //water rendering
-  shaderManager.updateWaterShaders(options.get(WATER_FC), projectionView, viewPosition, viewFrustum);
-  renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER) && frameCounter % 2 == 0);
+  if (options.get(RENDER_WATER))
+    {
+      shaderManager.updateWaterShaders(options.get(WATER_FC), projectionView, viewPosition, viewFrustum);
+      renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER) && frameCounter % 2 == 0);
+    }
 
   //Skybox rendering
   glm::mat4 skyView = glm::mat4(glm::mat3(view));

@@ -16,7 +16,7 @@ void HillsMapGenerator::prepareMap()
   float max_height = 0.0f;
   generateMap(12, &max_height, HILL_DENSITY::DENSE);
   generateMap(6, &max_height, HILL_DENSITY::THIN);
-  compressMap(0.66f, &max_height, 1.5f); //compress top-most peaks
+  compressMap(0.66f, &max_height, 2.0f); //compress top-most peaks
   removeMapPlateaus(1.0f);
   smoothMapHeightChunks(0.6f, 0.05f, 0.05f);
   smoothMapHeightChunks(0.6f, 0.05f, 0.05f);

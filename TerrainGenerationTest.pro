@@ -148,16 +148,6 @@ DISTFILES += \
     res/shaders/shore_shadow.vs \
     res/shaders/underwater_shadow.vs \
     res/shaders/water_shadow.vs \
-    res/models/hillTree1/hillTree1.obj \
-    res/models/hillTree2/hillTree2.obj \
-    res/models/hillTree3/hillTree3.obj \
-    res/models/hillTree4/hillTree4.obj \
-    res/models/hillTree5/hillTree5.obj \
-    res/models/hillTree6/hillTree6.obj \
-    res/models/hillTree7/hillTree7.obj \
-    res/models/tree1/tree1.obj \
-    res/models/tree2/tree2.obj \
-    res/models/tree3/tree3.obj \
     res/models/hillTree1/tree.jpg \
     res/models/hillTree2/tree.jpg \
     res/models/hillTree3/tree.jpg \
@@ -165,12 +155,17 @@ DISTFILES += \
     res/models/hillTree5/tree.jpg \
     res/models/hillTree6/tree.jpg \
     res/models/hillTree7/tree.jpg \
-    res/models/tree1/leaves.jpg \
     res/models/tree1/tree.jpg \
-    res/models/tree2/leaves.jpg \
+    res/models/tree1_2/tree.jpg \
     res/models/tree2/tree.jpg \
-    res/models/tree3/leaves.jpg \
-    res/models/tree3/tree.jpg \
+    res/models/tree2_2/tree.jpg \
+    res/models/tree4/tree.jpg \
+    res/models/tree5/tree.jpg \
+    res/models/tree5_2/tree.jpg \
+    res/models/tree6/tree.jpg \
+    res/models/tree6_2/tree.jpg \
+    res/models/tree7/tree.jpg \
+    res/models/tree8/tree.jpg \
     res/models/hillTree1/foliage.png \
     res/models/hillTree2/foliage1.png \
     res/models/hillTree2/foliage2.png \
@@ -186,6 +181,27 @@ DISTFILES += \
     res/models/hillTree6/cookie-foliage.png \
     res/models/hillTree6/foliage.png \
     res/models/hillTree7/foliage.png \
+    res/models/tree1/foliage5.png \
+    res/models/tree1_2/foliage5.png \
+    res/models/tree2/foliage1.png \
+    res/models/tree2_2/foliage1.png \
+    res/models/tree3/foliage-red.png \
+    res/models/tree3/foliage1.png \
+    res/models/tree3/nut.png \
+    res/models/tree3/stem.png \
+    res/models/tree3_2/foliage-red.png \
+    res/models/tree3_2/foliage1.png \
+    res/models/tree3_2/nut.png \
+    res/models/tree3_2/stem.png \
+    res/models/tree4/cream.png \
+    res/models/tree4/dough.png \
+    res/models/tree5/foliage5.png \
+    res/models/tree5_2/foliage1.png \
+    res/models/tree6/foliage.png \
+    res/models/tree6_2/foliage.png \
+    res/models/tree7/foliage.png \
+    res/models/tree8/foliage.png \
+    res/models/tree8/foliage2.png \
     res/models/hillTree1/hillTree1.mtl \
     res/models/hillTree2/hillTree2.mtl \
     res/models/hillTree3/hillTree3.mtl \
@@ -194,8 +210,18 @@ DISTFILES += \
     res/models/hillTree6/hillTree6.mtl \
     res/models/hillTree7/hillTree7.mtl \
     res/models/tree1/tree1.mtl \
+    res/models/tree1_2/tree1_2.mtl \
     res/models/tree2/tree2.mtl \
-    res/models/tree3/tree3.mtl
+    res/models/tree2_2/tree2_2.mtl \
+    res/models/tree3/tree3.mtl \
+    res/models/tree3_2/tree3_2.mtl \
+    res/models/tree4/tree4.mtl \
+    res/models/tree5/tree5.mtl \
+    res/models/tree5_2/tree5_2.mtl \
+    res/models/tree6/tree6.mtl \
+    res/models/tree6_2/tree6_2.mtl \
+    res/models/tree7/tree7.mtl \
+    res/models/tree8/tree8.mtl
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

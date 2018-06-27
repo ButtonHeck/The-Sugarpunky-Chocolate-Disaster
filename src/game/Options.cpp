@@ -18,7 +18,9 @@ Options::Options()
     {WATER_FC, true},
     {MULTISAMPLE_ENABLE, true},
     {SHADOW_ENABLE, true},
-    {CREATE_SHADOW_MAP_REQUEST, true}
+    {CREATE_SHADOW_MAP_REQUEST, true},
+    {RENDER_FLAT_TERRAIN, true},
+    {RENDER_WATER, true}
   });
 }
 

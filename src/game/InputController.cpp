@@ -207,6 +207,30 @@ void InputController::processKeyboard(float delta)
     }
   if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_Q] = false;
+
+  //Render flat terrain
+  if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_F])
+        {
+          options.switchOpt(RENDER_FLAT_TERRAIN);
+          keysPressed[GLFW_KEY_F] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_F] = false;
+
+  //Render water
+  if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_G])
+        {
+          options.switchOpt(RENDER_WATER);
+          keysPressed[GLFW_KEY_G] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_G) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_G] = false;
 }
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)
