@@ -16,10 +16,13 @@ void HillsMapGenerator::prepareMap()
   float max_height = 0.0f;
   generateMap(12, &max_height, HILL_DENSITY::DENSE);
   generateMap(6, &max_height, HILL_DENSITY::THIN);
-  compressMap(0.66f, &max_height, 2.0f); //compress top-most peaks
+  compressMap(0.02f, &max_height, 1.25f); //compress entire range
+  compressMap(0.66f, &max_height, 2.2f); //compress top-most peaks
   removeMapPlateaus(1.0f);
-  smoothMapHeightChunks(0.6f, 0.05f, 0.05f);
-  smoothMapHeightChunks(0.6f, 0.05f, 0.05f);
+  for (unsigned int i = 0; i < 4; i++)
+    {
+      smoothMapHeightChunks(0.6f, 0.05f, 0.05f);
+    }
   removeOrphanHills();
   smoothMapSinks();
   createTiles();
@@ -30,8 +33,8 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
 {
   const size_t VERTEX_DATA_LENGTH = tiles.size() * 48;
   const size_t ELEMENT_DATA_LENGTH = tiles.size() * 6;
-  GLfloat vertices[VERTEX_DATA_LENGTH];
-  GLuint indices[ELEMENT_DATA_LENGTH];
+  GLfloat* vertices = new GLfloat[VERTEX_DATA_LENGTH];
+  GLuint* indices = new GLuint[ELEMENT_DATA_LENGTH];
   glm::vec3 normal1, normal2;
   for (unsigned int c = 0; c < tiles.size(); c++)
     {
@@ -196,9 +199,9 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
   glGenBuffers(1, &vbo);
   glGenBuffers(1, &ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * ELEMENT_DATA_LENGTH, indices, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTEX_DATA_LENGTH, vertices, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
   glEnableVertexAttribArray(1);
@@ -206,6 +209,8 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
   resetAllGLBuffers();
+  delete[] vertices;
+  delete[] indices;
 }
 
 //not flat and not create on zero tiles
@@ -234,7 +239,7 @@ void HillsMapGenerator::createTiles()
 void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY density)
 {
   srand(time(NULL));
-  std::uniform_real_distribution<float> heightDistribution(0.3f, 0.7f);
+  std::uniform_real_distribution<float> heightDistribution(0.3f, 0.8f);
   std::default_random_engine randomizer;
   float density_value = 3.0f * (float)TILES_WIDTH;
   if (density == HILL_DENSITY::THIN)
@@ -282,9 +287,15 @@ void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY 
                     {
                       for (int x2 = left; x2 <= right; x2++)
                         {
-                          if (rand() % (cycle + 2) > 1 && !hasWaterNearby(x2, y2, 2))
+                          if (rand() % (cycle + 2) > 1)
                             {
-                              map[y2][x2] += 1.0f - 0.075f * cycle + (heightDistribution(randomizer) / cycle);
+                              if (hasWaterNearby(x2, y2, 4))
+                                {
+                                  --bottom;
+                                  --right;
+                                  continue;
+                                }
+                              map[y2][x2] += 1.0f - 0.05f * cycle + (heightDistribution(randomizer));
                               if (map[y2][x2] > *max_height)
                                 *max_height = map[y2][x2];
                             }
