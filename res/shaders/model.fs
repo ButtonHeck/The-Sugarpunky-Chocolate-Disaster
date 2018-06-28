@@ -16,7 +16,7 @@ uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
 
 const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
-const float SHADOW_INFLUENCE = 0.5;
+const float SHADOW_INFLUENCE = 0.3;
 const float DIFFUSE_MIX = 0.6;
 const vec2  POISSON_DISK[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
@@ -27,6 +27,9 @@ const vec2  POISSON_DISK[4] = vec2[](
 
 float calculateShadowComponent(vec3 normal)
 {
+    if (dot(normal, u_lightDir) < 0)
+        return (1.0 - SHADOW_INFLUENCE);
+
     float closestDepth = texture(u_shadowMap, v_ProjectedCoords.xy).r;
     float currentDepth = v_ProjectedCoords.z;
     float shadow = 0.0f;
