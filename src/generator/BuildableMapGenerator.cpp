@@ -24,10 +24,10 @@ void BuildableMapGenerator::prepareMap()
               && baseMap[y-1][x] == 0
               && baseMap[y-1][x+1] == 0
               && baseMap[y][x+1] == 0
-              && hillMap[y][x] == 0
-              && hillMap[y-1][x] == 0
-              && hillMap[y-1][x+1] == 0
-              && hillMap[y][x+1] == 0)
+              && hillMap[y][x] <= -HILLS_OFFSET_Y
+              && hillMap[y-1][x] <= -HILLS_OFFSET_Y
+              && hillMap[y-1][x+1] <= -HILLS_OFFSET_Y
+              && hillMap[y][x+1] <= -HILLS_OFFSET_Y)
             {
               map[y][x] = true;
             }

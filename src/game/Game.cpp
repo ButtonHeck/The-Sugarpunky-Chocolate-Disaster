@@ -344,8 +344,11 @@ void Game::drawFrameObjectsDepthmap()
   renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
 
   //water rendering
-  shaderManager.get(SHADER_SHADOW_WATER).use();
-  renderer.drawWater(waterMapGenerator, false);
+  if (options.get(RENDER_WATER))
+    {
+      shaderManager.get(SHADER_SHADOW_WATER).use();
+      renderer.drawWater(waterMapGenerator, false);
+    }
 
   //trees chunks rendering
   if (options.get(RENDER_TREE_MODELS))

@@ -155,6 +155,7 @@ void Renderer::drawSkybox(Skybox *skybox)
 
 void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFrustumCulling)
 {
+  glDisable(GL_BLEND);
   auto plainTrees = generator->getPlainTrees();
   auto hillTrees = generator->getHillTrees();
   auto treeModelChunks = generator->getTreeModelChunks();

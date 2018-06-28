@@ -26,7 +26,7 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
         delete[] treeModels[i];
     }
   treeModels.clear();
-  std::uniform_real_distribution<float> modelSizeDistribution(0.3f, 0.35f);
+  std::uniform_real_distribution<float> modelSizeDistribution(0.27f, 0.32f);
   std::uniform_real_distribution<float> modelPositionDistribution(-0.25f, 0.25f);
   std::default_random_engine randomizer;
   unsigned int treeCounter = 0, chunkCounter = 0;
