@@ -1,5 +1,6 @@
 #include <iostream>
 #include <chrono>
+#include <thread>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/vec3.hpp>
@@ -47,15 +48,20 @@ int main()
       glDebugMessageCallback(glDebugCallback, nullptr);
       glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
-
   game = new Game(window, cursorToViewportDirection, camera, options, scr_width, scr_height, aspect_ratio);
   game->setupVariables();
 
   //MAIN LOOP
+  std::thread inputHandlingThread([]()
+    {
+      while(!glfwWindowShouldClose(window))
+        glfwPollEvents();
+    });
   while(!glfwWindowShouldClose(window))
     {
       game->loop();
     }
+  inputHandlingThread.join();
 
   //cleanup
   delete game;

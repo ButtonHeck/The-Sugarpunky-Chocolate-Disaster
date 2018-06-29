@@ -234,3 +234,5 @@ INCLUDEPATH += $$PWD/../../../../../usr/local/include/freetype2
 DEPENDPATH += $$PWD/../../../../../usr/local/include/freetype2
 
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../../usr/local/lib/libfreetype.a
+
+unix:!macx: LIBS += -lpthread-2.23

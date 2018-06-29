@@ -399,7 +399,6 @@ void Game::loop()
   //render result onto the default FBO and apply HDR/MS if the flags are set
   drawFrameToScreenRectangle(HDR_ENABLED, multisamplingEnabled);
 
-  glfwPollEvents();
   glfwSwapBuffers(window);
   ++frameCounter;
 }
