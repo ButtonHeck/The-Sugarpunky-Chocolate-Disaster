@@ -19,6 +19,7 @@ const float DIFFUSE_MIX = 0.5;
 const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 const float SHADOW_INFLUENCE = 0.3;
 const float SHADOW_BIAS = 0.00025;
+const float MAX_DESATURATING_VALUE = 0.8 / (1.0 - SHADOW_INFLUENCE);
 const vec2 POISSON_DISK[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
   vec2( 0.94558609, -0.76890725 ),
@@ -26,7 +27,7 @@ const vec2 POISSON_DISK[4] = vec2[](
   vec2( 0.34495938, 0.29387760 )
 );
 
-float calculateShadowComponent()
+float calculateLuminosity()
 {
     float closestDepth = texture(u_shadowMap, v_ProjectedCoords.xy).r;
     float currentDepth = v_ProjectedCoords.z;
@@ -41,6 +42,14 @@ float calculateShadowComponent()
     return (1.0 - shadow * SHADOW_INFLUENCE);
 }
 
+vec4 desaturate(vec4 fragColor, float desaturatingValue)
+{
+    float colorMedian = (fragColor.r + fragColor.g + fragColor.b) * 0.333;
+    vec3 gray = vec3(colorMedian);
+    vec4 desaturated = vec4(mix(fragColor.rgb, gray, desaturatingValue), fragColor.a);
+    return desaturated;
+}
+
 void main()
 {
     vec3 FlatNormal = texture(u_normal_map, v_FragPos.xz * u_mapDimension + 0.5).rgb;
@@ -48,15 +57,22 @@ void main()
     vec3 ShadingNormal = normalize(NORMAL + FlatNormal);
 
     vec3 diffuseColor;
+    vec3 resultColor;
     float diffuseComponent = max(dot(ShadingNormal, v_LightDir), 0.0);
+
     if (u_shadowEnable)
     {
-        float shadowComponent = calculateShadowComponent();
-        diffuseColor = shadowComponent * mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX);
+        float luminosity = calculateLuminosity();
+        diffuseColor = luminosity * mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX);
+        resultColor = diffuseColor;
+        o_FragColor = vec4(resultColor, sampledDiffuse.a);
+        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - (1.0 - SHADOW_INFLUENCE));
+        o_FragColor = desaturate(o_FragColor, desaturatingValue);
     }
     else
+    {
         diffuseColor = mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX);
-
-    vec3 resultColor = diffuseColor;
-    o_FragColor = vec4(resultColor, sampledDiffuse.a);
+        resultColor = diffuseColor;
+        o_FragColor = vec4(resultColor, sampledDiffuse.a);
+    }
 }
