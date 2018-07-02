@@ -141,13 +141,7 @@ DISTFILES += \
     res/shaders/hdr.fs \
     res/shaders/MS_toDefault.vs \
     res/shaders/MS_toDefault.fs \
-    res/shaders/_depth.fs \
-    res/shaders/flat_shadow.vs \
-    res/shaders/hills_shadow.vs \
     res/shaders/model_shadow.vs \
-    res/shaders/shore_shadow.vs \
-    res/shaders/underwater_shadow.vs \
-    res/shaders/water_shadow.vs \
     res/models/hillTree1/tree.jpg \
     res/models/hillTree2/tree.jpg \
     res/models/hillTree3/tree.jpg \
@@ -221,7 +215,8 @@ DISTFILES += \
     res/models/tree6/tree6.mtl \
     res/models/tree6_2/tree6_2.mtl \
     res/models/tree7/tree7.mtl \
-    res/models/tree8/tree8.mtl
+    res/models/tree8/tree8.mtl \
+    res/shaders/terrain_shadow.vs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

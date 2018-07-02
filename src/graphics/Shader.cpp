@@ -1,5 +1,20 @@
 #include "src/graphics/Shader.h"
 
+Shader::Shader(const std::string &vertexFile)
+{
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile));
+  ID = glCreateProgram();
+  glAttachShader(ID, vertex);
+  glLinkProgram(ID);
+  glGetProgramiv(ID, GL_LINK_STATUS, &status);
+  if (status != 1)
+    {
+      glGetProgramInfoLog(ID, 512, NULL, infoLog);
+      std::cout << infoLog << std::endl;
+    }
+  glDeleteShader(vertex);
+}
+
 Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::string &fragmentFile)
 {
   GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile));

@@ -12,6 +12,7 @@
 class Shader
 {
 public:
+  Shader(const std::string& vertexFile);
   Shader(const std::string& vertexFile, const std::string& fragmentFile);
   Shader(const std::string& vertexFile, const std::string& geometryFile, const std::string& fragmentFile);
   void setInt(const std::string& uniformName, int value);

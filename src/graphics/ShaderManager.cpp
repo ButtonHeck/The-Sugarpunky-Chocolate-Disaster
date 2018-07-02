@@ -19,12 +19,8 @@ ShaderManager::ShaderManager()
     {SHADER_SELECTED,           Shader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs")},
     {SHADER_MS_TO_DEFAULT,      Shader("/shaders/MS_toDefault.vs", "/shaders/MS_toDefault.fs")},
     {SHADER_HDR,                Shader("/shaders/hdr.vs", "/shaders/hdr.fs")},
-    {SHADER_SHADOW_FLAT,        Shader("/shaders/flat_shadow.vs", "/shaders/_depth.fs")},
-    {SHADER_SHADOW_HILLS,       Shader("/shaders/hills_shadow.vs", "/shaders/_depth.fs")},
-    {SHADER_SHADOW_MODELS,      Shader("/shaders/model_shadow.vs", "/shaders/_depth.fs")},
-    {SHADER_SHADOW_SHORE,       Shader("/shaders/shore_shadow.vs", "/shaders/_depth.fs")},
-    {SHADER_SHADOW_UNDERWATER,  Shader("/shaders/underwater_shadow.vs", "/shaders/_depth.fs")},
-    {SHADER_SHADOW_WATER,       Shader("/shaders/water_shadow.vs", "/shaders/_depth.fs")},
+    {SHADER_SHADOW_TERRAIN,     Shader("/shaders/terrain_shadow.vs")},
+    {SHADER_SHADOW_MODELS,      Shader("/shaders/model_shadow.vs")}
         });
 }
 
@@ -120,27 +116,11 @@ void ShaderManager::setupConstantUniforms()
   shader->setInt("u_frameTexture", FRAME_TEXTURE);
 
   //below we setup shadow shader uniforms
-  shader = &shaders[SHADER_SHADOW_FLAT].second;
-  shader->use();
-  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-
-  shader = &shaders[SHADER_SHADOW_HILLS].second;
+  shader = &shaders[SHADER_SHADOW_TERRAIN].second;
   shader->use();
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
 
   shader = &shaders[SHADER_SHADOW_MODELS].second;
-  shader->use();
-  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-
-  shader = &shaders[SHADER_SHADOW_SHORE].second;
-  shader->use();
-  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-
-  shader = &shaders[SHADER_SHADOW_UNDERWATER].second;
-  shader->use();
-  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-
-  shader = &shaders[SHADER_SHADOW_WATER].second;
   shader->use();
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
 }

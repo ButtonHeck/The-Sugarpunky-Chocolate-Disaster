@@ -331,26 +331,10 @@ void Game::drawFrameObjectsDepthmap()
   viewFrustum.updateFrustum(projectionView);
   glDisable(GL_CULL_FACE); //or set front face culling
 
-  //hills rendering
-  shaderManager.get(SHADER_SHADOW_HILLS).use();
+  shaderManager.get(SHADER_SHADOW_TERRAIN).use();
   renderer.drawHills(hillMapGenerator);
-
-  //shore terrain chunks drawing
-  shaderManager.get(SHADER_SHADOW_SHORE).use();
   renderer.drawShore(baseMapGenerator, viewFrustum);
 
-  //flat terrain chunks drawing
-  shaderManager.get(SHADER_SHADOW_FLAT).use();
-  renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
-
-  //water rendering
-  if (options.get(RENDER_WATER))
-    {
-      shaderManager.get(SHADER_SHADOW_WATER).use();
-      renderer.drawWater(waterMapGenerator, false);
-    }
-
-  //trees chunks rendering
   if (options.get(RENDER_TREE_MODELS))
     {
       shaderManager.get(SHADER_SHADOW_MODELS).use();
@@ -358,6 +342,8 @@ void Game::drawFrameObjectsDepthmap()
     }
 
   glEnable(GL_CULL_FACE); //or set back face culling
+
+  //reset texture units to terrain textures after we done with models
   glActiveTexture(GL_TEXTURE0 + FLAT);
   glBindTexture(GL_TEXTURE_2D, textureManager->get(FLAT));
 }
