@@ -133,9 +133,7 @@ DISTFILES += \
     res/saves/testSave.txt \
     res/shaders/water.gs \
     res/shaders/water_noFC.vs \
-    res/shaders/water_noFC.fs \
     res/shaders/hills_noFC.vs \
-    res/shaders/hills_noFC.fs \
     res/shaders/hills.gs \
     res/shaders/hdr.vs \
     res/shaders/hdr.fs \

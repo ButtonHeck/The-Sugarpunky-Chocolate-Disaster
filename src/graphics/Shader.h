@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <regex>
 #include <unordered_map>
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -13,7 +14,7 @@ class Shader
 {
 public:
   Shader(const std::string& vertexFile);
-  Shader(const std::string& vertexFile, const std::string& fragmentFile);
+  Shader(const std::string& vertexFile, const std::string& fragmentFile, bool renameFragmentShaderVariables);
   Shader(const std::string& vertexFile, const std::string& geometryFile, const std::string& fragmentFile);
   void setInt(const std::string& uniformName, int value);
   void setFloat(const std::string& uniformName, float value);
@@ -28,7 +29,7 @@ public:
   void use() const;
   void cleanUp();
 private:
-  GLuint loadShader(GLenum shaderType, const std::string& file);
+  GLuint loadShader(GLenum shaderType, const std::string& file, bool renameFragmentShaderVariables);
   GLuint ID;
   int status;
   char infoLog[512];

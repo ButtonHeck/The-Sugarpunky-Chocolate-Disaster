@@ -2,7 +2,7 @@
 
 Shader::Shader(const std::string &vertexFile)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile));
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile), false);
   ID = glCreateProgram();
   glAttachShader(ID, vertex);
   glLinkProgram(ID);
@@ -15,10 +15,10 @@ Shader::Shader(const std::string &vertexFile)
   glDeleteShader(vertex);
 }
 
-Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::string &fragmentFile)
+Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::string &fragmentFile, bool renameFragmentShaderVariables)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile));
-  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(RES_DIR + fragmentFile));
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile), false);
+  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(RES_DIR + fragmentFile), renameFragmentShaderVariables);
   ID = glCreateProgram();
   glAttachShader(ID, vertex);
   glAttachShader(ID, fragment);
@@ -35,9 +35,9 @@ Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::strin
 
 Shader::Shader(const std::string &vertexFile, const std::string &geometryFile, const std::string &fragmentFile)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile));
-  GLuint geometry = loadShader(GL_GEOMETRY_SHADER, std::string(RES_DIR + geometryFile));
-  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(RES_DIR + fragmentFile));
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile), false);
+  GLuint geometry = loadShader(GL_GEOMETRY_SHADER, std::string(RES_DIR + geometryFile), false);
+  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(RES_DIR + fragmentFile), false);
   ID = glCreateProgram();
   glAttachShader(ID, vertex);
   glAttachShader(ID, geometry);
@@ -128,13 +128,17 @@ void Shader::cleanUp()
   glDeleteProgram(ID);
 }
 
-GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &file)
+GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &file, bool renameFragmentShaderVariables)
 {
   std::fstream fileStream(file);
   std::stringstream fileStringStream;
   fileStringStream << fileStream.rdbuf();
   fileStream.close();
   std::string stringSrc = fileStringStream.str();
+  if (renameFragmentShaderVariables)
+    {
+      stringSrc = std::regex_replace(stringSrc, std::regex("vg_"), "v_");
+    }
   const char* src = stringSrc.c_str();
   GLuint shader = glCreateShader(shaderType);
   glShaderSource(shader, 1, &src, NULL);
