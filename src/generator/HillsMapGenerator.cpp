@@ -213,7 +213,6 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
   delete[] indices;
 }
 
-//not flat and not create on zero tiles
 void HillsMapGenerator::createTiles()
 {
   tiles.clear();

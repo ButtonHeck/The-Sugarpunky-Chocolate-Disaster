@@ -22,24 +22,22 @@ out vec3  v_Normal;
 out vec3  v_ProjectedCoords;
 
 const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
-const float TRANSITION_RATIO_MULTIPLIER = 1.5;
-const float TRANSITION_RATIO_MULTIPLIER_INVERSE = 1 / TRANSITION_RATIO_MULTIPLIER;
 
 void main()
 {
     gl_Position = u_projectionView * vec4(i_pos, 1.0);
     v_TexCoords = i_texCoords;
-    v_PosHeight = i_pos.y * TRANSITION_RATIO_MULTIPLIER_INVERSE;
     vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(i_pos, 1.0);
     v_ProjectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
 
     //"normal" vector fetched from the global normal map (same as flat terrain normal), it is used for randomization of some variables
     vec3 FlatNormal = texture(u_normal_map, i_pos.xz * u_mapDimension + 0.5).rgb;
+    v_PosHeight = i_pos.y * (1.0 - FlatNormal.g * 0.75);
     v_TextureFlatMixRatio = FlatNormal.r;
-    v_TextureHillMixRatio = FlatNormal.r * TRANSITION_RATIO_MULTIPLIER;
+    v_TextureHillMixRatio = FlatNormal.r;
 
     //calculate how much each normal (flat or hill) would define the actual shading normal vector
-    float TransitionRatio = clamp(i_pos.y * TRANSITION_RATIO_MULTIPLIER, 0.0, 1.0);
+    float TransitionRatio = clamp(i_pos.y, 0.0, 1.0);
     //calculate the actual normal vector which then is used for shading
     vec3 ShadingNormal = normalize(mix(FlatNormal, i_normal, TransitionRatio));
     v_Normal = ShadingNormal;
