@@ -14,7 +14,7 @@ int scr_width;
 int scr_height;
 float aspect_ratio;
 GLFWwindow* window;
-Camera camera(glm::vec3(0.0f, 3.0f, 0.0f));
+Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
 glm::vec3 cursorToViewportDirection;
 Options options;
 Game* game;

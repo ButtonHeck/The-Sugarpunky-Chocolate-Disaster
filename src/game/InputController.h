@@ -14,7 +14,8 @@ class InputController
 {
 public:
   InputController() = default;
-  void processKeyboard(float delta);
+  void processKeyboard();
+  void processKeyboardCamera(float delta, std::vector<std::vector<float>>& hillsMap);
   static void cursorCallback(GLFWwindow*, double x, double y);
   static void cursorClickCallback(GLFWwindow*, int, int, int);
   void updateCursorMappingCoordinates(Camera& camera,

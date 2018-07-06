@@ -43,20 +43,28 @@ void Camera::processMouseScroll(float yOffset)
   updateVectors();
 }
 
-void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir)
+void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir, std::vector<std::vector<float>>& hillsMap)
 {
   float velocity = delta * moveSpeed;
   if (dir == FORWARD)
     {
-      Position += Front * velocity;
-      if (FPSmode)
-        Position.y -= Front.y * velocity;
+      if (!FPSmode)
+        Position += Front * velocity;
+      else
+        {
+          Position.x += Front.x * velocity;
+          Position.z += Front.z * velocity;
+        }
     }
   if (dir == BACKWARD)
     {
-      Position -= Front * velocity;
-      if (FPSmode)
-        Position.y += Front.y * velocity;
+      if (!FPSmode)
+        Position -= Front * velocity;
+      else
+        {
+          Position.x -= Front.x * velocity;
+          Position.z -= Front.z * velocity;
+        }
     }
   if (dir == RIGHT)
     Position += Right * velocity;
@@ -66,11 +74,46 @@ void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir)
     Position += WorldUp * velocity;
   if (dir == DOWN)
     Position -= WorldUp * velocity;
+  if (Position.x > HALF_TILES_WIDTH - 8.0f)
+    Position.x = HALF_TILES_WIDTH - 8.0f;
+  if (Position.x < -HALF_TILES_WIDTH + 8.0f)
+    Position.x = -HALF_TILES_WIDTH + 8.0f;
+  if (Position.z > HALF_TILES_HEIGHT - 8.0f)
+    Position.z = HALF_TILES_HEIGHT - 8.0f;
+  if (Position.z < -HALF_TILES_HEIGHT + 8.0f)
+    Position.z = -HALF_TILES_HEIGHT + 8.0f;
+  if (Position.y < 2.0f)
+    Position.y = 2.0f;
+  if (hillsMap[Position.z + HALF_TILES_HEIGHT][Position.x + HALF_TILES_WIDTH] > 0 ||
+      hillsMap[Position.z + HALF_TILES_HEIGHT + 1][Position.x + HALF_TILES_WIDTH] > 0 ||
+      hillsMap[Position.z + HALF_TILES_HEIGHT][Position.x + HALF_TILES_WIDTH + 1] > 0 ||
+      hillsMap[Position.z + HALF_TILES_HEIGHT + 1][Position.x + HALF_TILES_WIDTH + 1] > 0)
+    {
+      int x1 = std::floor(Position.x + HALF_TILES_WIDTH);
+      int x2 = std::round(Position.x + HALF_TILES_WIDTH);
+      int z1 = std::floor(Position.z + HALF_TILES_HEIGHT);
+      int z2 = std::round(Position.z + HALF_TILES_HEIGHT);
+      float xRatio = Position.x + HALF_TILES_WIDTH - x1;
+      float zRatio = Position.z + HALF_TILES_HEIGHT - z1;
+      float x1z1Height = hillsMap[z1][x1] + 2.0f - HILLS_OFFSET_Y;
+      float x2z1Height = hillsMap[z1][x2] + 2.0f - HILLS_OFFSET_Y;
+      float x1z2Height = hillsMap[z2][x1] + 2.0f - HILLS_OFFSET_Y;
+      float x2z2Height = hillsMap[z2][x2] + 2.0f - HILLS_OFFSET_Y;
+      Position.y = glm::max(Position.y,
+                            glm::mix(glm::mix(x1z1Height, x1z2Height, zRatio),
+                                     glm::mix(x2z1Height, x2z2Height, zRatio),
+                                     xRatio));
+    }
 }
 
 void Camera::setFPSmode(bool on)
 {
   FPSmode = on;
+}
+
+bool Camera::getFPSmode() const
+{
+  return FPSmode;
 }
 
 float Camera::getZoom() const
@@ -96,6 +139,11 @@ void Camera::setPitch(float pitch)
 void Camera::setYaw(float yaw)
 {
   this->yaw = yaw;
+}
+
+void Camera::setPosition(float x, float y, float z)
+{
+  Position = glm::vec3(x, y, z);
 }
 
 glm::vec3 Camera::getFront() const

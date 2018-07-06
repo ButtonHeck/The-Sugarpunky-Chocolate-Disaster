@@ -1,5 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
+#include <vector>
+#include <cmath>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/detail/func_geometric.hpp>
@@ -27,13 +29,15 @@ public:
   glm::mat4 getViewMatrix() const;
   void processMouseCursor(float xOffset, float yOffset);
   void processMouseScroll(float yOffset);
-  void processKeyboardInput(float delta, MOVE_DIRECTION dir);
+  void processKeyboardInput(float delta, MOVE_DIRECTION dir, std::vector<std::vector<float>>& hillsMap);
   void setFPSmode(bool on);
+  bool getFPSmode() const;
   float getZoom() const;
   glm::vec3 getPosition() const;
   glm::vec3 getDirection() const;
   void setPitch(float pitch);
   void setYaw(float yaw);
+  void setPosition(float x, float y, float z);
   glm::vec3 getFront() const;
   glm::vec3 getRight() const;
   glm::vec3 getUp() const;

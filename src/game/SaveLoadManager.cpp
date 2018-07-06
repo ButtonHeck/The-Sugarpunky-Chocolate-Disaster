@@ -1,11 +1,12 @@
 #include "src/game/SaveLoadManager.h"
 
-SaveLoadManager::SaveLoadManager(BaseMapGenerator &baseGenerator, HillsMapGenerator &hillGenerator, WaterMapGenerator &waterGenerator, BuildableMapGenerator *buildableGenerator)
+SaveLoadManager::SaveLoadManager(BaseMapGenerator &baseGenerator, HillsMapGenerator &hillGenerator, WaterMapGenerator &waterGenerator, BuildableMapGenerator *buildableGenerator, Camera& camera)
   :
     baseGenerator(baseGenerator),
     hillGenerator(hillGenerator),
     waterGenerator(waterGenerator),
     buildableGenerator(buildableGenerator),
+    camera(camera),
     baseMap(baseGenerator.getMap()),
     hillMap(hillGenerator.getMap()),
     waterMap(waterGenerator.getMap()),
@@ -50,6 +51,11 @@ bool SaveLoadManager::saveToFile(const std::string &filename)
         }
     }
   treeGenerator->serialize(output);
+  output << camera.getPosition().x << " ";
+  output << camera.getPosition().y << " ";
+  output << camera.getPosition().z << " ";
+  output << camera.getPitch() << " ";
+  output << camera.getYaw() << " ";
   output.close();
   return true;
 }
@@ -181,6 +187,13 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   buildableGenerator = new BuildableMapGenerator(baseGenerator.getMap(), hillGenerator.getMap());
   buildableGenerator->prepareMap();
   buildableGenerator->fillBufferData();
+
+  float camPosX, camPosY, camPosZ, pitch, yaw;
+  input >> camPosX >> camPosY >> camPosZ >> pitch >> yaw;
+  camera.setPosition(camPosX, camPosY, camPosZ);
+  camera.setPitch(pitch);
+  camera.setYaw(yaw);
+  camera.updateVectors();
   return true;
 }
 

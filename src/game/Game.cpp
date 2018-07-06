@@ -9,11 +9,6 @@ Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& op
     cursorToViewportDirection(cursorDir),
     camera(camera),
     options(options),
-    waterMapGenerator(new WaterMapGenerator()),
-    hillMapGenerator(new HillsMapGenerator(waterMapGenerator->getMap())),
-    baseMapGenerator(new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap())),
-    buildableMapGenerator(new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap())),
-    saveLoadManager(new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator)),
     fontManager(new FontManager("Laconic_Bold.otf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), &shaderManager.get(SHADER_FONT))),
     textureManager(new TextureManager(textureLoader, scr_width, scr_height))
 {
@@ -21,6 +16,7 @@ Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& op
 
 Game::~Game()
 {
+  cameraMovementThread->join();
   textureManager->deleteTextures();
   delete textureManager;
   shaderManager.deleteShaders();
@@ -30,6 +26,7 @@ Game::~Game()
   delete saveLoadManager;
   delete buildableMapGenerator;
   delete treeGenerator;
+  delete cameraMovementThread;
 }
 
 void Game::setupVariables()
@@ -88,6 +85,14 @@ void Game::setupVariables()
   prepareScreenVAO();
   prepareMS_FBO();
   prepareDepthMapFBO();
+  cameraMovementThread = new std::thread([this]()
+    {
+      while(!glfwWindowShouldClose(window))
+        {
+          cameraDelta = cameraTimer.tick();
+          input.processKeyboardCamera(cameraDelta, hillMapGenerator->getMap());
+        }
+    });
 }
 
 void Game::prepareTerrain()
@@ -204,26 +209,6 @@ void Game::drawFrameObjects()
   glm::mat4 projectionView = projection * view;
   viewFrustum.updateFrustum(projectionView);
 
-  if (options.get(RECREATE_TERRAIN_REQUEST))
-    {
-      delete waterMapGenerator;
-      delete hillMapGenerator;
-      delete baseMapGenerator;
-      delete buildableMapGenerator;
-      waterMapGenerator = new WaterMapGenerator();
-      hillMapGenerator = new HillsMapGenerator(waterMapGenerator->getMap());
-      baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
-      buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-      prepareTerrain();
-      treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-      treeGenerator->setupHillModels(hillMapGenerator->getMap());
-      delete saveLoadManager;
-      saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator);
-      saveLoadManager->setTreeGenerator(*treeGenerator);
-      options.set(RECREATE_TERRAIN_REQUEST, false);
-      textureManager->createUnderwaterReliefTexture(waterMapGenerator);
-    }
-
   //hills rendering
   shaderManager.updateHillsShaders(options.get(HILLS_FC), options.get(SHADOW_ENABLE), projectionView, viewPosition, viewFrustum);
   renderer.drawHills(hillMapGenerator);
@@ -285,7 +270,7 @@ void Game::drawFrameObjects()
   //font rendering
   if (options.get(RENDER_DEBUG_TEXT))
     {
-      fontManager->renderText("FPS: " + std::to_string(timer.getFPS()), 10.0f, (float)scr_height - 25.0f, 0.35f);
+      fontManager->renderText("FPS: " + std::to_string(fpsTimer.getFPS()), 10.0f, (float)scr_height - 25.0f, 0.35f);
       fontManager->renderText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                              + std::to_string(viewPosition.y).substr(0,6) + ": "
                              + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 45.0f, 0.35f);
@@ -304,19 +289,6 @@ void Game::drawFrameObjects()
       fontManager->renderText("Hills culling: " + (options.get(HILLS_FC) ? std::string("On") : std::string("Off")), 10.0f, 30.0f, 0.35f);
       fontManager->renderText("Trees culling: " + (options.get(MODELS_FC) ? std::string("On") : std::string("Off")), 10.0f, 50.0f, 0.35f);
       csRenderer.draw(view, aspect_ratio);
-    }
-
-  //save/load routine
-  if (options.get(SAVE_REQUEST))
-    {
-      saveLoadManager->saveToFile(RES_DIR + "/saves/testSave.txt");
-      options.set(SAVE_REQUEST, false);
-    }
-  if (options.get(LOAD_REQUEST))
-    {
-      saveLoadManager->loadFromFile(RES_DIR + "/saves/testSave.txt");
-      options.set(LOAD_REQUEST, false);
-      textureManager->createUnderwaterReliefTexture(waterMapGenerator);
     }
 
   //reset texture units to terrain textures after we done with models and text
@@ -350,6 +322,27 @@ void Game::drawFrameObjectsDepthmap()
 
 void Game::loop()
 {
+  //recreate routine
+  if (options.get(RECREATE_TERRAIN_REQUEST))
+    {
+      delete waterMapGenerator;
+      delete hillMapGenerator;
+      delete baseMapGenerator;
+      delete buildableMapGenerator;
+      waterMapGenerator = new WaterMapGenerator();
+      hillMapGenerator = new HillsMapGenerator(waterMapGenerator->getMap());
+      baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
+      buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+      prepareTerrain();
+      treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+      treeGenerator->setupHillModels(hillMapGenerator->getMap());
+      delete saveLoadManager;
+      saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator, camera);
+      saveLoadManager->setTreeGenerator(*treeGenerator);
+      options.set(RECREATE_TERRAIN_REQUEST, false);
+      textureManager->createUnderwaterReliefTexture(waterMapGenerator);
+    }
+
   /*
    * If the MULTISAMPLE_ENABLE option is true we only need to rebind fbo to use one with MS
    * because the msFBO is already configured to use multisample generated texture
@@ -376,14 +369,27 @@ void Game::loop()
   else
     glBindFramebuffer(GL_FRAMEBUFFER, screenFBO);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  float delta = timer.tick();
-  input.processKeyboard(delta);
+  fpsTimer.tick();
+  input.processKeyboard();
 
   //render our world onto separate FBO as usual
   drawFrameObjects();
 
   //render result onto the default FBO and apply HDR/MS if the flags are set
   drawFrameToScreenRectangle(HDR_ENABLED, multisamplingEnabled);
+
+  //save/load routine
+  if (options.get(SAVE_REQUEST))
+    {
+      saveLoadManager->saveToFile(RES_DIR + "/saves/testSave.txt");
+      options.set(SAVE_REQUEST, false);
+    }
+  if (options.get(LOAD_REQUEST))
+    {
+      saveLoadManager->loadFromFile(RES_DIR + "/saves/testSave.txt");
+      options.set(LOAD_REQUEST, false);
+      textureManager->createUnderwaterReliefTexture(waterMapGenerator);
+    }
 
   glfwSwapBuffers(window);
   ++frameCounter;

@@ -10,35 +10,21 @@ extern float aspect_ratio;
 bool keysPressed[GLFW_KEY_LAST];
 bool mouseKeysPressed[GLFW_MOUSE_BUTTON_LAST];
 bool firstMouseInput = true;
-bool polygonLineMode = false;
 float lastX, lastY;
 double cursorScreenX = 0.0;
 double cursorScreenY = 0.0;
 
-void InputController::processKeyboard(float delta)
+void InputController::processKeyboard()
 {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    camera.processKeyboardInput(delta, FORWARD);
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    camera.processKeyboardInput(delta, BACKWARD);
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    camera.processKeyboardInput(delta, LEFT);
-  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    camera.processKeyboardInput(delta, RIGHT);
-  if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    camera.processKeyboardInput(delta, DOWN);
-  if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-    camera.processKeyboardInput(delta, UP);
 
-  //polygon mode
+  //set FPS mode for the camera
   if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS)
     {
       if (!keysPressed[GLFW_KEY_F1])
         {
-          polygonLineMode = !polygonLineMode;
-          glPolygonMode(GL_FRONT_AND_BACK, polygonLineMode ? GL_LINE : GL_FILL);
+          camera.setFPSmode(!camera.getFPSmode());
           keysPressed[GLFW_KEY_F1] = true;
         }
     }
@@ -231,6 +217,22 @@ void InputController::processKeyboard(float delta)
     }
   if (glfwGetKey(window, GLFW_KEY_G) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_G] = false;
+}
+
+void InputController::processKeyboardCamera(float delta, std::vector<std::vector<float> > &hillsMap)
+{
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    camera.processKeyboardInput(delta, FORWARD, hillsMap);
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    camera.processKeyboardInput(delta, BACKWARD, hillsMap);
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    camera.processKeyboardInput(delta, LEFT, hillsMap);
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    camera.processKeyboardInput(delta, RIGHT, hillsMap);
+  if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    camera.processKeyboardInput(delta, DOWN, hillsMap);
+  if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    camera.processKeyboardInput(delta, UP, hillsMap);
 }
 
 void InputController::cursorCallback(GLFWwindow *, double x, double y)
