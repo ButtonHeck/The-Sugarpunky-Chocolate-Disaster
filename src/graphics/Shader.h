@@ -29,11 +29,21 @@ public:
   void use() const;
   void cleanUp();
 private:
-  GLuint loadShader(GLenum shaderType, const std::string& file, bool renameFragmentShaderVariables);
+  GLuint loadShader(GLenum shaderType, const std::string& filename, bool renameFragmentShaderVariables);
   GLuint ID;
   int status;
   char infoLog[512];
   std::unordered_map<std::string, GLint> uniformCache;
 };
+
+inline void Shader::setVec3(const std::__cxx11::string &uniformName, glm::vec3 vec)
+{
+  setVec3(uniformName, vec.x, vec.y, vec.z);
+}
+
+inline void Shader::setVec2(const std::__cxx11::string &uniformName, glm::vec2 vec)
+{
+  setVec2(uniformName, vec.x, vec.y);
+}
 
 #endif // SHADERPROGRAM_H

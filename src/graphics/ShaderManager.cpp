@@ -17,8 +17,7 @@ ShaderManager::ShaderManager()
     {SHADER_CS,                 Shader("/shaders/coordinateSystem.vs", "/shaders/coordinateSystem.gs", std::string("/shaders/coordinateSystem.fs"))},
     {SHADER_BUILDABLE,          Shader("/shaders/buildableTiles.vs", "/shaders/buildableTiles.fs", false)},
     {SHADER_SELECTED,           Shader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs", false)},
-    {SHADER_MS_TO_DEFAULT,      Shader("/shaders/MS_toDefault.vs", "/shaders/MS_toDefault.fs", false)},
-    {SHADER_HDR,                Shader("/shaders/hdr.vs", "/shaders/hdr.fs", false)},
+    {SHADER_MS_TO_DEFAULT,      Shader("/shaders/MS_toDefault.vs", "/shaders/MS_toDefault_hdr.fs", false)},
     {SHADER_SHADOW_TERRAIN,     Shader("/shaders/terrain_shadow.vs")},
     {SHADER_SHADOW_MODELS,      Shader("/shaders/model_shadow.vs")}
         });
@@ -106,14 +105,10 @@ void ShaderManager::setupConstantUniforms()
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", DEPTH_MAP);
 
-  shader = &shaders[SHADER_HDR].second;
-  shader->use();
-  shader->setFloat("u_exposure", 2.2f);
-  shader->setInt("u_frameTexture", FRAME_HDR_TEXTURE);
-
   shader = &shaders[SHADER_MS_TO_DEFAULT].second;
   shader->use();
-  shader->setInt("u_frameTexture", FRAME_TEXTURE);
+  shader->setInt("u_frameTexture", HDR_ENABLED ? FRAME_HDR_TEXTURE : FRAME_TEXTURE);
+  shader->setFloat("u_exposure", 2.2f);
 
   //below we setup shadow shader uniforms
   shader = &shaders[SHADER_SHADOW_TERRAIN].second;
@@ -236,6 +231,7 @@ void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &view
 
 void ShaderManager::deleteShaders()
 {
+  glUseProgram(0);
   for (unsigned int i = 0; i < shaders.size(); i++)
     shaders[i].second.cleanUp();
 }

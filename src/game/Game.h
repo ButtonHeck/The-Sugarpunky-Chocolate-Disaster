@@ -31,7 +31,7 @@ public:
   void prepareMS_FBO();
   void prepareDepthMapFBO();
   void prepareScreenVAO();
-  void drawFrameToScreenRectangle(bool enableHDR, bool enableMS);
+  void drawFrameToScreenRectangle(bool enableMS);
   void drawFrameObjects();
   void drawFrameObjectsDepthmap();
   void loop();
@@ -64,7 +64,6 @@ private:
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
   GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO;
   unsigned int frameCounter = 0;
-  float cameraDelta = 0.0f;
   std::thread* cameraMovementThread;
 };
 

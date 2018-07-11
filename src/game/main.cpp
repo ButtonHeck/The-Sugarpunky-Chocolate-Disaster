@@ -8,67 +8,6 @@
 #include "src/game/Options.h"
 #include "src/graphics/Camera.h"
 
-void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar* message, const void*);
-
-int scr_width;
-int scr_height;
-float aspect_ratio;
-GLFWwindow* window;
-Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
-glm::vec3 cursorToViewportDirection;
-Options options;
-Game* game;
-
-int main()
-{
-  //initializing and presetup routines
-  glfwSetErrorCallback([](int, const char* msg){printf("Error with GLFW: %s", msg);});
-  if (!glfwInit())
-    throw std::runtime_error("Error while loading GLFW\n");
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-  GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-  const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
-  std::cout << glfwGetVersionString() << std::endl;
-  scr_width = vidmode->width;
-  scr_height = vidmode->height;
-  aspect_ratio = (float)scr_width / (float)scr_height;
-  window = glfwCreateWindow(scr_width, scr_height, "Terrain Test", monitor, 0);
-  glfwMakeContextCurrent(window);
-  glewExperimental = GL_TRUE;
-  glewInit();
-  GLint flags;
-  glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-  if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
-    {
-      glEnable(GL_DEBUG_OUTPUT);
-      glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-      glDebugMessageCallback(glDebugCallback, nullptr);
-      glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-    }
-  game = new Game(window, cursorToViewportDirection, camera, options, scr_width, scr_height, aspect_ratio);
-  game->setupVariables();
-
-  //MAIN LOOP
-  std::thread inputHandlingThread([]()
-    {
-      while(!glfwWindowShouldClose(window))
-        glfwPollEvents();
-    });
-  while(!glfwWindowShouldClose(window))
-    {
-      game->loop();
-    }
-  inputHandlingThread.join();
-
-  //cleanup
-  delete game;
-  glfwDestroyWindow(window);
-  glfwTerminate();
-}
-
 void APIENTRY glDebugCallback(GLenum source,
                             GLenum type,
                             GLuint id,
@@ -107,4 +46,67 @@ void APIENTRY glDebugCallback(GLenum source,
     case GL_DEBUG_SEVERITY_LOW: std::cout << "Severity: Low\n\n"; break;
     case GL_DEBUG_SEVERITY_NOTIFICATION: std::cout << "Severity: Notification\n\n"; break;
     }
+}
+
+int scr_width;
+int scr_height;
+float aspect_ratio;
+GLFWwindow* window;
+Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
+glm::vec3 cursorToViewportDirection;
+Options options;
+Game* game;
+
+int main()
+{
+  //initializing and presetup routines
+  glfwSetErrorCallback([](int, const char* msg){printf("Error with GLFW: %s", msg);});
+  if (!glfwInit())
+    throw std::runtime_error("Error while loading GLFW\n");
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef _DEBUG
+  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+  std::cout << glfwGetVersionString() << std::endl;
+#endif
+  GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+  const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
+  scr_width = vidmode->width;
+  scr_height = vidmode->height;
+  aspect_ratio = (float)scr_width / (float)scr_height;
+  window = glfwCreateWindow(scr_width, scr_height, "Terrain Test", monitor, 0);
+  glfwMakeContextCurrent(window);
+  glewExperimental = GL_TRUE;
+  glewInit();
+#ifdef _DEBUG
+  GLint flags;
+  glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+  if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+    {
+      glEnable(GL_DEBUG_OUTPUT);
+      glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+      glDebugMessageCallback(glDebugCallback, nullptr);
+      glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+    }
+#endif
+  game = new Game(window, cursorToViewportDirection, camera, options, scr_width, scr_height, aspect_ratio);
+  game->setupVariables();
+
+  //MAIN LOOP
+  std::thread inputHandlingThread([]()
+    {
+      while(!glfwWindowShouldClose(window))
+        glfwPollEvents();
+    });
+  while(!glfwWindowShouldClose(window))
+    {
+      game->loop();
+    }
+  inputHandlingThread.join();
+
+  //cleanup
+  delete game;
+  glfwDestroyWindow(window);
+  glfwTerminate();
 }

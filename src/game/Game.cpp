@@ -18,8 +18,8 @@ Game::~Game()
 {
   cameraMovementThread->join();
   textureManager->deleteTextures();
-  delete textureManager;
   shaderManager.deleteShaders();
+  delete textureManager;
   delete baseMapGenerator;
   delete hillMapGenerator;
   delete waterMapGenerator;
@@ -77,8 +77,6 @@ void Game::setupVariables()
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
   prepareTerrain();
-  treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-  treeGenerator->setupHillModels(hillMapGenerator->getMap());
 
   textureManager->createUnderwaterReliefTexture(waterMapGenerator);
   shaderManager.setupConstantUniforms();
@@ -88,10 +86,7 @@ void Game::setupVariables()
   cameraMovementThread = new std::thread([this]()
     {
       while(!glfwWindowShouldClose(window))
-        {
-          cameraDelta = cameraTimer.tick();
-          input.processKeyboardCamera(cameraDelta, hillMapGenerator->getMap());
-        }
+        input.processKeyboardCamera(cameraTimer.tick(), hillMapGenerator->getMap());
     });
 }
 
@@ -108,6 +103,8 @@ void Game::prepareTerrain()
   waterMapGenerator->fillBufferData(); //fill water buffer
   buildableMapGenerator->prepareMap();
   buildableMapGenerator->fillBufferData();
+  treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+  treeGenerator->setupHillModels(hillMapGenerator->getMap());
 }
 
 void Game::prepareMS_FBO()
@@ -177,7 +174,7 @@ void Game::prepareScreenVAO()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Game::drawFrameToScreenRectangle(bool enableHDR, bool enableMS)
+void Game::drawFrameToScreenRectangle(bool enableMS)
 {
   if (enableMS)
     {
@@ -192,10 +189,7 @@ void Game::drawFrameToScreenRectangle(bool enableHDR, bool enableMS)
     }
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glClear(GL_COLOR_BUFFER_BIT);
-  if (enableHDR)
-    shaderManager.get(SHADER_HDR).use();
-  else
-    shaderManager.get(SHADER_MS_TO_DEFAULT).use();
+  shaderManager.get(SHADER_MS_TO_DEFAULT).use();
   glBindVertexArray(screenVAO);
   glDisable(GL_DEPTH_TEST);
   glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -334,8 +328,6 @@ void Game::loop()
       baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
       buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
       prepareTerrain();
-      treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-      treeGenerator->setupHillModels(hillMapGenerator->getMap());
       delete saveLoadManager;
       saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator, camera);
       saveLoadManager->setTreeGenerator(*treeGenerator);
@@ -375,8 +367,8 @@ void Game::loop()
   //render our world onto separate FBO as usual
   drawFrameObjects();
 
-  //render result onto the default FBO and apply HDR/MS if the flags are set
-  drawFrameToScreenRectangle(HDR_ENABLED, multisamplingEnabled);
+  //render result onto the default FBO and apply HDR/MS if the flag are set
+  drawFrameToScreenRectangle(multisamplingEnabled);
 
   //save/load routine
   if (options.get(SAVE_REQUEST))

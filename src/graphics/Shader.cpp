@@ -75,21 +75,11 @@ void Shader::setBool(const std::__cxx11::string &uniformName, bool value)
   glUniform1i(uniformCache[uniformName.c_str()], value);
 }
 
-void Shader::setVec3(const std::__cxx11::string &uniformName, glm::vec3 vec)
-{
-  setVec3(uniformName, vec.x, vec.y, vec.z);
-}
-
 void Shader::setVec3(const std::__cxx11::string &uniformName, float x, float y, float z)
 {
   if (uniformCache.find(uniformName) == uniformCache.end())
     uniformCache[uniformName.c_str()] = glGetUniformLocation(ID, uniformName.c_str());
   glUniform3f(uniformCache[uniformName.c_str()], x, y, z);
-}
-
-void Shader::setVec2(const std::__cxx11::string &uniformName, glm::vec2 vec)
-{
-  setVec2(uniformName, vec.x, vec.y);
 }
 
 void Shader::setVec2(const std::__cxx11::string &uniformName, float x, float y)
@@ -128,17 +118,21 @@ void Shader::cleanUp()
   glDeleteProgram(ID);
 }
 
-GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &file, bool renameFragmentShaderVariables)
+GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &filename, bool renameFragmentShaderVariables)
 {
-  std::fstream fileStream(file);
+  std::fstream fileStream(filename);
   std::stringstream fileStringStream;
   fileStringStream << fileStream.rdbuf();
   fileStream.close();
   std::string stringSrc = fileStringStream.str();
   if (renameFragmentShaderVariables)
-    {
-      stringSrc = std::regex_replace(stringSrc, std::regex("vg_"), "v_");
-    }
+    stringSrc = std::regex_replace(stringSrc, std::regex("vg_"), "v_");
+#ifdef _DEBUG
+  std::string debugPragmaString = "#pragma debug(on)\n";
+  stringSrc.insert(13, debugPragmaString);
+#endif
+  if (filename.find_first_of("_hdr") != std::string::npos && HDR_ENABLED)
+    stringSrc = std::regex_replace(stringSrc, std::regex("#version 450\n"), "#version 450\n#define HDR_ENABLED\n");
   const char* src = stringSrc.c_str();
   GLuint shader = glCreateShader(shaderType);
   glShaderSource(shader, 1, &src, NULL);
@@ -148,7 +142,6 @@ GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &file, b
     {
       glGetShaderInfoLog(shader, 512, NULL, infoLog);
       std::cout << infoLog << std::endl;
-      return NULL;
     }
   return shader;
 }
