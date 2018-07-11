@@ -1,4 +1,4 @@
-#include "src/model/Model.h"
+#include "model/Model.h"
 #include <IL/il.h>
 
 Model::Model(const std::string& path, TextureLoader& textureLoader)

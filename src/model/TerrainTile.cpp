@@ -1,4 +1,4 @@
-#include "src/model/TerrainTile.h"
+#include "model/TerrainTile.h"
 
 TerrainTile::TerrainTile(int x, int y, float lowLeft, float lowRight, float upperRight, float upperLeft, bool orderCrossed)
   :

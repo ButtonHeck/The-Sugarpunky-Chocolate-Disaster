@@ -7,7 +7,7 @@
 #include <string>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-#include "src/graphics/Shader.h"
+#include "graphics/Shader.h"
 
 class FontManager
 {

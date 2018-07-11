@@ -4,9 +4,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/vec3.hpp>
-#include "src/game/Game.h"
-#include "src/game/Options.h"
-#include "src/graphics/Camera.h"
+#include "game/Game.h"
+#include "game/Options.h"
+#include "graphics/Camera.h"
 
 void APIENTRY glDebugCallback(GLenum source,
                             GLenum type,

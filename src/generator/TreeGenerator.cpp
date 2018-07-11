@@ -1,4 +1,4 @@
-#include "src/generator/TreeGenerator.h"
+#include "generator/TreeGenerator.h"
 
 TreeGenerator::TreeGenerator(std::initializer_list<Model> plainTrees, std::initializer_list<Model> hillTrees)
   :

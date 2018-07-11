@@ -1,4 +1,4 @@
-#include "src/generator/BuildableMapGenerator.h"
+#include "generator/BuildableMapGenerator.h"
 
 BuildableMapGenerator::BuildableMapGenerator(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
   :

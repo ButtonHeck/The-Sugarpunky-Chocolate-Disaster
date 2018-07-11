@@ -12,6 +12,7 @@ Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& op
     fontManager(new FontManager("Laconic_Bold.otf", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), &shaderManager.get(SHADER_FONT))),
     textureManager(new TextureManager(textureLoader, scr_width, scr_height))
 {
+  srand(time(NULL));
 }
 
 Game::~Game()

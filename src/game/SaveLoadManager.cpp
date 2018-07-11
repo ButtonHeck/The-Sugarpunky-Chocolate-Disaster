@@ -1,4 +1,4 @@
-#include "src/game/SaveLoadManager.h"
+#include "game/SaveLoadManager.h"
 
 SaveLoadManager::SaveLoadManager(BaseMapGenerator &baseGenerator, HillsMapGenerator &hillGenerator, WaterMapGenerator &waterGenerator, BuildableMapGenerator *buildableGenerator, Camera& camera)
   :

@@ -1,4 +1,4 @@
-#include "src/generator/WaterMapGenerator.h"
+#include "generator/WaterMapGenerator.h"
 
 WaterMapGenerator::WaterMapGenerator()
   :
@@ -181,7 +181,6 @@ void WaterMapGenerator::liftWaterLevel(float liftValue)
 
 void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigned int &numWaterTiles)
 {
-  srand(time(NULL));
   bool startAxisFromX = rand() % 2 == 0;
   bool riverEnd = false;
   unsigned int curveMaxDistance = rand() % 48 + 48;

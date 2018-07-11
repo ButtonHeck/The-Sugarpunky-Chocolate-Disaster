@@ -1,4 +1,4 @@
-#include "src/graphics/Camera.h"
+#include "graphics/Camera.h"
 
 Camera::Camera(glm::vec3 position)
   :

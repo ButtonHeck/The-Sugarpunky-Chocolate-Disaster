@@ -2,7 +2,7 @@
 #define COORDINATESYSTEMRENDERER_H
 #include <GL/glew.h>
 #include <glm/mat4x4.hpp>
-#include "src/graphics/Shader.h"
+#include "graphics/Shader.h"
 
 class CoordinateSystemRenderer
 {

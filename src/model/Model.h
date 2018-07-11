@@ -5,10 +5,10 @@
 #include <assimp/scene.h>
 #include <vector>
 #include "Mesh.h"
-#include "src/graphics/TextureLoader.h"
-#include "src/chunk/ModelChunk.h"
-#include "src/graphics/Camera.h"
-#include "src/game/Settings.h"
+#include "graphics/TextureLoader.h"
+#include "chunk/ModelChunk.h"
+#include "graphics/Camera.h"
+#include "game/Settings.h"
 
 class Model
 {

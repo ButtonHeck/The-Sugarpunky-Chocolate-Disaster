@@ -1,4 +1,4 @@
-#include "src/game/InputController.h"
+#include "game/InputController.h"
 
 extern GLFWwindow* window;
 extern Camera camera;

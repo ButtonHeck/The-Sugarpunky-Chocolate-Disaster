@@ -5,21 +5,21 @@
 #include <GLFW/glfw3.h>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-#include "src/game/Settings.h"
-#include "src/game/Timer.h"
-#include "src/game/Options.h"
-#include "src/game/InputController.h"
-#include "src/game/SaveLoadManager.h"
-#include "src/graphics/Camera.h"
-#include "src/graphics/Renderer.h"
-#include "src/graphics/Frustum.h"
-#include "src/graphics/ShaderManager.h"
-#include "src/graphics/FontManager.h"
-#include "src/graphics/CoordinateSystemRenderer.h"
-#include "src/graphics/Skybox.h"
-#include "src/graphics/TextureManager.h"
-#include "src/generator/UnderwaterQuadMapGenerator.h"
-#include "src/model/Model.h"
+#include "game/Settings.h"
+#include "game/Timer.h"
+#include "game/Options.h"
+#include "game/InputController.h"
+#include "game/SaveLoadManager.h"
+#include "graphics/Camera.h"
+#include "graphics/Renderer.h"
+#include "graphics/Frustum.h"
+#include "graphics/ShaderManager.h"
+#include "graphics/FontManager.h"
+#include "graphics/CoordinateSystemRenderer.h"
+#include "graphics/Skybox.h"
+#include "graphics/TextureManager.h"
+#include "generator/UnderwaterQuadMapGenerator.h"
+#include "model/Model.h"
 
 class Game
 {

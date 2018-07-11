@@ -1,4 +1,4 @@
-#include "src/graphics/Renderer.h"
+#include "graphics/Renderer.h"
 
 Renderer::Renderer(Camera &camera)
   :

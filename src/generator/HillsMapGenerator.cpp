@@ -1,4 +1,4 @@
-#include "src/generator/HillsMapGenerator.h"
+#include "generator/HillsMapGenerator.h"
 
 HillsMapGenerator::HillsMapGenerator(std::vector<std::vector<float> > &waterMap)
   :
@@ -237,7 +237,6 @@ void HillsMapGenerator::createTiles()
 
 void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY density)
 {
-  srand(time(NULL));
   std::uniform_real_distribution<float> heightDistribution(0.3f, 0.8f);
   std::default_random_engine randomizer;
   float density_value = 3.0f * (float)TILES_WIDTH;

@@ -3,13 +3,13 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "src/generator/BaseMapGenerator.h"
-#include "src/generator/HillsMapGenerator.h"
-#include "src/generator/WaterMapGenerator.h"
-#include "src/generator/TreeGenerator.h"
-#include "src/generator/BuildableMapGenerator.h"
-#include "src/chunk/ModelChunk.h"
-#include "src/graphics/Camera.h"
+#include "generator/BaseMapGenerator.h"
+#include "generator/HillsMapGenerator.h"
+#include "generator/WaterMapGenerator.h"
+#include "generator/TreeGenerator.h"
+#include "generator/BuildableMapGenerator.h"
+#include "chunk/ModelChunk.h"
+#include "graphics/Camera.h"
 
 class SaveLoadManager
 {

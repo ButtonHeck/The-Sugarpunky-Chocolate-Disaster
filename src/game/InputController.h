@@ -3,12 +3,12 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/vec3.hpp>
-#include "src/graphics/Camera.h"
-#include "src/game/Settings.h"
-#include "src/game/Options.h"
-#include "src/generator/BaseMapGenerator.h"
-#include "src/generator/HillsMapGenerator.h"
-#include "src/generator/BuildableMapGenerator.h"
+#include "graphics/Camera.h"
+#include "game/Settings.h"
+#include "game/Options.h"
+#include "generator/BaseMapGenerator.h"
+#include "generator/HillsMapGenerator.h"
+#include "generator/BuildableMapGenerator.h"
 
 class InputController
 {

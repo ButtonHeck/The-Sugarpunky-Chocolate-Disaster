@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
-#include "src/game/Settings.h"
+#include "game/Settings.h"
 
 class Shader
 {

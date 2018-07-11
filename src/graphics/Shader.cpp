@@ -1,4 +1,4 @@
-#include "src/graphics/Shader.h"
+#include "graphics/Shader.h"
 
 Shader::Shader(const std::string &vertexFile)
 {

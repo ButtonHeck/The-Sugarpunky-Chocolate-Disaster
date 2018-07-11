@@ -1,4 +1,4 @@
-#include "src/generator/BaseMapGenerator.h"
+#include "generator/BaseMapGenerator.h"
 
 BaseMapGenerator::BaseMapGenerator(std::vector<std::vector<float> > &waterMap, std::vector<std::vector<float> > &hillMap)
   :

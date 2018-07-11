@@ -2,16 +2,16 @@
 #define RENDERER_H
 #include <glm/vec2.hpp>
 #include <glm/detail/func_exponential.hpp>
-#include "src/graphics/Shader.h"
-#include "src/graphics/Camera.h"
-#include "src/graphics/Frustum.h"
-#include "src/graphics/Skybox.h"
-#include "src/generator/HillsMapGenerator.h"
-#include "src/generator/BaseMapGenerator.h"
-#include "src/generator/UnderwaterQuadMapGenerator.h"
-#include "src/generator/BuildableMapGenerator.h"
-#include "src/generator/WaterMapGenerator.h"
-#include "src/generator/TreeGenerator.h"
+#include "graphics/Shader.h"
+#include "graphics/Camera.h"
+#include "graphics/Frustum.h"
+#include "graphics/Skybox.h"
+#include "generator/HillsMapGenerator.h"
+#include "generator/BaseMapGenerator.h"
+#include "generator/UnderwaterQuadMapGenerator.h"
+#include "generator/BuildableMapGenerator.h"
+#include "generator/WaterMapGenerator.h"
+#include "generator/TreeGenerator.h"
 
 class Renderer
 {

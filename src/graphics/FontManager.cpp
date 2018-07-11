@@ -1,4 +1,4 @@
-#include "src/graphics/FontManager.h"
+#include "graphics/FontManager.h"
 
 FontManager::FontManager(const std::string &fontfile, glm::mat4 projection, Shader* shader)
   :

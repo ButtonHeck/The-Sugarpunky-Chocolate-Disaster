@@ -4,7 +4,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "MapGenerator.h"
-#include "src/chunk/TerrainChunk.h"
+#include "chunk/TerrainChunk.h"
 
 class BaseMapGenerator : public MapGenerator
 {

@@ -1,4 +1,4 @@
-#include "src/graphics/CoordinateSystemRenderer.h"
+#include "graphics/CoordinateSystemRenderer.h"
 
 CoordinateSystemRenderer::CoordinateSystemRenderer(Shader *shader)
   :

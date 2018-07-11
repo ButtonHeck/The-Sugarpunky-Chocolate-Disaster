@@ -1,4 +1,4 @@
-#include "src/generator/UnderwaterQuadMapGenerator.h"
+#include "generator/UnderwaterQuadMapGenerator.h"
 
 UnderwaterQuadMapGenerator::UnderwaterQuadMapGenerator()
   :

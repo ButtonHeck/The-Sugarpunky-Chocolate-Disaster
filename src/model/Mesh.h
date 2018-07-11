@@ -6,10 +6,10 @@
 #include <glm/mat4x4.hpp>
 #include <glm/detail/func_common.hpp>
 #include <glm/detail/func_geometric.hpp>
-#include "src/graphics/Shader.h"
-#include "src/game/Settings.h"
-#include "src/chunk/ModelChunk.h"
-#include "src/graphics/Camera.h"
+#include "graphics/Shader.h"
+#include "game/Settings.h"
+#include "chunk/ModelChunk.h"
+#include "graphics/Camera.h"
 
 struct Vertex
 {

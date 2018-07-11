@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <unordered_map>
 #include "TextureLoader.h"
-#include "src/generator/WaterMapGenerator.h"
+#include "generator/WaterMapGenerator.h"
 
 class TextureManager
 {

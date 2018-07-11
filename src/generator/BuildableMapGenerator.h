@@ -5,7 +5,7 @@
 #include <glm/vec3.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "MapGenerator.h"
-#include "src/game/Settings.h"
+#include "game/Settings.h"
 
 class BuildableMapGenerator : public MapGenerator
 {

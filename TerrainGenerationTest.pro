@@ -3,7 +3,10 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += src/game/main.cpp \
+INCLUDEPATH += $$PWD/src
+
+SOURCES += \
+    src/game/main.cpp \
     src/game/Game.cpp \
     src/game/Settings.cpp \
     src/game/InputController.cpp \
@@ -32,29 +35,6 @@ SOURCES += src/game/main.cpp \
     src/chunk/ModelChunk.cpp \
     src/chunk/Chunk.cpp \
     src/chunk/TerrainChunk.cpp
-
-
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
-
-INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
-DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
-
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGLEW
-
-INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
-DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
-
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lglfw
-
-INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
-DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
-
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lIL
-
-INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
-DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../../usr/lib/x86_64-linux-gnu/libIL.a
 
 HEADERS += \
     src/game/Game.h \
@@ -86,6 +66,28 @@ HEADERS += \
     src/chunk/ModelChunk.h \
     src/chunk/Chunk.h \
     src/chunk/TerrainChunk.h
+
+unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
+
+INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+
+unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGLEW
+
+INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+
+unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lglfw
+
+INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+
+unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lIL
+
+INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../../usr/lib/x86_64-linux-gnu/libIL.a
 
 DISTFILES += \
     res/textures/hill.jpg \

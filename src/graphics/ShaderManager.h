@@ -5,7 +5,7 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include "Shader.h"
-#include "src/game/Settings.h"
+#include "game/Settings.h"
 #include "Frustum.h"
 
 enum SHADER_TYPE

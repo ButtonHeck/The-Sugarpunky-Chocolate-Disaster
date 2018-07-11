@@ -2,8 +2,8 @@
 #define MAPGENERATOR_H
 #include <vector>
 #include <GL/glew.h>
-#include "src/model/TerrainTile.h"
-#include "src/game/Settings.h"
+#include "model/TerrainTile.h"
+#include "game/Settings.h"
 
 class MapGenerator
 {

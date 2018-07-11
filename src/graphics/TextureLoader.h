@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <glm/common.hpp>
-#include "src/game/Settings.h"
-#include "src/generator/WaterMapGenerator.h"
+#include "game/Settings.h"
+#include "generator/WaterMapGenerator.h"
 
 class TextureLoader
 {
