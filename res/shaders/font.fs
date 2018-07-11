@@ -3,11 +3,11 @@
 in vec2  v_TexCoords;
 out vec4 o_FragColor;
 
-uniform sampler2D u_text;
-uniform vec3      u_textColor;
+uniform sampler2D u_glyph;
+uniform vec4      u_glyphColor;
 
 void main()
 {
-    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(u_text, v_TexCoords).r);
-    o_FragColor = vec4(u_textColor, 1.0) * sampled;
+    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(u_glyph, v_TexCoords).r);
+    o_FragColor = u_glyphColor * sampled;
 }

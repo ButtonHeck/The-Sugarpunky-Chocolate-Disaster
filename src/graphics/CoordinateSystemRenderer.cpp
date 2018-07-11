@@ -35,11 +35,11 @@ void CoordinateSystemRenderer::deleteGLObjects()
   glDeleteBuffers(1, &vbo);
 }
 
-void CoordinateSystemRenderer::draw(const glm::mat4 &view, float aspect_ratio)
+void CoordinateSystemRenderer::draw(const glm::mat3 &view, float aspect_ratio)
 {
   glLineWidth(2);
   shader->use();
-  shader->setMat4("u_view", view);
+  shader->setMat3("u_view", view);
   shader->setFloat("u_aspectRatio", aspect_ratio);
   glBindVertexArray(vao);
   glDrawArrays(GL_POINTS, 0, 3);

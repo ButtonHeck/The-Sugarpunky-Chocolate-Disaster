@@ -89,11 +89,18 @@ void Shader::setVec2(const std::__cxx11::string &uniformName, float x, float y)
   glUniform2f(uniformCache[uniformName.c_str()], x, y);
 }
 
-void Shader::setVec4(const std::string &uniformName, glm::vec4 vec)
+void Shader::setVec4(const std::string &uniformName, float x, float y, float z, float w)
 {
   if (uniformCache.find(uniformName) == uniformCache.end())
     uniformCache[uniformName.c_str()] = glGetUniformLocation(ID, uniformName.c_str());
-  glUniform4f(uniformCache[uniformName.c_str()], vec.x, vec.y, vec.z, vec.w);
+  glUniform4f(uniformCache[uniformName.c_str()], x, y, z, w);
+}
+
+void Shader::setMat3(const std::string &uniformName, glm::mat3 mat)
+{
+  if (uniformCache.find(uniformName) == uniformCache.end())
+    uniformCache[uniformName.c_str()] = glGetUniformLocation(ID, uniformName.c_str());
+  glUniformMatrix3fv(uniformCache[uniformName.c_str()], 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 void Shader::setMat4(const std::__cxx11::string &uniformName, glm::mat4 mat)

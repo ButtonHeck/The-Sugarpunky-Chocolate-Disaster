@@ -283,7 +283,7 @@ void Game::drawFrameObjects()
       fontManager->renderText("Water culling: " + (options.get(WATER_FC) ? std::string("On") : std::string("Off")), 10.0f, 10.0f, 0.35f);
       fontManager->renderText("Hills culling: " + (options.get(HILLS_FC) ? std::string("On") : std::string("Off")), 10.0f, 30.0f, 0.35f);
       fontManager->renderText("Trees culling: " + (options.get(MODELS_FC) ? std::string("On") : std::string("Off")), 10.0f, 50.0f, 0.35f);
-      csRenderer.draw(view, aspect_ratio);
+      csRenderer.draw(glm::mat3(view), aspect_ratio);
     }
 
   //reset texture units to terrain textures after we done with models and text

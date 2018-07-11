@@ -10,7 +10,7 @@ public:
   CoordinateSystemRenderer(Shader* shader);
   ~CoordinateSystemRenderer();
   void deleteGLObjects();
-  void draw(const glm::mat4& view, float aspect_ratio);
+  void draw(const glm::mat3& view, float aspect_ratio);
 private:
   GLuint vao, vbo;
   Shader* shader;

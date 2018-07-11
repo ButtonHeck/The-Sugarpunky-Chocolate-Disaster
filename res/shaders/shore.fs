@@ -2,7 +2,7 @@
 
 out vec4 o_FragColor;
 
-in vec3  v_FragPos;
+in float v_PositionDiffuseComponent;
 in vec2  v_TexCoords;
 in float v_PosHeight;
 in float v_TextureMixRatio;
@@ -20,7 +20,8 @@ uniform bool      u_shadowEnable;
 
 const float DIFFUSE_MIX = 0.5;
 const float SHADOW_INFLUENCE = 0.3;
-const float MAX_DESATURATING_VALUE = 0.8 / (1.0 - SHADOW_INFLUENCE);
+const float ONE_MINUS_SHADOW_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
+const float MAX_DESATURATING_VALUE = 0.8 / ONE_MINUS_SHADOW_INFLUENCE;
 const vec2 TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float POISSON_SHADOW_VALUE_GAIN = clamp(-v_PosHeight * 5.0, 0.0, 4.0);
 const vec2 POISSON_DISK[4] = vec2[](
@@ -68,15 +69,15 @@ void main()
     if (u_shadowEnable)
     {
         float luminosity = calculateLuminosity(v_Normal);
-        diffuseColor = luminosity * mix(sampledDiffuse.rgb, sampledDiffuse.rgb * v_DiffuseComponent, DIFFUSE_MIX) * (1 + v_FragPos.y * 0.4);
+        diffuseColor = luminosity * mix(sampledDiffuse.rgb, sampledDiffuse.rgb * v_DiffuseComponent, DIFFUSE_MIX) * v_PositionDiffuseComponent;
         resultColor = diffuseColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
-        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - (1.0 - SHADOW_INFLUENCE));
+        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - ONE_MINUS_SHADOW_INFLUENCE);
         o_FragColor = desaturate(o_FragColor, desaturatingValue);
     }
     else
     {
-        diffuseColor = mix(sampledDiffuse.rgb, sampledDiffuse.rgb * v_DiffuseComponent, DIFFUSE_MIX) * (1 + v_FragPos.y * 0.4);
+        diffuseColor = mix(sampledDiffuse.rgb, sampledDiffuse.rgb * v_DiffuseComponent, DIFFUSE_MIX) * v_PositionDiffuseComponent;
         resultColor = diffuseColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
     }

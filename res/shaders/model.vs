@@ -1,6 +1,6 @@
 #version 450
 
-layout (location = 0) in vec3 i_pos;
+layout (location = 0) in vec4 i_pos;
 layout (location = 1) in vec3 i_normal;
 layout (location = 2) in vec2 i_texCoords;
 layout (location = 3) in vec3 i_tangent;
@@ -20,11 +20,12 @@ out vec3  v_ProjectedCoords;
 
 void main()
 {
-    gl_Position = u_projectionView * i_model * vec4(i_pos, 1.0);
+    vec4 ModelWorldPosition = i_model * i_pos;
+    gl_Position = u_projectionView * ModelWorldPosition;
     v_TexCoords = i_texCoords;
-    vec3 FragPos = vec3(i_model * vec4(i_pos, 1.0));
-    v_Normal = normalize(mat3(transpose(inverse(i_model))) * i_normal);
-    vec4 fragPosLightSpace = u_lightSpaceMatrix * i_model * vec4(i_pos, 1.0);
+    vec3 FragPos = vec3(ModelWorldPosition);
+    v_Normal = normalize(vec3(i_model * vec4(i_normal, 0)));
+    vec4 fragPosLightSpace = u_lightSpaceMatrix * ModelWorldPosition;
     v_ProjectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
 
     //diffuse

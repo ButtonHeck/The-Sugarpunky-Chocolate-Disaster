@@ -57,6 +57,8 @@ FontManager::FontManager(const std::string &fontfile, glm::mat4 projection, Shad
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
+  shader->use();
+  shader->setMat4("u_projection", fontProjection);
 }
 
 FontManager::~FontManager()
@@ -68,9 +70,7 @@ void FontManager::renderText(std::string text, GLfloat x, GLfloat y, GLfloat sca
 {
   glEnable(GL_BLEND);
   shader->use();
-  shader->setMat4("u_projection", fontProjection);
-  shader->setVec3("u_textColor", color.r, color.g, color.b);
-  glActiveTexture(GL_TEXTURE0);
+  shader->setVec4("u_glyphColor", color.r, color.g, color.b, 1.0f);
   glBindVertexArray(vao);
   std::string::const_iterator c;
   for (c = text.begin(); c != text.end(); c++)
@@ -96,7 +96,6 @@ void FontManager::renderText(std::string text, GLfloat x, GLfloat y, GLfloat sca
       x += (ch.advance >> 6) * scale;
     }
   glBindVertexArray(0);
-  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 GLuint &FontManager::getVAO()

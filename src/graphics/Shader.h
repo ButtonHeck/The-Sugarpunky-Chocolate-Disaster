@@ -24,6 +24,8 @@ public:
   void setVec2(const std::string& uniformName, glm::vec2 vec);
   void setVec2(const std::string& uniformName, float x, float y);
   void setVec4(const std::string& uniformName, glm::vec4 vec);
+  void setVec4(const std::string& uniformName, float x, float y, float z, float w);
+  void setMat3(const std::string& uniformName, glm::mat3 mat);
   void setMat4(const std::string& uniformName, glm::mat4 mat);
   GLuint getID() const;
   void use() const;
@@ -35,6 +37,11 @@ private:
   char infoLog[512];
   std::unordered_map<std::string, GLint> uniformCache;
 };
+
+inline void Shader::setVec4(const std::__cxx11::string &uniformName, glm::vec4 vec)
+{
+  setVec4(uniformName, vec.x, vec.y, vec.z, vec.w);
+}
 
 inline void Shader::setVec3(const std::__cxx11::string &uniformName, glm::vec3 vec)
 {
