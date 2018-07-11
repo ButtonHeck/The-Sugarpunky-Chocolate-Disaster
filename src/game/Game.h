@@ -41,8 +41,7 @@ private:
   float aspect_ratio;
   GLFWwindow* window;
   glm::vec3& cursorToViewportDirection;
-  Timer cameraTimer;
-  Timer fpsTimer;
+  Timer timer;
   Camera& camera;
   Renderer renderer = Renderer(camera);
   Frustum viewFrustum;
@@ -64,7 +63,6 @@ private:
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
   GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO;
   unsigned int frameCounter = 0;
-  std::thread* cameraMovementThread;
 };
 
 #endif // GAME_H

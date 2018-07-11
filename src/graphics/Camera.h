@@ -30,7 +30,7 @@ public:
   void processMouseCursor(float xOffset, float yOffset);
   void processMouseScroll(float yOffset);
   void processKeyboardInput(float delta, MOVE_DIRECTION dir, std::vector<std::vector<float>>& hillsMap);
-  void setFPSmode(bool on);
+  void switchFPSmode();
   bool getFPSmode() const;
   float getZoom() const;
   glm::vec3 getPosition() const;
@@ -54,6 +54,7 @@ private:
   float yaw, pitch;
   //direction vectors
   glm::vec3 Position, Front, Right, Up, WorldUp;
+  void moveCameraFrontAxial(bool forward, float velocity);
 };
 
 #endif // CAMERA_H

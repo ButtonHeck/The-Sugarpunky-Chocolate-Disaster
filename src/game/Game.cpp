@@ -17,7 +17,6 @@ Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& op
 
 Game::~Game()
 {
-  cameraMovementThread->join();
   textureManager->deleteTextures();
   shaderManager.deleteShaders();
   delete textureManager;
@@ -27,7 +26,6 @@ Game::~Game()
   delete saveLoadManager;
   delete buildableMapGenerator;
   delete treeGenerator;
-  delete cameraMovementThread;
 }
 
 void Game::setupVariables()
@@ -84,11 +82,6 @@ void Game::setupVariables()
   prepareScreenVAO();
   prepareMS_FBO();
   prepareDepthMapFBO();
-  cameraMovementThread = new std::thread([this]()
-    {
-      while(!glfwWindowShouldClose(window))
-        input.processKeyboardCamera(cameraTimer.tick(), hillMapGenerator->getMap());
-    });
 }
 
 void Game::prepareTerrain()
@@ -265,7 +258,7 @@ void Game::drawFrameObjects()
   //font rendering
   if (options.get(RENDER_DEBUG_TEXT))
     {
-      fontManager->renderText("FPS: " + std::to_string(fpsTimer.getFPS()), 10.0f, (float)scr_height - 25.0f, 0.35f);
+      fontManager->renderText("FPS: " + std::to_string(timer.getFPS()), 10.0f, (float)scr_height - 25.0f, 0.35f);
       fontManager->renderText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                              + std::to_string(viewPosition.y).substr(0,6) + ": "
                              + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 45.0f, 0.35f);
@@ -357,13 +350,10 @@ void Game::loop()
     }
 
   bool multisamplingEnabled = options.get(MULTISAMPLE_ENABLE);
-  if (multisamplingEnabled)
-    glBindFramebuffer(GL_FRAMEBUFFER, multisampleFBO);
-  else
-    glBindFramebuffer(GL_FRAMEBUFFER, screenFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, multisamplingEnabled ? multisampleFBO : screenFBO);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  fpsTimer.tick();
   input.processKeyboard();
+  input.processKeyboardCamera(timer.tick(), hillMapGenerator->getMap());
 
   //render our world onto separate FBO as usual
   drawFrameObjects();

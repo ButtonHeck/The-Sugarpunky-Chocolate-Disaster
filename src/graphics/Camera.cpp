@@ -46,44 +46,35 @@ void Camera::processMouseScroll(float yOffset)
 void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir, std::vector<std::vector<float>>& hillsMap)
 {
   float velocity = delta * moveSpeed;
+
   if (dir == FORWARD)
-    {
-      if (!FPSmode)
-        Position += Front * velocity;
-      else
-        {
-          Position.x += Front.x * velocity;
-          Position.z += Front.z * velocity;
-        }
-    }
-  if (dir == BACKWARD)
-    {
-      if (!FPSmode)
-        Position -= Front * velocity;
-      else
-        {
-          Position.x -= Front.x * velocity;
-          Position.z -= Front.z * velocity;
-        }
-    }
+    moveCameraFrontAxial(true, velocity);
+  else if (dir == BACKWARD)
+    moveCameraFrontAxial(false, velocity);
+
   if (dir == RIGHT)
     Position += Right * velocity;
-  if (dir == LEFT)
+  else if (dir == LEFT)
     Position -= Right * velocity;
   if (dir == UP)
     Position += WorldUp * velocity;
-  if (dir == DOWN)
+  else if (dir == DOWN)
     Position -= WorldUp * velocity;
-  if (Position.x > HALF_TILES_WIDTH - 8.0f)
-    Position.x = HALF_TILES_WIDTH - 8.0f;
-  if (Position.x < -HALF_TILES_WIDTH + 8.0f)
-    Position.x = -HALF_TILES_WIDTH + 8.0f;
-  if (Position.z > HALF_TILES_HEIGHT - 8.0f)
-    Position.z = HALF_TILES_HEIGHT - 8.0f;
-  if (Position.z < -HALF_TILES_HEIGHT + 8.0f)
-    Position.z = -HALF_TILES_HEIGHT + 8.0f;
-  if (Position.y < 2.0f)
-    Position.y = 2.0f;
+
+  const float WORLD_CAMERA_BORDER_OFFSET = 8.0f;
+  if (Position.x > HALF_TILES_WIDTH - WORLD_CAMERA_BORDER_OFFSET)
+    Position.x = HALF_TILES_WIDTH - WORLD_CAMERA_BORDER_OFFSET;
+  else if (Position.x < -HALF_TILES_WIDTH + WORLD_CAMERA_BORDER_OFFSET)
+    Position.x = -HALF_TILES_WIDTH + WORLD_CAMERA_BORDER_OFFSET;
+  if (Position.z > HALF_TILES_HEIGHT - WORLD_CAMERA_BORDER_OFFSET)
+    Position.z = HALF_TILES_HEIGHT - WORLD_CAMERA_BORDER_OFFSET;
+  else if (Position.z < -HALF_TILES_HEIGHT + WORLD_CAMERA_BORDER_OFFSET)
+    Position.z = -HALF_TILES_HEIGHT + WORLD_CAMERA_BORDER_OFFSET;
+
+  const float WORLD_CAMERA_MIN_HEIGHT = 2.0f;
+  const float WORLD_CAMERA_MIN_HEIGHT_ON_HILLS = WORLD_CAMERA_MIN_HEIGHT - HILLS_OFFSET_Y;
+  if (Position.y < WORLD_CAMERA_MIN_HEIGHT)
+    Position.y = WORLD_CAMERA_MIN_HEIGHT;
   if (hillsMap[Position.z + HALF_TILES_HEIGHT][Position.x + HALF_TILES_WIDTH] > 0 ||
       hillsMap[Position.z + HALF_TILES_HEIGHT + 1][Position.x + HALF_TILES_WIDTH] > 0 ||
       hillsMap[Position.z + HALF_TILES_HEIGHT][Position.x + HALF_TILES_WIDTH + 1] > 0 ||
@@ -95,10 +86,10 @@ void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir, std::vector<s
       int z2 = std::round(Position.z + HALF_TILES_HEIGHT);
       float xRatio = Position.x + HALF_TILES_WIDTH - x1;
       float zRatio = Position.z + HALF_TILES_HEIGHT - z1;
-      float x1z1Height = hillsMap[z1][x1] + 2.0f - HILLS_OFFSET_Y;
-      float x2z1Height = hillsMap[z1][x2] + 2.0f - HILLS_OFFSET_Y;
-      float x1z2Height = hillsMap[z2][x1] + 2.0f - HILLS_OFFSET_Y;
-      float x2z2Height = hillsMap[z2][x2] + 2.0f - HILLS_OFFSET_Y;
+      float x1z1Height = hillsMap[z1][x1] + WORLD_CAMERA_MIN_HEIGHT_ON_HILLS;
+      float x2z1Height = hillsMap[z1][x2] + WORLD_CAMERA_MIN_HEIGHT_ON_HILLS;
+      float x1z2Height = hillsMap[z2][x1] + WORLD_CAMERA_MIN_HEIGHT_ON_HILLS;
+      float x2z2Height = hillsMap[z2][x2] + WORLD_CAMERA_MIN_HEIGHT_ON_HILLS;
       Position.y = glm::max(Position.y,
                             glm::mix(glm::mix(x1z1Height, x1z2Height, zRatio),
                                      glm::mix(x2z1Height, x2z2Height, zRatio),
@@ -106,9 +97,9 @@ void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir, std::vector<s
     }
 }
 
-void Camera::setFPSmode(bool on)
+void Camera::switchFPSmode()
 {
-  FPSmode = on;
+  FPSmode = !FPSmode;
 }
 
 bool Camera::getFPSmode() const
@@ -190,4 +181,15 @@ int Camera::getMapCoordX() const
 int Camera::getMapCoordZ() const
 {
   return glm::clamp((int)(TILES_HEIGHT + glm::clamp(Position.z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT)) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
+}
+
+void Camera::moveCameraFrontAxial(bool forward, float velocity)
+{
+  if (!FPSmode)
+    Position += forward ? Front * velocity : -Front * velocity;
+  else
+    {
+      Position.x += forward ? Front.x * velocity : -Front.x * velocity;
+      Position.z += forward ? Front.z * velocity : -Front.z * velocity;
+    }
 }

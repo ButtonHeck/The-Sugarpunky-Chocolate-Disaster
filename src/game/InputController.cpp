@@ -24,7 +24,7 @@ void InputController::processKeyboard()
     {
       if (!keysPressed[GLFW_KEY_F1])
         {
-          camera.setFPSmode(!camera.getFPSmode());
+          camera.switchFPSmode();
           keysPressed[GLFW_KEY_F1] = true;
         }
     }
@@ -96,7 +96,7 @@ void InputController::processKeyboard()
     {
       if (!keysPressed[GLFW_KEY_F9])
         {
-          options.switchOpt(RECREATE_TERRAIN_REQUEST);
+          options.set(RECREATE_TERRAIN_REQUEST, true);
           options.set(CREATE_SHADOW_MAP_REQUEST, true);
           keysPressed[GLFW_KEY_F9] = true;
         }
@@ -109,7 +109,7 @@ void InputController::processKeyboard()
     {
       if (!keysPressed[GLFW_KEY_F10])
         {
-          options.switchOpt(SAVE_REQUEST);
+          options.set(SAVE_REQUEST, true);
           keysPressed[GLFW_KEY_F10] = true;
         }
     }
@@ -121,7 +121,7 @@ void InputController::processKeyboard()
     {
       if (!keysPressed[GLFW_KEY_F11])
         {
-          options.switchOpt(LOAD_REQUEST);
+          options.set(LOAD_REQUEST, true);
           options.set(CREATE_SHADOW_MAP_REQUEST, true);
           keysPressed[GLFW_KEY_F11] = true;
         }
@@ -221,17 +221,24 @@ void InputController::processKeyboard()
 
 void InputController::processKeyboardCamera(float delta, std::vector<std::vector<float> > &hillsMap)
 {
+  /*
+   * I've just made an assumption that player won't be trying
+   * to move right and left (or up and down, forward and backward) simultaneously
+   * that's why here are pairs of "if-elif" instead of plain "if-if",
+   * in this case the CPU would not try to process both movements
+   * if the 1st direction is already detected(I guess...)
+   */
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     camera.processKeyboardInput(delta, FORWARD, hillsMap);
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+  else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     camera.processKeyboardInput(delta, BACKWARD, hillsMap);
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     camera.processKeyboardInput(delta, LEFT, hillsMap);
-  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+  else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     camera.processKeyboardInput(delta, RIGHT, hillsMap);
   if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     camera.processKeyboardInput(delta, DOWN, hillsMap);
-  if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+  else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     camera.processKeyboardInput(delta, UP, hillsMap);
 }
 
