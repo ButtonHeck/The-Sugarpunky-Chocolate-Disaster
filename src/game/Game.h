@@ -32,7 +32,7 @@ public:
   void prepareDepthMapFBO();
   void prepareScreenVAO();
   void drawFrameToScreenRectangle(bool enableMS);
-  void drawFrameObjects();
+  void drawFrameObjects(glm::mat4& projectionView);
   void drawFrameObjectsDepthmap();
   void loop();
 private:

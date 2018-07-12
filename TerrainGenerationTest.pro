@@ -134,8 +134,6 @@ DISTFILES += \
     res/shaders/selectedTile.fs \
     res/saves/testSave.txt \
     res/shaders/water.gs \
-    res/shaders/water_noFC.vs \
-    res/shaders/hills_noFC.vs \
     res/shaders/hills.gs \
     res/shaders/MS_toDefault.vs \
     res/shaders/model_shadow.vs \

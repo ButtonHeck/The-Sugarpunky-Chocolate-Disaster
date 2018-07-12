@@ -9,8 +9,7 @@ enum FRUSTUM_SIDE
   FRUSTUM_LEFT = 1,
   FRUSTUM_BOTTOM = 2,
   FRUSTUM_TOP = 3,
-  FRUSTUM_BACK = 4,
-  FRUSTUM_FRONT = 5
+  FRUSTUM_BACK = 4
 };
 
 class Frustum

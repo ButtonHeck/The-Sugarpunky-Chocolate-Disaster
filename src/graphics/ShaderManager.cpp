@@ -5,12 +5,12 @@ ShaderManager::ShaderManager()
   shaders.assign(
   {
     {SHADER_HILLS,              Shader("/shaders/hills.vs", "/shaders/hills.gs", std::string("/shaders/hills.fs"))},
-    {SHADER_HILLS_NOFC,         Shader("/shaders/hills_noFC.vs", "/shaders/hills.fs", true)},
+    {SHADER_HILLS_NOFC,         Shader("/shaders/hills.vs", "/shaders/hills.fs", true)},
     {SHADER_SHORE,              Shader("/shaders/shore.vs", "/shaders/shore.fs", false)},
     {SHADER_UNDERWATER,         Shader("/shaders/underwater.vs", "/shaders/underwater.fs", false)},
     {SHADER_FLAT,               Shader("/shaders/flat.vs", "/shaders/flat.fs", false)},
     {SHADER_WATER,              Shader("/shaders/water.vs", "/shaders/water.gs", std::string("/shaders/water.fs"))},
-    {SHADER_WATER_NOFC,         Shader("/shaders/water_noFC.vs", "/shaders/water.fs", true)},
+    {SHADER_WATER_NOFC,         Shader("/shaders/water.vs", "/shaders/water.fs", true)},
     {SHADER_SKY,                Shader("/shaders/skybox.vs", "/shaders/skybox.fs", false)},
     {SHADER_MODELS,             Shader("/shaders/model.vs", "/shaders/model.fs", false)},
     {SHADER_FONT,               Shader("/shaders/font.vs", "/shaders/font.fs", false)},
@@ -138,6 +138,7 @@ void ShaderManager::updateHillsShaders(bool enableFC, bool enableShadows, glm::m
       shader->setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
       shader->setVec4("u_frustumPlanes[2]", viewFrustum.getPlane(FRUSTUM_BOTTOM));
       shader->setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
+      shader->setVec4("u_frustumPlanes[4]", viewFrustum.getPlane(FRUSTUM_BACK));
       shader->setBool("u_shadowEnable", enableShadows);
     }
   else
@@ -201,6 +202,7 @@ void ShaderManager::updateWaterShaders(bool enableFC, glm::mat4 &projectionView,
       shader->setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
       shader->setVec4("u_frustumPlanes[2]", viewFrustum.getPlane(FRUSTUM_BOTTOM));
       shader->setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
+      shader->setVec4("u_frustumPlanes[4]", viewFrustum.getPlane(FRUSTUM_BACK));
     }
   else
     {

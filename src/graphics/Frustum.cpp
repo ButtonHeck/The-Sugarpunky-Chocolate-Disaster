@@ -2,7 +2,7 @@
 
 Frustum::Frustum()
 {
-  for (unsigned int i = 0; i < 6; i++)
+  for (unsigned int i = 0; i < 5; i++)
     {
       frustumPlanes.push_back(glm::vec4(0.0f));
     }
@@ -51,17 +51,11 @@ void Frustum::updateFrustum(glm::mat4 &projectionView)
   frustumPlanes[FRUSTUM_BACK].z = clip[11] - clip[10];
   frustumPlanes[FRUSTUM_BACK].w = clip[15] - clip[14];
   normalizePlane(FRUSTUM_BACK);
-
-  frustumPlanes[FRUSTUM_FRONT].x = clip[3] + clip[2];
-  frustumPlanes[FRUSTUM_FRONT].y = clip[7] + clip[6];
-  frustumPlanes[FRUSTUM_FRONT].z = clip[11] + clip[10];
-  frustumPlanes[FRUSTUM_FRONT].w = clip[15] + clip[14];
-  normalizePlane(FRUSTUM_FRONT);
 }
 
 bool Frustum::isInside(float x, float y, float z, float radius)
 {
-  for (unsigned int i = 0; i < 6; i++)
+  for (unsigned int i = 0; i < 5; i++)
     {
       if (frustumPlanes[i].x * x + frustumPlanes[i].y * y + frustumPlanes[i].z * z + frustumPlanes[i].w <= -radius)
         return false;

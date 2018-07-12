@@ -190,13 +190,9 @@ void Game::drawFrameToScreenRectangle(bool enableMS)
   glEnable(GL_DEPTH_TEST);
 }
 
-void Game::drawFrameObjects()
+void Game::drawFrameObjects(glm::mat4& projectionView)
 {
-  glm::mat4 view = camera.getViewMatrix();
   glm::vec3 viewPosition = camera.getPosition();
-  glm::mat4 projectionView = projection * view;
-  viewFrustum.updateFrustum(projectionView);
-
   //hills rendering
   shaderManager.updateHillsShaders(options.get(HILLS_FC), options.get(SHADOW_ENABLE), projectionView, viewPosition, viewFrustum);
   renderer.drawHills(hillMapGenerator);
@@ -244,7 +240,7 @@ void Game::drawFrameObjects()
     }
 
   //Skybox rendering
-  glm::mat4 skyView = glm::mat4(glm::mat3(view));
+  glm::mat4 skyView = glm::mat4(glm::mat3(camera.getViewMatrix()));
   shaderManager.updateSkyShader(skyView, projection);
   renderer.drawSkybox(&skybox);
 
@@ -276,7 +272,7 @@ void Game::drawFrameObjects()
       fontManager->renderText("Water culling: " + (options.get(WATER_FC) ? std::string("On") : std::string("Off")), 10.0f, 10.0f, 0.35f);
       fontManager->renderText("Hills culling: " + (options.get(HILLS_FC) ? std::string("On") : std::string("Off")), 10.0f, 30.0f, 0.35f);
       fontManager->renderText("Trees culling: " + (options.get(MODELS_FC) ? std::string("On") : std::string("Off")), 10.0f, 50.0f, 0.35f);
-      csRenderer.draw(glm::mat3(view), aspect_ratio);
+      csRenderer.draw(glm::mat3(camera.getViewMatrix()), aspect_ratio);
     }
 
   //reset texture units to terrain textures after we done with models and text
@@ -286,9 +282,6 @@ void Game::drawFrameObjects()
 
 void Game::drawFrameObjectsDepthmap()
 {
-  glm::mat4 view = camera.getViewMatrix();
-  glm::mat4 projectionView = projection * view;
-  viewFrustum.updateFrustum(projectionView);
   glDisable(GL_CULL_FACE); //or set front face culling
 
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
@@ -355,8 +348,13 @@ void Game::loop()
   input.processKeyboard();
   input.processKeyboardCamera(timer.tick(), hillMapGenerator->getMap());
 
+  //update view and projection matrices
+  glm::mat4 view = camera.getViewMatrix();
+  glm::mat4 projectionView = projection * view;
+  viewFrustum.updateFrustum(projectionView);
+
   //render our world onto separate FBO as usual
-  drawFrameObjects();
+  drawFrameObjects(projectionView);
 
   //render result onto the default FBO and apply HDR/MS if the flag are set
   drawFrameToScreenRectangle(multisamplingEnabled);

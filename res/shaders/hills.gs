@@ -3,6 +3,7 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
+in vec3  v_FragPos[];
 in vec2  v_TexCoords[];
 in float v_PosHeight[];
 in float v_DiffuseComponentHill[];
@@ -10,7 +11,6 @@ in float v_DiffuseComponentFlat[];
 in float v_TextureFlatMixRatio[];
 in float v_TextureHillMixRatio[];
 in float v_SpecularComponent[];
-in int   v_visible[];
 in vec3  v_Normal[];
 in vec3  v_ProjectedCoords[];
 
@@ -24,49 +24,35 @@ out float vg_SpecularComponent;
 out vec3  vg_Normal;
 out vec3  vg_ProjectedCoords;
 
+uniform vec4 u_frustumPlanes[5];
+const float TILE_RADIUS = 2;
+
+bool frustumCulling(vec3 position)
+{
+    for (int i = 0; i < u_frustumPlanes.length(); i++)
+    {
+        if (dot(u_frustumPlanes[i].xyz, position) <= -u_frustumPlanes[i].w - TILE_RADIUS)
+          return false;
+    }
+  return true;
+}
+
 void main()
 {
-    if (v_visible[0] == 1)
+    for (int i = 0; i < gl_in.length(); i++)
     {
-        vg_DiffuseComponentHill = v_DiffuseComponentHill[0];
-        vg_DiffuseComponentFlat = v_DiffuseComponentFlat[0];
-        vg_SpecularComponent = v_SpecularComponent[0];
-        gl_Position = gl_in[0].gl_Position;
-        vg_TexCoords = v_TexCoords[0];
-        vg_PosHeight = v_PosHeight[0];
-        vg_TextureFlatMixRatio = v_TextureFlatMixRatio[0];
-        vg_TextureHillMixRatio = v_TextureHillMixRatio[0];
-        vg_Normal = v_Normal[0];
-        vg_ProjectedCoords = v_ProjectedCoords[0];
-        EmitVertex();
-    }
-    if (v_visible[1] == 1)
-    {
-        vg_DiffuseComponentHill = v_DiffuseComponentHill[1];
-        vg_DiffuseComponentFlat = v_DiffuseComponentFlat[1];
-        vg_SpecularComponent = v_SpecularComponent[1];
-        gl_Position = gl_in[1].gl_Position;
-        vg_TexCoords = v_TexCoords[1];
-        vg_PosHeight = v_PosHeight[1];
-        vg_TextureFlatMixRatio = v_TextureFlatMixRatio[1];
-        vg_TextureHillMixRatio = v_TextureHillMixRatio[1];
-        vg_Normal = v_Normal[1];
-        vg_ProjectedCoords = v_ProjectedCoords[1];
-        EmitVertex();
-    }
-    if (v_visible[2] == 1)
-    {
-        vg_DiffuseComponentHill = v_DiffuseComponentHill[2];
-        vg_DiffuseComponentFlat = v_DiffuseComponentFlat[2];
-        vg_SpecularComponent = v_SpecularComponent[2];
-        gl_Position = gl_in[2].gl_Position;
-        vg_TexCoords = v_TexCoords[2];
-        vg_PosHeight = v_PosHeight[2];
-        vg_TextureFlatMixRatio = v_TextureFlatMixRatio[2];
-        vg_TextureHillMixRatio = v_TextureHillMixRatio[2];
-        vg_Normal = v_Normal[2];
-        vg_ProjectedCoords = v_ProjectedCoords[2];
-        EmitVertex();
+        vg_DiffuseComponentHill = v_DiffuseComponentHill[i];
+        vg_DiffuseComponentFlat = v_DiffuseComponentFlat[i];
+        vg_SpecularComponent = v_SpecularComponent[i];
+        gl_Position = gl_in[i].gl_Position;
+        vg_TexCoords = v_TexCoords[i];
+        vg_PosHeight = v_PosHeight[i];
+        vg_TextureFlatMixRatio = v_TextureFlatMixRatio[i];
+        vg_TextureHillMixRatio = v_TextureHillMixRatio[i];
+        vg_Normal = v_Normal[i];
+        vg_ProjectedCoords = v_ProjectedCoords[i];
+        if (frustumCulling(v_FragPos[i]))
+            EmitVertex();
     }
     EndPrimitive();
 }
