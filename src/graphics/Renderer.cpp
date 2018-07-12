@@ -137,7 +137,9 @@ void Renderer::drawWater(WaterMapGenerator *generator, bool animateWater)
 {
   glBindVertexArray(generator->getVAO());
   if (animateWater)
-    generator->updateAnimationFrame();
+    {
+      generator->bufferVertices();
+    }
   glEnable(GL_BLEND);
   glDrawArrays(GL_TRIANGLES, 0, 6 * generator->getTiles().size());
   glDisable(GL_BLEND);

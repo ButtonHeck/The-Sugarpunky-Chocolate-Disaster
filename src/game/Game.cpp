@@ -17,6 +17,8 @@ Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& op
 
 Game::~Game()
 {
+  waterAnimationThread->join();
+  delete waterAnimationThread;
   textureManager->deleteTextures();
   shaderManager.deleteShaders();
   delete textureManager;
@@ -76,6 +78,25 @@ void Game::setupVariables()
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
   prepareTerrain();
+  waterAnimationThread = new std::thread([this]()
+  {
+      while(!glfwWindowShouldClose(window))
+            {
+              if (!options.get(RECREATE_TERRAIN_REQUEST) &&
+                  options.get(ANIMATE_WATER) &&
+                  options.get(RENDER_WATER))
+                {
+                  waterMapGenerator->updateAnimationFrame(options);
+#ifdef _DEBUG
+                  waterThreadAnimationIsWorking = true;
+#endif
+                }
+#ifdef _DEBUG
+              else
+                waterThreadAnimationIsWorking = false;
+#endif
+            }
+        });
 
   textureManager->createUnderwaterReliefTexture(waterMapGenerator);
   shaderManager.setupConstantUniforms();
@@ -236,7 +257,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   if (options.get(RENDER_WATER))
     {
       shaderManager.updateWaterShaders(options.get(WATER_FC), projectionView, viewPosition, viewFrustum);
-      renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER) && frameCounter % 2 == 0);
+      renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER));
     }
 
   //Skybox rendering
@@ -272,6 +293,9 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
       fontManager->renderText("Water culling: " + (options.get(WATER_FC) ? std::string("On") : std::string("Off")), 10.0f, 10.0f, 0.35f);
       fontManager->renderText("Hills culling: " + (options.get(HILLS_FC) ? std::string("On") : std::string("Off")), 10.0f, 30.0f, 0.35f);
       fontManager->renderText("Trees culling: " + (options.get(MODELS_FC) ? std::string("On") : std::string("Off")), 10.0f, 50.0f, 0.35f);
+#ifdef _DEBUG
+      fontManager->renderText("Water anim thread works: " + (waterThreadAnimationIsWorking ? std::string("On") : std::string("Off")), 10.0f, 70.0f, 0.35f);
+#endif
       csRenderer.draw(glm::mat3(camera.getViewMatrix()), aspect_ratio);
     }
 

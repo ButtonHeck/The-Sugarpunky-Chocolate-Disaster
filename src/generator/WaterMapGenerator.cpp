@@ -7,6 +7,7 @@ WaterMapGenerator::WaterMapGenerator()
 WaterMapGenerator::~WaterMapGenerator()
 {
   deleteGLObjects();
+  delete[] vertices;
 }
 
 void WaterMapGenerator::prepareMap()
@@ -33,8 +34,8 @@ void WaterMapGenerator::postPrepareMap()
 
 void WaterMapGenerator::fillBufferData()
 {
-  const size_t VERTEX_DATA_LENGTH = tiles.size() * 36;
-  GLfloat vertices[VERTEX_DATA_LENGTH];
+  numVertices= tiles.size() * 36;
+  vertices = new GLfloat[numVertices];
   for (unsigned int i = 0; i < tiles.size(); i++)
     {
       TerrainTile& tile = tiles[i];
@@ -87,12 +88,18 @@ void WaterMapGenerator::fillBufferData()
   glGenBuffers(1, &vbo);
   glGenBuffers(1, &ebo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(GLfloat), vertices, GL_STREAM_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
   resetAllGLBuffers();
+}
+
+void WaterMapGenerator::bufferVertices()
+{
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(GLfloat), vertices, GL_STREAM_DRAW);
 }
 
 void WaterMapGenerator::addWaterNearbyBaseTerrain()
@@ -503,9 +510,8 @@ GLfloat *WaterMapGenerator::getHeightOffsets()
   return waterHeightOffsets;
 }
 
-void WaterMapGenerator::updateAnimationFrame()
+void WaterMapGenerator::updateAnimationFrame(Options& options)
 {
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
   double frameTime = glfwGetTime();
   double offsetMultiplier = frameTime * 0.1;
   for (size_t i = 0; i < WATER_HEIGHT_OFFSETS_SIZE; i+=2)
@@ -513,11 +519,12 @@ void WaterMapGenerator::updateAnimationFrame()
         waterHeightOffsets[i] = std::cos(offsetMultiplier * (i % 31)) * 0.0625 + WATER_LEVEL;
         waterHeightOffsets[i+1] = std::sin(offsetMultiplier * (i % 29)) * 0.0689 + WATER_LEVEL;
     }
-  GLfloat* waterVertexCoordinatePointer = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
   unsigned int numWaterTiles = tiles.size();
   glm::vec3 normalLR, normalUL;
   for (unsigned int i = 0; i < numWaterTiles; ++i)
     {
+      if (options.get(RECREATE_TERRAIN_REQUEST))
+        return;
       TerrainTile& tile = tiles[i];
       unsigned int pointerOffsetWithStride = i * 36;
       unsigned int heightOffsetWithStrideForLow = (tile.mapY+1) * TILES_WIDTH;
@@ -531,26 +538,25 @@ void WaterMapGenerator::updateAnimationFrame()
       normalLR = glm::vec3(ll - lr, 1, ur - lr); //just do the calculations manually (UR-LR x LL-LR and LL-UL x UR-UL)
       normalUL = glm::vec3(ul - ur, 1, ul - ll);
 
-      *(waterVertexCoordinatePointer+1+pointerOffsetWithStride) = ll;
-      *(waterVertexCoordinatePointer+7+pointerOffsetWithStride) = lr;
-      *(waterVertexCoordinatePointer+13+pointerOffsetWithStride) = ur;
-      *(waterVertexCoordinatePointer+19+pointerOffsetWithStride) = ur;
-      *(waterVertexCoordinatePointer+25+pointerOffsetWithStride) = ul;
-      *(waterVertexCoordinatePointer+31+pointerOffsetWithStride) = ll;
+      *(vertices+1+pointerOffsetWithStride) = ll;
+      *(vertices+7+pointerOffsetWithStride) = lr;
+      *(vertices+13+pointerOffsetWithStride) = ur;
+      *(vertices+19+pointerOffsetWithStride) = ur;
+      *(vertices+25+pointerOffsetWithStride) = ul;
+      *(vertices+31+pointerOffsetWithStride) = ll;
 
-      *(waterVertexCoordinatePointer+3+pointerOffsetWithStride) = normalLR.x;
-      *(waterVertexCoordinatePointer+5+pointerOffsetWithStride) = normalLR.z;
-      *(waterVertexCoordinatePointer+9+pointerOffsetWithStride) = normalLR.x;
-      *(waterVertexCoordinatePointer+11+pointerOffsetWithStride) = normalLR.z;
-      *(waterVertexCoordinatePointer+15+pointerOffsetWithStride) = normalLR.x;
-      *(waterVertexCoordinatePointer+17+pointerOffsetWithStride) = normalLR.z;
+      *(vertices+3+pointerOffsetWithStride) = normalLR.x;
+      *(vertices+5+pointerOffsetWithStride) = normalLR.z;
+      *(vertices+9+pointerOffsetWithStride) = normalLR.x;
+      *(vertices+11+pointerOffsetWithStride) = normalLR.z;
+      *(vertices+15+pointerOffsetWithStride) = normalLR.x;
+      *(vertices+17+pointerOffsetWithStride) = normalLR.z;
 
-      *(waterVertexCoordinatePointer+21+pointerOffsetWithStride) = normalUL.x;
-      *(waterVertexCoordinatePointer+23+pointerOffsetWithStride) = normalUL.z;
-      *(waterVertexCoordinatePointer+27+pointerOffsetWithStride) = normalUL.x;
-      *(waterVertexCoordinatePointer+29+pointerOffsetWithStride) = normalUL.z;
-      *(waterVertexCoordinatePointer+33+pointerOffsetWithStride) = normalUL.x;
-      *(waterVertexCoordinatePointer+35+pointerOffsetWithStride) = normalUL.z;
+      *(vertices+21+pointerOffsetWithStride) = normalUL.x;
+      *(vertices+23+pointerOffsetWithStride) = normalUL.z;
+      *(vertices+27+pointerOffsetWithStride) = normalUL.x;
+      *(vertices+29+pointerOffsetWithStride) = normalUL.z;
+      *(vertices+33+pointerOffsetWithStride) = normalUL.x;
+      *(vertices+35+pointerOffsetWithStride) = normalUL.z;
     }
-  glUnmapBuffer(GL_ARRAY_BUFFER);
 }
