@@ -91,10 +91,13 @@ void Game::setupVariables()
                   waterThreadAnimationIsWorking = true;
 #endif
                 }
-#ifdef _DEBUG
               else
-                waterThreadAnimationIsWorking = false;
+                {
+#ifdef _DEBUG
+                  waterThreadAnimationIsWorking = false;
 #endif
+                  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                }
             }
         });
 
