@@ -303,8 +303,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
     }
 
   //reset texture units to terrain textures after we done with models and text
-  glActiveTexture(GL_TEXTURE0 + FLAT);
-  glBindTexture(GL_TEXTURE_2D, textureManager->get(FLAT));
+  glBindTextureUnit(FLAT, textureManager->get(FLAT));
 }
 
 void Game::drawFrameObjectsDepthmap()
@@ -324,8 +323,7 @@ void Game::drawFrameObjectsDepthmap()
   glEnable(GL_CULL_FACE); //or set back face culling
 
   //reset texture units to terrain textures after we done with models
-  glActiveTexture(GL_TEXTURE0 + FLAT);
-  glBindTexture(GL_TEXTURE_2D, textureManager->get(FLAT));
+  glBindTextureUnit(FLAT, textureManager->get(FLAT));
 }
 
 void Game::loop()
