@@ -4,7 +4,9 @@ HillsMapGenerator::HillsMapGenerator(std::vector<std::vector<float> > &waterMap)
   :
     MapGenerator(),
     waterMap(waterMap)
-{}
+{
+  randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
+}
 
 HillsMapGenerator::~HillsMapGenerator()
 {
@@ -238,7 +240,6 @@ void HillsMapGenerator::createTiles()
 void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY density)
 {
   std::uniform_real_distribution<float> heightDistribution(0.3f, 0.8f);
-  std::default_random_engine randomizer;
   float density_value = 3.0f * (float)TILES_WIDTH;
   if (density == HILL_DENSITY::THIN)
       density_value = 3.1f * (float)TILES_WIDTH;

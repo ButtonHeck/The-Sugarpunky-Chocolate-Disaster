@@ -2,6 +2,7 @@
 #define HILLSMAPGENERATOR_H
 #include "MapGenerator.h"
 #include <random>
+#include <chrono>
 
 class HillsMapGenerator : public MapGenerator
 {
@@ -13,6 +14,7 @@ public:
   void createTiles();
 private:
   std::vector<std::vector<float>>& waterMap;
+  std::default_random_engine randomizer;
   void generateMap(int cycles, float* max_height, HILL_DENSITY density);
   bool hasWaterNearby(unsigned int x, unsigned int y, unsigned int radius);
   void compressMap(float threshold_percent, float* limit, float ratio);

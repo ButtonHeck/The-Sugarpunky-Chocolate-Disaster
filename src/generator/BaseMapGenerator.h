@@ -1,6 +1,7 @@
 #ifndef BASEMAPGENERATOR_H
 #define BASEMAPGENERATOR_H
 #include <random>
+#include <chrono>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "MapGenerator.h"

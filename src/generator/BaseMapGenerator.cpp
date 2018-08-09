@@ -6,6 +6,7 @@ BaseMapGenerator::BaseMapGenerator(std::vector<std::vector<float> > &waterMap, s
     waterMap(waterMap),
     hillMap(hillMap)
 {
+  randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
   squareTiles.reserve(NUM_TILES / CHUNK_SIZE * CHUNK_SIZE);
   initializeMap(chunkMap);
 }

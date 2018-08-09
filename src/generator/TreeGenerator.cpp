@@ -5,6 +5,7 @@ TreeGenerator::TreeGenerator(std::initializer_list<Model> plainTrees, std::initi
     plainTrees(plainTrees),
     hillTrees(hillTrees)
 {
+  randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
 }
 
 void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
@@ -28,7 +29,6 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
   treeModels.clear();
   std::uniform_real_distribution<float> modelSizeDistribution(0.27f, 0.32f);
   std::uniform_real_distribution<float> modelPositionDistribution(-0.25f, 0.25f);
-  std::default_random_engine randomizer;
   unsigned int treeCounter = 0, chunkCounter = 0;
 
   std::vector<unsigned int> instanceOffsetsVector(plainTrees.size());
