@@ -12,13 +12,8 @@ void MapGenerator::initializeMap(std::vector<std::vector<float>>& map)
   map.reserve(TILES_HEIGHT + 1);
   for (size_t row = 0; row < TILES_HEIGHT + 1; row++)
     {
-      std::vector<float> rowN;
-      rowN.reserve(TILES_WIDTH + 1);
-      map.emplace_back(rowN);
+      map.emplace_back(std::vector<float>(TILES_WIDTH + 1, 0));
     }
-  for (auto& row : map)
-    for (size_t elem = 0; elem < TILES_WIDTH + 1; elem++)
-      row.emplace_back(0);
 }
 
 void MapGenerator::resetAllGLBuffers()
@@ -63,10 +58,7 @@ void MapGenerator::createTiles(bool flat, bool createOnZeroTiles, std::vector<st
                   }
                 else
                   {
-                    ll = map[y][x];
-                    lr = map[y][x];
-                    ur = map[y][x];
-                    ul = map[y][x];
+                    ll = lr = ur = ul = map[y][x];
                   }
                 tiles.emplace_back(x, y, ll, lr, ur, ul);
               }

@@ -32,7 +32,7 @@ void Model::processNode(aiNode *node, const aiScene* scene)
   for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
       aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-      meshes.push_back(processMesh(mesh, scene));
+      meshes.emplace_back(std::move(processMesh(mesh, scene)));
     }
   for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
@@ -86,14 +86,14 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene)
       vector.y = mesh->mBitangents[i].y;
       vector.z = mesh->mBitangents[i].z;
       vertex.Bitangent = vector;
-      vertices.push_back(vertex);
+      vertices.emplace_back(std::move(vertex));
     }
   //process indices
   for (unsigned int i=0; i < mesh->mNumFaces; i++)
     {
       aiFace face = mesh->mFaces[i];
       for (unsigned int j = 0; j < face.mNumIndices; j++)
-        indices.push_back(face.mIndices[j]);
+        indices.emplace_back(std::move(face.mIndices[j]));
     }
   //process materials
   aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
@@ -136,8 +136,8 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *material, aiTexture
           std::string path = this->directory + '/' + std::string(texturePath.C_Str());
           texture.id = textureLoader.loadTexture(path, 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, !INCLUDE_RES_DIR);
           texture.path = texturePath.C_Str();
-          textures.push_back(texture);
-          textures_loaded.push_back(texture);
+          textures.emplace_back(texture);
+          textures_loaded.emplace_back(texture);
         }
     }
   return textures;

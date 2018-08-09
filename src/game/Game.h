@@ -41,7 +41,7 @@ private:
   float aspect_ratio;
   GLFWwindow* window;
   glm::vec3& cursorToViewportDirection;
-  Timer timer;
+  Timer CPU_timer;
   Camera& camera;
   Renderer renderer = Renderer(camera);
   Frustum viewFrustum;

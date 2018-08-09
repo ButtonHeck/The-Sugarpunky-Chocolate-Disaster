@@ -278,7 +278,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   //font rendering
   if (options.get(RENDER_DEBUG_TEXT))
     {
-      fontManager->renderText("FPS: " + std::to_string(timer.getFPS()), 10.0f, (float)scr_height - 25.0f, 0.35f);
+      fontManager->renderText("CPU UPS: " + std::to_string(CPU_timer.getFPS()), 10.0f, (float)scr_height - 25.0f, 0.35f);
       fontManager->renderText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                              + std::to_string(viewPosition.y).substr(0,6) + ": "
                              + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 45.0f, 0.35f);
@@ -328,6 +328,9 @@ void Game::drawFrameObjectsDepthmap()
 
 void Game::loop()
 {
+  input.processKeyboard();
+  input.processKeyboardCamera(CPU_timer.tick(), hillMapGenerator->getMap());
+
   //recreate routine
   if (options.get(RECREATE_TERRAIN_REQUEST))
     {
@@ -370,8 +373,6 @@ void Game::loop()
   bool multisamplingEnabled = options.get(MULTISAMPLE_ENABLE);
   glBindFramebuffer(GL_FRAMEBUFFER, multisamplingEnabled ? multisampleFBO : screenFBO);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  input.processKeyboard();
-  input.processKeyboardCamera(timer.tick(), hillMapGenerator->getMap());
 
   //update view and projection matrices
   glm::mat4 view = camera.getViewMatrix();

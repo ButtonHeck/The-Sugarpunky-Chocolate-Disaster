@@ -23,7 +23,7 @@ private:
 inline void ModelChunk::setInstanceOffsetsVector(std::vector<unsigned int> &instanceOffsets)
 {
   for (unsigned int i = 0; i < instanceOffsets.size(); i++)
-    this->instanceOffsets.push_back(instanceOffsets[i]);
+    this->instanceOffsets.emplace_back(instanceOffsets[i]);
 }
 
 inline void ModelChunk::setInstanceOffset(unsigned int index, unsigned int offset)
@@ -34,7 +34,7 @@ inline void ModelChunk::setInstanceOffset(unsigned int index, unsigned int offse
 inline void ModelChunk::setNumInstancesVector(std::vector<unsigned int> &numInstances)
 {
   for (unsigned int i = 0; i < numInstances.size(); i++)
-    this->numInstances.push_back(numInstances[i]);
+    this->numInstances.emplace_back(numInstances[i]);
 }
 
 inline void ModelChunk::setNumInstances(unsigned int index, unsigned int instances)

@@ -4,7 +4,7 @@ Frustum::Frustum()
 {
   for (unsigned int i = 0; i < 5; i++)
     {
-      frustumPlanes.push_back(glm::vec4(0.0f));
+      frustumPlanes.emplace_back(0.0f);
     }
 }
 

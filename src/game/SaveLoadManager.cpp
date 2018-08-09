@@ -139,7 +139,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
       unsigned int numTrees = 0;
       input >> numTrees;
       numAllTrees[i] = numTrees;
-      treeModels.push_back(new glm::mat4[numTrees]);
+      treeModels.emplace_back(new glm::mat4[numTrees]);
       for (unsigned int t = 0; t < numTrees; t++)
         {
           glm::mat4 model;
@@ -158,7 +158,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
       unsigned int numHillTrees = 0;
       input >> numHillTrees;
       numAllHillTrees[i] = numHillTrees;
-      hillTreeModels.push_back(new glm::mat4[numHillTrees]);
+      hillTreeModels.emplace_back(new glm::mat4[numHillTrees]);
       for (unsigned int m = 0; m < numHillTrees; m++)
         {
           glm::mat4 model;

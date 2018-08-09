@@ -37,8 +37,8 @@ void BaseMapGenerator::fillShoreBufferData()
   unsigned int numChunks = shoreChunks.size();
   for (unsigned int i = 0; i < numChunks; i++)
     {
-      shoreVaos.push_back(0);
-      shoreVbos.push_back(0);
+      shoreVaos.emplace_back(0);
+      shoreVbos.emplace_back(0);
       unsigned int numTiles = shoreChunks[i].getNumInstances();
       GLfloat vertices[numTiles * 48];
       glm::vec3 normal1, normal2;
