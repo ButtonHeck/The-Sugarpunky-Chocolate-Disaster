@@ -213,12 +213,11 @@ void ShaderManager::updateWaterShaders(bool enableFC, glm::mat4 &projectionView,
     }
 }
 
-void ShaderManager::updateSkyShader(glm::mat4 &view, glm::mat4 &projection)
+void ShaderManager::updateSkyShader(glm::mat4 &projectionView)
 {
   Shader* shader = &shaders[SHADER_SKY].second;
   shader->use();
-  shader->setMat4("u_view", view);
-  shader->setMat4("u_projection", projection);
+  shader->setMat4("u_projectionView", projectionView);
 }
 
 void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &viewPosition, bool shadowOnTrees, bool enableShadows)

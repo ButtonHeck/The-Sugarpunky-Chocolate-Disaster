@@ -41,7 +41,7 @@ public:
   void updateBuildableShader(glm::mat4& projectionView);
   void updateSelectedShader(glm::mat4& projectionView, glm::mat4& selectedModel);
   void updateWaterShaders(bool enableFC, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum);
-  void updateSkyShader(glm::mat4& view, glm::mat4& projection);
+  void updateSkyShader(glm::mat4 &projectionView);
   void updateModelShader(glm::mat4& projectionView, glm::vec3& viewPosition, bool shadowOnTrees, bool enableShadows);
   void deleteShaders();
 private:

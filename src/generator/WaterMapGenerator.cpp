@@ -25,7 +25,7 @@ void WaterMapGenerator::prepareMap()
 
 void WaterMapGenerator::postPrepareMap()
 {
-  postProcessMap = map;
+  initializeMap(postProcessMap);
   addWaterNearbyBaseTerrain();
   fillSharpTerrainWithWater();
   createTiles(true, false, postProcessMap, 0);

@@ -264,8 +264,8 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
     }
 
   //Skybox rendering
-  glm::mat4 skyView = glm::mat4(glm::mat3(camera.getViewMatrix()));
-  shaderManager.updateSkyShader(skyView, projection);
+  glm::mat4 skyProjectionView = projection * glm::mat4(glm::mat3(camera.getViewMatrix()));
+  shaderManager.updateSkyShader(skyProjectionView);
   renderer.drawSkybox(&skybox);
 
   //trees chunks rendering
