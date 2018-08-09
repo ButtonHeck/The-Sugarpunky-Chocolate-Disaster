@@ -73,8 +73,8 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
 
       if (!indicesCrossed)
         {
-          normal1 = glm::vec3(tile.lowLeft - tile.lowRight, 1, tile.upperRight - tile.lowRight);
-          normal2 = glm::vec3(tile.upperLeft - tile.upperRight, 1, tile.upperLeft - tile.lowLeft);
+          normal1 = glm::normalize(glm::vec3(tile.lowLeft - tile.lowRight, 1, tile.upperRight - tile.lowRight));
+          normal2 = glm::normalize(glm::vec3(tile.upperLeft - tile.upperRight, 1, tile.upperLeft - tile.lowLeft));
           //ll1
           vertices[offset] =   -1- HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+1] = tile.lowLeft;
@@ -132,8 +132,8 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
         }
       else
         {
-          normal1 = glm::vec3(tile.lowLeft - tile.lowRight, 1, tile.upperLeft - tile.lowLeft);
-          normal2 = glm::vec3(tile.upperLeft - tile.upperRight, 1, tile.upperRight - tile.lowRight);
+          normal1 = glm::normalize(glm::vec3(tile.lowLeft - tile.lowRight, 1, tile.upperLeft - tile.lowLeft));
+          normal2 = glm::normalize(glm::vec3(tile.upperLeft - tile.upperRight, 1, tile.upperRight - tile.lowRight));
           //ul1
           vertices[offset] =   -1 - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+1] = tile.upperLeft;

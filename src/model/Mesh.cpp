@@ -48,18 +48,12 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
   glGenBuffers(1, &instanceVBO);
   glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * numModels, &models[0], GL_STATIC_DRAW);
-  glEnableVertexAttribArray(5);
-  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), 0);
-  glEnableVertexAttribArray(6);
-  glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(sizeof(glm::vec4)));
-  glEnableVertexAttribArray(7);
-  glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4)));
-  glEnableVertexAttribArray(8);
-  glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4)));
-  glVertexAttribDivisor(5, 1);
-  glVertexAttribDivisor(6, 1);
-  glVertexAttribDivisor(7, 1);
-  glVertexAttribDivisor(8, 1);
+  for (unsigned int i = 0; i < 4; ++i)
+    {
+      glEnableVertexAttribArray(i+5);
+      glVertexAttribPointer(i+5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(i * sizeof(glm::vec4)));
+      glVertexAttribDivisor(i+5, 1);
+    }
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

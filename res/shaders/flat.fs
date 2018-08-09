@@ -4,11 +4,11 @@ out vec4 o_FragColor;
 
 in vec3 v_FragPos;
 in vec2 v_TexCoords;
-in vec3 v_LightDir;
 in vec3 v_ProjectedCoords;
 
 uniform sampler2D u_flat_diffuse;
 uniform sampler2D u_flat_diffuse2;
+uniform vec3      u_lightDir;
 uniform sampler2D u_normal_map;
 uniform float     u_mapDimension;
 uniform sampler2D u_shadowMap;
@@ -58,7 +58,7 @@ void main()
 
     vec3 diffuseColor;
     vec3 resultColor;
-    float diffuseComponent = dot(ShadingNormal, v_LightDir);
+    float diffuseComponent = dot(ShadingNormal, u_lightDir);
 
     if (u_shadowEnable)
     {

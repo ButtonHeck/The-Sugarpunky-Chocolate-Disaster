@@ -46,8 +46,8 @@ void BaseMapGenerator::fillShoreBufferData()
         {
           TerrainTile& tile = tiles[shoreChunks[i].getInstanceOffset() + c];
           int offset = c * 48;
-          normal1 = glm::vec3(tile.lowLeft - tile.lowRight, 1, tile.upperRight - tile.lowRight);
-          normal2 = glm::vec3(tile.upperLeft - tile.upperRight, 1, tile.upperLeft - tile.lowLeft);
+          normal1 = glm::normalize(glm::vec3(tile.lowLeft - tile.lowRight, 1, tile.upperRight - tile.lowRight));
+          normal2 = glm::normalize(glm::vec3(tile.upperLeft - tile.upperRight, 1, tile.upperLeft - tile.lowLeft));
           //ll1
           vertices[offset] =   -1- HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+1] = tile.lowLeft;
@@ -151,18 +151,12 @@ void BaseMapGenerator::fillSquareBufferData()
     }
   glBindBuffer(GL_ARRAY_BUFFER, squareModelVbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * squareTiles.size(), &baseInstanceChunkModels[0], GL_STATIC_DRAW);
-  glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), 0);
-  glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(sizeof(glm::vec4)));
-  glEnableVertexAttribArray(5);
-  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4)));
-  glEnableVertexAttribArray(6);
-  glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4)));
-  glVertexAttribDivisor(3, 1);
-  glVertexAttribDivisor(4, 1);
-  glVertexAttribDivisor(5, 1);
-  glVertexAttribDivisor(6, 1);
+  for (unsigned int i = 0; i < 4; ++i)
+    {
+      glEnableVertexAttribArray(i+3);
+      glVertexAttribPointer(i+3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(i * sizeof(glm::vec4)));
+      glVertexAttribDivisor(i+3, 1);
+    }
   resetAllGLBuffers();
   delete[] baseInstanceChunkModels;
 }
@@ -199,18 +193,12 @@ void BaseMapGenerator::fillCellBufferData()
     }
   glBindBuffer(GL_ARRAY_BUFFER, cellModelVbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * cellTiles.size(), &cellInstanceModels[0], GL_STATIC_DRAW);
-  glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), 0);
-  glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(sizeof(glm::vec4)));
-  glEnableVertexAttribArray(5);
-  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4)));
-  glEnableVertexAttribArray(6);
-  glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4)));
-  glVertexAttribDivisor(3, 1);
-  glVertexAttribDivisor(4, 1);
-  glVertexAttribDivisor(5, 1);
-  glVertexAttribDivisor(6, 1);
+  for (unsigned int i = 0; i < 4; ++i)
+    {
+      glEnableVertexAttribArray(i+3);
+      glVertexAttribPointer(i+3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(i * sizeof(glm::vec4)));
+      glVertexAttribDivisor(i+3, 1);
+    }
   delete[] cellInstanceModels;
   resetAllGLBuffers();
 }
