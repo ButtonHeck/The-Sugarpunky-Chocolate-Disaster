@@ -172,6 +172,7 @@ void BaseMapGenerator::fillCellBufferData()
   glGenBuffers(1, &cellVbo);
   glGenBuffers(1, &cellEbo);
   glCreateBuffers(1, &cellModelVbo);
+  glCreateBuffers(1, &cellMultiDE_I_DIBO);
   GLfloat cellVertices[20] = {
        0.0f, 0.0f,  1.0f, 0.0f,  0.0f,
        1.0f, 0.0f,  1.0f, 1.0f,  0.0f,
@@ -179,6 +180,7 @@ void BaseMapGenerator::fillCellBufferData()
        0.0f, 0.0f,  0.0f, 0.0f,  1.0f
   };
   glBindVertexArray(cellVao);
+  glBindBuffer(GL_DRAW_INDIRECT_BUFFER, cellMultiDE_I_DIBO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cellEbo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, cellVbo);
@@ -460,6 +462,7 @@ void BaseMapGenerator::deleteGLObjects()
   glDeleteBuffers(1, &cellVbo);
   glDeleteBuffers(1, &cellEbo);
   glDeleteBuffers(1, &cellModelVbo);
+  glDeleteBuffers(1, &cellMultiDE_I_DIBO);
   glDeleteVertexArrays(1, &shoreVao);
   glDeleteBuffers(1, &shoreVbo);
 }

@@ -35,7 +35,7 @@ public:
   int getNumCellInstances();
 private:
   GLuint squareVao, squareVbo, squareEbo, squareModelVbo;
-  GLuint cellVao, cellVbo, cellEbo, cellModelVbo;
+  GLuint cellVao, cellVbo, cellEbo, cellModelVbo, cellMultiDE_I_DIBO;
   GLuint shoreVao, shoreVbo;
   size_t shoreVerticesToDraw = 0;
   std::vector<std::vector<float>>& waterMap;

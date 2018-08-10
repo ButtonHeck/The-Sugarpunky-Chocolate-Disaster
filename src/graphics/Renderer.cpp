@@ -24,62 +24,67 @@ void Renderer::drawShore(BaseMapGenerator *generator)
 
 void Renderer::drawFlatTerrain(BaseMapGenerator *generator, Frustum& frustum)
 {
+  //square chunks are better to render without FC
   glBindVertexArray(generator->getSquareVAO());
-  auto baseChunks = generator->getSquareChunks();
-  float radius = CHUNK_SIZE / 2.0f * glm::sqrt(2);
-  for (unsigned int i = 0; i < baseChunks.size(); i++)
-    {
-      glm::vec2 chunkMidPoint = baseChunks[i].getMidPoint();
-      glm::vec2 chunkLL = glm::vec2(chunkMidPoint.x - CHUNK_SIZE / 2.0f, chunkMidPoint.y + CHUNK_SIZE / 2.0f);
-      if (frustum.isInside(chunkLL.x, 0.0f, chunkLL.y, radius))
-        {
-          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
-          continue;
-        }
-      glm::vec2 chunkLR = glm::vec2(chunkMidPoint.x + CHUNK_SIZE / 2.0f, chunkMidPoint.y + CHUNK_SIZE / 2.0f);
-      if (frustum.isInside(chunkLR.x, 0.0f, chunkLR.y, radius))
-        {
-          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
-          continue;
-        }
-      glm::vec2 chunkUR = glm::vec2(chunkMidPoint.x + CHUNK_SIZE / 2.0f, chunkMidPoint.y - CHUNK_SIZE / 2.0f);
-      if (frustum.isInside(chunkUR.x, 0.0f, chunkUR.y, radius))
-        {
-          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
-          continue;
-        }
-      glm::vec2 chunkUL = glm::vec2(chunkMidPoint.x - CHUNK_SIZE / 2.0f, chunkMidPoint.y - CHUNK_SIZE / 2.0f);
-      if (frustum.isInside(chunkUL.x, 0.0f, chunkUL.y, radius))
-        glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1, baseChunks[i].getInstanceOffset());
-    }
+  glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, generator->getNumSquareInstances());
 
+  //these ones should probably be FC-ed with multiDrawIndirect
   glBindVertexArray(generator->getCellVAO());
+  float radius = CHUNK_SIZE / 2.0f * glm::sqrt(2);
   auto cellChunks = generator->getCellChunks();
+  GLuint multiDrawIndirectData[cellChunks.size() * 5]; // { indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
+  GLuint dataOffset = 0;
+  GLuint multiDE_I_primCount = 0;
+  const float HALF_CHUNK_SIZE = CHUNK_SIZE / 2.0f;
   for (unsigned int i = 0; i < cellChunks.size(); i++)
     {
       glm::vec2 chunkMidPoint = cellChunks[i].getMidPoint();
-      glm::vec2 chunkLL = glm::vec2(chunkMidPoint.x - CHUNK_SIZE / 2.0f, chunkMidPoint.y + CHUNK_SIZE / 2.0f);
+      glm::vec2 chunkLL = glm::vec2(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE);
       if (frustum.isInside(chunkLL.x, 0.0f, chunkLL.y, radius))
         {
-          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
+          ++multiDE_I_primCount;
+          multiDrawIndirectData[dataOffset++] = 6;
+          multiDrawIndirectData[dataOffset++] = cellChunks[i].getNumInstances();
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = cellChunks[i].getInstanceOffset();
           continue;
         }
-      glm::vec2 chunkLR = glm::vec2(chunkMidPoint.x + CHUNK_SIZE / 2.0f, chunkMidPoint.y + CHUNK_SIZE / 2.0f);
+      glm::vec2 chunkLR = glm::vec2(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE);
       if (frustum.isInside(chunkLR.x, 0.0f, chunkLR.y, radius))
         {
-          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
+          ++multiDE_I_primCount;
+          multiDrawIndirectData[dataOffset++] = 6;
+          multiDrawIndirectData[dataOffset++] = cellChunks[i].getNumInstances();
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = cellChunks[i].getInstanceOffset();
           continue;
         }
-      glm::vec2 chunkUR = glm::vec2(chunkMidPoint.x + CHUNK_SIZE / 2.0f, chunkMidPoint.y - CHUNK_SIZE / 2.0f);
+      glm::vec2 chunkUR = glm::vec2(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE);
       if (frustum.isInside(chunkUR.x, 0.0f, chunkUR.y, radius))
         {
-          glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
+          ++multiDE_I_primCount;
+          multiDrawIndirectData[dataOffset++] = 6;
+          multiDrawIndirectData[dataOffset++] = cellChunks[i].getNumInstances();
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = cellChunks[i].getInstanceOffset();
           continue;
         }
-      glm::vec2 chunkUL = glm::vec2(chunkMidPoint.x - CHUNK_SIZE / 2.0f, chunkMidPoint.y - CHUNK_SIZE / 2.0f);
+      glm::vec2 chunkUL = glm::vec2(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE);
       if (frustum.isInside(chunkUL.x, 0.0f, chunkUL.y, radius))
-        glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
+        {
+          ++multiDE_I_primCount;
+          multiDrawIndirectData[dataOffset++] = 6;
+          multiDrawIndirectData[dataOffset++] = cellChunks[i].getNumInstances();
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = cellChunks[i].getInstanceOffset();
+        }
     }
+  glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData, GL_STATIC_DRAW);
+  glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, multiDE_I_primCount, 0);
 }
 
 void Renderer::drawUnderwaterQuad(UnderwaterQuadMapGenerator *generator)
