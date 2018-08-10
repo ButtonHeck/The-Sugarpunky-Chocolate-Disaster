@@ -255,7 +255,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   }
   {
     BENCHMARK("Renderer: draw shore", true);
-    renderer.drawShore(baseMapGenerator, viewFrustum);
+    renderer.drawShore(baseMapGenerator);
   }
 
   //flat terrain chunks drawing
@@ -392,7 +392,7 @@ void Game::drawFrameObjectsDepthmap()
   }
   {
     BENCHMARK("Renderer: draw shore depthmap", true);
-    renderer.drawShore(baseMapGenerator, viewFrustum);
+    renderer.drawShore(baseMapGenerator);
   }
 
   if (options.get(RENDER_TREE_MODELS))

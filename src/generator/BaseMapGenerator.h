@@ -26,7 +26,8 @@ public:
   std::vector<TerrainChunk>& getCellChunks();
   std::vector<TerrainTile>& getSquareTiles();
   std::vector<TerrainTile>& getCellTiles();
-  GLuint& getShoreVao(int i);
+  GLuint& getShoreVao();
+  size_t getShoreVerticesToDraw() const;
   GLuint& getSquareVAO();
   GLuint& getCellVAO();
   std::vector<std::vector<float>>& getChunkMap();
@@ -35,7 +36,8 @@ public:
 private:
   GLuint squareVao, squareVbo, squareEbo, squareModelVbo;
   GLuint cellVao, cellVbo, cellEbo, cellModelVbo;
-  std::vector<GLuint> shoreVaos, shoreVbos;
+  GLuint shoreVao, shoreVbo;
+  size_t shoreVerticesToDraw = 0;
   std::vector<std::vector<float>>& waterMap;
   std::vector<std::vector<float>>& hillMap;
   std::vector<TerrainTile> squareTiles;

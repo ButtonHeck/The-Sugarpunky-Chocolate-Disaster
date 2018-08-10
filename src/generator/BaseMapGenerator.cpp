@@ -35,87 +35,92 @@ void BaseMapGenerator::prepareMap(bool randomizeShoreFlag)
 void BaseMapGenerator::fillShoreBufferData()
 {
   unsigned int numChunks = shoreChunks.size();
+  glCreateVertexArrays(1, &shoreVao);
+  glBindVertexArray(shoreVao);
+  glCreateBuffers(1, &shoreVbo);
+  glBindBuffer(GL_ARRAY_BUFFER, shoreVbo);
+  GLfloat *vertices = new GLfloat[NUM_TILES * 48];
+  size_t bytesToBuffer = 0;
   for (unsigned int i = 0; i < numChunks; i++)
     {
-      shoreVaos.emplace_back(0);
-      shoreVbos.emplace_back(0);
       unsigned int numTiles = shoreChunks[i].getNumInstances();
-      GLfloat vertices[numTiles * 48];
       glm::vec3 normal1, normal2;
       for (unsigned int c = 0; c < numTiles; c++)
         {
           TerrainTile& tile = tiles[shoreChunks[i].getInstanceOffset() + c];
-          int offset = c * 48;
           normal1 = glm::normalize(glm::vec3(tile.lowLeft - tile.lowRight, 1, tile.upperRight - tile.lowRight));
           normal2 = glm::normalize(glm::vec3(tile.upperLeft - tile.upperRight, 1, tile.upperLeft - tile.lowLeft));
           //ll1
-          vertices[offset] =   -1- HALF_TILES_WIDTH + tile.mapX;
-          vertices[offset+1] = tile.lowLeft;
-          vertices[offset+2] = - HALF_TILES_HEIGHT + tile.mapY;
-          vertices[offset+3] = 0.0f;
-          vertices[offset+4] = 0.0f;
-          vertices[offset+5] = normal1.x;
-          vertices[offset+6] = normal1.y;
-          vertices[offset+7] = normal1.z;
+          vertices[bytesToBuffer++] =   -1- HALF_TILES_WIDTH + tile.mapX;
+          vertices[bytesToBuffer++] = tile.lowLeft;
+          vertices[bytesToBuffer++] = - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[bytesToBuffer++] = 0.0f;
+          vertices[bytesToBuffer++] = 0.0f;
+          vertices[bytesToBuffer++] = normal1.x;
+          vertices[bytesToBuffer++] = normal1.y;
+          vertices[bytesToBuffer++] = normal1.z;
+          ++shoreVerticesToDraw;
           //lr1
-          vertices[offset+8] =  - HALF_TILES_WIDTH + tile.mapX;
-          vertices[offset+9] =  tile.lowRight;
-          vertices[offset+10] = - HALF_TILES_HEIGHT + tile.mapY;
-          vertices[offset+11] = 1.0f;
-          vertices[offset+12] = 0.0f;
-          vertices[offset+13] = normal1.x;
-          vertices[offset+14] = normal1.y;
-          vertices[offset+15] = normal1.z;
+          vertices[bytesToBuffer++] =  - HALF_TILES_WIDTH + tile.mapX;
+          vertices[bytesToBuffer++] =  tile.lowRight;
+          vertices[bytesToBuffer++] = - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[bytesToBuffer++] = 1.0f;
+          vertices[bytesToBuffer++] = 0.0f;
+          vertices[bytesToBuffer++] = normal1.x;
+          vertices[bytesToBuffer++] = normal1.y;
+          vertices[bytesToBuffer++] = normal1.z;
+          ++shoreVerticesToDraw;
           //ur1
-          vertices[offset+16] = - HALF_TILES_WIDTH + tile.mapX;
-          vertices[offset+17] = tile.upperRight;
-          vertices[offset+18] = -1 - HALF_TILES_HEIGHT + tile.mapY;
-          vertices[offset+19] = 1.0f;
-          vertices[offset+20] = 1.0f;
-          vertices[offset+21] = normal1.x;
-          vertices[offset+22] = normal1.y;
-          vertices[offset+23] = normal1.z;
+          vertices[bytesToBuffer++] = - HALF_TILES_WIDTH + tile.mapX;
+          vertices[bytesToBuffer++] = tile.upperRight;
+          vertices[bytesToBuffer++] = -1 - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[bytesToBuffer++] = 1.0f;
+          vertices[bytesToBuffer++] = 1.0f;
+          vertices[bytesToBuffer++] = normal1.x;
+          vertices[bytesToBuffer++] = normal1.y;
+          vertices[bytesToBuffer++] = normal1.z;
+          ++shoreVerticesToDraw;
           //ur2
-          vertices[offset+24] = - HALF_TILES_WIDTH + tile.mapX;
-          vertices[offset+25] = tile.upperRight;
-          vertices[offset+26] = -1 - HALF_TILES_HEIGHT + tile.mapY;
-          vertices[offset+27] = 1.0f;
-          vertices[offset+28] = 1.0f;
-          vertices[offset+29] = normal2.x;
-          vertices[offset+30] = normal2.y;
-          vertices[offset+31] = normal2.z;
+          vertices[bytesToBuffer++] = - HALF_TILES_WIDTH + tile.mapX;
+          vertices[bytesToBuffer++] = tile.upperRight;
+          vertices[bytesToBuffer++] = -1 - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[bytesToBuffer++] = 1.0f;
+          vertices[bytesToBuffer++] = 1.0f;
+          vertices[bytesToBuffer++] = normal2.x;
+          vertices[bytesToBuffer++] = normal2.y;
+          vertices[bytesToBuffer++] = normal2.z;
+          ++shoreVerticesToDraw;
           //ul2
-          vertices[offset+32] = -1 - HALF_TILES_WIDTH + tile.mapX;
-          vertices[offset+33] = tile.upperLeft;
-          vertices[offset+34] = -1 - HALF_TILES_HEIGHT + tile.mapY;
-          vertices[offset+35] = 0.0f;
-          vertices[offset+36] = 1.0f;
-          vertices[offset+37] = normal2.x;
-          vertices[offset+38] = normal2.y;
-          vertices[offset+39] = normal2.z;
+          vertices[bytesToBuffer++] = -1 - HALF_TILES_WIDTH + tile.mapX;
+          vertices[bytesToBuffer++] = tile.upperLeft;
+          vertices[bytesToBuffer++] = -1 - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[bytesToBuffer++] = 0.0f;
+          vertices[bytesToBuffer++] = 1.0f;
+          vertices[bytesToBuffer++] = normal2.x;
+          vertices[bytesToBuffer++] = normal2.y;
+          vertices[bytesToBuffer++] = normal2.z;
+          ++shoreVerticesToDraw;
           //ll2
-          vertices[offset+40] = -1- HALF_TILES_WIDTH + tile.mapX;
-          vertices[offset+41] = tile.lowLeft;
-          vertices[offset+42] = - HALF_TILES_HEIGHT + tile.mapY;
-          vertices[offset+43] = 0.0f;
-          vertices[offset+44] = 0.0f;
-          vertices[offset+45] = normal2.x;
-          vertices[offset+46] = normal2.y;
-          vertices[offset+47] = normal2.z;
+          vertices[bytesToBuffer++] = -1- HALF_TILES_WIDTH + tile.mapX;
+          vertices[bytesToBuffer++] = tile.lowLeft;
+          vertices[bytesToBuffer++] = - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[bytesToBuffer++] = 0.0f;
+          vertices[bytesToBuffer++] = 0.0f;
+          vertices[bytesToBuffer++] = normal2.x;
+          vertices[bytesToBuffer++] = normal2.y;
+          vertices[bytesToBuffer++] = normal2.z;
+          ++shoreVerticesToDraw;
         }
-      glGenVertexArrays(1, &(shoreVaos[i]));
-      glGenBuffers(1, &(shoreVbos[i]));
-      glBindVertexArray(shoreVaos[i]);
-      glBindBuffer(GL_ARRAY_BUFFER, shoreVbos[i]);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
-      glEnableVertexAttribArray(1);
-      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-      glEnableVertexAttribArray(2);
-      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
-      resetAllGLBuffers();
     }
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * bytesToBuffer, vertices, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
+  delete[] vertices;
+  resetAllGLBuffers();
 }
 
 void BaseMapGenerator::fillSquareBufferData()
@@ -455,11 +460,8 @@ void BaseMapGenerator::deleteGLObjects()
   glDeleteBuffers(1, &cellVbo);
   glDeleteBuffers(1, &cellEbo);
   glDeleteBuffers(1, &cellModelVbo);
-  for (unsigned int i = 0; i < shoreVaos.size(); i++)
-    {
-      glDeleteVertexArrays(1, &(shoreVaos[i]));
-      glDeleteBuffers(1, &(shoreVbos[i]));
-    }
+  glDeleteVertexArrays(1, &shoreVao);
+  glDeleteBuffers(1, &shoreVbo);
 }
 
 std::vector<TerrainChunk> &BaseMapGenerator::getShoreChunks()
@@ -467,9 +469,9 @@ std::vector<TerrainChunk> &BaseMapGenerator::getShoreChunks()
   return shoreChunks;
 }
 
-GLuint &BaseMapGenerator::getShoreVao(int i)
+GLuint &BaseMapGenerator::getShoreVao()
 {
-  return shoreVaos[i];
+  return shoreVao;
 }
 
 std::vector<TerrainChunk> &BaseMapGenerator::getSquareChunks()
@@ -515,4 +517,9 @@ int BaseMapGenerator::getNumSquareInstances()
 int BaseMapGenerator::getNumCellInstances()
 {
   return NUM_CELL_INSTANCES;
+}
+
+size_t BaseMapGenerator::getShoreVerticesToDraw() const
+{
+  return shoreVerticesToDraw;
 }

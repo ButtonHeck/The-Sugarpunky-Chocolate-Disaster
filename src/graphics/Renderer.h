@@ -18,7 +18,7 @@ class Renderer
 public:
   Renderer(Camera& camera);
   void drawHills(HillsMapGenerator* generator);
-  void drawShore(BaseMapGenerator* generator, Frustum& frustum);
+  void drawShore(BaseMapGenerator* generator);
   void drawFlatTerrain(BaseMapGenerator* generator, Frustum& frustum);
   void drawUnderwaterQuad(UnderwaterQuadMapGenerator* generator);
   void drawBuildableTiles(BuildableMapGenerator* generator);

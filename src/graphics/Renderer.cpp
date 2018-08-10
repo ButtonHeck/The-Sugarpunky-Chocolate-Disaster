@@ -13,42 +13,13 @@ void Renderer::drawHills(HillsMapGenerator *generator)
     glDrawElements(GL_TRIANGLES, 6 * generator->getTiles().size(), GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::drawShore(BaseMapGenerator *generator, Frustum &frustum)
+void Renderer::drawShore(BaseMapGenerator *generator)
 {
   auto shoreChunks = generator->getShoreChunks();
-  for (unsigned int i = 0; i < shoreChunks.size(); i++)
-    {
-      GLuint vao = generator->getShoreVao(i);
-      glm::vec2 chunkMidPoint = shoreChunks[i].getMidPoint();
-      glm::vec2 chunkLL = glm::vec2(chunkMidPoint.x - CHUNK_SIZE / 2.0f, chunkMidPoint.y + CHUNK_SIZE / 2.0f);
-      float radius = CHUNK_SIZE / 2.0f * glm::sqrt(2);
-      if (frustum.isInside(chunkLL.x, 0.0f, chunkLL.y, radius))
-        {
-          glBindVertexArray(vao);
-          glDrawArrays(GL_TRIANGLES, 0, 6 * shoreChunks[i].getNumInstances());
-          continue;
-        }
-      glm::vec2 chunkLR = glm::vec2(chunkMidPoint.x + CHUNK_SIZE / 2.0f, chunkMidPoint.y + CHUNK_SIZE / 2.0f);
-      if (frustum.isInside(chunkLR.x, 0.0f, chunkLR.y, radius))
-        {
-          glBindVertexArray(vao);
-          glDrawArrays(GL_TRIANGLES, 0, 6 * shoreChunks[i].getNumInstances());
-          continue;
-        }
-      glm::vec2 chunkUR = glm::vec2(chunkMidPoint.x + CHUNK_SIZE / 2.0f, chunkMidPoint.y - CHUNK_SIZE / 2.0f);
-      if (frustum.isInside(chunkUR.x, 0.0f, chunkUR.y, radius))
-        {
-          glBindVertexArray(vao);
-          glDrawArrays(GL_TRIANGLES, 0, 6 * shoreChunks[i].getNumInstances());
-          continue;
-        }
-      glm::vec2 chunkUL = glm::vec2(chunkMidPoint.x - CHUNK_SIZE / 2.0f, chunkMidPoint.y - CHUNK_SIZE / 2.0f);
-      if (frustum.isInside(chunkUL.x, 0.0f, chunkUL.y, radius))
-        {
-          glBindVertexArray(vao);
-          glDrawArrays(GL_TRIANGLES, 0, 6 * shoreChunks[i].getNumInstances());
-        }
-    }
+  auto verticesToDraw = generator->getShoreVerticesToDraw();
+  GLuint vao = generator->getShoreVao();
+  glBindVertexArray(vao);
+  glDrawArrays(GL_TRIANGLES, 0, verticesToDraw);
 }
 
 void Renderer::drawFlatTerrain(BaseMapGenerator *generator, Frustum& frustum)
