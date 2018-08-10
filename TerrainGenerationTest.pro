@@ -35,11 +35,11 @@ SOURCES += \
     src/model/TerrainTile.cpp \
     src/chunk/ModelChunk.cpp \
     src/chunk/Chunk.cpp \
-    src/chunk/TerrainChunk.cpp
+    src/chunk/TerrainChunk.cpp \
+    src/timer/BenchmarkTimer.cpp
 
 HEADERS += \
     src/game/Game.h \
-    src/game/Timer.h \
     src/game/Settings.h \
     src/game/InputController.h \
     src/game/SaveLoadManager.h \
@@ -66,7 +66,9 @@ HEADERS += \
     src/model/Model.h \
     src/chunk/ModelChunk.h \
     src/chunk/Chunk.h \
-    src/chunk/TerrainChunk.h
+    src/chunk/TerrainChunk.h \
+    src/timer/BenchmarkTimer.h \
+    src/timer/Timer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 
@@ -213,7 +215,9 @@ DISTFILES += \
     res/models/tree7/tree7.mtl \
     res/models/tree8/tree8.mtl \
     res/shaders/terrain_shadow.vs \
-    res/shaders/MS_toDefault_hdr.fs
+    res/shaders/MS_toDefault_hdr.fs \
+    res/perFrameLog.txt \
+    res/perAppLog.txt
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

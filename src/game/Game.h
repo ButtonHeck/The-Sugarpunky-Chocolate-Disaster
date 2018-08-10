@@ -6,7 +6,6 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include "game/Settings.h"
-#include "game/Timer.h"
 #include "game/Options.h"
 #include "game/InputController.h"
 #include "game/SaveLoadManager.h"
@@ -20,6 +19,10 @@
 #include "graphics/TextureManager.h"
 #include "generator/UnderwaterQuadMapGenerator.h"
 #include "model/Model.h"
+#include "timer/Timer.h"
+#include "timer/BenchmarkTimer.h"
+
+extern unsigned long updateCount;
 
 class Game
 {
@@ -62,7 +65,6 @@ private:
   TextureManager* textureManager;
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
   GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO;
-  unsigned int frameCounter = 0;
   std::thread* waterAnimationThread;
 #ifdef _DEBUG
   bool waterThreadAnimationIsWorking = true;

@@ -45,39 +45,45 @@ void Game::setupVariables()
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-  Model tree1("/models/tree1/tree1.obj", textureLoader);
-  Model tree1_2("/models/tree1_2/tree1_2.obj", textureLoader);
-  Model tree2("/models/tree2/tree2.obj", textureLoader);
-  Model tree2_2("/models/tree2_2/tree2_2.obj", textureLoader);
-  Model tree3("/models/tree3/tree3.obj", textureLoader);
-  Model tree3_2("/models/tree3_2/tree3_2.obj", textureLoader);
-  Model tree4("/models/tree4/tree4.obj", textureLoader);
-  Model tree5("/models/tree5/tree5.obj", textureLoader);
-  Model tree5_2("/models/tree5_2/tree5_2.obj", textureLoader);
-  Model tree6("/models/tree6/tree6.obj", textureLoader);
-  Model tree6_2("/models/tree6_2/tree6_2.obj", textureLoader);
-  Model tree7("/models/tree7/tree7.obj", textureLoader);
-  Model tree8("/models/tree8/tree8.obj", textureLoader);
-  Model hillTree1("/models/hillTree1/hillTree1.obj", textureLoader);
-  Model hillTree2("/models/hillTree2/hillTree2.obj", textureLoader);
-  Model hillTree3("/models/hillTree3/hillTree3.obj", textureLoader);
-  Model hillTree4("/models/hillTree4/hillTree4.obj", textureLoader);
-  Model hillTree5("/models/hillTree5/hillTree5.obj", textureLoader);
-  Model hillTree6("/models/hillTree6/hillTree6.obj", textureLoader);
-  Model hillTree7("/models/hillTree7/hillTree7.obj", textureLoader);
-  Model hillTree8("/models/hillTree1/hillTree1.obj", textureLoader);
-  Model hillTree9("/models/hillTree3/hillTree3.obj", textureLoader);
-  Model hillTree10("/models/hillTree7/hillTree7.obj", textureLoader);
-  Model hillTree11("/models/hillTree1/hillTree1.obj", textureLoader);
-  Model hillTree12("/models/hillTree3/hillTree3.obj", textureLoader);
-  Model hillTree13("/models/hillTree7/hillTree7.obj", textureLoader);
-  treeGenerator = new TreeGenerator({tree1, tree1_2, tree2, tree2_2, tree3, tree3_2, tree4, tree5, tree5_2,
-                                     tree6, tree6_2, tree7, tree8},
-      {hillTree1, hillTree2, hillTree3, hillTree4, hillTree5, hillTree6, hillTree7,
-       hillTree8, hillTree9, hillTree10, hillTree11, hillTree12, hillTree13});
+  {
+    BENCHMARK("Game: Loading models", false);
+    Model tree1("/models/tree1/tree1.obj", textureLoader);
+    Model tree1_2("/models/tree1_2/tree1_2.obj", textureLoader);
+    Model tree2("/models/tree2/tree2.obj", textureLoader);
+    Model tree2_2("/models/tree2_2/tree2_2.obj", textureLoader);
+    Model tree3("/models/tree3/tree3.obj", textureLoader);
+    Model tree3_2("/models/tree3_2/tree3_2.obj", textureLoader);
+    Model tree4("/models/tree4/tree4.obj", textureLoader);
+    Model tree5("/models/tree5/tree5.obj", textureLoader);
+    Model tree5_2("/models/tree5_2/tree5_2.obj", textureLoader);
+    Model tree6("/models/tree6/tree6.obj", textureLoader);
+    Model tree6_2("/models/tree6_2/tree6_2.obj", textureLoader);
+    Model tree7("/models/tree7/tree7.obj", textureLoader);
+    Model tree8("/models/tree8/tree8.obj", textureLoader);
+    Model hillTree1("/models/hillTree1/hillTree1.obj", textureLoader);
+    Model hillTree2("/models/hillTree2/hillTree2.obj", textureLoader);
+    Model hillTree3("/models/hillTree3/hillTree3.obj", textureLoader);
+    Model hillTree4("/models/hillTree4/hillTree4.obj", textureLoader);
+    Model hillTree5("/models/hillTree5/hillTree5.obj", textureLoader);
+    Model hillTree6("/models/hillTree6/hillTree6.obj", textureLoader);
+    Model hillTree7("/models/hillTree7/hillTree7.obj", textureLoader);
+    Model hillTree8("/models/hillTree1/hillTree1.obj", textureLoader);
+    Model hillTree9("/models/hillTree3/hillTree3.obj", textureLoader);
+    Model hillTree10("/models/hillTree7/hillTree7.obj", textureLoader);
+    Model hillTree11("/models/hillTree1/hillTree1.obj", textureLoader);
+    Model hillTree12("/models/hillTree3/hillTree3.obj", textureLoader);
+    Model hillTree13("/models/hillTree7/hillTree7.obj", textureLoader);
+    treeGenerator = new TreeGenerator({tree1, tree1_2, tree2, tree2_2, tree3, tree3_2, tree4, tree5, tree5_2,
+                                       tree6, tree6_2, tree7, tree8},
+        {hillTree1, hillTree2, hillTree3, hillTree4, hillTree5, hillTree6, hillTree7,
+         hillTree8, hillTree9, hillTree10, hillTree11, hillTree12, hillTree13});
+  }
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
-  prepareTerrain();
+  {
+    BENCHMARK("Game: Prepare Terrain", false);
+    prepareTerrain();
+  }
   waterAnimationThread = new std::thread([this]()
   {
       while(!glfwWindowShouldClose(window))
@@ -86,7 +92,10 @@ void Game::setupVariables()
                   options.get(ANIMATE_WATER) &&
                   options.get(RENDER_WATER))
                 {
-                  waterMapGenerator->updateAnimationFrame(options);
+                  {
+
+                    waterMapGenerator->updateAnimationFrame(options);
+                  }
 #ifdef _DEBUG
                   waterThreadAnimationIsWorking = true;
 #endif
@@ -102,10 +111,22 @@ void Game::setupVariables()
         });
 
   textureManager->createUnderwaterReliefTexture(waterMapGenerator);
-  shaderManager.setupConstantUniforms();
-  prepareScreenVAO();
-  prepareMS_FBO();
-  prepareDepthMapFBO();
+  {
+    BENCHMARK("Shader: setup constant uniforms", false);
+    shaderManager.setupConstantUniforms();
+  }
+  {
+    BENCHMARK("Game: prepare screen VAO", false);
+    prepareScreenVAO();
+  }
+  {
+    BENCHMARK("Game: prepare multisample FBO", false);
+    prepareMS_FBO();
+  }
+  {
+    BENCHMARK("Game: prepare depthmap FBO", false);
+    prepareDepthMapFBO();
+  }
 }
 
 void Game::prepareTerrain()
@@ -218,29 +239,56 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
 {
   glm::vec3 viewPosition = camera.getPosition();
   //hills rendering
-  shaderManager.updateHillsShaders(options.get(HILLS_FC), options.get(SHADOW_ENABLE), projectionView, viewPosition, viewFrustum);
-  renderer.drawHills(hillMapGenerator);
+  {
+    BENCHMARK("Shader: update hills", true);
+    shaderManager.updateHillsShaders(options.get(HILLS_FC), options.get(SHADOW_ENABLE), projectionView, viewPosition, viewFrustum);
+  }
+  {
+    BENCHMARK("Renderer: draw hills", true);
+    renderer.drawHills(hillMapGenerator);
+  }
 
   //shore terrain chunks drawing
-  shaderManager.updateShoreShader(projectionView, options.get(SHADOW_ENABLE));
-  renderer.drawShore(baseMapGenerator, viewFrustum);
+  {
+    BENCHMARK("Shader: update shore", true);
+    shaderManager.updateShoreShader(projectionView, options.get(SHADOW_ENABLE));
+  }
+  {
+    BENCHMARK("Renderer: draw shore", true);
+    renderer.drawShore(baseMapGenerator, viewFrustum);
+  }
 
   //flat terrain chunks drawing
   if (options.get(RENDER_FLAT_TERRAIN))
     {
-      shaderManager.updateFlatShader(projectionView, options.get(SHADOW_ENABLE));
-      renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
+      {
+        BENCHMARK("Shader: update flat", true);
+        shaderManager.updateFlatShader(projectionView, options.get(SHADOW_ENABLE));
+      }
+      {
+        BENCHMARK("Renderer: draw flat", true);
+        renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
+      }
     }
 
   //underwater tile
-  shaderManager.updateUnderwaterShader(projectionView);
-  renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
+  {
+    BENCHMARK("Shader: update underwater", true);
+    shaderManager.updateUnderwaterShader(projectionView);
+  }
+  {
+    BENCHMARK("Renderer: draw underwater", true);
+    renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
+  }
 
   //buildable tiles
   if (options.get(SHOW_BUILDABLE))
     {
       shaderManager.updateBuildableShader(projectionView);
-      renderer.drawBuildableTiles(buildableMapGenerator);
+      {
+        BENCHMARK("Renderer: draw buildable", true);
+        renderer.drawBuildableTiles(buildableMapGenerator);
+      }
     }
 
   //cursor selected tile
@@ -252,54 +300,81 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
           glm::mat4 selectedModel;
           selectedModel = glm::translate(selectedModel, glm::vec3(-HALF_TILES_WIDTH + input.getCursorMapX(), 0.0f, -HALF_TILES_HEIGHT + input.getCursorMapZ()));
           shaderManager.updateSelectedShader(projectionView, selectedModel);
-          renderer.drawSelectedTile(buildableMapGenerator);
+          {
+            BENCHMARK("Renderer: draw selected", true);
+            renderer.drawSelectedTile(buildableMapGenerator);
+          }
         }
     }
 
   //water rendering
   if (options.get(RENDER_WATER))
     {
-      shaderManager.updateWaterShaders(options.get(WATER_FC), projectionView, viewPosition, viewFrustum);
-      renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER));
+      {
+        BENCHMARK("Shader: update water", true);
+        shaderManager.updateWaterShaders(options.get(WATER_FC), projectionView, viewPosition, viewFrustum);
+      }
+      {
+        BENCHMARK("Renderer: draw water", true);
+        renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER));
+      }
     }
 
   //Skybox rendering
-  glm::mat4 skyProjectionView = projection * glm::mat4(glm::mat3(camera.getViewMatrix()));
-  shaderManager.updateSkyShader(skyProjectionView);
-  renderer.drawSkybox(&skybox);
+  {
+    BENCHMARK("Shader: update sky", true);
+    glm::mat4 skyProjectionView = projection * glm::mat4(glm::mat3(camera.getViewMatrix()));
+    shaderManager.updateSkyShader(skyProjectionView);
+  }
+  {
+    BENCHMARK("Renderer: draw sky", true);
+    renderer.drawSkybox(&skybox);
+  }
 
   //trees chunks rendering
   if (options.get(RENDER_TREE_MODELS))
     {
-      shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE));
-      renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC));
+      {
+        BENCHMARK("Shader: update models", true);
+        shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE));
+      }
+      {
+        BENCHMARK("Renderer: draw models", true);
+        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC));
+      }
     }
 
   //font rendering
   if (options.get(RENDER_DEBUG_TEXT))
     {
-      fontManager->renderText("CPU UPS: " + std::to_string(CPU_timer.getFPS()), 10.0f, (float)scr_height - 25.0f, 0.35f);
-      fontManager->renderText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
-                             + std::to_string(viewPosition.y).substr(0,6) + ": "
-                             + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 45.0f, 0.35f);
-      fontManager->renderText("Camera on map: " + std::to_string(camera.getMapCoordX()) + ": " + std::to_string(camera.getMapCoordZ()),
-                             10.0f, (float)scr_height - 65.0f, 0.35f);
-      fontManager->renderText("View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
-                             + std::to_string(camera.getDirection().y).substr(0,6) + ": "
-                             + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 85.0f, 0.35f);
-      fontManager->renderText("Cursor at: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
-                             + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
-                             + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 105.0f, 0.35f);
-      fontManager->renderText("Cursor on map: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(input.getCursorMapX()) + ": "
-                             + std::to_string(input.getCursorMapZ()-1) + ", " + input.getCursorTileName())),
-                             10.0f, (float)scr_height - 125.0f, 0.35f);
-      fontManager->renderText("Water culling: " + (options.get(WATER_FC) ? std::string("On") : std::string("Off")), 10.0f, 10.0f, 0.35f);
-      fontManager->renderText("Hills culling: " + (options.get(HILLS_FC) ? std::string("On") : std::string("Off")), 10.0f, 30.0f, 0.35f);
-      fontManager->renderText("Trees culling: " + (options.get(MODELS_FC) ? std::string("On") : std::string("Off")), 10.0f, 50.0f, 0.35f);
+      {
+        BENCHMARK("Renderer: draw text", true);
+        fontManager->renderText("CPU UPS: " + std::to_string(CPU_timer.getFPS()), 10.0f, (float)scr_height - 25.0f, 0.35f);
+        fontManager->renderText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
+                               + std::to_string(viewPosition.y).substr(0,6) + ": "
+                               + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 45.0f, 0.35f);
+        fontManager->renderText("Camera on map: " + std::to_string(camera.getMapCoordX()) + ": " + std::to_string(camera.getMapCoordZ()),
+                               10.0f, (float)scr_height - 65.0f, 0.35f);
+        fontManager->renderText("View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
+                               + std::to_string(camera.getDirection().y).substr(0,6) + ": "
+                               + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 85.0f, 0.35f);
+        fontManager->renderText("Cursor at: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
+                               + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
+                               + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 105.0f, 0.35f);
+        fontManager->renderText("Cursor on map: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(input.getCursorMapX()) + ": "
+                               + std::to_string(input.getCursorMapZ()-1) + ", " + input.getCursorTileName())),
+                               10.0f, (float)scr_height - 125.0f, 0.35f);
+        fontManager->renderText("Water culling: " + (options.get(WATER_FC) ? std::string("On") : std::string("Off")), 10.0f, 10.0f, 0.35f);
+        fontManager->renderText("Hills culling: " + (options.get(HILLS_FC) ? std::string("On") : std::string("Off")), 10.0f, 30.0f, 0.35f);
+        fontManager->renderText("Trees culling: " + (options.get(MODELS_FC) ? std::string("On") : std::string("Off")), 10.0f, 50.0f, 0.35f);
 #ifdef _DEBUG
-      fontManager->renderText("Water anim thread works: " + (waterThreadAnimationIsWorking ? std::string("On") : std::string("Off")), 10.0f, 70.0f, 0.35f);
+        fontManager->renderText("Water anim thread works: " + (waterThreadAnimationIsWorking ? std::string("On") : std::string("Off")), 10.0f, 70.0f, 0.35f);
 #endif
-      csRenderer.draw(glm::mat3(camera.getViewMatrix()), aspect_ratio);
+      }
+      {
+        BENCHMARK("Renderer: draw cs", true);
+        csRenderer.draw(glm::mat3(camera.getViewMatrix()), aspect_ratio);
+      }
     }
 
   //reset texture units to terrain textures after we done with models and text
@@ -311,13 +386,22 @@ void Game::drawFrameObjectsDepthmap()
   glDisable(GL_CULL_FACE); //or set front face culling
 
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
-  renderer.drawHills(hillMapGenerator);
-  renderer.drawShore(baseMapGenerator, viewFrustum);
+  {
+    BENCHMARK("Renderer: draw hills depthmap", true);
+    renderer.drawHills(hillMapGenerator);
+  }
+  {
+    BENCHMARK("Renderer: draw shore depthmap", true);
+    renderer.drawShore(baseMapGenerator, viewFrustum);
+  }
 
   if (options.get(RENDER_TREE_MODELS))
     {
       shaderManager.get(SHADER_SHADOW_MODELS).use();
-      renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC));
+      {
+        BENCHMARK("Renderer: draw models depthmap", true);
+        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC));
+      }
     }
 
   glEnable(GL_CULL_FACE); //or set back face culling
@@ -328,8 +412,11 @@ void Game::drawFrameObjectsDepthmap()
 
 void Game::loop()
 {
-  input.processKeyboard();
-  input.processKeyboardCamera(CPU_timer.tick(), hillMapGenerator->getMap());
+  {
+    BENCHMARK("Input: process keyboard", true);
+    input.processKeyboard();
+    input.processKeyboardCamera(CPU_timer.tick(), hillMapGenerator->getMap());
+  }
 
   //recreate routine
   if (options.get(RECREATE_TERRAIN_REQUEST))
@@ -359,7 +446,7 @@ void Game::loop()
    * because the fbo itself already contains all the data drawn into it
    * and it could be used by default fbo immediately
    */
-  if ((options.get(CREATE_SHADOW_MAP_REQUEST) || frameCounter % 16 == 0) && options.get(SHADOW_ENABLE))
+  if ((options.get(CREATE_SHADOW_MAP_REQUEST) || updateCount % 16 == 0) && options.get(SHADOW_ENABLE))
     {
       glViewport(0, 0, DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
       glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -377,13 +464,19 @@ void Game::loop()
   //update view and projection matrices
   glm::mat4 view = camera.getViewMatrix();
   glm::mat4 projectionView = projection * view;
-  viewFrustum.updateFrustum(projectionView);
+  {
+    BENCHMARK("Frustum: update planes", true);
+    viewFrustum.updateFrustum(projectionView);
+  }
 
   //render our world onto separate FBO as usual
   drawFrameObjects(projectionView);
 
   //render result onto the default FBO and apply HDR/MS if the flag are set
-  drawFrameToScreenRectangle(multisamplingEnabled);
+  {
+    BENCHMARK("Game: draw frame to screen", true);
+    drawFrameToScreenRectangle(multisamplingEnabled);
+  }
 
   //save/load routine
   if (options.get(SAVE_REQUEST))
@@ -399,5 +492,5 @@ void Game::loop()
     }
 
   glfwSwapBuffers(window);
-  ++frameCounter;
+  ++updateCount;
 }

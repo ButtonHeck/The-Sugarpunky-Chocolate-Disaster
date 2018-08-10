@@ -8,12 +8,20 @@
 #include <cmath>
 #include <unistd.h>
 
+#ifdef _DEBUG
+#define BENCHMARK(benchmarkName, perFrame) BenchmarkTimer b(benchmarkName, perFrame);
+#define BENCHMARK_PASS_CHECK(benchmarkName, perFrame, passThru) BenchmarkTimer b(benchmarkName, perFrame, passThru);
+#else
+#define BENCHMARK(dont, care) //noop
+#define BENCHMARK_PASS_CHECK(Feed, me, weird) //things
+#endif
+
 std::string getProjectDirectory();
 
 constexpr float NEAR_PLANE = 0.1f;
 constexpr float FAR_PLANE = 500.0f;
 constexpr float FOV = 40.0f;
-constexpr float FOV_DOT_PRODUCT = std::cos(glm::radians(FOV));
+const float FOV_DOT_PRODUCT = std::cos(glm::radians(FOV));
 constexpr int TILES_WIDTH = 384;
 constexpr int TILES_HEIGHT = 384;
 constexpr int HALF_TILES_WIDTH = TILES_WIDTH / 2;

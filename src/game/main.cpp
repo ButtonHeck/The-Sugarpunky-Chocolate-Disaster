@@ -7,7 +7,9 @@
 #include <unordered_set>
 #include "game/Game.h"
 #include "game/Options.h"
+#include "game/Settings.h"
 #include "graphics/Camera.h"
+#include "timer/BenchmarkTimer.h"
 
 std::unordered_set<GLuint> debugMessages;
 void APIENTRY glDebugCallback(GLenum source,
@@ -55,6 +57,7 @@ void APIENTRY glDebugCallback(GLenum source,
 int scr_width;
 int scr_height;
 float aspect_ratio;
+unsigned long updateCount = 0;
 GLFWwindow* window;
 Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
 glm::vec3 cursorToViewportDirection;
@@ -95,7 +98,10 @@ int main()
     }
 #endif
   game = new Game(window, cursorToViewportDirection, camera, options, scr_width, scr_height, aspect_ratio);
-  game->setupVariables();
+  {
+    BENCHMARK("main.cpp: game object setup variables", false);
+    game->setupVariables();
+  }
 
   //MAIN LOOP
   std::thread inputHandlingThread([]()
@@ -113,4 +119,5 @@ int main()
   delete game;
   glfwDestroyWindow(window);
   glfwTerminate();
+  BenchmarkTimer::finish(updateCount);
 }

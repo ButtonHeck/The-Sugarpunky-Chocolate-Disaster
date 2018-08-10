@@ -2,6 +2,8 @@
 #define TIMER_H
 #include <GLFW/glfw3.h>
 #include <chrono>
+#include "timer/BenchmarkTimer.h"
+#include "generator/WaterMapGenerator.h"
 
 class Timer
 {
@@ -23,7 +25,14 @@ public:
       {
         frameTime = currentTime;
         fps = frames;
+        if (updateCount > 1)
+          {
+            BenchmarkTimer::printBenchmarksPerFrame(updateCount, fps);
+            BenchmarkTimer::clearBenchmarksPerFrameValues();
+            WaterMapGenerator::_setWaterAnimationBenchmarkPassThrough(false);
+          }
         frames = 0;
+        ++updateCount;
       }
     return delta;
   }
@@ -34,7 +43,7 @@ public:
 private:
   float lastTime, nowTime, delta;
   decltype(std::chrono::high_resolution_clock::now()) frameTime, currentTime;
-  unsigned int frames = 0, fps = 0;
+  unsigned int frames = 0, fps = 0, updateCount = 0;
 };
 
 #endif // TIMER_H

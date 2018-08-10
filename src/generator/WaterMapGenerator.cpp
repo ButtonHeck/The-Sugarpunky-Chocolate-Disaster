@@ -1,5 +1,7 @@
 #include "generator/WaterMapGenerator.h"
 
+bool WaterMapGenerator::_WATER_ANIMATION_BENCHMARK_PASS_THROUGH = false;
+
 WaterMapGenerator::WaterMapGenerator()
   :
     MapGenerator(){}
@@ -512,6 +514,8 @@ GLfloat *WaterMapGenerator::getHeightOffsets()
 
 void WaterMapGenerator::updateAnimationFrame(Options& options)
 {
+  BENCHMARK_PASS_CHECK("(SI)Water: Update animation frame", true, _WATER_ANIMATION_BENCHMARK_PASS_THROUGH);
+  _WATER_ANIMATION_BENCHMARK_PASS_THROUGH = true;
   double frameTime = glfwGetTime();
   double offsetMultiplier = frameTime * 0.1;
   for (size_t i = 0; i < WATER_HEIGHT_OFFSETS_SIZE; i+=2)
@@ -559,4 +563,9 @@ void WaterMapGenerator::updateAnimationFrame(Options& options)
       *(vertices+33+pointerOffsetWithStride) = normalUL.x;
       *(vertices+35+pointerOffsetWithStride) = normalUL.z;
     }
+}
+
+void WaterMapGenerator::_setWaterAnimationBenchmarkPassThrough(bool passThru)
+{
+  _WATER_ANIMATION_BENCHMARK_PASS_THROUGH = passThru;
 }

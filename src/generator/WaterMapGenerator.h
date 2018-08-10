@@ -3,6 +3,8 @@
 #include "MapGenerator.h"
 #include <GLFW/glfw3.h>
 #include "game/Options.h"
+#include "game/Settings.h"
+#include "timer/BenchmarkTimer.h"
 
 class WaterMapGenerator : public MapGenerator
 {
@@ -16,6 +18,7 @@ public:
   GLfloat* getHeightOffsets();
   void updateAnimationFrame(Options& options);
   constexpr static int WATER_HEIGHT_OFFSETS_SIZE = NUM_TILES + TILES_WIDTH * 2;
+  static void _setWaterAnimationBenchmarkPassThrough(bool passThru);
 private:
   size_t numVertices;
   GLfloat* vertices;
@@ -26,6 +29,7 @@ private:
   void fillSharpTerrainWithWater();
   void liftWaterLevel(float liftValue);
   std::vector<std::vector<float>> postProcessMap;
+  static bool _WATER_ANIMATION_BENCHMARK_PASS_THROUGH;
 };
 
 #endif // WATERMAPGENERATOR_H
