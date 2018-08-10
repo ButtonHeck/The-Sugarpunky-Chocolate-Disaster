@@ -216,9 +216,8 @@ DISTFILES += \
     res/models/tree8/tree8.mtl \
     res/shaders/terrain_shadow.vs \
     res/shaders/MS_toDefault_hdr.fs \
-    res/perFrameLog.txt \
     res/perAppLog.txt \
-    .gitignore
+    res/perFrameLog.txt
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
