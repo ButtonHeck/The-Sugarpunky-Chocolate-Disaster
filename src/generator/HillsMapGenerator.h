@@ -3,6 +3,7 @@
 #include "MapGenerator.h"
 #include <random>
 #include <chrono>
+#include <cstring>
 
 class HillsMapGenerator : public MapGenerator
 {

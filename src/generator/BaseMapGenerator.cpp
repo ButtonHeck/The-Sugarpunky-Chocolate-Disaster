@@ -166,14 +166,14 @@ void BaseMapGenerator::fillCellBufferData()
   glGenVertexArrays(1, &cellVao);
   glGenBuffers(1, &cellVbo);
   glGenBuffers(1, &cellEbo);
-  glGenBuffers(1, &cellModelVbo);
+  glCreateBuffers(1, &cellModelVbo);
   GLfloat cellVertices[20] = {
        0.0f, 0.0f,  1.0f, 0.0f,  0.0f,
        1.0f, 0.0f,  1.0f, 1.0f,  0.0f,
        1.0f, 0.0f,  0.0f, 1.0f,  1.0f,
        0.0f, 0.0f,  0.0f, 0.0f,  1.0f
   };
-    glBindVertexArray(cellVao);
+  glBindVertexArray(cellVao);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cellEbo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, cellVbo);
@@ -191,8 +191,13 @@ void BaseMapGenerator::fillCellBufferData()
       model = glm::translate(model, glm::vec3(- HALF_TILES_WIDTH + tile.mapX, 0.0f, -HALF_TILES_HEIGHT + tile.mapY - 1));
       cellInstanceModels[i] = model;
     }
+
+  glNamedBufferStorage(cellModelVbo, sizeof(glm::mat4) * NUM_CELL_INSTANCES, 0, GL_MAP_WRITE_BIT);
+  GLfloat *modelStorage = (GLfloat*)glMapNamedBuffer(cellModelVbo, GL_WRITE_ONLY);
+  std::memcpy(modelStorage, &cellInstanceModels[0], sizeof(glm::mat4) * NUM_CELL_INSTANCES);
+  glUnmapNamedBuffer(cellModelVbo);
+
   glBindBuffer(GL_ARRAY_BUFFER, cellModelVbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * cellTiles.size(), &cellInstanceModels[0], GL_STATIC_DRAW);
   for (unsigned int i = 0; i < 4; ++i)
     {
       glEnableVertexAttribArray(i+3);

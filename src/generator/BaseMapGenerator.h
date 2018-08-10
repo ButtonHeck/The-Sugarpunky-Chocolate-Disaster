@@ -4,6 +4,7 @@
 #include <chrono>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <cstring>
 #include "MapGenerator.h"
 #include "chunk/TerrainChunk.h"
 

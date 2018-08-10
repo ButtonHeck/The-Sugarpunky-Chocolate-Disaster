@@ -1,6 +1,7 @@
 #ifndef MESH_H
 #define MESH_H
 #include <vector>
+#include <cstring>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>

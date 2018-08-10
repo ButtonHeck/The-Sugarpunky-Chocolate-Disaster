@@ -217,7 +217,8 @@ DISTFILES += \
     res/shaders/terrain_shadow.vs \
     res/shaders/MS_toDefault_hdr.fs \
     res/perFrameLog.txt \
-    res/perAppLog.txt
+    res/perAppLog.txt \
+    .gitignore
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

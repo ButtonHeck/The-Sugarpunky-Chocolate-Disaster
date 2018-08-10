@@ -45,9 +45,12 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
 {
   numInstances = numModels;
   glBindVertexArray(VAO);
-  glGenBuffers(1, &instanceVBO);
+  glCreateBuffers(1, &instanceVBO);
+  glNamedBufferStorage(instanceVBO, sizeof(glm::mat4) * numModels, 0, GL_MAP_WRITE_BIT);
+  GLfloat* storage = (GLfloat*)glMapNamedBuffer(instanceVBO, GL_WRITE_ONLY);
+  std::memcpy(storage, &models[0], sizeof(glm::mat4) * numModels);
+  glUnmapNamedBuffer(instanceVBO);
   glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * numModels, &models[0], GL_STATIC_DRAW);
   for (unsigned int i = 0; i < 4; ++i)
     {
       glEnableVertexAttribArray(i+5);
