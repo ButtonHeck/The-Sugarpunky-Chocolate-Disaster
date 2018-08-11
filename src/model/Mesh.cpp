@@ -36,6 +36,9 @@ void Mesh::setupMesh()
   glEnableVertexAttribArray(4);
   glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 
+  glCreateBuffers(1, &multiDE_I_DIBO);
+  glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDE_I_DIBO);
+
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -62,8 +65,8 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Mesh::draw(Shader &shader, Camera &camera, std::vector<ModelChunk>& chunks, unsigned int index,
-                bool modelRenderOptimize, unsigned int chunkLoadingDistance)
+void Mesh::draw(Shader &shader, const glm::vec2 &cameraPositionXZ, std::vector<ModelChunk>& chunks, unsigned int index,
+                bool modelRenderOptimize, unsigned int chunkLoadingDistance, Frustum& frustum)
 {
   unsigned int diffuseNr = 1;
   unsigned int specularNr = 1;
@@ -90,56 +93,75 @@ void Mesh::draw(Shader &shader, Camera &camera, std::vector<ModelChunk>& chunks,
 
   if (modelRenderOptimize)
     {
-      float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
-      float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
-      int cameraOnMapCoordX = glm::clamp((int)(TILES_WIDTH + cameraOnMapX) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
-      int cameraOnMapCoordZ = glm::clamp((int)(TILES_HEIGHT + cameraOnMapZ) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
-      glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
-      glm::vec2 viewDirection = glm::normalize(glm::vec2(camera.getDirection().x, camera.getDirection().z));
-      float cameraCorrectedFOVDOT = FOV_DOT_PRODUCT - camera.getPosition().y / 50.0f;
+//      float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
+//      float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
+//      glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
+
+      GLuint multiDrawIndirectData[chunks.size() * 5]; // { indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
+      GLuint dataOffset = 0;
+      GLuint multiDE_I_primCount = 0;
+      GLuint indicesSize = indices.size();
+      const float HALF_CHUNK_SIZE = CHUNK_SIZE / 2.0f;
+      float radius = HALF_CHUNK_SIZE * glm::sqrt(2);
       for (unsigned int i = 0; i < chunks.size(); i++)
         {
-          if (chunks[i].containsPoint(cameraOnMapCoordX, cameraOnMapCoordZ))
-            {
-              glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0,
-                                                  chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
-              continue;
-            }
-          glm::vec2 directionToChunk = chunks[i].getMidPoint() - cameraPosition;
+          //if chunk is farther than load distance - just discard it
+          glm::vec2 directionToChunk = chunks[i].getMidPoint() - cameraPositionXZ;
           if (glm::length(directionToChunk) > CHUNK_SIZE * chunkLoadingDistance)
             continue;
-          glm::vec2 directionToChunkUL =  glm::normalize(glm::vec2(chunks[i].getLeft() - (float)HALF_TILES_WIDTH, chunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-          if (glm::dot(directionToChunkUL, viewDirection) > cameraCorrectedFOVDOT)
+
+          glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
+          glm::vec2 chunkLL = glm::vec2(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE);
+          if (frustum.isInside(chunkLL.x, 0.0f, chunkLL.y, radius))
             {
-              glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0,
-                                                  chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
+              ++multiDE_I_primCount;
+              multiDrawIndirectData[dataOffset++] = indicesSize;
+              multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
+              multiDrawIndirectData[dataOffset++] = 0;
+              multiDrawIndirectData[dataOffset++] = 0;
+              multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
               continue;
             }
-          glm::vec2 directionToChunkUR =  glm::normalize(glm::vec2(chunks[i].getRight() - (float)HALF_TILES_WIDTH, chunks[i].getTop() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-          if (glm::dot(directionToChunkUR, viewDirection) > cameraCorrectedFOVDOT)
+          glm::vec2 chunkLR = glm::vec2(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE);
+          if (frustum.isInside(chunkLR.x, 0.0f, chunkLR.y, radius))
             {
-              glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0,
-                                                  chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
+              ++multiDE_I_primCount;
+              multiDrawIndirectData[dataOffset++] = indicesSize;
+              multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
+              multiDrawIndirectData[dataOffset++] = 0;
+              multiDrawIndirectData[dataOffset++] = 0;
+              multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
               continue;
             }
-          glm::vec2 directionToChunkLR =  glm::normalize(glm::vec2(chunks[i].getRight() - (float)HALF_TILES_WIDTH, chunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-          if (glm::dot(directionToChunkLR, viewDirection) > cameraCorrectedFOVDOT)
+          glm::vec2 chunkUR = glm::vec2(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE);
+          if (frustum.isInside(chunkUR.x, 0.0f, chunkUR.y, radius))
             {
-              glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0,
-                                                  chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
+              ++multiDE_I_primCount;
+              multiDrawIndirectData[dataOffset++] = indicesSize;
+              multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
+              multiDrawIndirectData[dataOffset++] = 0;
+              multiDrawIndirectData[dataOffset++] = 0;
+              multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
               continue;
             }
-          glm::vec2 directionToChunkLL =  glm::normalize(glm::vec2(chunks[i].getLeft() - (float)HALF_TILES_WIDTH, chunks[i].getBottom() - (float)HALF_TILES_HEIGHT) - cameraPosition);
-          if (glm::dot(directionToChunkLL, viewDirection) > cameraCorrectedFOVDOT)
-            glDrawElementsInstancedBaseInstance(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0,
-                                                chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
+          glm::vec2 chunkUL = glm::vec2(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE);
+          if (frustum.isInside(chunkUL.x, 0.0f, chunkUL.y, radius))
+            {
+              ++multiDE_I_primCount;
+              multiDrawIndirectData[dataOffset++] = indicesSize;
+              multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
+              multiDrawIndirectData[dataOffset++] = 0;
+              multiDrawIndirectData[dataOffset++] = 0;
+              multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
+            }
         }
+      glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData, GL_STATIC_DRAW);
+      glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, multiDE_I_primCount, 0);
     }
   else
     {
       glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances);
     }
-
   glBindVertexArray(0);
   glBindTexture(GL_TEXTURE_2D, 0);
 }

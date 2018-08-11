@@ -21,7 +21,6 @@ std::string getProjectDirectory();
 constexpr float NEAR_PLANE = 0.1f;
 constexpr float FAR_PLANE = 500.0f;
 constexpr float FOV = 40.0f;
-const float FOV_DOT_PRODUCT = std::cos(glm::radians(FOV));
 constexpr int TILES_WIDTH = 384;
 constexpr int TILES_HEIGHT = 384;
 constexpr int HALF_TILES_WIDTH = TILES_WIDTH / 2;

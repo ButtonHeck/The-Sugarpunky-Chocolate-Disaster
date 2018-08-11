@@ -11,6 +11,7 @@
 #include "game/Settings.h"
 #include "chunk/ModelChunk.h"
 #include "graphics/Camera.h"
+#include "graphics/Frustum.h"
 
 struct Vertex
 {
@@ -35,14 +36,14 @@ public:
   Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
   void setupMesh();
   void setupInstances(glm::mat4* models, unsigned int numModels);
-  void draw(Shader& shader, Camera& camera, std::vector<ModelChunk>& chunks, unsigned int index,
-            bool modelRenderOptimize, unsigned int chunkLoadingDistance);
+  void draw(Shader& shader, const glm::vec2 &cameraPositionXZ, std::vector<ModelChunk>& chunks, unsigned int index,
+            bool modelRenderOptimize, unsigned int chunkLoadingDistance, Frustum &frustum);
   unsigned int VAO;
 private:
   std::vector<Vertex> vertices;
   std::vector<Texture> textures;
   std::vector<unsigned int> indices;
-  unsigned int VBO, EBO, instanceVBO;
+  unsigned int VBO, EBO, instanceVBO, multiDE_I_DIBO;
   unsigned int numInstances;
 };
 

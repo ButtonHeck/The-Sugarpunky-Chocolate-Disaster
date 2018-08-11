@@ -25,7 +25,7 @@ public:
   void drawSelectedTile(BuildableMapGenerator* generator);
   void drawWater(WaterMapGenerator* generator, bool animateWater);
   void drawSkybox(Skybox* skybox);
-  void drawTrees(TreeGenerator* generator, Shader& shader, bool enableFrustumCulling);
+  void drawTrees(TreeGenerator* generator, Shader& shader, bool enableFrustumCulling, Frustum &frustum);
 private:
   Camera& camera;
 };

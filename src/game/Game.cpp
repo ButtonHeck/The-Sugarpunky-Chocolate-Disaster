@@ -340,7 +340,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
       }
       {
         BENCHMARK("Renderer: draw models", true);
-        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC));
+        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC), viewFrustum);
       }
     }
 
@@ -400,7 +400,7 @@ void Game::drawFrameObjectsDepthmap()
       shaderManager.get(SHADER_SHADOW_MODELS).use();
       {
         BENCHMARK("Renderer: draw models depthmap", true);
-        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC));
+        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC), viewFrustum);
       }
     }
 
