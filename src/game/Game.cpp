@@ -32,6 +32,7 @@ Game::~Game()
 
 void Game::setupVariables()
 {
+  Shader::cacheUniformsMode(SHADER_CACHE_MODE);
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glDisable(GL_DITHER);

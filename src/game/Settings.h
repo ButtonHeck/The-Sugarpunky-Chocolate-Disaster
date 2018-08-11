@@ -44,6 +44,10 @@ constexpr unsigned int MULTISAMPLES = 8;
 constexpr float ANISOTROPY = 2.0f;
 const std::string RES_DIR = getProjectDirectory() + "/res";
 constexpr bool INCLUDE_RES_DIR = true;
+//shader uniform strategy
+constexpr bool SHADER_NO_CACHE = false;
+constexpr bool SHADER_USE_CACHE = true;
+constexpr bool SHADER_CACHE_MODE = SHADER_NO_CACHE;
 //constants for shadow calculations
 constexpr float NEAR_PLANE_SHADOWING = 280.0f;
 constexpr float FAR_PLANE_SHADOWING = 700.0f;

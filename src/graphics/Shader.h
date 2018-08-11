@@ -16,6 +16,7 @@ public:
   Shader(const std::string& vertexFile);
   Shader(const std::string& vertexFile, const std::string& fragmentFile, bool renameFragmentShaderVariables);
   Shader(const std::string& vertexFile, const std::string& geometryFile, const std::string& fragmentFile);
+  static void cacheUniformsMode(bool cache);
   void setInt(const std::string& uniformName, int value);
   void setFloat(const std::string& uniformName, float value);
   void setBool(const std::string& uniformName, bool value);
@@ -31,6 +32,7 @@ public:
   void use() const;
   void cleanUp();
 private:
+  static bool cachedUniforms;
   GLuint loadShader(GLenum shaderType, const std::string& filename, bool renameFragmentShaderVariables);
   GLuint ID;
   int status;
