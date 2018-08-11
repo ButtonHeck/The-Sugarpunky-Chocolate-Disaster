@@ -64,7 +64,7 @@ void BenchmarkTimer::printBenchmarksPerApp(unsigned int updateCount)
   char       dateCharBuffer[80];
   tstruct = *localtime(&nowTime);
   strftime(dateCharBuffer, sizeof(dateCharBuffer), "%Y.%m.%d %X", &tstruct);
-  perAppLog << "Benchmark: " << dateCharBuffer << '\n';
+  perAppLog << "Benchmark: " << dateCharBuffer << ", summary ticks: " << updateCount << '\n';
   std::multimap<float, std::string> appBenchmarksSorted;
   std::transform(appBenchmarks.begin(),
                  appBenchmarks.end(),
@@ -81,9 +81,9 @@ void BenchmarkTimer::printBenchmarksPerApp(unsigned int updateCount)
       memset(benchmarkName, FORMAT_VALUE_ASCII, BENCH_NAME_MAX_LENGTH);
       memcpy(benchmarkName, (bench->second.substr(0, BENCH_NAME_MAX_LENGTH)).c_str(), (bench->second.substr(0, BENCH_NAME_MAX_LENGTH)).size());
       benchmarkName[BENCH_NAME_MAX_LENGTH-1] = '\0';
-      perAppLog << benchmarkName << ": " << std::setw(10) << std::setprecision(6) << bench->first;
+      perAppLog << benchmarkName << ": " << std::setw(10) << std::setprecision(6) << bench->first << "ms";
       if (benchmarks.find(bench->second) != benchmarks.end()) //check whether a benchmark is a "per frame" and if it is - print mean value
-        perAppLog << ",\t" << std::setw(8) << std::setprecision(3) << (bench->first / updateCount) << "ms (mean per app)\n";
+        perAppLog << ",\t" << std::setw(8) << std::setprecision(5) << (bench->first / updateCount * 1000) << "us (mean per app)\n";
       else
         perAppLog << '\n';
     }

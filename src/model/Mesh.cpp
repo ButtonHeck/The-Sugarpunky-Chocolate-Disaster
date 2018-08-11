@@ -86,17 +86,16 @@ void Mesh::draw(Shader &shader, const glm::vec2 &cameraPositionXZ, std::vector<M
         number = std::to_string(normalNr++);
       else if (name == "u_texture_height")
         number = std::to_string(heightNr++);
-      glUniform1i(glGetUniformLocation(shader.getID(), (name + number).c_str()), i);
+      {
+        BENCHMARK("Shader: find texture location", true);
+        glUniform1i(glGetUniformLocation(shader.getID(), (name + number).c_str()), i);
+      }
       glBindTexture(GL_TEXTURE_2D, textures[i].id);
     }
   glBindVertexArray(VAO);
 
   if (modelRenderOptimize)
     {
-//      float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
-//      float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
-//      glm::vec2 cameraPosition = glm::vec2(cameraOnMapX, cameraOnMapZ);
-
       GLuint multiDrawIndirectData[chunks.size() * 5]; // { indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
       GLuint dataOffset = 0;
       GLuint multiDE_I_primCount = 0;

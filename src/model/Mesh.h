@@ -12,6 +12,8 @@
 #include "chunk/ModelChunk.h"
 #include "graphics/Camera.h"
 #include "graphics/Frustum.h"
+#include "game/Settings.h"
+#include "timer/BenchmarkTimer.h"
 
 struct Vertex
 {
