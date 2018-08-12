@@ -1,5 +1,9 @@
 #include "Game.h"
 
+#ifdef _DEBUG
+int ram_available, ram_size;
+#endif
+
 Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& options, int width, int height, float aspect)
   :
     scr_width(width),
@@ -370,6 +374,12 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
         fontManager->renderText("Trees culling: " + (options.get(MODELS_FC) ? std::string("On") : std::string("Off")), 10.0f, 50.0f, 0.35f);
 #ifdef _DEBUG
         fontManager->renderText("Water anim thread works: " + (waterThreadAnimationIsWorking ? std::string("On") : std::string("Off")), 10.0f, 70.0f, 0.35f);
+        glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &ram_available);
+        glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ram_size);
+        fontManager->renderText("RAM available: " + (std::to_string(ram_available)
+                                                     .append(", ")
+                                                     .append(std::to_string((float)ram_available / ram_size * 100))
+                                                     .append("%")), 10.0f, 90.0f, 0.35f);
 #endif
       }
       {
