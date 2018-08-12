@@ -9,8 +9,8 @@ ShaderManager::ShaderManager()
     {SHADER_SHORE,              Shader("/shaders/shore.vs", "/shaders/shore.fs", false)},
     {SHADER_UNDERWATER,         Shader("/shaders/underwater.vs", "/shaders/underwater.fs", false)},
     {SHADER_FLAT,               Shader("/shaders/flat.vs", "/shaders/flat.fs", false)},
-    {SHADER_WATER,              Shader("/shaders/water.vs", "/shaders/water.gs", std::string("/shaders/water.fs"))},
-    {SHADER_WATER_NOFC,         Shader("/shaders/water.vs", "/shaders/water.fs", true)},
+    {SHADER_WATER_FC,           Shader("/shaders/waterFC.vs", "/shaders/waterFC.gs", std::string("/shaders/waterFC.fs"))},
+    {SHADER_WATER_NOFC,         Shader("/shaders/water.vs", "/shaders/water.fs", false)},
     {SHADER_SKY,                Shader("/shaders/skybox.vs", "/shaders/skybox.fs", false)},
     {SHADER_MODELS,             Shader("/shaders/model.vs", "/shaders/model.fs", false)},
     {SHADER_FONT,               Shader("/shaders/font.vs", "/shaders/font.fs", false)},
@@ -80,13 +80,6 @@ void ShaderManager::setupConstantUniforms()
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", DEPTH_MAP);
-
-  shader = &shaders[SHADER_WATER].second;
-  shader->use();
-  shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  shader->setInt("u_skybox", SKYBOX);
-  shader->setInt("u_normal_map", NORMAL_MAP);
-  shader->setFloat("u_mapDimension", 1.0f / (TILES_WIDTH * 4));
 
   shader = &shaders[SHADER_WATER_NOFC].second;
   shader->use();
@@ -194,23 +187,18 @@ void ShaderManager::updateWaterShaders(bool enableFC, glm::mat4 &projectionView,
   Shader* shader;
   if (enableFC)
     {
-      shader = &shaders[SHADER_WATER].second;
+      shader = &shaders[SHADER_WATER_FC].second;
       shader->use();
-      shader->setMat4("u_projectionView", projectionView);
-      shader->setVec3("u_viewPosition", viewPosition);
       shader->setVec4("u_frustumPlanes[0]", viewFrustum.getPlane(FRUSTUM_LEFT));
       shader->setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
       shader->setVec4("u_frustumPlanes[2]", viewFrustum.getPlane(FRUSTUM_BOTTOM));
       shader->setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
       shader->setVec4("u_frustumPlanes[4]", viewFrustum.getPlane(FRUSTUM_BACK));
     }
-  else
-    {
-      shader = &shaders[SHADER_WATER_NOFC].second;
-      shader->use();
-      shader->setMat4("u_projectionView", projectionView);
-      shader->setVec3("u_viewPosition", viewPosition);
-    }
+  shader = &shaders[SHADER_WATER_NOFC].second;
+  shader->use();
+  shader->setMat4("u_projectionView", projectionView);
+  shader->setVec3("u_viewPosition", viewPosition);
 }
 
 void ShaderManager::updateSkyShader(glm::mat4 &projectionView)

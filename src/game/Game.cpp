@@ -247,6 +247,12 @@ void Game::drawFrameToScreenRectangle(bool enableMS)
 
 void Game::drawFrameObjects(glm::mat4& projectionView)
 {
+  if (options.get(ANIMATE_WATER))
+    {
+      BENCHMARK("Water: buffer animation frame", true);
+      waterMapGenerator->bufferVertices();
+    }
+
   glm::vec3 viewPosition = camera.getPosition();
   //hills rendering
   {
@@ -325,8 +331,8 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
         shaderManager.updateWaterShaders(options.get(WATER_FC), projectionView, viewPosition, viewFrustum);
       }
       {
-        BENCHMARK("Renderer: draw water", true);
-        renderer.drawWater(waterMapGenerator, options.get(ANIMATE_WATER));
+        BENCHMARK("Renderer: draw water summary(+TFB)", true);
+        renderer.drawWater(options.get(WATER_FC), waterMapGenerator, shaderManager.get(SHADER_WATER_FC), shaderManager.get(SHADER_WATER_NOFC));
       }
     }
 
@@ -440,7 +446,7 @@ void Game::loop()
       delete hillMapGenerator;
       delete baseMapGenerator;
       delete buildableMapGenerator;
-      waterMapGenerator = new WaterMapGenerator();
+      waterMapGenerator = new WaterMapGenerator(shaderManager.get(SHADER_WATER_FC));
       hillMapGenerator = new HillsMapGenerator(waterMapGenerator->getMap());
       baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
       buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());

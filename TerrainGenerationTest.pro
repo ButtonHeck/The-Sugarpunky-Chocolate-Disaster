@@ -137,7 +137,6 @@ DISTFILES += \
     res/shaders/shore.vs \
     res/shaders/selectedTile.fs \
     res/saves/testSave.txt \
-    res/shaders/water.gs \
     res/shaders/hills.gs \
     res/shaders/MS_toDefault.vs \
     res/shaders/model_shadow.vs \
@@ -218,7 +217,10 @@ DISTFILES += \
     res/shaders/terrain_shadow.vs \
     res/shaders/MS_toDefault_hdr.fs \
     res/perAppLog.txt \
-    res/perFrameLog.txt
+    res/perFrameLog.txt \
+    res/shaders/waterFC.gs \
+    res/shaders/waterFC.vs \
+    res/shaders/waterFC.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

@@ -56,6 +56,17 @@ Shader::Shader(const std::string &vertexFile, const std::string &geometryFile, c
   glDeleteShader(fragment);
 }
 
+void Shader::linkAgain()
+{
+  glLinkProgram(ID);
+  glGetProgramiv(ID, GL_LINK_STATUS, &status);
+  if (status != 1)
+    {
+      glGetProgramInfoLog(ID, 512, NULL, infoLog);
+      std::cout << infoLog << std::endl;
+    }
+}
+
 void Shader::cacheUniformsMode(bool cache)
 {
   Shader::cachedUniforms = cache;

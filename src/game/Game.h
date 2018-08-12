@@ -51,13 +51,13 @@ private:
   Options& options;
   InputController input;
   TextureLoader textureLoader;
-  WaterMapGenerator* waterMapGenerator = new WaterMapGenerator();
+  ShaderManager shaderManager;
+  WaterMapGenerator* waterMapGenerator = new WaterMapGenerator(shaderManager.get(SHADER_WATER_FC));
   HillsMapGenerator* hillMapGenerator = new HillsMapGenerator(waterMapGenerator->getMap());
   BaseMapGenerator* baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
   BuildableMapGenerator* buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
   SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator, camera);
   TreeGenerator* treeGenerator;
-  ShaderManager shaderManager;
   FontManager* fontManager;
   CoordinateSystemRenderer csRenderer = CoordinateSystemRenderer(&shaderManager.get(SHADER_CS));
   UnderwaterQuadMapGenerator underwaterQuadGenerator;

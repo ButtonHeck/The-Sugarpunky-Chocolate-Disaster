@@ -2,9 +2,11 @@
 
 bool WaterMapGenerator::_WATER_ANIMATION_BENCHMARK_PASS_THROUGH = false;
 
-WaterMapGenerator::WaterMapGenerator()
+WaterMapGenerator::WaterMapGenerator(Shader &waterShader)
   :
-    MapGenerator(){}
+    MapGenerator(),
+    waterShader(waterShader)
+{}
 
 WaterMapGenerator::~WaterMapGenerator()
 {
@@ -95,13 +97,28 @@ void WaterMapGenerator::fillBufferData()
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+
+  glCreateVertexArrays(1, &culledVAO);
+  glBindVertexArray(culledVAO);
+  glCreateBuffers(1, &culledVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, culledVBO);
+  glNamedBufferStorage(culledVBO, numVertices * sizeof(GLfloat), 0, GL_NONE);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glCreateTransformFeedbacks(1, &TFBO);
+  glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, TFBO);
+  const GLchar* varyings[2] = {"o_pos", "o_normal"};
+  glTransformFeedbackVaryings(waterShader.getID(), 2, varyings, GL_INTERLEAVED_ATTRIBS);
+  waterShader.linkAgain();
+  glTransformFeedbackBufferBase(TFBO, 0, culledVBO);
   resetAllGLBuffers();
 }
 
 void WaterMapGenerator::bufferVertices()
 {
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(GLfloat), vertices, GL_STREAM_DRAW);
+  glNamedBufferData(vbo, numVertices * sizeof(GLfloat), vertices, GL_STREAM_DRAW);
 }
 
 void WaterMapGenerator::addWaterNearbyBaseTerrain()
@@ -563,6 +580,16 @@ void WaterMapGenerator::updateAnimationFrame(Options& options)
       *(vertices+33+pointerOffsetWithStride) = normalUL.x;
       *(vertices+35+pointerOffsetWithStride) = normalUL.z;
     }
+}
+
+GLuint WaterMapGenerator::getCulledVAO() const
+{
+  return culledVAO;
+}
+
+GLuint WaterMapGenerator::getTransformFeedback() const
+{
+  return TFBO;
 }
 
 void WaterMapGenerator::_setWaterAnimationBenchmarkPassThrough(bool passThru)

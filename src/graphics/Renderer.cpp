@@ -110,16 +110,40 @@ void Renderer::drawSelectedTile(BuildableMapGenerator *generator)
   glDisable(GL_BLEND);
 }
 
-void Renderer::drawWater(WaterMapGenerator *generator, bool animateWater)
+void Renderer::drawWater(bool useFC, WaterMapGenerator *generator, Shader& fc, Shader& nofc)
 {
-  glBindVertexArray(generator->getVAO());
-  if (animateWater)
+  if (useFC)
     {
-      generator->bufferVertices();
+      {
+        fc.use();
+        glBindVertexArray(generator->getVAO());
+        {
+          BENCHMARK("Renderer: draw water to TFB", true);
+          glEnable(GL_RASTERIZER_DISCARD);
+          glBeginTransformFeedback(GL_TRIANGLES);
+          glDrawArrays(GL_TRIANGLES, 0, 6 * generator->getTiles().size());
+          glEndTransformFeedback();
+          glDisable(GL_RASTERIZER_DISCARD);
+        }
+      }
+      {
+        BENCHMARK("Renderer: draw water from TFB", true);
+        nofc.use();
+        glBindVertexArray(generator->getCulledVAO());
+        glEnable(GL_BLEND);
+        glDrawTransformFeedback(GL_TRIANGLES, generator->getTransformFeedback());
+        glDisable(GL_BLEND);
+      }
     }
-  glEnable(GL_BLEND);
-  glDrawArrays(GL_TRIANGLES, 0, 6 * generator->getTiles().size());
-  glDisable(GL_BLEND);
+  else
+    {
+      BENCHMARK("Renderer: draw water no FC", true);
+      nofc.use();
+      glBindVertexArray(generator->getVAO());
+      glEnable(GL_BLEND);
+      glDrawArrays(GL_TRIANGLES, 0, 6 * generator->getTiles().size());
+      glDisable(GL_BLEND);
+    }
 }
 
 void Renderer::drawSkybox(Skybox *skybox)

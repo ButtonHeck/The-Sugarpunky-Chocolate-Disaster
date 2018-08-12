@@ -5,11 +5,12 @@
 #include "game/Options.h"
 #include "game/Settings.h"
 #include "timer/BenchmarkTimer.h"
+#include "graphics/Shader.h"
 
 class WaterMapGenerator : public MapGenerator
 {
 public:
-  WaterMapGenerator();
+  WaterMapGenerator(Shader& waterShader);
   ~WaterMapGenerator();
   void prepareMap();
   void postPrepareMap();
@@ -18,8 +19,12 @@ public:
   GLfloat* getHeightOffsets();
   void updateAnimationFrame(Options& options);
   constexpr static int WATER_HEIGHT_OFFSETS_SIZE = NUM_TILES + TILES_WIDTH * 2;
+  GLuint getCulledVAO() const;
+  GLuint getTransformFeedback() const;
   static void _setWaterAnimationBenchmarkPassThrough(bool passThru);
 private:
+  GLuint culledVAO, culledVBO, TFBO;
+  Shader& waterShader;
   size_t numVertices;
   GLfloat* vertices;
   GLfloat waterHeightOffsets[WATER_HEIGHT_OFFSETS_SIZE]; //a bit overhead, because all we use is the part where we have water...

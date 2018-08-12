@@ -16,6 +16,7 @@ public:
   Shader(const std::string& vertexFile);
   Shader(const std::string& vertexFile, const std::string& fragmentFile, bool renameFragmentShaderVariables);
   Shader(const std::string& vertexFile, const std::string& geometryFile, const std::string& fragmentFile);
+  void linkAgain();
   static void cacheUniformsMode(bool cache);
   void setInt(const std::string& uniformName, int value);
   void setFloat(const std::string& uniformName, float value);

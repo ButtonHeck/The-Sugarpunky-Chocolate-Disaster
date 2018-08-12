@@ -23,7 +23,7 @@ public:
   void drawUnderwaterQuad(UnderwaterQuadMapGenerator* generator);
   void drawBuildableTiles(BuildableMapGenerator* generator);
   void drawSelectedTile(BuildableMapGenerator* generator);
-  void drawWater(WaterMapGenerator* generator, bool animateWater);
+  void drawWater(bool useFC, WaterMapGenerator* generator, Shader& fc, Shader& nofc);
   void drawSkybox(Skybox* skybox);
   void drawTrees(TreeGenerator* generator, Shader& shader, bool enableFrustumCulling, Frustum &frustum);
 private:
