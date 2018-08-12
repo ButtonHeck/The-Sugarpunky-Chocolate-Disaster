@@ -34,8 +34,7 @@ struct Texture
 class Mesh
 {
 public:
-  Mesh(std::vector<Vertex> vertices, std::vector<Texture> textures, std::vector<unsigned int> indices);
-  Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
+  Mesh(std::vector<Vertex> vertices, std::vector<Texture> textures, std::vector<GLushort> indices);
   void setupMesh();
   void setupInstances(glm::mat4* models, unsigned int numModels);
   void draw(Shader& shader, const glm::vec2 &cameraPositionXZ, std::vector<ModelChunk>& chunks, unsigned int index,
@@ -44,7 +43,7 @@ public:
 private:
   std::vector<Vertex> vertices;
   std::vector<Texture> textures;
-  std::vector<unsigned int> indices;
+  std::vector<GLushort> indices;
   unsigned int VBO, EBO, instanceVBO, multiDE_I_DIBO;
   unsigned int numInstances;
 };

@@ -507,6 +507,11 @@ GLuint &BaseMapGenerator::getCellVAO()
   return cellVao;
 }
 
+GLuint &BaseMapGenerator::getCellDIBO()
+{
+  return cellMultiDE_I_DIBO;
+}
+
 std::vector<std::vector<float> > &BaseMapGenerator::getChunkMap()
 {
   return chunkMap;

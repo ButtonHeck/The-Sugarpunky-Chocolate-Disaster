@@ -26,7 +26,7 @@ void Renderer::drawFlatTerrain(BaseMapGenerator *generator, Frustum& frustum)
 {
   //square chunks are better to render without FC
   glBindVertexArray(generator->getSquareVAO());
-  glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, generator->getNumSquareInstances());
+  glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0, generator->getNumSquareInstances());
 
   //these ones should probably be FC-ed with multiDrawIndirect
   glBindVertexArray(generator->getCellVAO());
@@ -83,21 +83,22 @@ void Renderer::drawFlatTerrain(BaseMapGenerator *generator, Frustum& frustum)
           multiDrawIndirectData[dataOffset++] = cellChunks[i].getInstanceOffset();
         }
     }
+  glBindBuffer(GL_DRAW_INDIRECT_BUFFER, generator->getCellDIBO());
   glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData, GL_STATIC_DRAW);
-  glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, multiDE_I_primCount, 0);
+  glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_BYTE, 0, multiDE_I_primCount, 0);
 }
 
 void Renderer::drawUnderwaterQuad(UnderwaterQuadMapGenerator *generator)
 {
   glBindVertexArray(generator->getVAO());
-  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 }
 
 void Renderer::drawBuildableTiles(BuildableMapGenerator *generator)
 {
   glBindVertexArray(generator->getVAO());
   glEnable(GL_BLEND);
-  glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, generator->getNumInstances());
+  glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0, generator->getNumInstances());
   glDisable(GL_BLEND);
 }
 
@@ -105,7 +106,7 @@ void Renderer::drawSelectedTile(BuildableMapGenerator *generator)
 {
   glBindVertexArray(generator->getSelectedTileVAO());
   glEnable(GL_BLEND);
-  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
   glDisable(GL_BLEND);
 }
 

@@ -30,6 +30,7 @@ public:
   size_t getShoreVerticesToDraw() const;
   GLuint& getSquareVAO();
   GLuint& getCellVAO();
+  GLuint& getCellDIBO();
   std::vector<std::vector<float>>& getChunkMap();
   int getNumSquareInstances();
   int getNumCellInstances();
