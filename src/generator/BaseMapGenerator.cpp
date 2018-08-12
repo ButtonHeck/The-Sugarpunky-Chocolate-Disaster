@@ -199,12 +199,8 @@ void BaseMapGenerator::fillCellBufferData()
       cellInstanceModels[i] = model;
     }
 
-  glNamedBufferStorage(cellModelVbo, sizeof(glm::mat4) * NUM_CELL_INSTANCES, 0, GL_MAP_WRITE_BIT);
-  GLfloat *modelStorage = (GLfloat*)glMapNamedBuffer(cellModelVbo, GL_WRITE_ONLY);
-  std::memcpy(modelStorage, &cellInstanceModels[0], sizeof(glm::mat4) * NUM_CELL_INSTANCES);
-  glUnmapNamedBuffer(cellModelVbo);
-
   glBindBuffer(GL_ARRAY_BUFFER, cellModelVbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * cellTiles.size(), &cellInstanceModels[0], GL_STATIC_DRAW);
   for (unsigned int i = 0; i < 4; ++i)
     {
       glEnableVertexAttribArray(i+3);

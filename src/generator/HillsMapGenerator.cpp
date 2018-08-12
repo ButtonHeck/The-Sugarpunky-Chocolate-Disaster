@@ -203,12 +203,8 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * ELEMENT_DATA_LENGTH, indices, GL_STATIC_DRAW);
 
-  glNamedBufferStorage(vbo, sizeof(GLfloat) * VERTEX_DATA_LENGTH, 0, GL_MAP_WRITE_BIT);
-  GLfloat* vertexPointer = (GLfloat*)glMapNamedBuffer(vbo, GL_WRITE_ONLY);
-  std::memcpy(vertexPointer, vertices, sizeof(GLfloat) * VERTEX_DATA_LENGTH);
-  glUnmapNamedBuffer(vbo);
-
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTEX_DATA_LENGTH, vertices, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
   glEnableVertexAttribArray(1);

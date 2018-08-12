@@ -2,6 +2,7 @@
 
 #ifdef _DEBUG
 int ram_available, ram_size;
+float ram_size_float_percentage;
 #endif
 
 Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& options, int width, int height, float aspect)
@@ -17,6 +18,10 @@ Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& op
     textureManager(new TextureManager(textureLoader, scr_width, scr_height))
 {
   srand(time(NULL));
+#ifdef _DEBUG
+  glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ram_size);
+  ram_size_float_percentage = (float)ram_size / 100;
+#endif
 }
 
 Game::~Game()
@@ -375,10 +380,9 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
 #ifdef _DEBUG
         fontManager->renderText("Water anim thread works: " + (waterThreadAnimationIsWorking ? std::string("On") : std::string("Off")), 10.0f, 70.0f, 0.35f);
         glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &ram_available);
-        glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ram_size);
         fontManager->renderText("RAM available: " + (std::to_string(ram_available)
                                                      .append(", ")
-                                                     .append(std::to_string((float)ram_available / ram_size * 100))
+                                                     .append(std::to_string(ram_available / ram_size_float_percentage))
                                                      .append("%")), 10.0f, 90.0f, 0.35f);
 #endif
       }
