@@ -49,7 +49,7 @@ void Model::loadInstances(glm::mat4 *models, unsigned int numModels)
 Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene)
 {
   std::vector<Vertex> vertices;
-  std::vector<GLushort> indices;
+  std::vector<GLuint> indices;
   std::vector<Texture> textures;
 
   for (unsigned int i = 0; i < mesh->mNumVertices; i++)
