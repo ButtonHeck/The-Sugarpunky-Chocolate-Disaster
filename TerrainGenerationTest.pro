@@ -219,10 +219,9 @@ DISTFILES += \
     res/perFrameLog.txt \
     res/shaders/waterFC.gs \
     res/shaders/waterFC.vs \
-    res/shaders/waterFC.fs \
     res/shaders/hillsFC.vs \
     res/shaders/hillsFC.gs \
-    res/shaders/hillsFC.fs
+    res/shaders/_FC.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

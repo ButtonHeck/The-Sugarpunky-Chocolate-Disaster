@@ -38,7 +38,7 @@ public:
   void setupMesh();
   void setupInstances(glm::mat4* models, unsigned int numModels);
   void draw(Shader& shader, const glm::vec2 &cameraPositionXZ, std::vector<ModelChunk>& chunks, unsigned int index,
-            bool modelRenderOptimize, unsigned int chunkLoadingDistance, Frustum &frustum);
+            bool modelRenderOptimize, unsigned int chunkLoadingDistance, Frustum &frustum, bool bindTexture);
   unsigned int VAO;
 private:
   std::vector<Vertex> vertices;

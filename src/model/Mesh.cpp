@@ -63,42 +63,45 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
 }
 
 void Mesh::draw(Shader &shader, const glm::vec2 &cameraPositionXZ, std::vector<ModelChunk>& chunks, unsigned int index,
-                bool modelRenderOptimize, unsigned int chunkLoadingDistance, Frustum& frustum)
+                bool modelRenderOptimize, unsigned int chunkLoadingDistance, Frustum& frustum, bool bindTexture)
 {  
-  if (textures.size() == 1) //for mostly all models we have only one texture(diffuse)
+  if (bindTexture)
     {
-      glActiveTexture(GL_TEXTURE0);
-      //dont need to get uniform location
-      glBindTexture(GL_TEXTURE_2D, textures[0].id);
-    }
-  else
-    {
-      unsigned int diffuseNr = 1;
-      unsigned int specularNr = 1;
-      unsigned int heightNr = 1;
-      unsigned int normalNr = 1;
-      for(unsigned int i = 0; i < textures.size(); i++)
+      if (textures.size() == 1) //for mostly all models we have only one texture(diffuse)
         {
-          glActiveTexture(GL_TEXTURE0 + i);
-          std::string number;
-          std::string name = textures[i].type;
-          if (name == "u_texture_diffuse")
-            number = std::to_string(diffuseNr++);
-          else if (name == "u_texture_specular")
-            number = std::to_string(specularNr++);
-          else if (name == "u_texture_normal")
-            number = std::to_string(normalNr++);
-          else if (name == "u_texture_height")
-            number = std::to_string(heightNr++);
-          {
-            BENCHMARK("Shader: mesh find texture location", true);
-            glUniform1i(glGetUniformLocation(shader.getID(), (name.append(number)).c_str()), i);
-          }
-          glBindTexture(GL_TEXTURE_2D, textures[i].id);
+          glActiveTexture(GL_TEXTURE0);
+          //dont need to get uniform location
+          glBindTexture(GL_TEXTURE_2D, textures[0].id);
+        }
+      else
+        {
+          unsigned int diffuseNr = 1;
+          unsigned int specularNr = 1;
+          unsigned int heightNr = 1;
+          unsigned int normalNr = 1;
+          for(unsigned int i = 0; i < textures.size(); i++)
+            {
+              glActiveTexture(GL_TEXTURE0 + i);
+              std::string number;
+              std::string name = textures[i].type;
+              if (name == "u_texture_diffuse")
+                number = std::to_string(diffuseNr++);
+              else if (name == "u_texture_specular")
+                number = std::to_string(specularNr++);
+              else if (name == "u_texture_normal")
+                number = std::to_string(normalNr++);
+              else if (name == "u_texture_height")
+                number = std::to_string(heightNr++);
+              {
+                BENCHMARK("Shader: mesh find texture location", true);
+                glUniform1i(glGetUniformLocation(shader.getID(), (name.append(number)).c_str()), i);
+              }
+              glBindTexture(GL_TEXTURE_2D, textures[i].id);
+            }
         }
     }
-  glBindVertexArray(VAO);
 
+  glBindVertexArray(VAO);
   if (modelRenderOptimize)
     {
       GLuint multiDrawIndirectData[chunks.size() * 5]; // { indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
@@ -168,5 +171,6 @@ void Mesh::draw(Shader &shader, const glm::vec2 &cameraPositionXZ, std::vector<M
       glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances);
     }
   glBindVertexArray(0);
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, 0);
 }

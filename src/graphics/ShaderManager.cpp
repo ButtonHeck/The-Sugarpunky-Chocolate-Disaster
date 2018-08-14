@@ -4,12 +4,12 @@ ShaderManager::ShaderManager()
 {
   shaders.assign(
   {
-    {SHADER_HILLS_FC,           Shader("/shaders/hillsFC.vs", "/shaders/hillsFC.gs", std::string("/shaders/hillsFC.fs"))},
+    {SHADER_HILLS_FC,           Shader("/shaders/hillsFC.vs", "/shaders/hillsFC.gs", std::string("/shaders/_FC.fs"))},
     {SHADER_HILLS_NOFC,         Shader("/shaders/hills.vs", "/shaders/hills.fs", false)},
     {SHADER_SHORE,              Shader("/shaders/shore.vs", "/shaders/shore.fs", false)},
     {SHADER_UNDERWATER,         Shader("/shaders/underwater.vs", "/shaders/underwater.fs", false)},
     {SHADER_FLAT,               Shader("/shaders/flat.vs", "/shaders/flat.fs", false)},
-    {SHADER_WATER_FC,           Shader("/shaders/waterFC.vs", "/shaders/waterFC.gs", std::string("/shaders/waterFC.fs"))},
+    {SHADER_WATER_FC,           Shader("/shaders/waterFC.vs", "/shaders/waterFC.gs", std::string("/shaders/_FC.fs"))},
     {SHADER_WATER_NOFC,         Shader("/shaders/water.vs", "/shaders/water.fs", false)},
     {SHADER_SKY,                Shader("/shaders/skybox.vs", "/shaders/skybox.fs", false)},
     {SHADER_MODELS,             Shader("/shaders/model.vs", "/shaders/model.fs", false)},

@@ -18,6 +18,7 @@ class Renderer
 public:
   Renderer(Camera& camera);
   void drawHills(bool useFC, HillsMapGenerator* generator, Shader &fc, Shader &nofc);
+  void drawHillsDepthmap(HillsMapGenerator* generator);
   void drawShore(BaseMapGenerator* generator);
   void drawFlatTerrain(BaseMapGenerator* generator, Frustum& frustum);
   void drawUnderwaterQuad(UnderwaterQuadMapGenerator* generator);
@@ -25,7 +26,7 @@ public:
   void drawSelectedTile(BuildableMapGenerator* generator);
   void drawWater(bool useFC, WaterMapGenerator* generator, Shader& fc, Shader& nofc);
   void drawSkybox(Skybox* skybox);
-  void drawTrees(TreeGenerator* generator, Shader& shader, bool enableFrustumCulling, Frustum &frustum);
+  void drawTrees(TreeGenerator* generator, Shader& shader, bool enableFrustumCulling, Frustum &frustum, bool bindTexture);
 private:
   Camera& camera;
 };

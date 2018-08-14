@@ -38,6 +38,12 @@ void Renderer::drawHills(bool useFC, HillsMapGenerator *generator, Shader& fc, S
     }
 }
 
+void Renderer::drawHillsDepthmap(HillsMapGenerator *generator)
+{
+  glBindVertexArray(generator->getVAO());
+  glDrawElements(GL_TRIANGLES, 6 * generator->getTiles().size(), GL_UNSIGNED_INT, 0);
+}
+
 void Renderer::drawShore(BaseMapGenerator *generator)
 {
   auto shoreChunks = generator->getShoreChunks();
@@ -182,7 +188,7 @@ void Renderer::drawSkybox(Skybox *skybox)
   glEnable(GL_CULL_FACE);
 }
 
-void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFrustumCulling, Frustum& frustum)
+void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFrustumCulling, Frustum& frustum, bool bindTexture)
 {
   glDisable(GL_BLEND);
   auto plainTrees = generator->getPlainTrees();
@@ -195,11 +201,11 @@ void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFr
   for (unsigned int i = 0; i < plainTrees.size(); i++)
     {
       Model& model = plainTrees[i];
-      model.draw(shader, cameraPositionXZ, treeModelChunks, i, enableFrustumCulling, CHUNK_LOADING_DISTANCE, frustum);
+      model.draw(shader, cameraPositionXZ, treeModelChunks, i, enableFrustumCulling, CHUNK_LOADING_DISTANCE, frustum, bindTexture);
     }
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
       Model& model = hillTrees[i];
-      model.draw(shader, cameraPositionXZ, hillTreeModelChunks, i, enableFrustumCulling, CHUNK_LOADING_DISTANCE, frustum);
+      model.draw(shader, cameraPositionXZ, hillTreeModelChunks, i, enableFrustumCulling, CHUNK_LOADING_DISTANCE, frustum, bindTexture);
     }
 }

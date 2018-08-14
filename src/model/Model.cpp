@@ -21,10 +21,10 @@ void Model::loadModel(const std::string &path)
 }
 
 void Model::draw(Shader &shaderProgram, const glm::vec2& cameraPositionXZ, std::vector<ModelChunk>& chunks, unsigned int index,
-                 bool modelRenderOptimize, unsigned int chunkLoadingDistance, Frustum& frustum)
+                 bool modelRenderOptimize, unsigned int chunkLoadingDistance, Frustum& frustum, bool bindTexture)
 {
   for (unsigned int i = 0; i < meshes.size(); i++)
-    meshes[i].draw(shaderProgram, cameraPositionXZ, chunks, index, modelRenderOptimize, chunkLoadingDistance, frustum);
+    meshes[i].draw(shaderProgram, cameraPositionXZ, chunks, index, modelRenderOptimize, chunkLoadingDistance, frustum, bindTexture);
 }
 
 void Model::processNode(aiNode *node, const aiScene* scene)

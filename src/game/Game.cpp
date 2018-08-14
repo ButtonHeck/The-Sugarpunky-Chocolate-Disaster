@@ -121,22 +121,10 @@ void Game::setupVariables()
         });
 
   textureManager->createUnderwaterReliefTexture(waterMapGenerator);
-  {
-    BENCHMARK("Shader: setup constant uniforms", false);
-    shaderManager.setupConstantUniforms();
-  }
-  {
-    BENCHMARK("Game: prepare screen VAO", false);
-    prepareScreenVAO();
-  }
-  {
-    BENCHMARK("Game: prepare multisample FBO", false);
-    prepareMS_FBO();
-  }
-  {
-    BENCHMARK("Game: prepare depthmap FBO", false);
-    prepareDepthMapFBO();
-  }
+  shaderManager.setupConstantUniforms();
+  prepareScreenVAO();
+  prepareMS_FBO();
+  prepareDepthMapFBO();
 }
 
 void Game::prepareTerrain()
@@ -356,7 +344,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
       }
       {
         BENCHMARK("Renderer: draw models", true);
-        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC), viewFrustum);
+        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC), viewFrustum, true);
       }
     }
 
@@ -409,7 +397,7 @@ void Game::drawFrameObjectsDepthmap()
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
   {
     BENCHMARK("Renderer: draw hills depthmap", true);
-    renderer.drawHills(options.get(HILLS_FC), hillMapGenerator, shaderManager.get(SHADER_HILLS_FC), shaderManager.get(SHADER_HILLS_NOFC));
+    renderer.drawHillsDepthmap(hillMapGenerator);
   }
   {
     BENCHMARK("Renderer: draw shore depthmap", true);
@@ -421,7 +409,7 @@ void Game::drawFrameObjectsDepthmap()
       shaderManager.get(SHADER_SHADOW_MODELS).use();
       {
         BENCHMARK("Renderer: draw models depthmap", true);
-        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC), viewFrustum);
+        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS), options.get(MODELS_FC), viewFrustum, false);
       }
     }
 
