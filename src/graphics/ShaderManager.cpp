@@ -4,8 +4,8 @@ ShaderManager::ShaderManager()
 {
   shaders.assign(
   {
-    {SHADER_HILLS,              Shader("/shaders/hills.vs", "/shaders/hills.gs", std::string("/shaders/hills.fs"))},
-    {SHADER_HILLS_NOFC,         Shader("/shaders/hills.vs", "/shaders/hills.fs", true)},
+    {SHADER_HILLS_FC,           Shader("/shaders/hillsFC.vs", "/shaders/hillsFC.gs", std::string("/shaders/hillsFC.fs"))},
+    {SHADER_HILLS_NOFC,         Shader("/shaders/hills.vs", "/shaders/hills.fs", false)},
     {SHADER_SHORE,              Shader("/shaders/shore.vs", "/shaders/shore.fs", false)},
     {SHADER_UNDERWATER,         Shader("/shaders/underwater.vs", "/shaders/underwater.fs", false)},
     {SHADER_FLAT,               Shader("/shaders/flat.vs", "/shaders/flat.fs", false)},
@@ -25,20 +25,7 @@ ShaderManager::ShaderManager()
 
 void ShaderManager::setupConstantUniforms()
 {
-  Shader* shader = &shaders[SHADER_HILLS].second;
-  shader->use();
-  shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  shader->setInt("u_flat_diffuse", FLAT_x2);
-  shader->setInt("u_flat_diffuse2", FLAT_2_x2);
-  shader->setInt("u_hills_diffuse", HILL);
-  shader->setInt("u_hills_diffuse2", HILL_2);
-  shader->setInt("u_hills_specular", HILL_SPECULAR);
-  shader->setInt("u_normal_map", NORMAL_MAP);
-  shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
-  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-  shader->setInt("u_shadowMap", DEPTH_MAP);
-
-  shader = &shaders[SHADER_HILLS_NOFC].second;
+  Shader* shader = &shaders[SHADER_HILLS_NOFC].second;
   shader->use();
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setInt("u_flat_diffuse", FLAT_x2);
@@ -123,25 +110,19 @@ void ShaderManager::updateHillsShaders(bool enableFC, bool enableShadows, glm::m
   Shader* shader;
   if (enableFC)
     {
-      shader = &shaders[SHADER_HILLS].second;
+      shader = &shaders[SHADER_HILLS_FC].second;
       shader->use();
-      shader->setMat4("u_projectionView", projectionView);
-      shader->setVec3("u_viewPosition", viewPosition);
       shader->setVec4("u_frustumPlanes[0]", viewFrustum.getPlane(FRUSTUM_LEFT));
       shader->setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
       shader->setVec4("u_frustumPlanes[2]", viewFrustum.getPlane(FRUSTUM_BOTTOM));
       shader->setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
       shader->setVec4("u_frustumPlanes[4]", viewFrustum.getPlane(FRUSTUM_BACK));
-      shader->setBool("u_shadowEnable", enableShadows);
     }
-  else
-    {
-      shader = &shaders[SHADER_HILLS_NOFC].second;
-      shader->use();
-      shader->setMat4("u_projectionView", projectionView);
-      shader->setVec3("u_viewPosition", viewPosition);
-      shader->setBool("u_shadowEnable", enableShadows);
-    }
+  shader = &shaders[SHADER_HILLS_NOFC].second;
+  shader->use();
+  shader->setMat4("u_projectionView", projectionView);
+  shader->setVec3("u_viewPosition", viewPosition);
+  shader->setBool("u_shadowEnable", enableShadows);
 }
 
 void ShaderManager::updateShoreShader(glm::mat4 &projectionView, bool enableShadows)

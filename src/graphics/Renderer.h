@@ -17,7 +17,7 @@ class Renderer
 {
 public:
   Renderer(Camera& camera);
-  void drawHills(HillsMapGenerator* generator);
+  void drawHills(bool useFC, HillsMapGenerator* generator, Shader &fc, Shader &nofc);
   void drawShore(BaseMapGenerator* generator);
   void drawFlatTerrain(BaseMapGenerator* generator, Frustum& frustum);
   void drawUnderwaterQuad(UnderwaterQuadMapGenerator* generator);

@@ -7,10 +7,35 @@ Renderer::Renderer(Camera &camera)
 
 }
 
-void Renderer::drawHills(HillsMapGenerator *generator)
+void Renderer::drawHills(bool useFC, HillsMapGenerator *generator, Shader& fc, Shader& nofc)
 {
-    glBindVertexArray(generator->getVAO());
-    glDrawElements(GL_TRIANGLES, 6 * generator->getTiles().size(), GL_UNSIGNED_INT, 0);
+  if (useFC)
+    {
+      GLuint tfb = generator->getTransformFeedback();
+      {
+        BENCHMARK("Renderer: draw hills to TFB", true);
+        fc.use();
+        glBindVertexArray(generator->getVAO());
+        glEnable(GL_RASTERIZER_DISCARD);
+        glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, tfb);
+        glBeginTransformFeedback(GL_TRIANGLES);
+        glDrawElements(GL_TRIANGLES, 6 * generator->getTiles().size(), GL_UNSIGNED_INT, 0);
+        glEndTransformFeedback();
+        glDisable(GL_RASTERIZER_DISCARD);
+      }
+      {
+        BENCHMARK("Renderer: draw hills from TFB", true);
+        nofc.use();
+        glBindVertexArray(generator->getCulledVAO());
+        glDrawTransformFeedback(GL_TRIANGLES, tfb);
+      }
+    }
+  else
+    {
+      nofc.use();
+      glBindVertexArray(generator->getVAO());
+      glDrawElements(GL_TRIANGLES, 6 * generator->getTiles().size(), GL_UNSIGNED_INT, 0);
+    }
 }
 
 void Renderer::drawShore(BaseMapGenerator *generator)
@@ -120,6 +145,7 @@ void Renderer::drawWater(bool useFC, WaterMapGenerator *generator, Shader& fc, S
         {
           BENCHMARK("Renderer: draw water to TFB", true);
           glEnable(GL_RASTERIZER_DISCARD);
+          glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, generator->getTransformFeedback());
           glBeginTransformFeedback(GL_TRIANGLES);
           glDrawArrays(GL_TRIANGLES, 0, 6 * generator->getTiles().size());
           glEndTransformFeedback();

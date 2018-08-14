@@ -1,8 +1,9 @@
 #include "generator/HillsMapGenerator.h"
 
-HillsMapGenerator::HillsMapGenerator(std::vector<std::vector<float> > &waterMap)
+HillsMapGenerator::HillsMapGenerator(Shader &shader, std::vector<std::vector<float> > &waterMap)
   :
     MapGenerator(),
+    hillsShader(shader),
     waterMap(waterMap)
 {
   randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
@@ -11,6 +12,9 @@ HillsMapGenerator::HillsMapGenerator(std::vector<std::vector<float> > &waterMap)
 HillsMapGenerator::~HillsMapGenerator()
 {
   deleteGLObjects();
+  glDeleteVertexArrays(1, &culledVAO);
+  glDeleteBuffers(1, &culledVBO);
+  glDeleteTransformFeedbacks(1, &TFBO);
 }
 
 void HillsMapGenerator::prepareMap()
@@ -211,6 +215,24 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
+
+  glCreateVertexArrays(1, &culledVAO);
+  glBindVertexArray(culledVAO);
+  glCreateBuffers(1, &culledVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, culledVBO);
+  glNamedBufferStorage(culledVBO, VERTEX_DATA_LENGTH * sizeof(GLfloat), 0, GL_NONE);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
+  glCreateTransformFeedbacks(1, &TFBO);
+  glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, TFBO);
+  const GLchar* varyings[3] = {"o_pos", "o_texCoords", "o_normal"};
+  glTransformFeedbackVaryings(hillsShader.getID(), 3, varyings, GL_INTERLEAVED_ATTRIBS);
+  hillsShader.linkAgain();
+  glTransformFeedbackBufferBase(TFBO, 0, culledVBO);
   resetAllGLBuffers();
   delete[] vertices;
   delete[] indices;
@@ -236,6 +258,16 @@ void HillsMapGenerator::createTiles()
               }
         }
     }
+}
+
+GLuint HillsMapGenerator::getCulledVAO() const
+{
+  return culledVAO;
+}
+
+GLuint HillsMapGenerator::getTransformFeedback() const
+{
+  return TFBO;
 }
 
 void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY density)

@@ -261,7 +261,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   }
   {
     BENCHMARK("Renderer: draw hills", true);
-    renderer.drawHills(hillMapGenerator);
+    renderer.drawHills(options.get(HILLS_FC), hillMapGenerator, shaderManager.get(SHADER_HILLS_FC), shaderManager.get(SHADER_HILLS_NOFC));
   }
 
   //shore terrain chunks drawing
@@ -409,7 +409,7 @@ void Game::drawFrameObjectsDepthmap()
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
   {
     BENCHMARK("Renderer: draw hills depthmap", true);
-    renderer.drawHills(hillMapGenerator);
+    renderer.drawHills(options.get(HILLS_FC), hillMapGenerator, shaderManager.get(SHADER_HILLS_FC), shaderManager.get(SHADER_HILLS_NOFC));
   }
   {
     BENCHMARK("Renderer: draw shore depthmap", true);
@@ -447,7 +447,7 @@ void Game::loop()
       delete baseMapGenerator;
       delete buildableMapGenerator;
       waterMapGenerator = new WaterMapGenerator(shaderManager.get(SHADER_WATER_FC));
-      hillMapGenerator = new HillsMapGenerator(waterMapGenerator->getMap());
+      hillMapGenerator = new HillsMapGenerator(shaderManager.get(SHADER_HILLS_FC), waterMapGenerator->getMap());
       baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
       buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
       prepareTerrain();
