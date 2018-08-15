@@ -235,13 +235,14 @@ void Game::drawFrameToScreenRectangle(bool enableMS)
 
 void Game::drawFrameObjects(glm::mat4& projectionView)
 {
+  glm::vec3 viewPosition = camera.getPosition();
+
   if (options.get(ANIMATE_WATER))
     {
       BENCHMARK("Water: buffer animation frame", true);
       waterMapGenerator->bufferVertices();
     }
 
-  glm::vec3 viewPosition = camera.getPosition();
   //hills rendering
   {
     BENCHMARK("Shader: update hills", true);
@@ -347,6 +348,8 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
         renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC), viewFrustum, true);
       }
     }
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, 0);
 
   //font rendering
   if (options.get(RENDER_DEBUG_TEXT))
