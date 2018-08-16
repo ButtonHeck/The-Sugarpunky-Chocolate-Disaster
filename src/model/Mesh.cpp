@@ -59,6 +59,7 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
 void Mesh::draw(Shader &shader, const glm::vec2 &cameraPositionXZ, std::vector<ModelChunk>& chunks, unsigned int index,
                 bool modelRenderOptimize, unsigned int chunkLoadingDistance, Frustum& frustum, bool bindTexture)
 {  
+  BENCHMARK("Mesh: draw (full func)", true);
   if (bindTexture)
     {
       if (textures.size() == 1) //for mostly all models we have only one texture(diffuse)
@@ -158,7 +159,10 @@ void Mesh::draw(Shader &shader, const glm::vec2 &cameraPositionXZ, std::vector<M
         }
       glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDE_I_DIBO);
       glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData, GL_STATIC_DRAW);
-      glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, multiDE_I_primCount, 0);
+      {
+        BENCHMARK("Mesh: multiDrawIndirect", true);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, multiDE_I_primCount, 0);
+      }
     }
   else
     {

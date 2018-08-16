@@ -245,20 +245,14 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
     }
 
   //hills rendering
-  {
-    BENCHMARK("Shader: update hills", true);
-    shaderManager.updateHillsShaders(options.get(HILLS_FC), options.get(OCCLUSION_CULLING), options.get(SHADOW_ENABLE), projectionView, viewPosition, viewFrustum);
-  }
+  shaderManager.updateHillsShaders(options.get(HILLS_FC), options.get(OCCLUSION_CULLING), options.get(SHADOW_ENABLE), projectionView, viewPosition, viewFrustum);
   {
     BENCHMARK("Renderer: draw hills", true);
     renderer.drawHills(options.get(HILLS_FC), hillMapGenerator, shaderManager.get(SHADER_HILLS_FC), shaderManager.get(SHADER_HILLS_NOFC));
   }
 
   //shore terrain chunks drawing
-  {
-    BENCHMARK("Shader: update shore", true);
-    shaderManager.updateShoreShader(projectionView, options.get(SHADOW_ENABLE));
-  }
+  shaderManager.updateShoreShader(projectionView, options.get(SHADOW_ENABLE));
   {
     BENCHMARK("Renderer: draw shore", true);
     renderer.drawShore(baseMapGenerator);
@@ -267,10 +261,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   //flat terrain chunks drawing
   if (options.get(RENDER_FLAT_TERRAIN))
     {
-      {
-        BENCHMARK("Shader: update flat", true);
-        shaderManager.updateFlatShader(projectionView, options.get(SHADOW_ENABLE));
-      }
+      shaderManager.updateFlatShader(projectionView, options.get(SHADOW_ENABLE));
       {
         BENCHMARK("Renderer: draw flat", true);
         renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
@@ -278,14 +269,8 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
     }
 
   //underwater tile
-  {
-    BENCHMARK("Shader: update underwater", true);
-    shaderManager.updateUnderwaterShader(projectionView);
-  }
-  {
-    BENCHMARK("Renderer: draw underwater", true);
-    renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
-  }
+  shaderManager.updateUnderwaterShader(projectionView);
+  renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
 
   //buildable tiles
   if (options.get(SHOW_BUILDABLE))
@@ -316,34 +301,22 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   //water rendering
   if (options.get(RENDER_WATER))
     {
+      shaderManager.updateWaterShaders(options.get(WATER_FC), projectionView, viewPosition, viewFrustum);
       {
-        BENCHMARK("Shader: update water", true);
-        shaderManager.updateWaterShaders(options.get(WATER_FC), projectionView, viewPosition, viewFrustum);
-      }
-      {
-        BENCHMARK("Renderer: draw water summary(+TFB)", true);
+        BENCHMARK("Renderer: draw water (full func)", true);
         renderer.drawWater(options.get(WATER_FC), waterMapGenerator, shaderManager.get(SHADER_WATER_FC), shaderManager.get(SHADER_WATER_NOFC));
       }
     }
 
   //Skybox rendering
-  {
-    BENCHMARK("Shader: update sky", true);
-    glm::mat4 skyProjectionView = projection * glm::mat4(glm::mat3(camera.getViewMatrix()));
-    shaderManager.updateSkyShader(skyProjectionView);
-  }
-  {
-    BENCHMARK("Renderer: draw sky", true);
-    renderer.drawSkybox(&skybox);
-  }
+  glm::mat4 skyProjectionView = projection * glm::mat4(glm::mat3(camera.getViewMatrix()));
+  shaderManager.updateSkyShader(skyProjectionView);
+  renderer.drawSkybox(&skybox);
 
   //trees chunks rendering
   if (options.get(RENDER_TREE_MODELS))
     {
-      {
-        BENCHMARK("Shader: update models", true);
-        shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE), options.get(OCCLUSION_CULLING));
-      }
+      shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE), options.get(OCCLUSION_CULLING));
       {
         BENCHMARK("Renderer: draw models", true);
         renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC), viewFrustum, true);
@@ -399,14 +372,8 @@ void Game::drawFrameObjectsDepthmap()
   glDisable(GL_CULL_FACE); //or set front face culling
 
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
-  {
-    BENCHMARK("Renderer: draw hills depthmap", true);
-    renderer.drawHillsDepthmap(hillMapGenerator);
-  }
-  {
-    BENCHMARK("Renderer: draw shore depthmap", true);
-    renderer.drawShore(baseMapGenerator);
-  }
+  renderer.drawHillsDepthmap(hillMapGenerator);
+  renderer.drawShore(baseMapGenerator);
 
   if (options.get(RENDER_TREE_MODELS))
     {
@@ -489,10 +456,7 @@ void Game::loop()
   //update view and projection matrices
   glm::mat4 view = camera.getViewMatrix();
   glm::mat4 projectionView = projection * view;
-  {
-    BENCHMARK("Frustum: update planes", true);
-    viewFrustum.updateFrustum(projectionView);
-  }
+  viewFrustum.updateFrustum(projectionView);
 
   if (options.get(OCCLUSION_CULLING))
   {
@@ -529,6 +493,9 @@ void Game::loop()
       textureManager->createUnderwaterReliefTexture(waterMapGenerator);
     }
 
-  glfwSwapBuffers(window);
+  {
+    BENCHMARK("Game: glfwSwapBuffers", true);
+    glfwSwapBuffers(window);
+  }
   ++updateCount;
 }

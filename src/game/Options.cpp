@@ -14,14 +14,14 @@ Options::Options()
     {SHOW_CURSOR, false},
     {SHOW_BUILDABLE, false},
     {MODELS_FC, true},
-    {HILLS_FC, true},
-    {WATER_FC, true},
+    {HILLS_FC, false},
+    {WATER_FC, false},
     {MULTISAMPLE_ENABLE, true},
     {SHADOW_ENABLE, true},
     {CREATE_SHADOW_MAP_REQUEST, true},
     {RENDER_FLAT_TERRAIN, true},
     {RENDER_WATER, true},
-    {OCCLUSION_CULLING, true}
+    {OCCLUSION_CULLING, false}
   });
 }
 
