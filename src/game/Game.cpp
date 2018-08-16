@@ -121,10 +121,11 @@ void Game::setupVariables()
         });
 
   textureManager->createUnderwaterReliefTexture(waterMapGenerator);
-  shaderManager.setupConstantUniforms();
+  shaderManager.setupConstantUniforms(scr_width, scr_height);
   prepareScreenVAO();
   prepareMS_FBO();
-  prepareDepthMapFBO();
+  prepareDepthMapFBO(&depthMapFBO, DEPTH_MAP_SUN);
+  prepareDepthMapFBO(&depthMapFBO_camera, DEPTH_MAP_CAMERA);
 }
 
 void Game::prepareTerrain()
@@ -175,11 +176,11 @@ void Game::prepareMS_FBO()
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Game::prepareDepthMapFBO()
+void Game::prepareDepthMapFBO(GLuint* fbo, GLuint depthTextureUnit)
 {
-  glGenFramebuffers(1, &depthMapFBO);
-  glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureManager->get(DEPTH_MAP), 0);
+  glGenFramebuffers(1, fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureManager->get(depthTextureUnit), 0);
   glDrawBuffer(GL_NONE);
   glReadBuffer(GL_NONE);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -422,6 +423,22 @@ void Game::drawFrameObjectsDepthmap()
   glBindTextureUnit(FLAT, textureManager->get(FLAT));
 }
 
+void Game::drawFrameObjectsDepthMapCamera(glm::mat4 &projectionView)
+{
+  Shader* shader = &shaderManager.get(SHADER_SHADOW_TERRAIN_CAMERA);
+  shader->use();
+  shader->setMat4("u_lightSpaceMatrix", projectionView);
+  renderer.drawHillsDepthmap(hillMapGenerator);
+
+//  if (options.get(RENDER_TREE_MODELS))
+//    {
+//      shader = &shaderManager.get(SHADER_SHADOW_MODELS_CAMERA);
+//      shader->use();
+//      shader->setMat4("u_lightSpaceMatrix", projectionView);
+//      renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS_CAMERA), options.get(MODELS_FC), viewFrustum, false);
+//    }
+}
+
 void Game::loop()
 {
   {
@@ -469,10 +486,6 @@ void Game::loop()
       options.set(CREATE_SHADOW_MAP_REQUEST, false);
     }
 
-  bool multisamplingEnabled = options.get(MULTISAMPLE_ENABLE);
-  glBindFramebuffer(GL_FRAMEBUFFER, multisamplingEnabled ? multisampleFBO : screenFBO);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   //update view and projection matrices
   glm::mat4 view = camera.getViewMatrix();
   glm::mat4 projectionView = projection * view;
@@ -480,6 +493,19 @@ void Game::loop()
     BENCHMARK("Frustum: update planes", true);
     viewFrustum.updateFrustum(projectionView);
   }
+
+  if (options.get(OCCLUSION_CULLING))
+  {
+    BENCHMARK("Game: draw occlusion map", true);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO_camera);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    drawFrameObjectsDepthMapCamera(projectionView);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  }
+
+  bool multisamplingEnabled = options.get(MULTISAMPLE_ENABLE);
+  glBindFramebuffer(GL_FRAMEBUFFER, multisamplingEnabled ? multisampleFBO : screenFBO);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   //render our world onto separate FBO as usual
   drawFrameObjects(projectionView);

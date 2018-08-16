@@ -25,14 +25,16 @@ enum SHADER_TYPE
   SHADER_SELECTED = 12,
   SHADER_MS_TO_DEFAULT = 13,
   SHADER_SHADOW_TERRAIN = 14,
-  SHADER_SHADOW_MODELS = 15
+  SHADER_SHADOW_MODELS = 15,
+  SHADER_SHADOW_TERRAIN_CAMERA = 16,
+  SHADER_SHADOW_MODELS_CAMERA = 17
 };
 
 class ShaderManager
 {
 public:
   ShaderManager();
-  void setupConstantUniforms();
+  void setupConstantUniforms(int scr_width, int scr_height);
   Shader& get(SHADER_TYPE type);
   void updateHillsShaders(bool enableFC, bool enableShadows, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum);
   void updateShoreShader(glm::mat4& projectionView, bool enableShadows);

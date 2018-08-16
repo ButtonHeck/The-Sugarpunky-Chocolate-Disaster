@@ -12,8 +12,14 @@ uniform sampler2D u_texture_diffuse;
 uniform sampler2D u_texture_specular;
 uniform bool      u_shadow;
 uniform sampler2D u_shadowMap;
+uniform sampler2D u_occlusionMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
+
+uniform float     U_NEAR;
+uniform float     U_FAR;
+uniform float     U_SCR_WIDTH;
+uniform float     U_SCR_HEIGHT;
 
 const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.3;
@@ -56,8 +62,18 @@ vec4 desaturate(vec4 fragColor, float desaturatingValue)
     return desaturated;
 }
 
+float linearizeDepth(float depth)
+{
+    float z = depth * 2.0 - 1.0; // back to NDC
+    return (2.0 * U_NEAR * U_FAR) / (U_FAR + U_NEAR - z * (U_FAR - U_NEAR));
+}
+
 void main()
 {
+    float d = linearizeDepth(texture(u_occlusionMap, vec2(gl_FragCoord.x / U_SCR_WIDTH, gl_FragCoord.y / U_SCR_HEIGHT)).r) / U_FAR;
+    if (gl_FragDepth > d)
+        discard;
+
     vec4 sampledDiffuse = texture(u_texture_diffuse, v_TexCoords);
     vec4 sampledSpecular = texture(u_texture_specular, v_TexCoords);
     vec3 ambientColor = 0.2 * sampledDiffuse.rgb;

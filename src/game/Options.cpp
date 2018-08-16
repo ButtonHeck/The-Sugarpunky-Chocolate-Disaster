@@ -20,7 +20,8 @@ Options::Options()
     {SHADOW_ENABLE, true},
     {CREATE_SHADOW_MAP_REQUEST, true},
     {RENDER_FLAT_TERRAIN, true},
-    {RENDER_WATER, true}
+    {RENDER_WATER, true},
+    {OCCLUSION_CULLING, true}
   });
 }
 

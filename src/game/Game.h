@@ -32,11 +32,12 @@ public:
   void setupVariables();
   void prepareTerrain();
   void prepareMS_FBO();
-  void prepareDepthMapFBO();
+  void prepareDepthMapFBO(GLuint* fbo, GLuint depthTextureUnit);
   void prepareScreenVAO();
   void drawFrameToScreenRectangle(bool enableMS);
   void drawFrameObjects(glm::mat4& projectionView);
   void drawFrameObjectsDepthmap();
+  void drawFrameObjectsDepthMapCamera(glm::mat4& projectionView);
   void loop();
 private:
   int scr_width;
@@ -64,7 +65,7 @@ private:
   Skybox skybox;
   TextureManager* textureManager;
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
-  GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO;
+  GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO, depthMapFBO_camera;
   std::thread* waterAnimationThread;
 #ifdef _DEBUG
   bool waterThreadAnimationIsWorking = true;

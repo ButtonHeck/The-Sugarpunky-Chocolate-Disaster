@@ -18,8 +18,14 @@ uniform sampler2D u_hills_diffuse;
 uniform sampler2D u_hills_diffuse2;
 uniform sampler2D u_hills_specular;
 uniform sampler2D u_shadowMap;
+uniform sampler2D u_occlusionMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
+
+uniform float     U_NEAR;
+uniform float     U_FAR;
+uniform float     U_SCR_WIDTH;
+uniform float     U_SCR_HEIGHT;
 
 const float TEXEL_SIZE_MULTIPLIER_OFFSET = 1.0 + clamp((v_PosHeight * 10.0), 0.0, 1.5);
 const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
@@ -55,8 +61,18 @@ vec4 desaturate(vec4 fragColor, float desaturatingValue)
     return desaturated;
 }
 
+float linearizeDepth(float depth)
+{
+    float z = depth * 2.0 - 1.0; // back to NDC
+    return (2.0 * U_NEAR * U_FAR) / (U_FAR + U_NEAR - z * (U_FAR - U_NEAR));
+}
+
 void main()
 {
+    float d = linearizeDepth(texture(u_occlusionMap, vec2(gl_FragCoord.x / U_SCR_WIDTH, gl_FragCoord.y / U_SCR_HEIGHT)).r) / U_FAR;
+    if (gl_FragDepth > d)
+        discard;
+
     vec4 sampledDiffuse =
         mix(mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), v_TextureFlatMixRatio),
             mix(texture(u_hills_diffuse, v_TexCoords), texture(u_hills_diffuse2, v_TexCoords), v_TextureHillMixRatio),

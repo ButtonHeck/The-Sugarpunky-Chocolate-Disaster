@@ -19,11 +19,13 @@ ShaderManager::ShaderManager()
     {SHADER_SELECTED,           Shader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs", false)},
     {SHADER_MS_TO_DEFAULT,      Shader("/shaders/MS_toDefault.vs", "/shaders/MS_toDefault_hdr.fs", false)},
     {SHADER_SHADOW_TERRAIN,     Shader("/shaders/terrain_shadow.vs")},
-    {SHADER_SHADOW_MODELS,      Shader("/shaders/model_shadow.vs")}
+    {SHADER_SHADOW_MODELS,      Shader("/shaders/model_shadow.vs")},
+    {SHADER_SHADOW_TERRAIN_CAMERA,      Shader("/shaders/terrain_shadow.vs")},
+    {SHADER_SHADOW_MODELS_CAMERA,       Shader("/shaders/model_shadow.vs")},
         });
 }
 
-void ShaderManager::setupConstantUniforms()
+void ShaderManager::setupConstantUniforms(int scr_width, int scr_height)
 {
   Shader* shader = &shaders[SHADER_HILLS_NOFC].second;
   shader->use();
@@ -36,7 +38,12 @@ void ShaderManager::setupConstantUniforms()
   shader->setInt("u_normal_map", NORMAL_MAP);
   shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-  shader->setInt("u_shadowMap", DEPTH_MAP);
+  shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
+  shader->setInt("u_occlusionMap", DEPTH_MAP_CAMERA);
+  shader->setFloat("U_NEAR", NEAR_PLANE);
+  shader->setFloat("U_FAR", FAR_PLANE);
+  shader->setFloat("U_SCR_WIDTH", scr_width);
+  shader->setFloat("U_SCR_HEIGHT", scr_height);
 
   shader = &shaders[SHADER_SHORE].second;
   shader->use();
@@ -48,7 +55,7 @@ void ShaderManager::setupConstantUniforms()
   shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-  shader->setInt("u_shadowMap", DEPTH_MAP);
+  shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
 
   shader = &shaders[SHADER_UNDERWATER].second;
   shader->use();
@@ -66,7 +73,7 @@ void ShaderManager::setupConstantUniforms()
   shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-  shader->setInt("u_shadowMap", DEPTH_MAP);
+  shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
 
   shader = &shaders[SHADER_WATER_NOFC].second;
   shader->use();
@@ -83,7 +90,12 @@ void ShaderManager::setupConstantUniforms()
   shader->use();
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-  shader->setInt("u_shadowMap", DEPTH_MAP);
+  shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
+  shader->setInt("u_occlusionMap", DEPTH_MAP_CAMERA);
+  shader->setFloat("U_NEAR", NEAR_PLANE);
+  shader->setFloat("U_FAR", FAR_PLANE);
+  shader->setFloat("U_SCR_WIDTH", scr_width);
+  shader->setFloat("U_SCR_HEIGHT", scr_height);
 
   shader = &shaders[SHADER_MS_TO_DEFAULT].second;
   shader->use();

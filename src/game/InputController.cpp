@@ -91,6 +91,18 @@ void InputController::processKeyboard()
   if (glfwGetKey(window, GLFW_KEY_F6) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_F6] = false;
 
+  //use occlusion culling
+  if (glfwGetKey(window, GLFW_KEY_F7) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_F7])
+        {
+          options.switchOpt(OCCLUSION_CULLING);
+          keysPressed[GLFW_KEY_F7] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_F7) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_F7] = false;
+
   //recreate terrain
   if (glfwGetKey(window, GLFW_KEY_F9) == GLFW_PRESS)
     {
