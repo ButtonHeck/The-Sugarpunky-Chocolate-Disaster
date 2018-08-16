@@ -1,4 +1,5 @@
 #version 450
+layout (early_fragment_tests) in;
 
 out vec4 o_FragColor;
 
@@ -15,6 +16,7 @@ uniform sampler2D u_shadowMap;
 uniform sampler2D u_occlusionMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
+uniform bool      u_occlusion;
 
 uniform float     U_NEAR;
 uniform float     U_FAR;
@@ -32,6 +34,7 @@ const vec2  POISSON_DISK[4] = vec2[](
   vec2( -0.094184101, -0.92938870 ),
   vec2( 0.34495938, 0.29387760 )
 );
+const float DEPTH_BIAS = 0.003;
 
 float calculateLuminosity(vec3 normal)
 {
@@ -70,9 +73,13 @@ float linearizeDepth(float depth)
 
 void main()
 {
-    float d = linearizeDepth(texture(u_occlusionMap, vec2(gl_FragCoord.x / U_SCR_WIDTH, gl_FragCoord.y / U_SCR_HEIGHT)).r) / U_FAR;
-    if (gl_FragDepth > d)
-        discard;
+    if (u_occlusion)
+    {
+        float ocMapDepth = linearizeDepth(texture(u_occlusionMap, vec2(gl_FragCoord.x / U_SCR_WIDTH, gl_FragCoord.y / U_SCR_HEIGHT)).r) / U_FAR;
+        float fragDepth = linearizeDepth(gl_FragCoord.z) / U_FAR;
+        if (fragDepth >= ocMapDepth + DEPTH_BIAS)
+            discard;
+    }
 
     vec4 sampledDiffuse = texture(u_texture_diffuse, v_TexCoords);
     vec4 sampledSpecular = texture(u_texture_specular, v_TexCoords);

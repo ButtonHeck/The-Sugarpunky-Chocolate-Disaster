@@ -117,10 +117,10 @@ Shader &ShaderManager::get(SHADER_TYPE type)
   return shaders[type].second;
 }
 
-void ShaderManager::updateHillsShaders(bool enableFC, bool enableShadows, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
+void ShaderManager::updateHillsShaders(bool useFC, bool useOC, bool enableShadows, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
 {
   Shader* shader;
-  if (enableFC)
+  if (useFC)
     {
       shader = &shaders[SHADER_HILLS_FC].second;
       shader->use();
@@ -135,6 +135,7 @@ void ShaderManager::updateHillsShaders(bool enableFC, bool enableShadows, glm::m
   shader->setMat4("u_projectionView", projectionView);
   shader->setVec3("u_viewPosition", viewPosition);
   shader->setBool("u_shadowEnable", enableShadows);
+  shader->setBool("u_occlusion", useOC);
 }
 
 void ShaderManager::updateShoreShader(glm::mat4 &projectionView, bool enableShadows)
@@ -201,7 +202,7 @@ void ShaderManager::updateSkyShader(glm::mat4 &projectionView)
   shader->setMat4("u_projectionView", projectionView);
 }
 
-void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &viewPosition, bool shadowOnTrees, bool enableShadows)
+void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &viewPosition, bool shadowOnTrees, bool enableShadows, bool useOC)
 {
   Shader* shader = &shaders[SHADER_MODELS].second;
   shader->use();
@@ -209,6 +210,7 @@ void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &view
   shader->setVec3("u_viewPosition", viewPosition);
   shader->setBool("u_shadow", shadowOnTrees);
   shader->setBool("u_shadowEnable", enableShadows);
+  shader->setBool("u_occlusion", useOC);
 }
 
 void ShaderManager::deleteShaders()

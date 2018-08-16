@@ -1,4 +1,5 @@
 #version 450
+layout (early_fragment_tests) in;
 
 out vec4 o_FragColor;
 
@@ -11,6 +12,7 @@ in float v_DiffuseComponentFlat;
 in float v_SpecularComponent;
 in vec3  v_Normal;
 in vec3  v_ProjectedCoords;
+in float v_VertexDepth;
 
 uniform sampler2D u_flat_diffuse;
 uniform sampler2D u_flat_diffuse2;
@@ -21,6 +23,7 @@ uniform sampler2D u_shadowMap;
 uniform sampler2D u_occlusionMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
+uniform bool      u_occlusion;
 
 uniform float     U_NEAR;
 uniform float     U_FAR;
@@ -69,9 +72,12 @@ float linearizeDepth(float depth)
 
 void main()
 {
-    float d = linearizeDepth(texture(u_occlusionMap, vec2(gl_FragCoord.x / U_SCR_WIDTH, gl_FragCoord.y / U_SCR_HEIGHT)).r) / U_FAR;
-    if (gl_FragDepth > d)
-        discard;
+    if (u_occlusion)
+    {
+        float ocMapDepth = linearizeDepth(texture(u_occlusionMap, vec2(gl_FragCoord.x / U_SCR_WIDTH, gl_FragCoord.y / U_SCR_HEIGHT)).r) / U_FAR;
+        if (v_VertexDepth > ocMapDepth)
+            discard;
+    }
 
     vec4 sampledDiffuse =
         mix(mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), v_TextureFlatMixRatio),

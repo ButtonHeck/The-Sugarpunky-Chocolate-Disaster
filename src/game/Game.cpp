@@ -247,7 +247,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   //hills rendering
   {
     BENCHMARK("Shader: update hills", true);
-    shaderManager.updateHillsShaders(options.get(HILLS_FC), options.get(SHADOW_ENABLE), projectionView, viewPosition, viewFrustum);
+    shaderManager.updateHillsShaders(options.get(HILLS_FC), options.get(OCCLUSION_CULLING), options.get(SHADOW_ENABLE), projectionView, viewPosition, viewFrustum);
   }
   {
     BENCHMARK("Renderer: draw hills", true);
@@ -342,7 +342,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
     {
       {
         BENCHMARK("Shader: update models", true);
-        shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE));
+        shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE), options.get(OCCLUSION_CULLING));
       }
       {
         BENCHMARK("Renderer: draw models", true);
@@ -430,13 +430,13 @@ void Game::drawFrameObjectsDepthMapCamera(glm::mat4 &projectionView)
   shader->setMat4("u_lightSpaceMatrix", projectionView);
   renderer.drawHillsDepthmap(hillMapGenerator);
 
-//  if (options.get(RENDER_TREE_MODELS))
-//    {
-//      shader = &shaderManager.get(SHADER_SHADOW_MODELS_CAMERA);
-//      shader->use();
-//      shader->setMat4("u_lightSpaceMatrix", projectionView);
-//      renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS_CAMERA), options.get(MODELS_FC), viewFrustum, false);
-//    }
+  if (options.get(RENDER_TREE_MODELS))
+    {
+      shader = &shaderManager.get(SHADER_SHADOW_MODELS_CAMERA);
+      shader->use();
+      shader->setMat4("u_lightSpaceMatrix", projectionView);
+      renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS_CAMERA), options.get(MODELS_FC), viewFrustum, false);
+    }
 }
 
 void Game::loop()
