@@ -46,11 +46,8 @@ void Renderer::drawHillsDepthmap(HillsMapGenerator *generator)
 
 void Renderer::drawShore(BaseMapGenerator *generator)
 {
-  auto shoreChunks = generator->getShoreChunks();
-  auto verticesToDraw = generator->getShoreVerticesToDraw();
-  GLuint vao = generator->getShoreVao();
-  glBindVertexArray(vao);
-  glDrawArrays(GL_TRIANGLES, 0, verticesToDraw);
+  glBindVertexArray(generator->getShoreVao());
+  glDrawArrays(GL_TRIANGLES, 0, generator->getShoreVerticesToDraw());
 }
 
 void Renderer::drawFlatTerrain(BaseMapGenerator *generator, Frustum& frustum)
@@ -61,62 +58,66 @@ void Renderer::drawFlatTerrain(BaseMapGenerator *generator, Frustum& frustum)
 
   //these ones should probably be FC-ed with multiDrawIndirect
   glBindVertexArray(generator->getCellVAO());
-  float radius = CHUNK_SIZE / 2.0f * glm::sqrt(2);
-  auto cellChunks = generator->getCellChunks();
+  auto& cellChunks = generator->getCellChunks();
   GLuint multiDrawIndirectData[cellChunks.size() * 5]; // { indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
   GLuint dataOffset = 0;
   GLuint multiDE_I_primCount = 0;
-  const float HALF_CHUNK_SIZE = CHUNK_SIZE / 2.0f;
   for (unsigned int i = 0; i < cellChunks.size(); i++)
     {
       glm::vec2 chunkMidPoint = cellChunks[i].getMidPoint();
-      glm::vec2 chunkLL = glm::vec2(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE);
-      if (frustum.isInside(chunkLL.x, 0.0f, chunkLL.y, radius))
+      if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE,
+                           chunkMidPoint.y + HALF_CHUNK_SIZE,
+                           MODELS_FC_RADIUS))
         {
-          ++multiDE_I_primCount;
-          multiDrawIndirectData[dataOffset++] = 6;
-          multiDrawIndirectData[dataOffset++] = cellChunks[i].getNumInstances();
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = cellChunks[i].getInstanceOffset();
+          addIndirectBufferData(multiDE_I_primCount,
+                                multiDrawIndirectData,
+                                dataOffset, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
           continue;
         }
-      glm::vec2 chunkLR = glm::vec2(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE);
-      if (frustum.isInside(chunkLR.x, 0.0f, chunkLR.y, radius))
+      if (frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE,
+                           chunkMidPoint.y + HALF_CHUNK_SIZE,
+                           MODELS_FC_RADIUS))
         {
-          ++multiDE_I_primCount;
-          multiDrawIndirectData[dataOffset++] = 6;
-          multiDrawIndirectData[dataOffset++] = cellChunks[i].getNumInstances();
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = cellChunks[i].getInstanceOffset();
+          addIndirectBufferData(multiDE_I_primCount,
+                                multiDrawIndirectData,
+                                dataOffset, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
           continue;
         }
-      glm::vec2 chunkUR = glm::vec2(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE);
-      if (frustum.isInside(chunkUR.x, 0.0f, chunkUR.y, radius))
+      if (frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE,
+                           chunkMidPoint.y - HALF_CHUNK_SIZE,
+                           MODELS_FC_RADIUS))
         {
-          ++multiDE_I_primCount;
-          multiDrawIndirectData[dataOffset++] = 6;
-          multiDrawIndirectData[dataOffset++] = cellChunks[i].getNumInstances();
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = cellChunks[i].getInstanceOffset();
+          addIndirectBufferData(multiDE_I_primCount,
+                                multiDrawIndirectData,
+                                dataOffset, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
           continue;
         }
-      glm::vec2 chunkUL = glm::vec2(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE);
-      if (frustum.isInside(chunkUL.x, 0.0f, chunkUL.y, radius))
+      if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE,
+                           chunkMidPoint.y - HALF_CHUNK_SIZE,
+                           MODELS_FC_RADIUS))
         {
-          ++multiDE_I_primCount;
-          multiDrawIndirectData[dataOffset++] = 6;
-          multiDrawIndirectData[dataOffset++] = cellChunks[i].getNumInstances();
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = cellChunks[i].getInstanceOffset();
+          addIndirectBufferData(multiDE_I_primCount,
+                                multiDrawIndirectData,
+                                dataOffset, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
         }
     }
   glBindBuffer(GL_DRAW_INDIRECT_BUFFER, generator->getCellDIBO());
   glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData, GL_STATIC_DRAW);
   glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_BYTE, 0, multiDE_I_primCount, 0);
+}
+
+void Renderer::addIndirectBufferData(GLuint& primCount,
+                                     GLuint* buffer,
+                                     GLuint& dataOffset,
+                                     GLuint numInstances,
+                                     GLuint instanceOffset)
+{
+  ++primCount;
+  buffer[dataOffset++] = 6;
+  buffer[dataOffset++] = numInstances;
+  buffer[dataOffset++] = 0;
+  buffer[dataOffset++] = 0;
+  buffer[dataOffset++] = instanceOffset;
 }
 
 void Renderer::drawUnderwaterQuad(UnderwaterQuadMapGenerator *generator)

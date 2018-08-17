@@ -21,6 +21,11 @@ public:
   void drawHillsDepthmap(HillsMapGenerator* generator);
   void drawShore(BaseMapGenerator* generator);
   void drawFlatTerrain(BaseMapGenerator* generator, Frustum& frustum);
+  void addIndirectBufferData(GLuint& primCount,
+                             GLuint* buffer,
+                             GLuint& dataOffset,
+                             GLuint numInstances,
+                             GLuint instanceOffset);
   void drawUnderwaterQuad(UnderwaterQuadMapGenerator* generator);
   void drawBuildableTiles(BuildableMapGenerator* generator);
   void drawSelectedTile(BuildableMapGenerator* generator);

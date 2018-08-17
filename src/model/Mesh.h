@@ -44,6 +44,7 @@ public:
                                  const glm::vec2 &cameraPositionXZ,
                                  Frustum& frustum);
 private:
+  void addIndirectBufferData(GLuint &dataOffset, GLuint indicesSize, GLuint numInstances, GLuint instanceOffset);
   std::vector<Vertex> vertices;
   std::vector<Texture> textures;
   std::vector<GLuint> indices;

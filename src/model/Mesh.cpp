@@ -33,6 +33,7 @@ void Mesh::setupMesh()
 
   glCreateBuffers(1, &multiDE_I_DIBO);
   glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDE_I_DIBO);
+  glNamedBufferStorage(multiDE_I_DIBO, sizeof(multiDrawIndirectData), 0, GL_DYNAMIC_STORAGE_BIT);
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -100,7 +101,7 @@ void Mesh::draw(Shader &shader, bool useCulling, bool bindTexture)
       {
         BENCHMARK("Mesh: bind+buffer indirect data", true);
         glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDE_I_DIBO);
-        glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData, GL_STATIC_DRAW);
+        glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData);
       }
       {
         BENCHMARK("Mesh: multiDrawIndirect", true);
@@ -128,48 +129,45 @@ void Mesh::prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
         continue;
 
       glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
-      glm::vec2 chunkLL = glm::vec2(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE);
-      if (frustum.isInside(chunkLL.x, 0.0f, chunkLL.y, MODELS_FC_RADIUS))
+      if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE,
+                           chunkMidPoint.y + HALF_CHUNK_SIZE,
+                           MODELS_FC_RADIUS))
         {
-          ++multiDE_I_primCount;
-          multiDrawIndirectData[dataOffset++] = indicesSize;
-          multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
+          addIndirectBufferData(dataOffset, indicesSize, chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
           continue;
         }
-      glm::vec2 chunkLR = glm::vec2(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE);
-      if (frustum.isInside(chunkLR.x, 0.0f, chunkLR.y, MODELS_FC_RADIUS))
+      if (frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE,
+                           chunkMidPoint.y + HALF_CHUNK_SIZE,
+                           MODELS_FC_RADIUS))
         {
-          ++multiDE_I_primCount;
-          multiDrawIndirectData[dataOffset++] = indicesSize;
-          multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
+          addIndirectBufferData(dataOffset, indicesSize, chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
           continue;
         }
-      glm::vec2 chunkUR = glm::vec2(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE);
-      if (frustum.isInside(chunkUR.x, 0.0f, chunkUR.y, MODELS_FC_RADIUS))
+      if (frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE,
+                           chunkMidPoint.y - HALF_CHUNK_SIZE,
+                           MODELS_FC_RADIUS))
         {
-          ++multiDE_I_primCount;
-          multiDrawIndirectData[dataOffset++] = indicesSize;
-          multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
+          addIndirectBufferData(dataOffset, indicesSize, chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
           continue;
         }
-      glm::vec2 chunkUL = glm::vec2(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE);
-      if (frustum.isInside(chunkUL.x, 0.0f, chunkUL.y, MODELS_FC_RADIUS))
+      if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE,
+                           chunkMidPoint.y - HALF_CHUNK_SIZE,
+                           MODELS_FC_RADIUS))
         {
-          ++multiDE_I_primCount;
-          multiDrawIndirectData[dataOffset++] = indicesSize;
-          multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = 0;
-          multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
+          addIndirectBufferData(dataOffset, indicesSize, chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
         }
     }
+}
+
+void Mesh::addIndirectBufferData(GLuint& dataOffset,
+                                 GLuint indicesSize,
+                                 GLuint numInstances,
+                                 GLuint instanceOffset)
+{
+  ++multiDE_I_primCount;
+  multiDrawIndirectData[dataOffset++] = indicesSize;
+  multiDrawIndirectData[dataOffset++] = numInstances;
+  multiDrawIndirectData[dataOffset++] = 0;
+  multiDrawIndirectData[dataOffset++] = 0;
+  multiDrawIndirectData[dataOffset++] = instanceOffset;
 }
