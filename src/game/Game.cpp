@@ -28,6 +28,8 @@ Game::~Game()
 {
   waterAnimationThread->join();
   delete waterAnimationThread;
+  meshIndirectUpdateThread->join();
+  delete meshIndirectUpdateThread;
   textureManager->deleteTextures();
   shaderManager.deleteShaders();
   delete textureManager;
@@ -94,6 +96,35 @@ void Game::setupVariables()
     BENCHMARK("Game: Prepare Terrain", false);
     prepareTerrain();
   }
+  meshIndirectUpdateThread = new std::thread([this]()
+  {
+      auto& plainTrees = treeGenerator->getPlainTrees();
+      auto& hillTrees = treeGenerator->getHillTrees();
+      auto& plainChunks = treeGenerator->getTreeModelChunks();
+      auto& hillChunks = treeGenerator->getHillTreeModelChunks();
+      while(!glfwWindowShouldClose(window))
+        {
+          if (meshesIndirectDataNeed)
+            {
+              BENCHMARK("Mesh: update DIB data", true);
+              float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
+              float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
+              glm::vec2 cameraPositionXZ = glm::vec2(cameraOnMapX, cameraOnMapZ);
+              for (unsigned int i = 0; i < plainTrees.size(); i++)
+                {
+                  Model& model = plainTrees[i];
+                  model.prepareMeshesIndirectData(plainChunks, i, cameraPositionXZ, CHUNK_LOADING_DISTANCE, viewFrustum);
+                }
+              for (unsigned int i = 0; i < hillTrees.size(); i++)
+                {
+                  Model& model = hillTrees[i];
+                  model.prepareMeshesIndirectData(hillChunks, i, cameraPositionXZ, CHUNK_LOADING_DISTANCE, viewFrustum);
+                }
+              meshesIndirectDataReady = true;
+              meshesIndirectDataNeed = false;
+            }
+        }
+    });
   waterAnimationThread = new std::thread([this]()
   {
       while(!glfwWindowShouldClose(window))
@@ -102,10 +133,7 @@ void Game::setupVariables()
                   options.get(ANIMATE_WATER) &&
                   options.get(RENDER_WATER))
                 {
-                  {
-
-                    waterMapGenerator->updateAnimationFrame(options);
-                  }
+                  waterMapGenerator->updateAnimationFrame(options);
 #ifdef _DEBUG
                   waterThreadAnimationIsWorking = true;
 #endif
@@ -190,20 +218,11 @@ void Game::prepareDepthMapFBO(GLuint* fbo, GLuint depthTextureUnit)
 
 void Game::prepareScreenVAO()
 {
-  float screenVertices[] = {
-      -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-       1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-       1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-
-       1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-      -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-      -1.0f, -1.0f, 0.0f, 0.0f, 0.0f
-  };
   glGenVertexArrays(1, &screenVAO);
   glGenBuffers(1, &screenVBO);
   glBindVertexArray(screenVAO);
   glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(screenVertices), &screenVertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(SCREEN_VERTICES), &SCREEN_VERTICES, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(1);
@@ -319,7 +338,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
       shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE), options.get(OCCLUSION_CULLING));
       {
         BENCHMARK("Renderer: draw models", true);
-        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC), viewFrustum, true);
+        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC), true);
       }
     }
   glActiveTexture(GL_TEXTURE0);
@@ -380,7 +399,7 @@ void Game::drawFrameObjectsDepthmap()
       shaderManager.get(SHADER_SHADOW_MODELS).use();
       {
         BENCHMARK("Renderer: draw models depthmap", true);
-        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS), options.get(MODELS_FC), viewFrustum, false);
+        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS), options.get(MODELS_FC), false);
       }
     }
 
@@ -402,12 +421,19 @@ void Game::drawFrameObjectsDepthMapCamera(glm::mat4 &projectionView)
       shader = &shaderManager.get(SHADER_SHADOW_MODELS_CAMERA);
       shader->use();
       shader->setMat4("u_lightSpaceMatrix", projectionView);
-      renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS_CAMERA), options.get(MODELS_FC), viewFrustum, false);
+      renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS_CAMERA), options.get(MODELS_FC), false);
     }
 }
 
 void Game::loop()
 {
+  //even if we don't need to render models make sure we update indirect buffer data for meshes
+  {
+    BENCHMARK("Game: wait for mesh indirect ready", true);
+    while(!meshesIndirectDataReady && !updateCount == 0) {}
+  }
+  meshesIndirectDataReady = false;
+
   {
     BENCHMARK("Input: process keyboard", true);
     input.processKeyboard();
@@ -473,6 +499,9 @@ void Game::loop()
 
   //render our world onto separate FBO as usual
   drawFrameObjects(projectionView);
+
+  //after all mesh related draw calls we could start updating meshes indirect data buffers
+  meshesIndirectDataNeed = true;
 
   //render result onto the default FBO and apply HDR/MS if the flag are set
   {

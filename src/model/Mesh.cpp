@@ -56,8 +56,7 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Mesh::prepareAndDraw(Shader &shader, const glm::vec2 &cameraPositionXZ, std::vector<ModelChunk>& chunks, unsigned int index,
-                bool useCulling, unsigned int chunkLoadingDistance, Frustum& frustum, bool bindTexture)
+void Mesh::draw(Shader &shader, bool useCulling, bool bindTexture)
 {  
   BENCHMARK("Mesh: draw (full func)", true);
   if (bindTexture)
@@ -95,12 +94,18 @@ void Mesh::prepareAndDraw(Shader &shader, const glm::vec2 &cameraPositionXZ, std
             }
         }
     }
-
+  glBindVertexArray(VAO);
   if (useCulling)
     {
-      prepareIndirectBufferData(chunks, index, cameraPositionXZ, chunkLoadingDistance, frustum);
+      glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDE_I_DIBO);
+      glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData, GL_STATIC_DRAW);
+      {
+        BENCHMARK("Mesh: multiDrawIndirect", true);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, multiDE_I_primCount, 0);
+      }
     }
-  draw(useCulling);
+  else
+    glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances);
 }
 
 void Mesh::prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
@@ -166,20 +171,4 @@ void Mesh::prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
           multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
         }
     }
-}
-
-void Mesh::draw(bool useCulling)
-{
-  glBindVertexArray(VAO);
-  if (useCulling)
-    {
-      glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDE_I_DIBO);
-      glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData, GL_STATIC_DRAW);
-      {
-        BENCHMARK("Mesh: multiDrawIndirect", true);
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, multiDE_I_primCount, 0);
-      }
-    }
-  else
-    glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances);
 }

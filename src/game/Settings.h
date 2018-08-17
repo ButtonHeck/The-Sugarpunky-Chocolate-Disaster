@@ -36,6 +36,14 @@ constexpr int SHORE_SIZE_BASE = 5;
 constexpr int CHUNK_SIZE = 16;
 constexpr unsigned int CHUNK_LOADING_DISTANCE = 8;
 constexpr unsigned char QUAD_INDICES[6] = {0,1,2,2,3,0};
+constexpr float SCREEN_VERTICES[] = {
+  -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+   1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+   1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+   1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+  -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+  -1.0f, -1.0f, 0.0f, 0.0f, 0.0f
+};
 constexpr bool HILLS_TEXTURE_MAPPING_SLOPE_CORRECTION = true;
 constexpr bool BASE_TERRAIN_RANDOMIZE_SHORE_FORM = true;
 constexpr bool HDR_ENABLED = true;

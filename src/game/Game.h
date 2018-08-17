@@ -67,6 +67,8 @@ private:
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
   GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO, depthMapFBO_camera;
   std::thread* waterAnimationThread;
+  std::thread* meshIndirectUpdateThread;
+  bool meshesIndirectDataReady = false, meshesIndirectDataNeed = false;
 #ifdef _DEBUG
   bool waterThreadAnimationIsWorking = true;
 #endif

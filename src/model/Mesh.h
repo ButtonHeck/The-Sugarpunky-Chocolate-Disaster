@@ -37,29 +37,20 @@ public:
   Mesh(std::vector<Vertex> vertices, std::vector<Texture> textures, std::vector<GLuint> indices);
   void setupMesh();
   void setupInstances(glm::mat4* models, unsigned int numModels);
-  void prepareAndDraw(Shader& shader,
-                      const glm::vec2 &cameraPositionXZ,
-                      std::vector<ModelChunk>& chunks,
-                      unsigned int index,
-                      bool useCUlling,
-                      unsigned int chunkLoadingDistance,
-                      Frustum &frustum,
-                      bool bindTexture);
+  void draw(Shader& shader, bool useCulling, bool bindTexture);
   void prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2 &cameraPositionXZ,
                                  unsigned int chunkLoadingDistance,
                                  Frustum& frustum);
-  void draw(bool useCulling);
-  unsigned int VAO;
 private:
   std::vector<Vertex> vertices;
   std::vector<Texture> textures;
   std::vector<GLuint> indices;
-  unsigned int VBO, EBO, instanceVBO, multiDE_I_DIBO;
+  unsigned int VAO, VBO, EBO, instanceVBO, multiDE_I_DIBO;
   unsigned int numInstances;
   constexpr static int NUM_CHUNKS = (TILES_WIDTH / CHUNK_SIZE) * (TILES_HEIGHT / CHUNK_SIZE);
-  GLuint multiDrawIndirectData[NUM_CHUNKS * 5]; //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
+  GLuint multiDrawIndirectData[NUM_CHUNKS * 5] = {0}; //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
   GLuint multiDE_I_primCount = 0;
 };
 

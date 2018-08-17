@@ -188,24 +188,20 @@ void Renderer::drawSkybox(Skybox *skybox)
   glEnable(GL_CULL_FACE);
 }
 
-void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFrustumCulling, Frustum& frustum, bool bindTexture)
+void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFrustumCulling, bool bindTexture)
 {
   glDisable(GL_BLEND);
-  auto plainTrees = generator->getPlainTrees();
-  auto hillTrees = generator->getHillTrees();
-  auto treeModelChunks = generator->getTreeModelChunks();
-  auto hillTreeModelChunks = generator->getHillTreeModelChunks();
-  float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
-  float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
-  glm::vec2 cameraPositionXZ = glm::vec2(cameraOnMapX, cameraOnMapZ);
+  auto& plainTrees = generator->getPlainTrees();
+  auto& hillTrees = generator->getHillTrees();
+
   for (unsigned int i = 0; i < plainTrees.size(); i++)
     {
       Model& model = plainTrees[i];
-      model.draw(shader, cameraPositionXZ, treeModelChunks, i, enableFrustumCulling, CHUNK_LOADING_DISTANCE, frustum, bindTexture);
+      model.draw(shader, enableFrustumCulling, bindTexture);
     }
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
       Model& model = hillTrees[i];
-      model.draw(shader, cameraPositionXZ, hillTreeModelChunks, i, enableFrustumCulling, CHUNK_LOADING_DISTANCE, frustum, bindTexture);
+      model.draw(shader, enableFrustumCulling, bindTexture);
     }
 }
