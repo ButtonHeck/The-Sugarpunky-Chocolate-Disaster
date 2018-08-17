@@ -34,7 +34,12 @@ constexpr float UNDERWATER_REMOVAL_LEVEL = -1.2f;
 constexpr float UNDERWATER_BASE_TILE_HEIGHT = -1.2f;
 constexpr int SHORE_SIZE_BASE = 5;
 constexpr int CHUNK_SIZE = 16;
-constexpr unsigned int CHUNK_LOADING_DISTANCE = 8;
+constexpr float HALF_CHUNK_SIZE = CHUNK_SIZE / 2.0f;
+constexpr unsigned int LOADING_DISTANCE_CHUNKS = 8;
+constexpr unsigned int LOADING_DISTANCE_UNITS = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS;
+constexpr unsigned int LOADING_DISTANCE_UNITS_SQUARE = LOADING_DISTANCE_UNITS * LOADING_DISTANCE_UNITS;
+constexpr float SQRT_2 = 1.4142;
+constexpr float MODELS_FC_RADIUS = HALF_CHUNK_SIZE * SQRT_2;
 constexpr unsigned char QUAD_INDICES[6] = {0,1,2,2,3,0};
 constexpr float SCREEN_VERTICES[] = {
   -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,

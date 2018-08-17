@@ -534,7 +534,7 @@ GLfloat *WaterMapGenerator::getHeightOffsets()
 
 void WaterMapGenerator::updateAnimationFrame(Options& options)
 {
-  BENCHMARK_PASS_CHECK("(SI)Water: Update animation frame", true, _WATER_ANIMATION_BENCHMARK_PASS_THROUGH);
+  BENCHMARK_PASS_CHECK("(SI/ST)Water: Update animation frame", true, _WATER_ANIMATION_BENCHMARK_PASS_THROUGH);
   _WATER_ANIMATION_BENCHMARK_PASS_THROUGH = true;
   double frameTime = glfwGetTime();
   double offsetMultiplier = frameTime * 0.1;

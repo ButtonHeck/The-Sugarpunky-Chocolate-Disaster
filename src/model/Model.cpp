@@ -29,11 +29,10 @@ void Model::draw(Shader &shaderProgram, bool modelRenderOptimize, bool bindTextu
 void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                       unsigned int index,
                                       const glm::vec2& cameraPositionXZ,
-                                      unsigned int chunkLoadingDistance,
                                       Frustum& frustum)
 {
   for (unsigned int i = 0; i < meshes.size(); i++)
-    meshes[i].prepareIndirectBufferData(chunks, index, cameraPositionXZ, chunkLoadingDistance, frustum);
+    meshes[i].prepareIndirectBufferData(chunks, index, cameraPositionXZ, frustum);
 }
 
 void Model::processNode(aiNode *node, const aiScene* scene)

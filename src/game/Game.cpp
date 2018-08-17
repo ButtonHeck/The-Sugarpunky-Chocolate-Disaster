@@ -106,19 +106,19 @@ void Game::setupVariables()
         {
           if (meshesIndirectDataNeed)
             {
-              BENCHMARK("Mesh: update DIB data", true);
+              BENCHMARK("(ST)Model: update meshes DIBs data", true);
               float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
               float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
               glm::vec2 cameraPositionXZ = glm::vec2(cameraOnMapX, cameraOnMapZ);
               for (unsigned int i = 0; i < plainTrees.size(); i++)
                 {
                   Model& model = plainTrees[i];
-                  model.prepareMeshesIndirectData(plainChunks, i, cameraPositionXZ, CHUNK_LOADING_DISTANCE, viewFrustum);
+                  model.prepareMeshesIndirectData(plainChunks, i, cameraPositionXZ, viewFrustum);
                 }
               for (unsigned int i = 0; i < hillTrees.size(); i++)
                 {
                   Model& model = hillTrees[i];
-                  model.prepareMeshesIndirectData(hillChunks, i, cameraPositionXZ, CHUNK_LOADING_DISTANCE, viewFrustum);
+                  model.prepareMeshesIndirectData(hillChunks, i, cameraPositionXZ, viewFrustum);
                 }
               meshesIndirectDataReady = true;
               meshesIndirectDataNeed = false;

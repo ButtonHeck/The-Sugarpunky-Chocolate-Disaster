@@ -7,6 +7,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/detail/func_common.hpp>
 #include <glm/detail/func_geometric.hpp>
+#include <glm/gtx/norm.hpp>
 #include "graphics/Shader.h"
 #include "game/Settings.h"
 #include "chunk/ModelChunk.h"
@@ -41,7 +42,6 @@ public:
   void prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2 &cameraPositionXZ,
-                                 unsigned int chunkLoadingDistance,
                                  Frustum& frustum);
 private:
   std::vector<Vertex> vertices;

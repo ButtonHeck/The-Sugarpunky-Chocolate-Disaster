@@ -26,7 +26,7 @@ private:
   static std::map<std::string, unsigned long> benchmarksTimers;
   static std::map<std::string, int> benchmarksInvocations;
   static std::map<std::string, float> appBenchmarks;
-  static constexpr int FORMAT_VALUE_ASCII = 45, BENCH_NAME_MAX_LENGTH = 36;
+  static constexpr int FORMAT_VALUE_ASCII = 45, BENCH_NAME_MAX_LENGTH = 40;
   std::string benchmark;
   bool perFrame;
   /*

@@ -18,12 +18,12 @@ BenchmarkTimer::BenchmarkTimer(const std::string &text, bool isPerFrame, bool is
       if (!perFrameLog)
         std::cerr << "perFrameLog file not found!\n";
       perFrameLog << "SOME INFORMATION MIGHT BE IRRELEVANT OR EVEN INCORRECT, GREAT CARE SHOULD BE TAKEN\n";
-      perFrameLog << "SI == Single Invocation (per second), m.p.u/a/i. == mean per update/app/invocation\n";
+      perFrameLog << "SI == Single Invocation (per second), ST == separate thread, m.p.u/a/i. == mean per update/app/invocation\n";
       perAppLog.open(RES_DIR + "/perAppLog.txt", std::ios_base::app);
       if (!perAppLog)
         std::cerr << "perAppLog file not found!\n";
       perAppLog << "SOME INFORMATION MIGHT BE IRRELEVANT OR EVEN INCORRECT, GREAT CARE SHOULD BE TAKEN\n";
-      perAppLog << "SI == Single Invocation (per second), m.p.u/a/i. == mean per update/app/invocation\n";
+      perAppLog << "SI == Single Invocation (per second), ST == separate thread, m.p.u/a/i. == mean per update/app/invocation\n";
       outputCreated = true;
     }
   if (passThrough)
