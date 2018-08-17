@@ -56,8 +56,8 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Mesh::draw(Shader &shader, const glm::vec2 &cameraPositionXZ, std::vector<ModelChunk>& chunks, unsigned int index,
-                bool modelRenderOptimize, unsigned int chunkLoadingDistance, Frustum& frustum, bool bindTexture)
+void Mesh::prepareAndDraw(Shader &shader, const glm::vec2 &cameraPositionXZ, std::vector<ModelChunk>& chunks, unsigned int index,
+                bool useCulling, unsigned int chunkLoadingDistance, Frustum& frustum, bool bindTexture)
 {  
   BENCHMARK("Mesh: draw (full func)", true);
   if (bindTexture)
@@ -96,67 +96,83 @@ void Mesh::draw(Shader &shader, const glm::vec2 &cameraPositionXZ, std::vector<M
         }
     }
 
-  glBindVertexArray(VAO);
-  if (modelRenderOptimize)
+  if (useCulling)
     {
-      GLuint multiDrawIndirectData[chunks.size() * 5]; // { indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
-      GLuint dataOffset = 0;
-      GLuint multiDE_I_primCount = 0;
-      GLuint indicesSize = indices.size();
-      const float HALF_CHUNK_SIZE = CHUNK_SIZE / 2.0f;
-      float radius = HALF_CHUNK_SIZE * glm::sqrt(2);
-      for (unsigned int i = 0; i < chunks.size(); i++)
-        {
-          //if chunk is farther than load distance - just discard it
-          glm::vec2 directionToChunk = chunks[i].getMidPoint() - cameraPositionXZ;
-          if (glm::length(directionToChunk) > CHUNK_SIZE * chunkLoadingDistance)
-            continue;
+      prepareIndirectBufferData(chunks, index, cameraPositionXZ, chunkLoadingDistance, frustum);
+    }
+  draw(useCulling);
+}
 
-          glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
-          glm::vec2 chunkLL = glm::vec2(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE);
-          if (frustum.isInside(chunkLL.x, 0.0f, chunkLL.y, radius))
-            {
-              ++multiDE_I_primCount;
-              multiDrawIndirectData[dataOffset++] = indicesSize;
-              multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
-              multiDrawIndirectData[dataOffset++] = 0;
-              multiDrawIndirectData[dataOffset++] = 0;
-              multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
-              continue;
-            }
-          glm::vec2 chunkLR = glm::vec2(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE);
-          if (frustum.isInside(chunkLR.x, 0.0f, chunkLR.y, radius))
-            {
-              ++multiDE_I_primCount;
-              multiDrawIndirectData[dataOffset++] = indicesSize;
-              multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
-              multiDrawIndirectData[dataOffset++] = 0;
-              multiDrawIndirectData[dataOffset++] = 0;
-              multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
-              continue;
-            }
-          glm::vec2 chunkUR = glm::vec2(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE);
-          if (frustum.isInside(chunkUR.x, 0.0f, chunkUR.y, radius))
-            {
-              ++multiDE_I_primCount;
-              multiDrawIndirectData[dataOffset++] = indicesSize;
-              multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
-              multiDrawIndirectData[dataOffset++] = 0;
-              multiDrawIndirectData[dataOffset++] = 0;
-              multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
-              continue;
-            }
-          glm::vec2 chunkUL = glm::vec2(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE);
-          if (frustum.isInside(chunkUL.x, 0.0f, chunkUL.y, radius))
-            {
-              ++multiDE_I_primCount;
-              multiDrawIndirectData[dataOffset++] = indicesSize;
-              multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
-              multiDrawIndirectData[dataOffset++] = 0;
-              multiDrawIndirectData[dataOffset++] = 0;
-              multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
-            }
+void Mesh::prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
+                                     unsigned int index,
+                                     const glm::vec2 &cameraPositionXZ,
+                                     unsigned int chunkLoadingDistance,
+                                     Frustum& frustum)
+{
+  GLuint dataOffset = 0;
+  multiDE_I_primCount = 0;
+  GLuint indicesSize = indices.size();
+  const float HALF_CHUNK_SIZE = CHUNK_SIZE / 2.0f;
+  float radius = HALF_CHUNK_SIZE * glm::sqrt(2);
+  for (unsigned int i = 0; i < chunks.size(); i++)
+    {
+      //if chunk is farther than load distance - just discard it
+      glm::vec2 directionToChunk = chunks[i].getMidPoint() - cameraPositionXZ;
+      if (glm::length(directionToChunk) > CHUNK_SIZE * chunkLoadingDistance)
+        continue;
+
+      glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
+      glm::vec2 chunkLL = glm::vec2(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE);
+      if (frustum.isInside(chunkLL.x, 0.0f, chunkLL.y, radius))
+        {
+          ++multiDE_I_primCount;
+          multiDrawIndirectData[dataOffset++] = indicesSize;
+          multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
+          continue;
         }
+      glm::vec2 chunkLR = glm::vec2(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE);
+      if (frustum.isInside(chunkLR.x, 0.0f, chunkLR.y, radius))
+        {
+          ++multiDE_I_primCount;
+          multiDrawIndirectData[dataOffset++] = indicesSize;
+          multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
+          continue;
+        }
+      glm::vec2 chunkUR = glm::vec2(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE);
+      if (frustum.isInside(chunkUR.x, 0.0f, chunkUR.y, radius))
+        {
+          ++multiDE_I_primCount;
+          multiDrawIndirectData[dataOffset++] = indicesSize;
+          multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
+          continue;
+        }
+      glm::vec2 chunkUL = glm::vec2(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE);
+      if (frustum.isInside(chunkUL.x, 0.0f, chunkUL.y, radius))
+        {
+          ++multiDE_I_primCount;
+          multiDrawIndirectData[dataOffset++] = indicesSize;
+          multiDrawIndirectData[dataOffset++] = chunks[i].getNumInstances(index);
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = 0;
+          multiDrawIndirectData[dataOffset++] = chunks[i].getInstanceOffset(index);
+        }
+    }
+}
+
+void Mesh::draw(bool useCulling)
+{
+  glBindVertexArray(VAO);
+  if (useCulling)
+    {
       glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDE_I_DIBO);
       glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData, GL_STATIC_DRAW);
       {
@@ -165,7 +181,5 @@ void Mesh::draw(Shader &shader, const glm::vec2 &cameraPositionXZ, std::vector<M
       }
     }
   else
-    {
-      glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances);
-    }
+    glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances);
 }

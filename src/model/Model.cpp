@@ -24,7 +24,7 @@ void Model::draw(Shader &shaderProgram, const glm::vec2& cameraPositionXZ, std::
                  bool modelRenderOptimize, unsigned int chunkLoadingDistance, Frustum& frustum, bool bindTexture)
 {
   for (unsigned int i = 0; i < meshes.size(); i++)
-    meshes[i].draw(shaderProgram, cameraPositionXZ, chunks, index, modelRenderOptimize, chunkLoadingDistance, frustum, bindTexture);
+    meshes[i].prepareAndDraw(shaderProgram, cameraPositionXZ, chunks, index, modelRenderOptimize, chunkLoadingDistance, frustum, bindTexture);
 }
 
 void Model::processNode(aiNode *node, const aiScene* scene)
