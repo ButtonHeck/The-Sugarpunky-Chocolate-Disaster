@@ -4,7 +4,7 @@ bool Shader::cachedUniforms = false;
 
 Shader::Shader(const std::string &vertexFile)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile), false);
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile));
   ID = glCreateProgram();
   glAttachShader(ID, vertex);
   glLinkProgram(ID);
@@ -17,10 +17,10 @@ Shader::Shader(const std::string &vertexFile)
   glDeleteShader(vertex);
 }
 
-Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::string &fragmentFile, bool renameFragmentShaderVariables)
+Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::string &fragmentFile)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile), false);
-  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(RES_DIR + fragmentFile), renameFragmentShaderVariables);
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile));
+  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(RES_DIR + fragmentFile));
   ID = glCreateProgram();
   glAttachShader(ID, vertex);
   glAttachShader(ID, fragment);
@@ -37,9 +37,9 @@ Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::strin
 
 Shader::Shader(const std::string &vertexFile, const std::string &geometryFile, const std::string &fragmentFile)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile), false);
-  GLuint geometry = loadShader(GL_GEOMETRY_SHADER, std::string(RES_DIR + geometryFile), false);
-  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(RES_DIR + fragmentFile), false);
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile));
+  GLuint geometry = loadShader(GL_GEOMETRY_SHADER, std::string(RES_DIR + geometryFile));
+  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(RES_DIR + fragmentFile));
   ID = glCreateProgram();
   glAttachShader(ID, vertex);
   glAttachShader(ID, geometry);
@@ -183,15 +183,13 @@ void Shader::cleanUp()
   glDeleteProgram(ID);
 }
 
-GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &filename, bool renameFragmentShaderVariables)
+GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &filename)
 {
   std::fstream fileStream(filename);
   std::stringstream fileStringStream;
   fileStringStream << fileStream.rdbuf();
   fileStream.close();
   std::string stringSrc = fileStringStream.str();
-  if (renameFragmentShaderVariables)
-    stringSrc = std::regex_replace(stringSrc, std::regex("vg_"), "v_");
 #ifdef _DEBUG
   std::string debugPragmaString = "#pragma debug(on)\n";
   stringSrc.insert(13, debugPragmaString);

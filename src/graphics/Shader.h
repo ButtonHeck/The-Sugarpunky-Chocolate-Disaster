@@ -14,7 +14,7 @@ class Shader
 {
 public:
   Shader(const std::string& vertexFile);
-  Shader(const std::string& vertexFile, const std::string& fragmentFile, bool renameFragmentShaderVariables);
+  Shader(const std::string& vertexFile, const std::string& fragmentFile);
   Shader(const std::string& vertexFile, const std::string& geometryFile, const std::string& fragmentFile);
   void linkAgain();
   static void cacheUniformsMode(bool cache);
@@ -34,7 +34,7 @@ public:
   void cleanUp();
 private:
   static bool cachedUniforms;
-  GLuint loadShader(GLenum shaderType, const std::string& filename, bool renameFragmentShaderVariables);
+  GLuint loadShader(GLenum shaderType, const std::string& filename);
   GLuint ID;
   int status;
   char infoLog[512];

@@ -4,20 +4,20 @@ ShaderManager::ShaderManager()
 {
   shaders.assign(
   {
-    {SHADER_HILLS_FC,           Shader("/shaders/hillsFC.vs", "/shaders/hillsFC.gs", std::string("/shaders/_FC.fs"))},
-    {SHADER_HILLS_NOFC,         Shader("/shaders/hills.vs", "/shaders/hills.fs", false)},
-    {SHADER_SHORE,              Shader("/shaders/shore.vs", "/shaders/shore.fs", false)},
-    {SHADER_UNDERWATER,         Shader("/shaders/underwater.vs", "/shaders/underwater.fs", false)},
-    {SHADER_FLAT,               Shader("/shaders/flat.vs", "/shaders/flat.fs", false)},
-    {SHADER_WATER_FC,           Shader("/shaders/waterFC.vs", "/shaders/waterFC.gs", std::string("/shaders/_FC.fs"))},
-    {SHADER_WATER_NOFC,         Shader("/shaders/water.vs", "/shaders/water.fs", false)},
-    {SHADER_SKY,                Shader("/shaders/skybox.vs", "/shaders/skybox.fs", false)},
-    {SHADER_MODELS,             Shader("/shaders/model.vs", "/shaders/model.fs", false)},
-    {SHADER_FONT,               Shader("/shaders/font.vs", "/shaders/font.fs", false)},
-    {SHADER_CS,                 Shader("/shaders/coordinateSystem.vs", "/shaders/coordinateSystem.gs", std::string("/shaders/coordinateSystem.fs"))},
-    {SHADER_BUILDABLE,          Shader("/shaders/buildableTiles.vs", "/shaders/buildableTiles.fs", false)},
-    {SHADER_SELECTED,           Shader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs", false)},
-    {SHADER_MS_TO_DEFAULT,      Shader("/shaders/MS_toDefault.vs", "/shaders/MS_toDefault_hdr.fs", false)},
+    {SHADER_HILLS_FC,           Shader("/shaders/hillsFC.vs", "/shaders/hillsFC.gs", "/shaders/_FC.fs")},
+    {SHADER_HILLS_NOFC,         Shader("/shaders/hills.vs", "/shaders/hills.fs")},
+    {SHADER_SHORE,              Shader("/shaders/shore.vs", "/shaders/shore.fs")},
+    {SHADER_UNDERWATER,         Shader("/shaders/underwater.vs", "/shaders/underwater.fs")},
+    {SHADER_FLAT,               Shader("/shaders/flat.vs", "/shaders/flat.fs")},
+    {SHADER_WATER_FC,           Shader("/shaders/waterFC.vs", "/shaders/waterFC.gs", "/shaders/_FC.fs")},
+    {SHADER_WATER_NOFC,         Shader("/shaders/water.vs", "/shaders/water.fs")},
+    {SHADER_SKY,                Shader("/shaders/skybox.vs", "/shaders/skybox.fs")},
+    {SHADER_MODELS,             Shader("/shaders/model.vs", "/shaders/model.fs")},
+    {SHADER_FONT,               Shader("/shaders/font.vs", "/shaders/font.fs")},
+    {SHADER_CS,                 Shader("/shaders/coordinateSystem.vs", "/shaders/coordinateSystem.gs", "/shaders/coordinateSystem.fs")},
+    {SHADER_BUILDABLE,          Shader("/shaders/buildableTiles.vs", "/shaders/buildableTiles.fs")},
+    {SHADER_SELECTED,           Shader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs")},
+    {SHADER_MS_TO_DEFAULT,      Shader("/shaders/MS_toDefault.vs", "/shaders/MS_toDefault_hdr.fs")},
     {SHADER_SHADOW_TERRAIN,     Shader("/shaders/terrain_shadow.vs")},
     {SHADER_SHADOW_MODELS,      Shader("/shaders/model_shadow.vs")},
     {SHADER_SHADOW_TERRAIN_CAMERA,      Shader("/shaders/terrain_shadow.vs")},
@@ -117,7 +117,7 @@ Shader &ShaderManager::get(SHADER_TYPE type)
   return shaders[type].second;
 }
 
-void ShaderManager::updateHillsShaders(bool useFC, bool useOC, bool enableShadows, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
+void ShaderManager::updateHillsShaders(bool useFC, bool useOC, bool useShadows, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
 {
   Shader* shader;
   if (useFC)
@@ -134,24 +134,24 @@ void ShaderManager::updateHillsShaders(bool useFC, bool useOC, bool enableShadow
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
   shader->setVec3("u_viewPosition", viewPosition);
-  shader->setBool("u_shadowEnable", enableShadows);
+  shader->setBool("u_shadowEnable", useShadows);
   shader->setBool("u_occlusion", useOC);
 }
 
-void ShaderManager::updateShoreShader(glm::mat4 &projectionView, bool enableShadows)
+void ShaderManager::updateShoreShader(glm::mat4 &projectionView, bool useShadows)
 {
   Shader* shader = &shaders[SHADER_SHORE].second;
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
-  shader->setBool("u_shadowEnable", enableShadows);
+  shader->setBool("u_shadowEnable", useShadows);
 }
 
-void ShaderManager::updateFlatShader(glm::mat4 &projectionView, bool enableShadows)
+void ShaderManager::updateFlatShader(glm::mat4 &projectionView, bool useShadows)
 {
   Shader* shader = &shaders[SHADER_FLAT].second;
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
-  shader->setBool("u_shadowEnable", enableShadows);
+  shader->setBool("u_shadowEnable", useShadows);
 }
 
 void ShaderManager::updateUnderwaterShader(glm::mat4 &projectionView)
@@ -176,10 +176,10 @@ void ShaderManager::updateSelectedShader(glm::mat4 &projectionView, glm::mat4 &s
   shader->setMat4("u_model", selectedModel);
 }
 
-void ShaderManager::updateWaterShaders(bool enableFC, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
+void ShaderManager::updateWaterShaders(bool useFC, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
 {
   Shader* shader;
-  if (enableFC)
+  if (useFC)
     {
       shader = &shaders[SHADER_WATER_FC].second;
       shader->use();
@@ -202,14 +202,14 @@ void ShaderManager::updateSkyShader(glm::mat4 &projectionView)
   shader->setMat4("u_projectionView", projectionView);
 }
 
-void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &viewPosition, bool shadowOnTrees, bool enableShadows, bool useOC)
+void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &viewPosition, bool shadowOnTrees, bool useShadows, bool useOC)
 {
   Shader* shader = &shaders[SHADER_MODELS].second;
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
   shader->setVec3("u_viewPosition", viewPosition);
   shader->setBool("u_shadow", shadowOnTrees);
-  shader->setBool("u_shadowEnable", enableShadows);
+  shader->setBool("u_shadowEnable", useShadows);
   shader->setBool("u_occlusion", useOC);
 }
 
