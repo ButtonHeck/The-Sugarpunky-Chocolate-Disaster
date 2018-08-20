@@ -37,7 +37,8 @@ SOURCES += \
     src/chunk/ModelChunk.cpp \
     src/chunk/Chunk.cpp \
     src/chunk/TerrainChunk.cpp \
-    src/timer/BenchmarkTimer.cpp
+    src/timer/BenchmarkTimer.cpp \
+    src/model/IndirectBufferToken.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -69,7 +70,8 @@ HEADERS += \
     src/chunk/Chunk.h \
     src/chunk/TerrainChunk.h \
     src/timer/BenchmarkTimer.h \
-    src/timer/Timer.h
+    src/timer/Timer.h \
+    src/model/IndirectBufferToken.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

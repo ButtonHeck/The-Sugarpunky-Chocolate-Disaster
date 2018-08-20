@@ -43,7 +43,7 @@ Game::~Game()
 
 void Game::setupVariables()
 {
-  Shader::cacheUniformsMode(SHADER_CACHE_MODE);
+  Shader::cacheUniformsMode(SHADER_NO_CACHE);
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glDisable(GL_DITHER);
@@ -504,7 +504,7 @@ void Game::loop()
 
   //after all mesh related draw calls we could start updating meshes indirect data buffers
   //start updating right after we've used it and before we need that data to be updated and buffered again
-  meshesIndirectDataNeed = updateCount % (MESH_INDIRECT_BUFFER_UPDATE_FREQ + 1) == 0;
+  meshesIndirectDataNeed = updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1;
 
   //render result onto the default FBO and apply HDR/MS if the flag are set
   {

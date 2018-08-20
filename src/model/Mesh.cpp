@@ -119,14 +119,15 @@ void Mesh::prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
                                      Frustum& frustum)
 {
   BENCHMARK("(ST)Mesh: update DIB data", true);
-  GLuint dataOffset = 0;
   multiDE_I_primCount = 0;
+  indirectTokensSorted.clear();
   GLuint indicesSize = indices.size();
   for (unsigned int i = 0; i < chunks.size(); i++)
     {
       //if chunk is farther than load distance - just discard it
       glm::vec2 directionToChunk = chunks[i].getMidPoint() - cameraPositionXZ;
-      if (glm::length2(directionToChunk) > LOADING_DISTANCE_UNITS_SQUARE)
+      unsigned int directionToChunkLength = glm::length2(directionToChunk);
+      if (directionToChunkLength > LOADING_DISTANCE_UNITS_SQUARE)
         continue;
 
       glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
@@ -134,41 +135,58 @@ void Mesh::prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
                            chunkMidPoint.y + HALF_CHUNK_SIZE,
                            MODELS_FC_RADIUS))
         {
-          addIndirectBufferData(dataOffset, indicesSize, chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
+          addIndirectBufferData(directionToChunkLength,
+                                indicesSize,
+                                chunks[i].getNumInstances(index),
+                                chunks[i].getInstanceOffset(index));
           continue;
         }
       if (frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE,
                            chunkMidPoint.y + HALF_CHUNK_SIZE,
                            MODELS_FC_RADIUS))
         {
-          addIndirectBufferData(dataOffset, indicesSize, chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
+          addIndirectBufferData(directionToChunkLength,
+                                indicesSize,
+                                chunks[i].getNumInstances(index),
+                                chunks[i].getInstanceOffset(index));
           continue;
         }
       if (frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE,
                            chunkMidPoint.y - HALF_CHUNK_SIZE,
                            MODELS_FC_RADIUS))
         {
-          addIndirectBufferData(dataOffset, indicesSize, chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
+          addIndirectBufferData(directionToChunkLength,
+                                indicesSize,
+                                chunks[i].getNumInstances(index),
+                                chunks[i].getInstanceOffset(index));
           continue;
         }
       if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE,
                            chunkMidPoint.y - HALF_CHUNK_SIZE,
                            MODELS_FC_RADIUS))
         {
-          addIndirectBufferData(dataOffset, indicesSize, chunks[i].getNumInstances(index), chunks[i].getInstanceOffset(index));
+          addIndirectBufferData(directionToChunkLength,
+                                indicesSize,
+                                chunks[i].getNumInstances(index),
+                                chunks[i].getInstanceOffset(index));
         }
+    }
+  GLuint dataOffset = 0;
+  for (auto& token : indirectTokensSorted)
+    {
+        multiDrawIndirectData[dataOffset++] = token.second.indicesCount;
+        multiDrawIndirectData[dataOffset++] = token.second.numInstances;
+        multiDrawIndirectData[dataOffset++] = token.second.FIRST_INDEX;
+        multiDrawIndirectData[dataOffset++] = token.second.BASE_VERTEX;
+        multiDrawIndirectData[dataOffset++] = token.second.instanceOffset;
     }
 }
 
-void Mesh::addIndirectBufferData(GLuint& dataOffset,
+void Mesh::addIndirectBufferData(int directionToChunkLength,
                                  GLuint indicesSize,
                                  GLuint numInstances,
                                  GLuint instanceOffset)
 {
+  indirectTokensSorted.insert(std::pair<int,IndirectBufferToken>(directionToChunkLength, IndirectBufferToken(indicesSize, numInstances, instanceOffset)));
   ++multiDE_I_primCount;
-  multiDrawIndirectData[dataOffset++] = indicesSize;
-  multiDrawIndirectData[dataOffset++] = numInstances;
-  multiDrawIndirectData[dataOffset++] = 0;
-  multiDrawIndirectData[dataOffset++] = 0;
-  multiDrawIndirectData[dataOffset++] = instanceOffset;
 }
