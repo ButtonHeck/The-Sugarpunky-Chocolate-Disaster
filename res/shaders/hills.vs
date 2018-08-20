@@ -39,8 +39,8 @@ void main()
     //"normal" vector fetched from the global normal map (same as flat terrain normal), it is used for randomization of some variables
     vec3 FlatNormal = texture(u_normal_map, i_pos.xz * u_mapDimension + 0.5).rgb;
     v_PosHeight = i_pos.y * (1.0 - FlatNormal.g * 0.75);
-    v_TextureFlatMixRatio = FlatNormal.r;
-    v_TextureHillMixRatio = FlatNormal.r;
+    v_TextureFlatMixRatio = FlatNormal.r * 1.25;
+    v_TextureHillMixRatio = v_TextureFlatMixRatio;
 
     //calculate how much each normal (flat or hill) would define the actual shading normal vector
     float TransitionRatio = clamp(i_pos.y, 0.0, 1.0);

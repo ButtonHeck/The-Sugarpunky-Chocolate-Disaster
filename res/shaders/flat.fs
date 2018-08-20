@@ -53,7 +53,7 @@ vec4 desaturate(vec4 fragColor, float desaturatingValue)
 void main()
 {
     vec3 FlatNormal = texture(u_normal_map, v_FragPos.xz * u_mapDimension + 0.5).rgb;
-    vec4 sampledDiffuse = mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), FlatNormal.r);
+    vec4 sampledDiffuse = mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), FlatNormal.r * 1.25);
     vec3 ShadingNormal = normalize(NORMAL + FlatNormal);
 
     vec3 diffuseColor;

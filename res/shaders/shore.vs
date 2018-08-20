@@ -33,7 +33,7 @@ void main()
     float TransitionRatio = clamp(1.0 + v_PosHeight, 0.0, 1.0);
     vec3 ShadingNormal = normalize(mix(i_normal, NORMAL + FlatNormal, TransitionRatio));
     v_Normal = ShadingNormal;
-    v_TextureMixRatio = FlatNormal.r;
+    v_TextureMixRatio = FlatNormal.r * 1.25;
 
     //diffuse
     v_PositionDiffuseComponent = 1.0 + i_pos.y * 0.4;
