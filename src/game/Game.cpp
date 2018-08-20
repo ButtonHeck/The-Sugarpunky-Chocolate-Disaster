@@ -269,6 +269,21 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
     renderer.drawHills(options.get(HILLS_FC), hillMapGenerator, shaderManager.get(SHADER_HILLS_FC), shaderManager.get(SHADER_HILLS_NOFC));
   }
 
+  //trees chunks rendering
+  if (options.get(RENDER_TREE_MODELS))
+    {
+      shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE), options.get(OCCLUSION_CULLING));
+      {
+        BENCHMARK("Renderer: draw models", true);
+        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC),
+                           true, updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0);
+      }
+    }
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  //reset texture units to terrain textures after we done with models
+  glBindTextureUnit(FLAT, textureManager->get(FLAT));
+
   //shore terrain chunks drawing
   shaderManager.updateShoreShader(projectionView, options.get(SHADOW_ENABLE));
   {
@@ -331,19 +346,6 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   shaderManager.updateSkyShader(skyProjectionView);
   renderer.drawSkybox(&skybox);
 
-  //trees chunks rendering
-  if (options.get(RENDER_TREE_MODELS))
-    {
-      shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE), options.get(OCCLUSION_CULLING));
-      {
-        BENCHMARK("Renderer: draw models", true);
-        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC),
-                           true, updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0);
-      }
-    }
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, 0);
-
   //font rendering
   if (options.get(RENDER_DEBUG_TEXT))
     {
@@ -381,9 +383,6 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
         csRenderer.draw(glm::mat3(camera.getViewMatrix()), aspect_ratio);
       }
     }
-
-  //reset texture units to terrain textures after we done with models and text
-  glBindTextureUnit(FLAT, textureManager->get(FLAT));
 }
 
 void Game::drawFrameObjectsDepthmap()
