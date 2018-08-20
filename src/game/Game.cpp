@@ -238,14 +238,13 @@ void Game::drawFrameToScreenRectangle(bool enableMS)
       glBindFramebuffer(GL_READ_FRAMEBUFFER, multisampleFBO);
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, screenFBO);
       glBlitFramebuffer(0, 0, scr_width, scr_height, 0, 0, scr_width, scr_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
   else
     {
       glBindFramebuffer(GL_READ_FRAMEBUFFER, screenFBO);
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     }
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glClear(GL_COLOR_BUFFER_BIT);
   shaderManager.get(SHADER_MS_TO_DEFAULT).use();
   glBindVertexArray(screenVAO);
   glDisable(GL_DEPTH_TEST);
@@ -338,7 +337,8 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
       shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE), options.get(OCCLUSION_CULLING));
       {
         BENCHMARK("Renderer: draw models", true);
-        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC), true);
+        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC),
+                           true, updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0);
       }
     }
   glActiveTexture(GL_TEXTURE0);
@@ -399,7 +399,8 @@ void Game::drawFrameObjectsDepthmap()
       shaderManager.get(SHADER_SHADOW_MODELS).use();
       {
         BENCHMARK("Renderer: draw models depthmap", true);
-        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS), options.get(MODELS_FC), false);
+        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS), options.get(MODELS_FC),
+                           false, updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0);
       }
     }
 
@@ -421,7 +422,8 @@ void Game::drawFrameObjectsDepthMapCamera(glm::mat4 &projectionView)
       shader = &shaderManager.get(SHADER_SHADOW_MODELS_CAMERA);
       shader->use();
       shader->setMat4("u_lightSpaceMatrix", projectionView);
-      renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS_CAMERA), options.get(MODELS_FC), false);
+      renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS_CAMERA), options.get(MODELS_FC),
+                         false, updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0);
     }
 }
 
@@ -430,7 +432,7 @@ void Game::loop()
   //even if we don't need to render models make sure we update indirect buffer data for meshes
   {
     BENCHMARK("Game: wait for mesh indirect ready", true);
-    while(!meshesIndirectDataReady && !updateCount == 0) {}
+    while(!meshesIndirectDataReady && !updateCount == 0 && meshesIndirectDataNeed) {}
   }
   meshesIndirectDataReady = false;
 
@@ -459,15 +461,6 @@ void Game::loop()
       textureManager->createUnderwaterReliefTexture(waterMapGenerator);
     }
 
-  /*
-   * If the MULTISAMPLE_ENABLE option is true we only need to rebind fbo to use one with MS
-   * because the msFBO is already configured to use multisample generated texture
-   * with a MULTISAMPLES number of sampling (check Settings.h). If the MULTISAMPLE_ENABLE set to false
-   * we just bind another one fbo without MS (that is also used as read buffer and then used for buffer blitting
-   * to the default fbo IF the ms enabled), moreover, we do not need to do blitting,
-   * because the fbo itself already contains all the data drawn into it
-   * and it could be used by default fbo immediately
-   */
   if ((options.get(CREATE_SHADOW_MAP_REQUEST) || updateCount % 16 == 0) && options.get(SHADOW_ENABLE))
     {
       glViewport(0, 0, DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
@@ -493,6 +486,15 @@ void Game::loop()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
 
+  /*
+   * If the MULTISAMPLE_ENABLE option is true we only need to rebind fbo to use one with MS
+   * because the msFBO is already configured to use multisample generated texture
+   * with a MULTISAMPLES number of sampling (check Settings.h). If the MULTISAMPLE_ENABLE set to false
+   * we just bind another one fbo without MS (that is also used as read buffer and then used for buffer blitting
+   * to the default fbo IF the ms enabled), moreover, we do not need to do blitting,
+   * because the fbo itself already contains all the data drawn into it
+   * and it could be used by default fbo immediately
+   */
   bool multisamplingEnabled = options.get(MULTISAMPLE_ENABLE);
   glBindFramebuffer(GL_FRAMEBUFFER, multisamplingEnabled ? multisampleFBO : screenFBO);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -501,7 +503,8 @@ void Game::loop()
   drawFrameObjects(projectionView);
 
   //after all mesh related draw calls we could start updating meshes indirect data buffers
-  meshesIndirectDataNeed = true;
+  //start updating right after we've used it and before we need that data to be updated and buffered again
+  meshesIndirectDataNeed = updateCount % (MESH_INDIRECT_BUFFER_UPDATE_FREQ + 1) == 0;
 
   //render result onto the default FBO and apply HDR/MS if the flag are set
   {

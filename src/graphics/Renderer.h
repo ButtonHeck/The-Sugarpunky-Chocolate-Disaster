@@ -31,7 +31,7 @@ public:
   void drawSelectedTile(BuildableMapGenerator* generator);
   void drawWater(bool useFC, WaterMapGenerator* generator, Shader& fc, Shader& nofc);
   void drawSkybox(Skybox* skybox);
-  void drawTrees(TreeGenerator* generator, Shader& shader, bool enableFrustumCulling, bool bindTexture);
+  void drawTrees(TreeGenerator* generator, Shader& shader, bool enableFrustumCulling, bool bindTexture, bool updateIndirect);
 private:
   Camera& camera;
 };

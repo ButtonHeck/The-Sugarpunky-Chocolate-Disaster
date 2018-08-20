@@ -57,7 +57,7 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Mesh::draw(Shader &shader, bool useCulling, bool bindTexture)
+void Mesh::draw(Shader &shader, bool useCulling, bool bindTexture, bool updateIndirect)
 {  
   BENCHMARK("Mesh: draw (full func)", true);
   if (bindTexture)
@@ -101,7 +101,8 @@ void Mesh::draw(Shader &shader, bool useCulling, bool bindTexture)
       {
         BENCHMARK("Mesh: bind+buffer indirect data", true);
         glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDE_I_DIBO);
-        glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData);
+        if (updateIndirect)
+          glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData);
       }
       {
         BENCHMARK("Mesh: multiDrawIndirect", true);

@@ -16,7 +16,7 @@ class Model
 public:
   Model(const std::string& path, TextureLoader& textureLoader);
   void loadModel(const std::string& path);
-  void draw(Shader& shaderProgram, bool modelRenderOptimize, bool bindTexture);
+  void draw(Shader& shaderProgram, bool modelRenderOptimize, bool bindTexture, bool updateIndirect);
   void prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2& cameraPositionXZ,

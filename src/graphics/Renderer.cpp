@@ -189,7 +189,7 @@ void Renderer::drawSkybox(Skybox *skybox)
   glEnable(GL_CULL_FACE);
 }
 
-void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFrustumCulling, bool bindTexture)
+void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFrustumCulling, bool bindTexture, bool updateIndirect)
 {
   glDisable(GL_BLEND);
   auto& plainTrees = generator->getPlainTrees();
@@ -198,11 +198,11 @@ void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFr
   for (unsigned int i = 0; i < plainTrees.size(); i++)
     {
       Model& model = plainTrees[i];
-      model.draw(shader, enableFrustumCulling, bindTexture);
+      model.draw(shader, enableFrustumCulling, bindTexture, updateIndirect);
     }
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
       Model& model = hillTrees[i];
-      model.draw(shader, enableFrustumCulling, bindTexture);
+      model.draw(shader, enableFrustumCulling, bindTexture, updateIndirect);
     }
 }
