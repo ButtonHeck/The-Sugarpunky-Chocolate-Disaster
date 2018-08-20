@@ -17,7 +17,7 @@ public:
   GLuint getCulledVAO() const;
   GLuint getTransformFeedback() const;
 private:
-  GLuint culledVAO, culledVBO, TFBO;
+  GLuint culledVAO = 0, culledVBO = 0, TFBO = 0;
   Shader& hillsShader;
   std::vector<std::vector<float>>& waterMap;
   std::default_random_engine randomizer;

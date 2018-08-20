@@ -23,7 +23,7 @@ public:
   GLuint getTransformFeedback() const;
   static void _setWaterAnimationBenchmarkPassThrough(bool passThru);
 private:
-  GLuint culledVAO, culledVBO, TFBO;
+  GLuint culledVAO = 0, culledVBO = 0, TFBO = 0;
   Shader& waterShader;
   size_t numVertices;
   GLfloat* vertices;

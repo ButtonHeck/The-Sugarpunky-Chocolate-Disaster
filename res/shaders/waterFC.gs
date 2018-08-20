@@ -10,7 +10,7 @@ out vec3 o_pos;
 out vec3 o_normal;
 
 uniform vec4 u_frustumPlanes[5];
-const float TILE_RADIUS = sqrt(2);
+const float TILE_RADIUS = 1.4142; //sqrt(2)
 
 bool frustumCulling(vec3 position)
 {

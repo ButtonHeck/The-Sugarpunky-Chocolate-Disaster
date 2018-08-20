@@ -9,6 +9,17 @@ BaseMapGenerator::BaseMapGenerator(std::vector<std::vector<float> > &waterMap, s
   randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
   squareTiles.reserve(NUM_TILES / CHUNK_SIZE * CHUNK_SIZE);
   initializeMap(chunkMap);
+  glCreateVertexArrays(1, &shoreVao);
+  glCreateBuffers(1, &shoreVbo);
+  glCreateVertexArrays(1, &squareVao);
+  glCreateBuffers(1, &squareVbo);
+  glCreateBuffers(1, &squareEbo);
+  glCreateBuffers(1, &squareModelVbo);
+  glCreateVertexArrays(1, &cellVao);
+  glCreateBuffers(1, &cellVbo);
+  glCreateBuffers(1, &cellEbo);
+  glCreateBuffers(1, &cellModelVbo);
+  glCreateBuffers(1, &cellMultiDE_I_DIBO);
 }
 
 BaseMapGenerator::~BaseMapGenerator()
@@ -35,9 +46,7 @@ void BaseMapGenerator::prepareMap(bool randomizeShoreFlag)
 void BaseMapGenerator::fillShoreBufferData()
 {
   unsigned int numChunks = shoreChunks.size();
-  glCreateVertexArrays(1, &shoreVao);
   glBindVertexArray(shoreVao);
-  glCreateBuffers(1, &shoreVbo);
   glBindBuffer(GL_ARRAY_BUFFER, shoreVbo);
   GLfloat *vertices = new GLfloat[NUM_TILES * 48];
   size_t bytesToBuffer = 0;
@@ -125,10 +134,6 @@ void BaseMapGenerator::fillShoreBufferData()
 
 void BaseMapGenerator::fillSquareBufferData()
 {
-  glGenVertexArrays(1, &squareVao);
-  glGenBuffers(1, &squareVbo);
-  glGenBuffers(1, &squareEbo);
-  glGenBuffers(1, &squareModelVbo);
   GLfloat baseChunkInstanceVertices[20] = {
       -1.0f, 0.0f,  1.0f, 0.0f,               0.0f,
        1.0f, 0.0f,  1.0f, (float)CHUNK_SIZE,  0.0f,
@@ -168,11 +173,6 @@ void BaseMapGenerator::fillSquareBufferData()
 
 void BaseMapGenerator::fillCellBufferData()
 {
-  glGenVertexArrays(1, &cellVao);
-  glGenBuffers(1, &cellVbo);
-  glGenBuffers(1, &cellEbo);
-  glCreateBuffers(1, &cellModelVbo);
-  glCreateBuffers(1, &cellMultiDE_I_DIBO);
   GLfloat cellVertices[20] = {
        0.0f, 0.0f,  1.0f, 0.0f,  0.0f,
        1.0f, 0.0f,  1.0f, 1.0f,  0.0f,

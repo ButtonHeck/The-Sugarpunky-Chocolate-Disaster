@@ -4,6 +4,9 @@ MapGenerator::MapGenerator()
 {
  initializeMap(map);
  tiles.reserve(NUM_TILES);
+ glCreateVertexArrays(1, &vao);
+ glCreateBuffers(1, &vbo);
+ glCreateBuffers(1, &ebo);
 }
 
 void MapGenerator::initializeMap(std::vector<std::vector<float>>& map)

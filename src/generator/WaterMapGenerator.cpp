@@ -90,10 +90,7 @@ void WaterMapGenerator::fillBufferData()
       vertices[offset+34] = 1.0f;
       vertices[offset+35] = 0.0f;
     }
-  glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
-  glGenBuffers(1, &vbo);
-  glGenBuffers(1, &ebo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(GLfloat), vertices, GL_STREAM_DRAW);
   glEnableVertexAttribArray(0);
@@ -101,21 +98,28 @@ void WaterMapGenerator::fillBufferData()
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
 
+  if (culledVAO != 0)
+    {
+      glDeleteVertexArrays(1, &culledVAO);
+      glDeleteBuffers(1, &culledVBO);
+      glDeleteTransformFeedbacks(1, &TFBO);
+    }
   glCreateVertexArrays(1, &culledVAO);
-  glBindVertexArray(culledVAO);
   glCreateBuffers(1, &culledVBO);
+  glCreateTransformFeedbacks(1, &TFBO);
+  glBindVertexArray(culledVAO);
   glBindBuffer(GL_ARRAY_BUFFER, culledVBO);
   glNamedBufferStorage(culledVBO, numVertices * sizeof(GLfloat), 0, GL_NONE);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-  glCreateTransformFeedbacks(1, &TFBO);
   glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, TFBO);
   const GLchar* varyings[2] = {"o_pos", "o_normal"};
   glTransformFeedbackVaryings(waterShader.getID(), 2, varyings, GL_INTERLEAVED_ATTRIBS);
   waterShader.linkAgain();
   glTransformFeedbackBufferBase(TFBO, 0, culledVBO);
+
   resetAllGLBuffers();
 }
 

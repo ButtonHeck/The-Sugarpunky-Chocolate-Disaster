@@ -200,13 +200,9 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
       indices[index+4] = index + 4;
       indices[index+5] = index + 5;
     }
-  glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
-  glCreateBuffers(1, &vbo);
-  glGenBuffers(1, &ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * ELEMENT_DATA_LENGTH, indices, GL_STATIC_DRAW);
-
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTEX_DATA_LENGTH, vertices, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
@@ -216,9 +212,16 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
 
+  if (culledVAO != 0)
+    {
+      glDeleteVertexArrays(1, &culledVAO);
+      glDeleteBuffers(1, &culledVBO);
+      glDeleteTransformFeedbacks(1, &TFBO);
+    }
   glCreateVertexArrays(1, &culledVAO);
-  glBindVertexArray(culledVAO);
   glCreateBuffers(1, &culledVBO);
+  glCreateTransformFeedbacks(1, &TFBO);
+  glBindVertexArray(culledVAO);
   glBindBuffer(GL_ARRAY_BUFFER, culledVBO);
   glNamedBufferStorage(culledVBO, VERTEX_DATA_LENGTH * sizeof(GLfloat), 0, GL_NONE);
   glEnableVertexAttribArray(0);
@@ -227,12 +230,12 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
-  glCreateTransformFeedbacks(1, &TFBO);
   glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, TFBO);
   const GLchar* varyings[3] = {"o_pos", "o_texCoords", "o_normal"};
   glTransformFeedbackVaryings(hillsShader.getID(), 3, varyings, GL_INTERLEAVED_ATTRIBS);
   hillsShader.linkAgain();
   glTransformFeedbackBufferBase(TFBO, 0, culledVBO);
+
   resetAllGLBuffers();
   delete[] vertices;
   delete[] indices;

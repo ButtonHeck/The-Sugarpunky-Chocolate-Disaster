@@ -6,7 +6,10 @@ BuildableMapGenerator::BuildableMapGenerator(std::vector<std::vector<float> > &b
     baseMap(baseMap),
     hillMap(hillMap)
 {
-
+  glCreateBuffers(1, &modelVbo);
+  glCreateVertexArrays(1, &selectedVAO);
+  glCreateBuffers(1, &selectedVBO);
+  glCreateBuffers(1, &selectedEBO);
 }
 
 BuildableMapGenerator::~BuildableMapGenerator()
@@ -39,11 +42,7 @@ void BuildableMapGenerator::prepareMap()
 
 void BuildableMapGenerator::fillBufferData()
 {
-  glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
-  glGenBuffers(1, &vbo);
-  glGenBuffers(1, &ebo);
-  glGenBuffers(1, &modelVbo);
   GLfloat cellVertices[12] = {
        0.05f, 0.01f,  -0.05f,
        0.95f, 0.01f,  -0.05f,
@@ -75,9 +74,7 @@ void BuildableMapGenerator::fillBufferData()
     }
   delete[] instanceModels;
   resetAllGLBuffers();
-  glGenVertexArrays(1, &selectedVAO);
-  glGenBuffers(1, &selectedVBO);
-  glGenBuffers(1, &selectedEBO);
+
   glBindVertexArray(selectedVAO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, selectedEBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
@@ -100,6 +97,7 @@ GLuint &BuildableMapGenerator::getSelectedTileVAO()
 
 void BuildableMapGenerator::deleteGLObjects()
 {
+  MapGenerator::deleteGLObjects();
   glDeleteVertexArrays(1, &selectedVAO);
   glDeleteBuffers(1, &modelVbo);
   glDeleteBuffers(1, &selectedVBO);

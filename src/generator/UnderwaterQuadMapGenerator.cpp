@@ -10,9 +10,6 @@ UnderwaterQuadMapGenerator::UnderwaterQuadMapGenerator()
      (float)HALF_TILES_WIDTH, UNDERWATER_BASE_TILE_HEIGHT,-(float)HALF_TILES_HEIGHT, TILES_WIDTH, TILES_HEIGHT,
     -(float)HALF_TILES_WIDTH, UNDERWATER_BASE_TILE_HEIGHT,-(float)HALF_TILES_HEIGHT, 0.0f, TILES_HEIGHT
   };
-  glGenVertexArrays(1, &vao);
-  glGenBuffers(1, &vbo);
-  glGenBuffers(1, &ebo);
   glBindVertexArray(vao);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
