@@ -8,6 +8,26 @@ TreeGenerator::TreeGenerator(std::initializer_list<Model> plainTrees, std::initi
   randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
 }
 
+TreeGenerator::~TreeGenerator()
+{
+  delete[] numTrees;
+  delete[] numHillTrees;
+  int treeModelsVecSize = treeModels.size();
+  for (int i = 0; i < treeModelsVecSize; ++i)
+    {
+      glm::mat4* models = treeModels[i];
+      delete[] models;
+      models = nullptr;
+    }
+  int hillTreeModelsVecSize = hillTreeModels.size();
+  for (int i = 0; i < hillTreeModelsVecSize; ++i)
+    {
+      glm::mat4* models = hillTreeModels[i];
+      delete[] models;
+      models = nullptr;
+    }
+}
+
 void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
 {
   treeModelChunks.clear();

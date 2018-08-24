@@ -32,6 +32,7 @@ Game::~Game()
   delete meshIndirectUpdateThread;
   textureManager->deleteTextures();
   shaderManager.deleteShaders();
+  delete fontManager;
   delete textureManager;
   delete baseMapGenerator;
   delete hillMapGenerator;

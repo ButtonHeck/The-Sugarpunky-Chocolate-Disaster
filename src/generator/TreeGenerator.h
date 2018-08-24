@@ -15,6 +15,7 @@ class TreeGenerator
 {
 public:
   TreeGenerator(std::initializer_list<Model> plainTrees, std::initializer_list<Model> hillTrees);
+  ~TreeGenerator();
   void setupPlainModels(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
   void updatePlainModels(std::vector<glm::mat4*>& models, unsigned int* numAllTrees);
   void setupHillModels(std::vector<std::vector<float>>& hillMap);
