@@ -14,18 +14,17 @@ uniform float     u_mapDimension;
 uniform sampler2D u_shadowMap;
 uniform bool      u_shadowEnable;
 
-const vec2 TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
+const vec2 TEXEL_SIZE = 0.75 / textureSize(u_shadowMap, 0);
 const float DIFFUSE_MIX = 0.5;
 const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 const float SHADOW_INFLUENCE = 0.3;
 const float ONE_MINUS_SHADOW_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
 const float SHADOW_BIAS = 0.00025;
 const float MAX_DESATURATING_VALUE = 0.8 / ONE_MINUS_SHADOW_INFLUENCE;
-const vec2 POISSON_DISK[4] = vec2[](
-  vec2( -0.94201624, -0.39906216 ),
-  vec2( 0.94558609, -0.76890725 ),
-  vec2( -0.094184101, -0.92938870 ),
-  vec2( 0.34495938, 0.29387760 )
+const vec2 POISSON_DISK[9] = vec2[](
+    vec2(0.95581, -0.27159), vec2(0.50147, -0.51807), vec2(0.69607, 0.51559),
+    vec2(-0.003682, -0.9015), vec2(0.1593, 0.13975), vec2(-0.6503, 0.0918),
+    vec2(0.11915, 0.95449), vec2(-0.34296, 0.75575), vec2(-0.6038, -0.6527)
 );
 
 float calculateLuminosity()
@@ -35,10 +34,11 @@ float calculateLuminosity()
     float shadow = 0.0f;
 
     //poisson filtering
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 9; i++)
     {
         float poissonDiskDepth = texture(u_shadowMap, v_ProjectedCoords.xy + POISSON_DISK[i] * TEXEL_SIZE).r;
-        shadow += currentDepth - SHADOW_BIAS > poissonDiskDepth ? 0.25 : 0.0;
+        float distanceEffect = max(0.21 - (45.0 * (currentDepth - poissonDiskDepth)), 0.0);
+        shadow += currentDepth - SHADOW_BIAS > poissonDiskDepth ? (0.111 + 0.125 * distanceEffect) : 0.0;
     }
     return (1.0 - shadow * SHADOW_INFLUENCE);
 }

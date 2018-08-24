@@ -31,7 +31,7 @@ uniform float     U_SCR_WIDTH;
 uniform float     U_SCR_HEIGHT;
 
 const float TEXEL_SIZE_MULTIPLIER_OFFSET = 1.0 + clamp((v_PosHeight * 10.0), 0.0, 1.5);
-const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
+const vec2  TEXEL_SIZE = 0.75 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.3;
 const float ONE_MINUS_SHADOW_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
 const float MAX_DESATURATING_VALUE = 0.8 / ONE_MINUS_SHADOW_INFLUENCE;
