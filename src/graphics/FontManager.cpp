@@ -68,7 +68,6 @@ FontManager::~FontManager()
 
 void FontManager::renderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
 {
-  glEnable(GL_BLEND);
   shader->use();
   shader->setVec4("u_glyphColor", color.r, color.g, color.b, 1.0f);
   glBindVertexArray(vao);

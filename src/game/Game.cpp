@@ -351,6 +351,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
     {
       {
         BENCHMARK("Renderer: draw text", true);
+        glEnable(GL_BLEND);
         fontManager->renderText("CPU UPS: " + std::to_string(CPU_timer.getFPS()), 10.0f, (float)scr_height - 25.0f, 0.35f);
         fontManager->renderText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                                + std::to_string(viewPosition.y).substr(0,6) + ": "
@@ -378,6 +379,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
                                                      .append("%")), 10.0f, 90.0f, 0.35f);
 #endif
       }
+      glDisable(GL_BLEND);
       {
         BENCHMARK("Renderer: draw cs", true);
         csRenderer.draw(glm::mat3(camera.getViewMatrix()), aspect_ratio);
