@@ -105,7 +105,7 @@ void Game::setupVariables()
       auto& hillChunks = treeGenerator->getHillTreeModelChunks();
       while(!glfwWindowShouldClose(window))
         {
-          if (meshesIndirectDataNeed)
+          if (_meshesIndirectDataNeed)
             {
               BENCHMARK("(ST)Model: update meshes DIBs data", true);
               float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
@@ -121,8 +121,8 @@ void Game::setupVariables()
                   Model& model = hillTrees[i];
                   model.prepareMeshesIndirectData(hillChunks, i, cameraPositionXZ, viewFrustum);
                 }
-              meshesIndirectDataReady = true;
-              meshesIndirectDataNeed = false;
+              _meshesIndirectDataReady = true;
+              _meshesIndirectDataNeed = false;
             }
         }
     });
@@ -130,11 +130,13 @@ void Game::setupVariables()
   {
       while(!glfwWindowShouldClose(window))
             {
-              if (!options.get(RECREATE_TERRAIN_REQUEST) &&
+              if (_waterThreadUpdatePermitted &&
                   options.get(ANIMATE_WATER) &&
                   options.get(RENDER_WATER))
                 {
+                  _waterThreadHasUpdated = false;
                   waterMapGenerator->updateAnimationFrame(options);
+                  _waterThreadHasUpdated = true;
 #ifdef _DEBUG
                   waterThreadAnimationIsWorking = true;
 #endif
@@ -144,6 +146,7 @@ void Game::setupVariables()
 #ifdef _DEBUG
                   waterThreadAnimationIsWorking = false;
 #endif
+                  std::this_thread::yield();
                   std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 }
             }
@@ -434,9 +437,9 @@ void Game::loop()
   //even if we don't need to render models make sure we update indirect buffer data for meshes
   {
     BENCHMARK("Game: wait for mesh indirect ready", true);
-    while(!meshesIndirectDataReady && !updateCount == 0 && meshesIndirectDataNeed) {}
+    while(!_meshesIndirectDataReady && !updateCount == 0 && _meshesIndirectDataNeed) {}
   }
-  meshesIndirectDataReady = false;
+  _meshesIndirectDataReady = false;
 
   {
     BENCHMARK("Input: process keyboard", true);
@@ -447,6 +450,11 @@ void Game::loop()
   //recreate routine
   if (options.get(RECREATE_TERRAIN_REQUEST))
     {
+      while(!_waterThreadHasUpdated)
+        {
+          std::this_thread::yield();//busy wait until water thread has done its business...and business is good
+        }
+      _waterThreadUpdatePermitted = false; //explicitly bypass water animation frame update routine
       delete waterMapGenerator;
       delete hillMapGenerator;
       delete baseMapGenerator;
@@ -461,6 +469,7 @@ void Game::loop()
       saveLoadManager->setTreeGenerator(*treeGenerator);
       options.set(RECREATE_TERRAIN_REQUEST, false);
       textureManager->createUnderwaterReliefTexture(waterMapGenerator);
+      _waterThreadUpdatePermitted = true; //it's okay now to begin animating water
     }
 
   if ((options.get(CREATE_SHADOW_MAP_REQUEST) || updateCount % 16 == 0) && options.get(SHADOW_ENABLE))
@@ -506,7 +515,7 @@ void Game::loop()
 
   //after all mesh related draw calls we could start updating meshes indirect data buffers
   //start updating right after we've used it and before we need that data to be updated and buffered again
-  meshesIndirectDataNeed = updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1;
+  _meshesIndirectDataNeed = updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1;
 
   //render result onto the default FBO and apply HDR/MS if the flag are set
   {
@@ -522,9 +531,15 @@ void Game::loop()
     }
   if (options.get(LOAD_REQUEST))
     {
+      while(!_waterThreadHasUpdated)
+        {
+          std::this_thread::yield(); //busy wait
+        }
+      _waterThreadUpdatePermitted = false;
       saveLoadManager->loadFromFile(RES_DIR + "/saves/testSave.txt");
       options.set(LOAD_REQUEST, false);
       textureManager->createUnderwaterReliefTexture(waterMapGenerator);
+      _waterThreadUpdatePermitted = true;
     }
 
   {

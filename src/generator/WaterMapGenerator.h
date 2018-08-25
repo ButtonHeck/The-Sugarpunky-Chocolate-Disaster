@@ -27,7 +27,7 @@ private:
   Shader& waterShader;
   size_t numVertices;
   GLfloat* vertices;
-  GLfloat waterHeightOffsets[WATER_HEIGHT_OFFSETS_SIZE]; //a bit overhead, because all we use is the part where we have water...
+  GLfloat* waterHeightOffsets; //a bit overhead, because all we use is the part where we have water...
   //also, we don't have to init waterHeightOffsets, because we update its data every frame
   void generateMap(int shoreSizeBase, float waterLevel, unsigned int &numWaterTiles);
   void addWaterNearbyBaseTerrain();

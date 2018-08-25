@@ -68,7 +68,8 @@ private:
   GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO, depthMapFBO_camera;
   std::thread* waterAnimationThread;
   std::thread* meshIndirectUpdateThread;
-  volatile bool meshesIndirectDataReady = false, meshesIndirectDataNeed = false;
+  volatile bool _meshesIndirectDataReady = false, _meshesIndirectDataNeed = false;
+  volatile bool _waterThreadHasUpdated = false, _waterThreadUpdatePermitted = true;
 #ifdef _DEBUG
   bool waterThreadAnimationIsWorking = true;
 #endif

@@ -50,7 +50,7 @@ private:
   std::vector<Vertex> vertices;
   std::vector<Texture> textures;
   std::vector<GLuint> indices;
-  unsigned int VAO, VBO, EBO, instanceVBO, multiDE_I_DIBO;
+  unsigned int VAO, VBO, EBO, instanceVBO = 0, multiDE_I_DIBO;
   unsigned int numInstances;
   constexpr static int NUM_CHUNKS = (TILES_WIDTH / CHUNK_SIZE) * (TILES_HEIGHT / CHUNK_SIZE);
   GLuint multiDrawIndirectData[NUM_CHUNKS * 5] = {0}; //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }

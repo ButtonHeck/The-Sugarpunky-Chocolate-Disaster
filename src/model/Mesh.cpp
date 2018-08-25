@@ -44,6 +44,12 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
 {
   numInstances = numModels;
   glBindVertexArray(VAO);
+  if (instanceVBO != 0)
+    {
+      glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+      glInvalidateBufferData(instanceVBO);
+      glDeleteBuffers(1, &instanceVBO);
+    }
   glCreateBuffers(1, &instanceVBO);
   glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * numModels, &models[0], GL_STATIC_DRAW);

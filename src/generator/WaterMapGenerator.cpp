@@ -6,7 +6,9 @@ WaterMapGenerator::WaterMapGenerator(Shader &waterShader)
   :
     MapGenerator(),
     waterShader(waterShader)
-{}
+{
+  waterHeightOffsets = new GLfloat[WATER_HEIGHT_OFFSETS_SIZE];
+}
 
 WaterMapGenerator::~WaterMapGenerator()
 {
@@ -15,6 +17,7 @@ WaterMapGenerator::~WaterMapGenerator()
   glDeleteBuffers(1, &culledVBO);
   glDeleteTransformFeedbacks(1, &TFBO);
   delete[] vertices;
+  delete[] waterHeightOffsets;
 }
 
 void WaterMapGenerator::prepareMap()
