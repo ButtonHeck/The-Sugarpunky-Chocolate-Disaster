@@ -455,14 +455,13 @@ void Game::loop()
           std::this_thread::yield();//busy wait until water thread has done its business...and business is good
         }
       _waterThreadUpdatePermitted = false; //explicitly bypass water animation frame update routine
-      delete waterMapGenerator;
-      delete hillMapGenerator;
       delete baseMapGenerator;
       delete buildableMapGenerator;
-      waterMapGenerator = new WaterMapGenerator(shaderManager.get(SHADER_WATER_FC));
-      hillMapGenerator = new HillsMapGenerator(shaderManager.get(SHADER_HILLS_FC), waterMapGenerator->getMap());
       baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
       buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+      waterMapGenerator->initializeMap(waterMapGenerator->getMap());
+      hillMapGenerator->initializeMap(hillMapGenerator->getMap());
+
       prepareTerrain();
       delete saveLoadManager;
       saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator, camera);
