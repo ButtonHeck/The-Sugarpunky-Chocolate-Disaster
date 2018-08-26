@@ -81,6 +81,7 @@ void ShaderManager::setupConstantUniforms(int scr_width, int scr_height)
   shader->setInt("u_skybox", SKYBOX);
   shader->setInt("u_normal_map", NORMAL_MAP);
   shader->setFloat("u_mapDimension", 1.0f / (TILES_WIDTH * 4));
+  shader->setFloat("U_WATER_LEVEL", -WATER_LEVEL / 10.0f);
 
   shader = &shaders[SHADER_SKY].second;
   shader->use();

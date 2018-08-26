@@ -547,8 +547,8 @@ void WaterMapGenerator::updateAnimationFrame(Options& options)
   double offsetMultiplier = frameTime * 0.1;
   for (size_t i = 0; i < WATER_HEIGHT_OFFSETS_SIZE; i+=2)
     {
-        waterHeightOffsets[i] = std::cos(offsetMultiplier * (i % 31)) * 0.0625 + WATER_LEVEL;
-        waterHeightOffsets[i+1] = std::sin(offsetMultiplier * (i % 29)) * 0.0689 + WATER_LEVEL;
+        waterHeightOffsets[i] = std::cos(offsetMultiplier * ((i * i) % 17)) * 0.0825 + WATER_LEVEL;
+        waterHeightOffsets[i+1] = std::sin(offsetMultiplier * ((i * i) % 29)) * 0.0889 + WATER_LEVEL;
     }
   unsigned int numWaterTiles = tiles.size();
   glm::vec3 normalLR, normalUL;
