@@ -18,6 +18,7 @@ public:
   Shader(const std::string& vertexFile, const std::string& geometryFile, const std::string& fragmentFile);
   void linkAgain();
   static void cacheUniformsMode(bool cache);
+  GLuint getUniformLocation(const std::string& uniformName);
   void setInt(const std::string& uniformName, int value);
   void setFloat(const std::string& uniformName, float value);
   void setBool(const std::string& uniformName, bool value);
@@ -40,6 +41,14 @@ private:
   char infoLog[512];
   std::unordered_map<std::string, GLint> uniformCache;
 };
+
+inline GLuint Shader::getUniformLocation(const std::string &uniformName)
+{
+  auto uniformLocation = glGetUniformLocation(ID, uniformName.c_str());
+  if (uniformLocation == -1)
+    std::cerr << "Unknown uniform: " << uniformName.c_str() << " for ID: " << ID << 'n';
+  return uniformLocation;
+}
 
 inline void Shader::setVec4(const std::__cxx11::string &uniformName, glm::vec4 vec)
 {

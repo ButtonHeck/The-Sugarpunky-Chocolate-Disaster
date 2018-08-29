@@ -1,35 +1,33 @@
 #ifndef FONTMANAGER_H
 #define FONTMANAGER_H
-#include <ft2build.h>
-#include FT_FREETYPE_H
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include <GL/glew.h>
+#include <IL/il.h>
 #include <map>
-#include <string>
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
+#include "game/Settings.h"
 #include "graphics/Shader.h"
 
 class FontManager
 {
 public:
-  FontManager(const std::string& fontfile, glm::mat4 projection, Shader* shader);
+  FontManager(const std::string& fontFile, const std::string& fontTexture, glm::mat4 projection, Shader& shader);
   ~FontManager();
-  void renderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color = glm::vec3(0.0f));
-  GLuint& getVAO();
-  GLuint& getVBO();
-  void deleteGLObjects();
+  void resetBufferOffset();
+  void addText(std::string text, GLfloat x, GLfloat y, GLfloat scale);
+  void drawText();
 private:
-  std::string filename;
-  GLuint vbo, vao;
   struct Character {
-    GLuint textureID;
-    glm::ivec2 size;
-    glm::ivec2 bearing;
-    FT_Pos advance;
+    int asciiCode, x, y, width, height, xoffset, yoffset, xadvance;
   };
-  std::map<GLchar, Character> characters;
-  glm::mat4 fontProjection;
-  Shader* shader;
+  Shader& fontShader;
+  const int MAX_BUFFER_SIZE = 1024 * 24;
+  GLfloat* vertexData;
+  int bufferOffset = 0, vertexCount = 0;
+  std::map<char, Character> chars;
+  GLuint fontTexture, textureWidth, textureHeight;
+  GLuint vao, vbo;
 };
 
 #endif // FONTMANAGER_H

@@ -19,11 +19,11 @@ SOURCES += \
     src/graphics/TextureLoader.cpp \
     src/graphics/Skybox.cpp \
     src/graphics/Renderer.cpp \
-    src/graphics/FontManager.cpp \
     src/graphics/CoordinateSystemRenderer.cpp \
     src/graphics/Frustum.cpp \
     src/graphics/TextureManager.cpp \
     src/graphics/ShaderManager.cpp \
+    src/graphics/FontManager.cpp \
     src/generator/MapGenerator.cpp \
     src/generator/WaterMapGenerator.cpp \
     src/generator/HillsMapGenerator.cpp \
@@ -52,10 +52,10 @@ HEADERS += \
     src/graphics/TextureLoader.h \
     src/graphics/Renderer.h \
     src/graphics/Skybox.h \
-    src/graphics/FontManager.h \
     src/graphics/CoordinateSystemRenderer.h \
     src/graphics/Frustum.h \
     src/graphics/TextureManager.h \
+    src/graphics/FontManager.h \
     src/generator/MapGenerator.h \
     src/generator/WaterMapGenerator.h \
     src/generator/HillsMapGenerator.h \
@@ -223,7 +223,9 @@ DISTFILES += \
     res/shaders/waterFC.vs \
     res/shaders/hillsFC.vs \
     res/shaders/hillsFC.gs \
-    res/shaders/_FC.fs
+    res/shaders/_FC.fs \
+    res/fonts/font.png \
+    res/fonts/font.fnt
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
