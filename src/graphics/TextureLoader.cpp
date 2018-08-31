@@ -16,7 +16,7 @@ GLuint TextureLoader::createAndBindTextureObject(GLenum target, GLuint textureUn
   return texture;
 }
 
-GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, GLenum wrapType, GLint magFilter, GLint minFilter, bool includeCWD)
+GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, GLenum wrapType, GLint magFilter, GLint minFilter, bool useAnisotropy, bool includeCWD)
 {
   GLuint texture = createAndBindTextureObject(GL_TEXTURE_2D, textureUnit);
   std::string fullPath = includeCWD ? std::string(RES_DIR + path) : path;
@@ -45,7 +45,8 @@ GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, G
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapType);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapType);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, ANISOTROPY);
+  if (useAnisotropy)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, ANISOTROPY);
   ilDeleteImage(ilGetInteger(IL_ACTIVE_IMAGE));
   return texture;
 }

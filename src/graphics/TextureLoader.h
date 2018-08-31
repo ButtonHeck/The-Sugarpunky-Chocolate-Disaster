@@ -13,7 +13,7 @@ class TextureLoader
 public:
   TextureLoader();
   GLuint createAndBindTextureObject(GLenum target, GLuint textureUnit);
-  GLuint loadTexture(const std::string& path, GLuint textureUnit, GLenum wrapType, GLint magFilter, GLint minFilter, bool includeCWD = true);
+  GLuint loadTexture(const std::string& path, GLuint textureUnit, GLenum wrapType, GLint magFilter, GLint minFilter, bool useAnisotropy, bool includeCWD = true);
   GLuint createFrameMSTexture(int width, int height, int multisample, GLuint textureUnit);
   GLuint createFrameTexture(int width, int height, GLuint textureUnit);
   GLuint createDepthMapTexture(int width, int height, GLuint textureUnit);

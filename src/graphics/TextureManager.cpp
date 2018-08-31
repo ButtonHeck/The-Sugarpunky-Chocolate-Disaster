@@ -4,16 +4,16 @@ TextureManager::TextureManager(TextureLoader &loader, int scr_width, int scr_hei
   :
     loader(loader)
 {
-  textures[FLAT] = loader.loadTexture("/textures/flat.jpg", FLAT, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-  textures[FLAT_2] = loader.loadTexture("/textures/flat2.jpg", FLAT_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-  textures[FLAT_x2] = loader.loadTexture("/textures/flat_x2.jpg", FLAT_x2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-  textures[FLAT_2_x2] = loader.loadTexture("/textures/flat2_x2.jpg", FLAT_2_x2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-  textures[NORMAL_MAP] = loader.loadTexture("/textures/normalMap.jpg", NORMAL_MAP, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-  textures[HILL] = loader.loadTexture("/textures/hill2.jpg", HILL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-  textures[HILL_2] = loader.loadTexture("/textures/hill.jpg", HILL_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-  textures[HILL_SPECULAR] = loader.loadTexture("/textures/hill_specular.jpg", HILL_SPECULAR, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-  textures[SHORE] = loader.loadTexture("/textures/shore.jpg", SHORE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-  textures[SHORE_2] = loader.loadTexture("/textures/shore2.jpg", SHORE_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+  textures[FLAT] = loader.loadTexture("/textures/flat.jpg", FLAT, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[FLAT_2] = loader.loadTexture("/textures/flat2.jpg", FLAT_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[FLAT_x2] = loader.loadTexture("/textures/flat_x2.jpg", FLAT_x2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[FLAT_2_x2] = loader.loadTexture("/textures/flat2_x2.jpg", FLAT_2_x2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[NORMAL_MAP] = loader.loadTexture("/textures/normalMap.jpg", NORMAL_MAP, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
+  textures[HILL] = loader.loadTexture("/textures/hill2.jpg", HILL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[HILL_2] = loader.loadTexture("/textures/hill.jpg", HILL_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[HILL_SPECULAR] = loader.loadTexture("/textures/hill_specular.jpg", HILL_SPECULAR, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
+  textures[SHORE] = loader.loadTexture("/textures/shore.jpg", SHORE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[SHORE_2] = loader.loadTexture("/textures/shore2.jpg", SHORE_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[SKYBOX] = loader.loadCubemap("/textures/cubemap/", SKYBOX);
   textures[FRAME_MS_TEXTURE] = loader.createFrameMSTexture(scr_width, scr_height, MULTISAMPLES, FRAME_MS_TEXTURE);
   textures[FRAME_TEXTURE] = loader.createFrameTexture(scr_width, scr_height, FRAME_TEXTURE);
