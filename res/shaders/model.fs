@@ -27,7 +27,7 @@ const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.3;
 const float SHADOW_INFLUENCE_FOR_NEGATIVE_DOT = 0.4;
 const float ONE_MINUS_SHADOW_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
-const float DIFFUSE_MIX = 0.6;
+const float DIFFUSE_MIX = 0.7;
 const float MAX_DESATURATING_VALUE = 0.8 / ONE_MINUS_SHADOW_INFLUENCE;
 const vec2  POISSON_DISK[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),

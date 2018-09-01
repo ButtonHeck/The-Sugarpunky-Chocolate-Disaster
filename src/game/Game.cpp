@@ -358,31 +358,31 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
       {
         BENCHMARK("Renderer: add and draw text", true);
         fontManager->resetBufferOffset();
-        fontManager->addText("CPU UPS: " + std::to_string(CPU_timer.getFPS()), 10.0f, (float)scr_height - 15.0f, 0.2f);
+        fontManager->addText("CPU UPS: " + std::to_string(CPU_timer.getFPS()), 10.0f, (float)scr_height - 15.0f, 0.18f);
         fontManager->addText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                                + std::to_string(viewPosition.y).substr(0,6) + ": "
-                               + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 35.0f, 0.2f);
+                               + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 35.0f, 0.18f);
         fontManager->addText("Camera on map: " + std::to_string(camera.getMapCoordX()) + ": " + std::to_string(camera.getMapCoordZ()),
-                               10.0f, (float)scr_height - 55.0f, 0.2f);
+                               10.0f, (float)scr_height - 55.0f, 0.18f);
         fontManager->addText("View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
                                + std::to_string(camera.getDirection().y).substr(0,6) + ": "
-                               + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 75.0f, 0.2f);
+                               + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 75.0f, 0.18f);
         fontManager->addText("Cursor at: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
                                + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
-                               + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 95.0f, 0.2f);
+                               + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 95.0f, 0.18f);
         fontManager->addText("Cursor on map: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(input.getCursorMapX()) + ": "
                                + std::to_string(input.getCursorMapZ()-1) + ", " + input.getCursorTileName())),
-                               10.0f, (float)scr_height - 115.0f, 0.2f);
-        fontManager->addText("Water culling: " + (options.get(WATER_FC) ? std::string("On") : std::string("Off")), 10.0f, 20.0f, 0.2f);
-        fontManager->addText("Hills culling: " + (options.get(HILLS_FC) ? std::string("On") : std::string("Off")), 10.0f, 40.0f, 0.2f);
-        fontManager->addText("Trees culling: " + (options.get(MODELS_FC) ? std::string("On") : std::string("Off")), 10.0f, 60.0f, 0.2f);
+                               10.0f, (float)scr_height - 115.0f, 0.18f);
+        fontManager->addText("Water culling: " + (options.get(WATER_FC) ? std::string("On") : std::string("Off")), 10.0f, 20.0f, 0.18f);
+        fontManager->addText("Hills culling: " + (options.get(HILLS_FC) ? std::string("On") : std::string("Off")), 10.0f, 40.0f, 0.18f);
+        fontManager->addText("Trees culling: " + (options.get(MODELS_FC) ? std::string("On") : std::string("Off")), 10.0f, 60.0f, 0.18f);
 #ifdef _DEBUG
-        fontManager->addText("Water anim thread works: " + (waterThreadAnimationIsWorking ? std::string("On") : std::string("Off")), 10.0f, 80.0f, 0.2f);
+        fontManager->addText("Water anim thread works: " + (waterThreadAnimationIsWorking ? std::string("On") : std::string("Off")), 10.0f, 80.0f, 0.18f);
         glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &ram_available);
         fontManager->addText("RAM available: " + (std::to_string(ram_available)
                                                      .append(", ")
                                                      .append(std::to_string(ram_available / ram_size_float_percentage))
-                                                     .append("%")), 10.0f, 100.0f, 0.2f);
+                                                     .append("%")), 10.0f, 100.0f, 0.18f);
 #endif
         fontManager->drawText();
       }

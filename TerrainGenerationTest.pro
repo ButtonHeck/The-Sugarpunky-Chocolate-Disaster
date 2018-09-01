@@ -141,6 +141,17 @@ DISTFILES += \
     res/saves/testSave.txt \
     res/shaders/MS_toDefault.vs \
     res/shaders/model_shadow.vs \
+    res/shaders/terrain_shadow.vs \
+    res/shaders/MS_toDefault_hdr.fs \
+    res/perAppLog.txt \
+    res/perFrameLog.txt \
+    res/shaders/waterFC.gs \
+    res/shaders/waterFC.vs \
+    res/shaders/hillsFC.vs \
+    res/shaders/hillsFC.gs \
+    res/shaders/_FC.fs \
+    res/fonts/font.png \
+    res/fonts/font.fnt \
     res/models/hillTree1/tree.jpg \
     res/models/hillTree2/tree.jpg \
     res/models/hillTree3/tree.jpg \
@@ -215,17 +226,26 @@ DISTFILES += \
     res/models/tree6_2/tree6_2.mtl \
     res/models/tree7/tree7.mtl \
     res/models/tree8/tree8.mtl \
-    res/shaders/terrain_shadow.vs \
-    res/shaders/MS_toDefault_hdr.fs \
-    res/perAppLog.txt \
-    res/perFrameLog.txt \
-    res/shaders/waterFC.gs \
-    res/shaders/waterFC.vs \
-    res/shaders/hillsFC.vs \
-    res/shaders/hillsFC.gs \
-    res/shaders/_FC.fs \
-    res/fonts/font.png \
-    res/fonts/font.fnt
+    res/models/hillTree1/hillTree1.obj \
+    res/models/hillTree2/hillTree2.obj \
+    res/models/hillTree3/hillTree3.obj \
+    res/models/hillTree4/hillTree4.obj \
+    res/models/hillTree5/hillTree5.obj \
+    res/models/hillTree6/hillTree6.obj \
+    res/models/hillTree7/hillTree7.obj \
+    res/models/tree1/tree1.obj \
+    res/models/tree1_2/tree1_2.obj \
+    res/models/tree2/tree2.obj \
+    res/models/tree2_2/tree2_2.obj \
+    res/models/tree3/tree3.obj \
+    res/models/tree3_2/tree3_2.obj \
+    res/models/tree4/tree4.obj \
+    res/models/tree5/tree5.obj \
+    res/models/tree5_2/tree5_2.obj \
+    res/models/tree6/tree6.obj \
+    res/models/tree6_2/tree6_2.obj \
+    res/models/tree7/tree7.obj \
+    res/models/tree8/tree8.obj
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
