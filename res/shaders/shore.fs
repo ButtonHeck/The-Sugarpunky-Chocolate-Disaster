@@ -18,7 +18,7 @@ uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
 
-const float DIFFUSE_MIX = 0.5;
+const float DIFFUSE_MIX = 0.7;
 const float SHADOW_INFLUENCE = 0.3;
 const float ONE_MINUS_SHADOW_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
 const float MAX_DESATURATING_VALUE = 0.8 / ONE_MINUS_SHADOW_INFLUENCE;

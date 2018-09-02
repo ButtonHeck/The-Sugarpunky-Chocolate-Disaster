@@ -20,6 +20,7 @@ private:
   GLuint culledVAO = 0, culledVBO = 0, TFBO = 0;
   Shader& hillsShader;
   std::vector<std::vector<float>>& waterMap;
+  std::vector<std::vector<glm::vec3>> normalMap;
   std::default_random_engine randomizer;
   void generateMap(int cycles, float* max_height, HILL_DENSITY density);
   bool hasWaterNearby(unsigned int x, unsigned int y, unsigned int radius);

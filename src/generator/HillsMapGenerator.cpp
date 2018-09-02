@@ -41,7 +41,6 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
   const size_t ELEMENT_DATA_LENGTH = tiles.size() * 6;
   GLfloat* vertices = new GLfloat[VERTEX_DATA_LENGTH];
   GLuint* indices = new GLuint[ELEMENT_DATA_LENGTH];
-  glm::vec3 normal1, normal2;
   for (unsigned int c = 0; c < tiles.size(); c++)
     {
       TerrainTile& tile = tiles[c];
@@ -75,123 +74,120 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
       float texCoordXOffset = (tile.mapX % 2) / 2.0f;
       float texCoordYOffset = ((TILES_HEIGHT - tile.mapY) % 2) / 2.0f;
 
+      int x = tile.mapX, y = tile.mapY;
       if (!indicesCrossed)
         {
-          normal1 = glm::normalize(glm::vec3(tile.lowLeft - tile.lowRight, 1, tile.upperRight - tile.lowRight));
-          normal2 = glm::normalize(glm::vec3(tile.upperLeft - tile.upperRight, 1, tile.upperLeft - tile.lowLeft));
           //ll1
           vertices[offset] =   -1- HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+1] = tile.lowLeft;
           vertices[offset+2] = - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+3] = 0.0f + texCoordXOffset;
           vertices[offset+4] = 0.0f + texCoordYOffset;
-          vertices[offset+5] = normal1.x;
-          vertices[offset+6] = normal1.y;
-          vertices[offset+7] = normal1.z;
+          vertices[offset+5] = normalMap[y][x-1].x;
+          vertices[offset+6] = normalMap[y][x-1].y;
+          vertices[offset+7] = normalMap[y][x-1].z;
           //lr1
           vertices[offset+8] =  - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+9] =  tile.lowRight;
           vertices[offset+10] = - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+11] = (1.0f / 2.0f + texCoordXOffset) * dxRatio;
           vertices[offset+12] = 0.0f + texCoordYOffset;
-          vertices[offset+13] = normal1.x;
-          vertices[offset+14] = normal1.y;
-          vertices[offset+15] = normal1.z;
+          vertices[offset+13] = normalMap[y][x].x;
+          vertices[offset+14] = normalMap[y][x].y;
+          vertices[offset+15] = normalMap[y][x].z;
           //ur1
           vertices[offset+16] = - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+17] = tile.upperRight;
           vertices[offset+18] = -1 - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+19] = (1.0f / 2.0f + texCoordXOffset) * dxRatio;
           vertices[offset+20] = (1.0f / 2.0f + texCoordYOffset) * dyRatio;
-          vertices[offset+21] = normal1.x;
-          vertices[offset+22] = normal1.y;
-          vertices[offset+23] = normal1.z;
+          vertices[offset+21] = normalMap[y-1][x].x;
+          vertices[offset+22] = normalMap[y-1][x].y;
+          vertices[offset+23] = normalMap[y-1][x].z;
           //ur2
           vertices[offset+24] = - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+25] = tile.upperRight;
           vertices[offset+26] = -1 - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+27] = (1.0f / 2.0f + texCoordXOffset) * dxRatio;
           vertices[offset+28] = (1.0f / 2.0f + texCoordYOffset) * dyRatio;
-          vertices[offset+29] = normal2.x;
-          vertices[offset+30] = normal2.y;
-          vertices[offset+31] = normal2.z;
+          vertices[offset+29] = normalMap[y-1][x].x;
+          vertices[offset+30] = normalMap[y-1][x].y;
+          vertices[offset+31] = normalMap[y-1][x].z;
           //ul2
           vertices[offset+32] = -1 - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+33] = tile.upperLeft;
           vertices[offset+34] = -1 - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+35] = 0.0f + texCoordXOffset;
           vertices[offset+36] = (1.0f / 2.0f + texCoordYOffset) * dyRatio;
-          vertices[offset+37] = normal2.x;
-          vertices[offset+38] = normal2.y;
-          vertices[offset+39] = normal2.z;
+          vertices[offset+37] = normalMap[y-1][x-1].x;
+          vertices[offset+38] = normalMap[y-1][x-1].y;
+          vertices[offset+39] = normalMap[y-1][x-1].z;
           //ll2
           vertices[offset+40] = -1- HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+41] = tile.lowLeft;
           vertices[offset+42] = - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+43] = 0.0f + texCoordXOffset;
           vertices[offset+44] = 0.0f + texCoordYOffset;
-          vertices[offset+45] = normal2.x;
-          vertices[offset+46] = normal2.y;
-          vertices[offset+47] = normal2.z;
+          vertices[offset+45] = normalMap[y][x-1].x;
+          vertices[offset+46] = normalMap[y][x-1].y;
+          vertices[offset+47] = normalMap[y][x-1].z;
         }
       else
         {
-          normal1 = glm::normalize(glm::vec3(tile.lowLeft - tile.lowRight, 1, tile.upperLeft - tile.lowLeft));
-          normal2 = glm::normalize(glm::vec3(tile.upperLeft - tile.upperRight, 1, tile.upperRight - tile.lowRight));
           //ul1
           vertices[offset] =   -1 - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+1] = tile.upperLeft;
           vertices[offset+2] = -1 - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+3] = 0.0f + texCoordXOffset;
           vertices[offset+4] = (1.0f / 2.0f + texCoordYOffset) * dyRatio;
-          vertices[offset+5] = normal1.x;
-          vertices[offset+6] = normal1.y;
-          vertices[offset+7] = normal1.z;
+          vertices[offset+5] = normalMap[y-1][x-1].x;
+          vertices[offset+6] = normalMap[y-1][x-1].y;
+          vertices[offset+7] = normalMap[y-1][x-1].z;
           //ll1
           vertices[offset+8] =  -1- HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+9] =  tile.lowLeft;
           vertices[offset+10] = - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+11] = 0.0f + texCoordXOffset;
           vertices[offset+12] = 0.0f + texCoordYOffset;
-          vertices[offset+13] = normal1.x;
-          vertices[offset+14] = normal1.y;
-          vertices[offset+15] = normal1.z;
+          vertices[offset+13] = normalMap[y][x-1].x;
+          vertices[offset+14] = normalMap[y][x-1].y;
+          vertices[offset+15] = normalMap[y][x-1].z;
           //lr1
           vertices[offset+16] = - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+17] = tile.lowRight;
           vertices[offset+18] = - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+19] = (1.0f / 2.0f + texCoordXOffset) * dxRatio;
           vertices[offset+20] = 0.0f + texCoordYOffset;
-          vertices[offset+21] = normal1.x;
-          vertices[offset+22] = normal1.y;
-          vertices[offset+23] = normal1.z;
+          vertices[offset+21] = normalMap[y][x].x;
+          vertices[offset+22] = normalMap[y][x].y;
+          vertices[offset+23] = normalMap[y][x].z;
           //lr2
           vertices[offset+24] = - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+25] = tile.lowRight;
           vertices[offset+26] = - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+27] = (1.0f / 2.0f + texCoordXOffset) * dxRatio;
           vertices[offset+28] = 0.0f + texCoordYOffset;
-          vertices[offset+29] = normal2.x;
-          vertices[offset+30] = normal2.y;
-          vertices[offset+31] = normal2.z;
+          vertices[offset+29] = normalMap[y][x].x;
+          vertices[offset+30] = normalMap[y][x].y;
+          vertices[offset+31] = normalMap[y][x].z;
           //ur2
           vertices[offset+32] = - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+33] = tile.upperRight;
           vertices[offset+34] = -1 - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+35] = (1.0f / 2.0f + texCoordXOffset) * dxRatio;
           vertices[offset+36] = (1.0f / 2.0f + texCoordYOffset) * dyRatio;
-          vertices[offset+37] = normal2.x;
-          vertices[offset+38] = normal2.y;
-          vertices[offset+39] = normal2.z;
+          vertices[offset+37] = normalMap[y-1][x].x;
+          vertices[offset+38] = normalMap[y-1][x].y;
+          vertices[offset+39] = normalMap[y-1][x].z;
           //ul2
           vertices[offset+40] = -1 - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+41] = tile.upperLeft;
           vertices[offset+42] = -1 - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+43] = 0.0f + texCoordXOffset;
           vertices[offset+44] = (1.0f / 2.0f + texCoordYOffset) * dyRatio;
-          vertices[offset+45] = normal2.x;
-          vertices[offset+46] = normal2.y;
-          vertices[offset+47] = normal2.z;
+          vertices[offset+45] = normalMap[y-1][x-1].x;
+          vertices[offset+46] = normalMap[y-1][x-1].y;
+          vertices[offset+47] = normalMap[y-1][x-1].z;
         }
       indices[index] = index;
       indices[index+1] = index + 1;
@@ -244,6 +240,14 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
 void HillsMapGenerator::createTiles()
 {
   tiles.clear();
+  normalMap.clear();
+  normalMap.reserve(TILES_HEIGHT + 1);
+  for (size_t row = 0; row < TILES_HEIGHT + 1; row++)
+    {
+      glm::vec3 emptyNormal(0.0f);
+      std::vector<glm::vec3> emptyVec(TILES_WIDTH + 1, emptyNormal);
+      normalMap.emplace_back(emptyVec);
+    }
   for (unsigned int y = 1; y < map.size(); y++)
     {
       for (unsigned int x = 1; x < map[0].size(); x++)
@@ -259,6 +263,23 @@ void HillsMapGenerator::createTiles()
                 float ul = map[y-1][x-1] + HILLS_OFFSET_Y;
                 tiles.emplace_back(x, y, ll, lr, ur, ul);
               }
+        }
+    }
+
+  //calculate normals for smooth shading
+  //nX where X is a relative direction for n0 to nearby polygon expressed as a clockface number
+  for (unsigned int y = 1; y < map.size() - 1; y++)
+    {
+      for (unsigned int x = 1; x < map[0].size() - 1; x++)
+        {
+          glm::vec3 n0 = glm::normalize(glm::vec3(map[y][x-1] - map[y][x], 1, map[y-1][x] - map[y][x]));
+          glm::vec3 n3 = glm::normalize(glm::vec3(map[y][x] - map[y][x+1], 1, map[y-1][x+1] - map[y][x+1]));
+          glm::vec3 n6 = glm::normalize(glm::vec3(map[y+1][x-1] - map[y+1][x], 1, map[y][x] - map[y+1][x]));
+          glm::vec3 n1= glm::normalize(glm::vec3(map[y-1][x] - map[y-1][x+1], 1, map[y-1][x] - map[y][x]));
+          glm::vec3 n4 = glm::normalize(glm::vec3(map[y][x] - map[y][x+1], 1, map[y][x] - map[y+1][x]));
+          glm::vec3 n9 = glm::normalize(glm::vec3(map[y][x-1] - map[y][x], 1, map[y][x-1] - map[y+1][x-1]));
+          glm::vec3 avgNormal = glm::normalize(n0 + n1 + n3 + n4 + n6 + n9);
+          normalMap[y][x] = avgNormal;
         }
     }
 }

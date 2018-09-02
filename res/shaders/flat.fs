@@ -15,7 +15,7 @@ uniform sampler2D u_shadowMap;
 uniform bool      u_shadowEnable;
 
 const vec2 TEXEL_SIZE = 0.75 / textureSize(u_shadowMap, 0);
-const float DIFFUSE_MIX = 0.5;
+const float DIFFUSE_MIX = 0.7;
 const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 const float SHADOW_INFLUENCE = 0.3;
 const float ONE_MINUS_SHADOW_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
