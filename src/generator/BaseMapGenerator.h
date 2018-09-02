@@ -48,6 +48,7 @@ private:
   std::vector<TerrainChunk> squareChunks;
   std::vector<TerrainChunk> cellChunks;
   std::vector<TerrainChunk> shoreChunks;
+  std::vector<std::vector<glm::vec3>> shoreNormals;
   int NUM_SQUARE_INSTANCES;
   int NUM_CELL_INSTANCES;
   void generateMap();

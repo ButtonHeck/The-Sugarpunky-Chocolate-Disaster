@@ -46,7 +46,7 @@ inline GLuint Shader::getUniformLocation(const std::string &uniformName)
 {
   auto uniformLocation = glGetUniformLocation(ID, uniformName.c_str());
   if (uniformLocation == -1)
-    std::cerr << "Unknown uniform: " << uniformName.c_str() << " for ID: " << ID << 'n';
+    std::cerr << "Unknown uniform: " << uniformName.c_str() << " for ID: " << ID << '\n';
   return uniformLocation;
 }
 

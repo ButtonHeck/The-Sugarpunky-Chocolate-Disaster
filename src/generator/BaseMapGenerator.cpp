@@ -53,21 +53,19 @@ void BaseMapGenerator::fillShoreBufferData()
   for (unsigned int i = 0; i < numChunks; i++)
     {
       unsigned int numTiles = shoreChunks[i].getNumInstances();
-      glm::vec3 normal1, normal2;
       for (unsigned int c = 0; c < numTiles; c++)
         {
           TerrainTile& tile = tiles[shoreChunks[i].getInstanceOffset() + c];
-          normal1 = glm::normalize(glm::vec3(tile.lowLeft - tile.lowRight, 1, tile.upperRight - tile.lowRight));
-          normal2 = glm::normalize(glm::vec3(tile.upperLeft - tile.upperRight, 1, tile.upperLeft - tile.lowLeft));
+          int x = tile.mapX, y = tile.mapY;
           //ll1
           vertices[bytesToBuffer++] =   -1- HALF_TILES_WIDTH + tile.mapX;
           vertices[bytesToBuffer++] = tile.lowLeft;
           vertices[bytesToBuffer++] = - HALF_TILES_HEIGHT + tile.mapY;
           vertices[bytesToBuffer++] = 0.0f;
           vertices[bytesToBuffer++] = 0.0f;
-          vertices[bytesToBuffer++] = normal1.x;
-          vertices[bytesToBuffer++] = normal1.y;
-          vertices[bytesToBuffer++] = normal1.z;
+          vertices[bytesToBuffer++] = shoreNormals[y][x-1].x;
+          vertices[bytesToBuffer++] = shoreNormals[y][x-1].y;
+          vertices[bytesToBuffer++] = shoreNormals[y][x-1].z;
           ++shoreVerticesToDraw;
           //lr1
           vertices[bytesToBuffer++] =  - HALF_TILES_WIDTH + tile.mapX;
@@ -75,9 +73,9 @@ void BaseMapGenerator::fillShoreBufferData()
           vertices[bytesToBuffer++] = - HALF_TILES_HEIGHT + tile.mapY;
           vertices[bytesToBuffer++] = 1.0f;
           vertices[bytesToBuffer++] = 0.0f;
-          vertices[bytesToBuffer++] = normal1.x;
-          vertices[bytesToBuffer++] = normal1.y;
-          vertices[bytesToBuffer++] = normal1.z;
+          vertices[bytesToBuffer++] = shoreNormals[y][x].x;
+          vertices[bytesToBuffer++] = shoreNormals[y][x].y;
+          vertices[bytesToBuffer++] = shoreNormals[y][x].z;
           ++shoreVerticesToDraw;
           //ur1
           vertices[bytesToBuffer++] = - HALF_TILES_WIDTH + tile.mapX;
@@ -85,9 +83,9 @@ void BaseMapGenerator::fillShoreBufferData()
           vertices[bytesToBuffer++] = -1 - HALF_TILES_HEIGHT + tile.mapY;
           vertices[bytesToBuffer++] = 1.0f;
           vertices[bytesToBuffer++] = 1.0f;
-          vertices[bytesToBuffer++] = normal1.x;
-          vertices[bytesToBuffer++] = normal1.y;
-          vertices[bytesToBuffer++] = normal1.z;
+          vertices[bytesToBuffer++] = shoreNormals[y-1][x].x;
+          vertices[bytesToBuffer++] = shoreNormals[y-1][x].y;
+          vertices[bytesToBuffer++] = shoreNormals[y-1][x].z;
           ++shoreVerticesToDraw;
           //ur2
           vertices[bytesToBuffer++] = - HALF_TILES_WIDTH + tile.mapX;
@@ -95,9 +93,9 @@ void BaseMapGenerator::fillShoreBufferData()
           vertices[bytesToBuffer++] = -1 - HALF_TILES_HEIGHT + tile.mapY;
           vertices[bytesToBuffer++] = 1.0f;
           vertices[bytesToBuffer++] = 1.0f;
-          vertices[bytesToBuffer++] = normal2.x;
-          vertices[bytesToBuffer++] = normal2.y;
-          vertices[bytesToBuffer++] = normal2.z;
+          vertices[bytesToBuffer++] = shoreNormals[y-1][x].x;
+          vertices[bytesToBuffer++] = shoreNormals[y-1][x].y;
+          vertices[bytesToBuffer++] = shoreNormals[y-1][x].z;
           ++shoreVerticesToDraw;
           //ul2
           vertices[bytesToBuffer++] = -1 - HALF_TILES_WIDTH + tile.mapX;
@@ -105,9 +103,9 @@ void BaseMapGenerator::fillShoreBufferData()
           vertices[bytesToBuffer++] = -1 - HALF_TILES_HEIGHT + tile.mapY;
           vertices[bytesToBuffer++] = 0.0f;
           vertices[bytesToBuffer++] = 1.0f;
-          vertices[bytesToBuffer++] = normal2.x;
-          vertices[bytesToBuffer++] = normal2.y;
-          vertices[bytesToBuffer++] = normal2.z;
+          vertices[bytesToBuffer++] = shoreNormals[y-1][x-1].x;
+          vertices[bytesToBuffer++] = shoreNormals[y-1][x-1].y;
+          vertices[bytesToBuffer++] = shoreNormals[y-1][x-1].z;
           ++shoreVerticesToDraw;
           //ll2
           vertices[bytesToBuffer++] = -1- HALF_TILES_WIDTH + tile.mapX;
@@ -115,9 +113,9 @@ void BaseMapGenerator::fillShoreBufferData()
           vertices[bytesToBuffer++] = - HALF_TILES_HEIGHT + tile.mapY;
           vertices[bytesToBuffer++] = 0.0f;
           vertices[bytesToBuffer++] = 0.0f;
-          vertices[bytesToBuffer++] = normal2.x;
-          vertices[bytesToBuffer++] = normal2.y;
-          vertices[bytesToBuffer++] = normal2.z;
+          vertices[bytesToBuffer++] = shoreNormals[y][x-1].x;
+          vertices[bytesToBuffer++] = shoreNormals[y][x-1].y;
+          vertices[bytesToBuffer++] = shoreNormals[y][x-1].z;
           ++shoreVerticesToDraw;
         }
     }
@@ -355,8 +353,16 @@ void BaseMapGenerator::splitShoreChunks(int chunkSize)
 {
   tiles.clear();
   shoreChunks.clear();
+  shoreNormals.clear();
+  shoreNormals.reserve(TILES_HEIGHT + 1);
+  for (size_t row = 0; row < TILES_HEIGHT + 1; row++)
+    {
+      glm::vec3 emptyNormal(0.0f);
+      std::vector<glm::vec3> emptyVec(TILES_WIDTH + 1, emptyNormal);
+      shoreNormals.emplace_back(emptyVec);
+    }
   unsigned int offset = 0;
-  for (int y = 0; y <TILES_HEIGHT - chunkSize + 1; y += chunkSize)
+  for (int y = 0; y < TILES_HEIGHT - chunkSize + 1; y += chunkSize)
     {
       for (int x = 0; x < TILES_WIDTH - chunkSize + 1; x += chunkSize)
         {
@@ -388,6 +394,22 @@ void BaseMapGenerator::splitShoreChunks(int chunkSize)
           if (instances != 0)
             shoreChunks.emplace_back(x, x + chunkSize, y, y + chunkSize, offset, instances);
           offset += instances;
+        }
+    }
+  //calculate normals for smooth shading
+  //nX where X is a relative direction for n0 to nearby polygon expressed as a clockface number
+  for (unsigned int y = 1; y < map.size() - 1; y++)
+    {
+      for (unsigned int x = 1; x < map[0].size() - 1; x++)
+        {
+          glm::vec3 n0 = glm::normalize(glm::vec3(map[y][x-1] - map[y][x], 1, map[y-1][x] - map[y][x]));
+          glm::vec3 n3 = glm::normalize(glm::vec3(map[y][x] - map[y][x+1], 1, map[y-1][x+1] - map[y][x+1]));
+          glm::vec3 n6 = glm::normalize(glm::vec3(map[y+1][x-1] - map[y+1][x], 1, map[y][x] - map[y+1][x]));
+          glm::vec3 n1= glm::normalize(glm::vec3(map[y-1][x] - map[y-1][x+1], 1, map[y-1][x] - map[y][x]));
+          glm::vec3 n4 = glm::normalize(glm::vec3(map[y][x] - map[y][x+1], 1, map[y][x] - map[y+1][x]));
+          glm::vec3 n9 = glm::normalize(glm::vec3(map[y][x-1] - map[y][x], 1, map[y][x-1] - map[y+1][x-1]));
+          glm::vec3 avgNormal = glm::normalize(n0 + n1 + n3 + n4 + n6 + n9);
+          shoreNormals[y][x] = avgNormal;
         }
     }
 }
