@@ -8,8 +8,9 @@ in vec3 v_ProjectedCoords;
 
 uniform sampler2D u_flat_diffuse;
 uniform sampler2D u_flat_diffuse2;
-uniform vec3      u_lightDir;
+uniform sampler2D u_diffuse_mix_map;
 uniform sampler2D u_normal_map;
+uniform vec3      u_lightDir;
 uniform float     u_mapDimension;
 uniform sampler2D u_shadowMap;
 uniform bool      u_shadowEnable;
@@ -52,9 +53,15 @@ vec4 desaturate(vec4 fragColor, float desaturatingValue)
 
 void main()
 {
-    vec3 FlatNormal = texture(u_normal_map, v_FragPos.xz * u_mapDimension + 0.5).rgb;
-    vec4 sampledDiffuse = mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), FlatNormal.r * 1.25);
-    vec3 ShadingNormal = normalize(NORMAL + FlatNormal);
+    float DiffuseTextureMix = texture(u_diffuse_mix_map, v_FragPos.xz * u_mapDimension + 0.5).r;
+    vec4 sampledDiffuse = mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), DiffuseTextureMix);
+
+    //swizzle z and y to rotate Z-aligned normal map 90 degrees around X axis, as like we look at it upside down
+    //also scale up texture mapping a bit
+    vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
+    //and make our Y component less, so the entire range of normals would be more spread
+    ShadingNormal.y *= 0.5;
+    ShadingNormal = normalize(ShadingNormal);
 
     vec3 diffuseColor;
     vec3 resultColor;

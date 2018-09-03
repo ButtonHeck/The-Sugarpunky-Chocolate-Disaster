@@ -35,7 +35,8 @@ void ShaderManager::setupConstantUniforms(int scr_width, int scr_height)
   shader->setInt("u_hills_diffuse", HILL);
   shader->setInt("u_hills_diffuse2", HILL_2);
   shader->setInt("u_hills_specular", HILL_SPECULAR);
-  shader->setInt("u_normal_map", NORMAL_MAP);
+  shader->setInt("u_diffuse_mix_map", DIFFUSE_MIX_MAP);
+  shader->setInt("u_normal_map", TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
@@ -51,7 +52,7 @@ void ShaderManager::setupConstantUniforms(int scr_width, int scr_height)
   shader->setInt("u_flat_diffuse2", FLAT_2);
   shader->setInt("u_sand_diffuse", SHORE);
   shader->setInt("u_sand_diffuse2", SHORE_2);
-  shader->setInt("u_normal_map", NORMAL_MAP);
+  shader->setInt("u_normal_map", DIFFUSE_MIX_MAP);
   shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
@@ -60,7 +61,7 @@ void ShaderManager::setupConstantUniforms(int scr_width, int scr_height)
   shader = &shaders[SHADER_UNDERWATER].second;
   shader->use();
   shader->setInt("u_underwater_diffuse", SHORE);
-  shader->setInt("u_normal_map", NORMAL_MAP);
+  shader->setInt("u_normal_map", DIFFUSE_MIX_MAP);
   shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setInt("u_bottomRelief_diffuse", UNDERWATER_RELIEF);
@@ -69,7 +70,8 @@ void ShaderManager::setupConstantUniforms(int scr_width, int scr_height)
   shader->use();
   shader->setInt("u_flat_diffuse", FLAT);
   shader->setInt("u_flat_diffuse2", FLAT_2);
-  shader->setInt("u_normal_map", NORMAL_MAP);
+  shader->setInt("u_diffuse_mix_map", DIFFUSE_MIX_MAP);
+  shader->setInt("u_normal_map", TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
@@ -79,7 +81,7 @@ void ShaderManager::setupConstantUniforms(int scr_width, int scr_height)
   shader->use();
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setInt("u_skybox", SKYBOX);
-  shader->setInt("u_normal_map", NORMAL_MAP);
+  shader->setInt("u_normal_map", DIFFUSE_MIX_MAP);
   shader->setFloat("u_mapDimension", 1.0f / (TILES_WIDTH * 4));
   shader->setFloat("U_WATER_LEVEL", -WATER_LEVEL / 10.0f);
 

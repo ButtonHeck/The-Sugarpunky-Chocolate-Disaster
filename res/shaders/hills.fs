@@ -3,14 +3,12 @@ layout (early_fragment_tests) in;
 
 out vec4 o_FragColor;
 
+in vec3  v_FragPos;
+in vec3  v_Normal;
 in vec2  v_TexCoords;
 in float v_PosHeight;
-in float v_TextureFlatMixRatio;
-in float v_TextureHillMixRatio;
-in float v_DiffuseComponentHill;
-in float v_DiffuseComponentFlat;
+in float v_TextureMixRatio;
 in float v_SpecularComponent;
-in vec3  v_Normal;
 in vec3  v_ProjectedCoords;
 in float v_VertexDepth;
 
@@ -20,6 +18,7 @@ uniform sampler2D u_hills_diffuse;
 uniform sampler2D u_hills_diffuse2;
 uniform sampler2D u_hills_specular;
 uniform sampler2D u_shadowMap;
+uniform sampler2D u_normal_map;
 uniform sampler2D u_occlusionMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
@@ -80,8 +79,8 @@ void main()
     }
 
     vec4 sampledDiffuse =
-        mix(mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), v_TextureFlatMixRatio),
-            mix(texture(u_hills_diffuse, v_TexCoords), texture(u_hills_diffuse2, v_TexCoords), v_TextureHillMixRatio),
+        mix(mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), v_TextureMixRatio),
+            mix(texture(u_hills_diffuse, v_TexCoords), texture(u_hills_diffuse2, v_TexCoords), v_TextureMixRatio),
             clamp(v_PosHeight, 0.0, 1.0));
     vec4 sampledSpecular =
         mix(vec4(0.0), texture(u_hills_specular, v_TexCoords), clamp(v_PosHeight, 0.0, 1.0));
@@ -89,11 +88,24 @@ void main()
     vec3 diffuseColor;
     vec3 specularColor;
     vec3 resultColor;
-    float diffuseComponent = mix(v_DiffuseComponentFlat, v_DiffuseComponentHill, clamp(v_PosHeight, 0.0, 1.0));
+
+    //swizzle z and y to rotate Z-aligned normal map 90 degrees around X axis, as like we look at it upside down
+    //also scale up texture mapping a bit
+    vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
+    vec3 ShadingNormalFlat = ShadingNormal;
+    ShadingNormalFlat.y *= 0.5;
+    ShadingNormalFlat = normalize(ShadingNormalFlat);
+    vec3 ShadingNormalHill = ShadingNormal;
+    ShadingNormalHill.y *= 0.5;
+    ShadingNormalHill = normalize(ShadingNormalHill * 0.75 + v_Normal * 1.25);
+
+    float DiffuseComponentHill = max(dot(ShadingNormalHill, u_lightDir), 0.0);
+    float DiffuseComponentFlat = dot(ShadingNormalFlat, u_lightDir);
+    float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentHill, clamp(v_PosHeight, 0.0, 1.0));
 
     if (u_shadowEnable)
     {
-        float luminosity = calculateLuminosity(v_Normal);
+        float luminosity = calculateLuminosity(ShadingNormalHill);
         diffuseColor = luminosity * mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX);
         specularColor = v_SpecularComponent * sampledSpecular.rgb;
         resultColor = diffuseColor + specularColor;

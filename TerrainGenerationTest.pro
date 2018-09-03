@@ -111,7 +111,6 @@ DISTFILES += \
     res/textures/flat2.jpg \
     res/textures/flat2_x2.jpg \
     res/textures/flat_x2.jpg \
-    res/textures/normalMap.jpg \
     res/shaders/skybox.vs \
     res/shaders/skybox.fs \
     res/shaders/water.fs \
@@ -245,7 +244,9 @@ DISTFILES += \
     res/models/tree6/tree6.obj \
     res/models/tree6_2/tree6_2.obj \
     res/models/tree7/tree7.obj \
-    res/models/tree8/tree8.obj
+    res/models/tree8/tree8.obj \
+    res/textures/terrainNormal.jpg \
+    res/textures/diffuseMixMap.jpg
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

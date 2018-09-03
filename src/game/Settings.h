@@ -29,7 +29,7 @@ constexpr int NUM_TILES = TILES_WIDTH * TILES_HEIGHT;
 constexpr float WATER_LEVEL = -0.75f;
 constexpr int DENY_TILE_RENDER_VALUE = -10;
 constexpr int DENY_CHUNK_RENDER_VALUE = -20;
-constexpr float HILLS_OFFSET_Y = -0.4f;
+constexpr float HILLS_OFFSET_Y = -0.2f;
 constexpr float UNDERWATER_REMOVAL_LEVEL = -1.2f;
 constexpr float UNDERWATER_BASE_TILE_HEIGHT = -1.2f;
 constexpr int SHORE_SIZE_BASE = 5;
@@ -83,7 +83,7 @@ enum TEXTURE_UNITS
   FLAT_2 = 1,
   FLAT_x2 = 2,
   FLAT_2_x2 = 3,
-  NORMAL_MAP = 4,
+  DIFFUSE_MIX_MAP = 4,
   HILL = 5,
   HILL_2 = 6,
   HILL_SPECULAR = 7,
@@ -96,7 +96,8 @@ enum TEXTURE_UNITS
   FRAME_HDR_TEXTURE = 14,
   DEPTH_MAP_SUN = 15,
   DEPTH_MAP_CAMERA = 16,
-  FONT_TEXTURE = 17
+  FONT_TEXTURE = 17,
+  TERRAIN_NORMAL = 18
 };
 #endif // SETTINGS
 
