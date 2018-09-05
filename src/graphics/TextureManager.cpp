@@ -10,6 +10,8 @@ TextureManager::TextureManager(TextureLoader &loader, int scr_width, int scr_hei
   textures[FLAT_2_x2] = loader.loadTexture("/textures/flat2_x2.jpg", FLAT_2_x2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[DIFFUSE_MIX_MAP] = loader.loadTexture("/textures/diffuseMixMap.jpg", DIFFUSE_MIX_MAP, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
   textures[TERRAIN_NORMAL] = loader.loadTexture("/textures/terrainNormal.jpg", TERRAIN_NORMAL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[WATER_NORMAL] = loader.loadTexture("/textures/waterNormal.jpg", WATER_NORMAL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[WATER_SPECULAR] = loader.loadTexture("/textures/waterSpecular.jpg", WATER_SPECULAR, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[HILL] = loader.loadTexture("/textures/hill2.jpg", HILL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[HILL_2] = loader.loadTexture("/textures/hill.jpg", HILL_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[HILL_SPECULAR] = loader.loadTexture("/textures/hill_specular.jpg", HILL_SPECULAR, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);

@@ -544,11 +544,11 @@ void WaterMapGenerator::updateAnimationFrame(Options& options)
   BENCHMARK_PASS_CHECK("(SI/ST)Water: Update animation frame", true, _WATER_ANIMATION_BENCHMARK_PASS_THROUGH);
   _WATER_ANIMATION_BENCHMARK_PASS_THROUGH = true;
   double frameTime = glfwGetTime();
-  double offsetMultiplier = frameTime * 0.1;
+  double offsetMultiplier = frameTime * 0.12;
   for (size_t i = 0; i < WATER_HEIGHT_OFFSETS_SIZE; i+=2)
     {
-        waterHeightOffsets[i] = std::cos(offsetMultiplier * ((i * i) % 17)) * 0.0825 + WATER_LEVEL;
-        waterHeightOffsets[i+1] = std::sin(offsetMultiplier * ((i * i) % 29)) * 0.0889 + WATER_LEVEL;
+        waterHeightOffsets[i] = std::cos(offsetMultiplier * ((i * i) % 19)) * 0.0725 + WATER_LEVEL;
+        waterHeightOffsets[i+1] = std::sin(offsetMultiplier * ((i * i) % 29)) * 0.0789 + WATER_LEVEL;
     }
   unsigned int numWaterTiles = tiles.size();
   glm::vec3 normalLR, normalUL;
