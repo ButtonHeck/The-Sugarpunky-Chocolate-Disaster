@@ -14,7 +14,7 @@ uniform vec3        u_lightDir;
 uniform float       u_mapDimension;
 uniform float       U_WATER_LEVEL;
 
-const vec3 KISSEL_COLOR = vec3(0.37, 0.07, 0.05);
+const vec3 KISSEL_COLOR = vec3(0.4, 0.1, 0.05);
 const vec3 KISSEL_REFLECT_COLOR = vec3(0.9, 0.75, 0.75);
 const float REFLECTION_MIX = 0.1;
 const float KISSEL_ALPHA = 0.7;

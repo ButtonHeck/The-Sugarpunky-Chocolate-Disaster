@@ -9,7 +9,7 @@ in float v_DiffuseComponent;
 in float v_SpecularComponent;
 in vec3  v_ProjectedCoords;
 
-uniform sampler2D u_texture_diffuse;
+uniform sampler2D u_texture_diffuse1;
 uniform sampler2D u_texture_specular;
 uniform bool      u_shadow;
 uniform sampler2D u_shadowMap;
@@ -82,7 +82,7 @@ void main()
             discard;
     }
 
-    vec4 sampledDiffuse = texture(u_texture_diffuse, v_TexCoords);
+    vec4 sampledDiffuse = texture(u_texture_diffuse1, v_TexCoords);
     vec4 sampledSpecular = texture(u_texture_specular, v_TexCoords);
     vec3 ambientColor = 0.2 * sampledDiffuse.rgb;
     vec3 diffuseColor;

@@ -97,9 +97,9 @@ void main()
     ShadingNormalFlat = normalize(ShadingNormalFlat);
     vec3 ShadingNormalHill = ShadingNormal;
     ShadingNormalHill.y *= 0.5;
-    ShadingNormalHill = normalize(ShadingNormalHill * 0.75 + v_Normal * 1.25);
+    ShadingNormalHill = normalize(v_Normal * 4.0 - ShadingNormalHill * 3.0);
 
-    float DiffuseComponentHill = max(dot(ShadingNormalHill, u_lightDir), 0.0);
+    float DiffuseComponentHill = max(dot(ShadingNormalHill, u_lightDir), 0.0) + 0.1;
     float DiffuseComponentFlat = dot(ShadingNormalFlat, u_lightDir);
     float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentHill, clamp(v_PosHeight, 0.0, 1.0));
 

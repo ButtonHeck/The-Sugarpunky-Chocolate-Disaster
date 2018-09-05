@@ -246,7 +246,9 @@ DISTFILES += \
     res/models/tree7/tree7.obj \
     res/models/tree8/tree8.obj \
     res/textures/terrainNormal.jpg \
-    res/textures/diffuseMixMap.jpg
+    res/textures/diffuseMixMap.jpg \
+    res/textures/waterNormal.jpg \
+    res/textures/waterSpecular.jpg
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
