@@ -2,6 +2,7 @@
 
 out vec4 o_FragColor;
 
+in vec3  v_FragPos;
 in float v_PositionDiffuseComponent;
 in vec2  v_TexCoords;
 in float v_PosHeight;
@@ -14,6 +15,7 @@ uniform sampler2D u_flat_diffuse;
 uniform sampler2D u_flat_diffuse2;
 uniform sampler2D u_sand_diffuse;
 uniform sampler2D u_sand_diffuse2;
+uniform sampler2D u_normal_map;
 uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
@@ -66,10 +68,24 @@ void main()
     vec3 diffuseColor;
     vec3 resultColor;
 
+    //swizzle z and y to rotate Z-aligned normal map 90 degrees around X axis, as like we look at it upside down
+    //also scale up texture mapping a bit
+    vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
+    vec3 ShadingNormalFlat = ShadingNormal;
+    ShadingNormalFlat.y *= 0.5;
+    ShadingNormalFlat = normalize(ShadingNormalFlat);
+    vec3 ShadingNormalShore = ShadingNormal;
+    ShadingNormalShore.y *= 0.5;
+    ShadingNormalShore = normalize(ShadingNormalShore + v_Normal);
+
+    float DiffuseComponentShore = max(dot(ShadingNormalShore, u_lightDir), 0.0);
+    float DiffuseComponentFlat = dot(ShadingNormalFlat, u_lightDir);
+    float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentShore, clamp(v_PosHeight, 0.0, 1.0));
+
     if (u_shadowEnable)
     {
-        float luminosity = calculateLuminosity(v_Normal);
-        diffuseColor = luminosity * mix(sampledDiffuse.rgb, sampledDiffuse.rgb * v_DiffuseComponent, DIFFUSE_MIX) * v_PositionDiffuseComponent;
+        float luminosity = calculateLuminosity(ShadingNormalShore);
+        diffuseColor = luminosity * mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX) * v_PositionDiffuseComponent;
         resultColor = diffuseColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
         float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - ONE_MINUS_SHADOW_INFLUENCE);
@@ -77,7 +93,7 @@ void main()
     }
     else
     {
-        diffuseColor = mix(sampledDiffuse.rgb, sampledDiffuse.rgb * v_DiffuseComponent, DIFFUSE_MIX) * v_PositionDiffuseComponent;
+        diffuseColor = mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX) * v_PositionDiffuseComponent;
         resultColor = diffuseColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
     }

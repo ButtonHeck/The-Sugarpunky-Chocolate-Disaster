@@ -52,7 +52,8 @@ void ShaderManager::setupConstantUniforms(int scr_width, int scr_height)
   shader->setInt("u_flat_diffuse2", FLAT_2);
   shader->setInt("u_sand_diffuse", SHORE);
   shader->setInt("u_sand_diffuse2", SHORE_2);
-  shader->setInt("u_normal_map", DIFFUSE_MIX_MAP);
+  shader->setInt("u_diffuse_mix_map", DIFFUSE_MIX_MAP);
+  shader->setInt("u_normal_map", TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
