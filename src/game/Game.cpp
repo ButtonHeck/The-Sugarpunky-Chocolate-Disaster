@@ -154,11 +154,10 @@ void Game::setupVariables()
         });
 
   textureManager->createUnderwaterReliefTexture(waterMapGenerator);
-  shaderManager.setupConstantUniforms(scr_width, scr_height);
+  shaderManager.setupConstantUniforms();
   prepareScreenVAO();
   prepareMS_FBO();
   prepareDepthMapFBO(&depthMapFBO, DEPTH_MAP_SUN);
-  prepareDepthMapFBO(&depthMapFBO_camera, DEPTH_MAP_CAMERA);
 }
 
 void Game::prepareTerrain()
@@ -268,7 +267,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
     }
 
   //hills rendering
-  shaderManager.updateHillsShaders(options.get(HILLS_FC), options.get(OCCLUSION_CULLING), options.get(SHADOW_ENABLE), projectionView, viewPosition, viewFrustum);
+  shaderManager.updateHillsShaders(options.get(HILLS_FC), options.get(SHADOW_ENABLE), projectionView, viewPosition, viewFrustum);
   {
     BENCHMARK("Renderer: draw hills", true);
     renderer.drawHills(options.get(HILLS_FC), hillMapGenerator, shaderManager.get(SHADER_HILLS_FC), shaderManager.get(SHADER_HILLS_NOFC));
@@ -277,7 +276,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   //trees chunks rendering
   if (options.get(RENDER_TREE_MODELS))
     {
-      shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE), options.get(OCCLUSION_CULLING));
+      shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE));
       {
         BENCHMARK("Renderer: draw models", true);
         renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC),
@@ -420,23 +419,6 @@ void Game::drawFrameObjectsDepthmap()
   glBindTextureUnit(FLAT, textureManager->get(FLAT));
 }
 
-void Game::drawFrameObjectsDepthMapCamera(glm::mat4 &projectionView)
-{
-  Shader* shader = &shaderManager.get(SHADER_SHADOW_TERRAIN_CAMERA);
-  shader->use();
-  shader->setMat4("u_lightSpaceMatrix", projectionView);
-  renderer.drawHillsDepthmap(hillMapGenerator);
-
-  if (options.get(RENDER_TREE_MODELS))
-    {
-      shader = &shaderManager.get(SHADER_SHADOW_MODELS_CAMERA);
-      shader->use();
-      shader->setMat4("u_lightSpaceMatrix", projectionView);
-      renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS_CAMERA), options.get(MODELS_FC),
-                         false, updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0);
-    }
-}
-
 void Game::loop()
 {
   //even if we don't need to render models make sure we update indirect buffer data for meshes
@@ -491,15 +473,6 @@ void Game::loop()
   glm::mat4 view = camera.getViewMatrix();
   glm::mat4 projectionView = projection * view;
   viewFrustum.updateFrustum(projectionView);
-
-  if (options.get(OCCLUSION_CULLING))
-  {
-    BENCHMARK("Game: draw occlusion map", true);
-    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO_camera);
-    glClear(GL_DEPTH_BUFFER_BIT);
-    drawFrameObjectsDepthMapCamera(projectionView);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  }
 
   /*
    * If the MULTISAMPLE_ENABLE option is true we only need to rebind fbo to use one with MS

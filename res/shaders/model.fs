@@ -13,15 +13,8 @@ uniform sampler2D u_texture_diffuse1;
 uniform sampler2D u_texture_specular;
 uniform bool      u_shadow;
 uniform sampler2D u_shadowMap;
-uniform sampler2D u_occlusionMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
-uniform bool      u_occlusion;
-
-uniform float     U_NEAR;
-uniform float     U_FAR;
-uniform float     U_SCR_WIDTH;
-uniform float     U_SCR_HEIGHT;
 
 const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.3;
@@ -35,7 +28,6 @@ const vec2  POISSON_DISK[4] = vec2[](
   vec2( -0.094184101, -0.92938870 ),
   vec2( 0.34495938, 0.29387760 )
 );
-const float DEPTH_BIAS = 0.003;
 
 float calculateLuminosity(vec3 normal)
 {
@@ -66,22 +58,8 @@ vec4 desaturate(vec4 fragColor, float desaturatingValue)
     return desaturated;
 }
 
-float linearizeDepth(float depth)
-{
-    float z = depth * 2.0 - 1.0; // back to NDC
-    return (2.0 * U_NEAR * U_FAR) / (U_FAR + U_NEAR - z * (U_FAR - U_NEAR));
-}
-
 void main()
 {
-    if (u_occlusion)
-    {
-        float ocMapDepth = linearizeDepth(texture(u_occlusionMap, vec2(gl_FragCoord.x / U_SCR_WIDTH, gl_FragCoord.y / U_SCR_HEIGHT)).r) / U_FAR;
-        float fragDepth = linearizeDepth(gl_FragCoord.z) / U_FAR;
-        if (fragDepth >= ocMapDepth + DEPTH_BIAS)
-            discard;
-    }
-
     vec4 sampledDiffuse = texture(u_texture_diffuse1, v_TexCoords);
     vec4 sampledSpecular = texture(u_texture_specular, v_TexCoords);
     vec3 ambientColor = 0.2 * sampledDiffuse.rgb;

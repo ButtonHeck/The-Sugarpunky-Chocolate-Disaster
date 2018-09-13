@@ -25,7 +25,7 @@ ShaderManager::ShaderManager()
         });
 }
 
-void ShaderManager::setupConstantUniforms(int scr_width, int scr_height)
+void ShaderManager::setupConstantUniforms()
 {
   Shader* shader = &shaders[SHADER_HILLS_NOFC].second;
   shader->use();
@@ -40,11 +40,6 @@ void ShaderManager::setupConstantUniforms(int scr_width, int scr_height)
   shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
-  shader->setInt("u_occlusionMap", DEPTH_MAP_CAMERA);
-  shader->setFloat("U_NEAR", NEAR_PLANE);
-  shader->setFloat("U_FAR", FAR_PLANE);
-  shader->setFloat("U_SCR_WIDTH", scr_width);
-  shader->setFloat("U_SCR_HEIGHT", scr_height);
 
   shader = &shaders[SHADER_SHORE].second;
   shader->use();
@@ -97,11 +92,6 @@ void ShaderManager::setupConstantUniforms(int scr_width, int scr_height)
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
-  shader->setInt("u_occlusionMap", DEPTH_MAP_CAMERA);
-  shader->setFloat("U_NEAR", NEAR_PLANE);
-  shader->setFloat("U_FAR", FAR_PLANE);
-  shader->setFloat("U_SCR_WIDTH", scr_width);
-  shader->setFloat("U_SCR_HEIGHT", scr_height);
 
   shader = &shaders[SHADER_MS_TO_DEFAULT].second;
   shader->use();
@@ -123,7 +113,7 @@ Shader &ShaderManager::get(SHADER_TYPE type)
   return shaders[type].second;
 }
 
-void ShaderManager::updateHillsShaders(bool useFC, bool useOC, bool useShadows, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
+void ShaderManager::updateHillsShaders(bool useFC, bool useShadows, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
 {
   Shader* shader;
   if (useFC)
@@ -141,7 +131,6 @@ void ShaderManager::updateHillsShaders(bool useFC, bool useOC, bool useShadows, 
   shader->setMat4("u_projectionView", projectionView);
   shader->setVec3("u_viewPosition", viewPosition);
   shader->setBool("u_shadowEnable", useShadows);
-  shader->setBool("u_occlusion", useOC);
 }
 
 void ShaderManager::updateShoreShader(glm::mat4 &projectionView, bool useShadows)
@@ -208,7 +197,7 @@ void ShaderManager::updateSkyShader(glm::mat4 &projectionView)
   shader->setMat4("u_projectionView", projectionView);
 }
 
-void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &viewPosition, bool shadowOnTrees, bool useShadows, bool useOC)
+void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &viewPosition, bool shadowOnTrees, bool useShadows)
 {
   Shader* shader = &shaders[SHADER_MODELS].second;
   shader->use();
@@ -216,7 +205,6 @@ void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &view
   shader->setVec3("u_viewPosition", viewPosition);
   shader->setBool("u_shadow", shadowOnTrees);
   shader->setBool("u_shadowEnable", useShadows);
-  shader->setBool("u_occlusion", useOC);
 }
 
 void ShaderManager::deleteShaders()

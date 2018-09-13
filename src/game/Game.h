@@ -37,7 +37,6 @@ public:
   void drawFrameToScreenRectangle(bool enableMS);
   void drawFrameObjects(glm::mat4& projectionView);
   void drawFrameObjectsDepthmap();
-  void drawFrameObjectsDepthMapCamera(glm::mat4& projectionView);
   void loop();
 private:
   int scr_width;
@@ -65,7 +64,7 @@ private:
   Skybox skybox;
   TextureManager* textureManager;
   glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
-  GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO, depthMapFBO_camera;
+  GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO;
   std::thread* waterAnimationThread;
   std::thread* meshIndirectUpdateThread;
   volatile bool _meshesIndirectDataReady = false, _meshesIndirectDataNeed = false;

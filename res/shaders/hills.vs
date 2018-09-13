@@ -10,7 +10,6 @@ uniform float       u_mapDimension;
 uniform sampler2D   u_diffuse_mix_map;
 uniform vec3        u_viewPosition;
 uniform mat4        u_lightSpaceMatrix;
-uniform float       U_FAR;
 
 out vec3  v_FragPos;
 out vec3  v_Normal;
@@ -19,7 +18,6 @@ out float v_PosHeight;
 out float v_TextureMixRatio;
 out float v_SpecularComponent;
 out vec3  v_ProjectedCoords;
-out float v_VertexDepth;
 
 const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 const float DEPTH_BIAS = 0.01;
@@ -45,7 +43,4 @@ void main()
     vec3 Reflect = reflect(-u_lightDir, i_normal);
     vec3 ViewDir = normalize(u_viewPosition - i_pos);
     v_SpecularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 64.0);
-
-    //calculate vertex depth for occlusion culling here instead of fragment shader
-    v_VertexDepth = gl_Position.z / U_FAR - DEPTH_BIAS;
 }
