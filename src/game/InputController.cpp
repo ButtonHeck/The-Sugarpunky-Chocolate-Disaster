@@ -217,6 +217,18 @@ void InputController::processKeyboard()
     }
   if (glfwGetKey(window, GLFW_KEY_G) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_G] = false;
+
+  //models flat blending
+  if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_B])
+        {
+          options.switchOpt(MODELS_FLAT_BLENDING);
+          keysPressed[GLFW_KEY_B] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_B] = false;
 }
 
 void InputController::processKeyboardCamera(float delta, std::vector<std::vector<float> > &hillsMap)

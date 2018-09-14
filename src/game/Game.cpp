@@ -280,21 +280,6 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
     renderer.drawHills(options.get(HILLS_FC), hillMapGenerator, shaderManager.get(SHADER_HILLS_FC), shaderManager.get(SHADER_HILLS_NOFC));
   }
 
-  //trees chunks rendering
-  if (options.get(RENDER_TREE_MODELS))
-    {
-      shaderManager.updateModelShader(projectionView, viewPosition, options.get(RENDER_SHADOW_ON_TREES), options.get(SHADOW_ENABLE));
-      {
-        BENCHMARK("Renderer: draw models", true);
-        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC),
-                           true, updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0, true);
-      }
-    }
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, 0);
-  //reset texture units to terrain textures after we done with models
-  glBindTextureUnit(FLAT, textureManager->get(FLAT));
-
   //shore terrain chunks drawing
   shaderManager.updateShoreShader(projectionView, options.get(SHADOW_ENABLE));
   {
@@ -311,6 +296,28 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
         renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
       }
     }
+
+  //trees chunks rendering
+  if (options.get(RENDER_TREE_MODELS))
+    {
+      shaderManager.updateModelShader(projectionView, viewPosition,
+                                      options.get(RENDER_SHADOW_ON_TREES),
+                                      options.get(SHADOW_ENABLE),
+                                      options.get(MODELS_FLAT_BLENDING));
+      {
+        BENCHMARK("Renderer: draw models", true);
+        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS),
+                           options.get(MODELS_FC),
+                           true,
+                           updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0,
+                           true,
+                           options.get(MODELS_FLAT_BLENDING));
+      }
+    }
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  //reset texture units to terrain textures after we done with models
+  glBindTextureUnit(FLAT, textureManager->get(FLAT));
 
   //underwater tile
   shaderManager.updateUnderwaterShader(projectionView);
@@ -415,8 +422,12 @@ void Game::drawFrameObjectsDepthmap()
       shaderManager.get(SHADER_SHADOW_MODELS).use();
       {
         BENCHMARK("Renderer: draw models depthmap", true);
-        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS), options.get(MODELS_FC),
-                           false, updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0, false);
+        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS),
+                           options.get(MODELS_FC),
+                           false,
+                           updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0,
+                           false,
+                           false);
       }
     }
 

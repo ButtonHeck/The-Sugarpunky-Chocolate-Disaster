@@ -15,13 +15,14 @@ uniform bool  u_isGrass;
 uniform float u_grassPosDistribution;
 uniform float u_grassPosDistrubutionInfluence;
 
-const vec3 GRASS_WAVE_XYZ = vec3(0.0055, 0.00195, 0.0025);
+const vec3 GRASS_WAVE_XYZ = vec3(0.0070, 0.00210, 0.0033);
 
 out vec2  v_TexCoords;
 out vec3  v_Normal;
 out float v_DiffuseComponent;
 out float v_SpecularComponent;
 out vec3  v_ProjectedCoords;
+out float v_FlatBlend;
 
 void main()
 {
@@ -32,7 +33,13 @@ void main()
         float distribution = cos(u_grassPosDistribution + fract(i_pos.x) * 29);
         ModelWorldPosition.xyz += (mix(GRASS_WAVE_XYZ, GRASS_WAVE_XYZ + i_normal * 0.005, dot(normalize(GRASS_WAVE_XYZ), i_normal)))
             * distribution * influence * clamp(i_pos.y, 0.0, 1.0);
+        v_FlatBlend = ModelWorldPosition.y * 24;
     }
+    else
+    {
+        v_FlatBlend = ModelWorldPosition.y * 48;
+    }
+
     gl_Position = u_projectionView * ModelWorldPosition;
     v_TexCoords = i_texCoords;
     vec3 FragPos = vec3(ModelWorldPosition);

@@ -8,6 +8,7 @@ in vec3  v_Normal;
 in float v_DiffuseComponent;
 in float v_SpecularComponent;
 in vec3  v_ProjectedCoords;
+in float v_FlatBlend;
 
 uniform sampler2D u_texture_diffuse1;
 uniform sampler2D u_texture_specular;
@@ -15,6 +16,7 @@ uniform bool      u_shadow;
 uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
+uniform bool      u_useFlatBlending;
 
 const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.3;
@@ -67,9 +69,10 @@ void main()
     vec3 specularColor;
     vec3 resultColor;
 
+    float luminosity = 0.0;
     if (u_shadowEnable)
     {
-        float luminosity = calculateLuminosity(v_Normal);
+        luminosity = calculateLuminosity(v_Normal);
         diffuseColor = luminosity * mix(sampledDiffuse.rgb, sampledDiffuse.rgb * v_DiffuseComponent, DIFFUSE_MIX);
         specularColor = v_SpecularComponent * sampledSpecular.rgb;
         resultColor = ambientColor + diffuseColor + specularColor;
@@ -87,4 +90,11 @@ void main()
 
     if (u_shadow)
         o_FragColor += clamp(o_FragColor * v_Normal.y * 0.5, -0.05, 0.01);
+
+    //perform flat blending
+    if(u_useFlatBlending)
+    {
+        float flatBlend = clamp(v_FlatBlend, 0.0, 1.0);
+        o_FragColor.a = mix(0.0, 1.0, flatBlend);
+    }
 }

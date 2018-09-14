@@ -44,7 +44,10 @@ public:
   void updateSelectedShader(glm::mat4& projectionView, glm::mat4& selectedModel);
   void updateWaterShaders(bool useFC, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum);
   void updateSkyShader(glm::mat4 &projectionView);
-  void updateModelShader(glm::mat4& projectionView, glm::vec3& viewPosition, bool shadowOnTrees, bool useShadows);
+  void updateModelShader(glm::mat4& projectionView, glm::vec3& viewPosition,
+                         bool shadowOnTrees,
+                         bool useShadows,
+                         bool useFlatBlending);
   void deleteShaders();
 private:
   std::vector<std::pair<SHADER_TYPE, Shader>> shaders;
