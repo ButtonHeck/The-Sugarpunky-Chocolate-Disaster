@@ -210,11 +210,20 @@ void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFr
   //draw grass without face culling
   glDisable(GL_CULL_FACE);
   if (screenDraw)
-    shader.setBool("u_shadow", false);
+    {
+      shader.setBool("u_shadow", false);
+      shader.setBool("u_isGrass", true);
+      shader.setFloat("u_grassPosDistribution", glfwGetTime() * 0.677f);
+      shader.setFloat("u_grassPosDistrubutionInfluence", glfwGetTime() * 7.2f);
+    }
   for (unsigned int i = plainTrees.size() - NUM_GRASS_MODELS; i < plainTrees.size(); i++)
     {
       Model& model = plainTrees[i];
       model.draw(shader, enableFrustumCulling, bindTexture, updateIndirect);
     }
   glEnable(GL_CULL_FACE);
+  if (screenDraw)
+    {
+      shader.setBool("u_isGrass", false);
+    }
 }

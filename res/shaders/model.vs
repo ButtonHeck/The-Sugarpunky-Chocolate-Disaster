@@ -7,10 +7,15 @@ layout (location = 3) in vec3 i_tangent;
 layout (location = 4) in vec3 i_bitangent;
 layout (location = 5) in mat4 i_model;
 
-uniform mat4 u_projectionView;
-uniform vec3 u_viewPosition;
-uniform vec3 u_lightDir;
-uniform mat4 u_lightSpaceMatrix;
+uniform mat4  u_projectionView;
+uniform vec3  u_viewPosition;
+uniform vec3  u_lightDir;
+uniform mat4  u_lightSpaceMatrix;
+uniform bool  u_isGrass;
+uniform float u_grassPosDistribution;
+uniform float u_grassPosDistrubutionInfluence;
+
+const vec3 GRASS_WAVE_XYZ = vec3(0.0055, 0.00195, 0.0025);
 
 out vec2  v_TexCoords;
 out vec3  v_Normal;
@@ -21,6 +26,13 @@ out vec3  v_ProjectedCoords;
 void main()
 {
     vec4 ModelWorldPosition = i_model * i_pos;
+    if (u_isGrass && i_pos.y > 0.45)
+    {
+        float influence = sin(u_grassPosDistrubutionInfluence + fract(i_pos.y) * 41);
+        float distribution = cos(u_grassPosDistribution + fract(i_pos.x) * 29);
+        ModelWorldPosition.xyz += (mix(GRASS_WAVE_XYZ, GRASS_WAVE_XYZ + i_normal * 0.005, dot(normalize(GRASS_WAVE_XYZ), i_normal)))
+            * distribution * influence * clamp(i_pos.y, 0.0, 1.0);
+    }
     gl_Position = u_projectionView * ModelWorldPosition;
     v_TexCoords = i_texCoords;
     vec3 FragPos = vec3(ModelWorldPosition);
