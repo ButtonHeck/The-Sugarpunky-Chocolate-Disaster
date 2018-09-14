@@ -41,6 +41,7 @@ constexpr unsigned int LOADING_DISTANCE_UNITS_SQUARE = LOADING_DISTANCE_UNITS * 
 constexpr float SQRT_2 = 1.4142;
 constexpr float MODELS_FC_RADIUS = HALF_CHUNK_SIZE * SQRT_2;
 constexpr unsigned int MESH_INDIRECT_BUFFER_UPDATE_FREQ = 2;
+constexpr int NUM_GRASS_MODELS = 6;
 constexpr unsigned char QUAD_INDICES[6] = {0,1,2,2,3,0};
 constexpr float SCREEN_VERTICES[] = {
   -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,

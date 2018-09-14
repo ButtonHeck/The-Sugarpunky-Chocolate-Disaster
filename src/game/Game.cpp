@@ -73,6 +73,12 @@ void Game::setupVariables()
     Model tree6_2("/models/tree6_2/tree6_2.obj", textureLoader);
     Model tree7("/models/tree7/tree7.obj", textureLoader);
     Model tree8("/models/tree8/tree8.obj", textureLoader);
+    Model grass1("/models/grass1/grass1.obj", textureLoader);
+    Model grass2("/models/grass2/grass2.obj", textureLoader);
+    Model grass3("/models/grass3/grass3.obj", textureLoader);
+    Model grass4("/models/grass4/grass4.obj", textureLoader);
+    Model grass5("/models/grass5/grass5.obj", textureLoader);
+    Model grass6("/models/grass6/grass6.obj", textureLoader);
     Model hillTree1("/models/hillTree1/hillTree1.obj", textureLoader);
     Model hillTree2("/models/hillTree2/hillTree2.obj", textureLoader);
     Model hillTree3("/models/hillTree3/hillTree3.obj", textureLoader);
@@ -87,9 +93,10 @@ void Game::setupVariables()
     Model hillTree12("/models/hillTree3/hillTree3.obj", textureLoader);
     Model hillTree13("/models/hillTree7/hillTree7.obj", textureLoader);
     treeGenerator = new TreeGenerator({tree1, tree1_2, tree2, tree2_2, tree3, tree3_2, tree4, tree5, tree5_2,
-                                       tree6, tree6_2, tree7, tree8},
+                                       tree6, tree6_2, tree7, tree8,
+                                       grass1, grass2, grass3, grass4, grass5, grass6},
         {hillTree1, hillTree2, hillTree3, hillTree4, hillTree5, hillTree6, hillTree7,
-         hillTree8, hillTree9, hillTree10, hillTree11, hillTree12, hillTree13});
+         hillTree8, hillTree9, hillTree10, hillTree11, hillTree12, hillTree13}, NUM_GRASS_MODELS);
   }
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
@@ -280,7 +287,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
       {
         BENCHMARK("Renderer: draw models", true);
         renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS), options.get(MODELS_FC),
-                           true, updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0);
+                           true, updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0, true);
       }
     }
   glActiveTexture(GL_TEXTURE0);
@@ -409,7 +416,7 @@ void Game::drawFrameObjectsDepthmap()
       {
         BENCHMARK("Renderer: draw models depthmap", true);
         renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS), options.get(MODELS_FC),
-                           false, updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0);
+                           false, updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0, false);
       }
     }
 

@@ -248,7 +248,28 @@ DISTFILES += \
     res/textures/terrainNormal.jpg \
     res/textures/diffuseMixMap.jpg \
     res/textures/waterNormal.jpg \
-    res/textures/waterSpecular.jpg
+    res/textures/waterSpecular.jpg \
+    res/models/grass1/grass1.obj \
+    res/models/grass1/grass.png \
+    res/models/grass1/grass2.png \
+    res/models/grass1/grass1.mtl \
+    res/models/grass2/grass.png \
+    res/models/grass2/grass2.png \
+    res/models/grass3/grass.png \
+    res/models/grass3/grass2.png \
+    res/models/grass4/grass.png \
+    res/models/grass4/grass2.png \
+    res/models/grass5/grass.png \
+    res/models/grass5/grass2.png \
+    res/models/grass5/rock.png \
+    res/models/grass6/grass.png \
+    res/models/grass6/grass2.png \
+    res/models/grass6/rock.png \
+    res/models/grass2/grass2.mtl \
+    res/models/grass3/grass3.mtl \
+    res/models/grass4/grass4.mtl \
+    res/models/grass5/grass5.mtl \
+    res/models/grass6/grass6.mtl
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

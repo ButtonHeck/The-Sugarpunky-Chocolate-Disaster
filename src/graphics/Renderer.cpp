@@ -189,20 +189,32 @@ void Renderer::drawSkybox(Skybox *skybox)
   glEnable(GL_CULL_FACE);
 }
 
-void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFrustumCulling, bool bindTexture, bool updateIndirect)
+void Renderer::drawTrees(TreeGenerator *generator, Shader &shader, bool enableFrustumCulling, bool bindTexture, bool updateIndirect, bool screenDraw)
 {
   glDisable(GL_BLEND);
   auto& plainTrees = generator->getPlainTrees();
   auto& hillTrees = generator->getHillTrees();
 
-  for (unsigned int i = 0; i < plainTrees.size(); i++)
+  for (unsigned int i = 0; i < plainTrees.size() - NUM_GRASS_MODELS; i++)
     {
       Model& model = plainTrees[i];
       model.draw(shader, enableFrustumCulling, bindTexture, updateIndirect);
     }
+
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
       Model& model = hillTrees[i];
       model.draw(shader, enableFrustumCulling, bindTexture, updateIndirect);
     }
+
+  //draw grass without face culling
+  glDisable(GL_CULL_FACE);
+  if (screenDraw)
+    shader.setBool("u_shadow", false);
+  for (unsigned int i = plainTrees.size() - NUM_GRASS_MODELS; i < plainTrees.size(); i++)
+    {
+      Model& model = plainTrees[i];
+      model.draw(shader, enableFrustumCulling, bindTexture, updateIndirect);
+    }
+  glEnable(GL_CULL_FACE);
 }

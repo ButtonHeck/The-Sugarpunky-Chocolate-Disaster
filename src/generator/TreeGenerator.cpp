@@ -1,8 +1,9 @@
 #include "generator/TreeGenerator.h"
 
-TreeGenerator::TreeGenerator(std::initializer_list<Model> plainTrees, std::initializer_list<Model> hillTrees)
+TreeGenerator::TreeGenerator(std::initializer_list<Model> plainTrees, std::initializer_list<Model> hillTrees, int numGrassModels)
   :
     plainTrees(plainTrees),
+    numGrassModels(numGrassModels),
     hillTrees(hillTrees)
 {
   randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
@@ -79,10 +80,36 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
                                                        -(float)HALF_TILES_HEIGHT + y1 + modelPositionDistribution(randomizer) + 0.5f));
                       model = glm::rotate(model, glm::radians((float)(y1 * TILES_WIDTH + x1 * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
                       model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer), modelSizeDistribution(randomizer), modelSizeDistribution(randomizer)));
-                      treeModelsVecs[treeCounter % treeModelsVecs.size()].emplace_back(std::move(model));
-                      numInstanceVector[treeCounter % treeModelsVecs.size()] += 1;
-                      instanceOffsetsVector[treeCounter % treeModelsVecs.size()] += 1;
+                      treeModelsVecs[treeCounter % (treeModelsVecs.size() - numGrassModels)].emplace_back(std::move(model));
+                      numInstanceVector[treeCounter % (treeModelsVecs.size() - numGrassModels)] += 1;
+                      instanceOffsetsVector[treeCounter % (treeModelsVecs.size() - numGrassModels)] += 1;
                       ++treeCounter;
+                    }
+                }
+            }
+          int grassCounter = 0;
+          for (unsigned int y1 = y; y1 < y + CHUNK_SIZE; y1++)
+            {
+              for (unsigned int x1 = x; x1 < x + CHUNK_SIZE; x1++)
+                {
+                  if ((baseMap[y1][x1] == 0 && baseMap[y1+1][x1+1] == 0 && baseMap[y1+1][x1] == 0 && baseMap[y1][x1+1] == 0)
+                      && !(hillMap[y1][x1] != 0 || hillMap[y1+1][x1+1] != 0 || hillMap[y1+1][x1] != 0 || hillMap[y1][x1+1] != 0)
+                      && rand() % 6 == 0)
+                    {
+                      glm::mat4 model;
+                      model = glm::translate(model,
+                                             glm::vec3(-(float)HALF_TILES_WIDTH + x1 + 0.5f,
+                                                       0.0f,
+                                                       -(float)HALF_TILES_HEIGHT + y1 + 0.5f));
+                      model = glm::rotate(model, glm::radians((float)(rand() * TILES_WIDTH + x1 * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
+                      glm::vec3 scale(modelSizeDistribution(randomizer) * 0.75f,
+                                      modelSizeDistribution(randomizer) * 0.66f,
+                                      modelSizeDistribution(randomizer) * 0.75f);
+                      model = glm::scale(model, scale);
+                      treeModelsVecs[treeModelsVecs.size() - numGrassModels + (grassCounter % numGrassModels)].emplace_back(std::move(model));
+                      numInstanceVector[treeModelsVecs.size() - numGrassModels + (grassCounter % numGrassModels)] += 1;
+                      instanceOffsetsVector[treeModelsVecs.size() - numGrassModels + (grassCounter % numGrassModels)] += 1;
+                      ++grassCounter;
                     }
                 }
             }
