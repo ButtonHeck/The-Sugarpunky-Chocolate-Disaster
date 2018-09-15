@@ -26,7 +26,6 @@ const vec2  TEXEL_SIZE = 0.75 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.3;
 const float ONE_MINUS_SHADOW_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
 const float MAX_DESATURATING_VALUE = 0.8 / ONE_MINUS_SHADOW_INFLUENCE;
-const float DIFFUSE_MIX = 0.7;
 
 float calculateLuminosity(vec3 normal)
 {
@@ -64,6 +63,7 @@ void main()
     vec4 sampledSpecular =
         mix(vec4(0.0), texture(u_hills_specular, v_TexCoords), clamp(v_PosHeight, 0.0, 1.0));
 
+    vec3 ambientColor = 0.12 * sampledDiffuse.rgb;
     vec3 diffuseColor;
     vec3 specularColor;
     vec3 resultColor;
@@ -72,11 +72,11 @@ void main()
     //also scale up texture mapping a bit
     vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
     vec3 ShadingNormalFlat = ShadingNormal;
-    ShadingNormalFlat.y *= 0.5;
+    ShadingNormalFlat.y *= 0.4;
     ShadingNormalFlat = normalize(ShadingNormalFlat);
     vec3 ShadingNormalHill = ShadingNormal;
     ShadingNormalHill.y *= 0.5;
-    ShadingNormalHill = normalize(v_Normal * 4.0 - ShadingNormalHill * 3.0);
+    ShadingNormalHill = normalize(v_Normal * 4.0 - ShadingNormalHill * 3.2);
 
     float DiffuseComponentHill = max(dot(ShadingNormalHill, u_lightDir), 0.0) + 0.1;
     float DiffuseComponentFlat = dot(ShadingNormalFlat, u_lightDir);
@@ -85,18 +85,18 @@ void main()
     if (u_shadowEnable)
     {
         float luminosity = calculateLuminosity(ShadingNormalHill);
-        diffuseColor = luminosity * mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX);
+        diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
         specularColor = v_SpecularComponent * sampledSpecular.rgb;
-        resultColor = diffuseColor + specularColor;
+        resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
         float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - ONE_MINUS_SHADOW_INFLUENCE);
         o_FragColor = desaturate(o_FragColor, desaturatingValue);
     }
     else
     {
-        diffuseColor = mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX);
+        diffuseColor = sampledDiffuse.rgb * diffuseComponent;
         specularColor = v_SpecularComponent * sampledSpecular.rgb;
-        resultColor = diffuseColor + specularColor;
+        resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
     }
 }

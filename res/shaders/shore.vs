@@ -18,7 +18,6 @@ out float v_TextureMixRatio;
 out vec3  v_Normal;
 out vec3  v_ProjectedCoords;
 
-const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 const float POSITION_HEIGHT_MULTIPLIER = 2.1;
 
 void main()

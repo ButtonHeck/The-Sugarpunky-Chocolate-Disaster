@@ -15,7 +15,7 @@ uniform bool  u_isGrass;
 uniform float u_grassPosDistribution;
 uniform float u_grassPosDistrubutionInfluence;
 
-const vec3 GRASS_WAVE_XYZ = vec3(0.0070, 0.00210, 0.0033);
+const vec3 GRASS_WAVE_XYZ = vec3(0.007, 0.0023, 0.0035);
 
 out vec2  v_TexCoords;
 out vec3  v_Normal;
@@ -27,13 +27,13 @@ out float v_FlatBlend;
 void main()
 {
     vec4 ModelWorldPosition = i_model * i_pos;
-    if (u_isGrass && i_pos.y > 0.45)
+    if (u_isGrass && i_pos.y > 0.38)
     {
-        float influence = sin(u_grassPosDistrubutionInfluence + fract(i_pos.y) * 41);
-        float distribution = cos(u_grassPosDistribution + fract(i_pos.x) * 29);
+        float influence = sin(u_grassPosDistrubutionInfluence + fract(i_pos.y) * 41) * 0.5 + 0.5;
+        float distribution = cos(u_grassPosDistribution) * 2.0;
         ModelWorldPosition.xyz += (mix(GRASS_WAVE_XYZ, GRASS_WAVE_XYZ + i_normal * 0.005, dot(normalize(GRASS_WAVE_XYZ), i_normal)))
             * distribution * influence * clamp(i_pos.y, 0.0, 1.0);
-        v_FlatBlend = ModelWorldPosition.y * 24;
+        v_FlatBlend = ModelWorldPosition.y * 32;
     }
     else
     {

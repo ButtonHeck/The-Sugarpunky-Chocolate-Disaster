@@ -269,7 +269,12 @@ DISTFILES += \
     res/models/grass3/grass3.mtl \
     res/models/grass4/grass4.mtl \
     res/models/grass5/grass5.mtl \
-    res/models/grass6/grass6.mtl
+    res/models/grass6/grass6.mtl \
+    res/models/grass2/grass2.obj \
+    res/models/grass3/grass3.obj \
+    res/models/grass4/grass4.obj \
+    res/models/grass5/grass5.obj \
+    res/models/grass6/grass6.obj
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

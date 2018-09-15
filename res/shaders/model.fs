@@ -22,7 +22,6 @@ const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.3;
 const float SHADOW_INFLUENCE_FOR_NEGATIVE_DOT = 0.4;
 const float ONE_MINUS_SHADOW_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
-const float DIFFUSE_MIX = 0.99;
 const float MAX_DESATURATING_VALUE = 0.8 / ONE_MINUS_SHADOW_INFLUENCE;
 const vec2  POISSON_DISK[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
@@ -64,7 +63,7 @@ void main()
 {
     vec4 sampledDiffuse = texture(u_texture_diffuse1, v_TexCoords);
     vec4 sampledSpecular = texture(u_texture_specular, v_TexCoords);
-    vec3 ambientColor = 0.2 * sampledDiffuse.rgb;
+    vec3 ambientColor = 0.25 * sampledDiffuse.rgb;
     vec3 diffuseColor;
     vec3 specularColor;
     vec3 resultColor;
@@ -73,7 +72,7 @@ void main()
     if (u_shadowEnable)
     {
         luminosity = calculateLuminosity(v_Normal);
-        diffuseColor = luminosity * mix(sampledDiffuse.rgb, sampledDiffuse.rgb * v_DiffuseComponent, DIFFUSE_MIX);
+        diffuseColor = luminosity * sampledDiffuse.rgb * v_DiffuseComponent;
         specularColor = v_SpecularComponent * sampledSpecular.rgb;
         resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
@@ -82,7 +81,7 @@ void main()
     }
     else
     {
-        diffuseColor = mix(sampledDiffuse.rgb, sampledDiffuse.rgb * v_DiffuseComponent, DIFFUSE_MIX);
+        diffuseColor = sampledDiffuse.rgb * v_DiffuseComponent;
         specularColor = v_SpecularComponent * sampledSpecular.rgb;
         resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);

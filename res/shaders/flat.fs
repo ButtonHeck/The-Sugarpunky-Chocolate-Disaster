@@ -16,8 +16,6 @@ uniform sampler2D u_shadowMap;
 uniform bool      u_shadowEnable;
 
 const vec2 TEXEL_SIZE = 0.75 / textureSize(u_shadowMap, 0);
-const float DIFFUSE_MIX = 0.7;
-const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
 const float SHADOW_INFLUENCE = 0.3;
 const float ONE_MINUS_SHADOW_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
 const float SHADOW_BIAS = 0.00025;
@@ -60,9 +58,10 @@ void main()
     //also scale up texture mapping a bit
     vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
     //and make our Y component less, so the entire range of normals would be more spread
-    ShadingNormal.y *= 0.5;
+    ShadingNormal.y *= 0.4;
     ShadingNormal = normalize(ShadingNormal);
 
+    vec3 ambientColor = 0.12 * sampledDiffuse.rgb;
     vec3 diffuseColor;
     vec3 resultColor;
     float diffuseComponent = dot(ShadingNormal, u_lightDir);
@@ -70,16 +69,16 @@ void main()
     if (u_shadowEnable)
     {
         float luminosity = calculateLuminosity();
-        diffuseColor = luminosity * mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX);
-        resultColor = diffuseColor;
+        diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
+        resultColor = ambientColor + diffuseColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
         float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - ONE_MINUS_SHADOW_INFLUENCE);
         o_FragColor = desaturate(o_FragColor, desaturatingValue);
     }
     else
     {
-        diffuseColor = mix(sampledDiffuse.rgb, sampledDiffuse.rgb * diffuseComponent, DIFFUSE_MIX);
-        resultColor = diffuseColor;
+        diffuseColor = sampledDiffuse.rgb * diffuseComponent;
+        resultColor = ambientColor + diffuseColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
     }
 }

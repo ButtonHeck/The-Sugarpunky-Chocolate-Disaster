@@ -19,9 +19,6 @@ out float v_TextureMixRatio;
 out float v_SpecularComponent;
 out vec3  v_ProjectedCoords;
 
-const vec3 NORMAL = vec3(0.0, 1.0, 0.0);
-const float DEPTH_BIAS = 0.01;
-
 void main()
 {
     gl_Position = u_projectionView * vec4(i_pos, 1.0);

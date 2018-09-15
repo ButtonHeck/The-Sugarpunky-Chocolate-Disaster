@@ -221,8 +221,8 @@ void Renderer::drawTrees(TreeGenerator *generator, Shader &shader,
     {
       shader.setBool("u_shadow", false);
       shader.setBool("u_isGrass", true);
-      shader.setFloat("u_grassPosDistribution", glfwGetTime() * 0.677f);
-      shader.setFloat("u_grassPosDistrubutionInfluence", glfwGetTime() * 7.2f);
+      shader.setFloat("u_grassPosDistribution", glfwGetTime());
+      shader.setFloat("u_grassPosDistrubutionInfluence", glfwGetTime() * 4.2f);
     }
   for (unsigned int i = plainTrees.size() - NUM_GRASS_MODELS; i < plainTrees.size(); i++)
     {
