@@ -5,13 +5,13 @@ out vec4 o_FragColor;
 
 in vec2  v_TexCoords;
 in vec3  v_Normal;
-in float v_DiffuseComponent;
-in float v_SpecularComponent;
 in vec3  v_ProjectedCoords;
 in float v_FlatBlend;
+in vec3  v_FragPos;
 
 uniform sampler2D u_texture_diffuse1;
 uniform sampler2D u_texture_specular;
+uniform vec3      u_viewPosition;
 uniform bool      u_shadow;
 uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
@@ -69,11 +69,17 @@ void main()
     vec3 resultColor;
 
     float luminosity = 0.0;
+    vec3 shadingNormal = normalize(v_Normal);
+    float diffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0);
+    vec3 Reflect = reflect(-u_lightDir, shadingNormal);
+    vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
+    float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 8.0) * 0.5;
+
     if (u_shadowEnable)
     {
-        luminosity = calculateLuminosity(v_Normal);
-        diffuseColor = luminosity * sampledDiffuse.rgb * v_DiffuseComponent;
-        specularColor = luminosity * sampledSpecular.rgb * v_SpecularComponent;
+        luminosity = calculateLuminosity(shadingNormal);
+        diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
+        specularColor = luminosity * specularComponent * sampledSpecular.rgb;
         resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
         float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - ONE_MINUS_SHADOW_INFLUENCE);
@@ -81,14 +87,14 @@ void main()
     }
     else
     {
-        diffuseColor = sampledDiffuse.rgb * v_DiffuseComponent;
-        specularColor = sampledSpecular.rgb * v_SpecularComponent;
+        diffuseColor = sampledDiffuse.rgb * diffuseComponent;
+        specularColor = sampledSpecular.rgb * specularComponent;
         resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
     }
 
     if (u_shadow)
-        o_FragColor += clamp(o_FragColor * v_Normal.y * 0.5, -0.05, 0.01);
+        o_FragColor += clamp(o_FragColor * shadingNormal.y * 0.5, -0.05, 0.01);
 
     //perform flat blending
     if(u_useFlatBlending)

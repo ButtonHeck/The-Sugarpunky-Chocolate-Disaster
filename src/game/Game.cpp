@@ -306,7 +306,8 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
                                       options.get(MODELS_FLAT_BLENDING));
       {
         BENCHMARK("Renderer: draw models", true);
-        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_MODELS),
+        renderer.drawTrees(treeGenerator,
+                           options.get(MODELS_PHONG_SHADING) ? shaderManager.get(SHADER_MODELS_PHONG) : shaderManager.get(SHADER_MODELS),
                            options.get(MODELS_FC),
                            true,
                            updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0,
@@ -397,6 +398,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
                                                      .append(", ")
                                                      .append(std::to_string(ram_available / ram_size_float_percentage))
                                                      .append("%")), 10.0f, 100.0f, 0.18f);
+        fontManager->addText("Models Phong: " + (options.get(MODELS_PHONG_SHADING) ? std::string("On") : std::string("Off")), 10.0f, 120.0f, 0.18f);
 #endif
         fontManager->drawText();
       }

@@ -22,6 +22,7 @@ ShaderManager::ShaderManager()
     {SHADER_SHADOW_MODELS,      Shader("/shaders/model_shadow.vs")},
     {SHADER_SHADOW_TERRAIN_CAMERA,      Shader("/shaders/terrain_shadow.vs")},
     {SHADER_SHADOW_MODELS_CAMERA,       Shader("/shaders/model_shadow.vs")},
+    {SHADER_MODELS_PHONG,       Shader("/shaders/modelPhong.vs", "/shaders/modelPhong.fs")}
         });
 }
 
@@ -88,6 +89,12 @@ void ShaderManager::setupConstantUniforms()
   shader->setInt("u_skybox", SKYBOX);
 
   shader = &shaders[SHADER_MODELS].second;
+  shader->use();
+  shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
+  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
+  shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
+
+  shader = &shaders[SHADER_MODELS_PHONG].second;
   shader->use();
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
@@ -204,6 +211,14 @@ void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &view
                                       bool useFlatBlending)
 {
   Shader* shader = &shaders[SHADER_MODELS].second;
+  shader->use();
+  shader->setMat4("u_projectionView", projectionView);
+  shader->setVec3("u_viewPosition", viewPosition);
+  shader->setBool("u_shadow", shadowOnTrees);
+  shader->setBool("u_shadowEnable", useShadows);
+  shader->setBool("u_useFlatBlending", useFlatBlending);
+
+  shader = &shaders[SHADER_MODELS_PHONG].second;
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
   shader->setVec3("u_viewPosition", viewPosition);

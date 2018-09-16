@@ -274,7 +274,9 @@ DISTFILES += \
     res/models/grass3/grass3.obj \
     res/models/grass4/grass4.obj \
     res/models/grass5/grass5.obj \
-    res/models/grass6/grass6.obj
+    res/models/grass6/grass6.obj \
+    res/shaders/modelPhong.fs \
+    res/shaders/modelPhong.vs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

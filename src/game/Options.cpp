@@ -21,7 +21,8 @@ Options::Options()
     {CREATE_SHADOW_MAP_REQUEST, true},
     {RENDER_FLAT_TERRAIN, true},
     {RENDER_WATER, true},
-    {MODELS_FLAT_BLENDING, true}
+    {MODELS_FLAT_BLENDING, true},
+    {MODELS_PHONG_SHADING, true}
   });
 }
 

@@ -196,6 +196,7 @@ void Renderer::drawTrees(TreeGenerator *generator, Shader &shader,
                          bool screenDraw,
                          bool useFlatBlending)
 {
+  shader.use();
   if (useFlatBlending)
     glEnable(GL_BLEND);
   else
