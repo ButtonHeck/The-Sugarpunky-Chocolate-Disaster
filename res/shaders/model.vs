@@ -27,12 +27,15 @@ out float v_FlatBlend;
 void main()
 {
     vec4 ModelWorldPosition = i_model * i_pos;
-    if (u_isGrass && i_pos.y > 0.38)
+    if (u_isGrass)
     {
-        float influence = sin(u_grassPosDistrubutionInfluence + fract(i_pos.y) * 41) * 0.5 + 0.5;
-        float distribution = cos(u_grassPosDistribution) * 2.0;
-        ModelWorldPosition.xyz += (mix(GRASS_WAVE_XYZ, GRASS_WAVE_XYZ + i_normal * 0.005, dot(normalize(GRASS_WAVE_XYZ), i_normal)))
-            * distribution * influence * clamp(i_pos.y, 0.0, 1.0);
+        if (i_pos.y > 0.38)
+        {
+            float influence = sin(u_grassPosDistrubutionInfluence * fract(max(ModelWorldPosition.x, 0.1)) * 2) * 0.5 + 0.5;
+            float distribution = cos(u_grassPosDistribution * fract(max(ModelWorldPosition.z, 0.1)) * 2) * 2.0;
+            ModelWorldPosition.xyz += (mix(GRASS_WAVE_XYZ, GRASS_WAVE_XYZ + i_normal * 0.005, dot(normalize(GRASS_WAVE_XYZ), i_normal)))
+                                    * distribution * influence * clamp(i_pos.y, 0.0, 1.0);
+        }
         v_FlatBlend = ModelWorldPosition.y * 32;
     }
     else
