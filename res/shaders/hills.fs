@@ -16,6 +16,9 @@ uniform sampler2D u_flat_diffuse2;
 uniform sampler2D u_hills_diffuse;
 uniform sampler2D u_hills_diffuse2;
 uniform sampler2D u_hills_specular;
+uniform sampler2D u_diffuse_mix_map;
+uniform float     u_mapDimension;
+uniform float     u_maxHillHeight;
 uniform sampler2D u_shadowMap;
 uniform sampler2D u_normal_map;
 uniform vec3      u_lightDir;
@@ -26,6 +29,8 @@ const vec2  TEXEL_SIZE = 0.75 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.3;
 const float ONE_MINUS_SHADOW_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
 const float MAX_DESATURATING_VALUE = 0.8 / ONE_MINUS_SHADOW_INFLUENCE;
+const float MIN_CANYON_CIRCLE_HEIGHT = 2.5;
+const int   NUM_CANYON_CIRCLES = 12;
 
 float calculateLuminosity(vec3 normal)
 {
@@ -52,6 +57,25 @@ vec4 desaturate(vec4 fragColor, float desaturatingValue)
     float colorMedian = (fragColor.r + fragColor.g + fragColor.b) * 0.333;
     vec4 desaturated = vec4(mix(fragColor.rgb, vec3(colorMedian), desaturatingValue), fragColor.a);
     return desaturated;
+}
+
+void createCanyonRings(inout vec4 fragColor, vec3 circleColor, float minHeight, float maxHeight, int numCircles, int circlesRandomMultiplier)
+{
+    vec2 canyonDistrubution = texture(u_diffuse_mix_map, v_FragPos.xz * u_mapDimension + 0.5).rg;
+    float[2] canyonCircleOffset = {canyonDistrubution.r, canyonDistrubution.g};
+    float canyonCircleStep = (maxHeight - minHeight) / (numCircles);
+    vec3 canyonColor = circleColor * (1.0 - v_Normal.y);
+    float influenceStep = 0.1 / (numCircles - 1);
+    for (int i = 0; i < numCircles; i++)
+    {
+        float influence = 1.0 + i * influenceStep;
+        float density = 2.0 + influence;
+        fragColor.xyz += (influence - clamp(abs(density * (v_FragPos.y
+                                                - (minHeight + i * canyonCircleStep))
+                                                + canyonCircleOffset[i%2] * circlesRandomMultiplier),
+                                            0.0, influence))
+                         * canyonColor;
+    }
 }
 
 void main()
@@ -99,4 +123,6 @@ void main()
         resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
     }
+
+    createCanyonRings(o_FragColor, ambientColor + diffuseColor, MIN_CANYON_CIRCLE_HEIGHT, u_maxHillHeight, NUM_CANYON_CIRCLES, 4);
 }

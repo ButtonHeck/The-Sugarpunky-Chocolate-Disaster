@@ -19,11 +19,10 @@ HillsMapGenerator::~HillsMapGenerator()
 
 void HillsMapGenerator::prepareMap()
 {
-  float max_height = 0.0f;
-  generateMap(12, &max_height, HILL_DENSITY::DENSE);
-  generateMap(6, &max_height, HILL_DENSITY::THIN);
-  compressMap(0.02f, &max_height, 1.25f); //compress entire range
-  compressMap(0.66f, &max_height, 2.2f); //compress top-most peaks
+  generateMap(12, HILL_DENSITY::DENSE);
+  generateMap(6, HILL_DENSITY::THIN);
+  compressMap(0.00f, 1.33f); //compress entire range
+  compressMap(0.66f, 2.0f);
   removeMapPlateaus(1.0f);
   for (unsigned int i = 0; i < 4; i++)
     {
@@ -284,6 +283,11 @@ void HillsMapGenerator::createTiles()
     }
 }
 
+float HillsMapGenerator::getMaxHeight() const
+{
+  return maxHeight;
+}
+
 GLuint HillsMapGenerator::getCulledVAO() const
 {
   return culledVAO;
@@ -294,7 +298,7 @@ GLuint HillsMapGenerator::getTransformFeedback() const
   return TFBO;
 }
 
-void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY density)
+void HillsMapGenerator::generateMap(int cycles, HILL_DENSITY density)
 {
   std::uniform_real_distribution<float> heightDistribution(0.3f, 0.8f);
   float density_value = 3.0f * (float)TILES_WIDTH;
@@ -314,7 +318,7 @@ void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY 
             }
         }
     }
-  *max_height = 1.0f;
+  maxHeight = 1.0f;
 
   //fattening hills around, based on their kernel positions
   for (int cycle = 1; cycle < cycles; cycle++)
@@ -352,8 +356,8 @@ void HillsMapGenerator::generateMap(int cycles, float *max_height, HILL_DENSITY 
                                   continue;
                                 }
                               map[y2][x2] += 1.0f - 0.05f * cycle + (heightDistribution(randomizer));
-                              if (map[y2][x2] > *max_height)
-                                *max_height = map[y2][x2];
+                              if (map[y2][x2] > maxHeight)
+                                maxHeight = map[y2][x2];
                             }
                         }
                     }
@@ -393,9 +397,9 @@ bool HillsMapGenerator::hasWaterNearby(unsigned int x, unsigned int y, unsigned 
   return false;
 }
 
-void HillsMapGenerator::compressMap(float threshold_percent, float *limit, float ratio)
+void HillsMapGenerator::compressMap(float threshold_percent, float ratio)
 {
-  float threshold_value = *limit * threshold_percent;
+  float threshold_value = maxHeight * threshold_percent;
   for (auto& row : map)
     for (auto& height : row)
       {
@@ -403,7 +407,23 @@ void HillsMapGenerator::compressMap(float threshold_percent, float *limit, float
           continue;
         height = threshold_value + (height - threshold_value) / ratio;
       }
-  *limit /= ratio;
+  updateMaxHeight();
+}
+
+void HillsMapGenerator::updateMaxHeight()
+{
+  float newMaxHeight = 0.0f;
+  for (int y = 1; y < TILES_HEIGHT - 1; y++)
+    {
+      for (int x = 1; x < TILES_WIDTH - 1; x++)
+        {
+          if (map[y][x] > newMaxHeight)
+            {
+              newMaxHeight = map[y][x];
+            }
+        }
+    }
+  maxHeight = newMaxHeight;
 }
 
 void HillsMapGenerator::removeMapPlateaus(float plateauHeight)

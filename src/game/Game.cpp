@@ -274,7 +274,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
     }
 
   //hills rendering
-  shaderManager.updateHillsShaders(options.get(HILLS_FC), options.get(SHADOW_ENABLE), projectionView, viewPosition, viewFrustum);
+  shaderManager.updateHillsShaders(options.get(HILLS_FC), options.get(SHADOW_ENABLE), projectionView, viewPosition, viewFrustum, hillMapGenerator->getMaxHeight());
   {
     BENCHMARK("Renderer: draw hills", true);
     renderer.drawHills(options.get(HILLS_FC), hillMapGenerator, shaderManager.get(SHADER_HILLS_FC), shaderManager.get(SHADER_HILLS_NOFC));

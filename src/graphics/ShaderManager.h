@@ -36,7 +36,7 @@ public:
   ShaderManager();
   void setupConstantUniforms();
   Shader& get(SHADER_TYPE type);
-  void updateHillsShaders(bool useFC, bool useShadows, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum);
+  void updateHillsShaders(bool useFC, bool useShadows, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum, float maxHillHeight);
   void updateShoreShader(glm::mat4& projectionView, bool useShadows);
   void updateFlatShader(glm::mat4& projectionView, bool useShadows);
   void updateUnderwaterShader(glm::mat4& projectionView);

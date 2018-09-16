@@ -113,7 +113,7 @@ Shader &ShaderManager::get(SHADER_TYPE type)
   return shaders[type].second;
 }
 
-void ShaderManager::updateHillsShaders(bool useFC, bool useShadows, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
+void ShaderManager::updateHillsShaders(bool useFC, bool useShadows, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum, float maxHillHeight)
 {
   Shader* shader;
   if (useFC)
@@ -131,6 +131,7 @@ void ShaderManager::updateHillsShaders(bool useFC, bool useShadows, glm::mat4 &p
   shader->setMat4("u_projectionView", projectionView);
   shader->setVec3("u_viewPosition", viewPosition);
   shader->setBool("u_shadowEnable", useShadows);
+  shader->setFloat("u_maxHillHeight", maxHillHeight);
 }
 
 void ShaderManager::updateShoreShader(glm::mat4 &projectionView, bool useShadows)

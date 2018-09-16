@@ -107,7 +107,10 @@ int main()
   std::thread inputHandlingThread([]()
     {
       while(!glfwWindowShouldClose(window))
-        glfwPollEvents();
+        {
+          glfwPollEvents();
+          std::this_thread::yield();
+        }
     });
   while(!glfwWindowShouldClose(window))
     {

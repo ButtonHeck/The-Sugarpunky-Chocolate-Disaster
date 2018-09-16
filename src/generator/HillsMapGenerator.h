@@ -14,17 +14,20 @@ public:
   void prepareMap();
   void fillBufferData(bool textureSlopeCorrection);
   void createTiles();
+  float getMaxHeight() const;
   GLuint getCulledVAO() const;
   GLuint getTransformFeedback() const;
 private:
   GLuint culledVAO = 0, culledVBO = 0, TFBO = 0;
   Shader& hillsShader;
+  float maxHeight = 0.0f;
   std::vector<std::vector<float>>& waterMap;
   std::vector<std::vector<glm::vec3>> normalMap;
   std::default_random_engine randomizer;
-  void generateMap(int cycles, float* max_height, HILL_DENSITY density);
+  void generateMap(int cycles, HILL_DENSITY density);
   bool hasWaterNearby(unsigned int x, unsigned int y, unsigned int radius);
-  void compressMap(float threshold_percent, float* limit, float ratio);
+  void compressMap(float threshold_percent, float ratio);
+  void updateMaxHeight();
   void removeMapPlateaus(float plateauHeight);
   void smoothMapHeightChunks(float baseWeight, float evenWeight, float diagonalWeight);
   void removeOrphanHills();
