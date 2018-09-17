@@ -20,9 +20,9 @@ uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
 
-const float SHADOW_INFLUENCE = 0.3;
-const float ONE_MINUS_SHADOW_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
-const float MAX_DESATURATING_VALUE = 0.8 / ONE_MINUS_SHADOW_INFLUENCE;
+const float SHADOW_INFLUENCE = 0.4;
+const float DESATURATING_INFLUENCE = 1.1 - SHADOW_INFLUENCE;
+const float MAX_DESATURATING_VALUE = 0.8 / DESATURATING_INFLUENCE;
 const vec2 TEXEL_SIZE = 0.75 / textureSize(u_shadowMap, 0);
 const float POISSON_SHADOW_VALUE_GAIN = clamp(-v_PosHeight * 5.0, 0.0, 4.0);
 const vec2 POISSON_DISK[4] = vec2[](
@@ -88,7 +88,7 @@ void main()
         diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent * v_PositionDiffuseComponent;
         resultColor = ambientColor + diffuseColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
-        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - ONE_MINUS_SHADOW_INFLUENCE);
+        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - DESATURATING_INFLUENCE);
         o_FragColor = desaturate(o_FragColor, desaturatingValue);
     }
     else

@@ -11,6 +11,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd foliage.png
+map_Ks foliage_spec.png
 
 newmtl wood
 Ns 96.078431
@@ -22,3 +23,4 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd tree.jpg
+map_Ks tree_spec.jpg

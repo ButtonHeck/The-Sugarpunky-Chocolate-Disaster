@@ -276,7 +276,50 @@ DISTFILES += \
     res/models/grass5/grass5.obj \
     res/models/grass6/grass6.obj \
     res/shaders/modelPhong.fs \
-    res/shaders/modelPhong.vs
+    res/shaders/modelPhong.vs \
+    res/models/grass5/rock_spec.png \
+    res/models/grass6/rock_spec.png \
+    res/models/hillTree1/tree_spec.jpg \
+    res/models/hillTree2/tree_spec.jpg \
+    res/models/hillTree3/tree_spec.jpg \
+    res/models/hillTree4/tree_spec.jpg \
+    res/models/hillTree5/tree_spec.jpg \
+    res/models/hillTree6/tree_spec.jpg \
+    res/models/hillTree7/tree_spec.jpg \
+    res/models/tree1/tree_spec.jpg \
+    res/models/tree1_2/tree_spec.jpg \
+    res/models/tree2/tree_spec.jpg \
+    res/models/tree2_2/tree_spec.jpg \
+    res/models/tree4/tree_spec.jpg \
+    res/models/tree5/tree_spec.jpg \
+    res/models/tree5_2/tree_spec.jpg \
+    res/models/tree6/tree_spec.jpg \
+    res/models/tree6_2/tree_spec.jpg \
+    res/models/tree7/tree_spec.jpg \
+    res/models/tree8/tree_spec.jpg \
+    res/models/hillTree1/foliage_spec.png \
+    res/models/hillTree2/foliage_spec.png \
+    res/models/hillTree3/foliage_spec.png \
+    res/models/hillTree4/foliage_spec.png \
+    res/models/hillTree5/cookie-foliage_spec.png \
+    res/models/hillTree5/foliage_spec.png \
+    res/models/hillTree6/cookie-foliage_spec.png \
+    res/models/hillTree6/foliage_spec.png \
+    res/models/hillTree7/foliage_spec.png \
+    res/models/tree1/foliage5_spec.png \
+    res/models/tree1_2/foliage5_spec.png \
+    res/models/tree2/foliage1_spec.png \
+    res/models/tree2_2/foliage1_spec.png \
+    res/models/tree3/foliage1_spec.png \
+    res/models/tree3_2/foliage1_spec.png \
+    res/models/tree4/cream_spec.png \
+    res/models/tree4/dough_spec.png \
+    res/models/tree5/foliage5_spec.png \
+    res/models/tree5_2/foliage5_spec.png \
+    res/models/tree6/foliage_spec.png \
+    res/models/tree6_2/foliage_spec.png \
+    res/models/tree7/foliage_spec.png \
+    res/models/tree8/foliage_spec.png
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

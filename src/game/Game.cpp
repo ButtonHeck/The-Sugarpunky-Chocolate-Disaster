@@ -319,6 +319,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   glBindTexture(GL_TEXTURE_2D, 0);
   //reset texture units to terrain textures after we done with models
   glBindTextureUnit(FLAT, textureManager->get(FLAT));
+  glBindTextureUnit(FLAT_2, textureManager->get(FLAT_2));
 
   //underwater tile
   shaderManager.updateUnderwaterShader(projectionView);
@@ -437,6 +438,7 @@ void Game::drawFrameObjectsDepthmap()
 
   //reset texture units to terrain textures after we done with models
   glBindTextureUnit(FLAT, textureManager->get(FLAT));
+  glBindTextureUnit(FLAT_2, textureManager->get(FLAT_2));
 }
 
 void Game::loop()

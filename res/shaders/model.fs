@@ -11,7 +11,7 @@ in vec3  v_ProjectedCoords;
 in float v_FlatBlend;
 
 uniform sampler2D u_texture_diffuse1;
-uniform sampler2D u_texture_specular;
+uniform sampler2D u_texture_specular1;
 uniform bool      u_shadow;
 uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
@@ -21,8 +21,8 @@ uniform bool      u_useFlatBlending;
 const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.3;
 const float SHADOW_INFLUENCE_FOR_NEGATIVE_DOT = 0.4;
-const float ONE_MINUS_SHADOW_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
-const float MAX_DESATURATING_VALUE = 0.8 / ONE_MINUS_SHADOW_INFLUENCE;
+const float DESATURATING_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
+const float MAX_DESATURATING_VALUE = 0.8 / DESATURATING_INFLUENCE;
 const vec2  POISSON_DISK[4] = vec2[](
   vec2( -0.94201624, -0.39906216 ),
   vec2( 0.94558609, -0.76890725 ),
@@ -62,7 +62,7 @@ vec4 desaturate(vec4 fragColor, float desaturatingValue)
 void main()
 {
     vec4 sampledDiffuse = texture(u_texture_diffuse1, v_TexCoords);
-    vec4 sampledSpecular = texture(u_texture_specular, v_TexCoords);
+    vec4 sampledSpecular = sampledDiffuse * texture(u_texture_specular1, v_TexCoords).r;
     vec3 ambientColor = 0.25 * sampledDiffuse.rgb;
     vec3 diffuseColor;
     vec3 specularColor;
@@ -76,7 +76,7 @@ void main()
         specularColor = luminosity * sampledSpecular.rgb * v_SpecularComponent;
         resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
-        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - ONE_MINUS_SHADOW_INFLUENCE);
+        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - DESATURATING_INFLUENCE);
         o_FragColor = desaturate(o_FragColor, desaturatingValue);
     }
     else

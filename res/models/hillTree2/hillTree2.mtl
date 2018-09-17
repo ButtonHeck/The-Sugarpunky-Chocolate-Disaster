@@ -11,6 +11,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd foliage1.png
+map_Ks foliage_spec.png
 
 newmtl foliage2
 Ns 96.078431
@@ -22,6 +23,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd foliage2.png
+map_Ks foliage_spec.png
 
 newmtl foliage3
 Ns 96.078431
@@ -33,6 +35,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd foliage3.png
+map_Ks foliage_spec.png
 
 newmtl foliage4
 Ns 96.078431
@@ -44,6 +47,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd foliage4.png
+map_Ks foliage_spec.png
 
 newmtl wood
 Ns 96.078431
@@ -55,3 +59,4 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd tree.jpg
+map_Ks tree_spec.jpg
