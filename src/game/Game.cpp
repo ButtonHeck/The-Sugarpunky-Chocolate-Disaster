@@ -171,7 +171,7 @@ void Game::prepareTerrain()
 {
   waterMapGenerator->prepareMap(); //prepare water map
   hillMapGenerator->prepareMap(); //generating hill height map
-  hillMapGenerator->fillBufferData(!HILLS_TEXTURE_MAPPING_SLOPE_CORRECTION); //fill hills buffer
+  hillMapGenerator->fillBufferData(); //fill hills buffer
   baseMapGenerator->prepareMap(BASE_TERRAIN_RANDOMIZE_SHORE_FORM); //generating base terrain data
   baseMapGenerator->fillShoreBufferData(); //fill base terrain vertex data
   baseMapGenerator->fillSquareBufferData(); //generating data for chunk instance rendering

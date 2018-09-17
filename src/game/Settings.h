@@ -51,7 +51,6 @@ constexpr float SCREEN_VERTICES[] = {
   -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
   -1.0f, -1.0f, 0.0f, 0.0f, 0.0f
 };
-constexpr bool HILLS_TEXTURE_MAPPING_SLOPE_CORRECTION = true;
 constexpr bool BASE_TERRAIN_RANDOMIZE_SHORE_FORM = true;
 constexpr bool HDR_ENABLED = true;
 constexpr bool TEXTURE_SRGB = HDR_ENABLED;

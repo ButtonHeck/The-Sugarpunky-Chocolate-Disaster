@@ -12,7 +12,7 @@ public:
   HillsMapGenerator(Shader& shader, std::vector<std::vector<float>>& waterMap);
   ~HillsMapGenerator();
   void prepareMap();
-  void fillBufferData(bool textureSlopeCorrection);
+  void fillBufferData();
   void createTiles();
   float getMaxHeight() const;
   GLuint getCulledVAO() const;

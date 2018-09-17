@@ -174,7 +174,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   treeGenerator->updateHillModels(hillTreeModels, numAllHillTrees);
 
   hillGenerator.createTiles();
-  hillGenerator.fillBufferData(!HILLS_TEXTURE_MAPPING_SLOPE_CORRECTION);
+  hillGenerator.fillBufferData();
   baseGenerator.getSquareTiles().clear();
   baseGenerator.getCellTiles().clear();
   baseGenerator.prepareMap(BASE_TERRAIN_RANDOMIZE_SHORE_FORM);

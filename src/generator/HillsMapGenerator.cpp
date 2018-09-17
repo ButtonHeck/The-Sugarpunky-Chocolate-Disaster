@@ -34,7 +34,7 @@ void HillsMapGenerator::prepareMap()
   tiles.shrink_to_fit();
 }
 
-void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
+void HillsMapGenerator::fillBufferData()
 {
   const size_t VERTEX_DATA_LENGTH = tiles.size() * 48;
   const size_t ELEMENT_DATA_LENGTH = tiles.size() * 6;
@@ -45,27 +45,7 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
       TerrainTile& tile = tiles[c];
       int offset = c * 48;
       int index = c * 6;
-      //approximation for texture mapping based on height coords of the tile.
-      //for now, it works only for tiles which have a slope for either left->right and top->bottom (or vice versa) direction
-      //generally speaking it doesn't work for tiles with one of the following principal scheme:
-      /*
-       * UL UR      0 1       1 0       0 0       0 0
-       * LL LR  ->  0 0   or  0 0   or  1 0   or  0 1
-       */
-      float dyRatio = 1.0, dxRatio = 1.0;
-      if (textureSlopeCorrection)
-        {
-          if ((tile.upperLeft > tile.lowLeft && tile.upperRight > tile.lowRight && tile.upperLeft > tile.lowRight && tile.upperRight > tile.lowLeft)
-              || (tile.upperLeft < tile.lowLeft && tile.upperRight < tile.lowRight && tile.upperLeft < tile.lowRight && tile.upperRight < tile.lowLeft))
-            {
-              dyRatio = std::max(std::abs((tile.upperLeft + tile.upperRight) / 2 - (tile.lowLeft + tile.lowRight) / 2), 1.0f);
-            }
-          if ((tile.upperLeft > tile.upperRight && tile.upperLeft > tile.lowRight && tile.lowLeft > tile.upperRight && tile.lowLeft > tile.lowRight)
-              || (tile.upperLeft < tile.upperRight && tile.upperLeft < tile.lowRight && tile.lowLeft < tile.upperRight && tile.lowLeft < tile.lowRight))
-            {
-              dxRatio = std::max(std::abs((tile.lowLeft + tile.upperLeft) / 2 - (tile.lowRight + tile.upperRight) / 2), 1.0f);
-            }
-        }
+
       bool indicesCrossed = false;
       if (tile.lowRight < tile.upperLeft || tile.upperLeft < tile.lowRight)
         indicesCrossed = true;
@@ -89,7 +69,7 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
           vertices[offset+8] =  - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+9] =  tile.lowRight;
           vertices[offset+10] = - HALF_TILES_HEIGHT + tile.mapY;
-          vertices[offset+11] = (1.0f / 2.0f + texCoordXOffset) * dxRatio;
+          vertices[offset+11] = (1.0f / 2.0f + texCoordXOffset);
           vertices[offset+12] = 0.0f + texCoordYOffset;
           vertices[offset+13] = normalMap[y][x].x;
           vertices[offset+14] = normalMap[y][x].y;
@@ -98,8 +78,8 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
           vertices[offset+16] = - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+17] = tile.upperRight;
           vertices[offset+18] = -1 - HALF_TILES_HEIGHT + tile.mapY;
-          vertices[offset+19] = (1.0f / 2.0f + texCoordXOffset) * dxRatio;
-          vertices[offset+20] = (1.0f / 2.0f + texCoordYOffset) * dyRatio;
+          vertices[offset+19] = (1.0f / 2.0f + texCoordXOffset);
+          vertices[offset+20] = (1.0f / 2.0f + texCoordYOffset);
           vertices[offset+21] = normalMap[y-1][x].x;
           vertices[offset+22] = normalMap[y-1][x].y;
           vertices[offset+23] = normalMap[y-1][x].z;
@@ -107,8 +87,8 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
           vertices[offset+24] = - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+25] = tile.upperRight;
           vertices[offset+26] = -1 - HALF_TILES_HEIGHT + tile.mapY;
-          vertices[offset+27] = (1.0f / 2.0f + texCoordXOffset) * dxRatio;
-          vertices[offset+28] = (1.0f / 2.0f + texCoordYOffset) * dyRatio;
+          vertices[offset+27] = (1.0f / 2.0f + texCoordXOffset);
+          vertices[offset+28] = (1.0f / 2.0f + texCoordYOffset);
           vertices[offset+29] = normalMap[y-1][x].x;
           vertices[offset+30] = normalMap[y-1][x].y;
           vertices[offset+31] = normalMap[y-1][x].z;
@@ -117,7 +97,7 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
           vertices[offset+33] = tile.upperLeft;
           vertices[offset+34] = -1 - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+35] = 0.0f + texCoordXOffset;
-          vertices[offset+36] = (1.0f / 2.0f + texCoordYOffset) * dyRatio;
+          vertices[offset+36] = (1.0f / 2.0f + texCoordYOffset);
           vertices[offset+37] = normalMap[y-1][x-1].x;
           vertices[offset+38] = normalMap[y-1][x-1].y;
           vertices[offset+39] = normalMap[y-1][x-1].z;
@@ -138,7 +118,7 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
           vertices[offset+1] = tile.upperLeft;
           vertices[offset+2] = -1 - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+3] = 0.0f + texCoordXOffset;
-          vertices[offset+4] = (1.0f / 2.0f + texCoordYOffset) * dyRatio;
+          vertices[offset+4] = (1.0f / 2.0f + texCoordYOffset);
           vertices[offset+5] = normalMap[y-1][x-1].x;
           vertices[offset+6] = normalMap[y-1][x-1].y;
           vertices[offset+7] = normalMap[y-1][x-1].z;
@@ -155,7 +135,7 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
           vertices[offset+16] = - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+17] = tile.lowRight;
           vertices[offset+18] = - HALF_TILES_HEIGHT + tile.mapY;
-          vertices[offset+19] = (1.0f / 2.0f + texCoordXOffset) * dxRatio;
+          vertices[offset+19] = (1.0f / 2.0f + texCoordXOffset);
           vertices[offset+20] = 0.0f + texCoordYOffset;
           vertices[offset+21] = normalMap[y][x].x;
           vertices[offset+22] = normalMap[y][x].y;
@@ -164,7 +144,7 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
           vertices[offset+24] = - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+25] = tile.lowRight;
           vertices[offset+26] = - HALF_TILES_HEIGHT + tile.mapY;
-          vertices[offset+27] = (1.0f / 2.0f + texCoordXOffset) * dxRatio;
+          vertices[offset+27] = (1.0f / 2.0f + texCoordXOffset);
           vertices[offset+28] = 0.0f + texCoordYOffset;
           vertices[offset+29] = normalMap[y][x].x;
           vertices[offset+30] = normalMap[y][x].y;
@@ -173,8 +153,8 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
           vertices[offset+32] = - HALF_TILES_WIDTH + tile.mapX;
           vertices[offset+33] = tile.upperRight;
           vertices[offset+34] = -1 - HALF_TILES_HEIGHT + tile.mapY;
-          vertices[offset+35] = (1.0f / 2.0f + texCoordXOffset) * dxRatio;
-          vertices[offset+36] = (1.0f / 2.0f + texCoordYOffset) * dyRatio;
+          vertices[offset+35] = (1.0f / 2.0f + texCoordXOffset);
+          vertices[offset+36] = (1.0f / 2.0f + texCoordYOffset);
           vertices[offset+37] = normalMap[y-1][x].x;
           vertices[offset+38] = normalMap[y-1][x].y;
           vertices[offset+39] = normalMap[y-1][x].z;
@@ -183,7 +163,7 @@ void HillsMapGenerator::fillBufferData(bool textureSlopeCorrection)
           vertices[offset+41] = tile.upperLeft;
           vertices[offset+42] = -1 - HALF_TILES_HEIGHT + tile.mapY;
           vertices[offset+43] = 0.0f + texCoordXOffset;
-          vertices[offset+44] = (1.0f / 2.0f + texCoordYOffset) * dyRatio;
+          vertices[offset+44] = (1.0f / 2.0f + texCoordYOffset);
           vertices[offset+45] = normalMap[y-1][x-1].x;
           vertices[offset+46] = normalMap[y-1][x-1].y;
           vertices[offset+47] = normalMap[y-1][x-1].z;
