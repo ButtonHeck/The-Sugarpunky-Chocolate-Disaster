@@ -82,7 +82,6 @@ void ShaderManager::setupConstantUniforms()
   shader->setInt("u_normal_map", WATER_NORMAL);
   shader->setInt("u_specular_map", WATER_SPECULAR);
   shader->setFloat("u_mapDimension", 1.0f / (TILES_WIDTH * 4));
-  shader->setFloat("U_WATER_LEVEL", -WATER_LEVEL / 10.0f);
 
   shader = &shaders[SHADER_SKY].second;
   shader->use();
