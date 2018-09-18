@@ -547,11 +547,10 @@ void WaterMapGenerator::updateAnimationFrame(Options& options)
   double offsetMultiplier = frameTime * 0.12;
   for (size_t i = 0; i < WATER_HEIGHT_OFFSETS_SIZE; i+=2)
     {
-        waterHeightOffsets[i] = std::cos(offsetMultiplier * ((i * i) % 19)) * 0.0725 + WATER_LEVEL;
-        waterHeightOffsets[i+1] = std::sin(offsetMultiplier * ((i * i) % 29)) * 0.0789 + WATER_LEVEL;
+        waterHeightOffsets[i] = std::cos(offsetMultiplier * ((i * i) % 19)) * 0.0825 + WATER_LEVEL;
+        waterHeightOffsets[i+1] = std::sin(offsetMultiplier * ((i * i) % 29)) * 0.0889 + WATER_LEVEL;
     }
   unsigned int numWaterTiles = tiles.size();
-  glm::vec3 normalLR, normalUL;
   for (unsigned int i = 0; i < numWaterTiles; ++i)
     {
       if (options.get(RECREATE_TERRAIN_REQUEST))
@@ -561,34 +560,118 @@ void WaterMapGenerator::updateAnimationFrame(Options& options)
       unsigned int heightOffsetWithStrideForLow = (tile.mapY+1) * TILES_WIDTH;
       unsigned int heightOffsetWithStrideForUpper = tile.mapY * TILES_WIDTH;
 
-      float ll = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX];
-      float lr = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + 1];
-      float ur = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX + 1];
-      float ul = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX];
+      if(tile.mapX > 0 && tile.mapX + 2 < TILES_WIDTH && tile.mapY - 2 > 0 && tile.mapY + 1 < TILES_HEIGHT)
+        {
+          float ll = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX];
+          float lr = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + 1];
+          float ur = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX + 1];
+          float ul = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX];
+          float ll_xm1 = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX - 1];
+          float ll_yp1 = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + TILES_WIDTH];
+          float ll_xm1_yp1 = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + TILES_WIDTH - 1];
+          float lr_yp1 = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + TILES_WIDTH + 1];
+          float lr_xp1 = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + 2];
+          float ur_xp1 = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX + 2];
+          float ur_ym1 = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX - TILES_WIDTH + 1];
+          float ur_xp1_ym1 = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX - TILES_WIDTH + 2];
+          float ul_ym1 = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX - TILES_WIDTH];
+          float ul_xm1 = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX - 1];
 
-      normalLR = glm::vec3(ll - lr, 1, ur - lr); //just do the calculations manually (UR-LR x LL-LR and LL-UL x UR-UL)
-      normalUL = glm::vec3(ul - ur, 1, ul - ll);
+          glm::vec3 normalLL3 =  glm::vec3(ll - lr, 1 - glm::sqrt(glm::pow(ll - lr, 2) + glm::pow(ur - lr, 2)), ur - lr);
+          glm::vec3 normalLL12 = glm::vec3(ul - ur, 1 - glm::sqrt(glm::pow(ul - ur, 2) + glm::pow(ul - ll, 2)), ul - ll);
+          glm::vec3 normalLL0 =  glm::vec3(ll_xm1 - ll, 1 - glm::sqrt(glm::pow(ll_xm1 - ll, 2) + glm::pow(ul - ll, 2)), ul - ll);
+          glm::vec3 normalLL9 =  glm::vec3(ll_xm1 - ll, 1 - glm::sqrt(glm::pow(ll_xm1 - ll, 2) + glm::pow(ll_xm1 - ll_xm1_yp1, 2)), ll_xm1 - ll_xm1_yp1);
+          glm::vec3 normalLL6 =  glm::vec3(ll_xm1_yp1 - ll_yp1, 1 - glm::sqrt(glm::pow(ll_xm1_yp1 - ll_yp1, 2) + glm::pow(ll - ll_yp1, 2)), ll - ll_yp1);
+          glm::vec3 normalLL4 =  glm::vec3(ll - lr, 1 - glm::sqrt(glm::pow(ll - lr, 2) + glm::pow(ll - ll_yp1, 2)), ll - ll_yp1);
+          glm::vec3 normalLL = normalLL3 + normalLL12 + normalLL0 + normalLL9 + normalLL6 + normalLL4;
 
-      *(vertices+1+pointerOffsetWithStride) = ll;
-      *(vertices+7+pointerOffsetWithStride) = lr;
-      *(vertices+13+pointerOffsetWithStride) = ur;
-      *(vertices+19+pointerOffsetWithStride) = ur;
-      *(vertices+25+pointerOffsetWithStride) = ul;
-      *(vertices+31+pointerOffsetWithStride) = ll;
+          glm::vec3 normalLR3 =  glm::vec3(lr - lr_xp1, 1 - glm::sqrt(glm::pow(lr - lr_xp1, 2) + glm::pow(ur_xp1 - lr_xp1, 2)) , ur_xp1 - lr_xp1);
+          glm::vec3 normalLR12 = glm::vec3(ur - ur_xp1, 1 - glm::sqrt(glm::pow(ur - ur_xp1, 2) + glm::pow(ur - lr, 2)), ur - lr);
+          glm::vec3 normalLR0 = normalLL3;
+          glm::vec3 normalLR9 = normalLL4;
+          glm::vec3 normalLR6 =  glm::vec3(ll_yp1 - lr_yp1, 1 - glm::sqrt(glm::pow(ll_yp1 - lr_yp1, 2) + glm::pow(lr - lr_yp1, 2)), lr - lr_yp1);
+          glm::vec3 normalLR4 =  glm::vec3(lr - lr_xp1, 1 - glm::sqrt(glm::pow(lr - lr_xp1, 2) + glm::pow(lr - lr_xp1, 2)), lr - lr_xp1);
+          glm::vec3 normalLR = normalLR3 + normalLR12 + normalLR0 + normalLR9 + normalLR6 + normalLR4;
 
-      *(vertices+3+pointerOffsetWithStride) = normalLR.x;
-      *(vertices+5+pointerOffsetWithStride) = normalLR.z;
-      *(vertices+9+pointerOffsetWithStride) = normalLR.x;
-      *(vertices+11+pointerOffsetWithStride) = normalLR.z;
-      *(vertices+15+pointerOffsetWithStride) = normalLR.x;
-      *(vertices+17+pointerOffsetWithStride) = normalLR.z;
+          glm::vec3 normalUR3 =  glm::vec3(ur - ur_xp1, 1 - glm::sqrt(glm::pow(ur - ur_xp1, 2) + glm::pow(ur_xp1_ym1 - ur_xp1, 2)), ur_xp1_ym1 - ur_xp1);
+          glm::vec3 normalUR12 = glm::vec3(ur_ym1 - ur_xp1_ym1, 1 - glm::sqrt(glm::pow(ur_ym1 - ur_xp1_ym1, 2) + glm::pow(ur_ym1 - ur, 2)), ur_ym1 - ur);
+          glm::vec3 normalUR0 =  glm::vec3(ul - ur, 1 - glm::sqrt(glm::pow(ul - ur, 2) + glm::pow(ur_ym1 - ur, 2)), ur_ym1 - ur);
+          glm::vec3 normalUR9 = normalLL12;
+          glm::vec3 normalUR6 = normalLL3;
+          glm::vec3 normalUR4 = normalLR12;
+          glm::vec3 normalUR = normalUR3 + normalUR12 + normalUR0 + normalUR9 + normalUR6 + normalUR4;
 
-      *(vertices+21+pointerOffsetWithStride) = normalUL.x;
-      *(vertices+23+pointerOffsetWithStride) = normalUL.z;
-      *(vertices+27+pointerOffsetWithStride) = normalUL.x;
-      *(vertices+29+pointerOffsetWithStride) = normalUL.z;
-      *(vertices+33+pointerOffsetWithStride) = normalUL.x;
-      *(vertices+35+pointerOffsetWithStride) = normalUL.z;
+          glm::vec3 normalUL3 = normalUR0;
+          glm::vec3 normalUL12 = glm::vec3(ul_ym1 - ur_ym1, 1 - glm::sqrt(glm::pow(ul_ym1 - ur_ym1, 2) + glm::pow(ul_ym1 - ul, 2)), ul_ym1 - ul);
+          glm::vec3 normalUL0 =  glm::vec3(ul_xm1 - ul, 1 - glm::sqrt(glm::pow(ul_xm1 - ul, 2) + glm::pow(ul_ym1 - ul, 2)), ul_ym1 - ul);
+          glm::vec3 normalUL9 =  glm::vec3(ul_xm1 - ul, 1 - glm::sqrt(glm::pow(ul_xm1 - ul, 2) + glm::pow(ul_xm1 - ll_xm1, 2)), ul_xm1 - ll_xm1);
+          glm::vec3 normalUL6 = normalLL0;
+          glm::vec3 normalUL4 = normalLL12;
+          glm::vec3 normalUL = normalUL3 + normalUL12 + normalUL0 + normalUL9 + normalUL6 + normalUL4;
+
+          *(vertices+1+pointerOffsetWithStride) = ll;
+          *(vertices+7+pointerOffsetWithStride) = lr;
+          *(vertices+13+pointerOffsetWithStride) = ur;
+          *(vertices+19+pointerOffsetWithStride) = ur;
+          *(vertices+25+pointerOffsetWithStride) = ul;
+          *(vertices+31+pointerOffsetWithStride) = ll;
+
+          *(vertices+3+pointerOffsetWithStride) = normalLL.x;
+          *(vertices+4+pointerOffsetWithStride) = normalLL.y;
+          *(vertices+5+pointerOffsetWithStride) = normalLL.z;
+
+          *(vertices+9+pointerOffsetWithStride) = normalLR.x;
+          *(vertices+10+pointerOffsetWithStride) = normalLR.y;
+          *(vertices+11+pointerOffsetWithStride) = normalLR.z;
+
+          *(vertices+15+pointerOffsetWithStride) = normalUR.x;
+          *(vertices+16+pointerOffsetWithStride) = normalUR.y;
+          *(vertices+17+pointerOffsetWithStride) = normalUR.z;
+
+          *(vertices+21+pointerOffsetWithStride) = normalUR.x;
+          *(vertices+22+pointerOffsetWithStride) = normalUR.y;
+          *(vertices+23+pointerOffsetWithStride) = normalUR.z;
+
+          *(vertices+27+pointerOffsetWithStride) = normalUL.x;
+          *(vertices+28+pointerOffsetWithStride) = normalUL.y;
+          *(vertices+29+pointerOffsetWithStride) = normalUL.z;
+
+          *(vertices+33+pointerOffsetWithStride) = normalLL.x;
+          *(vertices+34+pointerOffsetWithStride) = normalLL.y;
+          *(vertices+35+pointerOffsetWithStride) = normalLL.z;
+        }
+      else
+        {
+          float ll = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX];
+          float lr = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + 1];
+          float ur = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX + 1];
+          float ul = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX];
+
+          //just do the calculations manually (UR-LR x LL-LR and LL-UL x UR-UL)
+          glm::vec3 normalLR = glm::vec3(ll - lr, 1 - glm::sqrt(glm::pow(ll - lr, 2) + glm::pow(ur - lr, 2)), ur - lr);
+          glm::vec3 normalUL = glm::vec3(ul - ur, 1 - glm::sqrt(glm::pow(ul - ur, 2) + glm::pow(ul - ll, 2)), ul - ll);
+
+          *(vertices+1+pointerOffsetWithStride) = ll;
+          *(vertices+7+pointerOffsetWithStride) = lr;
+          *(vertices+13+pointerOffsetWithStride) = ur;
+          *(vertices+19+pointerOffsetWithStride) = ur;
+          *(vertices+25+pointerOffsetWithStride) = ul;
+          *(vertices+31+pointerOffsetWithStride) = ll;
+
+          *(vertices+3+pointerOffsetWithStride) = normalLR.x;
+          *(vertices+5+pointerOffsetWithStride) = normalLR.z;
+          *(vertices+9+pointerOffsetWithStride) = normalLR.x;
+          *(vertices+11+pointerOffsetWithStride) = normalLR.z;
+          *(vertices+15+pointerOffsetWithStride) = normalLR.x;
+          *(vertices+17+pointerOffsetWithStride) = normalLR.z;
+
+          *(vertices+21+pointerOffsetWithStride) = normalUL.x;
+          *(vertices+23+pointerOffsetWithStride) = normalUL.z;
+          *(vertices+27+pointerOffsetWithStride) = normalUL.x;
+          *(vertices+29+pointerOffsetWithStride) = normalUL.z;
+          *(vertices+33+pointerOffsetWithStride) = normalUL.x;
+          *(vertices+35+pointerOffsetWithStride) = normalUL.z;
+        }
     }
 }
 
