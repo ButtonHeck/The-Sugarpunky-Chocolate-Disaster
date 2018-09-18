@@ -54,14 +54,15 @@ void ShaderManager::setupConstantUniforms()
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
+  shader->setFloat("U_UNDERWATER_BASE_TILE_HEIGHT", -UNDERWATER_BASE_TILE_HEIGHT);
 
   shader = &shaders[SHADER_UNDERWATER].second;
   shader->use();
-  shader->setInt("u_underwater_diffuse", SHORE);
-  shader->setInt("u_normal_map", DIFFUSE_MIX_MAP);
-  shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
-  shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
+  shader->setInt("u_underwater_diffuse", UNDERWATER_DIFFUSE);
   shader->setInt("u_bottomRelief_diffuse", UNDERWATER_RELIEF);
+  shader->setInt("u_normal_map", TERRAIN_NORMAL);
+  shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
+  shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
 
   shader = &shaders[SHADER_FLAT].second;
   shader->use();

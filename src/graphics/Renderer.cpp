@@ -47,7 +47,9 @@ void Renderer::drawHillsDepthmap(HillsMapGenerator *generator)
 void Renderer::drawShore(BaseMapGenerator *generator)
 {
   glBindVertexArray(generator->getShoreVao());
+  glEnable(GL_BLEND);
   glDrawArrays(GL_TRIANGLES, 0, generator->getShoreVerticesToDraw());
+  glDisable(GL_BLEND);
 }
 
 void Renderer::drawFlatTerrain(BaseMapGenerator *generator, Frustum& frustum)

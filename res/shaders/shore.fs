@@ -10,6 +10,7 @@ in float v_TextureMixRatio;
 in float v_DiffuseComponent;
 in vec3  v_Normal;
 in vec3  v_ProjectedCoords;
+in float v_FlatBlend;
 
 uniform sampler2D u_flat_diffuse;
 uniform sampler2D u_flat_diffuse2;
@@ -97,4 +98,7 @@ void main()
         resultColor = ambientColor + diffuseColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
     }
+
+    float flatBlend = clamp(v_FlatBlend, 0.0, 1.0);
+    o_FragColor.a = mix(0.0, 1.0, flatBlend);
 }

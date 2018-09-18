@@ -280,13 +280,6 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
     renderer.drawHills(options.get(HILLS_FC), hillMapGenerator, shaderManager.get(SHADER_HILLS_FC), shaderManager.get(SHADER_HILLS_NOFC));
   }
 
-  //shore terrain chunks drawing
-  shaderManager.updateShoreShader(projectionView, options.get(SHADOW_ENABLE));
-  {
-    BENCHMARK("Renderer: draw shore", true);
-    renderer.drawShore(baseMapGenerator);
-  }
-
   //flat terrain chunks drawing
   if (options.get(RENDER_FLAT_TERRAIN))
     {
@@ -296,6 +289,17 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
         renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
       }
     }
+
+  //underwater tile
+  shaderManager.updateUnderwaterShader(projectionView);
+  renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
+
+  //shore terrain chunks drawing
+  shaderManager.updateShoreShader(projectionView, options.get(SHADOW_ENABLE));
+  {
+    BENCHMARK("Renderer: draw shore", true);
+    renderer.drawShore(baseMapGenerator);
+  }
 
   //trees chunks rendering
   if (options.get(RENDER_TREE_MODELS))
@@ -320,10 +324,6 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   //reset texture units to terrain textures after we done with models
   glBindTextureUnit(FLAT, textureManager->get(FLAT));
   glBindTextureUnit(FLAT_2, textureManager->get(FLAT_2));
-
-  //underwater tile
-  shaderManager.updateUnderwaterShader(projectionView);
-  renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
 
   //buildable tiles
   if (options.get(SHOW_BUILDABLE))

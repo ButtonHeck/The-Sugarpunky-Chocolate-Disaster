@@ -319,7 +319,8 @@ DISTFILES += \
     res/models/tree6/foliage_spec.png \
     res/models/tree6_2/foliage_spec.png \
     res/models/tree7/foliage_spec.png \
-    res/models/tree8/foliage_spec.png
+    res/models/tree8/foliage_spec.png \
+    res/textures/underwater.jpg
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

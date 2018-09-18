@@ -9,6 +9,7 @@ uniform vec3      u_lightDir;
 uniform sampler2D u_diffuse_mix_map;
 uniform float     u_mapDimension;
 uniform mat4      u_lightSpaceMatrix;
+uniform float     U_UNDERWATER_BASE_TILE_HEIGHT;
 
 out vec3  v_FragPos;
 out vec2  v_TexCoords;
@@ -17,12 +18,14 @@ out float v_PositionDiffuseComponent;
 out float v_TextureMixRatio;
 out vec3  v_Normal;
 out vec3  v_ProjectedCoords;
+out float v_FlatBlend;
 
 const float POSITION_HEIGHT_MULTIPLIER = 2.1;
 
 void main()
 {
     gl_Position = u_projectionView * i_pos;
+    v_FlatBlend = (i_pos.y + U_UNDERWATER_BASE_TILE_HEIGHT) * 2;
 
     v_FragPos = i_pos.xyz;
     v_TexCoords = i_texCoords;
