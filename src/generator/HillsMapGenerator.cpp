@@ -292,7 +292,7 @@ void HillsMapGenerator::generateMap(int cycles, HILL_DENSITY density)
     {
       for (int x = 1; x < TILES_WIDTH - 1; x++)
         {
-          if (rand() % (int)density_value == 0 && !hasWaterNearby(x, y, cycles - 1))
+          if (rand() % (int)density_value == 0 && !hasWaterNearby(x, y, cycles + 3))
             {
               map[y][x] += 1.0f;
             }
@@ -329,7 +329,7 @@ void HillsMapGenerator::generateMap(int cycles, HILL_DENSITY density)
                         {
                           if (rand() % (cycle + 2) > 1)
                             {
-                              if (hasWaterNearby(x2, y2, 4))
+                              if (hasWaterNearby(x2, y2, 8))
                                 {
                                   --bottom;
                                   --right;

@@ -53,6 +53,7 @@ private:
   int NUM_CELL_INSTANCES;
   void generateMap();
   void smoothMap();
+  void smoothMapHeightChunks(float baseWeight, float evenWeight, float diagonalWeight);
   void randomizeShore();
   void correctMapAtEdges();
   void compressMap(float ratio);

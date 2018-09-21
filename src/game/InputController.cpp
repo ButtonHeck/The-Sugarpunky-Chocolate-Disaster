@@ -241,6 +241,18 @@ void InputController::processKeyboard()
     }
   if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE)
     keysPressed[GLFW_KEY_B] = false;
+
+  //set polygon draw mode
+  if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+    {
+      if (!keysPressed[GLFW_KEY_L])
+        {
+          options.switchOpt(POLYGON_LINE);
+          keysPressed[GLFW_KEY_L] = true;
+        }
+    }
+  if (glfwGetKey(window, GLFW_KEY_L) == GLFW_RELEASE)
+    keysPressed[GLFW_KEY_L] = false;
 }
 
 void InputController::processKeyboardCamera(float delta, std::vector<std::vector<float> > &hillsMap)

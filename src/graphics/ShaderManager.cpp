@@ -79,10 +79,10 @@ void ShaderManager::setupConstantUniforms()
   shader->use();
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setInt("u_skybox", SKYBOX);
-  shader->setInt("u_diffuse_mix_map", DIFFUSE_MIX_MAP);
+  shader->setInt("u_bottomRelief_diffuse", UNDERWATER_RELIEF);
   shader->setInt("u_normal_map", WATER_NORMAL);
   shader->setInt("u_specular_map", WATER_SPECULAR);
-  shader->setFloat("u_mapDimension", 1.0f / (TILES_WIDTH * 4));
+  shader->setFloat("u_mapDimension", 1.0f / TILES_WIDTH);
 
   shader = &shaders[SHADER_SKY].second;
   shader->use();

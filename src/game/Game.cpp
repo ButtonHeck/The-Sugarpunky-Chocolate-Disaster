@@ -265,6 +265,9 @@ void Game::drawFrameToScreenRectangle(bool enableMS)
 
 void Game::drawFrameObjects(glm::mat4& projectionView)
 {
+  if (options.get(POLYGON_LINE))
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
   glm::vec3 viewPosition = camera.getPosition();
 
   if (options.get(ANIMATE_WATER))
@@ -410,6 +413,9 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
         csRenderer.draw(glm::mat3(camera.getViewMatrix()), aspect_ratio);
       }
     }
+
+  if (options.get(POLYGON_LINE))
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void Game::drawFrameObjectsDepthmap()

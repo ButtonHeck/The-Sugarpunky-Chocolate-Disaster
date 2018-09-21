@@ -22,7 +22,8 @@ Options::Options()
     {RENDER_FLAT_TERRAIN, true},
     {RENDER_WATER, true},
     {MODELS_FLAT_BLENDING, true},
-    {MODELS_PHONG_SHADING, true}
+    {MODELS_PHONG_SHADING, true},
+    {POLYGON_LINE, false}
   });
 }
 

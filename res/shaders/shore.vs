@@ -25,7 +25,7 @@ const float POSITION_HEIGHT_MULTIPLIER = 2.1;
 void main()
 {
     gl_Position = u_projectionView * i_pos;
-    v_FlatBlend = (i_pos.y + U_UNDERWATER_BASE_TILE_HEIGHT) * 2;
+    v_FlatBlend = (i_pos.y + U_UNDERWATER_BASE_TILE_HEIGHT) * 0.33;
 
     v_FragPos = i_pos.xyz;
     v_TexCoords = i_texCoords;
@@ -38,5 +38,5 @@ void main()
     float TransitionRatio = clamp(1.0 + v_PosHeight, 0.0, 1.0);
 
     //diffuse
-    v_PositionDiffuseComponent = 1.0 + i_pos.y * 0.4;
+    v_PositionDiffuseComponent = clamp(1.0 + i_pos.y * 0.25, 0.4, 1.0);
 }

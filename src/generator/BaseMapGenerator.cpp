@@ -30,7 +30,14 @@ BaseMapGenerator::~BaseMapGenerator()
 void BaseMapGenerator::prepareMap(bool randomizeShoreFlag)
 {
   generateMap();
-  smoothMap();
+  for (unsigned int i = 0; i < 5; i++)
+    {
+      smoothMap();
+      float baseWeight = 0.5f - 0.02f * i;
+      float evenWeight = (1.0f - baseWeight) / 8.0f;
+      float diagonalWeight = evenWeight;
+      smoothMapHeightChunks(baseWeight, evenWeight, diagonalWeight);
+    }
   if (randomizeShoreFlag)
     randomizeShore();
   compressMap(2.0f);
@@ -223,42 +230,69 @@ void BaseMapGenerator::generateMap()
 
 void BaseMapGenerator::smoothMap()
 {
+  float waterLevel = WATER_LEVEL + 0.25f;
   //smooth tile below on map
-  for (unsigned int y = 1; y < TILES_HEIGHT - 1; y++)
+  for (unsigned int y = 1; y < TILES_HEIGHT + 1; y++)
     {
-      for (unsigned int x = 1; x < TILES_WIDTH; x++)
+      for (unsigned int x = 0; x < TILES_WIDTH + 1; x++)
         {
-          if (map[y-1][x] < WATER_LEVEL - WATER_LEVEL / 4)
-            map[y][x] += WATER_LEVEL / 1.5f;
+          if (map[y-1][x] < waterLevel - waterLevel / 4)
+            map[y][x] += waterLevel / 2.0f;
         }
     }
   //smooth tile upper on map
-  for (unsigned int y = 2; y < TILES_HEIGHT; y++)
+  for (unsigned int y = 0; y < TILES_HEIGHT; y++)
     {
-      for (unsigned int x = 1; x < TILES_WIDTH; x++)
+      for (unsigned int x = 0; x < TILES_WIDTH + 1; x++)
         {
-          if (map[y+1][x] < WATER_LEVEL - WATER_LEVEL / 4)
-            map[y][x] += WATER_LEVEL / 1.5f;
+          if (map[y+1][x] < waterLevel - waterLevel / 4)
+            map[y][x] += waterLevel / 2.0f;
         }
     }
   //smooth tile left on map
-  for (unsigned int y = 1; y < TILES_HEIGHT; y++)
+  for (unsigned int y = 0; y < TILES_HEIGHT + 1; y++)
     {
-      for (unsigned int x = 2; x < TILES_WIDTH; x++)
+      for (unsigned int x = 0; x < TILES_WIDTH; x++)
         {
-          if (map[y][x+1] < WATER_LEVEL - WATER_LEVEL / 4)
-            map[y][x] += WATER_LEVEL / 1.5f;
+          if (map[y][x+1] < waterLevel - waterLevel / 4)
+            map[y][x] += waterLevel / 2.0f;
         }
     }
   //smooth tile right on map
-  for (unsigned int y = 1; y < TILES_HEIGHT; y++)
+  for (unsigned int y = 0; y < TILES_HEIGHT + 1; y++)
     {
-      for (unsigned int x = 1; x < TILES_WIDTH - 1; x++)
+      for (unsigned int x = 1; x < TILES_WIDTH + 1; x++)
         {
-          if (map[y][x-1] < WATER_LEVEL - WATER_LEVEL / 4)
-            map[y][x] += WATER_LEVEL / 1.5f;
+          if (map[y][x-1] < waterLevel - waterLevel / 4)
+            map[y][x] += waterLevel / 2.0f;
         }
     }
+}
+
+void BaseMapGenerator::smoothMapHeightChunks(float baseWeight, float evenWeight, float diagonalWeight)
+{
+  std::vector<std::vector<float>> shoreMapSmoothed;
+  initializeMap(shoreMapSmoothed);
+  for (unsigned int y = 1; y < TILES_HEIGHT; y++)
+    {
+      for (unsigned int x = 1; x < TILES_WIDTH; x++)
+        {
+          if (map[y][x] == 0)
+            continue;
+          float smoothedHeight =
+                map[y][x] * baseWeight
+              + map[y-1][x] * evenWeight
+              + map[y+1][x] * evenWeight
+              + map[y][x-1] * evenWeight
+              + map[y][x+1] * evenWeight
+              + map[y-1][x-1] * diagonalWeight
+              + map[y-1][x+1] * diagonalWeight
+              + map[y+1][x-1] * diagonalWeight
+              + map[y+1][x+1] * diagonalWeight;
+          shoreMapSmoothed[y][x] = smoothedHeight;
+        }
+    }
+  map.assign(shoreMapSmoothed.begin(), shoreMapSmoothed.end());
 }
 
 void BaseMapGenerator::randomizeShore()
@@ -416,9 +450,9 @@ void BaseMapGenerator::splitShoreChunks(int chunkSize)
 
 void BaseMapGenerator::removeUnderwaterTiles(float thresholdValue)
 {
-  for (unsigned int y = 1; y < TILES_HEIGHT - 1; y++)
+  for (unsigned int y = 1; y < TILES_HEIGHT; y++)
     {
-      for (unsigned int x = 1; x < TILES_WIDTH - 1; x++)
+      for (unsigned int x = 1; x < TILES_WIDTH; x++)
         {
           if (map[y-1][x-1] < thresholdValue
               && map[y-1][x] < thresholdValue
