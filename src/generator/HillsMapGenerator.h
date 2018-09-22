@@ -18,6 +18,10 @@ public:
   GLuint getCulledVAO() const;
   GLuint getTransformFeedback() const;
 private:
+  enum HILL_DENSITY
+  {
+    HILLS_THIN, HILLS_MEDIUM, HILLS_DENSE
+  };
   GLuint culledVAO = 0, culledVBO = 0, TFBO = 0;
   Shader& hillsShader;
   float maxHeight = 0.0f;

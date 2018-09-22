@@ -18,7 +18,7 @@ public:
   void bufferVertices();
   GLfloat* getHeightOffsets();
   void updateAnimationFrame(Options& options);
-  constexpr static int WATER_HEIGHT_OFFSETS_SIZE = NUM_TILES + TILES_WIDTH * 2;
+  constexpr static int WATER_HEIGHT_OFFSETS_SIZE = NUM_TILES + WORLD_WIDTH * 2;
   GLuint getCulledVAO() const;
   GLuint getTransformFeedback() const;
   static void _setWaterAnimationBenchmarkPassThrough(bool passThru);

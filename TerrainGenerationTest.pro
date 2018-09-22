@@ -71,7 +71,8 @@ HEADERS += \
     src/chunk/TerrainChunk.h \
     src/timer/BenchmarkTimer.h \
     src/timer/Timer.h \
-    src/model/IndirectBufferToken.h
+    src/model/IndirectBufferToken.h \
+    src/game/TextureUnits.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

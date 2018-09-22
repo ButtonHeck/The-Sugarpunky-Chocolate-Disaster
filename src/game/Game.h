@@ -6,6 +6,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include "game/Settings.h"
+#include "game/TextureUnits.h"
 #include "game/Options.h"
 #include "game/InputController.h"
 #include "game/SaveLoadManager.h"

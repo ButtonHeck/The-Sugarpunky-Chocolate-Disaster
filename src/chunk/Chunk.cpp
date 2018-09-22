@@ -7,6 +7,6 @@ Chunk::Chunk(unsigned int left, unsigned int right, unsigned int top, unsigned i
     top(top),
     bottom(bottom)
 {
-  midPointX = -HALF_TILES_WIDTH + (right - left) / 2.0f + left;
-  midPointY = -HALF_TILES_HEIGHT + (bottom - top) / 2.0f + top;
+  midPointX = -HALF_WORLD_WIDTH + (right - left) / 2.0f + left;
+  midPointY = -HALF_WORLD_HEIGHT + (bottom - top) / 2.0f + top;
 }

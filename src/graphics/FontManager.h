@@ -6,7 +6,7 @@
 #include <GL/glew.h>
 #include <IL/il.h>
 #include <map>
-#include "game/Settings.h"
+#include "game/TextureUnits.h"
 #include "graphics/Shader.h"
 
 class FontManager

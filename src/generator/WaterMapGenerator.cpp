@@ -24,8 +24,8 @@ void WaterMapGenerator::prepareMap()
 {
   unsigned int numWaterTiles = 0;
   generateMap(SHORE_SIZE_BASE, WATER_LEVEL, numWaterTiles);
-  while (numWaterTiles < TILES_WIDTH * (SHORE_SIZE_BASE + 2) * (SHORE_SIZE_BASE + 2) * 9
-         || numWaterTiles > TILES_WIDTH * (SHORE_SIZE_BASE + 3) * (SHORE_SIZE_BASE + 3) * 9)
+  while (numWaterTiles < WORLD_WIDTH * (SHORE_SIZE_BASE + 2) * (SHORE_SIZE_BASE + 2) * 9
+         || numWaterTiles > WORLD_WIDTH * (SHORE_SIZE_BASE + 3) * (SHORE_SIZE_BASE + 3) * 9)
     {
       numWaterTiles = 0;
       initializeMap(map);
@@ -54,44 +54,44 @@ void WaterMapGenerator::fillBufferData()
       TerrainTile& tile = tiles[i];
       int offset = i * 36;
       //ll1
-      vertices[offset] = -1- HALF_TILES_WIDTH + tile.mapX;
+      vertices[offset] = -1- HALF_WORLD_WIDTH + tile.mapX;
       vertices[offset+1] = tile.lowLeft;
-      vertices[offset+2] = - HALF_TILES_HEIGHT + tile.mapY;
+      vertices[offset+2] = - HALF_WORLD_HEIGHT + tile.mapY;
       vertices[offset+3] = 0.0f;
       vertices[offset+4] = 1.0f;
       vertices[offset+5] = 0.0f;
       //lr1
-      vertices[offset+6] = - HALF_TILES_WIDTH + tile.mapX;
+      vertices[offset+6] = - HALF_WORLD_WIDTH + tile.mapX;
       vertices[offset+7] = tile.lowRight;
-      vertices[offset+8] = - HALF_TILES_HEIGHT + tile.mapY;
+      vertices[offset+8] = - HALF_WORLD_HEIGHT + tile.mapY;
       vertices[offset+9] = 0.0f;
       vertices[offset+10] = 1.0f;
       vertices[offset+11] = 0.0f;
       //ur1
-      vertices[offset+12] = - HALF_TILES_WIDTH + tile.mapX;
+      vertices[offset+12] = - HALF_WORLD_WIDTH + tile.mapX;
       vertices[offset+13] = tile.upperRight;
-      vertices[offset+14] = -1 - HALF_TILES_HEIGHT + tile.mapY;
+      vertices[offset+14] = -1 - HALF_WORLD_HEIGHT + tile.mapY;
       vertices[offset+15] = 0.0f;
       vertices[offset+16] = 1.0f;
       vertices[offset+17] = 0.0f;
       //ur2
-      vertices[offset+18] = - HALF_TILES_WIDTH + tile.mapX;
+      vertices[offset+18] = - HALF_WORLD_WIDTH + tile.mapX;
       vertices[offset+19] = tile.upperRight;
-      vertices[offset+20] = -1 - HALF_TILES_HEIGHT + tile.mapY;
+      vertices[offset+20] = -1 - HALF_WORLD_HEIGHT + tile.mapY;
       vertices[offset+21] = 0.0f;
       vertices[offset+22] = 1.0f;
       vertices[offset+23] = 0.0f;
       //ul2
-      vertices[offset+24] = -1 - HALF_TILES_WIDTH + tile.mapX;
+      vertices[offset+24] = -1 - HALF_WORLD_WIDTH + tile.mapX;
       vertices[offset+25] = tile.upperLeft;
-      vertices[offset+26] = -1 - HALF_TILES_HEIGHT + tile.mapY;
+      vertices[offset+26] = -1 - HALF_WORLD_HEIGHT + tile.mapY;
       vertices[offset+27] = 0.0f;
       vertices[offset+28] = 1.0f;
       vertices[offset+29] = 0.0f;
       //ll2
-      vertices[offset+30] = -1- HALF_TILES_WIDTH + tile.mapX;
+      vertices[offset+30] = -1- HALF_WORLD_WIDTH + tile.mapX;
       vertices[offset+31] = tile.lowLeft;
-      vertices[offset+32] = - HALF_TILES_HEIGHT + tile.mapY;
+      vertices[offset+32] = - HALF_WORLD_HEIGHT + tile.mapY;
       vertices[offset+33] = 0.0f;
       vertices[offset+34] = 1.0f;
       vertices[offset+35] = 0.0f;
@@ -137,18 +137,18 @@ void WaterMapGenerator::bufferVertices()
 void WaterMapGenerator::addWaterNearbyBaseTerrain()
 {
   //add water above the tile
-  for (unsigned int y = 0; y < TILES_HEIGHT - 1; y++)
+  for (unsigned int y = 0; y < WORLD_HEIGHT - 1; y++)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x++)
+      for (unsigned int x = 0; x < WORLD_WIDTH; x++)
         {
           if (map[y+1][x] != 0)
             postProcessMap[y][x] = map[y+1][x];
         }
     }
   //add more water above the tile
-  for (unsigned int y = 0; y < TILES_HEIGHT - 1; y++)
+  for (unsigned int y = 0; y < WORLD_HEIGHT - 1; y++)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x++)
+      for (unsigned int x = 0; x < WORLD_WIDTH; x++)
         {
           if (postProcessMap[y+1][x] != 0)
             postProcessMap[y][x] = postProcessMap[y+1][x];
@@ -156,18 +156,18 @@ void WaterMapGenerator::addWaterNearbyBaseTerrain()
     }
 
   //add water below the tile
-  for (unsigned int y = TILES_HEIGHT; y > 0; y--)
+  for (unsigned int y = WORLD_HEIGHT; y > 0; y--)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x++)
+      for (unsigned int x = 0; x < WORLD_WIDTH; x++)
         {
           if (map[y-1][x] != 0)
             postProcessMap[y][x] = map[y-1][x];
         }
     }
   //add more water below the tile
-  for (unsigned int y = TILES_HEIGHT; y > 0; y--)
+  for (unsigned int y = WORLD_HEIGHT; y > 0; y--)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x++)
+      for (unsigned int x = 0; x < WORLD_WIDTH; x++)
         {
           if (postProcessMap[y-1][x] != 0)
             postProcessMap[y][x] = postProcessMap[y-1][x];
@@ -175,18 +175,18 @@ void WaterMapGenerator::addWaterNearbyBaseTerrain()
     }
 
   //add water left to the tile
-  for (unsigned int x = 0; x < TILES_WIDTH - 1; x++)
+  for (unsigned int x = 0; x < WORLD_WIDTH - 1; x++)
     {
-      for (unsigned int y = 0; y < TILES_HEIGHT; y++)
+      for (unsigned int y = 0; y < WORLD_HEIGHT; y++)
         {
           if (map[y][x+1] != 0)
             postProcessMap[y][x] = map[y][x+1];
         }
     }
   //add more water left to the tile
-  for (unsigned int x = 0; x < TILES_WIDTH - 1; x++)
+  for (unsigned int x = 0; x < WORLD_WIDTH - 1; x++)
     {
-      for (unsigned int y = 0; y < TILES_HEIGHT; y++)
+      for (unsigned int y = 0; y < WORLD_HEIGHT; y++)
         {
           if (postProcessMap[y][x+1] != 0)
             postProcessMap[y][x] = postProcessMap[y][x+1];
@@ -194,18 +194,18 @@ void WaterMapGenerator::addWaterNearbyBaseTerrain()
     }
 
   //add water right to the tile
-  for (unsigned int x = TILES_WIDTH; x > 0; x--)
+  for (unsigned int x = WORLD_WIDTH; x > 0; x--)
     {
-      for (unsigned int y = 0; y < TILES_HEIGHT; y++)
+      for (unsigned int y = 0; y < WORLD_HEIGHT; y++)
         {
           if (map[y][x-1] != 0)
             postProcessMap[y][x] = map[y][x-1];
         }
     }
   //add more water right to the tile
-  for (unsigned int x = TILES_WIDTH; x > 0; x--)
+  for (unsigned int x = WORLD_WIDTH; x > 0; x--)
     {
-      for (unsigned int y = 0; y < TILES_HEIGHT; y++)
+      for (unsigned int y = 0; y < WORLD_HEIGHT; y++)
         {
           if (postProcessMap[y][x-1] != 0)
             postProcessMap[y][x] = postProcessMap[y][x-1];
@@ -215,9 +215,9 @@ void WaterMapGenerator::addWaterNearbyBaseTerrain()
 
 void WaterMapGenerator::fillSharpTerrainWithWater()
 {
-  for (int y2 = 1; y2 < TILES_HEIGHT - 1; y2++)
+  for (int y2 = 1; y2 < WORLD_HEIGHT - 1; y2++)
     {
-      for (int x2 = 1; x2 < TILES_WIDTH - 1; x2++)
+      for (int x2 = 1; x2 < WORLD_WIDTH - 1; x2++)
         {
           if (postProcessMap[y2][x2] == WATER_LEVEL)
             continue;
@@ -251,7 +251,7 @@ void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigne
   };
   DIRECTION dir;
   unsigned int y, x;
-  unsigned int startCoord = rand() % TILES_HEIGHT;
+  unsigned int startCoord = rand() % WORLD_HEIGHT;
   x = startAxisFromX ? startCoord : 0;
   y = startAxisFromX ? 0 : startCoord;
   dir = startAxisFromX ? DOWN : RIGHT;
@@ -277,9 +277,9 @@ void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigne
                 x = 0;
                 riverEnd = true;
               }
-            if (x >= TILES_WIDTH)
+            if (x >= WORLD_WIDTH)
               {
-                x = TILES_WIDTH;
+                x = WORLD_WIDTH;
                 riverEnd = true;
               }
 
@@ -306,9 +306,9 @@ void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigne
                 y = 0;
                 riverEnd = true;
               }
-            if (x >= TILES_WIDTH)
+            if (x >= WORLD_WIDTH)
               {
-                x = TILES_WIDTH;
+                x = WORLD_WIDTH;
                 riverEnd = true;
               }
             map[y][x] = waterLevel;
@@ -328,9 +328,9 @@ void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigne
           {
             ++curveDistanceStep;
             ++x;
-            if (x >= TILES_WIDTH)
+            if (x >= WORLD_WIDTH)
               {
-                x = TILES_WIDTH;
+                x = WORLD_WIDTH;
                 riverEnd = true;
               }
             if (rand() % 4 == 0)
@@ -340,9 +340,9 @@ void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigne
                 y = 0;
                 riverEnd = true;
               }
-            if (y >= TILES_HEIGHT)
+            if (y >= WORLD_HEIGHT)
               {
-                y = TILES_HEIGHT;
+                y = WORLD_HEIGHT;
                 riverEnd = true;
               }
 
@@ -364,14 +364,14 @@ void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigne
             ++curveDistanceStep;
             y += rand() % 2;
             x += rand() % 2;
-            if (y >= TILES_HEIGHT)
+            if (y >= WORLD_HEIGHT)
               {
-                y = TILES_HEIGHT;
+                y = WORLD_HEIGHT;
                 riverEnd = true;
               }
-            if (x >= TILES_WIDTH)
+            if (x >= WORLD_WIDTH)
               {
-                x = TILES_WIDTH;
+                x = WORLD_WIDTH;
                 riverEnd = true;
               }
             map[y][x] = waterLevel;
@@ -391,9 +391,9 @@ void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigne
           {
             ++curveDistanceStep;
             ++y;
-            if (y >= TILES_HEIGHT)
+            if (y >= WORLD_HEIGHT)
               {
-                y = TILES_HEIGHT;
+                y = WORLD_HEIGHT;
                 riverEnd = true;
               }
             if (rand() % 4 == 0)
@@ -403,9 +403,9 @@ void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigne
                 x = 0;
                 riverEnd = true;
               }
-            if (x >= TILES_WIDTH)
+            if (x >= WORLD_WIDTH)
               {
-                x = TILES_WIDTH;
+                x = WORLD_WIDTH;
                 riverEnd = true;
               }
 
@@ -427,9 +427,9 @@ void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigne
             ++curveDistanceStep;
             y += rand() % 2;
             x -= rand() % 2;
-            if (y >= TILES_HEIGHT)
+            if (y >= WORLD_HEIGHT)
               {
-                y = TILES_HEIGHT;
+                y = WORLD_HEIGHT;
                 riverEnd = true;
               }
             if (x <= 0)
@@ -466,9 +466,9 @@ void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigne
                 y = 0;
                 riverEnd = true;
               }
-            if (y >= TILES_HEIGHT)
+            if (y >= WORLD_HEIGHT)
               {
-                y = TILES_HEIGHT;
+                y = WORLD_HEIGHT;
                 riverEnd = true;
               }
 
@@ -539,14 +539,14 @@ void WaterMapGenerator::generateMap(int shoreSizeBase, float waterLevel, unsigne
       if (xl <= 0)
         xl = 0;
       int xr = x + shoreSizeXR + shoreSizeOffset;
-      if (xr >= TILES_WIDTH)
-        xr = TILES_WIDTH;
+      if (xr >= WORLD_WIDTH)
+        xr = WORLD_WIDTH;
       int yt = y - shoreSizeYT - shoreSizeOffset;
       if (yt <= 0)
         yt = 0;
       int yb = y + shoreSizeYB + shoreSizeOffset;
-      if (yb >= TILES_HEIGHT)
-        yb = TILES_HEIGHT;
+      if (yb >= WORLD_HEIGHT)
+        yb = WORLD_HEIGHT;
       for (int y1 = yt; y1 <= yb; y1++)
         {
           for (int x1 = xl; x1 <= xr; x1++)
@@ -581,24 +581,24 @@ void WaterMapGenerator::updateAnimationFrame(Options& options)
         return;
       TerrainTile& tile = tiles[i];
       unsigned int pointerOffsetWithStride = i * 36;
-      unsigned int heightOffsetWithStrideForLow = (tile.mapY+1) * TILES_WIDTH;
-      unsigned int heightOffsetWithStrideForUpper = tile.mapY * TILES_WIDTH;
+      unsigned int heightOffsetWithStrideForLow = (tile.mapY+1) * WORLD_WIDTH;
+      unsigned int heightOffsetWithStrideForUpper = tile.mapY * WORLD_WIDTH;
 
-      if(tile.mapX > 0 && tile.mapX + 2 < TILES_WIDTH && tile.mapY - 2 > 0 && tile.mapY + 1 < TILES_HEIGHT)
+      if(tile.mapX > 0 && tile.mapX + 2 < WORLD_WIDTH && tile.mapY - 2 > 0 && tile.mapY + 1 < WORLD_HEIGHT)
         {
           float ll = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX];
           float lr = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + 1];
           float ur = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX + 1];
           float ul = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX];
           float ll_xm1 = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX - 1];
-          float ll_yp1 = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + TILES_WIDTH];
-          float ll_xm1_yp1 = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + TILES_WIDTH - 1];
-          float lr_yp1 = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + TILES_WIDTH + 1];
+          float ll_yp1 = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + WORLD_WIDTH];
+          float ll_xm1_yp1 = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + WORLD_WIDTH - 1];
+          float lr_yp1 = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + WORLD_WIDTH + 1];
           float lr_xp1 = waterHeightOffsets[heightOffsetWithStrideForLow + tile.mapX + 2];
           float ur_xp1 = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX + 2];
-          float ur_ym1 = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX - TILES_WIDTH + 1];
-          float ur_xp1_ym1 = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX - TILES_WIDTH + 2];
-          float ul_ym1 = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX - TILES_WIDTH];
+          float ur_ym1 = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX - WORLD_WIDTH + 1];
+          float ur_xp1_ym1 = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX - WORLD_WIDTH + 2];
+          float ul_ym1 = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX - WORLD_WIDTH];
           float ul_xm1 = waterHeightOffsets[heightOffsetWithStrideForUpper + tile.mapX - 1];
 
           glm::vec3 normalLL3 =  glm::vec3(ll - lr, 1 - glm::sqrt(glm::pow(ll - lr, 2) + glm::pow(ur - lr, 2)), ur - lr);

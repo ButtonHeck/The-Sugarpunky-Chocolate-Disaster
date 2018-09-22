@@ -32,9 +32,9 @@ TreeGenerator::~TreeGenerator()
 void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
 {
   treeModelChunks.clear();
-  for (unsigned int y = 0; y < TILES_HEIGHT; y += CHUNK_SIZE)
+  for (unsigned int y = 0; y < WORLD_HEIGHT; y += CHUNK_SIZE)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x += CHUNK_SIZE)
+      for (unsigned int x = 0; x < WORLD_WIDTH; x += CHUNK_SIZE)
         {
           ModelChunk chunk(x, x + CHUNK_SIZE, y, y + CHUNK_SIZE);
           treeModelChunks.emplace_back(std::move(chunk));
@@ -60,9 +60,9 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
       numInstanceVector.emplace_back(0);
     }
 
-  for (unsigned int y = 0; y < TILES_HEIGHT; y += CHUNK_SIZE)
+  for (unsigned int y = 0; y < WORLD_HEIGHT; y += CHUNK_SIZE)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x += CHUNK_SIZE)
+      for (unsigned int x = 0; x < WORLD_WIDTH; x += CHUNK_SIZE)
         {
           treeModelChunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
           for (unsigned int y1 = y; y1 < y + CHUNK_SIZE; y1++)
@@ -75,10 +75,10 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
                     {
                       glm::mat4 model;
                       model = glm::translate(model,
-                                             glm::vec3(-(float)HALF_TILES_WIDTH + x1 + modelPositionDistribution(randomizer) + 0.5f,
+                                             glm::vec3(-(float)HALF_WORLD_WIDTH + x1 + modelPositionDistribution(randomizer) + 0.5f,
                                                        0.0f,
-                                                       -(float)HALF_TILES_HEIGHT + y1 + modelPositionDistribution(randomizer) + 0.5f));
-                      model = glm::rotate(model, glm::radians((float)(y1 * TILES_WIDTH + x1 * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
+                                                       -(float)HALF_WORLD_HEIGHT + y1 + modelPositionDistribution(randomizer) + 0.5f));
+                      model = glm::rotate(model, glm::radians((float)(y1 * WORLD_WIDTH + x1 * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
                       model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer), modelSizeDistribution(randomizer), modelSizeDistribution(randomizer)));
                       treeModelsVecs[treeCounter % (treeModelsVecs.size() - numGrassModels)].emplace_back(std::move(model));
                       numInstanceVector[treeCounter % (treeModelsVecs.size() - numGrassModels)] += 1;
@@ -98,10 +98,10 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
                     {
                       glm::mat4 model;
                       model = glm::translate(model,
-                                             glm::vec3(-(float)HALF_TILES_WIDTH + x1 + 0.5f,
+                                             glm::vec3(-(float)HALF_WORLD_WIDTH + x1 + 0.5f,
                                                        0.0f,
-                                                       -(float)HALF_TILES_HEIGHT + y1 + 0.5f));
-                      model = glm::rotate(model, glm::radians((float)(rand() * TILES_WIDTH + x1 * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
+                                                       -(float)HALF_WORLD_HEIGHT + y1 + 0.5f));
+                      model = glm::rotate(model, glm::radians((float)(rand() * WORLD_WIDTH + x1 * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
                       glm::vec3 scale(modelSizeDistribution(randomizer) * 0.75f,
                                       modelSizeDistribution(randomizer) * 0.66f,
                                       modelSizeDistribution(randomizer) * 0.75f);
@@ -170,9 +170,9 @@ void TreeGenerator::updatePlainModels(std::vector<glm::mat4 *> &models, unsigned
 void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
 {
   hillTreeModelChunks.clear();
-  for (unsigned int y = 0; y < TILES_HEIGHT; y += CHUNK_SIZE)
+  for (unsigned int y = 0; y < WORLD_HEIGHT; y += CHUNK_SIZE)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x += CHUNK_SIZE)
+      for (unsigned int x = 0; x < WORLD_WIDTH; x += CHUNK_SIZE)
         {
           ModelChunk chunk(x, x + CHUNK_SIZE, y, y + CHUNK_SIZE);
           hillTreeModelChunks.emplace_back(std::move(chunk));
@@ -199,9 +199,9 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
       numInstancesVector.emplace_back(0);
     }
 
-  for (unsigned int y = 0; y < TILES_HEIGHT; y += CHUNK_SIZE)
+  for (unsigned int y = 0; y < WORLD_HEIGHT; y += CHUNK_SIZE)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x += CHUNK_SIZE)
+      for (unsigned int x = 0; x < WORLD_WIDTH; x += CHUNK_SIZE)
         {
           hillTreeModelChunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
           for (unsigned int y1 = y; y1 < y + CHUNK_SIZE; y1++)
@@ -227,13 +227,13 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
                               std::abs(hillMap[y1][x1+1] - hillMap[y1+1][x1]) / 2)
                             + HILLS_OFFSET_Y;
                       glm::vec3 translation(
-                            -(float)HALF_TILES_WIDTH + x1 + 0.5f + offsetX,
+                            -(float)HALF_WORLD_WIDTH + x1 + 0.5f + offsetX,
                             baseY,
-                            -(float)HALF_TILES_HEIGHT + y1 + 0.5f + offsetZ);
+                            -(float)HALF_WORLD_HEIGHT + y1 + 0.5f + offsetZ);
                       if (translation.y < 0)
                         continue;
                       model = glm::translate(model, translation);
-                      model = glm::rotate(model, glm::radians((float)(y1 * TILES_WIDTH + x1 * 5)),
+                      model = glm::rotate(model, glm::radians((float)(y1 * WORLD_WIDTH + x1 * 5)),
                                           glm::vec3(modelAxisRotationDistribution(randomizer), 1.0f, modelAxisRotationDistribution(randomizer)));
                       model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer)));
                       hillTreeModelsVecs[hillTreeCounter % hillTreeModelsVecs.size()].emplace_back(std::move(model));

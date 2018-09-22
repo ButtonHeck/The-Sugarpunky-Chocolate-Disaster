@@ -17,7 +17,7 @@ Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& op
     textureManager(new TextureManager(textureLoader, scr_width, scr_height))
 {
   srand(time(NULL));
-  fontManager = new FontManager(RES_DIR + "/fonts/font.fnt", RES_DIR + "/fonts/font.png", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), shaderManager.get(SHADER_FONT));
+  fontManager = new FontManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), shaderManager.get(SHADER_FONT));
 #ifdef _DEBUG
   glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ram_size);
   ram_size_float_percentage = (float)ram_size / 100;
@@ -44,7 +44,7 @@ Game::~Game()
 
 void Game::setupVariables()
 {
-  Shader::cacheUniformsMode(SHADER_NO_CACHE);
+  Shader::cacheUniformsMode(UNIFORMS_NO_CACHE);
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glDisable(GL_DITHER);
@@ -60,38 +60,38 @@ void Game::setupVariables()
 
   {
     BENCHMARK("Game: Loading models", false);
-    Model tree1("/models/tree1/tree1.obj", textureLoader);
-    Model tree1_2("/models/tree1_2/tree1_2.obj", textureLoader);
-    Model tree2("/models/tree2/tree2.obj", textureLoader);
-    Model tree2_2("/models/tree2_2/tree2_2.obj", textureLoader);
-    Model tree3("/models/tree3/tree3.obj", textureLoader);
-    Model tree3_2("/models/tree3_2/tree3_2.obj", textureLoader);
-    Model tree4("/models/tree4/tree4.obj", textureLoader);
-    Model tree5("/models/tree5/tree5.obj", textureLoader);
-    Model tree5_2("/models/tree5_2/tree5_2.obj", textureLoader);
-    Model tree6("/models/tree6/tree6.obj", textureLoader);
-    Model tree6_2("/models/tree6_2/tree6_2.obj", textureLoader);
-    Model tree7("/models/tree7/tree7.obj", textureLoader);
-    Model tree8("/models/tree8/tree8.obj", textureLoader);
-    Model grass1("/models/grass1/grass1.obj", textureLoader);
-    Model grass2("/models/grass2/grass2.obj", textureLoader);
-    Model grass3("/models/grass3/grass3.obj", textureLoader);
-    Model grass4("/models/grass4/grass4.obj", textureLoader);
-    Model grass5("/models/grass5/grass5.obj", textureLoader);
-    Model grass6("/models/grass6/grass6.obj", textureLoader);
-    Model hillTree1("/models/hillTree1/hillTree1.obj", textureLoader);
-    Model hillTree2("/models/hillTree2/hillTree2.obj", textureLoader);
-    Model hillTree3("/models/hillTree3/hillTree3.obj", textureLoader);
-    Model hillTree4("/models/hillTree4/hillTree4.obj", textureLoader);
-    Model hillTree5("/models/hillTree5/hillTree5.obj", textureLoader);
-    Model hillTree6("/models/hillTree6/hillTree6.obj", textureLoader);
-    Model hillTree7("/models/hillTree7/hillTree7.obj", textureLoader);
-    Model hillTree8("/models/hillTree1/hillTree1.obj", textureLoader);
-    Model hillTree9("/models/hillTree3/hillTree3.obj", textureLoader);
-    Model hillTree10("/models/hillTree7/hillTree7.obj", textureLoader);
-    Model hillTree11("/models/hillTree1/hillTree1.obj", textureLoader);
-    Model hillTree12("/models/hillTree3/hillTree3.obj", textureLoader);
-    Model hillTree13("/models/hillTree7/hillTree7.obj", textureLoader);
+    Model tree1("tree1/tree1.obj", textureLoader);
+    Model tree1_2("tree1_2/tree1_2.obj", textureLoader);
+    Model tree2("tree2/tree2.obj", textureLoader);
+    Model tree2_2("tree2_2/tree2_2.obj", textureLoader);
+    Model tree3("tree3/tree3.obj", textureLoader);
+    Model tree3_2("tree3_2/tree3_2.obj", textureLoader);
+    Model tree4("tree4/tree4.obj", textureLoader);
+    Model tree5("tree5/tree5.obj", textureLoader);
+    Model tree5_2("tree5_2/tree5_2.obj", textureLoader);
+    Model tree6("tree6/tree6.obj", textureLoader);
+    Model tree6_2("tree6_2/tree6_2.obj", textureLoader);
+    Model tree7("tree7/tree7.obj", textureLoader);
+    Model tree8("tree8/tree8.obj", textureLoader);
+    Model grass1("grass1/grass1.obj", textureLoader);
+    Model grass2("grass2/grass2.obj", textureLoader);
+    Model grass3("grass3/grass3.obj", textureLoader);
+    Model grass4("grass4/grass4.obj", textureLoader);
+    Model grass5("grass5/grass5.obj", textureLoader);
+    Model grass6("grass6/grass6.obj", textureLoader);
+    Model hillTree1("hillTree1/hillTree1.obj", textureLoader);
+    Model hillTree2("hillTree2/hillTree2.obj", textureLoader);
+    Model hillTree3("hillTree3/hillTree3.obj", textureLoader);
+    Model hillTree4("hillTree4/hillTree4.obj", textureLoader);
+    Model hillTree5("hillTree5/hillTree5.obj", textureLoader);
+    Model hillTree6("hillTree6/hillTree6.obj", textureLoader);
+    Model hillTree7("hillTree7/hillTree7.obj", textureLoader);
+    Model hillTree8("hillTree1/hillTree1.obj", textureLoader);
+    Model hillTree9("hillTree3/hillTree3.obj", textureLoader);
+    Model hillTree10("hillTree7/hillTree7.obj", textureLoader);
+    Model hillTree11("hillTree1/hillTree1.obj", textureLoader);
+    Model hillTree12("hillTree3/hillTree3.obj", textureLoader);
+    Model hillTree13("hillTree7/hillTree7.obj", textureLoader);
     treeGenerator = new TreeGenerator({tree1, tree1_2, tree2, tree2_2, tree3, tree3_2, tree4, tree5, tree5_2,
                                        tree6, tree6_2, tree7, tree8,
                                        grass1, grass2, grass3, grass4, grass5, grass6},
@@ -115,8 +115,8 @@ void Game::setupVariables()
           if (_meshesIndirectDataNeed)
             {
               BENCHMARK("(ST)Model: update meshes DIBs data", true);
-              float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
-              float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
+              float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH);
+              float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_WORLD_HEIGHT, (float)HALF_WORLD_HEIGHT);
               glm::vec2 cameraPositionXZ = glm::vec2(cameraOnMapX, cameraOnMapZ);
               for (unsigned int i = 0; i < plainTrees.size(); i++)
                 {
@@ -172,7 +172,7 @@ void Game::prepareTerrain()
   waterMapGenerator->prepareMap(); //prepare water map
   hillMapGenerator->prepareMap(); //generating hill height map
   hillMapGenerator->fillBufferData(); //fill hills buffer
-  baseMapGenerator->prepareMap(BASE_TERRAIN_RANDOMIZE_SHORE_FORM); //generating base terrain data
+  baseMapGenerator->prepareMap(); //generating base terrain data
   baseMapGenerator->fillShoreBufferData(); //fill base terrain vertex data
   baseMapGenerator->fillSquareBufferData(); //generating data for chunk instance rendering
   baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
@@ -235,9 +235,9 @@ void Game::prepareScreenVAO()
   glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(SCREEN_VERTICES), &SCREEN_VERTICES, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -345,7 +345,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
       if (buildableMapGenerator->getMap()[input.getCursorMapZ()][input.getCursorMapX()] != 0)
         {
           glm::mat4 selectedModel;
-          selectedModel = glm::translate(selectedModel, glm::vec3(-HALF_TILES_WIDTH + input.getCursorMapX(), 0.0f, -HALF_TILES_HEIGHT + input.getCursorMapZ()));
+          selectedModel = glm::translate(selectedModel, glm::vec3(-HALF_WORLD_WIDTH + input.getCursorMapX(), 0.0f, -HALF_WORLD_HEIGHT + input.getCursorMapZ()));
           shaderManager.updateSelectedShader(projectionView, selectedModel);
           {
             BENCHMARK("Renderer: draw selected", true);
@@ -531,7 +531,7 @@ void Game::loop()
   //save/load routine
   if (options.get(SAVE_REQUEST))
     {
-      saveLoadManager->saveToFile(RES_DIR + "/saves/testSave.txt");
+      saveLoadManager->saveToFile(SAVES_DIR + "testSave.txt");
       options.set(SAVE_REQUEST, false);
     }
   if (options.get(LOAD_REQUEST))
@@ -541,7 +541,7 @@ void Game::loop()
           std::this_thread::yield(); //busy wait
         }
       _waterThreadUpdatePermitted = false;
-      saveLoadManager->loadFromFile(RES_DIR + "/saves/testSave.txt");
+      saveLoadManager->loadFromFile(SAVES_DIR + "testSave.txt");
       options.set(LOAD_REQUEST, false);
       textureManager->createUnderwaterReliefTexture(waterMapGenerator);
       _waterThreadUpdatePermitted = true;

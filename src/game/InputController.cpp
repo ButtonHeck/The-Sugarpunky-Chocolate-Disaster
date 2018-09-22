@@ -345,20 +345,20 @@ void InputController::updateCursorMappingCoordinates(Camera &camera,
     {
       float ratio = camera.getPosition().y / (-cursorToViewportDirection.y);
       bool cursorOutOfMap = false;
-      cursorOnMapX = glm::clamp((cursorToViewportDirection.x * ratio) + camera.getPosition().x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH);
-      cursorOnMapZ = glm::clamp((cursorToViewportDirection.z * ratio) + camera.getPosition().z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT);
-      if (cursorOnMapX == -HALF_TILES_WIDTH || cursorOnMapX == HALF_TILES_WIDTH ||
-          cursorOnMapZ == -HALF_TILES_HEIGHT || cursorOnMapZ == HALF_TILES_HEIGHT)
+      cursorOnMapX = glm::clamp((cursorToViewportDirection.x * ratio) + camera.getPosition().x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH);
+      cursorOnMapZ = glm::clamp((cursorToViewportDirection.z * ratio) + camera.getPosition().z, -(float)HALF_WORLD_HEIGHT, (float)HALF_WORLD_HEIGHT);
+      if (cursorOnMapX == -HALF_WORLD_WIDTH || cursorOnMapX == HALF_WORLD_WIDTH ||
+          cursorOnMapZ == -HALF_WORLD_HEIGHT || cursorOnMapZ == HALF_WORLD_HEIGHT)
         cursorOutOfMap = true;
       if (cursorOutOfMap)
         {
           cursorTileName = "out of map";
           return;
         }
-      cursorOnMapCoordX = (int)(TILES_WIDTH + cursorOnMapX) - HALF_TILES_WIDTH;
-      cursorOnMapCoordX = glm::clamp(cursorOnMapCoordX, 1, TILES_WIDTH - 2);
-      cursorOnMapCoordZ = (int)(TILES_HEIGHT + cursorOnMapZ) - HALF_TILES_HEIGHT + 1;
-      cursorOnMapCoordZ = glm::clamp(cursorOnMapCoordZ, 1, TILES_HEIGHT - 1);
+      cursorOnMapCoordX = (int)(WORLD_WIDTH + cursorOnMapX) - HALF_WORLD_WIDTH;
+      cursorOnMapCoordX = glm::clamp(cursorOnMapCoordX, 1, WORLD_WIDTH - 2);
+      cursorOnMapCoordZ = (int)(WORLD_HEIGHT + cursorOnMapZ) - HALF_WORLD_HEIGHT + 1;
+      cursorOnMapCoordZ = glm::clamp(cursorOnMapCoordZ, 1, WORLD_HEIGHT - 1);
       if (buildableMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
         cursorTileName = "Flat";
       else if (hillMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0 ||
@@ -368,10 +368,10 @@ void InputController::updateCursorMappingCoordinates(Camera &camera,
         cursorTileName = "Hills";
       else
         {
-          if (baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] == DENY_TILE_RENDER_VALUE ||
-              baseMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX] == DENY_TILE_RENDER_VALUE ||
-              baseMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX+1] == DENY_TILE_RENDER_VALUE ||
-              baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX+1] == DENY_TILE_RENDER_VALUE)
+          if (baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] == TILE_NO_RENDER_VALUE ||
+              baseMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX] == TILE_NO_RENDER_VALUE ||
+              baseMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX+1] == TILE_NO_RENDER_VALUE ||
+              baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX+1] == TILE_NO_RENDER_VALUE)
             cursorTileName = "Water";
           else
             cursorTileName = "Shore";

@@ -1,6 +1,6 @@
 #include "Settings.h"
 
-std::string getProjectDirectory()
+const std::string getResourcesDirectory()
 {
   char cwd_buffer[FILENAME_MAX];
   getcwd(cwd_buffer, FILENAME_MAX);

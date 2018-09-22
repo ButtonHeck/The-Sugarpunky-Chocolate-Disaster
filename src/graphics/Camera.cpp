@@ -62,30 +62,30 @@ void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir, std::vector<s
     Position -= WorldUp * velocity;
 
   const float WORLD_CAMERA_BORDER_OFFSET = 8.0f;
-  if (Position.x > HALF_TILES_WIDTH - WORLD_CAMERA_BORDER_OFFSET)
-    Position.x = HALF_TILES_WIDTH - WORLD_CAMERA_BORDER_OFFSET;
-  else if (Position.x < -HALF_TILES_WIDTH + WORLD_CAMERA_BORDER_OFFSET)
-    Position.x = -HALF_TILES_WIDTH + WORLD_CAMERA_BORDER_OFFSET;
-  if (Position.z > HALF_TILES_HEIGHT - WORLD_CAMERA_BORDER_OFFSET)
-    Position.z = HALF_TILES_HEIGHT - WORLD_CAMERA_BORDER_OFFSET;
-  else if (Position.z < -HALF_TILES_HEIGHT + WORLD_CAMERA_BORDER_OFFSET)
-    Position.z = -HALF_TILES_HEIGHT + WORLD_CAMERA_BORDER_OFFSET;
+  if (Position.x > HALF_WORLD_WIDTH - WORLD_CAMERA_BORDER_OFFSET)
+    Position.x = HALF_WORLD_WIDTH - WORLD_CAMERA_BORDER_OFFSET;
+  else if (Position.x < -HALF_WORLD_WIDTH + WORLD_CAMERA_BORDER_OFFSET)
+    Position.x = -HALF_WORLD_WIDTH + WORLD_CAMERA_BORDER_OFFSET;
+  if (Position.z > HALF_WORLD_HEIGHT - WORLD_CAMERA_BORDER_OFFSET)
+    Position.z = HALF_WORLD_HEIGHT - WORLD_CAMERA_BORDER_OFFSET;
+  else if (Position.z < -HALF_WORLD_HEIGHT + WORLD_CAMERA_BORDER_OFFSET)
+    Position.z = -HALF_WORLD_HEIGHT + WORLD_CAMERA_BORDER_OFFSET;
 
   const float WORLD_CAMERA_MIN_HEIGHT = 2.0f;
   const float WORLD_CAMERA_MIN_HEIGHT_ON_HILLS = WORLD_CAMERA_MIN_HEIGHT - HILLS_OFFSET_Y;
   if (Position.y < WORLD_CAMERA_MIN_HEIGHT)
     Position.y = WORLD_CAMERA_MIN_HEIGHT;
-  if (hillsMap[Position.z + HALF_TILES_HEIGHT][Position.x + HALF_TILES_WIDTH] > 0 ||
-      hillsMap[Position.z + HALF_TILES_HEIGHT + 1][Position.x + HALF_TILES_WIDTH] > 0 ||
-      hillsMap[Position.z + HALF_TILES_HEIGHT][Position.x + HALF_TILES_WIDTH + 1] > 0 ||
-      hillsMap[Position.z + HALF_TILES_HEIGHT + 1][Position.x + HALF_TILES_WIDTH + 1] > 0)
+  if (hillsMap[Position.z + HALF_WORLD_HEIGHT][Position.x + HALF_WORLD_WIDTH] > 0 ||
+      hillsMap[Position.z + HALF_WORLD_HEIGHT + 1][Position.x + HALF_WORLD_WIDTH] > 0 ||
+      hillsMap[Position.z + HALF_WORLD_HEIGHT][Position.x + HALF_WORLD_WIDTH + 1] > 0 ||
+      hillsMap[Position.z + HALF_WORLD_HEIGHT + 1][Position.x + HALF_WORLD_WIDTH + 1] > 0)
     {
-      int x1 = std::floor(Position.x + HALF_TILES_WIDTH);
-      int x2 = std::round(Position.x + HALF_TILES_WIDTH);
-      int z1 = std::floor(Position.z + HALF_TILES_HEIGHT);
-      int z2 = std::round(Position.z + HALF_TILES_HEIGHT);
-      float xRatio = Position.x + HALF_TILES_WIDTH - x1;
-      float zRatio = Position.z + HALF_TILES_HEIGHT - z1;
+      int x1 = std::floor(Position.x + HALF_WORLD_WIDTH);
+      int x2 = std::round(Position.x + HALF_WORLD_WIDTH);
+      int z1 = std::floor(Position.z + HALF_WORLD_HEIGHT);
+      int z2 = std::round(Position.z + HALF_WORLD_HEIGHT);
+      float xRatio = Position.x + HALF_WORLD_WIDTH - x1;
+      float zRatio = Position.z + HALF_WORLD_HEIGHT - z1;
       float x1z1Height = hillsMap[z1][x1] + WORLD_CAMERA_MIN_HEIGHT_ON_HILLS;
       float x2z1Height = hillsMap[z1][x2] + WORLD_CAMERA_MIN_HEIGHT_ON_HILLS;
       float x1z2Height = hillsMap[z2][x1] + WORLD_CAMERA_MIN_HEIGHT_ON_HILLS;
@@ -175,12 +175,12 @@ void Camera::updateVectors()
 
 int Camera::getMapCoordX() const
 {
-  return glm::clamp((int)(TILES_WIDTH + glm::clamp(Position.x, -(float)HALF_TILES_WIDTH, (float)HALF_TILES_WIDTH)) - HALF_TILES_WIDTH, 0, TILES_WIDTH - 1);
+  return glm::clamp((int)(WORLD_WIDTH + glm::clamp(Position.x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH)) - HALF_WORLD_WIDTH, 0, WORLD_WIDTH - 1);
 }
 
 int Camera::getMapCoordZ() const
 {
-  return glm::clamp((int)(TILES_HEIGHT + glm::clamp(Position.z, -(float)HALF_TILES_HEIGHT, (float)HALF_TILES_HEIGHT)) - HALF_TILES_HEIGHT, 0, TILES_HEIGHT - 1);
+  return glm::clamp((int)(WORLD_HEIGHT + glm::clamp(Position.z, -(float)HALF_WORLD_HEIGHT, (float)HALF_WORLD_HEIGHT)) - HALF_WORLD_HEIGHT, 0, WORLD_HEIGHT - 1);
 }
 
 void Camera::moveCameraFrontAxial(bool forward, float velocity)

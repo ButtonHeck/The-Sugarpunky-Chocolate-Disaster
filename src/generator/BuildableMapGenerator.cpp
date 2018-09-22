@@ -19,9 +19,9 @@ BuildableMapGenerator::~BuildableMapGenerator()
 
 void BuildableMapGenerator::prepareMap()
 {
-  for (unsigned int y = 2; y < TILES_HEIGHT; y++)
+  for (unsigned int y = 2; y < WORLD_HEIGHT; y++)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH - 1; x++)
+      for (unsigned int x = 0; x < WORLD_WIDTH - 1; x++)
         {
           if (baseMap[y][x] == 0
               && baseMap[y-1][x] == 0
@@ -61,7 +61,7 @@ void BuildableMapGenerator::fillBufferData()
     {
       glm::mat4 model;
       TerrainTile& tile = tiles[i];
-      model = glm::translate(model, glm::vec3(- HALF_TILES_WIDTH + tile.mapX, 0.0f, -HALF_TILES_HEIGHT + tile.mapY));
+      model = glm::translate(model, glm::vec3(- HALF_WORLD_WIDTH + tile.mapX, 0.0f, -HALF_WORLD_HEIGHT + tile.mapY));
       instanceModels[i] = model;
     }
   glBindBuffer(GL_ARRAY_BUFFER, modelVbo);

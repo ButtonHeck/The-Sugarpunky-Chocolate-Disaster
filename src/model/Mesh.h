@@ -52,7 +52,7 @@ private:
   std::vector<GLuint> indices;
   unsigned int VAO, VBO, EBO, instanceVBO = 0, multiDE_I_DIBO;
   unsigned int numInstances;
-  constexpr static int NUM_CHUNKS = (TILES_WIDTH / CHUNK_SIZE) * (TILES_HEIGHT / CHUNK_SIZE);
+  constexpr static int NUM_CHUNKS = (WORLD_WIDTH / CHUNK_SIZE) * (WORLD_HEIGHT / CHUNK_SIZE);
   GLuint multiDrawIndirectData[NUM_CHUNKS * 5] = {0}; //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
   std::multimap<int, IndirectBufferToken> indirectTokensSorted;
   GLuint multiDE_I_primCount = 0;

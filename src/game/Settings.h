@@ -3,11 +3,10 @@
 #include <GL/glew.h>
 #include <string>
 #include <glm/vec3.hpp>
-#include <glm/detail/func_trigonometric.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <cmath>
 #include <unistd.h>
 
+//benchmarking
 #ifdef _DEBUG
 #define BENCHMARK(benchmarkName, perFrame) BenchmarkTimer b(benchmarkName, perFrame);
 #define BENCHMARK_PASS_CHECK(benchmarkName, perFrame, passThru) BenchmarkTimer b(benchmarkName, perFrame, passThru);
@@ -16,51 +15,59 @@
 #define BENCHMARK_PASS_CHECK(Feed, me, weird) //things
 #endif
 
-std::string getProjectDirectory();
+//resource loading related
+const std::string getResourcesDirectory();
+const std::string RES_DIR = getResourcesDirectory() + "/res/";
+const std::string SHADER_DIR = RES_DIR + "shaders/";
+const std::string TEXTURES_DIR = RES_DIR + "textures/";
+const std::string MODELS_DIR = RES_DIR + "models/";
+const std::string FONT_DIR = RES_DIR + "fonts/";
+const std::string SAVES_DIR = RES_DIR + "saves/";
+constexpr bool INCLUDE_RES_DIR = true;
 
+//view frustum config
 constexpr float NEAR_PLANE = 0.1f;
 constexpr float FAR_PLANE = 500.0f;
 constexpr float FOV = 40.0f;
-constexpr int TILES_WIDTH = 384;
-constexpr int TILES_HEIGHT = 384;
-constexpr int HALF_TILES_WIDTH = TILES_WIDTH / 2;
-constexpr int HALF_TILES_HEIGHT = TILES_HEIGHT / 2;
-constexpr int NUM_TILES = TILES_WIDTH * TILES_HEIGHT;
+constexpr float SCREEN_VERTICES[] = {
+  -1.0f, -1.0f, 0.0f, 0.0f,
+   1.0f, -1.0f, 1.0f, 0.0f,
+   1.0f,  1.0f, 1.0f, 1.0f,
+   1.0f,  1.0f, 1.0f, 1.0f,
+  -1.0f,  1.0f, 0.0f, 1.0f,
+  -1.0f, -1.0f, 0.0f, 0.0f
+};
+
+//world config
+constexpr int WORLD_WIDTH = 384;
+constexpr int WORLD_HEIGHT = 384;
+constexpr int HALF_WORLD_WIDTH = WORLD_WIDTH / 2;
+constexpr int HALF_WORLD_HEIGHT = WORLD_HEIGHT / 2;
+constexpr int NUM_TILES = WORLD_WIDTH * WORLD_HEIGHT;
 constexpr float WATER_LEVEL = -1.0f;
-constexpr int DENY_TILE_RENDER_VALUE = -10;
-constexpr int DENY_CHUNK_RENDER_VALUE = -20;
+constexpr int TILE_NO_RENDER_VALUE = -10;
+constexpr int CHUNK_NO_RENDER_VALUE = -20;
 constexpr float HILLS_OFFSET_Y = -0.2f;
-constexpr float UNDERWATER_REMOVAL_LEVEL = -4.0f;
-constexpr float UNDERWATER_BASE_TILE_HEIGHT = -4.0f;
+constexpr float SHORE_CLIP_LEVEL = -4.0f;
+constexpr float UNDERWATER_TILE_YPOS = -4.0f;
 constexpr int SHORE_SIZE_BASE = 5;
+constexpr int NUM_GRASS_MODELS = 6;
+
+//world update & rendering config
 constexpr int CHUNK_SIZE = 16;
 constexpr float HALF_CHUNK_SIZE = CHUNK_SIZE / 2.0f;
 constexpr unsigned int LOADING_DISTANCE_CHUNKS = 8;
 constexpr unsigned int LOADING_DISTANCE_UNITS = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS;
 constexpr unsigned int LOADING_DISTANCE_UNITS_SQUARE = LOADING_DISTANCE_UNITS * LOADING_DISTANCE_UNITS;
-constexpr float SQRT_2 = 1.4142;
-constexpr float MODELS_FC_RADIUS = HALF_CHUNK_SIZE * SQRT_2;
+constexpr float MODELS_FC_RADIUS = HALF_CHUNK_SIZE;
 constexpr unsigned int MESH_INDIRECT_BUFFER_UPDATE_FREQ = 2;
-constexpr int NUM_GRASS_MODELS = 6;
 constexpr unsigned char QUAD_INDICES[6] = {0,1,2,2,3,0};
-constexpr float SCREEN_VERTICES[] = {
-  -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-   1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-   1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-   1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-  -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-  -1.0f, -1.0f, 0.0f, 0.0f, 0.0f
-};
-constexpr bool BASE_TERRAIN_RANDOMIZE_SHORE_FORM = true;
+
+//textures configuration
 constexpr bool HDR_ENABLED = true;
-constexpr bool TEXTURE_SRGB = HDR_ENABLED;
 constexpr unsigned int MULTISAMPLES = 8;
 constexpr float ANISOTROPY = 2.0f;
-const std::string RES_DIR = getProjectDirectory() + "/res";
-constexpr bool INCLUDE_RES_DIR = true;
-//shader uniform strategy
-constexpr bool SHADER_NO_CACHE = false;
-constexpr bool SHADER_USE_CACHE = true;
+
 //constants for shadow calculations
 constexpr float NEAR_PLANE_SHADOWING = 280.0f;
 constexpr float FAR_PLANE_SHADOWING = 700.0f;
@@ -72,34 +79,9 @@ const glm::mat4 LIGHT_SPACE_MATRIX = LIGHT_PROJECTION * LIGHT_VIEW;
 constexpr int DEPTH_MAP_TEXTURE_WIDTH = 16184;
 constexpr int DEPTH_MAP_TEXTURE_HEIGHT = 10000;
 
-enum HILL_DENSITY
-{
-  THIN, MEDIUM, DENSE
-};
+//shader uniform strategy
+constexpr bool UNIFORMS_NO_CACHE = false;
+constexpr bool UNIFORMS_USE_CACHE = true;
 
-enum TEXTURE_UNITS
-{
-  FLAT = 0,
-  FLAT_2 = 1,
-  FLAT_x2 = 2,
-  FLAT_2_x2 = 3,
-  DIFFUSE_MIX_MAP = 4,
-  HILL = 5,
-  HILL_2 = 6,
-  HILL_SPECULAR = 7,
-  SHORE = 8,
-  SHORE_2 = 9,
-  UNDERWATER_RELIEF = 10,
-  SKYBOX = 11,
-  FRAME_MS_TEXTURE = 12,
-  FRAME_TEXTURE = 13,
-  FRAME_HDR_TEXTURE = 14,
-  DEPTH_MAP_SUN = 15,
-  FONT_TEXTURE = 16,
-  TERRAIN_NORMAL = 17,
-  WATER_NORMAL = 18,
-  WATER_SPECULAR = 19,
-  UNDERWATER_DIFFUSE = 20
-};
 #endif // SETTINGS
 

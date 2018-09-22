@@ -23,7 +23,7 @@ bool SaveLoadManager::saveToFile(const std::string &filename)
       std::cerr << "Could not open file: " << filename << std::endl;
       return false;
     }
-  output << TILES_WIDTH << " " << TILES_HEIGHT << " ";
+  output << WORLD_WIDTH << " " << WORLD_HEIGHT << " ";
   for (std::vector<float>& row : baseMap)
     {
       for (float& value : row)
@@ -177,7 +177,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   hillGenerator.fillBufferData();
   baseGenerator.getSquareTiles().clear();
   baseGenerator.getCellTiles().clear();
-  baseGenerator.prepareMap(BASE_TERRAIN_RANDOMIZE_SHORE_FORM);
+  baseGenerator.prepareMap();
   baseGenerator.fillShoreBufferData();
   baseGenerator.fillSquareBufferData();
   baseGenerator.fillCellBufferData();

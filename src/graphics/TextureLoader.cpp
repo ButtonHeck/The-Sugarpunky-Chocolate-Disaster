@@ -19,7 +19,7 @@ GLuint TextureLoader::createAndBindTextureObject(GLenum target, GLuint textureUn
 GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, GLenum wrapType, GLint magFilter, GLint minFilter, bool useAnisotropy, bool includeCWD)
 {
   GLuint texture = createAndBindTextureObject(GL_TEXTURE_2D, textureUnit);
-  std::string fullPath = includeCWD ? std::string(RES_DIR + path) : path;
+  std::string fullPath = includeCWD ? std::string(TEXTURES_DIR + path) : path;
   if (!ilLoadImage(fullPath.c_str()))
     printf("Error when loading texture: %s\n", fullPath.c_str());
   ILubyte* data = ilGetData();
@@ -29,12 +29,12 @@ GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, G
   GLenum internalFormat, dataFormat;
   if (imageChannels == 4)
     {
-      internalFormat = TEXTURE_SRGB ? GL_SRGB8_ALPHA8 : GL_RGBA8;
+      internalFormat = HDR_ENABLED ? GL_SRGB8_ALPHA8 : GL_RGBA8;
       dataFormat = GL_RGBA;
     }
   else if (imageChannels == 3)
     {
-      internalFormat = TEXTURE_SRGB ? GL_SRGB8 : GL_RGB8;
+      internalFormat = HDR_ENABLED ? GL_SRGB8 : GL_RGB8;
       dataFormat = GL_RGB;
     }
   GLuint mipLevel = getMaxMip(imageWidth, imageHeight);
@@ -83,12 +83,12 @@ GLuint TextureLoader::loadCubemap(const std::string& directory, GLuint textureUn
   std::vector<std::string> faces;
   faces.assign(
   {
-          RES_DIR + directory + "right.png",
-          RES_DIR + directory + "left.png",
-          RES_DIR + directory + "up.png",
-          RES_DIR + directory + "down.png",
-          RES_DIR + directory + "back.png",
-          RES_DIR + directory + "front.png"
+          TEXTURES_DIR + directory + "right.png",
+          TEXTURES_DIR + directory + "left.png",
+          TEXTURES_DIR + directory + "up.png",
+          TEXTURES_DIR + directory + "down.png",
+          TEXTURES_DIR + directory + "back.png",
+          TEXTURES_DIR + directory + "front.png"
         });
   ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
   GLuint texture = createAndBindTextureObject(GL_TEXTURE_CUBE_MAP, textureUnit);
@@ -100,7 +100,7 @@ GLuint TextureLoader::loadCubemap(const std::string& directory, GLuint textureUn
       auto width = ilGetInteger(IL_IMAGE_WIDTH);
       auto height = ilGetInteger(IL_IMAGE_HEIGHT);
       ILubyte* data = ilGetData();
-      GLenum internalFormat = TEXTURE_SRGB ? GL_SRGB8 : GL_RGB8;
+      GLenum internalFormat = HDR_ENABLED ? GL_SRGB8 : GL_RGB8;
       glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
       ilDeleteImage(ilGetInteger(IL_ACTIVE_IMAGE));
     }
@@ -116,17 +116,17 @@ GLuint TextureLoader::createUnderwaterReliefTexture(WaterMapGenerator *waterMapG
 {
   static bool needStorage = true;
   static GLuint underwaterReliefTexture;
-  GLubyte* textureData = new GLubyte[TILES_WIDTH * TILES_HEIGHT];
+  GLubyte* textureData = new GLubyte[WORLD_WIDTH * WORLD_HEIGHT];
   int left, right, top, bottom;
   float waterCount;
-  for (int y = 1; y < TILES_HEIGHT; y++)
+  for (int y = 1; y < WORLD_HEIGHT; y++)
     {
-      for (int x = 0; x < TILES_WIDTH - 1; x++)
+      for (int x = 0; x < WORLD_WIDTH - 1; x++)
         {
-          left = glm::clamp(x - SHORE_SIZE_BASE - 3, 0, TILES_WIDTH - 1);
-          right = glm::clamp(x + SHORE_SIZE_BASE + 3, 0, TILES_WIDTH - 1);
-          top = glm::clamp(y - SHORE_SIZE_BASE - 3, 1, TILES_HEIGHT);
-          bottom = glm::clamp(y + SHORE_SIZE_BASE + 3, 0, TILES_HEIGHT);
+          left = glm::clamp(x - SHORE_SIZE_BASE - 3, 0, WORLD_WIDTH - 1);
+          right = glm::clamp(x + SHORE_SIZE_BASE + 3, 0, WORLD_WIDTH - 1);
+          top = glm::clamp(y - SHORE_SIZE_BASE - 3, 1, WORLD_HEIGHT);
+          bottom = glm::clamp(y + SHORE_SIZE_BASE + 3, 0, WORLD_HEIGHT);
           waterCount = 0;
           for (int y1 = top; y1 < bottom; y1++)
             {
@@ -139,18 +139,18 @@ GLuint TextureLoader::createUnderwaterReliefTexture(WaterMapGenerator *waterMapG
                     waterCount += 1.0 - ((SHORE_SIZE_BASE - 4) * 0.25);
                 }
             }
-          textureData[y * TILES_WIDTH + x] = (GLubyte)waterCount;
+          textureData[y * WORLD_WIDTH + x] = (GLubyte)waterCount;
         }
     }
   if (needStorage)
     {
       glCreateTextures(GL_TEXTURE_2D, 1, &underwaterReliefTexture);
-      glTextureStorage2D(underwaterReliefTexture, 1, GL_R8, TILES_WIDTH, TILES_HEIGHT);
+      glTextureStorage2D(underwaterReliefTexture, 1, GL_R8, WORLD_WIDTH, WORLD_HEIGHT);
       needStorage = false;
     }
   glActiveTexture(GL_TEXTURE0 + textureUnit);
   glBindTexture(GL_TEXTURE_2D, underwaterReliefTexture);
-  glTextureSubImage2D(underwaterReliefTexture, 0, 0, 0, TILES_WIDTH, TILES_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, textureData);
+  glTextureSubImage2D(underwaterReliefTexture, 0, 0, 0, WORLD_WIDTH, WORLD_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, textureData);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

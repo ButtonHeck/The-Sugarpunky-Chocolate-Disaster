@@ -5,7 +5,7 @@ Model::Model(const std::string& path, TextureLoader& textureLoader)
   :
     textureLoader(textureLoader)
 {
-  loadModel(std::string(RES_DIR + path));
+  loadModel(std::string(MODELS_DIR + path));
 }
 
 void Model::loadModel(const std::string &path)

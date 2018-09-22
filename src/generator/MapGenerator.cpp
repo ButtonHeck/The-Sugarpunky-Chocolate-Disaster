@@ -12,10 +12,10 @@ MapGenerator::MapGenerator()
 void MapGenerator::initializeMap(std::vector<std::vector<float>>& map)
 {
   map.clear();
-  map.reserve(TILES_HEIGHT + 1);
-  for (size_t row = 0; row < TILES_HEIGHT + 1; row++)
+  map.reserve(WORLD_HEIGHT + 1);
+  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
     {
-      map.emplace_back(std::vector<float>(TILES_WIDTH + 1, 0));
+      map.emplace_back(std::vector<float>(WORLD_WIDTH + 1, 0));
     }
 }
 
@@ -33,7 +33,7 @@ void MapGenerator::createTiles(bool flat, bool createOnZeroTiles, std::vector<st
     {
       for (unsigned int x = 1; x < map[0].size(); x++)
         {
-          if (map[y][x] == DENY_TILE_RENDER_VALUE)
+          if (map[y][x] == TILE_NO_RENDER_VALUE)
             continue;
           bool toCreate;
             if (!flat)
@@ -49,14 +49,14 @@ void MapGenerator::createTiles(bool flat, bool createOnZeroTiles, std::vector<st
                 if (!flat)
                   {
                     ll = map[y][x-1] + offsetY;
-                    if (ll == DENY_TILE_RENDER_VALUE)
+                    if (ll == TILE_NO_RENDER_VALUE)
                       ll = map[y][x];
                     lr = map[y][x] + offsetY;
                     ur = map[y-1][x] + offsetY;
-                    if (ur == DENY_TILE_RENDER_VALUE)
+                    if (ur == TILE_NO_RENDER_VALUE)
                       ur = map[y][x];
                     ul = map[y-1][x-1] + offsetY;
-                    if (ul == DENY_TILE_RENDER_VALUE)
+                    if (ul == TILE_NO_RENDER_VALUE)
                       ul = map[y][x];
                   }
                 else

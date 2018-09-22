@@ -4,25 +4,25 @@ ShaderManager::ShaderManager()
 {
   shaders.assign(
   {
-    {SHADER_HILLS_FC,           Shader("/shaders/hillsFC.vs", "/shaders/hillsFC.gs", "/shaders/_FC.fs")},
-    {SHADER_HILLS_NOFC,         Shader("/shaders/hills.vs", "/shaders/hills.fs")},
-    {SHADER_SHORE,              Shader("/shaders/shore.vs", "/shaders/shore.fs")},
-    {SHADER_UNDERWATER,         Shader("/shaders/underwater.vs", "/shaders/underwater.fs")},
-    {SHADER_FLAT,               Shader("/shaders/flat.vs", "/shaders/flat.fs")},
-    {SHADER_WATER_FC,           Shader("/shaders/waterFC.vs", "/shaders/waterFC.gs", "/shaders/_FC.fs")},
-    {SHADER_WATER_NOFC,         Shader("/shaders/water.vs", "/shaders/water.fs")},
-    {SHADER_SKY,                Shader("/shaders/skybox.vs", "/shaders/skybox.fs")},
-    {SHADER_MODELS,             Shader("/shaders/model.vs", "/shaders/model.fs")},
-    {SHADER_FONT,               Shader("/shaders/font.vs", "/shaders/font.fs")},
-    {SHADER_CS,                 Shader("/shaders/coordinateSystem.vs", "/shaders/coordinateSystem.gs", "/shaders/coordinateSystem.fs")},
-    {SHADER_BUILDABLE,          Shader("/shaders/buildableTiles.vs", "/shaders/buildableTiles.fs")},
-    {SHADER_SELECTED,           Shader("/shaders/selectedTile.vs", "/shaders/selectedTile.fs")},
-    {SHADER_MS_TO_DEFAULT,      Shader("/shaders/MS_toDefault.vs", "/shaders/MS_toDefault_hdr.fs")},
-    {SHADER_SHADOW_TERRAIN,     Shader("/shaders/terrain_shadow.vs")},
-    {SHADER_SHADOW_MODELS,      Shader("/shaders/model_shadow.vs")},
-    {SHADER_SHADOW_TERRAIN_CAMERA,      Shader("/shaders/terrain_shadow.vs")},
-    {SHADER_SHADOW_MODELS_CAMERA,       Shader("/shaders/model_shadow.vs")},
-    {SHADER_MODELS_PHONG,       Shader("/shaders/modelPhong.vs", "/shaders/modelPhong.fs")}
+    {SHADER_HILLS_FC,               Shader("hillsFC.vs", "hillsFC.gs", "_FC.fs")},
+    {SHADER_HILLS_NOFC,             Shader("hills.vs", "hills.fs")},
+    {SHADER_SHORE,                  Shader("shore.vs", "shore.fs")},
+    {SHADER_UNDERWATER,             Shader("underwater.vs", "underwater.fs")},
+    {SHADER_FLAT,                   Shader("flat.vs", "flat.fs")},
+    {SHADER_WATER_FC,               Shader("waterFC.vs", "waterFC.gs", "_FC.fs")},
+    {SHADER_WATER_NOFC,             Shader("water.vs", "water.fs")},
+    {SHADER_SKY,                    Shader("skybox.vs", "skybox.fs")},
+    {SHADER_MODELS,                 Shader("model.vs", "model.fs")},
+    {SHADER_FONT,                   Shader("font.vs", "font.fs")},
+    {SHADER_CS,                     Shader("coordinateSystem.vs", "coordinateSystem.gs", "coordinateSystem.fs")},
+    {SHADER_BUILDABLE,              Shader("buildableTiles.vs", "buildableTiles.fs")},
+    {SHADER_SELECTED,               Shader("selectedTile.vs", "selectedTile.fs")},
+    {SHADER_MS_TO_DEFAULT,          Shader("MS_toDefault.vs", "MS_toDefault_hdr.fs")},
+    {SHADER_SHADOW_TERRAIN,         Shader("terrain_shadow.vs")},
+    {SHADER_SHADOW_MODELS,          Shader("model_shadow.vs")},
+    {SHADER_SHADOW_TERRAIN_CAMERA,  Shader("terrain_shadow.vs")},
+    {SHADER_SHADOW_MODELS_CAMERA,   Shader("model_shadow.vs")},
+    {SHADER_MODELS_PHONG,           Shader("modelPhong.vs", "modelPhong.fs")}
         });
 }
 
@@ -38,7 +38,7 @@ void ShaderManager::setupConstantUniforms()
   shader->setInt("u_hills_specular", HILL_SPECULAR);
   shader->setInt("u_diffuse_mix_map", DIFFUSE_MIX_MAP);
   shader->setInt("u_normal_map", TERRAIN_NORMAL);
-  shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
+  shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
 
@@ -50,11 +50,11 @@ void ShaderManager::setupConstantUniforms()
   shader->setInt("u_sand_diffuse2", SHORE_2);
   shader->setInt("u_diffuse_mix_map", DIFFUSE_MIX_MAP);
   shader->setInt("u_normal_map", TERRAIN_NORMAL);
-  shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
+  shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
-  shader->setFloat("U_UNDERWATER_BASE_TILE_HEIGHT", -UNDERWATER_BASE_TILE_HEIGHT);
+  shader->setFloat("U_UNDERWATER_TILE_YPOS", -UNDERWATER_TILE_YPOS);
 
   shader = &shaders[SHADER_UNDERWATER].second;
   shader->use();
@@ -62,7 +62,7 @@ void ShaderManager::setupConstantUniforms()
   shader->setInt("u_bottomRelief_diffuse", UNDERWATER_RELIEF);
   shader->setInt("u_normal_map", TERRAIN_NORMAL);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
+  shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
 
   shader = &shaders[SHADER_FLAT].second;
   shader->use();
@@ -70,7 +70,7 @@ void ShaderManager::setupConstantUniforms()
   shader->setInt("u_flat_diffuse2", FLAT_2);
   shader->setInt("u_diffuse_mix_map", DIFFUSE_MIX_MAP);
   shader->setInt("u_normal_map", TERRAIN_NORMAL);
-  shader->setFloat("u_mapDimension", 1.0f / (float)TILES_WIDTH);
+  shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
@@ -82,7 +82,7 @@ void ShaderManager::setupConstantUniforms()
   shader->setInt("u_bottomRelief_diffuse", UNDERWATER_RELIEF);
   shader->setInt("u_normal_map", WATER_NORMAL);
   shader->setInt("u_specular_map", WATER_SPECULAR);
-  shader->setFloat("u_mapDimension", 1.0f / TILES_WIDTH);
+  shader->setFloat("u_mapDimension", 1.0f / WORLD_WIDTH);
 
   shader = &shaders[SHADER_SKY].second;
   shader->use();

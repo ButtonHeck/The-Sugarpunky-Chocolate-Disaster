@@ -27,7 +27,7 @@ BaseMapGenerator::~BaseMapGenerator()
   deleteGLObjects();
 }
 
-void BaseMapGenerator::prepareMap(bool randomizeShoreFlag)
+void BaseMapGenerator::prepareMap()
 {
   generateMap();
   for (unsigned int i = 0; i < 5; i++)
@@ -38,13 +38,12 @@ void BaseMapGenerator::prepareMap(bool randomizeShoreFlag)
       float diagonalWeight = evenWeight;
       smoothMapHeightChunks(baseWeight, evenWeight, diagonalWeight);
     }
-  if (randomizeShoreFlag)
-    randomizeShore();
+  randomizeShore();
   compressMap(2.0f);
   correctMapAtEdges();
   splitSquareChunks(CHUNK_SIZE);
   squareTiles.shrink_to_fit();
-  removeUnderwaterTiles(UNDERWATER_REMOVAL_LEVEL);
+  removeUnderwaterTiles(SHORE_CLIP_LEVEL);
   tiles.shrink_to_fit();
   splitCellChunks(CHUNK_SIZE);
   splitShoreChunks(CHUNK_SIZE);
@@ -65,9 +64,9 @@ void BaseMapGenerator::fillShoreBufferData()
           TerrainTile& tile = tiles[shoreChunks[i].getInstanceOffset() + c];
           int x = tile.mapX, y = tile.mapY;
           //ll1
-          vertices[bytesToBuffer++] =   -1- HALF_TILES_WIDTH + tile.mapX;
+          vertices[bytesToBuffer++] =   -1- HALF_WORLD_WIDTH + tile.mapX;
           vertices[bytesToBuffer++] = tile.lowLeft;
-          vertices[bytesToBuffer++] = - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[bytesToBuffer++] = - HALF_WORLD_HEIGHT + tile.mapY;
           vertices[bytesToBuffer++] = 0.0f;
           vertices[bytesToBuffer++] = 0.0f;
           vertices[bytesToBuffer++] = shoreNormals[y][x-1].x;
@@ -75,9 +74,9 @@ void BaseMapGenerator::fillShoreBufferData()
           vertices[bytesToBuffer++] = shoreNormals[y][x-1].z;
           ++shoreVerticesToDraw;
           //lr1
-          vertices[bytesToBuffer++] =  - HALF_TILES_WIDTH + tile.mapX;
+          vertices[bytesToBuffer++] =  - HALF_WORLD_WIDTH + tile.mapX;
           vertices[bytesToBuffer++] =  tile.lowRight;
-          vertices[bytesToBuffer++] = - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[bytesToBuffer++] = - HALF_WORLD_HEIGHT + tile.mapY;
           vertices[bytesToBuffer++] = 1.0f;
           vertices[bytesToBuffer++] = 0.0f;
           vertices[bytesToBuffer++] = shoreNormals[y][x].x;
@@ -85,9 +84,9 @@ void BaseMapGenerator::fillShoreBufferData()
           vertices[bytesToBuffer++] = shoreNormals[y][x].z;
           ++shoreVerticesToDraw;
           //ur1
-          vertices[bytesToBuffer++] = - HALF_TILES_WIDTH + tile.mapX;
+          vertices[bytesToBuffer++] = - HALF_WORLD_WIDTH + tile.mapX;
           vertices[bytesToBuffer++] = tile.upperRight;
-          vertices[bytesToBuffer++] = -1 - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[bytesToBuffer++] = -1 - HALF_WORLD_HEIGHT + tile.mapY;
           vertices[bytesToBuffer++] = 1.0f;
           vertices[bytesToBuffer++] = 1.0f;
           vertices[bytesToBuffer++] = shoreNormals[y-1][x].x;
@@ -95,9 +94,9 @@ void BaseMapGenerator::fillShoreBufferData()
           vertices[bytesToBuffer++] = shoreNormals[y-1][x].z;
           ++shoreVerticesToDraw;
           //ur2
-          vertices[bytesToBuffer++] = - HALF_TILES_WIDTH + tile.mapX;
+          vertices[bytesToBuffer++] = - HALF_WORLD_WIDTH + tile.mapX;
           vertices[bytesToBuffer++] = tile.upperRight;
-          vertices[bytesToBuffer++] = -1 - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[bytesToBuffer++] = -1 - HALF_WORLD_HEIGHT + tile.mapY;
           vertices[bytesToBuffer++] = 1.0f;
           vertices[bytesToBuffer++] = 1.0f;
           vertices[bytesToBuffer++] = shoreNormals[y-1][x].x;
@@ -105,9 +104,9 @@ void BaseMapGenerator::fillShoreBufferData()
           vertices[bytesToBuffer++] = shoreNormals[y-1][x].z;
           ++shoreVerticesToDraw;
           //ul2
-          vertices[bytesToBuffer++] = -1 - HALF_TILES_WIDTH + tile.mapX;
+          vertices[bytesToBuffer++] = -1 - HALF_WORLD_WIDTH + tile.mapX;
           vertices[bytesToBuffer++] = tile.upperLeft;
-          vertices[bytesToBuffer++] = -1 - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[bytesToBuffer++] = -1 - HALF_WORLD_HEIGHT + tile.mapY;
           vertices[bytesToBuffer++] = 0.0f;
           vertices[bytesToBuffer++] = 1.0f;
           vertices[bytesToBuffer++] = shoreNormals[y-1][x-1].x;
@@ -115,9 +114,9 @@ void BaseMapGenerator::fillShoreBufferData()
           vertices[bytesToBuffer++] = shoreNormals[y-1][x-1].z;
           ++shoreVerticesToDraw;
           //ll2
-          vertices[bytesToBuffer++] = -1- HALF_TILES_WIDTH + tile.mapX;
+          vertices[bytesToBuffer++] = -1- HALF_WORLD_WIDTH + tile.mapX;
           vertices[bytesToBuffer++] = tile.lowLeft;
-          vertices[bytesToBuffer++] = - HALF_TILES_HEIGHT + tile.mapY;
+          vertices[bytesToBuffer++] = - HALF_WORLD_HEIGHT + tile.mapY;
           vertices[bytesToBuffer++] = 0.0f;
           vertices[bytesToBuffer++] = 0.0f;
           vertices[bytesToBuffer++] = shoreNormals[y][x-1].x;
@@ -160,7 +159,7 @@ void BaseMapGenerator::fillSquareBufferData()
     {
       glm::mat4 model;
       TerrainTile& tile = squareTiles[i];
-      model = glm::translate(model, glm::vec3(- HALF_TILES_WIDTH + tile.mapX + CHUNK_SIZE / 2, 0.0f, - HALF_TILES_HEIGHT + tile.mapY + CHUNK_SIZE / 2));
+      model = glm::translate(model, glm::vec3(- HALF_WORLD_WIDTH + tile.mapX + CHUNK_SIZE / 2, 0.0f, - HALF_WORLD_HEIGHT + tile.mapY + CHUNK_SIZE / 2));
       model = glm::scale(model, glm::vec3(CHUNK_SIZE / 2, 0.0f, CHUNK_SIZE / 2));
       baseInstanceChunkModels[i] = model;
     }
@@ -200,7 +199,7 @@ void BaseMapGenerator::fillCellBufferData()
     {
       glm::mat4 model;
       TerrainTile& tile = cellTiles[i];
-      model = glm::translate(model, glm::vec3(- HALF_TILES_WIDTH + tile.mapX, 0.0f, -HALF_TILES_HEIGHT + tile.mapY - 1));
+      model = glm::translate(model, glm::vec3(- HALF_WORLD_WIDTH + tile.mapX, 0.0f, -HALF_WORLD_HEIGHT + tile.mapY - 1));
       cellInstanceModels[i] = model;
     }
 
@@ -219,9 +218,9 @@ void BaseMapGenerator::fillCellBufferData()
 void BaseMapGenerator::generateMap()
 {
   std::uniform_real_distribution<float> distribution(0.9f, 1.1f);
-  for (unsigned int y = 0; y <= TILES_HEIGHT; y++)
+  for (unsigned int y = 0; y <= WORLD_HEIGHT; y++)
     {
-      for (unsigned int x = 0; x <= TILES_WIDTH; x++)
+      for (unsigned int x = 0; x <= WORLD_WIDTH; x++)
         {
           map[y][x] = waterMap[y][x] * 1.1f * distribution(randomizer);
         }
@@ -232,36 +231,36 @@ void BaseMapGenerator::smoothMap()
 {
   float waterLevel = WATER_LEVEL + 0.25f;
   //smooth tile below on map
-  for (unsigned int y = 1; y < TILES_HEIGHT + 1; y++)
+  for (unsigned int y = 1; y < WORLD_HEIGHT + 1; y++)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH + 1; x++)
+      for (unsigned int x = 0; x < WORLD_WIDTH + 1; x++)
         {
           if (map[y-1][x] < waterLevel - waterLevel / 4)
             map[y][x] += waterLevel / 2.0f;
         }
     }
   //smooth tile upper on map
-  for (unsigned int y = 0; y < TILES_HEIGHT; y++)
+  for (unsigned int y = 0; y < WORLD_HEIGHT; y++)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH + 1; x++)
+      for (unsigned int x = 0; x < WORLD_WIDTH + 1; x++)
         {
           if (map[y+1][x] < waterLevel - waterLevel / 4)
             map[y][x] += waterLevel / 2.0f;
         }
     }
   //smooth tile left on map
-  for (unsigned int y = 0; y < TILES_HEIGHT + 1; y++)
+  for (unsigned int y = 0; y < WORLD_HEIGHT + 1; y++)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x++)
+      for (unsigned int x = 0; x < WORLD_WIDTH; x++)
         {
           if (map[y][x+1] < waterLevel - waterLevel / 4)
             map[y][x] += waterLevel / 2.0f;
         }
     }
   //smooth tile right on map
-  for (unsigned int y = 0; y < TILES_HEIGHT + 1; y++)
+  for (unsigned int y = 0; y < WORLD_HEIGHT + 1; y++)
     {
-      for (unsigned int x = 1; x < TILES_WIDTH + 1; x++)
+      for (unsigned int x = 1; x < WORLD_WIDTH + 1; x++)
         {
           if (map[y][x-1] < waterLevel - waterLevel / 4)
             map[y][x] += waterLevel / 2.0f;
@@ -273,9 +272,9 @@ void BaseMapGenerator::smoothMapHeightChunks(float baseWeight, float evenWeight,
 {
   std::vector<std::vector<float>> shoreMapSmoothed;
   initializeMap(shoreMapSmoothed);
-  for (unsigned int y = 1; y < TILES_HEIGHT; y++)
+  for (unsigned int y = 1; y < WORLD_HEIGHT; y++)
     {
-      for (unsigned int x = 1; x < TILES_WIDTH; x++)
+      for (unsigned int x = 1; x < WORLD_WIDTH; x++)
         {
           if (map[y][x] == 0)
             continue;
@@ -298,9 +297,9 @@ void BaseMapGenerator::smoothMapHeightChunks(float baseWeight, float evenWeight,
 void BaseMapGenerator::randomizeShore()
 {
   std::uniform_real_distribution<float> distribution(-0.24f, 0.24f);
-  for (unsigned int y = 0; y < TILES_HEIGHT; y++)
+  for (unsigned int y = 0; y < WORLD_HEIGHT; y++)
     {
-      for (unsigned int x = 0; x < TILES_WIDTH; x++)
+      for (unsigned int x = 0; x < WORLD_WIDTH; x++)
         {
           if (map[y][x] < 0)
             map[y][x] += distribution(randomizer);
@@ -311,20 +310,20 @@ void BaseMapGenerator::randomizeShore()
 void BaseMapGenerator::correctMapAtEdges()
 {
   //correct top and bottom sides of the map
-  for (unsigned int x = 0; x < TILES_WIDTH; ++x)
+  for (unsigned int x = 0; x < WORLD_WIDTH; ++x)
     {
       if (waterMap[0][x] != 0)
         map[0][x] = map[1][x];
-      if (waterMap[TILES_HEIGHT][x] != 0)
-        map[TILES_HEIGHT][x] = map[TILES_HEIGHT - 1][x];
+      if (waterMap[WORLD_HEIGHT][x] != 0)
+        map[WORLD_HEIGHT][x] = map[WORLD_HEIGHT - 1][x];
     }
   //correct left and right sides of the map
-  for (unsigned int y = 0; y < TILES_HEIGHT; ++y)
+  for (unsigned int y = 0; y < WORLD_HEIGHT; ++y)
     {
       if (waterMap[y][0] != 0)
         map[y][0] = map[y][1];
-      if (waterMap[y][TILES_WIDTH] != 0)
-        map[y][TILES_WIDTH] = map[y][TILES_WIDTH - 1];
+      if (waterMap[y][WORLD_WIDTH] != 0)
+        map[y][WORLD_WIDTH] = map[y][WORLD_WIDTH - 1];
     }
 }
 
@@ -344,19 +343,19 @@ void BaseMapGenerator::splitSquareChunks(int chunkSize)
 {
   squareChunks.clear();
   unsigned int chunkOffset = 0;
-  for (int y = 0; y < TILES_HEIGHT - chunkSize + 1; y += chunkSize)
+  for (int y = 0; y < WORLD_HEIGHT - chunkSize + 1; y += chunkSize)
     {
-      for (int x = 0; x < TILES_WIDTH - chunkSize + 1; x += chunkSize)
+      for (int x = 0; x < WORLD_WIDTH - chunkSize + 1; x += chunkSize)
         {
           bool emptyChunk = true;
           for (int y1 = y; y1 < y + chunkSize; y1++)
             {
               for (int x1 = x; x1 < x + chunkSize; x1++)
                 {
-                  if ((map[y1][x1] != 0 && map[y1][x1] != DENY_TILE_RENDER_VALUE)
-                      || (map[y1+1][x1] != 0 && map[y1+1][x1] != DENY_TILE_RENDER_VALUE)
-                      || (map[y1+1][x1+1] != 0 && map[y1+1][x1+1] != DENY_TILE_RENDER_VALUE)
-                      || (map[y1][x1+1] != 0 && map[y1][x1+1] != DENY_TILE_RENDER_VALUE))
+                  if ((map[y1][x1] != 0 && map[y1][x1] != TILE_NO_RENDER_VALUE)
+                      || (map[y1+1][x1] != 0 && map[y1+1][x1] != TILE_NO_RENDER_VALUE)
+                      || (map[y1+1][x1+1] != 0 && map[y1+1][x1+1] != TILE_NO_RENDER_VALUE)
+                      || (map[y1][x1+1] != 0 && map[y1][x1+1] != TILE_NO_RENDER_VALUE))
                     {
                       emptyChunk = false;
                       break;
@@ -372,7 +371,7 @@ void BaseMapGenerator::splitSquareChunks(int chunkSize)
                   for (int xdel = x + 1; xdel < x + chunkSize; xdel++)
                     {
                       map[ydel][xdel] = 0;
-                      chunkMap[ydel][xdel] = DENY_CHUNK_RENDER_VALUE;
+                      chunkMap[ydel][xdel] = CHUNK_NO_RENDER_VALUE;
                     }
                 }
               squareTiles.emplace_back(x, y, 0, 0, 0, 0, false);
@@ -388,37 +387,37 @@ void BaseMapGenerator::splitShoreChunks(int chunkSize)
   tiles.clear();
   shoreChunks.clear();
   shoreNormals.clear();
-  shoreNormals.reserve(TILES_HEIGHT + 1);
-  for (size_t row = 0; row < TILES_HEIGHT + 1; row++)
+  shoreNormals.reserve(WORLD_HEIGHT + 1);
+  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
     {
       glm::vec3 emptyNormal(0.0f);
-      std::vector<glm::vec3> emptyVec(TILES_WIDTH + 1, emptyNormal);
+      std::vector<glm::vec3> emptyVec(WORLD_WIDTH + 1, emptyNormal);
       shoreNormals.emplace_back(emptyVec);
     }
   unsigned int offset = 0;
-  for (int y = 0; y < TILES_HEIGHT - chunkSize + 1; y += chunkSize)
+  for (int y = 0; y < WORLD_HEIGHT - chunkSize + 1; y += chunkSize)
     {
-      for (int x = 0; x < TILES_WIDTH - chunkSize + 1; x += chunkSize)
+      for (int x = 0; x < WORLD_WIDTH - chunkSize + 1; x += chunkSize)
         {
           unsigned int instances = 0;
           for (int y1 = y + 1; y1 < y + chunkSize + 1; y1++)
             {
               for (int x1 = x + 1; x1 < x + chunkSize + 1; x1++)
                 {
-                  if (map[y1][x1] == DENY_TILE_RENDER_VALUE)
+                  if (map[y1][x1] == TILE_NO_RENDER_VALUE)
                     continue;
                   bool toCreate = map[y1][x1] != 0 || map[y1-1][x1] != 0 || map[y1][x1-1] != 0 || map[y1-1][x1-1] != 0;
                     if (toCreate)
                       {
                         float ll = map[y1][x1-1];
-                        if (ll == DENY_TILE_RENDER_VALUE)
+                        if (ll == TILE_NO_RENDER_VALUE)
                           ll = map[y1][x1];
                         float lr = map[y1][x1];
                         float ur = map[y1-1][x1];
-                        if (ur == DENY_TILE_RENDER_VALUE)
+                        if (ur == TILE_NO_RENDER_VALUE)
                           ur = map[y1][x1];
                         float ul = map[y1-1][x1-1];
-                        if (ul == DENY_TILE_RENDER_VALUE)
+                        if (ul == TILE_NO_RENDER_VALUE)
                           ul = map[y1][x1];
                         tiles.emplace_back(x1, y1, ll, lr, ur, ul);
                         instances++;
@@ -450,9 +449,9 @@ void BaseMapGenerator::splitShoreChunks(int chunkSize)
 
 void BaseMapGenerator::removeUnderwaterTiles(float thresholdValue)
 {
-  for (unsigned int y = 1; y < TILES_HEIGHT; y++)
+  for (unsigned int y = 1; y < WORLD_HEIGHT; y++)
     {
-      for (unsigned int x = 1; x < TILES_WIDTH; x++)
+      for (unsigned int x = 1; x < WORLD_WIDTH; x++)
         {
           if (map[y-1][x-1] < thresholdValue
               && map[y-1][x] < thresholdValue
@@ -463,7 +462,7 @@ void BaseMapGenerator::removeUnderwaterTiles(float thresholdValue)
               && map[y+1][x-1] < thresholdValue
               && map[y+1][x] < thresholdValue
               && map[y+1][x+1] < thresholdValue)
-            map[y][x] = DENY_TILE_RENDER_VALUE;
+            map[y][x] = TILE_NO_RENDER_VALUE;
         }
     }
 }
@@ -472,9 +471,9 @@ void BaseMapGenerator::splitCellChunks(int chunkSize)
 {
   cellChunks.clear();
   unsigned int offset = 0;
-  for (int y = 0; y < TILES_HEIGHT - chunkSize + 1; y += chunkSize)
+  for (int y = 0; y < WORLD_HEIGHT - chunkSize + 1; y += chunkSize)
     {
-      for (int x = 0; x < TILES_WIDTH - chunkSize + 1; x += chunkSize)
+      for (int x = 0; x < WORLD_WIDTH - chunkSize + 1; x += chunkSize)
         {
           unsigned int instances = 0;
           for (int y1 = y+1; y1 < y + chunkSize + 1; y1++)
@@ -486,10 +485,10 @@ void BaseMapGenerator::splitCellChunks(int chunkSize)
                        && map[y1-1][x1+1] == 0
                        && map[y1][x1+1] == 0)
                       &&
-                      (chunkMap[y1][x1] != DENY_CHUNK_RENDER_VALUE
-                       && chunkMap[y1-1][x1] != DENY_CHUNK_RENDER_VALUE
-                       && chunkMap[y1-1][x1+1] != DENY_CHUNK_RENDER_VALUE
-                       && chunkMap[y1][x1+1] != DENY_CHUNK_RENDER_VALUE))
+                      (chunkMap[y1][x1] != CHUNK_NO_RENDER_VALUE
+                       && chunkMap[y1-1][x1] != CHUNK_NO_RENDER_VALUE
+                       && chunkMap[y1-1][x1+1] != CHUNK_NO_RENDER_VALUE
+                       && chunkMap[y1][x1+1] != CHUNK_NO_RENDER_VALUE))
                     {
                       cellTiles.emplace_back(x1, y1, 0, 0, 0, 0, false);
                       instances++;

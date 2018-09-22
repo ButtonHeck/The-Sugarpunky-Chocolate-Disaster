@@ -4,7 +4,7 @@ bool Shader::cachedUniforms = false;
 
 Shader::Shader(const std::string &vertexFile)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile));
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile));
   ID = glCreateProgram();
   glAttachShader(ID, vertex);
   glLinkProgram(ID);
@@ -19,8 +19,8 @@ Shader::Shader(const std::string &vertexFile)
 
 Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::string &fragmentFile)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile));
-  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(RES_DIR + fragmentFile));
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile));
+  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(SHADER_DIR + fragmentFile));
   ID = glCreateProgram();
   glAttachShader(ID, vertex);
   glAttachShader(ID, fragment);
@@ -37,9 +37,9 @@ Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::strin
 
 Shader::Shader(const std::string &vertexFile, const std::string &geometryFile, const std::string &fragmentFile)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(RES_DIR + vertexFile));
-  GLuint geometry = loadShader(GL_GEOMETRY_SHADER, std::string(RES_DIR + geometryFile));
-  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(RES_DIR + fragmentFile));
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile));
+  GLuint geometry = loadShader(GL_GEOMETRY_SHADER, std::string(SHADER_DIR + geometryFile));
+  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(SHADER_DIR + fragmentFile));
   ID = glCreateProgram();
   glAttachShader(ID, vertex);
   glAttachShader(ID, geometry);
