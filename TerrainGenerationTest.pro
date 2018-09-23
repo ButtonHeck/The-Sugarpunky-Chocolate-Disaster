@@ -11,7 +11,6 @@ SOURCES += \
     src/game/main.cpp \
     src/game/Game.cpp \
     src/game/Settings.cpp \
-    src/game/InputController.cpp \
     src/game/SaveLoadManager.cpp \
     src/game/Options.cpp \
     src/graphics/Shader.cpp \
@@ -38,12 +37,14 @@ SOURCES += \
     src/chunk/Chunk.cpp \
     src/chunk/TerrainChunk.cpp \
     src/timer/BenchmarkTimer.cpp \
-    src/model/IndirectBufferToken.cpp
+    src/model/IndirectBufferToken.cpp \
+    src/input/KeyboardManager.cpp \
+    src/input/MouseInputManager.cpp
 
 HEADERS += \
     src/game/Game.h \
     src/game/Settings.h \
-    src/game/InputController.h \
+    src/game/TextureUnits.h \
     src/game/SaveLoadManager.h \
     src/game/Options.h \
     src/graphics/Shader.h \
@@ -72,7 +73,8 @@ HEADERS += \
     src/timer/BenchmarkTimer.h \
     src/timer/Timer.h \
     src/model/IndirectBufferToken.h \
-    src/game/TextureUnits.h
+    src/input/KeyboardManager.h \
+    src/input/MouseInputManager.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

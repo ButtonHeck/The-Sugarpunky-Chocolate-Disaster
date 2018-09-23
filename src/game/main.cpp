@@ -57,7 +57,6 @@ void APIENTRY glDebugCallback(GLenum source,
 int scr_width;
 int scr_height;
 float aspect_ratio;
-unsigned long updateCount = 0;
 GLFWwindow* window;
 Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
 glm::vec3 cursorToViewportDirection;
@@ -82,7 +81,7 @@ int main()
   scr_width = vidmode->width;
   scr_height = vidmode->height;
   aspect_ratio = (float)scr_width / (float)scr_height;
-  window = glfwCreateWindow(scr_width, scr_height, "Terrain Test", monitor, 0);
+  window = glfwCreateWindow(scr_width, scr_height, "The Sugarpunky Chocolate Disaster", monitor, 0);
   glfwMakeContextCurrent(window);
   glewExperimental = GL_TRUE;
   glewInit();
@@ -98,12 +97,9 @@ int main()
     }
 #endif
   game = new Game(window, cursorToViewportDirection, camera, options, scr_width, scr_height, aspect_ratio);
-  {
-    BENCHMARK("main.cpp: game object setup variables", false);
-    game->setupVariables();
-  }
+  game->setupVariables();
 
-  //MAIN LOOP
+  //game loop
   std::thread inputHandlingThread([]()
     {
       while(!glfwWindowShouldClose(window))
@@ -122,5 +118,4 @@ int main()
   delete game;
   glfwDestroyWindow(window);
   glfwTerminate();
-  BenchmarkTimer::finish(updateCount);
 }

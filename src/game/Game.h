@@ -8,7 +8,8 @@
 #include "game/Settings.h"
 #include "game/TextureUnits.h"
 #include "game/Options.h"
-#include "game/InputController.h"
+#include "input/KeyboardManager.h"
+#include "input/MouseInputManager.h"
 #include "game/SaveLoadManager.h"
 #include "graphics/Camera.h"
 #include "graphics/Renderer.h"
@@ -22,8 +23,6 @@
 #include "model/Model.h"
 #include "timer/Timer.h"
 #include "timer/BenchmarkTimer.h"
-
-extern unsigned long updateCount;
 
 class Game
 {
@@ -40,6 +39,7 @@ public:
   void drawFrameObjectsDepthmap();
   void loop();
 private:
+  unsigned long updateCount = 0;
   int scr_width;
   int scr_height;
   float aspect_ratio;
@@ -50,7 +50,8 @@ private:
   Renderer renderer = Renderer(camera);
   Frustum viewFrustum;
   Options& options;
-  InputController input;
+  KeyboardManager keyboard = KeyboardManager(window, camera, options);
+  MouseInputManager mouseInput;
   TextureLoader textureLoader;
   ShaderManager shaderManager;
   WaterMapGenerator* waterMapGenerator = new WaterMapGenerator(shaderManager.get(SHADER_WATER_FC));

@@ -40,6 +40,7 @@ Game::~Game()
   delete saveLoadManager;
   delete buildableMapGenerator;
   delete treeGenerator;
+  BenchmarkTimer::finish(updateCount);
 }
 
 void Game::setupVariables()
@@ -53,51 +54,48 @@ void Game::setupVariables()
   else
     glDisable(GL_MULTISAMPLE);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glfwSetCursorPosCallback(window, input.cursorCallback);
-  glfwSetMouseButtonCallback(window, input.cursorClickCallback);
+  glfwSetCursorPosCallback(window, MouseInputManager::cursorCallback);
+  glfwSetMouseButtonCallback(window, MouseInputManager::cursorClickCallback);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-  {
-    BENCHMARK("Game: Loading models", false);
-    Model tree1("tree1/tree1.obj", textureLoader);
-    Model tree1_2("tree1_2/tree1_2.obj", textureLoader);
-    Model tree2("tree2/tree2.obj", textureLoader);
-    Model tree2_2("tree2_2/tree2_2.obj", textureLoader);
-    Model tree3("tree3/tree3.obj", textureLoader);
-    Model tree3_2("tree3_2/tree3_2.obj", textureLoader);
-    Model tree4("tree4/tree4.obj", textureLoader);
-    Model tree5("tree5/tree5.obj", textureLoader);
-    Model tree5_2("tree5_2/tree5_2.obj", textureLoader);
-    Model tree6("tree6/tree6.obj", textureLoader);
-    Model tree6_2("tree6_2/tree6_2.obj", textureLoader);
-    Model tree7("tree7/tree7.obj", textureLoader);
-    Model tree8("tree8/tree8.obj", textureLoader);
-    Model grass1("grass1/grass1.obj", textureLoader);
-    Model grass2("grass2/grass2.obj", textureLoader);
-    Model grass3("grass3/grass3.obj", textureLoader);
-    Model grass4("grass4/grass4.obj", textureLoader);
-    Model grass5("grass5/grass5.obj", textureLoader);
-    Model grass6("grass6/grass6.obj", textureLoader);
-    Model hillTree1("hillTree1/hillTree1.obj", textureLoader);
-    Model hillTree2("hillTree2/hillTree2.obj", textureLoader);
-    Model hillTree3("hillTree3/hillTree3.obj", textureLoader);
-    Model hillTree4("hillTree4/hillTree4.obj", textureLoader);
-    Model hillTree5("hillTree5/hillTree5.obj", textureLoader);
-    Model hillTree6("hillTree6/hillTree6.obj", textureLoader);
-    Model hillTree7("hillTree7/hillTree7.obj", textureLoader);
-    Model hillTree8("hillTree1/hillTree1.obj", textureLoader);
-    Model hillTree9("hillTree3/hillTree3.obj", textureLoader);
-    Model hillTree10("hillTree7/hillTree7.obj", textureLoader);
-    Model hillTree11("hillTree1/hillTree1.obj", textureLoader);
-    Model hillTree12("hillTree3/hillTree3.obj", textureLoader);
-    Model hillTree13("hillTree7/hillTree7.obj", textureLoader);
-    treeGenerator = new TreeGenerator({tree1, tree1_2, tree2, tree2_2, tree3, tree3_2, tree4, tree5, tree5_2,
-                                       tree6, tree6_2, tree7, tree8,
-                                       grass1, grass2, grass3, grass4, grass5, grass6},
-        {hillTree1, hillTree2, hillTree3, hillTree4, hillTree5, hillTree6, hillTree7,
-         hillTree8, hillTree9, hillTree10, hillTree11, hillTree12, hillTree13}, NUM_GRASS_MODELS);
-  }
+  Model tree1("tree1/tree1.obj", textureLoader);
+  Model tree1_2("tree1_2/tree1_2.obj", textureLoader);
+  Model tree2("tree2/tree2.obj", textureLoader);
+  Model tree2_2("tree2_2/tree2_2.obj", textureLoader);
+  Model tree3("tree3/tree3.obj", textureLoader);
+  Model tree3_2("tree3_2/tree3_2.obj", textureLoader);
+  Model tree4("tree4/tree4.obj", textureLoader);
+  Model tree5("tree5/tree5.obj", textureLoader);
+  Model tree5_2("tree5_2/tree5_2.obj", textureLoader);
+  Model tree6("tree6/tree6.obj", textureLoader);
+  Model tree6_2("tree6_2/tree6_2.obj", textureLoader);
+  Model tree7("tree7/tree7.obj", textureLoader);
+  Model tree8("tree8/tree8.obj", textureLoader);
+  Model grass1("grass1/grass1.obj", textureLoader);
+  Model grass2("grass2/grass2.obj", textureLoader);
+  Model grass3("grass3/grass3.obj", textureLoader);
+  Model grass4("grass4/grass4.obj", textureLoader);
+  Model grass5("grass5/grass5.obj", textureLoader);
+  Model grass6("grass6/grass6.obj", textureLoader);
+  Model hillTree1("hillTree1/hillTree1.obj", textureLoader);
+  Model hillTree2("hillTree2/hillTree2.obj", textureLoader);
+  Model hillTree3("hillTree3/hillTree3.obj", textureLoader);
+  Model hillTree4("hillTree4/hillTree4.obj", textureLoader);
+  Model hillTree5("hillTree5/hillTree5.obj", textureLoader);
+  Model hillTree6("hillTree6/hillTree6.obj", textureLoader);
+  Model hillTree7("hillTree7/hillTree7.obj", textureLoader);
+  Model hillTree8("hillTree1/hillTree1.obj", textureLoader);
+  Model hillTree9("hillTree3/hillTree3.obj", textureLoader);
+  Model hillTree10("hillTree7/hillTree7.obj", textureLoader);
+  Model hillTree11("hillTree1/hillTree1.obj", textureLoader);
+  Model hillTree12("hillTree3/hillTree3.obj", textureLoader);
+  Model hillTree13("hillTree7/hillTree7.obj", textureLoader);
+  treeGenerator = new TreeGenerator({tree1, tree1_2, tree2, tree2_2, tree3, tree3_2, tree4, tree5, tree5_2,
+                                     tree6, tree6_2, tree7, tree8,
+                                     grass1, grass2, grass3, grass4, grass5, grass6},
+      {hillTree1, hillTree2, hillTree3, hillTree4, hillTree5, hillTree6, hillTree7,
+       hillTree8, hillTree9, hillTree10, hillTree11, hillTree12, hillTree13}, NUM_GRASS_MODELS);
   saveLoadManager->setTreeGenerator(*treeGenerator);
 
   {
@@ -341,16 +339,13 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   //cursor selected tile
   if (options.get(SHOW_CURSOR))
     {
-      input.updateCursorMappingCoordinates(camera, baseMapGenerator, hillMapGenerator, buildableMapGenerator);
-      if (buildableMapGenerator->getMap()[input.getCursorMapZ()][input.getCursorMapX()] != 0)
+      mouseInput.updateCursorMappingCoordinates(camera, baseMapGenerator, hillMapGenerator, buildableMapGenerator);
+      if (buildableMapGenerator->getMap()[mouseInput.getCursorMapZ()][mouseInput.getCursorMapX()] != 0)
         {
           glm::mat4 selectedModel;
-          selectedModel = glm::translate(selectedModel, glm::vec3(-HALF_WORLD_WIDTH + input.getCursorMapX(), 0.0f, -HALF_WORLD_HEIGHT + input.getCursorMapZ()));
+          selectedModel = glm::translate(selectedModel, glm::vec3(-HALF_WORLD_WIDTH + mouseInput.getCursorMapX(), 0.0f, -HALF_WORLD_HEIGHT + mouseInput.getCursorMapZ()));
           shaderManager.updateSelectedShader(projectionView, selectedModel);
-          {
-            BENCHMARK("Renderer: draw selected", true);
-            renderer.drawSelectedTile(buildableMapGenerator);
-          }
+          renderer.drawSelectedTile(buildableMapGenerator);
         }
     }
 
@@ -389,8 +384,8 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
         fontManager->addText("Cursor at: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
                                + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
                                + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 95.0f, 0.18f);
-        fontManager->addText("Cursor on map: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(input.getCursorMapX()) + ": "
-                               + std::to_string(input.getCursorMapZ()-1) + ", " + input.getCursorTileName())),
+        fontManager->addText("Cursor on map: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(mouseInput.getCursorMapX()) + ": "
+                               + std::to_string(mouseInput.getCursorMapZ()-1) + ", " + mouseInput.getCursorTileName())),
                                10.0f, (float)scr_height - 115.0f, 0.18f);
         fontManager->addText("Water culling: " + (options.get(WATER_FC) ? std::string("On") : std::string("Off")), 10.0f, 20.0f, 0.18f);
         fontManager->addText("Hills culling: " + (options.get(HILLS_FC) ? std::string("On") : std::string("Off")), 10.0f, 40.0f, 0.18f);
@@ -456,11 +451,8 @@ void Game::loop()
   }
   _meshesIndirectDataReady = false;
 
-  {
-    BENCHMARK("Input: process keyboard", true);
-    input.processKeyboard();
-    input.processKeyboardCamera(CPU_timer.tick(), hillMapGenerator->getMap());
-  }
+  keyboard.processKeyboard();
+  keyboard.processKeyboardCamera(CPU_timer.tick(), hillMapGenerator->getMap());
 
   //recreate routine
   if (options.get(RECREATE_TERRAIN_REQUEST))
