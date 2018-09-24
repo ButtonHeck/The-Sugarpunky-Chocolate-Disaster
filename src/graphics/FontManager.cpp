@@ -12,7 +12,7 @@ FontManager::FontManager(const std::string &fontFile, const std::string &texture
   auto height = ilGetInteger(IL_IMAGE_HEIGHT);
   textureHeight = height;
   glCreateTextures(GL_TEXTURE_2D, 1, &fontTexture);
-  glActiveTexture(GL_TEXTURE0 + FONT_TEXTURE);
+  glActiveTexture(GL_TEXTURE0 + TEX_FONT);
   glBindTexture(GL_TEXTURE_2D, fontTexture);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -83,7 +83,7 @@ FontManager::FontManager(const std::string &fontFile, const std::string &texture
 
   fontShader.use();
   fontShader.setMat4("u_projection", projection);
-  fontShader.setInt("u_fontTexture", FONT_TEXTURE);
+  fontShader.setInt("u_fontTexture", TEX_FONT);
 }
 
 FontManager::~FontManager()

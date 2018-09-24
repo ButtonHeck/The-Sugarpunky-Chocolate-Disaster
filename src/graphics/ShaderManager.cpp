@@ -4,13 +4,13 @@ ShaderManager::ShaderManager()
 {
   shaders.assign(
   {
-    {SHADER_HILLS_FC,               Shader("hillsFC.vs", "hillsFC.gs", "_FC.fs")},
-    {SHADER_HILLS_NOFC,             Shader("hills.vs", "hills.fs")},
+    {SHADER_HILLS_CULLING,               Shader("hillsFC.vs", "hillsFC.gs", "_FC.fs")},
+    {SHADER_HILLS,             Shader("hills.vs", "hills.fs")},
     {SHADER_SHORE,                  Shader("shore.vs", "shore.fs")},
     {SHADER_UNDERWATER,             Shader("underwater.vs", "underwater.fs")},
     {SHADER_FLAT,                   Shader("flat.vs", "flat.fs")},
-    {SHADER_WATER_FC,               Shader("waterFC.vs", "waterFC.gs", "_FC.fs")},
-    {SHADER_WATER_NOFC,             Shader("water.vs", "water.fs")},
+    {SHADER_WATER_CULLING,               Shader("waterFC.vs", "waterFC.gs", "_FC.fs")},
+    {SHADER_WATER,             Shader("water.vs", "water.fs")},
     {SHADER_SKY,                    Shader("skybox.vs", "skybox.fs")},
     {SHADER_MODELS,                 Shader("model.vs", "model.fs")},
     {SHADER_FONT,                   Shader("font.vs", "font.fs")},
@@ -28,81 +28,81 @@ ShaderManager::ShaderManager()
 
 void ShaderManager::setupConstantUniforms()
 {
-  Shader* shader = &shaders[SHADER_HILLS_NOFC].second;
+  Shader* shader = &shaders[SHADER_HILLS].second;
   shader->use();
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  shader->setInt("u_flat_diffuse", FLAT_x2);
-  shader->setInt("u_flat_diffuse2", FLAT_2_x2);
-  shader->setInt("u_hills_diffuse", HILL);
-  shader->setInt("u_hills_diffuse2", HILL_2);
-  shader->setInt("u_hills_specular", HILL_SPECULAR);
-  shader->setInt("u_diffuse_mix_map", DIFFUSE_MIX_MAP);
-  shader->setInt("u_normal_map", TERRAIN_NORMAL);
+  shader->setInt("u_flat_diffuse", TEX_FLAT_x2);
+  shader->setInt("u_flat_diffuse2", TEX_FLAT_2_x2);
+  shader->setInt("u_hills_diffuse", TEX_HILL);
+  shader->setInt("u_hills_diffuse2", TEX_HILL_2);
+  shader->setInt("u_hills_specular", TEX_HILL_SPECULAR);
+  shader->setInt("u_diffuse_mix_map", TEX_DIFFUSE_MIX_MAP);
+  shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-  shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
+  shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
 
   shader = &shaders[SHADER_SHORE].second;
   shader->use();
-  shader->setInt("u_flat_diffuse", FLAT);
-  shader->setInt("u_flat_diffuse2", FLAT_2);
-  shader->setInt("u_sand_diffuse", SHORE);
-  shader->setInt("u_sand_diffuse2", SHORE_2);
-  shader->setInt("u_diffuse_mix_map", DIFFUSE_MIX_MAP);
-  shader->setInt("u_normal_map", TERRAIN_NORMAL);
+  shader->setInt("u_flat_diffuse", TEX_FLAT);
+  shader->setInt("u_flat_diffuse2", TEX_FLAT_2);
+  shader->setInt("u_sand_diffuse", TEX_SHORE);
+  shader->setInt("u_sand_diffuse2", TEX_SHORE_2);
+  shader->setInt("u_diffuse_mix_map", TEX_DIFFUSE_MIX_MAP);
+  shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-  shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
+  shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setFloat("U_UNDERWATER_TILE_YPOS", -UNDERWATER_TILE_YPOS);
 
   shader = &shaders[SHADER_UNDERWATER].second;
   shader->use();
-  shader->setInt("u_underwater_diffuse", UNDERWATER_DIFFUSE);
-  shader->setInt("u_bottomRelief_diffuse", UNDERWATER_RELIEF);
-  shader->setInt("u_normal_map", TERRAIN_NORMAL);
+  shader->setInt("u_underwater_diffuse", TEX_UNDERWATER_DIFFUSE);
+  shader->setInt("u_bottomRelief_diffuse", TEX_UNDERWATER_RELIEF);
+  shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
 
   shader = &shaders[SHADER_FLAT].second;
   shader->use();
-  shader->setInt("u_flat_diffuse", FLAT);
-  shader->setInt("u_flat_diffuse2", FLAT_2);
-  shader->setInt("u_diffuse_mix_map", DIFFUSE_MIX_MAP);
-  shader->setInt("u_normal_map", TERRAIN_NORMAL);
+  shader->setInt("u_flat_diffuse", TEX_FLAT);
+  shader->setInt("u_flat_diffuse2", TEX_FLAT_2);
+  shader->setInt("u_diffuse_mix_map", TEX_DIFFUSE_MIX_MAP);
+  shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-  shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
+  shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
 
-  shader = &shaders[SHADER_WATER_NOFC].second;
+  shader = &shaders[SHADER_WATER].second;
   shader->use();
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  shader->setInt("u_skybox", SKYBOX);
-  shader->setInt("u_bottomRelief_diffuse", UNDERWATER_RELIEF);
-  shader->setInt("u_normal_map", WATER_NORMAL);
-  shader->setInt("u_specular_map", WATER_SPECULAR);
+  shader->setInt("u_skybox", TEX_SKYBOX);
+  shader->setInt("u_bottomRelief_diffuse", TEX_UNDERWATER_RELIEF);
+  shader->setInt("u_normal_map", TEX_WATER_NORMAL);
+  shader->setInt("u_specular_map", TEX_WATER_SPECULAR);
   shader->setFloat("u_mapDimension", 1.0f / WORLD_WIDTH);
 
   shader = &shaders[SHADER_SKY].second;
   shader->use();
-  shader->setInt("u_skybox", SKYBOX);
+  shader->setInt("u_skybox", TEX_SKYBOX);
 
   shader = &shaders[SHADER_MODELS].second;
   shader->use();
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-  shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
+  shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
 
   shader = &shaders[SHADER_MODELS_PHONG].second;
   shader->use();
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-  shader->setInt("u_shadowMap", DEPTH_MAP_SUN);
+  shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
 
   shader = &shaders[SHADER_MS_TO_DEFAULT].second;
   shader->use();
-  shader->setInt("u_frameTexture", HDR_ENABLED ? FRAME_HDR_TEXTURE : FRAME_TEXTURE);
+  shader->setInt("u_frameTexture", HDR_ENABLED ? TEX_FRAME_HDR : TEX_FRAME);
   shader->setFloat("u_exposure", 2.2f);
 
   //below we setup shadow shader uniforms
@@ -115,7 +115,7 @@ void ShaderManager::setupConstantUniforms()
   shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
 }
 
-Shader &ShaderManager::get(SHADER_TYPE type)
+Shader &ShaderManager::get(SHADER type)
 {
   return shaders[type].second;
 }
@@ -125,7 +125,7 @@ void ShaderManager::updateHillsShaders(bool useFC, bool useShadows, glm::mat4 &p
   Shader* shader;
   if (useFC)
     {
-      shader = &shaders[SHADER_HILLS_FC].second;
+      shader = &shaders[SHADER_HILLS_CULLING].second;
       shader->use();
       shader->setVec4("u_frustumPlanes[0]", viewFrustum.getPlane(FRUSTUM_LEFT));
       shader->setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
@@ -133,7 +133,7 @@ void ShaderManager::updateHillsShaders(bool useFC, bool useShadows, glm::mat4 &p
       shader->setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
       shader->setVec4("u_frustumPlanes[4]", viewFrustum.getPlane(FRUSTUM_BACK));
     }
-  shader = &shaders[SHADER_HILLS_NOFC].second;
+  shader = &shaders[SHADER_HILLS].second;
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
   shader->setVec3("u_viewPosition", viewPosition);
@@ -184,7 +184,7 @@ void ShaderManager::updateWaterShaders(bool useFC, glm::mat4 &projectionView, gl
   Shader* shader;
   if (useFC)
     {
-      shader = &shaders[SHADER_WATER_FC].second;
+      shader = &shaders[SHADER_WATER_CULLING].second;
       shader->use();
       shader->setVec4("u_frustumPlanes[0]", viewFrustum.getPlane(FRUSTUM_LEFT));
       shader->setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
@@ -192,7 +192,7 @@ void ShaderManager::updateWaterShaders(bool useFC, glm::mat4 &projectionView, gl
       shader->setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
       shader->setVec4("u_frustumPlanes[4]", viewFrustum.getPlane(FRUSTUM_BACK));
     }
-  shader = &shaders[SHADER_WATER_NOFC].second;
+  shader = &shaders[SHADER_WATER].second;
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
   shader->setVec3("u_viewPosition", viewPosition);

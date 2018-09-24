@@ -7,14 +7,19 @@ class ModelChunk : public Chunk
 {
 public:
   ModelChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom);
+
+  //instance offsets (one unsigned int per model)
   void setInstanceOffsetsVector(std::vector<unsigned int>& instanceOffsets);
   void setInstanceOffset(unsigned int index, unsigned int offset);
-  void setNumInstancesVector(std::vector<unsigned int>& numInstances);
-  void setNumInstances(unsigned int index, unsigned int instances);
   unsigned int getInstanceOffset(int index) const;
   std::vector<unsigned int>& getInstanceOffsetVector();
+
+  //number of models instances (one unsigned int per model)
+  void setNumInstancesVector(std::vector<unsigned int>& numInstances);
+  void setNumInstances(unsigned int index, unsigned int instances);
   unsigned int getNumInstances(int index) const;
   std::vector<unsigned int>& getNumInstancesVector();
+
 private:
   std::vector<unsigned int> instanceOffsets;
   std::vector<unsigned int> numInstances;

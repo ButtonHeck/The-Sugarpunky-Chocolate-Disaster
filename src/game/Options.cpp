@@ -4,26 +4,26 @@ Options::Options()
 {
   options.assign(
   {
-    {RENDER_SHADOW_ON_TREES, true},
-    {RENDER_TREE_MODELS, true},
-    {ANIMATE_WATER, true},
-    {RENDER_DEBUG_TEXT, true},
-    {RECREATE_TERRAIN_REQUEST, false},
-    {SAVE_REQUEST, false},
-    {LOAD_REQUEST, false},
-    {SHOW_CURSOR, false},
-    {SHOW_BUILDABLE, false},
-    {MODELS_FC, true},
-    {HILLS_FC, false},
-    {WATER_FC, false},
-    {MULTISAMPLE_ENABLE, true},
-    {SHADOW_ENABLE, true},
-    {CREATE_SHADOW_MAP_REQUEST, true},
-    {RENDER_FLAT_TERRAIN, true},
-    {RENDER_WATER, true},
-    {MODELS_FLAT_BLENDING, true},
-    {MODELS_PHONG_SHADING, true},
-    {POLYGON_LINE, false}
+    {OPT_TREES_SHADOW_EMPHASIZE, true},
+    {OPT_DRAW_TREES, true},
+    {OPT_ANIMATE_WATER, true},
+    {OPT_DRAW_DEBUG_TEXT, true},
+    {OPT_RECREATE_TERRAIN_REQUEST, false},
+    {OPT_SAVE_REQUEST, false},
+    {OPT_LOAD_REQUEST, false},
+    {OPT_SHOW_CURSOR, false},
+    {OPT_DRAW_BUILDABLE, false},
+    {OPT_MODELS_CULLING, true},
+    {OPT_HILLS_CULLING, false},
+    {OPT_WATER_CULLING, false},
+    {OPT_USE_MULTISAMPLiNG, true},
+    {OPT_USE_SHADOWS, true},
+    {OPT_CREATE_SHADOW_MAP_REQUEST, true},
+    {OPT_DRAW_FLAT_TERRAIN, true},
+    {OPT_DRAW_WATER, true},
+    {OPT_MODELS_FLAT_BLENDING, true},
+    {OPT_MODELS_PHONG_SHADING, true},
+    {OPT_POLYGON_LINE, false}
   });
 }
 

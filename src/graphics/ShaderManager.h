@@ -8,15 +8,15 @@
 #include "game/TextureUnits.h"
 #include "Frustum.h"
 
-enum SHADER_TYPE
+enum SHADER
 {
-  SHADER_HILLS_FC = 0,
-  SHADER_HILLS_NOFC = 1,
+  SHADER_HILLS_CULLING = 0,
+  SHADER_HILLS = 1,
   SHADER_SHORE = 2,
   SHADER_UNDERWATER = 3,
   SHADER_FLAT = 4,
-  SHADER_WATER_FC = 5,
-  SHADER_WATER_NOFC = 6,
+  SHADER_WATER_CULLING = 5,
+  SHADER_WATER = 6,
   SHADER_SKY = 7,
   SHADER_MODELS = 8,
   SHADER_FONT = 9,
@@ -36,7 +36,7 @@ class ShaderManager
 public:
   ShaderManager();
   void setupConstantUniforms();
-  Shader& get(SHADER_TYPE type);
+  Shader& get(SHADER type);
   void updateHillsShaders(bool useFC, bool useShadows, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum, float maxHillHeight);
   void updateShoreShader(glm::mat4& projectionView, bool useShadows);
   void updateFlatShader(glm::mat4& projectionView, bool useShadows);
@@ -51,7 +51,7 @@ public:
                          bool useFlatBlending);
   void deleteShaders();
 private:
-  std::vector<std::pair<SHADER_TYPE, Shader>> shaders;
+  std::vector<std::pair<SHADER, Shader>> shaders;
 };
 
 #endif // SHADERMANAGER_H

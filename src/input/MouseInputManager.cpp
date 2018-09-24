@@ -12,7 +12,7 @@ void MouseInputManager::cursorCallback(GLFWwindow *, double x, double y)
   static bool firstMouseInput = true;
   static double cursorScreenX = 0.0;
   static double cursorScreenY = 0.0;
-  if (options.get(SHOW_CURSOR))
+  if (options.get(OPT_SHOW_CURSOR))
     {
       lastX = x;
       lastY = y;
@@ -57,8 +57,8 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
     {
       if (!mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT])
         {
-          options.switchOpt(SHOW_CURSOR);
-          glfwSetInputMode(window, GLFW_CURSOR, options.get(SHOW_CURSOR) ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+          options.switchOpt(OPT_SHOW_CURSOR);
+          glfwSetInputMode(window, GLFW_CURSOR, options.get(OPT_SHOW_CURSOR) ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
           glfwSetCursorPos(window, screenResolution.getWidth() / 2.0f, screenResolution.getHeight() / 2.0f);
           lastX = screenResolution.getWidth() / 2.0f;
           lastY = screenResolution.getHeight() / 2.0f;
@@ -71,7 +71,7 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
 
 void MouseInputManager::updateCursorMappingCoordinates(Camera &camera, BaseMapGenerator *baseMapGenerator, HillsMapGenerator *hillMapGenerator, BuildableMapGenerator *buildableMapGenerator)
 {
-  if (options.get(SHOW_CURSOR) && cursorToViewportDirection.y < 0.0f)
+  if (options.get(OPT_SHOW_CURSOR) && cursorToViewportDirection.y < 0.0f)
     {
       float ratio = camera.getPosition().y / (-cursorToViewportDirection.y);
       bool cursorOutOfMap = false;

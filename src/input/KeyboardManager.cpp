@@ -13,43 +13,43 @@ void KeyboardManager::processKeyboard()
     glfwSetWindowShouldClose(window, GL_TRUE);
 
   processKey(GLFW_KEY_F1, [&](){camera.switchFPSmode();});
-  processKey(GLFW_KEY_F2, RENDER_SHADOW_ON_TREES);
-  processKey(GLFW_KEY_F3, ANIMATE_WATER);
-  processKey(GLFW_KEY_F4, RENDER_TREE_MODELS);
-  processKey(GLFW_KEY_F5, RENDER_DEBUG_TEXT);
-  processKey(GLFW_KEY_F6, SHOW_BUILDABLE);
-  processKey(GLFW_KEY_F7, MODELS_PHONG_SHADING);
+  processKey(GLFW_KEY_F2, OPT_TREES_SHADOW_EMPHASIZE);
+  processKey(GLFW_KEY_F3, OPT_ANIMATE_WATER);
+  processKey(GLFW_KEY_F4, OPT_DRAW_TREES);
+  processKey(GLFW_KEY_F5, OPT_DRAW_DEBUG_TEXT);
+  processKey(GLFW_KEY_F6, OPT_DRAW_BUILDABLE);
+  processKey(GLFW_KEY_F7, OPT_MODELS_PHONG_SHADING);
   processKey(GLFW_KEY_F9, [&]()
   {
-      options.set(RECREATE_TERRAIN_REQUEST, true);
-      options.set(CREATE_SHADOW_MAP_REQUEST, true);
+      options.set(OPT_RECREATE_TERRAIN_REQUEST, true);
+      options.set(OPT_CREATE_SHADOW_MAP_REQUEST, true);
     });
-  processKey(GLFW_KEY_F10, [&](){options.set(SAVE_REQUEST, true);});
+  processKey(GLFW_KEY_F10, [&](){options.set(OPT_SAVE_REQUEST, true);});
   processKey(GLFW_KEY_F11, [&]()
   {
-      options.set(LOAD_REQUEST, true);
-      options.set(CREATE_SHADOW_MAP_REQUEST, true);
+      options.set(OPT_LOAD_REQUEST, true);
+      options.set(OPT_CREATE_SHADOW_MAP_REQUEST, true);
     });
   processKey(GLFW_KEY_R, [&]()
   {
-      options.switchOpt(MODELS_FC);
-      options.set(CREATE_SHADOW_MAP_REQUEST, true);
+      options.switchOpt(OPT_MODELS_CULLING);
+      options.set(OPT_CREATE_SHADOW_MAP_REQUEST, true);
     });
-  processKey(GLFW_KEY_T, HILLS_FC);
-  processKey(GLFW_KEY_Y, WATER_FC);
+  processKey(GLFW_KEY_T, OPT_HILLS_CULLING);
+  processKey(GLFW_KEY_Y, OPT_WATER_CULLING);
   processKey(GLFW_KEY_M, [&]()
   {
-      options.switchOpt(MULTISAMPLE_ENABLE);
-      if (options.get(MULTISAMPLE_ENABLE))
+      options.switchOpt(OPT_USE_MULTISAMPLiNG);
+      if (options.get(OPT_USE_MULTISAMPLiNG))
         glEnable(GL_MULTISAMPLE);
       else
         glDisable(GL_MULTISAMPLE);
     });
-  processKey(GLFW_KEY_Q, SHADOW_ENABLE);
-  processKey(GLFW_KEY_F, RENDER_FLAT_TERRAIN);
-  processKey(GLFW_KEY_G, RENDER_WATER);
-  processKey(GLFW_KEY_B, MODELS_FLAT_BLENDING);
-  processKey(GLFW_KEY_L, POLYGON_LINE);
+  processKey(GLFW_KEY_Q, OPT_USE_SHADOWS);
+  processKey(GLFW_KEY_F, OPT_DRAW_FLAT_TERRAIN);
+  processKey(GLFW_KEY_G, OPT_DRAW_WATER);
+  processKey(GLFW_KEY_B, OPT_MODELS_FLAT_BLENDING);
+  processKey(GLFW_KEY_L, OPT_POLYGON_LINE);
 }
 
 void KeyboardManager::processKeyboardCamera(float delta, std::vector<std::vector<float> > &hillsMap)

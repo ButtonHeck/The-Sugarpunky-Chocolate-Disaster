@@ -6,10 +6,15 @@ class TerrainChunk : public Chunk
 {
 public:
   TerrainChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom, unsigned int offset, unsigned int instances);
+
+  //instance offset
   void setInstanceOffset(unsigned int offset);
   unsigned int getInstanceOffset() const;
+
+  //num instances
   void setNumInstances(unsigned int instances);
   unsigned int getNumInstances() const;
+
 private:
   unsigned int instanceOffset;
   unsigned int numInstances;

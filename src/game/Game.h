@@ -53,8 +53,8 @@ private:
   MouseInputManager mouseInput;
   TextureLoader textureLoader = TextureLoader(screenResolution);
   ShaderManager shaderManager;
-  WaterMapGenerator* waterMapGenerator = new WaterMapGenerator(shaderManager.get(SHADER_WATER_FC));
-  HillsMapGenerator* hillMapGenerator = new HillsMapGenerator(shaderManager.get(SHADER_HILLS_FC), waterMapGenerator->getMap());
+  WaterMapGenerator* waterMapGenerator = new WaterMapGenerator(shaderManager.get(SHADER_WATER_CULLING));
+  HillsMapGenerator* hillMapGenerator = new HillsMapGenerator(shaderManager.get(SHADER_HILLS_CULLING), waterMapGenerator->getMap());
   BaseMapGenerator* baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
   BuildableMapGenerator* buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
   SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator, camera);
