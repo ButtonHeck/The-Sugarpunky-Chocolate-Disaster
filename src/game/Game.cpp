@@ -5,19 +5,17 @@ int ram_available, ram_size;
 float ram_size_float_percentage;
 #endif
 
-Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& options, int width, int height, float aspect)
+Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& options, ScreenResolution &screenResolution)
   :
-    scr_width(width),
-    scr_height(height),
-    aspect_ratio(aspect),
+    screenResolution(screenResolution),
     window(window),
     cursorToViewportDirection(cursorDir),
     camera(camera),
     options(options),
-    textureManager(new TextureManager(textureLoader, scr_width, scr_height))
+    textureManager(new TextureManager(textureLoader))
 {
   srand(time(NULL));
-  fontManager = new FontManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", glm::ortho(0.0f, (float)scr_width, 0.0f, (float)scr_height), shaderManager.get(SHADER_FONT));
+  fontManager = new FontManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()), shaderManager.get(SHADER_FONT));
 #ifdef _DEBUG
   glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ram_size);
   ram_size_float_percentage = (float)ram_size / 100;
@@ -110,7 +108,7 @@ void Game::setupVariables()
       auto& hillChunks = treeGenerator->getHillTreeModelChunks();
       while(!glfwWindowShouldClose(window))
         {
-          if (_meshesIndirectDataNeed)
+          if (meshesIndirectDataNeed)
             {
               BENCHMARK("(ST)Model: update meshes DIBs data", true);
               float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH);
@@ -126,8 +124,8 @@ void Game::setupVariables()
                   Model& model = hillTrees[i];
                   model.prepareMeshesIndirectData(hillChunks, i, cameraPositionXZ, viewFrustum);
                 }
-              _meshesIndirectDataReady = true;
-              _meshesIndirectDataNeed = false;
+              meshesIndirectDataReady = true;
+              meshesIndirectDataNeed = false;
             }
           std::this_thread::yield();
         }
@@ -136,13 +134,13 @@ void Game::setupVariables()
   {
       while(!glfwWindowShouldClose(window))
             {
-              if (_waterThreadUpdatePermitted &&
+              if (waterThreadUpdatePermitted &&
                   options.get(ANIMATE_WATER) &&
                   options.get(RENDER_WATER))
                 {
-                  _waterThreadHasUpdated = false;
+                  waterThreadHasUpdated = false;
                   waterMapGenerator->updateAnimationFrame(options);
-                  _waterThreadHasUpdated = true;
+                  waterThreadHasUpdated = true;
 #ifdef _DEBUG
                   waterThreadAnimationIsWorking = true;
 #endif
@@ -191,7 +189,7 @@ void Game::prepareMS_FBO()
   GLuint msDepthRbo;
   glGenRenderbuffers(1, &msDepthRbo);
   glBindRenderbuffer(GL_RENDERBUFFER, msDepthRbo);
-  glRenderbufferStorageMultisample(GL_RENDERBUFFER, MULTISAMPLES, GL_DEPTH24_STENCIL8, scr_width, scr_height);
+  glRenderbufferStorageMultisample(GL_RENDERBUFFER, MULTISAMPLES, GL_DEPTH24_STENCIL8, screenResolution.getWidth(), screenResolution.getHeight());
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, msDepthRbo);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE)
     std::cout << "MS Framebuffer is not complete\n";
@@ -206,7 +204,7 @@ void Game::prepareMS_FBO()
   GLuint screenDepthRbo;
   glGenRenderbuffers(1, &screenDepthRbo);
   glBindRenderbuffer(GL_RENDERBUFFER, screenDepthRbo);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, scr_width, scr_height);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenResolution.getWidth(), screenResolution.getHeight());
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, screenDepthRbo);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     std::cout << "Intermediate Framebuffer is not complete\n";
@@ -246,7 +244,7 @@ void Game::drawFrameToScreenRectangle(bool enableMS)
     {
       glBindFramebuffer(GL_READ_FRAMEBUFFER, multisampleFBO);
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, screenFBO);
-      glBlitFramebuffer(0, 0, scr_width, scr_height, 0, 0, scr_width, scr_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+      glBlitFramebuffer(0, 0, screenResolution.getWidth(), screenResolution.getHeight(), 0, 0, screenResolution.getWidth(), screenResolution.getHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
   else
@@ -372,21 +370,22 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
       {
         BENCHMARK("Renderer: add and draw text", true);
         fontManager->resetBufferOffset();
-        fontManager->addText("CPU UPS: " + std::to_string(CPU_timer.getFPS()), 10.0f, (float)scr_height - 15.0f, 0.18f);
+        float scrHeight = (float)screenResolution.getHeight();
+        fontManager->addText("CPU UPS: " + std::to_string(CPU_timer.getFPS()), 10.0f, scrHeight - 15.0f, 0.18f);
         fontManager->addText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                                + std::to_string(viewPosition.y).substr(0,6) + ": "
-                               + std::to_string(viewPosition.z).substr(0,6), 10.0f, (float)scr_height - 35.0f, 0.18f);
+                               + std::to_string(viewPosition.z).substr(0,6), 10.0f, scrHeight - 35.0f, 0.18f);
         fontManager->addText("Camera on map: " + std::to_string(camera.getMapCoordX()) + ": " + std::to_string(camera.getMapCoordZ()),
-                               10.0f, (float)scr_height - 55.0f, 0.18f);
+                               10.0f, scrHeight - 55.0f, 0.18f);
         fontManager->addText("View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
                                + std::to_string(camera.getDirection().y).substr(0,6) + ": "
-                               + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, (float)scr_height - 75.0f, 0.18f);
+                               + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, scrHeight - 75.0f, 0.18f);
         fontManager->addText("Cursor at: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
                                + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
-                               + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, (float)scr_height - 95.0f, 0.18f);
+                               + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, scrHeight - 95.0f, 0.18f);
         fontManager->addText("Cursor on map: " + (!options.get(SHOW_CURSOR) ? "inactive" : (std::to_string(mouseInput.getCursorMapX()) + ": "
                                + std::to_string(mouseInput.getCursorMapZ()-1) + ", " + mouseInput.getCursorTileName())),
-                               10.0f, (float)scr_height - 115.0f, 0.18f);
+                               10.0f, scrHeight - 115.0f, 0.18f);
         fontManager->addText("Water culling: " + (options.get(WATER_FC) ? std::string("On") : std::string("Off")), 10.0f, 20.0f, 0.18f);
         fontManager->addText("Hills culling: " + (options.get(HILLS_FC) ? std::string("On") : std::string("Off")), 10.0f, 40.0f, 0.18f);
         fontManager->addText("Trees culling: " + (options.get(MODELS_FC) ? std::string("On") : std::string("Off")), 10.0f, 60.0f, 0.18f);
@@ -405,7 +404,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
       glEnable(GL_CULL_FACE);
       {
         BENCHMARK("Renderer: draw cs", true);
-        csRenderer.draw(glm::mat3(camera.getViewMatrix()), aspect_ratio);
+        csRenderer.draw(glm::mat3(camera.getViewMatrix()), screenResolution.getAspectRatio());
       }
     }
 
@@ -447,9 +446,9 @@ void Game::loop()
   //even if we don't need to render models make sure we update indirect buffer data for meshes
   {
     BENCHMARK("Game: wait for mesh indirect ready", true);
-    while(!_meshesIndirectDataReady && !updateCount == 0 && _meshesIndirectDataNeed) {}
+    while(!meshesIndirectDataReady && !updateCount == 0 && meshesIndirectDataNeed) {}
   }
-  _meshesIndirectDataReady = false;
+  meshesIndirectDataReady = false;
 
   keyboard.processKeyboard();
   keyboard.processKeyboardCamera(CPU_timer.tick(), hillMapGenerator->getMap());
@@ -457,11 +456,11 @@ void Game::loop()
   //recreate routine
   if (options.get(RECREATE_TERRAIN_REQUEST))
     {
-      while(!_waterThreadHasUpdated)
+      while(!waterThreadHasUpdated)
         {
           std::this_thread::yield();//busy wait until water thread has done its business...and business is good
         }
-      _waterThreadUpdatePermitted = false; //explicitly bypass water animation frame update routine
+      waterThreadUpdatePermitted = false; //explicitly bypass water animation frame update routine
       delete baseMapGenerator;
       delete buildableMapGenerator;
       baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
@@ -475,7 +474,7 @@ void Game::loop()
       saveLoadManager->setTreeGenerator(*treeGenerator);
       options.set(RECREATE_TERRAIN_REQUEST, false);
       textureManager->createUnderwaterReliefTexture(waterMapGenerator);
-      _waterThreadUpdatePermitted = true; //it's okay now to begin animating water
+      waterThreadUpdatePermitted = true; //it's okay now to begin animating water
     }
 
   if ((options.get(CREATE_SHADOW_MAP_REQUEST) || updateCount % 16 == 0) && options.get(SHADOW_ENABLE))
@@ -484,7 +483,7 @@ void Game::loop()
       glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
       glClear(GL_DEPTH_BUFFER_BIT);
       drawFrameObjectsDepthmap();
-      glViewport(0, 0, scr_width, scr_height);
+      glViewport(0, 0, screenResolution.getWidth(), screenResolution.getHeight());
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
       options.set(CREATE_SHADOW_MAP_REQUEST, false);
     }
@@ -512,7 +511,7 @@ void Game::loop()
 
   //after all mesh related draw calls we could start updating meshes indirect data buffers
   //start updating right after we've used it and before we need that data to be updated and buffered again
-  _meshesIndirectDataNeed = updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1;
+  meshesIndirectDataNeed = updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1;
 
   //render result onto the default FBO and apply HDR/MS if the flag are set
   {
@@ -528,15 +527,15 @@ void Game::loop()
     }
   if (options.get(LOAD_REQUEST))
     {
-      while(!_waterThreadHasUpdated)
+      while(!waterThreadHasUpdated)
         {
           std::this_thread::yield(); //busy wait
         }
-      _waterThreadUpdatePermitted = false;
+      waterThreadUpdatePermitted = false;
       saveLoadManager->loadFromFile(SAVES_DIR + "testSave.txt");
       options.set(LOAD_REQUEST, false);
       textureManager->createUnderwaterReliefTexture(waterMapGenerator);
-      _waterThreadUpdatePermitted = true;
+      waterThreadUpdatePermitted = true;
     }
 
   {

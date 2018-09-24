@@ -8,6 +8,7 @@
 #include "game/Settings.h"
 #include "game/TextureUnits.h"
 #include "game/Options.h"
+#include "game/ScreenResolution.h"
 #include "input/KeyboardManager.h"
 #include "input/MouseInputManager.h"
 #include "game/SaveLoadManager.h"
@@ -27,7 +28,7 @@
 class Game
 {
 public:
-  Game(GLFWwindow* window, glm::vec3& cursorDir, Camera& camera, Options& options, int width, int height, float aspect);
+  Game(GLFWwindow* window, glm::vec3& cursorDir, Camera& camera, Options& options, ScreenResolution& screenResolution);
   ~Game();
   void setupVariables();
   void prepareTerrain();
@@ -40,9 +41,7 @@ public:
   void loop();
 private:
   unsigned long updateCount = 0;
-  int scr_width;
-  int scr_height;
-  float aspect_ratio;
+  ScreenResolution& screenResolution;
   GLFWwindow* window;
   glm::vec3& cursorToViewportDirection;
   Timer CPU_timer;
@@ -52,7 +51,7 @@ private:
   Options& options;
   KeyboardManager keyboard = KeyboardManager(window, camera, options);
   MouseInputManager mouseInput;
-  TextureLoader textureLoader;
+  TextureLoader textureLoader = TextureLoader(screenResolution);
   ShaderManager shaderManager;
   WaterMapGenerator* waterMapGenerator = new WaterMapGenerator(shaderManager.get(SHADER_WATER_FC));
   HillsMapGenerator* hillMapGenerator = new HillsMapGenerator(shaderManager.get(SHADER_HILLS_FC), waterMapGenerator->getMap());
@@ -65,12 +64,12 @@ private:
   UnderwaterQuadMapGenerator underwaterQuadGenerator;
   Skybox skybox;
   TextureManager* textureManager;
-  glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), (float)scr_width / (float)scr_height, NEAR_PLANE, FAR_PLANE);
+  glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE);
   GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO;
   std::thread* waterAnimationThread;
   std::thread* meshIndirectUpdateThread;
-  volatile bool _meshesIndirectDataReady = false, _meshesIndirectDataNeed = false;
-  volatile bool _waterThreadHasUpdated = false, _waterThreadUpdatePermitted = true;
+  volatile bool meshesIndirectDataReady = false, meshesIndirectDataNeed = false;
+  volatile bool waterThreadHasUpdated = false, waterThreadUpdatePermitted = true;
 #ifdef _DEBUG
   bool waterThreadAnimationIsWorking = true;
 #endif

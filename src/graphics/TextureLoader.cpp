@@ -1,6 +1,8 @@
 #include "graphics/TextureLoader.h"
 
-TextureLoader::TextureLoader()
+TextureLoader::TextureLoader(ScreenResolution &screen)
+  :
+    screenResolution(screen)
 {
   ilInit();
   ilEnable(IL_ORIGIN_SET);
@@ -51,17 +53,17 @@ GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, G
   return texture;
 }
 
-GLuint TextureLoader::createFrameMSTexture(int width, int height, int samples, GLuint textureUnit)
+GLuint TextureLoader::createFrameMSTexture(int samples, GLuint textureUnit)
 {
   GLuint texture = createAndBindTextureObject(GL_TEXTURE_2D_MULTISAMPLE, textureUnit);
-  glTextureStorage2DMultisample(texture, samples, GL_RGB8, width, height, GL_TRUE);
+  glTextureStorage2DMultisample(texture, samples, GL_RGB8, screenResolution.getWidth(), screenResolution.getHeight(), GL_TRUE);
   return texture;
 }
 
-GLuint TextureLoader::createFrameTexture(int width, int height, GLuint textureUnit)
+GLuint TextureLoader::createFrameTexture(GLuint textureUnit)
 {
   GLuint texture = createAndBindTextureObject(GL_TEXTURE_2D, textureUnit);
-  glTextureStorage2D(texture, 1, GL_RGB8, width, height);
+  glTextureStorage2D(texture, 1, GL_RGB8, screenResolution.getWidth(), screenResolution.getHeight());
   return texture;
 }
 

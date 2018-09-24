@@ -3,6 +3,7 @@
 #include "graphics/Camera.h"
 #include <GLFW/glfw3.h>
 #include "game/Options.h"
+#include "game/ScreenResolution.h"
 #include "generator/BaseMapGenerator.h"
 #include "generator/HillsMapGenerator.h"
 #include "generator/BuildableMapGenerator.h"

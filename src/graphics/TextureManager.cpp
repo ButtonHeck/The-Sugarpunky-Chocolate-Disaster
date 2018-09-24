@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 
-TextureManager::TextureManager(TextureLoader &loader, int scr_width, int scr_height)
+TextureManager::TextureManager(TextureLoader& loader)
   :
     loader(loader)
 {
@@ -19,9 +19,9 @@ TextureManager::TextureManager(TextureLoader &loader, int scr_width, int scr_hei
   textures[UNDERWATER_DIFFUSE] = loader.loadTexture("underwater.jpg", UNDERWATER_DIFFUSE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
   textures[SHORE_2] = loader.loadTexture("shore2.jpg", SHORE_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[SKYBOX] = loader.loadCubemap("cubemap/", SKYBOX);
-  textures[FRAME_MS_TEXTURE] = loader.createFrameMSTexture(scr_width, scr_height, MULTISAMPLES, FRAME_MS_TEXTURE);
-  textures[FRAME_TEXTURE] = loader.createFrameTexture(scr_width, scr_height, FRAME_TEXTURE);
-  textures[FRAME_HDR_TEXTURE] = loader.createFrameTexture(scr_width, scr_height, FRAME_HDR_TEXTURE);
+  textures[FRAME_MS_TEXTURE] = loader.createFrameMSTexture(MULTISAMPLES, FRAME_MS_TEXTURE);
+  textures[FRAME_TEXTURE] = loader.createFrameTexture(FRAME_TEXTURE);
+  textures[FRAME_HDR_TEXTURE] = loader.createFrameTexture(FRAME_HDR_TEXTURE);
   textures[DEPTH_MAP_SUN] = loader.createDepthMapTexture(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT, DEPTH_MAP_SUN);
 }
 

@@ -8,7 +8,7 @@ QMAKE_LFLAGS +=  -fopenmp
 INCLUDEPATH += $$PWD/src
 
 SOURCES += \
-    src/game/main.cpp \
+    src/main.cpp \
     src/game/Game.cpp \
     src/game/Settings.cpp \
     src/game/SaveLoadManager.cpp \
@@ -39,7 +39,8 @@ SOURCES += \
     src/timer/BenchmarkTimer.cpp \
     src/model/IndirectBufferToken.cpp \
     src/input/KeyboardManager.cpp \
-    src/input/MouseInputManager.cpp
+    src/input/MouseInputManager.cpp \
+    src/game/ScreenResolution.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -74,7 +75,8 @@ HEADERS += \
     src/timer/Timer.h \
     src/model/IndirectBufferToken.h \
     src/input/KeyboardManager.h \
-    src/input/MouseInputManager.h
+    src/input/MouseInputManager.h \
+    src/game/ScreenResolution.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

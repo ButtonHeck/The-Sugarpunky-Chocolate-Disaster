@@ -3,9 +3,7 @@
 extern GLFWwindow* window;
 extern Camera camera;
 extern Options options;
-extern int scr_width;
-extern int scr_height;
-extern float aspect_ratio;
+extern ScreenResolution screenResolution;
 float lastX, lastY;
 extern glm::vec3 cursorToViewportDirection;
 
@@ -27,13 +25,13 @@ void MouseInputManager::cursorCallback(GLFWwindow *, double x, double y)
       v = glm::normalize(v);
       float fovRad = glm::radians(camera.getZoom());
       float vLength = std::tan(fovRad / 2) * NEAR_PLANE;
-      float hLength = vLength * aspect_ratio;
+      float hLength = vLength * screenResolution.getAspectRatio();
       h *= hLength;
       v *= vLength;
-      cursorScreenX -= scr_width / 2;
-      cursorScreenY -= scr_height / 2;
-      cursorScreenX /= (scr_width / 2);
-      cursorScreenY /= (scr_height / 2);
+      cursorScreenX -= screenResolution.getWidth() / 2;
+      cursorScreenY -= screenResolution.getHeight() / 2;
+      cursorScreenX /= (screenResolution.getWidth() / 2);
+      cursorScreenY /= (screenResolution.getHeight() / 2);
       glm::vec3 newPos = camera.getPosition() + view * NEAR_PLANE + h * (float)cursorScreenX - v * (float)cursorScreenY;
       glm::vec3 newDir = newPos - camera.getPosition();
       cursorToViewportDirection = newDir;
@@ -61,9 +59,9 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
         {
           options.switchOpt(SHOW_CURSOR);
           glfwSetInputMode(window, GLFW_CURSOR, options.get(SHOW_CURSOR) ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-          glfwSetCursorPos(window, scr_width / 2.0f, scr_height / 2.0f);
-          lastX = scr_width / 2.0f;
-          lastY = scr_height / 2.0f;
+          glfwSetCursorPos(window, screenResolution.getWidth() / 2.0f, screenResolution.getHeight() / 2.0f);
+          lastX = screenResolution.getWidth() / 2.0f;
+          lastY = screenResolution.getHeight() / 2.0f;
           mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT] = true;
         }
     }

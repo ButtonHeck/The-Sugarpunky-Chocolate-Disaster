@@ -8,6 +8,7 @@
 #include "game/Game.h"
 #include "game/Options.h"
 #include "game/Settings.h"
+#include "game/ScreenResolution.h"
 #include "graphics/Camera.h"
 #include "timer/BenchmarkTimer.h"
 
@@ -54,10 +55,8 @@ void APIENTRY glDebugCallback(GLenum source,
   std::cout << message << '\n' << glMessage << "\n\n";
 }
 
-int scr_width;
-int scr_height;
-float aspect_ratio;
 GLFWwindow* window;
+ScreenResolution screenResolution;
 Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
 glm::vec3 cursorToViewportDirection;
 Options options;
@@ -78,10 +77,8 @@ int main()
 #endif
   GLFWmonitor* monitor = glfwGetPrimaryMonitor();
   const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
-  scr_width = vidmode->width;
-  scr_height = vidmode->height;
-  aspect_ratio = (float)scr_width / (float)scr_height;
-  window = glfwCreateWindow(scr_width, scr_height, "The Sugarpunky Chocolate Disaster", monitor, 0);
+  screenResolution.updateResolution(vidmode->width, vidmode->height);
+  window = glfwCreateWindow(screenResolution.getWidth(), screenResolution.getHeight(), "The Sugarpunky Chocolate Disaster", monitor, 0);
   glfwMakeContextCurrent(window);
   glewExperimental = GL_TRUE;
   glewInit();
@@ -96,7 +93,7 @@ int main()
       glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
 #endif
-  game = new Game(window, cursorToViewportDirection, camera, options, scr_width, scr_height, aspect_ratio);
+  game = new Game(window, cursorToViewportDirection, camera, options, screenResolution);
   game->setupVariables();
 
   //game loop

@@ -3,12 +3,13 @@
 #include <GL/glew.h>
 #include <unordered_map>
 #include "TextureLoader.h"
+#include "game/TextureUnits.h"
 #include "generator/WaterMapGenerator.h"
 
 class TextureManager
 {
 public:
-  TextureManager(TextureLoader& loader, int scr_width, int scr_height);
+  TextureManager(TextureLoader& loader);
   void createUnderwaterReliefTexture(WaterMapGenerator* generator);
   GLuint& get(int unit);
   void deleteTextures();

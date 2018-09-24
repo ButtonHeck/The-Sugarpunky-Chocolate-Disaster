@@ -5,21 +5,23 @@
 #include <string>
 #include <vector>
 #include <glm/common.hpp>
-#include "game/TextureUnits.h"
+#include "game/ScreenResolution.h"
 #include "generator/WaterMapGenerator.h"
 
 class TextureLoader
 {
 public:
-  TextureLoader();
+  TextureLoader(ScreenResolution& screenResolution);
   GLuint createAndBindTextureObject(GLenum target, GLuint textureUnit);
   GLuint loadTexture(const std::string& path, GLuint textureUnit, GLenum wrapType, GLint magFilter, GLint minFilter, bool useAnisotropy, bool includeCWD = true);
-  GLuint createFrameMSTexture(int width, int height, int multisample, GLuint textureUnit);
-  GLuint createFrameTexture(int width, int height, GLuint textureUnit);
+  GLuint createFrameMSTexture(int multisample, GLuint textureUnit);
+  GLuint createFrameTexture(GLuint textureUnit);
   GLuint createDepthMapTexture(int width, int height, GLuint textureUnit);
   GLuint loadCubemap(const std::string& directory, GLuint textureUnit);
   GLuint createUnderwaterReliefTexture(WaterMapGenerator* waterMapGenerator, GLuint textureUnit, GLint magFilter, GLint minFilter);
   unsigned int getMaxMip(unsigned int width, unsigned int height);
+private:
+  ScreenResolution& screenResolution;
 };
 
 #endif // TEXTURELOADER_H
