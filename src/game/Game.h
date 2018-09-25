@@ -40,32 +40,45 @@ public:
   void drawFrameObjectsDepthmap();
   void loop();
 private:
-  unsigned long updateCount = 0;
+  //context and hardware
   ScreenResolution& screenResolution;
   GLFWwindow* window;
-  glm::vec3& cursorToViewportDirection;
   Timer CPU_timer;
+  unsigned long updateCount = 0;
+
+  //camera and related stuff
   Camera& camera;
-  Renderer renderer = Renderer(camera);
+  glm::vec3& cursorToViewportDirection;
   Frustum viewFrustum;
+  glm::mat4 projection;
+
+  //input and options
   Options& options;
-  KeyboardManager keyboard = KeyboardManager(window, camera, options);
+  KeyboardManager keyboard;
   MouseInputManager mouseInput;
-  TextureLoader textureLoader = TextureLoader(screenResolution);
+
+  //graphics
   ShaderManager shaderManager;
-  WaterMapGenerator* waterMapGenerator = new WaterMapGenerator(shaderManager.get(SHADER_WATER_CULLING));
-  HillsMapGenerator* hillMapGenerator = new HillsMapGenerator(shaderManager.get(SHADER_HILLS_CULLING), waterMapGenerator->getMap());
-  BaseMapGenerator* baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
-  BuildableMapGenerator* buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-  SaveLoadManager* saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator, camera);
+  Renderer renderer;
+  TextureLoader textureLoader;
+  TextureManager* textureManager;
+  CoordinateSystemRenderer csRenderer;
+  GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO;
+
+  //world
+  WaterMapGenerator* waterMapGenerator;
+  HillsMapGenerator* hillMapGenerator;
+  BaseMapGenerator* baseMapGenerator;
+  BuildableMapGenerator* buildableMapGenerator;
+  SaveLoadManager* saveLoadManager;
   TreeGenerator* treeGenerator;
-  FontManager* fontManager;
-  CoordinateSystemRenderer csRenderer = CoordinateSystemRenderer(&shaderManager.get(SHADER_CS));
   UnderwaterQuadMapGenerator underwaterQuadGenerator;
   Skybox skybox;
-  TextureManager* textureManager;
-  glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE);
-  GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO;
+
+  //GUI and text
+  FontManager* fontManager;
+
+  //multithreading
   std::thread* waterAnimationThread;
   std::thread* meshIndirectUpdateThread;
   volatile bool meshesIndirectDataReady = false, meshesIndirectDataNeed = false;

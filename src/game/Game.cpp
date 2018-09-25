@@ -9,12 +9,23 @@ Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& op
   :
     screenResolution(screenResolution),
     window(window),
-    cursorToViewportDirection(cursorDir),
     camera(camera),
+    cursorToViewportDirection(cursorDir),
+    projection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE)),
     options(options),
-    textureManager(new TextureManager(textureLoader))
+    keyboard(KeyboardManager(window, camera, options)),
+    shaderManager(),
+    renderer(Renderer(camera)),
+    textureLoader(TextureLoader(screenResolution)),
+    csRenderer(CoordinateSystemRenderer(&shaderManager.get(SHADER_CS)))
 {
   srand(time(NULL));
+  textureManager = new TextureManager(textureLoader);
+  waterMapGenerator = new WaterMapGenerator(shaderManager.get(SHADER_WATER_CULLING));
+  hillMapGenerator = new HillsMapGenerator(shaderManager.get(SHADER_HILLS_CULLING), waterMapGenerator->getMap());
+  baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
+  buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+  saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator, camera);
   fontManager = new FontManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()), shaderManager.get(SHADER_FONT));
 #ifdef _DEBUG
   glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ram_size);
