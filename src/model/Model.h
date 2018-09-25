@@ -14,7 +14,8 @@
 class Model
 {
 public:
-  Model(const std::string& path, TextureLoader& textureLoader);
+  Model(const std::string& path);
+  static void bindTextureLoader(TextureLoader& textureLoader);
   void loadModel(const std::string& path);
   void draw(Shader& shaderProgram, bool modelRenderOptimize, bool bindTexture, bool updateIndirect);
   void prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
@@ -29,7 +30,7 @@ private:
   std::vector<Mesh> meshes;
   std::vector<Texture> textures_loaded;
   std::string directory;
-  TextureLoader& textureLoader;
+  static TextureLoader* textureLoader;
 };
 
 #endif // MODEL_H

@@ -6,7 +6,7 @@
 #include "generator/BaseMapGenerator.h"
 #include "generator/HillsMapGenerator.h"
 #include "generator/WaterMapGenerator.h"
-#include "generator/TreeGenerator.h"
+#include "generator/PlantGenerator.h"
 #include "generator/BuildableMapGenerator.h"
 #include "chunk/ModelChunk.h"
 #include "graphics/Camera.h"
@@ -17,13 +17,13 @@ public:
   SaveLoadManager(BaseMapGenerator& baseGenerator, HillsMapGenerator& hillGenerator, WaterMapGenerator& waterGenerator, BuildableMapGenerator* buildableGenerator, Camera& camera);
   bool saveToFile(const std::string& filename);
   bool loadFromFile(const std::string& filename);
-  void setTreeGenerator(TreeGenerator& treeGenerator);
+  void setTreeGenerator(PlantGenerator& treeGenerator);
 private:
   BaseMapGenerator& baseGenerator;
   HillsMapGenerator& hillGenerator;
   WaterMapGenerator& waterGenerator;
   BuildableMapGenerator* buildableGenerator;
-  TreeGenerator* treeGenerator;
+  PlantGenerator* treeGenerator;
   Camera& camera;
   std::vector<std::vector<float>>& baseMap;
   std::vector<std::vector<float>>& hillMap;

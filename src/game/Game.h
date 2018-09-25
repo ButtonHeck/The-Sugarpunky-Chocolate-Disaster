@@ -71,7 +71,7 @@ private:
   BaseMapGenerator* baseMapGenerator;
   BuildableMapGenerator* buildableMapGenerator;
   SaveLoadManager* saveLoadManager;
-  TreeGenerator* treeGenerator;
+  PlantGenerator* plantGenerator;
   UnderwaterQuadMapGenerator underwaterQuadGenerator;
   Skybox skybox;
 

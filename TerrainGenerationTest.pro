@@ -28,7 +28,6 @@ SOURCES += \
     src/generator/HillsMapGenerator.cpp \
     src/generator/UnderwaterQuadMapGenerator.cpp \
     src/generator/BaseMapGenerator.cpp \
-    src/generator/TreeGenerator.cpp \
     src/generator/BuildableMapGenerator.cpp \
     src/model/Mesh.cpp \
     src/model/Model.cpp \
@@ -40,7 +39,8 @@ SOURCES += \
     src/model/IndirectBufferToken.cpp \
     src/input/KeyboardManager.cpp \
     src/input/MouseInputManager.cpp \
-    src/game/ScreenResolution.cpp
+    src/game/ScreenResolution.cpp \
+    src/generator/PlantGenerator.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -63,7 +63,6 @@ HEADERS += \
     src/generator/HillsMapGenerator.h \
     src/generator/UnderwaterQuadMapGenerator.h \
     src/generator/BaseMapGenerator.h \
-    src/generator/TreeGenerator.h \
     src/generator/BuildableMapGenerator.h \
     src/model/TerrainTile.h \
     src/model/Mesh.h \
@@ -76,7 +75,8 @@ HEADERS += \
     src/model/IndirectBufferToken.h \
     src/input/KeyboardManager.h \
     src/input/MouseInputManager.h \
-    src/game/ScreenResolution.h
+    src/game/ScreenResolution.h \
+    src/generator/PlantGenerator.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

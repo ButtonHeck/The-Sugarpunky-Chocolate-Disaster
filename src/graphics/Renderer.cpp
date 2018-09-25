@@ -191,7 +191,7 @@ void Renderer::drawSkybox(Skybox *skybox)
   glEnable(GL_CULL_FACE);
 }
 
-void Renderer::drawTrees(TreeGenerator *generator, Shader &shader,
+void Renderer::drawPlants(PlantGenerator *generator, Shader &shader,
                          bool enableFrustumCulling,
                          bool bindTexture,
                          bool updateIndirect,
@@ -203,7 +203,7 @@ void Renderer::drawTrees(TreeGenerator *generator, Shader &shader,
     glEnable(GL_BLEND);
   else
     glDisable(GL_BLEND);
-  auto& plainTrees = generator->getPlainTrees();
+  auto& plainTrees = generator->getPlainPlants();
   auto& hillTrees = generator->getHillTrees();
 
   for (unsigned int i = 0; i < plainTrees.size() - NUM_GRASS_MODELS; i++)

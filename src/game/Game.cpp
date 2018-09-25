@@ -27,6 +27,9 @@ Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& op
   buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
   saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator, camera);
   fontManager = new FontManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()), shaderManager.get(SHADER_FONT));
+  Model::bindTextureLoader(textureLoader);
+  plantGenerator = new PlantGenerator(NUM_GRASS_MODELS);
+  saveLoadManager->setTreeGenerator(*plantGenerator);
 #ifdef _DEBUG
   glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ram_size);
   ram_size_float_percentage = (float)ram_size / 100;
@@ -48,7 +51,7 @@ Game::~Game()
   delete waterMapGenerator;
   delete saveLoadManager;
   delete buildableMapGenerator;
-  delete treeGenerator;
+  delete plantGenerator;
   BenchmarkTimer::finish(updateCount);
 }
 
@@ -58,7 +61,7 @@ void Game::setupVariables()
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glDisable(GL_DITHER);
-  if (options.get(OPT_USE_MULTISAMPLiNG))
+  if (options.get(OPT_USE_MULTISAMPLING))
     glEnable(GL_MULTISAMPLE);
   else
     glDisable(GL_MULTISAMPLE);
@@ -68,55 +71,16 @@ void Game::setupVariables()
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-  Model tree1("tree1/tree1.obj", textureLoader);
-  Model tree1_2("tree1_2/tree1_2.obj", textureLoader);
-  Model tree2("tree2/tree2.obj", textureLoader);
-  Model tree2_2("tree2_2/tree2_2.obj", textureLoader);
-  Model tree3("tree3/tree3.obj", textureLoader);
-  Model tree3_2("tree3_2/tree3_2.obj", textureLoader);
-  Model tree4("tree4/tree4.obj", textureLoader);
-  Model tree5("tree5/tree5.obj", textureLoader);
-  Model tree5_2("tree5_2/tree5_2.obj", textureLoader);
-  Model tree6("tree6/tree6.obj", textureLoader);
-  Model tree6_2("tree6_2/tree6_2.obj", textureLoader);
-  Model tree7("tree7/tree7.obj", textureLoader);
-  Model tree8("tree8/tree8.obj", textureLoader);
-  Model grass1("grass1/grass1.obj", textureLoader);
-  Model grass2("grass2/grass2.obj", textureLoader);
-  Model grass3("grass3/grass3.obj", textureLoader);
-  Model grass4("grass4/grass4.obj", textureLoader);
-  Model grass5("grass5/grass5.obj", textureLoader);
-  Model grass6("grass6/grass6.obj", textureLoader);
-  Model hillTree1("hillTree1/hillTree1.obj", textureLoader);
-  Model hillTree2("hillTree2/hillTree2.obj", textureLoader);
-  Model hillTree3("hillTree3/hillTree3.obj", textureLoader);
-  Model hillTree4("hillTree4/hillTree4.obj", textureLoader);
-  Model hillTree5("hillTree5/hillTree5.obj", textureLoader);
-  Model hillTree6("hillTree6/hillTree6.obj", textureLoader);
-  Model hillTree7("hillTree7/hillTree7.obj", textureLoader);
-  Model hillTree8("hillTree1/hillTree1.obj", textureLoader);
-  Model hillTree9("hillTree3/hillTree3.obj", textureLoader);
-  Model hillTree10("hillTree7/hillTree7.obj", textureLoader);
-  Model hillTree11("hillTree1/hillTree1.obj", textureLoader);
-  Model hillTree12("hillTree3/hillTree3.obj", textureLoader);
-  Model hillTree13("hillTree7/hillTree7.obj", textureLoader);
-  treeGenerator = new TreeGenerator({tree1, tree1_2, tree2, tree2_2, tree3, tree3_2, tree4, tree5, tree5_2,
-                                     tree6, tree6_2, tree7, tree8,
-                                     grass1, grass2, grass3, grass4, grass5, grass6},
-      {hillTree1, hillTree2, hillTree3, hillTree4, hillTree5, hillTree6, hillTree7,
-       hillTree8, hillTree9, hillTree10, hillTree11, hillTree12, hillTree13}, NUM_GRASS_MODELS);
-  saveLoadManager->setTreeGenerator(*treeGenerator);
-
   {
     BENCHMARK("Game: Prepare Terrain", false);
     prepareTerrain();
   }
   meshIndirectUpdateThread = new std::thread([this]()
   {
-      auto& plainTrees = treeGenerator->getPlainTrees();
-      auto& hillTrees = treeGenerator->getHillTrees();
-      auto& plainChunks = treeGenerator->getTreeModelChunks();
-      auto& hillChunks = treeGenerator->getHillTreeModelChunks();
+      auto& plainPlants = plantGenerator->getPlainPlants();
+      auto& hillTrees = plantGenerator->getHillTrees();
+      auto& plainChunks = plantGenerator->getPlainPlantsModelChunks();
+      auto& hillChunks = plantGenerator->getHillTreeModelChunks();
       while(!glfwWindowShouldClose(window))
         {
           if (meshesIndirectDataNeed)
@@ -125,9 +89,9 @@ void Game::setupVariables()
               float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH);
               float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_WORLD_HEIGHT, (float)HALF_WORLD_HEIGHT);
               glm::vec2 cameraPositionXZ = glm::vec2(cameraOnMapX, cameraOnMapZ);
-              for (unsigned int i = 0; i < plainTrees.size(); i++)
+              for (unsigned int i = 0; i < plainPlants.size(); i++)
                 {
-                  Model& model = plainTrees[i];
+                  Model& model = plainPlants[i];
                   model.prepareMeshesIndirectData(plainChunks, i, cameraPositionXZ, viewFrustum);
                 }
               for (unsigned int i = 0; i < hillTrees.size(); i++)
@@ -187,8 +151,8 @@ void Game::prepareTerrain()
   waterMapGenerator->fillBufferData(); //fill water buffer
   buildableMapGenerator->prepareMap();
   buildableMapGenerator->fillBufferData();
-  treeGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-  treeGenerator->setupHillModels(hillMapGenerator->getMap());
+  plantGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+  plantGenerator->setupHillModels(hillMapGenerator->getMap());
 }
 
 void Game::prepareMS_FBO()
@@ -320,7 +284,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
                                       options.get(OPT_MODELS_FLAT_BLENDING));
       {
         BENCHMARK("Renderer: draw models", true);
-        renderer.drawTrees(treeGenerator,
+        renderer.drawPlants(plantGenerator,
                            options.get(OPT_MODELS_PHONG_SHADING) ? shaderManager.get(SHADER_MODELS_PHONG) : shaderManager.get(SHADER_MODELS),
                            options.get(OPT_MODELS_CULLING),
                            true,
@@ -436,7 +400,7 @@ void Game::drawFrameObjectsDepthmap()
       shaderManager.get(SHADER_SHADOW_MODELS).use();
       {
         BENCHMARK("Renderer: draw models depthmap", true);
-        renderer.drawTrees(treeGenerator, shaderManager.get(SHADER_SHADOW_MODELS),
+        renderer.drawPlants(plantGenerator, shaderManager.get(SHADER_SHADOW_MODELS),
                            options.get(OPT_MODELS_CULLING),
                            false,
                            updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0,
@@ -482,7 +446,7 @@ void Game::loop()
       prepareTerrain();
       delete saveLoadManager;
       saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator, camera);
-      saveLoadManager->setTreeGenerator(*treeGenerator);
+      saveLoadManager->setTreeGenerator(*plantGenerator);
       options.set(OPT_RECREATE_TERRAIN_REQUEST, false);
       textureManager->createUnderwaterReliefTexture(waterMapGenerator);
       waterThreadUpdatePermitted = true; //it's okay now to begin animating water
@@ -513,7 +477,7 @@ void Game::loop()
    * because the fbo itself already contains all the data drawn into it
    * and it could be used by default fbo immediately
    */
-  bool multisamplingEnabled = options.get(OPT_USE_MULTISAMPLiNG);
+  bool multisamplingEnabled = options.get(OPT_USE_MULTISAMPLING);
   glBindFramebuffer(GL_FRAMEBUFFER, multisamplingEnabled ? multisampleFBO : screenFBO);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

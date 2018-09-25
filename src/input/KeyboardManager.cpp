@@ -39,8 +39,8 @@ void KeyboardManager::processKeyboard()
   processKey(GLFW_KEY_Y, OPT_WATER_CULLING);
   processKey(GLFW_KEY_M, [&]()
   {
-      options.switchOpt(OPT_USE_MULTISAMPLiNG);
-      if (options.get(OPT_USE_MULTISAMPLiNG))
+      options.switchOpt(OPT_USE_MULTISAMPLING);
+      if (options.get(OPT_USE_MULTISAMPLING))
         glEnable(GL_MULTISAMPLE);
       else
         glDisable(GL_MULTISAMPLE);

@@ -1,11 +1,15 @@
 #include "model/Model.h"
 #include <IL/il.h>
 
-Model::Model(const std::string& path, TextureLoader& textureLoader)
-  :
-    textureLoader(textureLoader)
+Model::Model(const std::string& path)
 {
   loadModel(std::string(MODELS_DIR + path));
+}
+
+TextureLoader* Model::textureLoader;
+void Model::bindTextureLoader(TextureLoader &textureLoader)
+{
+  Model::textureLoader = &textureLoader;
 }
 
 void Model::loadModel(const std::string &path)
@@ -142,7 +146,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *material, aiTexture
           Texture texture;
           texture.type = typeName;
           std::string path = this->directory + '/' + std::string(texturePath.C_Str());
-          texture.id = textureLoader.loadTexture(path, 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, !INCLUDE_RES_DIR);
+          texture.id = textureLoader->loadTexture(path, 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, !INCLUDE_RES_DIR);
           texture.path = texturePath.C_Str();
           textures.emplace_back(texture);
           textures_loaded.emplace_back(texture);

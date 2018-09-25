@@ -11,7 +11,7 @@
 #include "generator/UnderwaterQuadMapGenerator.h"
 #include "generator/BuildableMapGenerator.h"
 #include "generator/WaterMapGenerator.h"
-#include "generator/TreeGenerator.h"
+#include "generator/PlantGenerator.h"
 
 class Renderer
 {
@@ -31,7 +31,7 @@ public:
   void drawSelectedTile(BuildableMapGenerator* generator);
   void drawWater(bool useFC, WaterMapGenerator* generator, Shader& fc, Shader& nofc);
   void drawSkybox(Skybox* skybox);
-  void drawTrees(TreeGenerator* generator, Shader& shader,
+  void drawPlants(PlantGenerator* generator, Shader& shader,
                  bool enableFrustumCulling,
                  bool bindTexture,
                  bool updateIndirect,

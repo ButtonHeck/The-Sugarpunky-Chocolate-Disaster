@@ -1,60 +1,90 @@
-#include "generator/TreeGenerator.h"
+#include "generator/PlantGenerator.h"
 
-TreeGenerator::TreeGenerator(std::initializer_list<Model> plainTrees, std::initializer_list<Model> hillTrees, int numGrassModels)
+PlantGenerator::PlantGenerator(int numGrassModels)
   :
-    plainTrees(plainTrees),
-    numGrassModels(numGrassModels),
-    hillTrees(hillTrees)
+    numGrassModels(numGrassModels)
 {
   randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
+  plainPlants.emplace_back("tree1/tree1.obj");
+  plainPlants.emplace_back("tree1_2/tree1_2.obj");
+  plainPlants.emplace_back("tree2/tree2.obj");
+  plainPlants.emplace_back("tree2_2/tree2_2.obj");
+  plainPlants.emplace_back("tree3/tree3.obj");
+  plainPlants.emplace_back("tree3_2/tree3_2.obj");
+  plainPlants.emplace_back("tree4/tree4.obj");
+  plainPlants.emplace_back("tree5/tree5.obj");
+  plainPlants.emplace_back("tree5_2/tree5_2.obj");
+  plainPlants.emplace_back("tree6/tree6.obj");
+  plainPlants.emplace_back("tree6_2/tree6_2.obj");
+  plainPlants.emplace_back("tree7/tree7.obj");
+  plainPlants.emplace_back("tree8/tree8.obj");
+  plainPlants.emplace_back("grass1/grass1.obj");
+  plainPlants.emplace_back("grass2/grass2.obj");
+  plainPlants.emplace_back("grass3/grass3.obj");
+  plainPlants.emplace_back("grass4/grass4.obj");
+  plainPlants.emplace_back("grass5/grass5.obj");
+  plainPlants.emplace_back("grass6/grass6.obj");
+  hillTrees.emplace_back("hillTree1/hillTree1.obj");
+  hillTrees.emplace_back("hillTree2/hillTree2.obj");
+  hillTrees.emplace_back("hillTree3/hillTree3.obj");
+  hillTrees.emplace_back("hillTree4/hillTree4.obj");
+  hillTrees.emplace_back("hillTree5/hillTree5.obj");
+  hillTrees.emplace_back("hillTree6/hillTree6.obj");
+  hillTrees.emplace_back("hillTree7/hillTree7.obj");
+  hillTrees.emplace_back("hillTree1/hillTree1.obj");
+  hillTrees.emplace_back("hillTree3/hillTree3.obj");
+  hillTrees.emplace_back("hillTree7/hillTree7.obj");
+  hillTrees.emplace_back("hillTree1/hillTree1.obj");
+  hillTrees.emplace_back("hillTree3/hillTree3.obj");
+  hillTrees.emplace_back("hillTree7/hillTree7.obj");
 }
 
-TreeGenerator::~TreeGenerator()
+PlantGenerator::~PlantGenerator()
 {
-  delete[] numTrees;
+  delete[] numPlainPlants;
   delete[] numHillTrees;
-  int treeModelsVecSize = treeModels.size();
+  int treeModelsVecSize = plainPlantsMatrices.size();
   for (int i = 0; i < treeModelsVecSize; ++i)
     {
-      glm::mat4* models = treeModels[i];
+      glm::mat4* models = plainPlantsMatrices[i];
       delete[] models;
       models = nullptr;
     }
-  int hillTreeModelsVecSize = hillTreeModels.size();
+  int hillTreeModelsVecSize = hillTreesMatrices.size();
   for (int i = 0; i < hillTreeModelsVecSize; ++i)
     {
-      glm::mat4* models = hillTreeModels[i];
+      glm::mat4* models = hillTreesMatrices[i];
       delete[] models;
       models = nullptr;
     }
 }
 
-void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
+void PlantGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
 {
-  treeModelChunks.clear();
+  plainPlantsModelChunks.clear();
   for (unsigned int y = 0; y < WORLD_HEIGHT; y += CHUNK_SIZE)
     {
       for (unsigned int x = 0; x < WORLD_WIDTH; x += CHUNK_SIZE)
         {
           ModelChunk chunk(x, x + CHUNK_SIZE, y, y + CHUNK_SIZE);
-          treeModelChunks.emplace_back(std::move(chunk));
+          plainPlantsModelChunks.emplace_back(std::move(chunk));
         }
     }
   std::vector<std::vector<glm::mat4>> treeModelsVecs;
-  for (unsigned int i = 0; i < plainTrees.size(); i++)
+  for (unsigned int i = 0; i < plainPlants.size(); i++)
     {
       treeModelsVecs.emplace_back(std::vector<glm::mat4>());
-      if (!treeModels.empty())
-        delete[] treeModels[i];
+      if (!plainPlantsMatrices.empty())
+        delete[] plainPlantsMatrices[i];
     }
-  treeModels.clear();
+  plainPlantsMatrices.clear();
   std::uniform_real_distribution<float> modelSizeDistribution(0.27f, 0.32f);
   std::uniform_real_distribution<float> modelPositionDistribution(-0.25f, 0.25f);
   unsigned int treeCounter = 0, chunkCounter = 0;
 
-  std::vector<unsigned int> instanceOffsetsVector(plainTrees.size());
-  std::vector<unsigned int> numInstanceVector(plainTrees.size());
-  for (unsigned int i = 0; i < plainTrees.size(); i++)
+  std::vector<unsigned int> instanceOffsetsVector(plainPlants.size());
+  std::vector<unsigned int> numInstanceVector(plainPlants.size());
+  for (unsigned int i = 0; i < plainPlants.size(); i++)
     {
       instanceOffsetsVector.emplace_back(0);
       numInstanceVector.emplace_back(0);
@@ -64,7 +94,7 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
     {
       for (unsigned int x = 0; x < WORLD_WIDTH; x += CHUNK_SIZE)
         {
-          treeModelChunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
+          plainPlantsModelChunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
           for (unsigned int y1 = y; y1 < y + CHUNK_SIZE; y1++)
             {
               for (unsigned int x1 = x; x1 < x + CHUNK_SIZE; x1++)
@@ -113,7 +143,7 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
                     }
                 }
             }
-          treeModelChunks.at(chunkCounter).setNumInstancesVector(numInstanceVector);
+          plainPlantsModelChunks.at(chunkCounter).setNumInstancesVector(numInstanceVector);
           for (unsigned int i = 0; i < numInstanceVector.size(); i++)
             {
               numInstanceVector[i] = 0;
@@ -121,61 +151,61 @@ void TreeGenerator::setupPlainModels(std::vector<std::vector<float> > &baseMap, 
           ++chunkCounter;
         }
     }
-  if (treesAlreadyCreated)
-    delete[] numTrees;
-  numTrees = new unsigned int[plainTrees.size()];
+  if (plainPlantsAlreadyCreated)
+    delete[] numPlainPlants;
+  numPlainPlants = new unsigned int[plainPlants.size()];
   for (unsigned int i = 0; i < treeModelsVecs.size(); i++)
     {
-      treeModels.emplace_back(new glm::mat4[treeModelsVecs[i].size()]);
+      plainPlantsMatrices.emplace_back(new glm::mat4[treeModelsVecs[i].size()]);
       for (unsigned int m = 0; m < treeModelsVecs[i].size(); m++)
         {
-          treeModels[i][m] = treeModelsVecs[i][m];
+          plainPlantsMatrices[i][m] = treeModelsVecs[i][m];
         }
-      numTrees[i] = treeModelsVecs[i].size();
+      numPlainPlants[i] = treeModelsVecs[i].size();
     }
-  for (unsigned int i = 0; i < plainTrees.size(); i++)
+  for (unsigned int i = 0; i < plainPlants.size(); i++)
     {
-      plainTrees[i].loadInstances(treeModels[i], numTrees[i]);
+      plainPlants[i].loadInstances(plainPlantsMatrices[i], numPlainPlants[i]);
     }
-  treesAlreadyCreated = true;
+  plainPlantsAlreadyCreated = true;
 }
 
-void TreeGenerator::updatePlainModels(std::vector<glm::mat4 *> &models, unsigned int *numAllTrees)
+void PlantGenerator::updatePlainModels(std::vector<glm::mat4 *> &models, unsigned int *numAllTrees)
 {
-  delete[] numTrees;
-  numTrees = new unsigned int[plainTrees.size()];
-  for (unsigned int i = 0; i < treeModels.size(); i++)
+  delete[] numPlainPlants;
+  numPlainPlants = new unsigned int[plainPlants.size()];
+  for (unsigned int i = 0; i < plainPlantsMatrices.size(); i++)
     {
-      delete[] treeModels[i];
+      delete[] plainPlantsMatrices[i];
     }
-  treeModels.clear();
+  plainPlantsMatrices.clear();
   for (unsigned int i = 0; i < models.size(); i++)
     {
-      treeModels.emplace_back(new glm::mat4[numAllTrees[i]]);
-      numTrees[i] = numAllTrees[i];
+      plainPlantsMatrices.emplace_back(new glm::mat4[numAllTrees[i]]);
+      numPlainPlants[i] = numAllTrees[i];
     }
-  for (unsigned int i = 0; i < treeModels.size(); i++)
+  for (unsigned int i = 0; i < plainPlantsMatrices.size(); i++)
     {
       for (unsigned int m = 0; m < numAllTrees[i]; m++)
         {
-          treeModels[i][m] = models[i][m];
+          plainPlantsMatrices[i][m] = models[i][m];
         }
     }
-  for (unsigned int i = 0; i < plainTrees.size(); i++)
+  for (unsigned int i = 0; i < plainPlants.size(); i++)
     {
-      plainTrees[i].loadInstances(treeModels[i], numTrees[i]);
+      plainPlants[i].loadInstances(plainPlantsMatrices[i], numPlainPlants[i]);
     }
 }
 
-void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
+void PlantGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
 {
-  hillTreeModelChunks.clear();
+  hillTreesModelChunks.clear();
   for (unsigned int y = 0; y < WORLD_HEIGHT; y += CHUNK_SIZE)
     {
       for (unsigned int x = 0; x < WORLD_WIDTH; x += CHUNK_SIZE)
         {
           ModelChunk chunk(x, x + CHUNK_SIZE, y, y + CHUNK_SIZE);
-          hillTreeModelChunks.emplace_back(std::move(chunk));
+          hillTreesModelChunks.emplace_back(std::move(chunk));
         }
     }
   std::uniform_real_distribution<float> modelSizeDistribution(0.36f, 0.51f);
@@ -185,10 +215,10 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
       hillTreeModelsVecs.emplace_back(std::vector<glm::mat4>());
-      if (!hillTreeModels.empty())
-        delete[] hillTreeModels[i];
+      if (!hillTreesMatrices.empty())
+        delete[] hillTreesMatrices[i];
     }
-  hillTreeModels.clear();
+  hillTreesMatrices.clear();
   unsigned int hillTreeCounter = 0, chunkCounter = 0;
 
   std::vector<unsigned int> instanceOffsetsVector(hillTrees.size());
@@ -203,7 +233,7 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
     {
       for (unsigned int x = 0; x < WORLD_WIDTH; x += CHUNK_SIZE)
         {
-          hillTreeModelChunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
+          hillTreesModelChunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
           for (unsigned int y1 = y; y1 < y + CHUNK_SIZE; y1++)
             {
               for (unsigned int x1 = x; x1 < x + CHUNK_SIZE; x1++)
@@ -243,7 +273,7 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
                     }
                 }
             }
-          hillTreeModelChunks.at(chunkCounter).setNumInstancesVector(numInstancesVector);
+          hillTreesModelChunks.at(chunkCounter).setNumInstancesVector(numInstancesVector);
           for (unsigned int i = 0; i < numInstancesVector.size(); i++)
             {
               numInstancesVector[i] = 0;
@@ -256,127 +286,127 @@ void TreeGenerator::setupHillModels(std::vector<std::vector<float> > &hillMap)
   numHillTrees = new unsigned int[hillTrees.size()];
   for (unsigned int i = 0; i < hillTreeModelsVecs.size(); i++)
     {
-      hillTreeModels.emplace_back(new glm::mat4[hillTreeModelsVecs[i].size()]);
+      hillTreesMatrices.emplace_back(new glm::mat4[hillTreeModelsVecs[i].size()]);
       for (unsigned int m = 0; m < hillTreeModelsVecs[i].size(); m++)
         {
-          hillTreeModels[i][m] = hillTreeModelsVecs[i][m];
+          hillTreesMatrices[i][m] = hillTreeModelsVecs[i][m];
         }
       numHillTrees[i] = hillTreeModelsVecs[i].size();
     }
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
-      hillTrees[i].loadInstances(hillTreeModels[i], numHillTrees[i]);
+      hillTrees[i].loadInstances(hillTreesMatrices[i], numHillTrees[i]);
     }
   hillTreesAlreadyCreated = true;
 }
 
-void TreeGenerator::updateHillModels(std::vector<glm::mat4 *> &models, unsigned int *numAllTrees)
+void PlantGenerator::updateHillModels(std::vector<glm::mat4 *> &models, unsigned int *numAllTrees)
 {
   delete[] numHillTrees;
   numHillTrees = new unsigned int[hillTrees.size()];
-  for (unsigned int i = 0; i < hillTreeModels.size(); i++)
+  for (unsigned int i = 0; i < hillTreesMatrices.size(); i++)
     {
-      delete[] hillTreeModels[i];
+      delete[] hillTreesMatrices[i];
     }
-  hillTreeModels.clear();
+  hillTreesMatrices.clear();
   for (unsigned int i = 0; i < models.size(); i++)
     {
-      hillTreeModels.emplace_back(new glm::mat4[numAllTrees[i]]);
+      hillTreesMatrices.emplace_back(new glm::mat4[numAllTrees[i]]);
       numHillTrees[i] = numAllTrees[i];
     }
-  for (unsigned int i = 0; i < hillTreeModels.size(); i++)
+  for (unsigned int i = 0; i < hillTreesMatrices.size(); i++)
     {
       for (unsigned int m = 0; m < numAllTrees[i]; m++)
         {
-          hillTreeModels[i][m] = models[i][m];
+          hillTreesMatrices[i][m] = models[i][m];
         }
     }
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
-      hillTrees[i].loadInstances(hillTreeModels[i], numHillTrees[i]);
+      hillTrees[i].loadInstances(hillTreesMatrices[i], numHillTrees[i]);
     }
 }
 
-std::vector<glm::mat4 *> &TreeGenerator::getTreeModels()
+std::vector<glm::mat4 *> &PlantGenerator::getPlainPlantsMatrices()
 {
-  return treeModels;
+  return plainPlantsMatrices;
 }
 
-std::vector<glm::mat4 *> &TreeGenerator::getHillTreeModels()
+std::vector<glm::mat4 *> &PlantGenerator::getHillTreesMatrices()
 {
-  return hillTreeModels;
+  return hillTreesMatrices;
 }
 
-unsigned int TreeGenerator::getNumTrees(int i)
+unsigned int PlantGenerator::getNumPlainPlants(int i)
 {
-  return numTrees[i];
+  return numPlainPlants[i];
 }
 
-unsigned int TreeGenerator::getNumHillTrees(int i)
+unsigned int PlantGenerator::getNumHillTrees(int i)
 {
   return numHillTrees[i];
 }
 
-std::vector<Model> &TreeGenerator::getPlainTrees()
+std::vector<Model> &PlantGenerator::getPlainPlants()
 {
-  return plainTrees;
+  return plainPlants;
 }
 
-std::vector<Model> &TreeGenerator::getHillTrees()
+std::vector<Model> &PlantGenerator::getHillTrees()
 {
   return hillTrees;
 }
 
-std::vector<ModelChunk> &TreeGenerator::getTreeModelChunks()
+std::vector<ModelChunk> &PlantGenerator::getPlainPlantsModelChunks()
 {
-  return treeModelChunks;
+  return plainPlantsModelChunks;
 }
 
-std::vector<ModelChunk> &TreeGenerator::getHillTreeModelChunks()
+std::vector<ModelChunk> &PlantGenerator::getHillTreeModelChunks()
 {
-  return hillTreeModelChunks;
+  return hillTreesModelChunks;
 }
 
-void TreeGenerator::serialize(std::ofstream &out)
+void PlantGenerator::serialize(std::ofstream &out)
 {
-  for (unsigned int chunk = 0; chunk < treeModelChunks.size(); chunk++)
+  for (unsigned int chunk = 0; chunk < plainPlantsModelChunks.size(); chunk++)
     {
-      for (unsigned int i = 0; i < treeModelChunks[chunk].getNumInstancesVector().size(); i++)
+      for (unsigned int i = 0; i < plainPlantsModelChunks[chunk].getNumInstancesVector().size(); i++)
         {
-          out << treeModelChunks[chunk].getNumInstances(i) << " ";
+          out << plainPlantsModelChunks[chunk].getNumInstances(i) << " ";
         }
-      for (unsigned int i = 0; i < treeModelChunks[chunk].getInstanceOffsetVector().size(); i++)
+      for (unsigned int i = 0; i < plainPlantsModelChunks[chunk].getInstanceOffsetVector().size(); i++)
         {
-          out << treeModelChunks[chunk].getInstanceOffset(i) << " ";
+          out << plainPlantsModelChunks[chunk].getInstanceOffset(i) << " ";
         }
     }
-  for (unsigned int chunk = 0; chunk < hillTreeModelChunks.size(); chunk++)
+  for (unsigned int chunk = 0; chunk < hillTreesModelChunks.size(); chunk++)
     {
-      for (unsigned int i = 0; i < hillTreeModelChunks[chunk].getNumInstancesVector().size(); i++)
+      for (unsigned int i = 0; i < hillTreesModelChunks[chunk].getNumInstancesVector().size(); i++)
         {
-          out << hillTreeModelChunks[chunk].getNumInstances(i) << " ";
+          out << hillTreesModelChunks[chunk].getNumInstances(i) << " ";
         }
-      for (unsigned int i = 0; i < hillTreeModelChunks[chunk].getInstanceOffsetVector().size(); i++)
+      for (unsigned int i = 0; i < hillTreesModelChunks[chunk].getInstanceOffsetVector().size(); i++)
         {
-          out << hillTreeModelChunks[chunk].getInstanceOffset(i) << " ";
+          out << hillTreesModelChunks[chunk].getInstanceOffset(i) << " ";
         }
     }
-  for (unsigned int i = 0; i < treeModels.size(); i++)
+  for (unsigned int i = 0; i < plainPlantsMatrices.size(); i++)
     {
-      out << numTrees[i] << " ";
-      for (unsigned int m = 0; m < numTrees[i]; m++)
+      out << numPlainPlants[i] << " ";
+      for (unsigned int m = 0; m < numPlainPlants[i]; m++)
         {
-          float* matrixValues = (float*)glm::value_ptr(treeModels[i][m]);
+          float* matrixValues = (float*)glm::value_ptr(plainPlantsMatrices[i][m]);
           for (unsigned int e = 0; e < 16; ++e)
             out << matrixValues[e] << " ";
         }
     }
-  for (unsigned int i = 0; i < hillTreeModels.size(); i++)
+  for (unsigned int i = 0; i < hillTreesMatrices.size(); i++)
     {
       out << numHillTrees[i] << " ";
       for (unsigned int m = 0; m < numHillTrees[i]; m++)
         {
-          float* matrixValues = (float*)glm::value_ptr(hillTreeModels[i][m]);
+          float* matrixValues = (float*)glm::value_ptr(hillTreesMatrices[i][m]);
           for (unsigned int e = 0; e < 16; ++e)
             out << matrixValues[e] << " ";
         }

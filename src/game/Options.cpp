@@ -16,7 +16,7 @@ Options::Options()
     {OPT_MODELS_CULLING, true},
     {OPT_HILLS_CULLING, false},
     {OPT_WATER_CULLING, false},
-    {OPT_USE_MULTISAMPLiNG, true},
+    {OPT_USE_MULTISAMPLING, true},
     {OPT_USE_SHADOWS, true},
     {OPT_CREATE_SHADOW_MAP_REQUEST, true},
     {OPT_DRAW_FLAT_TERRAIN, true},

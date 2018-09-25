@@ -99,7 +99,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
         }
     }
 
-  std::vector<ModelChunk>& treeModelChunks = treeGenerator->getTreeModelChunks();
+  std::vector<ModelChunk>& treeModelChunks = treeGenerator->getPlainPlantsModelChunks();
   for (unsigned int chunk = 0; chunk < treeModelChunks.size(); chunk++)
     {
       for (unsigned int i = 0; i < treeModelChunks[chunk].getNumInstancesVector().size(); i++)
@@ -133,8 +133,8 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
     }
 
   std::vector<glm::mat4*> treeModels;
-  unsigned int numAllTrees[treeGenerator->getTreeModels().size()];
-  for (unsigned int i = 0; i < treeGenerator->getTreeModels().size(); i++)
+  unsigned int numAllTrees[treeGenerator->getPlainPlantsMatrices().size()];
+  for (unsigned int i = 0; i < treeGenerator->getPlainPlantsMatrices().size(); i++)
     {
       unsigned int numTrees = 0;
       input >> numTrees;
@@ -152,8 +152,8 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
         }
     }
   std::vector<glm::mat4*> hillTreeModels;
-  unsigned int numAllHillTrees[treeGenerator->getHillTreeModels().size()];
-  for (unsigned int i = 0; i < treeGenerator->getHillTreeModels().size(); i++)
+  unsigned int numAllHillTrees[treeGenerator->getHillTreesMatrices().size()];
+  for (unsigned int i = 0; i < treeGenerator->getHillTreesMatrices().size(); i++)
     {
       unsigned int numHillTrees = 0;
       input >> numHillTrees;
@@ -197,7 +197,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   return true;
 }
 
-void SaveLoadManager::setTreeGenerator(TreeGenerator &treeGenerator)
+void SaveLoadManager::setTreeGenerator(PlantGenerator &treeGenerator)
 {
   this->treeGenerator = &treeGenerator;
 }
