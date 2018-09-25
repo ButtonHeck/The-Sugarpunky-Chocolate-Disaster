@@ -40,7 +40,9 @@ SOURCES += \
     src/input/KeyboardManager.cpp \
     src/input/MouseInputManager.cpp \
     src/game/ScreenResolution.cpp \
-    src/generator/PlantGenerator.cpp
+    src/generator/PlantGenerator.cpp \
+    src/game/ScreenBuffer.cpp \
+    src/game/DepthmapBuffer.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -76,7 +78,9 @@ HEADERS += \
     src/input/KeyboardManager.h \
     src/input/MouseInputManager.h \
     src/game/ScreenResolution.h \
-    src/generator/PlantGenerator.h
+    src/generator/PlantGenerator.h \
+    src/game/ScreenBuffer.h \
+    src/game/DepthmapBuffer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

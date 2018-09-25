@@ -9,6 +9,8 @@
 #include "game/TextureUnits.h"
 #include "game/Options.h"
 #include "game/ScreenResolution.h"
+#include "game/ScreenBuffer.h"
+#include "game/DepthmapBuffer.h"
 #include "input/KeyboardManager.h"
 #include "input/MouseInputManager.h"
 #include "game/SaveLoadManager.h"
@@ -32,10 +34,6 @@ public:
   ~Game();
   void setupVariables();
   void prepareTerrain();
-  void prepareMS_FBO();
-  void prepareDepthMapFBO(GLuint* fbo, GLuint depthTextureUnit);
-  void prepareScreenVAO();
-  void drawFrameToScreenRectangle(bool enableMS);
   void drawFrameObjects(glm::mat4& projectionView);
   void drawFrameObjectsDepthmap();
   void loop();
@@ -61,9 +59,10 @@ private:
   ShaderManager shaderManager;
   Renderer renderer;
   TextureLoader textureLoader;
-  TextureManager* textureManager;
+  TextureManager textureManager;
   CoordinateSystemRenderer csRenderer;
-  GLuint screenVAO, screenVBO, multisampleFBO, screenFBO, depthMapFBO;
+  ScreenBuffer screenBuffer;
+  DepthmapBuffer depthmapBuffer;
 
   //world
   WaterMapGenerator* waterMapGenerator;

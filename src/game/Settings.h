@@ -29,14 +29,6 @@ constexpr bool INCLUDE_RES_DIR = true;
 constexpr float NEAR_PLANE = 0.1f;
 constexpr float FAR_PLANE = 500.0f;
 constexpr float FOV = 40.0f;
-constexpr float SCREEN_VERTICES[] = {
-  -1.0f, -1.0f, 0.0f, 0.0f,
-   1.0f, -1.0f, 1.0f, 0.0f,
-   1.0f,  1.0f, 1.0f, 1.0f,
-   1.0f,  1.0f, 1.0f, 1.0f,
-  -1.0f,  1.0f, 0.0f, 1.0f,
-  -1.0f, -1.0f, 0.0f, 0.0f
-};
 
 //world config
 constexpr int WORLD_WIDTH = 384;
