@@ -20,7 +20,7 @@ public:
   void drawHills(bool useFC, HillsMapGenerator* generator, Shader &fc, Shader &nofc);
   void drawHillsDepthmap(HillsMapGenerator* generator);
   void drawShore(BaseMapGenerator* generator);
-  void drawFlatTerrain(BaseMapGenerator* generator, Frustum& frustum);
+  void drawFlatTerrain(BaseMapGenerator *generator, Frustum& frustum, GLuint texture);
   void addIndirectBufferData(GLuint& primCount,
                              GLuint* buffer,
                              GLuint& dataOffset,

@@ -52,8 +52,9 @@ void Renderer::drawShore(BaseMapGenerator *generator)
   glDisable(GL_BLEND);
 }
 
-void Renderer::drawFlatTerrain(BaseMapGenerator *generator, Frustum& frustum)
+void Renderer::drawFlatTerrain(BaseMapGenerator *generator, Frustum& frustum, GLuint texture)
 {
+  glBindTextureUnit(TEX_FLAT, texture);
   //square chunks are better to render without FC
   glBindVertexArray(generator->getSquareVAO());
   glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0, generator->getNumSquareInstances());
@@ -203,19 +204,19 @@ void Renderer::drawPlants(PlantGenerator *generator, Shader &shader,
     glEnable(GL_BLEND);
   else
     glDisable(GL_BLEND);
-  auto& plainTrees = generator->getPlainPlants();
+  auto& plainPlants = generator->getPlainPlants();
   auto& hillTrees = generator->getHillTrees();
 
-  for (unsigned int i = 0; i < plainTrees.size() - NUM_GRASS_MODELS; i++)
+  for (unsigned int i = 0; i < plainPlants.size() - NUM_GRASS_MODELS; i++)
     {
-      Model& model = plainTrees[i];
-      model.draw(shader, enableFrustumCulling, bindTexture, updateIndirect);
+      Model& model = plainPlants[i];
+      model.draw(enableFrustumCulling, bindTexture, updateIndirect);
     }
 
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
       Model& model = hillTrees[i];
-      model.draw(shader, enableFrustumCulling, bindTexture, updateIndirect);
+      model.draw(enableFrustumCulling, bindTexture, updateIndirect);
     }
 
   //draw grass without face culling
@@ -227,10 +228,10 @@ void Renderer::drawPlants(PlantGenerator *generator, Shader &shader,
       shader.setFloat("u_grassPosDistribution", glfwGetTime());
       shader.setFloat("u_grassPosDistrubutionInfluence", glfwGetTime() * 4.2f);
     }
-  for (unsigned int i = plainTrees.size() - NUM_GRASS_MODELS; i < plainTrees.size(); i++)
+  for (unsigned int i = plainPlants.size() - NUM_GRASS_MODELS; i < plainPlants.size(); i++)
     {
-      Model& model = plainTrees[i];
-      model.draw(shader, enableFrustumCulling, bindTexture, updateIndirect);
+      Model& model = plainPlants[i];
+      model.draw(enableFrustumCulling, bindTexture, updateIndirect);
     }
   glEnable(GL_CULL_FACE);
   if (screenDraw)

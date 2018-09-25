@@ -16,6 +16,7 @@
 #include "game/Settings.h"
 #include "timer/BenchmarkTimer.h"
 #include "model/IndirectBufferToken.h"
+#include "game/TextureUnits.h"
 #include <map>
 
 struct Vertex
@@ -40,7 +41,7 @@ public:
   Mesh(std::vector<Vertex> vertices, std::vector<Texture> textures, std::vector<GLuint> indices);
   void setupMesh();
   void setupInstances(glm::mat4* models, unsigned int numModels);
-  void draw(Shader& shader, bool useCulling, bool bindTexture, bool updateIndirect);
+  void draw(bool useCulling, bool bindTexture, bool updateIndirect);
   void prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2 &cameraPositionXZ,

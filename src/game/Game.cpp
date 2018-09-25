@@ -181,7 +181,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
       shaderManager.updateFlatShader(projectionView, options.get(OPT_USE_SHADOWS));
       {
         BENCHMARK("Renderer: draw flat", true);
-        renderer.drawFlatTerrain(baseMapGenerator, viewFrustum);
+        renderer.drawFlatTerrain(baseMapGenerator, viewFrustum, textureManager.get(TEX_FLAT));
       }
     }
 
@@ -214,11 +214,6 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
                            options.get(OPT_MODELS_FLAT_BLENDING));
       }
     }
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, 0);
-  //reset texture units to terrain textures after we done with models
-  glBindTextureUnit(TEX_FLAT, textureManager.get(TEX_FLAT));
-  glBindTextureUnit(TEX_FLAT_2, textureManager.get(TEX_FLAT_2));
 
   //buildable tiles
   if (options.get(OPT_DRAW_BUILDABLE))
@@ -331,10 +326,6 @@ void Game::drawFrameObjectsDepthmap()
     }
 
   glEnable(GL_CULL_FACE); //or set back face culling
-
-  //reset texture units to terrain textures after we done with models
-  glBindTextureUnit(TEX_FLAT, textureManager.get(TEX_FLAT));
-  glBindTextureUnit(TEX_FLAT_2, textureManager.get(TEX_FLAT_2));
 }
 
 void Game::loop()
