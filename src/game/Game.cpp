@@ -5,15 +5,15 @@ int ram_available, ram_size;
 float ram_size_float_percentage;
 #endif
 
-Game::Game(GLFWwindow *window, glm::vec3 &cursorDir, Camera& camera, Options& options, ScreenResolution &screenResolution)
+Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolution &screenResolution)
   :
     screenResolution(screenResolution),
     window(window),
     camera(camera),
-    cursorToViewportDirection(cursorDir),
     projection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE)),
     options(options),
     keyboard(KeyboardManager(window, camera, options)),
+    mouseInput(MouseInputManager::getInstance()),
     shaderManager(),
     renderer(Renderer(camera)),
     textureLoader(TextureLoader(screenResolution)),
@@ -271,6 +271,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
         fontManager->addText("View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
                                + std::to_string(camera.getDirection().y).substr(0,6) + ": "
                                + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, scrHeight - 75.0f, 0.18f);
+        const glm::vec3& cursorToViewportDirection = mouseInput.getCursorToViewportDirection();
         fontManager->addText("Cursor at: " + (!options.get(OPT_SHOW_CURSOR) ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
                                + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
                                + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, scrHeight - 95.0f, 0.18f);

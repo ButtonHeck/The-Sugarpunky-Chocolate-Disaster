@@ -4,18 +4,26 @@ extern GLFWwindow* window;
 extern Camera camera;
 extern Options options;
 extern ScreenResolution screenResolution;
-float lastX, lastY;
-extern glm::vec3 cursorToViewportDirection;
+
+/*
+Singleton for mouse input, NOT THREAD SAFE!
+*/
+MouseInputManager &MouseInputManager::getInstance()
+{
+  static MouseInputManager instance;
+  return instance;
+}
 
 void MouseInputManager::cursorCallback(GLFWwindow *, double x, double y)
 {
   static bool firstMouseInput = true;
   static double cursorScreenX = 0.0;
   static double cursorScreenY = 0.0;
+  MouseInputManager& mouseInput = MouseInputManager::getInstance();
   if (options.get(OPT_SHOW_CURSOR))
     {
-      lastX = x;
-      lastY = y;
+      mouseInput.lastX = x;
+      mouseInput.lastY = y;
       glfwGetCursorPos(window, &cursorScreenX, &cursorScreenY);
       glm::vec3 view = camera.getDirection();
       view = glm::normalize(view);
@@ -34,24 +42,25 @@ void MouseInputManager::cursorCallback(GLFWwindow *, double x, double y)
       cursorScreenY /= (screenResolution.getHeight() / 2);
       glm::vec3 newPos = camera.getPosition() + view * NEAR_PLANE + h * (float)cursorScreenX - v * (float)cursorScreenY;
       glm::vec3 newDir = newPos - camera.getPosition();
-      cursorToViewportDirection = newDir;
+      mouseInput.cursorToViewportDirection = newDir;
       return;
     }
   if (firstMouseInput)
     {
-      lastX = x;
-      lastY = y;
+      mouseInput.lastX = x;
+      mouseInput.lastY = y;
       firstMouseInput = false;
     }
-  float dx = lastX - x;
-  float dy = y - lastY;
-  lastX = x;
-  lastY = y;
+  float dx = mouseInput.lastX - x;
+  float dy = y - mouseInput.lastY;
+  mouseInput.lastX = x;
+  mouseInput.lastY = y;
   camera.processMouseCursor(dx, dy);
 }
 
 void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int action, int)
 {
+  MouseInputManager& mouseInput = MouseInputManager::getInstance();
   static bool mouseKeysPressed[GLFW_MOUSE_BUTTON_LAST];
   if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
     {
@@ -60,8 +69,8 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
           options.switchOpt(OPT_SHOW_CURSOR);
           glfwSetInputMode(window, GLFW_CURSOR, options.get(OPT_SHOW_CURSOR) ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
           glfwSetCursorPos(window, screenResolution.getWidth() / 2.0f, screenResolution.getHeight() / 2.0f);
-          lastX = screenResolution.getWidth() / 2.0f;
-          lastY = screenResolution.getHeight() / 2.0f;
+          mouseInput.lastX = screenResolution.getWidth() / 2.0f;
+          mouseInput.lastY = screenResolution.getHeight() / 2.0f;
           mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT] = true;
         }
     }
@@ -119,6 +128,11 @@ int MouseInputManager::getCursorMapX() const
 int MouseInputManager::getCursorMapZ() const
 {
   return cursorOnMapCoordZ;
+}
+
+const glm::vec3 &MouseInputManager::getCursorToViewportDirection() const
+{
+  return cursorToViewportDirection;
 }
 
 const std::string &MouseInputManager::getCursorTileName() const

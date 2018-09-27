@@ -17,7 +17,6 @@ DebugLogger debugLogger;
 GLFWwindow* window;
 ScreenResolution screenResolution;
 Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
-glm::vec3 cursorToViewportDirection;
 Options options;
 Game* game;
 
@@ -43,7 +42,7 @@ int main()
 #ifdef _DEBUG
   debugLogger.setupDebugContext();
 #endif
-  game = new Game(window, cursorToViewportDirection, camera, options, screenResolution);
+  game = new Game(window, camera, options, screenResolution);
   game->setupVariables();
 
   //game loop

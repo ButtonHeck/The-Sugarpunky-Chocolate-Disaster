@@ -11,7 +11,7 @@
 class MouseInputManager
 {
 public:
-  MouseInputManager() = default;
+  static MouseInputManager& getInstance();
   static void cursorCallback(GLFWwindow*, double x, double y);
   static void cursorClickCallback(GLFWwindow*, int, int, int);
   void updateCursorMappingCoordinates(Camera& camera,
@@ -20,8 +20,12 @@ public:
                          BuildableMapGenerator* buildableMapGenerator);
   int getCursorMapX() const;
   int getCursorMapZ() const;
+  const glm::vec3& getCursorToViewportDirection() const;
   const std::string& getCursorTileName() const;
 private:
+  MouseInputManager() = default;
+  glm::vec3 cursorToViewportDirection;
+  float lastX, lastY;
   float cursorOnMapX = 0.0f;
   float cursorOnMapZ = 0.0f;
   int cursorOnMapCoordX = 0;

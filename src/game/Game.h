@@ -30,7 +30,7 @@
 class Game
 {
 public:
-  Game(GLFWwindow* window, glm::vec3& cursorDir, Camera& camera, Options& options, ScreenResolution& screenResolution);
+  Game(GLFWwindow* window, Camera& camera, Options& options, ScreenResolution& screenResolution);
   ~Game();
   void setupVariables();
   void prepareTerrain();
@@ -46,14 +46,13 @@ private:
 
   //camera and related stuff
   Camera& camera;
-  glm::vec3& cursorToViewportDirection;
   Frustum viewFrustum;
   glm::mat4 projection;
 
   //input and options
   Options& options;
   KeyboardManager keyboard;
-  MouseInputManager mouseInput;
+  MouseInputManager& mouseInput;
 
   //graphics
   ShaderManager shaderManager;
