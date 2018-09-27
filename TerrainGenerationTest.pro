@@ -42,7 +42,8 @@ SOURCES += \
     src/game/ScreenResolution.cpp \
     src/generator/PlantGenerator.cpp \
     src/game/ScreenBuffer.cpp \
-    src/game/DepthmapBuffer.cpp
+    src/game/DepthmapBuffer.cpp \
+    src/game/DebugLogger.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -80,7 +81,8 @@ HEADERS += \
     src/game/ScreenResolution.h \
     src/generator/PlantGenerator.h \
     src/game/ScreenBuffer.h \
-    src/game/DepthmapBuffer.h
+    src/game/DepthmapBuffer.h \
+    src/game/DebugLogger.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 
