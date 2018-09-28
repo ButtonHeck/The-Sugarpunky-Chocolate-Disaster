@@ -42,8 +42,7 @@ Game::~Game()
 {
   waterAnimationThread->join();
   delete waterAnimationThread;
-  meshIndirectUpdateThread->join();
-  delete meshIndirectUpdateThread;
+  delete meshBufferUpdateThread;
   textureManager.deleteTextures();
   shaderManager.deleteShaders();
   delete fontManager;
@@ -76,36 +75,8 @@ void Game::setupVariables()
     BENCHMARK("Game: Prepare Terrain", false);
     prepareTerrain();
   }
-  meshIndirectUpdateThread = new std::thread([this]()
-  {
-      auto& plainPlants = plantGenerator->getPlainPlants();
-      auto& hillTrees = plantGenerator->getHillTrees();
-      auto& plainChunks = plantGenerator->getPlainPlantsModelChunks();
-      auto& hillChunks = plantGenerator->getHillTreeModelChunks();
-      while(!glfwWindowShouldClose(window))
-        {
-          if (meshesIndirectDataNeed)
-            {
-              BENCHMARK("(ST)Model: update meshes DIBs data", true);
-              float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH);
-              float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_WORLD_HEIGHT, (float)HALF_WORLD_HEIGHT);
-              glm::vec2 cameraPositionXZ = glm::vec2(cameraOnMapX, cameraOnMapZ);
-              for (unsigned int i = 0; i < plainPlants.size(); i++)
-                {
-                  Model& model = plainPlants[i];
-                  model.prepareMeshesIndirectData(plainChunks, i, cameraPositionXZ, viewFrustum);
-                }
-              for (unsigned int i = 0; i < hillTrees.size(); i++)
-                {
-                  Model& model = hillTrees[i];
-                  model.prepareMeshesIndirectData(hillChunks, i, cameraPositionXZ, viewFrustum);
-                }
-              meshesIndirectDataReady = true;
-              meshesIndirectDataNeed = false;
-            }
-          std::this_thread::yield();
-        }
-    });
+  meshBufferUpdateThread = new MeshBufferUpdateThread(window, camera, plantGenerator, viewFrustum);
+
   waterAnimationThread = new std::thread([this]()
   {
       while(!glfwWindowShouldClose(window))
@@ -334,9 +305,9 @@ void Game::loop()
   //even if we don't need to render models make sure we update indirect buffer data for meshes
   {
     BENCHMARK("Game: wait for mesh indirect ready", true);
-    while(!meshesIndirectDataReady && !updateCount == 0 && meshesIndirectDataNeed) {}
+    while(!updateCount == 0 && meshBufferUpdateThread->waitFor()) {}
   }
-  meshesIndirectDataReady = false;
+  meshBufferUpdateThread->setDataReady(false);
 
   keyboard.processKeyboard();
   keyboard.processKeyboardCamera(CPU_timer.tick(), hillMapGenerator->getMap());
@@ -397,7 +368,7 @@ void Game::loop()
 
   //after all mesh related draw calls we could start updating meshes indirect data buffers
   //start updating right after we've used it and before we need that data to be updated and buffered again
-  meshesIndirectDataNeed = updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1;
+  meshBufferUpdateThread->setDataNeed(updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1);
 
   //render result onto the default FBO and apply HDR/MS if the flag are set
   {

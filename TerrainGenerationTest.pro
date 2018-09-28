@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
-QMAKE_CXXFLAGS+= -fopenmp
+QMAKE_CXXFLAGS+= -fopenmp -pthread
 QMAKE_LFLAGS +=  -fopenmp
 
 INCLUDEPATH += $$PWD/src
@@ -43,7 +43,9 @@ SOURCES += \
     src/generator/PlantGenerator.cpp \
     src/game/ScreenBuffer.cpp \
     src/game/DepthmapBuffer.cpp \
-    src/game/DebugLogger.cpp
+    src/game/DebugLogger.cpp \
+    src/game/MeshBufferUpdateThread.cpp \
+    src/game/Thread.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -82,7 +84,9 @@ HEADERS += \
     src/generator/PlantGenerator.h \
     src/game/ScreenBuffer.h \
     src/game/DepthmapBuffer.h \
-    src/game/DebugLogger.h
+    src/game/DebugLogger.h \
+    src/game/Thread.h \
+    src/game/MeshBufferUpdateThread.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

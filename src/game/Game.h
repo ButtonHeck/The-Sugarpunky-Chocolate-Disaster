@@ -26,6 +26,7 @@
 #include "model/Model.h"
 #include "timer/Timer.h"
 #include "timer/BenchmarkTimer.h"
+#include "game/MeshBufferUpdateThread.h"
 
 class Game
 {
@@ -78,8 +79,7 @@ private:
 
   //multithreading
   std::thread* waterAnimationThread;
-  std::thread* meshIndirectUpdateThread;
-  volatile bool meshesIndirectDataReady = false, meshesIndirectDataNeed = false;
+  MeshBufferUpdateThread* meshBufferUpdateThread;
   volatile bool waterThreadHasUpdated = false, waterThreadUpdatePermitted = true;
 #ifdef _DEBUG
   bool waterThreadAnimationIsWorking = true;
