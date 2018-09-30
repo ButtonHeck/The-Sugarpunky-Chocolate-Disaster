@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
-QMAKE_CXXFLAGS+= -fopenmp -pthread
+QMAKE_CXXFLAGS+= -fopenmp
 QMAKE_LFLAGS +=  -fopenmp
 
 INCLUDEPATH += $$PWD/src
@@ -44,15 +44,16 @@ SOURCES += \
     src/game/ScreenBuffer.cpp \
     src/game/DepthmapBuffer.cpp \
     src/game/DebugLogger.cpp \
-    src/game/MeshBufferUpdateThread.cpp \
-    src/game/Thread.cpp
+    src/thread/Thread.cpp \
+    src/thread/WaterAnimationUpdater.cpp \
+    src/thread/MeshBufferUpdater.cpp
 
 HEADERS += \
     src/game/Game.h \
     src/game/Settings.h \
-    src/game/TextureUnits.h \
     src/game/SaveLoadManager.h \
     src/game/Options.h \
+    src/graphics/TextureUnits.h \
     src/graphics/Shader.h \
     src/graphics/ShaderManager.h \
     src/graphics/Camera.h \
@@ -85,8 +86,9 @@ HEADERS += \
     src/game/ScreenBuffer.h \
     src/game/DepthmapBuffer.h \
     src/game/DebugLogger.h \
-    src/game/Thread.h \
-    src/game/MeshBufferUpdateThread.h
+    src/thread/Thread.h \
+    src/thread/WaterAnimationUpdater.h \
+    src/thread/MeshBufferUpdater.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 
@@ -341,12 +343,5 @@ unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
 INCLUDEPATH += $$PWD/../../../../../usr/local/include
 DEPENDPATH += $$PWD/../../../../../usr/local/include
-
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lfreetype
-
-INCLUDEPATH += $$PWD/../../../../../usr/local/include/freetype2
-DEPENDPATH += $$PWD/../../../../../usr/local/include/freetype2
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../../usr/local/lib/libfreetype.a
 
 unix:!macx: LIBS += -lpthread-2.23

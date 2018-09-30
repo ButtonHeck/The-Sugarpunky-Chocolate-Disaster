@@ -16,7 +16,7 @@
 #include "game/Settings.h"
 #include "timer/BenchmarkTimer.h"
 #include "model/IndirectBufferToken.h"
-#include "game/TextureUnits.h"
+#include "graphics/TextureUnits.h"
 #include <map>
 
 struct Vertex

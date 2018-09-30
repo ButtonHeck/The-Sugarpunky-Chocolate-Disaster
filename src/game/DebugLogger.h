@@ -11,8 +11,6 @@ class DebugLogger
 public:
   DebugLogger() = default;
   static void setupWindowLibraryErrorCallback();
-  void setupDebugContext();
-private:
   static void APIENTRY glDebugCallback(GLenum source,
                               GLenum type,
                               GLuint id,

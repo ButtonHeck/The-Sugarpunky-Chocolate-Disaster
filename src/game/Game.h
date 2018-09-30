@@ -6,7 +6,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include "game/Settings.h"
-#include "game/TextureUnits.h"
+#include "graphics/TextureUnits.h"
 #include "game/Options.h"
 #include "game/ScreenResolution.h"
 #include "game/ScreenBuffer.h"
@@ -26,7 +26,8 @@
 #include "model/Model.h"
 #include "timer/Timer.h"
 #include "timer/BenchmarkTimer.h"
-#include "game/MeshBufferUpdateThread.h"
+#include "thread/MeshBufferUpdater.h"
+#include "thread/WaterAnimationUpdater.h"
 
 class Game
 {
@@ -78,12 +79,8 @@ private:
   FontManager* fontManager;
 
   //multithreading
-  std::thread* waterAnimationThread;
-  MeshBufferUpdateThread* meshBufferUpdateThread;
-  volatile bool waterThreadHasUpdated = false, waterThreadUpdatePermitted = true;
-#ifdef _DEBUG
-  bool waterThreadAnimationIsWorking = true;
-#endif
+  WaterAnimationUpdater* waterAnimator;
+  MeshBufferUpdater* meshBufferUpdater;
 };
 
 #endif // GAME_H

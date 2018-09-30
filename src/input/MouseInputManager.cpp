@@ -6,7 +6,7 @@ extern Options options;
 extern ScreenResolution screenResolution;
 
 /*
-Singleton for mouse input, NOT THREAD SAFE!
+Singleton for mouse input, C++11 guarantees thread-safe instantiation
 */
 MouseInputManager &MouseInputManager::getInstance()
 {

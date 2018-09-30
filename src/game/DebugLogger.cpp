@@ -8,20 +8,6 @@ void DebugLogger::setupWindowLibraryErrorCallback()
     });
 }
 
-void DebugLogger::setupDebugContext()
-{
-  std::cout << glfwGetVersionString() << std::endl;
-  GLint flags;
-  glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-  if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
-    {
-      glEnable(GL_DEBUG_OUTPUT);
-      glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-      glDebugMessageCallback(glDebugCallback, nullptr);
-      glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-    }
-}
-
 void DebugLogger::glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar *glMessage, const void *)
 {
   static std::unordered_set<GLuint> debugMessages;
