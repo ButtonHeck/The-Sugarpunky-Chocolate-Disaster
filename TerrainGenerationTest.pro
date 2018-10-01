@@ -43,9 +43,6 @@ SOURCES += \
     src/game/ScreenBuffer.cpp \
     src/game/DepthmapBuffer.cpp \
     src/game/DebugLogger.cpp \
-    src/thread/Thread.cpp \
-    src/thread/WaterAnimationUpdater.cpp \
-    src/thread/MeshBufferUpdater.cpp \
     src/graphics/TextRenderer.cpp \
     src/graphics/FontLoader.cpp
 
@@ -86,9 +83,6 @@ HEADERS += \
     src/game/ScreenBuffer.h \
     src/game/DepthmapBuffer.h \
     src/game/DebugLogger.h \
-    src/thread/Thread.h \
-    src/thread/WaterAnimationUpdater.h \
-    src/thread/MeshBufferUpdater.h \
     src/graphics/TextRenderer.h \
     src/graphics/FontLoader.h
 

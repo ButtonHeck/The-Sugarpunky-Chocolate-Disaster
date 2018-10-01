@@ -27,8 +27,6 @@
 #include "model/Model.h"
 #include "timer/Timer.h"
 #include "timer/BenchmarkTimer.h"
-#include "thread/MeshBufferUpdater.h"
-#include "thread/WaterAnimationUpdater.h"
 
 class Game
 {
@@ -81,8 +79,14 @@ private:
   TextRenderer textRenderer;
 
   //multithreading
-  WaterAnimationUpdater* waterAnimator;
-  MeshBufferUpdater* meshBufferUpdater;
+  void setupThreads();
+  std::thread* waterAnimator;
+  std::thread* meshIndirectBufferUpdater;
+  volatile bool meshBufferReady = false, meshBufferNeedUpdate = false;
+  volatile bool waterKeyFrameReady = false, waterNeedNewKeyFrame = true;
+#ifdef _DEBUG
+  bool waterAnimatorIsWorking = true;
+#endif
 };
 
 #endif // GAME_H

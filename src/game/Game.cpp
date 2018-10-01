@@ -41,8 +41,10 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
 
 Game::~Game()
 {
+  waterAnimator->join();
   delete waterAnimator;
-  delete meshBufferUpdater;
+  meshIndirectBufferUpdater->join();
+  delete meshIndirectBufferUpdater;
   textureManager.deleteTextures();
   shaderManager.deleteShaders();
   delete baseMapGenerator;
@@ -69,13 +71,11 @@ void Game::setupVariables()
   glfwSetMouseButtonCallback(window, MouseInputManager::cursorClickCallback);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
   {
     BENCHMARK("Game: Prepare Terrain", false);
     prepareTerrain();
   }
-  meshBufferUpdater = new MeshBufferUpdater(window, camera, plantGenerator, viewFrustum);
-  waterAnimator = new WaterAnimationUpdater(window, options, waterMapGenerator);
+  setupThreads();
   textureManager.createUnderwaterReliefTexture(waterMapGenerator);
   shaderManager.setupConstantUniforms(glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()));
   screenBuffer.setupBuffer();
@@ -225,7 +225,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
         textRenderer.addText("Hills culling: " + (options.get(OPT_HILLS_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 40.0f, 0.18f);
         textRenderer.addText("Trees culling: " + (options.get(OPT_MODELS_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 60.0f, 0.18f);
 #ifdef _DEBUG
-        textRenderer.addText("Water anim thread works: " + (waterAnimator->isWorking() ? std::string("On") : std::string("Off")), 10.0f, 80.0f, 0.18f);
+        textRenderer.addText("Water anim thread works: " + (waterAnimatorIsWorking ? std::string("On") : std::string("Off")), 10.0f, 80.0f, 0.18f);
         glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &ram_available);
         textRenderer.addText("RAM available: " + (std::to_string(ram_available)
                                                      .append(", ")
@@ -277,9 +277,9 @@ void Game::loop()
   //even if we don't need to render models make sure we update indirect buffer data for meshes
   {
     BENCHMARK("Game: wait for mesh indirect ready", true);
-    while(!updateCount == 0 && meshBufferUpdater->waitFor()) {}
+    while(!meshBufferReady && !updateCount == 0 && meshBufferNeedUpdate) {}
   }
-  meshBufferUpdater->setDataReady(false);
+  meshBufferReady = false;
 
   keyboard.processKeyboard();
   keyboard.processKeyboardCamera(CPU_timer.tick(), hillMapGenerator->getMap());
@@ -287,11 +287,11 @@ void Game::loop()
   //recreate routine
   if (options.get(OPT_RECREATE_TERRAIN_REQUEST))
     {
-      while(!waterAnimator->isReady())
+      while(!waterKeyFrameReady)
         {
           std::this_thread::yield();//busy wait until water thread has done its business...and business is good
         }
-      waterAnimator->setNewFrameNeed(false); //explicitly bypass water animation frame update routine
+      waterNeedNewKeyFrame = false; //explicitly bypass water animation frame update routine
       delete baseMapGenerator;
       delete buildableMapGenerator;
       baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
@@ -305,7 +305,7 @@ void Game::loop()
       saveLoadManager->setTreeGenerator(*plantGenerator);
       options.set(OPT_RECREATE_TERRAIN_REQUEST, false);
       textureManager.createUnderwaterReliefTexture(waterMapGenerator);
-      waterAnimator->setNewFrameNeed(true); //it's okay now to begin animating water
+      waterNeedNewKeyFrame = true; //it's okay now to begin animating water
     }
 
   if ((options.get(OPT_CREATE_SHADOW_MAP_REQUEST) || updateCount % 16 == 0) && options.get(OPT_USE_SHADOWS))
@@ -340,7 +340,7 @@ void Game::loop()
 
   //after all mesh related draw calls we could start updating meshes indirect data buffers
   //start updating right after we've used it and before we need that data to be updated and buffered again
-  meshBufferUpdater->setDataNeed(updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1);
+  meshBufferNeedUpdate = updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1;
 
   //render result onto the default FBO and apply HDR/MS if the flag are set
   {
@@ -356,15 +356,15 @@ void Game::loop()
     }
   if (options.get(OPT_LOAD_REQUEST))
     {
-      while(!waterAnimator->isReady())
+      while(!waterKeyFrameReady)
         {
           std::this_thread::yield(); //busy wait
         }
-      waterAnimator->setNewFrameNeed(false);
+      waterNeedNewKeyFrame = false;
       saveLoadManager->loadFromFile(SAVES_DIR + "testSave.txt");
       options.set(OPT_LOAD_REQUEST, false);
       textureManager.createUnderwaterReliefTexture(waterMapGenerator);
-      waterAnimator->setNewFrameNeed(true);
+      waterNeedNewKeyFrame = true;
     }
 
   {
@@ -372,4 +372,63 @@ void Game::loop()
     glfwSwapBuffers(window);
   }
   ++updateCount;
+}
+
+void Game::setupThreads()
+{
+  meshIndirectBufferUpdater = new std::thread([this]()
+  {
+      auto& plainPlants = plantGenerator->getPlainPlants();
+      auto& hillTrees = plantGenerator->getHillTrees();
+      auto& plainChunks = plantGenerator->getPlainPlantsModelChunks();
+      auto& hillChunks = plantGenerator->getHillTreeModelChunks();
+      while(!glfwWindowShouldClose(window))
+        {
+          if (meshBufferNeedUpdate)
+            {
+              BENCHMARK("(ST)Model: update meshes DIBs data", true);
+              float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH);
+              float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_WORLD_HEIGHT, (float)HALF_WORLD_HEIGHT);
+              glm::vec2 cameraPositionXZ = glm::vec2(cameraOnMapX, cameraOnMapZ);
+              for (unsigned int i = 0; i < plainPlants.size(); i++)
+                {
+                  Model& model = plainPlants[i];
+                  model.prepareMeshesIndirectData(plainChunks, i, cameraPositionXZ, viewFrustum);
+                }
+              for (unsigned int i = 0; i < hillTrees.size(); i++)
+                {
+                  Model& model = hillTrees[i];
+                  model.prepareMeshesIndirectData(hillChunks, i, cameraPositionXZ, viewFrustum);
+                }
+              meshBufferReady = true;
+              meshBufferNeedUpdate = false;
+            }
+          std::this_thread::yield();
+        }
+    });
+  waterAnimator = new std::thread([this]()
+  {
+      while(!glfwWindowShouldClose(window))
+            {
+              if (waterNeedNewKeyFrame &&
+                  options.get(OPT_ANIMATE_WATER) &&
+                  options.get(OPT_DRAW_WATER))
+                {
+                  waterKeyFrameReady = false;
+                  waterMapGenerator->updateAnimationFrame(options);
+                  waterKeyFrameReady = true;
+#ifdef _DEBUG
+                  waterAnimatorIsWorking = true;
+#endif
+                }
+              else
+                {
+#ifdef _DEBUG
+                  waterAnimatorIsWorking = false;
+#endif
+                  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                }
+              std::this_thread::yield();
+            }
+        });
 }
