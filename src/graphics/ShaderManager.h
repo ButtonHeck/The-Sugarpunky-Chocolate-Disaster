@@ -35,7 +35,7 @@ class ShaderManager
 {
 public:
   ShaderManager();
-  void setupConstantUniforms();
+  void setupConstantUniforms(glm::mat4 fontProjection);
   Shader& get(SHADER type);
   void updateHillsShaders(bool useFC, bool useShadows, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum, float maxHillHeight);
   void updateShoreShader(glm::mat4& projectionView, bool useShadows);

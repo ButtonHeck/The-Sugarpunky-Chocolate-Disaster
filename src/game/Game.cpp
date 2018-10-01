@@ -20,7 +20,9 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
     textureManager(TextureManager(textureLoader)),
     csRenderer(CoordinateSystemRenderer(&shaderManager.get(SHADER_CS))),
     screenBuffer(screenResolution, textureManager, shaderManager),
-    depthmapBuffer()
+    depthmapBuffer(),
+    fontLoader(FONT_DIR + "font.fnt", FONT_DIR + "font.png"),
+    textRenderer(fontLoader, shaderManager.get(SHADER_FONT))
 {
   srand(time(NULL));
   waterMapGenerator = new WaterMapGenerator(shaderManager.get(SHADER_WATER_CULLING));
@@ -28,7 +30,6 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
   baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
   buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
   saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator, camera);
-  fontManager = new FontManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()), shaderManager.get(SHADER_FONT));
   Model::bindTextureLoader(textureLoader);
   plantGenerator = new PlantGenerator(NUM_GRASS_MODELS);
   saveLoadManager->setTreeGenerator(*plantGenerator);
@@ -44,7 +45,6 @@ Game::~Game()
   delete meshBufferUpdater;
   textureManager.deleteTextures();
   shaderManager.deleteShaders();
-  delete fontManager;
   delete baseMapGenerator;
   delete hillMapGenerator;
   delete waterMapGenerator;
@@ -77,7 +77,7 @@ void Game::setupVariables()
   meshBufferUpdater = new MeshBufferUpdater(window, camera, plantGenerator, viewFrustum);
   waterAnimator = new WaterAnimationUpdater(window, options, waterMapGenerator);
   textureManager.createUnderwaterReliefTexture(waterMapGenerator);
-  shaderManager.setupConstantUniforms();
+  shaderManager.setupConstantUniforms(glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()));
   screenBuffer.setupBuffer();
   depthmapBuffer.setupBuffer(textureManager.get(TEX_DEPTH_MAP_SUN));
 }
@@ -204,37 +204,36 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
       glDisable(GL_CULL_FACE);
       {
         BENCHMARK("Renderer: add and draw text", true);
-        fontManager->resetBufferOffset();
         float scrHeight = (float)screenResolution.getHeight();
-        fontManager->addText("CPU UPS: " + std::to_string(CPU_timer.getFPS()), 10.0f, scrHeight - 15.0f, 0.18f);
-        fontManager->addText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
+        textRenderer.addText("CPU UPS: " + std::to_string(CPU_timer.getFPS()), 10.0f, scrHeight - 15.0f, 0.18f);
+        textRenderer.addText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                                + std::to_string(viewPosition.y).substr(0,6) + ": "
                                + std::to_string(viewPosition.z).substr(0,6), 10.0f, scrHeight - 35.0f, 0.18f);
-        fontManager->addText("Camera on map: " + std::to_string(camera.getMapCoordX()) + ": " + std::to_string(camera.getMapCoordZ()),
+        textRenderer.addText("Camera on map: " + std::to_string(camera.getMapCoordX()) + ": " + std::to_string(camera.getMapCoordZ()),
                                10.0f, scrHeight - 55.0f, 0.18f);
-        fontManager->addText("View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
+        textRenderer.addText("View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
                                + std::to_string(camera.getDirection().y).substr(0,6) + ": "
                                + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, scrHeight - 75.0f, 0.18f);
         const glm::vec3& cursorToViewportDirection = mouseInput.getCursorToViewportDirection();
-        fontManager->addText("Cursor at: " + (!options.get(OPT_SHOW_CURSOR) ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
+        textRenderer.addText("Cursor at: " + (!options.get(OPT_SHOW_CURSOR) ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
                                + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
                                + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, scrHeight - 95.0f, 0.18f);
-        fontManager->addText("Cursor on map: " + (!options.get(OPT_SHOW_CURSOR) ? "inactive" : (std::to_string(mouseInput.getCursorMapX()) + ": "
+        textRenderer.addText("Cursor on map: " + (!options.get(OPT_SHOW_CURSOR) ? "inactive" : (std::to_string(mouseInput.getCursorMapX()) + ": "
                                + std::to_string(mouseInput.getCursorMapZ()-1) + ", " + mouseInput.getCursorTileName())),
                                10.0f, scrHeight - 115.0f, 0.18f);
-        fontManager->addText("Water culling: " + (options.get(OPT_WATER_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 20.0f, 0.18f);
-        fontManager->addText("Hills culling: " + (options.get(OPT_HILLS_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 40.0f, 0.18f);
-        fontManager->addText("Trees culling: " + (options.get(OPT_MODELS_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 60.0f, 0.18f);
+        textRenderer.addText("Water culling: " + (options.get(OPT_WATER_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 20.0f, 0.18f);
+        textRenderer.addText("Hills culling: " + (options.get(OPT_HILLS_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 40.0f, 0.18f);
+        textRenderer.addText("Trees culling: " + (options.get(OPT_MODELS_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 60.0f, 0.18f);
 #ifdef _DEBUG
-        fontManager->addText("Water anim thread works: " + (waterAnimator->isWorking() ? std::string("On") : std::string("Off")), 10.0f, 80.0f, 0.18f);
+        textRenderer.addText("Water anim thread works: " + (waterAnimator->isWorking() ? std::string("On") : std::string("Off")), 10.0f, 80.0f, 0.18f);
         glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &ram_available);
-        fontManager->addText("RAM available: " + (std::to_string(ram_available)
+        textRenderer.addText("RAM available: " + (std::to_string(ram_available)
                                                      .append(", ")
                                                      .append(std::to_string(ram_available / ram_size_float_percentage))
                                                      .append("%")), 10.0f, 100.0f, 0.18f);
-        fontManager->addText("Models Phong: " + (options.get(OPT_MODELS_PHONG_SHADING) ? std::string("On") : std::string("Off")), 10.0f, 120.0f, 0.18f);
+        textRenderer.addText("Models Phong: " + (options.get(OPT_MODELS_PHONG_SHADING) ? std::string("On") : std::string("Off")), 10.0f, 120.0f, 0.18f);
 #endif
-        fontManager->drawText();
+        textRenderer.drawText();
       }
       glDisable(GL_BLEND);
       glEnable(GL_CULL_FACE);

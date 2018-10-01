@@ -22,7 +22,6 @@ SOURCES += \
     src/graphics/Frustum.cpp \
     src/graphics/TextureManager.cpp \
     src/graphics/ShaderManager.cpp \
-    src/graphics/FontManager.cpp \
     src/generator/MapGenerator.cpp \
     src/generator/WaterMapGenerator.cpp \
     src/generator/HillsMapGenerator.cpp \
@@ -46,7 +45,9 @@ SOURCES += \
     src/game/DebugLogger.cpp \
     src/thread/Thread.cpp \
     src/thread/WaterAnimationUpdater.cpp \
-    src/thread/MeshBufferUpdater.cpp
+    src/thread/MeshBufferUpdater.cpp \
+    src/graphics/TextRenderer.cpp \
+    src/graphics/FontLoader.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -63,7 +64,6 @@ HEADERS += \
     src/graphics/CoordinateSystemRenderer.h \
     src/graphics/Frustum.h \
     src/graphics/TextureManager.h \
-    src/graphics/FontManager.h \
     src/generator/MapGenerator.h \
     src/generator/WaterMapGenerator.h \
     src/generator/HillsMapGenerator.h \
@@ -88,7 +88,9 @@ HEADERS += \
     src/game/DebugLogger.h \
     src/thread/Thread.h \
     src/thread/WaterAnimationUpdater.h \
-    src/thread/MeshBufferUpdater.h
+    src/thread/MeshBufferUpdater.h \
+    src/graphics/TextRenderer.h \
+    src/graphics/FontLoader.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

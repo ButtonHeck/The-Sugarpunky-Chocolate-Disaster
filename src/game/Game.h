@@ -18,7 +18,8 @@
 #include "graphics/Renderer.h"
 #include "graphics/Frustum.h"
 #include "graphics/ShaderManager.h"
-#include "graphics/FontManager.h"
+#include "graphics/TextRenderer.h"
+#include "graphics/FontLoader.h"
 #include "graphics/CoordinateSystemRenderer.h"
 #include "graphics/Skybox.h"
 #include "graphics/TextureManager.h"
@@ -76,7 +77,8 @@ private:
   Skybox skybox;
 
   //GUI and text
-  FontManager* fontManager;
+  FontLoader fontLoader;
+  TextRenderer textRenderer;
 
   //multithreading
   WaterAnimationUpdater* waterAnimator;

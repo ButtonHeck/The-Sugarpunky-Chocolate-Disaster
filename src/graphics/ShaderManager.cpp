@@ -30,7 +30,7 @@ ShaderManager::ShaderManager()
   shader = &shaders[type].second; \
   shader->use();
 
-void ShaderManager::setupConstantUniforms()
+void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
 {
   Shader* shader = nullptr;
   bindShaderUnit(shader, SHADER_HILLS);
@@ -86,6 +86,10 @@ void ShaderManager::setupConstantUniforms()
 
   bindShaderUnit(shader, SHADER_SKY);
   shader->setInt("u_skybox", TEX_SKYBOX);
+
+  bindShaderUnit(shader, SHADER_FONT);
+  shader->setMat4("u_projection", fontProjection);
+  shader->setInt("u_fontTexture", TEX_FONT);
 
   bindShaderUnit(shader, SHADER_MODELS);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
