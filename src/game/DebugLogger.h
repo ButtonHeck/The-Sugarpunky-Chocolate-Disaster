@@ -6,12 +6,10 @@
 #include <string>
 #include <unordered_set>
 
-class DebugLogger
+namespace DebugLogger
 {
-public:
-  DebugLogger() = default;
-  static void setupWindowLibraryErrorCallback();
-  static void APIENTRY glDebugCallback(GLenum source,
+  void setupWindowLibraryErrorCallback();
+  void APIENTRY glDebugCallback(GLenum source,
                               GLenum type,
                               GLuint id,
                               GLenum severity,

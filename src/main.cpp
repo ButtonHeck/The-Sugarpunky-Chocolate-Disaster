@@ -13,7 +13,6 @@
 #include "graphics/Camera.h"
 #include "timer/BenchmarkTimer.h"
 
-DebugLogger debugLogger;
 GLFWwindow* window;
 ScreenResolution screenResolution;
 Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
@@ -22,8 +21,7 @@ Game* game;
 
 int main()
 {
-  //initializing and presetup routines
-  debugLogger.setupWindowLibraryErrorCallback();
+  DebugLogger::setupWindowLibraryErrorCallback();
   if (!glfwInit())
     throw std::runtime_error("Error while loading GLFW\n");
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -47,7 +45,7 @@ int main()
     {
       glEnable(GL_DEBUG_OUTPUT);
       glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-      glDebugMessageCallback(debugLogger.glDebugCallback, nullptr);
+      glDebugMessageCallback(DebugLogger::glDebugCallback, nullptr);
       glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
 #endif
