@@ -1,16 +1,19 @@
 #include "game/SaveLoadManager.h"
 
-SaveLoadManager::SaveLoadManager(BaseMapGenerator &baseGenerator, HillsMapGenerator &hillGenerator, WaterMapGenerator &waterGenerator, BuildableMapGenerator *buildableGenerator, Camera& camera)
+SaveLoadManager::SaveLoadManager(std::shared_ptr<BaseMapGenerator> baseGenerator,
+                                 std::shared_ptr<HillsMapGenerator> hillGenerator,
+                                 std::shared_ptr<WaterMapGenerator> waterGenerator,
+                                 std::shared_ptr<BuildableMapGenerator> buildableGenerator, Camera& camera)
   :
     baseGenerator(baseGenerator),
     hillGenerator(hillGenerator),
     waterGenerator(waterGenerator),
     buildableGenerator(buildableGenerator),
     camera(camera),
-    baseMap(baseGenerator.getMap()),
-    hillMap(hillGenerator.getMap()),
-    waterMap(waterGenerator.getMap()),
-    chunkMap(baseGenerator.getChunkMap())
+    baseMap(baseGenerator->getMap()),
+    hillMap(hillGenerator->getMap()),
+    waterMap(waterGenerator->getMap()),
+    chunkMap(baseGenerator->getChunkMap())
 {
 
 }
@@ -173,20 +176,16 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   treeGenerator->updatePlainModels(treeModels, numAllTrees);
   treeGenerator->updateHillModels(hillTreeModels, numAllHillTrees);
 
-  hillGenerator.createTiles();
-  hillGenerator.fillBufferData();
-  baseGenerator.getSquareTiles().clear();
-  baseGenerator.getCellTiles().clear();
-  baseGenerator.prepareMap();
-  baseGenerator.fillShoreBufferData();
-  baseGenerator.fillSquareBufferData();
-  baseGenerator.fillCellBufferData();
-  waterGenerator.postPrepareMap();
-  waterGenerator.fillBufferData();
-  delete buildableGenerator;
-  buildableGenerator = new BuildableMapGenerator(baseGenerator.getMap(), hillGenerator.getMap());
-  buildableGenerator->prepareMap();
-  buildableGenerator->fillBufferData();
+  hillGenerator->createTiles();
+  hillGenerator->fillBufferData();
+  baseGenerator->getSquareTiles().clear();
+  baseGenerator->getCellTiles().clear();
+  baseGenerator->prepareMap();
+  baseGenerator->fillShoreBufferData();
+  baseGenerator->fillSquareBufferData();
+  baseGenerator->fillCellBufferData();
+  waterGenerator->postPrepareMap();
+  waterGenerator->fillBufferData();
 
   float camPosX, camPosY, camPosZ, pitch, yaw;
   input >> camPosX >> camPosY >> camPosZ >> pitch >> yaw;
@@ -197,7 +196,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   return true;
 }
 
-void SaveLoadManager::setTreeGenerator(PlantGenerator &treeGenerator)
+void SaveLoadManager::setTreeGenerator(const std::shared_ptr<PlantGenerator> treeGenerator)
 {
-  this->treeGenerator = &treeGenerator;
+  this->treeGenerator = treeGenerator;
 }

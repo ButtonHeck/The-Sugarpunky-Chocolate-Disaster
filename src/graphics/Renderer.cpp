@@ -7,7 +7,7 @@ Renderer::Renderer(Camera &camera)
 
 }
 
-void Renderer::drawHills(bool useFC, HillsMapGenerator *generator, Shader& fc, Shader& nofc)
+void Renderer::drawHills(bool useFC, const std::shared_ptr<HillsMapGenerator> generator, Shader& fc, Shader& nofc)
 {
   if (useFC)
     {
@@ -38,13 +38,13 @@ void Renderer::drawHills(bool useFC, HillsMapGenerator *generator, Shader& fc, S
     }
 }
 
-void Renderer::drawHillsDepthmap(HillsMapGenerator *generator)
+void Renderer::drawHillsDepthmap(const std::shared_ptr<HillsMapGenerator> generator)
 {
   glBindVertexArray(generator->getVAO());
   glDrawElements(GL_TRIANGLES, 6 * generator->getTiles().size(), GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::drawShore(BaseMapGenerator *generator)
+void Renderer::drawShore(const std::shared_ptr<BaseMapGenerator> generator)
 {
   glBindVertexArray(generator->getShoreVao());
   glEnable(GL_BLEND);
@@ -52,7 +52,7 @@ void Renderer::drawShore(BaseMapGenerator *generator)
   glDisable(GL_BLEND);
 }
 
-void Renderer::drawFlatTerrain(BaseMapGenerator *generator, Frustum& frustum, GLuint texture)
+void Renderer::drawFlatTerrain(const std::shared_ptr<BaseMapGenerator> generator, Frustum& frustum, GLuint texture)
 {
   glBindTextureUnit(TEX_FLAT, texture);
   //square chunks are better to render without FC
@@ -123,13 +123,13 @@ void Renderer::addIndirectBufferData(GLuint& primCount,
   buffer[dataOffset++] = instanceOffset;
 }
 
-void Renderer::drawUnderwaterQuad(UnderwaterQuadMapGenerator *generator)
+void Renderer::drawUnderwaterQuad(const UnderwaterQuadMapGenerator &generator)
 {
-  glBindVertexArray(generator->getVAO());
+  glBindVertexArray(generator.getVAO());
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 }
 
-void Renderer::drawBuildableTiles(BuildableMapGenerator *generator)
+void Renderer::drawBuildableTiles(const std::shared_ptr<BuildableMapGenerator> generator)
 {
   glBindVertexArray(generator->getVAO());
   glEnable(GL_BLEND);
@@ -137,7 +137,7 @@ void Renderer::drawBuildableTiles(BuildableMapGenerator *generator)
   glDisable(GL_BLEND);
 }
 
-void Renderer::drawSelectedTile(BuildableMapGenerator *generator)
+void Renderer::drawSelectedTile(const std::shared_ptr<BuildableMapGenerator> generator)
 {
   glBindVertexArray(generator->getSelectedTileVAO());
   glEnable(GL_BLEND);
@@ -145,7 +145,7 @@ void Renderer::drawSelectedTile(BuildableMapGenerator *generator)
   glDisable(GL_BLEND);
 }
 
-void Renderer::drawWater(bool useFC, WaterMapGenerator *generator, Shader& fc, Shader& nofc)
+void Renderer::drawWater(bool useFC, std::shared_ptr<WaterMapGenerator> generator, Shader& fc, Shader& nofc)
 {
   if (useFC)
     {
@@ -192,7 +192,7 @@ void Renderer::drawSkybox(Skybox *skybox)
   glEnable(GL_CULL_FACE);
 }
 
-void Renderer::drawPlants(PlantGenerator *generator, Shader &shader,
+void Renderer::drawPlants(const std::shared_ptr<PlantGenerator> generator, Shader &shader,
                          bool enableFrustumCulling,
                          bool bindTexture,
                          bool updateIndirect,

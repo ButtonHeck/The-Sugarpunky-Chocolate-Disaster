@@ -15,9 +15,9 @@ public:
   void createTiles(bool flat, bool createOnZeroTiles, std::vector<std::vector<float>>& map, float offsetY);
   std::vector<std::vector<float>>& getMap();
   std::vector<TerrainTile>& getTiles();
-  GLuint& getVAO();
-  GLuint& getVBO();
-  GLuint& getEBO();
+  GLuint getVAO() const;
+  GLuint getVBO() const;
+  GLuint getEBO() const;
   virtual void deleteGLObjects();
 protected:
   std::vector<std::vector<float>> map;

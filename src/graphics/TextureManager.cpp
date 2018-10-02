@@ -25,7 +25,7 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_DEPTH_MAP_SUN] = loader.createDepthMapTexture(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT, TEX_DEPTH_MAP_SUN);
 }
 
-void TextureManager::createUnderwaterReliefTexture(WaterMapGenerator *generator)
+void TextureManager::createUnderwaterReliefTexture(const std::shared_ptr<WaterMapGenerator> generator)
 {
   textures[TEX_UNDERWATER_RELIEF] = loader.createUnderwaterReliefTexture(generator, TEX_UNDERWATER_RELIEF, GL_LINEAR, GL_LINEAR);
 }

@@ -79,17 +79,17 @@ std::vector<TerrainTile> &MapGenerator::getTiles()
   return tiles;
 }
 
-GLuint &MapGenerator::getVAO()
+GLuint MapGenerator::getVAO() const
 {
   return vao;
 }
 
-GLuint &MapGenerator::getVBO()
+GLuint MapGenerator::getVBO() const
 {
   return vbo;
 }
 
-GLuint &MapGenerator::getEBO()
+GLuint MapGenerator::getEBO() const
 {
   return ebo;
 }

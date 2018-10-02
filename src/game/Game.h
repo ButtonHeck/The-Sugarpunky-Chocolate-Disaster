@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
+#include <memory>
 #include "game/Settings.h"
 #include "graphics/TextureUnits.h"
 #include "game/Options.h"
@@ -65,12 +66,12 @@ private:
   DepthmapBuffer depthmapBuffer;
 
   //world
-  WaterMapGenerator* waterMapGenerator;
-  HillsMapGenerator* hillMapGenerator;
-  BaseMapGenerator* baseMapGenerator;
-  BuildableMapGenerator* buildableMapGenerator;
-  SaveLoadManager* saveLoadManager;
-  PlantGenerator* plantGenerator;
+  std::shared_ptr<WaterMapGenerator> waterMapGenerator;
+  std::shared_ptr<HillsMapGenerator> hillMapGenerator;
+  std::shared_ptr<BaseMapGenerator> baseMapGenerator;
+  std::shared_ptr<BuildableMapGenerator> buildableMapGenerator;
+  std::unique_ptr<SaveLoadManager> saveLoadManager;
+  std::shared_ptr<PlantGenerator> plantGenerator;
   UnderwaterQuadMapGenerator underwaterQuadGenerator;
   Skybox skybox;
 
@@ -80,8 +81,8 @@ private:
 
   //multithreading
   void setupThreads();
-  std::thread* waterAnimator;
-  std::thread* meshIndirectBufferUpdater;
+  std::unique_ptr<std::thread> waterAnimator;
+  std::unique_ptr<std::thread> meshIndirectBufferUpdater;
   volatile bool meshBufferReady = false, meshBufferNeedUpdate = false;
   volatile bool waterKeyFrameReady = false, waterNeedNewKeyFrame = true;
 #ifdef _DEBUG

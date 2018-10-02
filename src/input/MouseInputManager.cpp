@@ -78,39 +78,42 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
     mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT] = false;
 }
 
-void MouseInputManager::updateCursorMappingCoordinates(Camera &camera, BaseMapGenerator *baseMapGenerator, HillsMapGenerator *hillMapGenerator, BuildableMapGenerator *buildableMapGenerator)
+void MouseInputManager::updateCursorMappingCoordinates(Camera &camera,
+                                                       const std::shared_ptr<BaseMapGenerator> baseMapGenerator,
+                                                       const std::shared_ptr<HillsMapGenerator> hillMapGenerator,
+                                                       const std::shared_ptr<BuildableMapGenerator> buildableMapGenerator)
 {
   if (options.get(OPT_SHOW_CURSOR) && cursorToViewportDirection.y < 0.0f)
     {
       float ratio = camera.getPosition().y / (-cursorToViewportDirection.y);
       bool cursorOutOfMap = false;
-      cursorOnMapX = glm::clamp((cursorToViewportDirection.x * ratio) + camera.getPosition().x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH);
-      cursorOnMapZ = glm::clamp((cursorToViewportDirection.z * ratio) + camera.getPosition().z, -(float)HALF_WORLD_HEIGHT, (float)HALF_WORLD_HEIGHT);
-      if (cursorOnMapX == -HALF_WORLD_WIDTH || cursorOnMapX == HALF_WORLD_WIDTH ||
-          cursorOnMapZ == -HALF_WORLD_HEIGHT || cursorOnMapZ == HALF_WORLD_HEIGHT)
+      cursorAbsX = glm::clamp((cursorToViewportDirection.x * ratio) + camera.getPosition().x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH);
+      cursorAbsZ = glm::clamp((cursorToViewportDirection.z * ratio) + camera.getPosition().z, -(float)HALF_WORLD_HEIGHT, (float)HALF_WORLD_HEIGHT);
+      if (cursorAbsX == -HALF_WORLD_WIDTH || cursorAbsX == HALF_WORLD_WIDTH ||
+          cursorAbsZ == -HALF_WORLD_HEIGHT || cursorAbsZ == HALF_WORLD_HEIGHT)
         cursorOutOfMap = true;
       if (cursorOutOfMap)
         {
           cursorTileName = "out of map";
           return;
         }
-      cursorOnMapCoordX = (int)(WORLD_WIDTH + cursorOnMapX) - HALF_WORLD_WIDTH;
-      cursorOnMapCoordX = glm::clamp(cursorOnMapCoordX, 1, WORLD_WIDTH - 2);
-      cursorOnMapCoordZ = (int)(WORLD_HEIGHT + cursorOnMapZ) - HALF_WORLD_HEIGHT + 1;
-      cursorOnMapCoordZ = glm::clamp(cursorOnMapCoordZ, 1, WORLD_HEIGHT - 1);
-      if (buildableMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0)
+      cursorMapX = (int)(WORLD_WIDTH + cursorAbsX) - HALF_WORLD_WIDTH;
+      cursorMapX = glm::clamp(cursorMapX, 1, WORLD_WIDTH - 2);
+      cursorMapZ = (int)(WORLD_HEIGHT + cursorAbsZ) - HALF_WORLD_HEIGHT + 1;
+      cursorMapZ = glm::clamp(cursorMapZ, 1, WORLD_HEIGHT - 1);
+      if (buildableMapGenerator->getMap()[cursorMapZ][cursorMapX] != 0)
         cursorTileName = "Flat";
-      else if (hillMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] != 0 ||
-               hillMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX] != 0 ||
-               hillMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX+1] != 0 ||
-               hillMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX+1] != 0)
+      else if (hillMapGenerator->getMap()[cursorMapZ][cursorMapX] != 0 ||
+               hillMapGenerator->getMap()[cursorMapZ-1][cursorMapX] != 0 ||
+               hillMapGenerator->getMap()[cursorMapZ-1][cursorMapX+1] != 0 ||
+               hillMapGenerator->getMap()[cursorMapZ][cursorMapX+1] != 0)
         cursorTileName = "Hills";
       else
         {
-          if (baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX] == TILE_NO_RENDER_VALUE ||
-              baseMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX] == TILE_NO_RENDER_VALUE ||
-              baseMapGenerator->getMap()[cursorOnMapCoordZ-1][cursorOnMapCoordX+1] == TILE_NO_RENDER_VALUE ||
-              baseMapGenerator->getMap()[cursorOnMapCoordZ][cursorOnMapCoordX+1] == TILE_NO_RENDER_VALUE)
+          if (baseMapGenerator->getMap()[cursorMapZ][cursorMapX] == TILE_NO_RENDER_VALUE ||
+              baseMapGenerator->getMap()[cursorMapZ-1][cursorMapX] == TILE_NO_RENDER_VALUE ||
+              baseMapGenerator->getMap()[cursorMapZ-1][cursorMapX+1] == TILE_NO_RENDER_VALUE ||
+              baseMapGenerator->getMap()[cursorMapZ][cursorMapX+1] == TILE_NO_RENDER_VALUE)
             cursorTileName = "Water";
           else
             cursorTileName = "Shore";
@@ -122,12 +125,12 @@ void MouseInputManager::updateCursorMappingCoordinates(Camera &camera, BaseMapGe
 
 int MouseInputManager::getCursorMapX() const
 {
-  return cursorOnMapCoordX;
+  return cursorMapX;
 }
 
 int MouseInputManager::getCursorMapZ() const
 {
-  return cursorOnMapCoordZ;
+  return cursorMapZ;
 }
 
 const glm::vec3 &MouseInputManager::getCursorToViewportDirection() const

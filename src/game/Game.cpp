@@ -25,14 +25,14 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
     textRenderer(fontLoader, shaderManager.get(SHADER_FONT))
 {
   srand(time(NULL));
-  waterMapGenerator = new WaterMapGenerator(shaderManager.get(SHADER_WATER_CULLING));
-  hillMapGenerator = new HillsMapGenerator(shaderManager.get(SHADER_HILLS_CULLING), waterMapGenerator->getMap());
-  baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
-  buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-  saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator, camera);
+  waterMapGenerator = std::make_shared<WaterMapGenerator>(shaderManager.get(SHADER_WATER_CULLING));
+  hillMapGenerator = std::make_shared<HillsMapGenerator>(shaderManager.get(SHADER_HILLS_CULLING), waterMapGenerator->getMap());
+  baseMapGenerator = std::make_shared<BaseMapGenerator>(waterMapGenerator->getMap(), hillMapGenerator->getMap());
+  buildableMapGenerator = std::make_shared<BuildableMapGenerator>(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+  saveLoadManager = std::make_unique<SaveLoadManager>(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, camera);
   Model::bindTextureLoader(textureLoader);
-  plantGenerator = new PlantGenerator(NUM_GRASS_MODELS);
-  saveLoadManager->setTreeGenerator(*plantGenerator);
+  plantGenerator = std::make_shared<PlantGenerator>(NUM_GRASS_MODELS);
+  saveLoadManager->setTreeGenerator(plantGenerator);
 #ifdef _DEBUG
   glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ram_size);
   ram_size_float_percentage = (float)ram_size / 100;
@@ -42,17 +42,9 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
 Game::~Game()
 {
   waterAnimator->join();
-  delete waterAnimator;
   meshIndirectBufferUpdater->join();
-  delete meshIndirectBufferUpdater;
   textureManager.deleteTextures();
   shaderManager.deleteShaders();
-  delete baseMapGenerator;
-  delete hillMapGenerator;
-  delete waterMapGenerator;
-  delete saveLoadManager;
-  delete buildableMapGenerator;
-  delete plantGenerator;
   BenchmarkTimer::finish(updateCount);
 }
 
@@ -131,7 +123,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
 
   //underwater tile
   shaderManager.updateUnderwaterShader(projectionView);
-  renderer.drawUnderwaterQuad(&underwaterQuadGenerator);
+  renderer.drawUnderwaterQuad(underwaterQuadGenerator);
 
   //shore terrain chunks drawing
   shaderManager.updateShoreShader(projectionView, options.get(OPT_USE_SHADOWS));
@@ -292,17 +284,14 @@ void Game::loop()
           std::this_thread::yield();//busy wait until water thread has done its business...and business is good
         }
       waterNeedNewKeyFrame = false; //explicitly bypass water animation frame update routine
-      delete baseMapGenerator;
-      delete buildableMapGenerator;
-      baseMapGenerator = new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap());
-      buildableMapGenerator = new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+      baseMapGenerator.reset(new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap()));
+      buildableMapGenerator.reset(new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap()));
       waterMapGenerator->initializeMap(waterMapGenerator->getMap());
       hillMapGenerator->initializeMap(hillMapGenerator->getMap());
 
       prepareTerrain();
-      delete saveLoadManager;
-      saveLoadManager = new SaveLoadManager(*baseMapGenerator, *hillMapGenerator, *waterMapGenerator, buildableMapGenerator, camera);
-      saveLoadManager->setTreeGenerator(*plantGenerator);
+      saveLoadManager.reset(new SaveLoadManager(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, camera));
+      saveLoadManager->setTreeGenerator(plantGenerator);
       options.set(OPT_RECREATE_TERRAIN_REQUEST, false);
       textureManager.createUnderwaterReliefTexture(waterMapGenerator);
       waterNeedNewKeyFrame = true; //it's okay now to begin animating water
@@ -364,6 +353,9 @@ void Game::loop()
       saveLoadManager->loadFromFile(SAVES_DIR + "testSave.txt");
       options.set(OPT_LOAD_REQUEST, false);
       textureManager.createUnderwaterReliefTexture(waterMapGenerator);
+      buildableMapGenerator.reset(new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap()));
+      buildableMapGenerator->prepareMap();
+      buildableMapGenerator->fillBufferData();
       waterNeedNewKeyFrame = true;
     }
 
@@ -376,7 +368,7 @@ void Game::loop()
 
 void Game::setupThreads()
 {
-  meshIndirectBufferUpdater = new std::thread([this]()
+  meshIndirectBufferUpdater = std::make_unique<std::thread>([this]()
   {
       auto& plainPlants = plantGenerator->getPlainPlants();
       auto& hillTrees = plantGenerator->getHillTrees();
@@ -406,7 +398,7 @@ void Game::setupThreads()
           std::this_thread::yield();
         }
     });
-  waterAnimator = new std::thread([this]()
+  waterAnimator = std::make_unique<std::thread>([this]()
   {
       while(!glfwWindowShouldClose(window))
             {

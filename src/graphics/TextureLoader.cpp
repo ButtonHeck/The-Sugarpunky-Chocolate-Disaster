@@ -114,7 +114,7 @@ GLuint TextureLoader::loadCubemap(const std::string& directory, GLuint textureUn
   return texture;
 }
 
-GLuint TextureLoader::createUnderwaterReliefTexture(WaterMapGenerator *waterMapGenerator, GLuint textureUnit, GLint magFilter, GLint minFilter)
+GLuint TextureLoader::createUnderwaterReliefTexture(const std::shared_ptr<WaterMapGenerator> waterMapGenerator, GLuint textureUnit, GLint magFilter, GLint minFilter)
 {
   static bool needStorage = true;
   static GLuint underwaterReliefTexture;
