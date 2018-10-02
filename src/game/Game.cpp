@@ -29,10 +29,9 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
   hillMapGenerator = std::make_shared<HillsMapGenerator>(shaderManager.get(SHADER_HILLS_CULLING), waterMapGenerator->getMap());
   baseMapGenerator = std::make_shared<BaseMapGenerator>(waterMapGenerator->getMap(), hillMapGenerator->getMap());
   buildableMapGenerator = std::make_shared<BuildableMapGenerator>(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-  saveLoadManager = std::make_unique<SaveLoadManager>(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, camera);
   Model::bindTextureLoader(textureLoader);
   plantGenerator = std::make_shared<PlantGenerator>(NUM_GRASS_MODELS);
-  saveLoadManager->setTreeGenerator(plantGenerator);
+  saveLoadManager = std::make_unique<SaveLoadManager>(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, plantGenerator, camera);
 #ifdef _DEBUG
   glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ram_size);
   ram_size_float_percentage = (float)ram_size / 100;
@@ -290,8 +289,7 @@ void Game::loop()
       hillMapGenerator->initializeMap(hillMapGenerator->getMap());
 
       prepareTerrain();
-      saveLoadManager.reset(new SaveLoadManager(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, camera));
-      saveLoadManager->setTreeGenerator(plantGenerator);
+      saveLoadManager.reset(new SaveLoadManager(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, plantGenerator, camera));
       options.set(OPT_RECREATE_TERRAIN_REQUEST, false);
       textureManager.createUnderwaterReliefTexture(waterMapGenerator);
       waterNeedNewKeyFrame = true; //it's okay now to begin animating water

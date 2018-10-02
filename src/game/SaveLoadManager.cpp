@@ -1,14 +1,17 @@
 #include "game/SaveLoadManager.h"
 
-SaveLoadManager::SaveLoadManager(std::shared_ptr<BaseMapGenerator> baseGenerator,
-                                 std::shared_ptr<HillsMapGenerator> hillGenerator,
-                                 std::shared_ptr<WaterMapGenerator> waterGenerator,
-                                 std::shared_ptr<BuildableMapGenerator> buildableGenerator, Camera& camera)
+SaveLoadManager::SaveLoadManager(std::shared_ptr<BaseMapGenerator>& baseGenerator,
+                                 std::shared_ptr<HillsMapGenerator>& hillGenerator,
+                                 std::shared_ptr<WaterMapGenerator>& waterGenerator,
+                                 std::shared_ptr<BuildableMapGenerator>& buildableGenerator,
+                                 std::shared_ptr<PlantGenerator>& treeGenerator,
+                                 Camera& camera)
   :
     baseGenerator(baseGenerator),
     hillGenerator(hillGenerator),
     waterGenerator(waterGenerator),
     buildableGenerator(buildableGenerator),
+    plantGenerator(treeGenerator),
     camera(camera),
     baseMap(baseGenerator->getMap()),
     hillMap(hillGenerator->getMap()),
@@ -53,7 +56,7 @@ bool SaveLoadManager::saveToFile(const std::string &filename)
           output << value << " ";
         }
     }
-  treeGenerator->serialize(output);
+  plantGenerator->serialize(output);
   output << camera.getPosition().x << " ";
   output << camera.getPosition().y << " ";
   output << camera.getPosition().z << " ";
@@ -102,23 +105,23 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
         }
     }
 
-  std::vector<ModelChunk>& treeModelChunks = treeGenerator->getPlainPlantsModelChunks();
-  for (unsigned int chunk = 0; chunk < treeModelChunks.size(); chunk++)
+  std::vector<ModelChunk>& plainPlantsModelChunks = plantGenerator->getPlainPlantsModelChunks();
+  for (unsigned int chunk = 0; chunk < plainPlantsModelChunks.size(); chunk++)
     {
-      for (unsigned int i = 0; i < treeModelChunks[chunk].getNumInstancesVector().size(); i++)
+      for (unsigned int i = 0; i < plainPlantsModelChunks[chunk].getNumInstancesVector().size(); i++)
         {
           unsigned int numInstances;
           input >> numInstances;
-          treeModelChunks[chunk].setNumInstances(i, numInstances);
+          plainPlantsModelChunks[chunk].setNumInstances(i, numInstances);
         }
-      for (unsigned int i = 0; i < treeModelChunks[chunk].getInstanceOffsetVector().size(); i++)
+      for (unsigned int i = 0; i < plainPlantsModelChunks[chunk].getInstanceOffsetVector().size(); i++)
         {
           unsigned int offset;
           input >> offset;
-          treeModelChunks[chunk].setInstanceOffset(i, offset);
+          plainPlantsModelChunks[chunk].setInstanceOffset(i, offset);
         }
     }
-  std::vector<ModelChunk>& hillTreeModelChunks = treeGenerator->getHillTreeModelChunks();
+  std::vector<ModelChunk>& hillTreeModelChunks = plantGenerator->getHillTreeModelChunks();
   for (unsigned int chunk = 0; chunk < hillTreeModelChunks.size(); chunk++)
     {
       for (unsigned int i = 0; i < hillTreeModelChunks[chunk].getNumInstancesVector().size(); i++)
@@ -135,14 +138,14 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
         }
     }
 
-  std::vector<glm::mat4*> treeModels;
-  unsigned int numAllTrees[treeGenerator->getPlainPlantsMatrices().size()];
-  for (unsigned int i = 0; i < treeGenerator->getPlainPlantsMatrices().size(); i++)
+  std::vector<glm::mat4*> plainPlantsMatrices;
+  unsigned int numAllTrees[plantGenerator->getPlainPlantsMatrices().size()];
+  for (unsigned int i = 0; i < plantGenerator->getPlainPlantsMatrices().size(); i++)
     {
       unsigned int numTrees = 0;
       input >> numTrees;
       numAllTrees[i] = numTrees;
-      treeModels.emplace_back(new glm::mat4[numTrees]);
+      plainPlantsMatrices.emplace_back(new glm::mat4[numTrees]);
       for (unsigned int t = 0; t < numTrees; t++)
         {
           glm::mat4 model;
@@ -151,17 +154,17 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
             {
               input >> modelData[e];
             }
-          treeModels[i][t] = std::move(model);
+          plainPlantsMatrices[i][t] = std::move(model);
         }
     }
-  std::vector<glm::mat4*> hillTreeModels;
-  unsigned int numAllHillTrees[treeGenerator->getHillTreesMatrices().size()];
-  for (unsigned int i = 0; i < treeGenerator->getHillTreesMatrices().size(); i++)
+  std::vector<glm::mat4*> hillTreesMatrices;
+  unsigned int numAllHillTrees[plantGenerator->getHillTreesMatrices().size()];
+  for (unsigned int i = 0; i < plantGenerator->getHillTreesMatrices().size(); i++)
     {
       unsigned int numHillTrees = 0;
       input >> numHillTrees;
       numAllHillTrees[i] = numHillTrees;
-      hillTreeModels.emplace_back(new glm::mat4[numHillTrees]);
+      hillTreesMatrices.emplace_back(new glm::mat4[numHillTrees]);
       for (unsigned int m = 0; m < numHillTrees; m++)
         {
           glm::mat4 model;
@@ -170,11 +173,19 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
             {
               input >> modelData[e];
             }
-          hillTreeModels[i][m] = std::move(model);
+          hillTreesMatrices[i][m] = std::move(model);
         }
     }
-  treeGenerator->updatePlainModels(treeModels, numAllTrees);
-  treeGenerator->updateHillModels(hillTreeModels, numAllHillTrees);
+  plantGenerator->updatePlainModels(plainPlantsMatrices, numAllTrees);
+  plantGenerator->updateHillModels(hillTreesMatrices, numAllHillTrees);
+  for (unsigned int i = 0; i < plantGenerator->getPlainPlantsMatrices().size(); i++)
+    {
+      delete[] plainPlantsMatrices[i];
+    }
+  for (unsigned int i = 0; i < plantGenerator->getHillTreesMatrices().size(); i++)
+    {
+      delete[] hillTreesMatrices[i];
+    }
 
   hillGenerator->createTiles();
   hillGenerator->fillBufferData();
@@ -194,9 +205,4 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   camera.setYaw(yaw);
   camera.updateVectors();
   return true;
-}
-
-void SaveLoadManager::setTreeGenerator(const std::shared_ptr<PlantGenerator> treeGenerator)
-{
-  this->treeGenerator = treeGenerator;
 }

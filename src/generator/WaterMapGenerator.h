@@ -26,8 +26,8 @@ private:
   GLuint culledVAO = 0, culledVBO = 0, TFBO = 0;
   Shader& waterShader;
   size_t numVertices;
-  GLfloat* vertices;
-  GLfloat* waterHeightOffsets; //a bit overhead, because all we use is the part where we have water...
+  GLfloat* vertices = nullptr;
+  GLfloat* waterHeightOffsets = nullptr; //a bit overhead, because all we use is the part where we have water...
   //also, we don't have to init waterHeightOffsets, because we update its data every frame
   void generateMap(int shoreSizeBase, float waterLevel, unsigned int &numWaterTiles);
   void addWaterNearbyBaseTerrain();

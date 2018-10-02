@@ -48,6 +48,10 @@ void WaterMapGenerator::postPrepareMap()
 void WaterMapGenerator::fillBufferData()
 {
   numVertices = tiles.size() * 36;
+  if (vertices)
+    {
+      delete[] vertices;
+    }
   vertices = new GLfloat[numVertices];
   for (unsigned int i = 0; i < tiles.size(); i++)
     {
