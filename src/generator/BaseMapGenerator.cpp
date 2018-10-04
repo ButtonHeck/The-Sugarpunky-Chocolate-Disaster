@@ -27,7 +27,7 @@ BaseMapGenerator::~BaseMapGenerator()
   deleteGLObjects();
 }
 
-void BaseMapGenerator::prepareMap()
+void BaseMapGenerator::setup()
 {
   generateMap();
   for (unsigned int i = 0; i < 5; i++)
@@ -47,6 +47,9 @@ void BaseMapGenerator::prepareMap()
   tiles.shrink_to_fit();
   splitCellChunks(CHUNK_SIZE);
   splitShoreChunks(CHUNK_SIZE);
+  fillShoreBufferData();
+  fillSquareBufferData();
+  fillCellBufferData();
 }
 
 void BaseMapGenerator::fillShoreBufferData()

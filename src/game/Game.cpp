@@ -78,14 +78,10 @@ void Game::prepareTerrain()
   waterMapGenerator->prepareMap();
   hillMapGenerator->prepareMap();
   hillMapGenerator->fillBufferData();
-  baseMapGenerator->prepareMap();
-  baseMapGenerator->fillShoreBufferData();
-  baseMapGenerator->fillSquareBufferData();
-  baseMapGenerator->fillCellBufferData();
+  baseMapGenerator->setup();
   waterMapGenerator->postPrepareMap();
   waterMapGenerator->fillBufferData();
-  buildableMapGenerator->prepareMap();
-  buildableMapGenerator->fillBufferData();
+  buildableMapGenerator->setup();
   plantGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
   plantGenerator->setupHillModels(hillMapGenerator->getMap());
 }
@@ -352,8 +348,7 @@ void Game::loop()
       options.set(OPT_LOAD_REQUEST, false);
       textureManager.createUnderwaterReliefTexture(waterMapGenerator);
       buildableMapGenerator.reset(new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap()));
-      buildableMapGenerator->prepareMap();
-      buildableMapGenerator->fillBufferData();
+      buildableMapGenerator->setup();
       waterNeedNewKeyFrame = true;
     }
 

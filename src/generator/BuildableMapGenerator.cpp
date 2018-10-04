@@ -17,7 +17,7 @@ BuildableMapGenerator::~BuildableMapGenerator()
   deleteGLObjects();
 }
 
-void BuildableMapGenerator::prepareMap()
+void BuildableMapGenerator::setup()
 {
   for (unsigned int y = 2; y < WORLD_HEIGHT; y++)
     {
@@ -38,6 +38,7 @@ void BuildableMapGenerator::prepareMap()
     }
   createTiles(true, false, map, 0);
   tiles.shrink_to_fit();
+  fillBufferData();
 }
 
 void BuildableMapGenerator::fillBufferData()

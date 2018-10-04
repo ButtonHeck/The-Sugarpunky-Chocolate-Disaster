@@ -49,10 +49,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   hillGenerator->fillBufferData();
   baseGenerator->getSquareTiles().clear();
   baseGenerator->getCellTiles().clear();
-  baseGenerator->prepareMap();
-  baseGenerator->fillShoreBufferData();
-  baseGenerator->fillSquareBufferData();
-  baseGenerator->fillCellBufferData();
+  baseGenerator->setup();
   waterGenerator->postPrepareMap();
   waterGenerator->fillBufferData();
 

@@ -13,13 +13,7 @@ class BaseMapGenerator : public MapGenerator
 public:
   BaseMapGenerator(std::vector<std::vector<float>>& waterMap, std::vector<std::vector<float>>& hillMap);
   ~BaseMapGenerator();
-  void prepareMap();
-  void fillShoreBufferData();
-  void fillSquareBufferData();
-  void fillCellBufferData();
-  void splitCellChunks(int chunkSize);
-  void splitSquareChunks(int chunkSize);
-  void splitShoreChunks(int chunkSize);
+  void setup();
   void deleteGLObjects() override;
   std::vector<TerrainChunk>& getShoreChunks();
   std::vector<TerrainChunk>& getSquareChunks();
@@ -59,6 +53,12 @@ private:
   void correctMapAtEdges();
   void compressMap(float ratio);
   void removeUnderwaterTiles(float thresholdValue);
+  void splitCellChunks(int chunkSize);
+  void splitSquareChunks(int chunkSize);
+  void splitShoreChunks(int chunkSize);
+  void fillShoreBufferData();
+  void fillSquareBufferData();
+  void fillCellBufferData();
 };
 
 #endif // BASEMAPGENERATOR_H

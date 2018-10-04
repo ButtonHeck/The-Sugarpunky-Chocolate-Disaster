@@ -12,12 +12,12 @@ class BuildableMapGenerator : public MapGenerator
 public:
   BuildableMapGenerator(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
   ~BuildableMapGenerator();
-  void prepareMap();
-  void fillBufferData();
+  void setup();
   GLuint& getNumInstances();
   GLuint& getSelectedTileVAO();
   void deleteGLObjects();
 private:
+  void fillBufferData();
   std::vector<std::vector<float>>& baseMap;
   std::vector<std::vector<float>>& hillMap;
   GLuint modelVbo;
