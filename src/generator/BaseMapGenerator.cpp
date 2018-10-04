@@ -578,6 +578,18 @@ int BaseMapGenerator::getNumCellInstances()
   return NUM_CELL_INSTANCES;
 }
 
+void BaseMapGenerator::deserialize(std::ifstream &input)
+{
+  MapGenerator::deserialize(input);
+  for (std::vector<float>& row : chunkMap)
+    {
+      for (float& value : row)
+        {
+          value = 0;
+        }
+    }
+}
+
 size_t BaseMapGenerator::getShoreVerticesToDraw() const
 {
   return shoreVerticesToDraw;

@@ -8,9 +8,9 @@ class DepthmapBuffer
 public:
   DepthmapBuffer() = default;
   ~DepthmapBuffer();
-  void setupBuffer(GLuint depthTextureUnit);
-  void prepareBuffer(int frameWidth, int frameHeight);
-  void restoreDefaultBuffer(int frameWidth, int frameHeight);
+  void setup(GLuint depthTextureUnit);
+  void bindToViewport(int frameWidth, int frameHeight);
+  void unbindToViewport(int frameWidth, int frameHeight);
 private:
   GLuint FBO;
 };

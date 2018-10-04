@@ -37,7 +37,7 @@ void Options::set(OPTION value, bool flag)
   options[value].second = flag;
 }
 
-void Options::switchOpt(OPTION value)
+void Options::toggle(OPTION value)
 {
   options[value].second = !options[value].second;
 }

@@ -32,14 +32,14 @@ void KeyboardManager::processKeyboard()
     });
   processKey(GLFW_KEY_R, [&]()
   {
-      options.switchOpt(OPT_MODELS_CULLING);
+      options.toggle(OPT_MODELS_CULLING);
       options.set(OPT_CREATE_SHADOW_MAP_REQUEST, true);
     });
   processKey(GLFW_KEY_T, OPT_HILLS_CULLING);
   processKey(GLFW_KEY_Y, OPT_WATER_CULLING);
   processKey(GLFW_KEY_M, [&]()
   {
-      options.switchOpt(OPT_USE_MULTISAMPLING);
+      options.toggle(OPT_USE_MULTISAMPLING);
       if (options.get(OPT_USE_MULTISAMPLING))
         glEnable(GL_MULTISAMPLE);
       else
@@ -81,7 +81,7 @@ void KeyboardManager::processKey(int keyCode, OPTION option)
     {
       if (!keysPressed[keyCode])
         {
-          options.switchOpt(option);
+          options.toggle(option);
           keysPressed[keyCode] = true;
         }
     }

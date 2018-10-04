@@ -34,6 +34,7 @@ public:
   std::vector<std::vector<float>>& getChunkMap();
   int getNumSquareInstances();
   int getNumCellInstances();
+  virtual void deserialize(std::ifstream& input) override;
 private:
   GLuint squareVao, squareVbo, squareEbo, squareModelVbo;
   GLuint cellVao, cellVbo, cellEbo, cellModelVbo, cellMultiDE_I_DIBO;

@@ -5,7 +5,7 @@ DepthmapBuffer::~DepthmapBuffer()
   glDeleteFramebuffers(1, &FBO);
 }
 
-void DepthmapBuffer::setupBuffer(GLuint depthTextureUnit)
+void DepthmapBuffer::setup(GLuint depthTextureUnit)
 {
   glGenFramebuffers(1, &FBO);
   glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -17,13 +17,13 @@ void DepthmapBuffer::setupBuffer(GLuint depthTextureUnit)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void DepthmapBuffer::prepareBuffer(int frameWidth, int frameHeight)
+void DepthmapBuffer::bindToViewport(int frameWidth, int frameHeight)
 {
   glViewport(0, 0, frameWidth, frameHeight);
   glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 }
 
-void DepthmapBuffer::restoreDefaultBuffer(int frameWidth, int frameHeight)
+void DepthmapBuffer::unbindToViewport(int frameWidth, int frameHeight)
 {
   glViewport(0, 0, frameWidth, frameHeight);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);

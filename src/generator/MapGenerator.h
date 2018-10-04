@@ -1,6 +1,7 @@
 #ifndef MAPGENERATOR_H
 #define MAPGENERATOR_H
 #include <vector>
+#include <fstream>
 #include <GL/glew.h>
 #include "model/TerrainTile.h"
 #include "game/Settings.h"
@@ -19,6 +20,8 @@ public:
   GLuint getVBO() const;
   GLuint getEBO() const;
   virtual void deleteGLObjects();
+  virtual void serialize(std::ofstream& output);
+  virtual void deserialize(std::ifstream& input);
 protected:
   std::vector<std::vector<float>> map;
   std::vector<TerrainTile> tiles;

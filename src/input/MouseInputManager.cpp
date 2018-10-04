@@ -66,7 +66,7 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
     {
       if (!mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT])
         {
-          options.switchOpt(OPT_SHOW_CURSOR);
+          options.toggle(OPT_SHOW_CURSOR);
           glfwSetInputMode(window, GLFW_CURSOR, options.get(OPT_SHOW_CURSOR) ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
           glfwSetCursorPos(window, screenResolution.getWidth() / 2.0f, screenResolution.getHeight() / 2.0f);
           mouseInput.lastX = screenResolution.getWidth() / 2.0f;

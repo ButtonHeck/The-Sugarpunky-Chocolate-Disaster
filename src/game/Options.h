@@ -32,7 +32,7 @@ public:
   Options();
   bool get(OPTION value);
   void set(OPTION value, bool flag);
-  void switchOpt(OPTION value);
+  void toggle(OPTION value);
 private:
   std::vector<std::pair<OPTION, bool>> options;
 };

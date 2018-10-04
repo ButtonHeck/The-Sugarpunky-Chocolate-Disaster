@@ -17,7 +17,7 @@ ScreenBuffer::~ScreenBuffer()
   glDeleteBuffers(1, &screenVBO);
 }
 
-void ScreenBuffer::setupBuffer()
+void ScreenBuffer::setup()
 {
   setupFramebuffers();
   setupScreenQuadBuffer();
@@ -75,7 +75,7 @@ void ScreenBuffer::setupScreenQuadBuffer()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void ScreenBuffer::drawBuffer(bool enableMultisampling)
+void ScreenBuffer::draw(bool enableMultisampling)
 {
   if (enableMultisampling)
     {

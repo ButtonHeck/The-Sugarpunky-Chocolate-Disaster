@@ -100,3 +100,25 @@ void MapGenerator::deleteGLObjects()
   glDeleteBuffers(1, &vbo);
   glDeleteBuffers(1, &ebo);
 }
+
+void MapGenerator::serialize(std::ofstream &output)
+{
+  for (std::vector<float>& row : map)
+    {
+      for (float& value : row)
+        {
+          output << value << " ";
+        }
+    }
+}
+
+void MapGenerator::deserialize(std::ifstream &input)
+{
+  for (std::vector<float>& row : map)
+    {
+      for (float& value : row)
+        {
+          input >> value;
+        }
+    }
+}

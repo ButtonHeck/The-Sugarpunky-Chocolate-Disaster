@@ -10,8 +10,8 @@ class ScreenBuffer
 public:
   ScreenBuffer(ScreenResolution& screenResolution, TextureManager& textureManager, ShaderManager& shaderManager);
   ~ScreenBuffer();
-  void setupBuffer();
-  void drawBuffer(bool enableMultisampling);
+  void setup();
+  void draw(bool enableMultisampling);
   void bindAppropriateFBO(bool enableMultisampling);
 private:
   void setupFramebuffers();

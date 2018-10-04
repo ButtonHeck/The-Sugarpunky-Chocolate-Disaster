@@ -34,7 +34,8 @@ public:
   std::vector<ModelChunk>& getHillTreeModelChunks();
 
   //save/load routine
-  void serialize(std::ofstream& out);
+  void serialize(std::ofstream& output);
+  void deserialize(std::ifstream& input);
 
 private:
   //plain plants

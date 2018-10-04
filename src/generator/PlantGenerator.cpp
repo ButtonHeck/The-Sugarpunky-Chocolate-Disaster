@@ -367,48 +367,131 @@ std::vector<ModelChunk> &PlantGenerator::getHillTreeModelChunks()
   return hillTreesModelChunks;
 }
 
-void PlantGenerator::serialize(std::ofstream &out)
+void PlantGenerator::serialize(std::ofstream &output)
 {
   for (unsigned int chunk = 0; chunk < plainPlantsModelChunks.size(); chunk++)
     {
       for (unsigned int i = 0; i < plainPlantsModelChunks[chunk].getNumInstancesVector().size(); i++)
         {
-          out << plainPlantsModelChunks[chunk].getNumInstances(i) << " ";
+          output << plainPlantsModelChunks[chunk].getNumInstances(i) << " ";
         }
       for (unsigned int i = 0; i < plainPlantsModelChunks[chunk].getInstanceOffsetVector().size(); i++)
         {
-          out << plainPlantsModelChunks[chunk].getInstanceOffset(i) << " ";
+          output << plainPlantsModelChunks[chunk].getInstanceOffset(i) << " ";
         }
     }
   for (unsigned int chunk = 0; chunk < hillTreesModelChunks.size(); chunk++)
     {
       for (unsigned int i = 0; i < hillTreesModelChunks[chunk].getNumInstancesVector().size(); i++)
         {
-          out << hillTreesModelChunks[chunk].getNumInstances(i) << " ";
+          output << hillTreesModelChunks[chunk].getNumInstances(i) << " ";
         }
       for (unsigned int i = 0; i < hillTreesModelChunks[chunk].getInstanceOffsetVector().size(); i++)
         {
-          out << hillTreesModelChunks[chunk].getInstanceOffset(i) << " ";
+          output << hillTreesModelChunks[chunk].getInstanceOffset(i) << " ";
         }
     }
   for (unsigned int i = 0; i < plainPlantsMatrices.size(); i++)
     {
-      out << numPlainPlants[i] << " ";
+      output << numPlainPlants[i] << " ";
       for (unsigned int m = 0; m < numPlainPlants[i]; m++)
         {
           float* matrixValues = (float*)glm::value_ptr(plainPlantsMatrices[i][m]);
           for (unsigned int e = 0; e < 16; ++e)
-            out << matrixValues[e] << " ";
+            output << matrixValues[e] << " ";
         }
     }
   for (unsigned int i = 0; i < hillTreesMatrices.size(); i++)
     {
-      out << numHillTrees[i] << " ";
+      output << numHillTrees[i] << " ";
       for (unsigned int m = 0; m < numHillTrees[i]; m++)
         {
           float* matrixValues = (float*)glm::value_ptr(hillTreesMatrices[i][m]);
           for (unsigned int e = 0; e < 16; ++e)
-            out << matrixValues[e] << " ";
+            output << matrixValues[e] << " ";
         }
+    }
+}
+
+void PlantGenerator::deserialize(std::ifstream &input)
+{
+  for (unsigned int chunk = 0; chunk < plainPlantsModelChunks.size(); chunk++)
+    {
+      for (unsigned int i = 0; i < plainPlantsModelChunks[chunk].getNumInstancesVector().size(); i++)
+        {
+          unsigned int numInstances;
+          input >> numInstances;
+          plainPlantsModelChunks[chunk].setNumInstances(i, numInstances);
+        }
+      for (unsigned int i = 0; i < plainPlantsModelChunks[chunk].getInstanceOffsetVector().size(); i++)
+        {
+          unsigned int offset;
+          input >> offset;
+          plainPlantsModelChunks[chunk].setInstanceOffset(i, offset);
+        }
+    }
+  for (unsigned int chunk = 0; chunk < hillTreesModelChunks.size(); chunk++)
+    {
+      for (unsigned int i = 0; i < hillTreesModelChunks[chunk].getNumInstancesVector().size(); i++)
+        {
+          unsigned int numInstances;
+          input >> numInstances;
+          hillTreesModelChunks[chunk].setNumInstances(i, numInstances);
+        }
+      for (unsigned int i = 0; i < hillTreesModelChunks[chunk].getInstanceOffsetVector().size(); i++)
+        {
+          unsigned int offset;
+          input >> offset;
+          hillTreesModelChunks[chunk].setInstanceOffset(i, offset);
+        }
+    }
+
+  std::vector<glm::mat4*> newPlainPlantsMatrices;
+  unsigned int numAllTrees[plainPlantsMatrices.size()];
+  for (unsigned int i = 0; i < plainPlantsMatrices.size(); i++)
+    {
+      unsigned int numTrees = 0;
+      input >> numTrees;
+      numAllTrees[i] = numTrees;
+      newPlainPlantsMatrices.emplace_back(new glm::mat4[numTrees]);
+      for (unsigned int t = 0; t < numTrees; t++)
+        {
+          glm::mat4 model;
+          float* modelData = (float*)glm::value_ptr(model);
+          for (unsigned int e = 0; e < 16; e++)
+            {
+              input >> modelData[e];
+            }
+          newPlainPlantsMatrices[i][t] = std::move(model);
+        }
+    }
+  std::vector<glm::mat4*> newHillTreesMatrices;
+  unsigned int numAllHillTrees[hillTreesMatrices.size()];
+  for (unsigned int i = 0; i < hillTreesMatrices.size(); i++)
+    {
+      unsigned int numHillTrees = 0;
+      input >> numHillTrees;
+      numAllHillTrees[i] = numHillTrees;
+      newHillTreesMatrices.emplace_back(new glm::mat4[numHillTrees]);
+      for (unsigned int m = 0; m < numHillTrees; m++)
+        {
+          glm::mat4 model;
+          float* modelData = (float*)glm::value_ptr(model);
+          for (unsigned int e = 0; e < 16; e++)
+            {
+              input >> modelData[e];
+            }
+          newHillTreesMatrices[i][m] = std::move(model);
+        }
+    }
+  updatePlainModels(newPlainPlantsMatrices, numAllTrees);
+  updateHillModels(newHillTreesMatrices, numAllHillTrees);
+  for (unsigned int i = 0; i < getPlainPlantsMatrices().size(); i++)
+    {
+      delete[] newPlainPlantsMatrices[i];
+    }
+  for (unsigned int i = 0; i < getHillTreesMatrices().size(); i++)
+    {
+      delete[] newHillTreesMatrices[i];
     }
 }

@@ -2,6 +2,7 @@
 #define CAMERA_H
 #include <vector>
 #include <cmath>
+#include <fstream>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/detail/func_geometric.hpp>
@@ -46,6 +47,8 @@ public:
   void updateVectors();
   int getMapCoordX() const;
   int getMapCoordZ() const;
+  void serialize(std::ofstream& output);
+  void deserialize(std::ifstream& input);
 private:
   //options
   float zoom, moveSpeed, mouseSensitivity;
@@ -53,7 +56,7 @@ private:
   //Euler angles
   float yaw, pitch;
   //direction vectors
-  glm::vec3 Position, Front, Right, Up, WorldUp;
+  glm::vec3 position, front, right, up, worldUp;
   void moveCameraFrontAxial(bool forward, float velocity);
 };
 

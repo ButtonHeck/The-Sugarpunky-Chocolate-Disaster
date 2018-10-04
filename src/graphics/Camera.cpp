@@ -8,16 +8,16 @@ Camera::Camera(glm::vec3 position)
     FPSmode(false),
     yaw(-90.0f),
     pitch(0.0f),
-    Position(position),
-    Front(glm::vec3(0.0, 0.0, -1.0)),
-    WorldUp(0.0, 1.0, 0.0)
+    position(position),
+    front(glm::vec3(0.0, 0.0, -1.0)),
+    worldUp(0.0, 1.0, 0.0)
 {
   updateVectors();
 }
 
 glm::mat4 Camera::getViewMatrix() const
 {
-  return glm::lookAt(Position, Position + Front, WorldUp);
+  return glm::lookAt(position, position + front, worldUp);
 }
 
 void Camera::processMouseCursor(float xOffset, float yOffset)
@@ -53,44 +53,44 @@ void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir, std::vector<s
     moveCameraFrontAxial(false, velocity);
 
   if (dir == RIGHT)
-    Position += Right * velocity;
+    position += right * velocity;
   else if (dir == LEFT)
-    Position -= Right * velocity;
+    position -= right * velocity;
   if (dir == UP)
-    Position += WorldUp * velocity;
+    position += worldUp * velocity;
   else if (dir == DOWN)
-    Position -= WorldUp * velocity;
+    position -= worldUp * velocity;
 
   const float WORLD_CAMERA_BORDER_OFFSET = 8.0f;
-  if (Position.x > HALF_WORLD_WIDTH - WORLD_CAMERA_BORDER_OFFSET)
-    Position.x = HALF_WORLD_WIDTH - WORLD_CAMERA_BORDER_OFFSET;
-  else if (Position.x < -HALF_WORLD_WIDTH + WORLD_CAMERA_BORDER_OFFSET)
-    Position.x = -HALF_WORLD_WIDTH + WORLD_CAMERA_BORDER_OFFSET;
-  if (Position.z > HALF_WORLD_HEIGHT - WORLD_CAMERA_BORDER_OFFSET)
-    Position.z = HALF_WORLD_HEIGHT - WORLD_CAMERA_BORDER_OFFSET;
-  else if (Position.z < -HALF_WORLD_HEIGHT + WORLD_CAMERA_BORDER_OFFSET)
-    Position.z = -HALF_WORLD_HEIGHT + WORLD_CAMERA_BORDER_OFFSET;
+  if (position.x > HALF_WORLD_WIDTH - WORLD_CAMERA_BORDER_OFFSET)
+    position.x = HALF_WORLD_WIDTH - WORLD_CAMERA_BORDER_OFFSET;
+  else if (position.x < -HALF_WORLD_WIDTH + WORLD_CAMERA_BORDER_OFFSET)
+    position.x = -HALF_WORLD_WIDTH + WORLD_CAMERA_BORDER_OFFSET;
+  if (position.z > HALF_WORLD_HEIGHT - WORLD_CAMERA_BORDER_OFFSET)
+    position.z = HALF_WORLD_HEIGHT - WORLD_CAMERA_BORDER_OFFSET;
+  else if (position.z < -HALF_WORLD_HEIGHT + WORLD_CAMERA_BORDER_OFFSET)
+    position.z = -HALF_WORLD_HEIGHT + WORLD_CAMERA_BORDER_OFFSET;
 
   const float WORLD_CAMERA_MIN_HEIGHT = 2.0f;
   const float WORLD_CAMERA_MIN_HEIGHT_ON_HILLS = WORLD_CAMERA_MIN_HEIGHT - HILLS_OFFSET_Y;
-  if (Position.y < WORLD_CAMERA_MIN_HEIGHT)
-    Position.y = WORLD_CAMERA_MIN_HEIGHT;
-  if (hillsMap[Position.z + HALF_WORLD_HEIGHT][Position.x + HALF_WORLD_WIDTH] > 0 ||
-      hillsMap[Position.z + HALF_WORLD_HEIGHT + 1][Position.x + HALF_WORLD_WIDTH] > 0 ||
-      hillsMap[Position.z + HALF_WORLD_HEIGHT][Position.x + HALF_WORLD_WIDTH + 1] > 0 ||
-      hillsMap[Position.z + HALF_WORLD_HEIGHT + 1][Position.x + HALF_WORLD_WIDTH + 1] > 0)
+  if (position.y < WORLD_CAMERA_MIN_HEIGHT)
+    position.y = WORLD_CAMERA_MIN_HEIGHT;
+  if (hillsMap[position.z + HALF_WORLD_HEIGHT][position.x + HALF_WORLD_WIDTH] > 0 ||
+      hillsMap[position.z + HALF_WORLD_HEIGHT + 1][position.x + HALF_WORLD_WIDTH] > 0 ||
+      hillsMap[position.z + HALF_WORLD_HEIGHT][position.x + HALF_WORLD_WIDTH + 1] > 0 ||
+      hillsMap[position.z + HALF_WORLD_HEIGHT + 1][position.x + HALF_WORLD_WIDTH + 1] > 0)
     {
-      int x1 = std::floor(Position.x + HALF_WORLD_WIDTH);
-      int x2 = std::round(Position.x + HALF_WORLD_WIDTH);
-      int z1 = std::floor(Position.z + HALF_WORLD_HEIGHT);
-      int z2 = std::round(Position.z + HALF_WORLD_HEIGHT);
-      float xRatio = Position.x + HALF_WORLD_WIDTH - x1;
-      float zRatio = Position.z + HALF_WORLD_HEIGHT - z1;
+      int x1 = std::floor(position.x + HALF_WORLD_WIDTH);
+      int x2 = std::round(position.x + HALF_WORLD_WIDTH);
+      int z1 = std::floor(position.z + HALF_WORLD_HEIGHT);
+      int z2 = std::round(position.z + HALF_WORLD_HEIGHT);
+      float xRatio = position.x + HALF_WORLD_WIDTH - x1;
+      float zRatio = position.z + HALF_WORLD_HEIGHT - z1;
       float x1z1Height = hillsMap[z1][x1] + WORLD_CAMERA_MIN_HEIGHT_ON_HILLS;
       float x2z1Height = hillsMap[z1][x2] + WORLD_CAMERA_MIN_HEIGHT_ON_HILLS;
       float x1z2Height = hillsMap[z2][x1] + WORLD_CAMERA_MIN_HEIGHT_ON_HILLS;
       float x2z2Height = hillsMap[z2][x2] + WORLD_CAMERA_MIN_HEIGHT_ON_HILLS;
-      Position.y = glm::max(Position.y,
+      position.y = glm::max(position.y,
                             glm::mix(glm::mix(x1z1Height, x1z2Height, zRatio),
                                      glm::mix(x2z1Height, x2z2Height, zRatio),
                                      xRatio));
@@ -114,12 +114,12 @@ float Camera::getZoom() const
 
 glm::vec3 Camera::getPosition() const
 {
-  return Position;
+  return position;
 }
 
 glm::vec3 Camera::getDirection() const
 {
-  return Front;
+  return front;
 }
 
 void Camera::setPitch(float pitch)
@@ -134,22 +134,22 @@ void Camera::setYaw(float yaw)
 
 void Camera::setPosition(float x, float y, float z)
 {
-  Position = glm::vec3(x, y, z);
+  position = glm::vec3(x, y, z);
 }
 
 glm::vec3 Camera::getFront() const
 {
-  return Front;
+  return front;
 }
 
 glm::vec3 Camera::getRight() const
 {
-  return Right;
+  return right;
 }
 
 glm::vec3 Camera::getUp() const
 {
-  return Up;
+  return up;
 }
 
 float Camera::getPitch()
@@ -167,29 +167,44 @@ void Camera::updateVectors()
   float x = std::cos(glm::radians(yaw)) * std::cos(glm::radians(pitch));
   float y = std::sin(glm::radians(pitch));
   float z = std::sin(glm::radians(yaw)) * std::cos(glm::radians(pitch));
-  glm::vec3 front(x,y,z);
-  Front = glm::normalize(front);
-  Right = glm::normalize(glm::cross(Front, WorldUp));
-  Up = glm::normalize(glm::cross(Right, Front));
+  glm::vec3 newFront(x,y,z);
+  front = glm::normalize(newFront);
+  right = glm::normalize(glm::cross(front, worldUp));
+  up = glm::normalize(glm::cross(right, front));
 }
 
 int Camera::getMapCoordX() const
 {
-  return glm::clamp((int)(WORLD_WIDTH + glm::clamp(Position.x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH)) - HALF_WORLD_WIDTH, 0, WORLD_WIDTH - 1);
+  return glm::clamp((int)(WORLD_WIDTH + glm::clamp(position.x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH)) - HALF_WORLD_WIDTH, 0, WORLD_WIDTH - 1);
 }
 
 int Camera::getMapCoordZ() const
 {
-  return glm::clamp((int)(WORLD_HEIGHT + glm::clamp(Position.z, -(float)HALF_WORLD_HEIGHT, (float)HALF_WORLD_HEIGHT)) - HALF_WORLD_HEIGHT, 0, WORLD_HEIGHT - 1);
+  return glm::clamp((int)(WORLD_HEIGHT + glm::clamp(position.z, -(float)HALF_WORLD_HEIGHT, (float)HALF_WORLD_HEIGHT)) - HALF_WORLD_HEIGHT, 0, WORLD_HEIGHT - 1);
+}
+
+void Camera::serialize(std::ofstream &output)
+{
+  output << position.x << " ";
+  output << position.y << " ";
+  output << position.z << " ";
+  output << pitch << " ";
+  output << yaw << " ";
+}
+
+void Camera::deserialize(std::ifstream &input)
+{
+  input >> position.x >> position.y >> position.z >> pitch >> yaw;
+  updateVectors();
 }
 
 void Camera::moveCameraFrontAxial(bool forward, float velocity)
 {
   if (!FPSmode)
-    Position += forward ? Front * velocity : -Front * velocity;
+    position += forward ? front * velocity : -front * velocity;
   else
     {
-      Position.x += forward ? Front.x * velocity : -Front.x * velocity;
-      Position.z += forward ? Front.z * velocity : -Front.z * velocity;
+      position.x += forward ? front.x * velocity : -front.x * velocity;
+      position.z += forward ? front.z * velocity : -front.z * velocity;
     }
 }

@@ -69,21 +69,21 @@ void Game::setupVariables()
   setupThreads();
   textureManager.createUnderwaterReliefTexture(waterMapGenerator);
   shaderManager.setupConstantUniforms(glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()));
-  screenBuffer.setupBuffer();
-  depthmapBuffer.setupBuffer(textureManager.get(TEX_DEPTH_MAP_SUN));
+  screenBuffer.setup();
+  depthmapBuffer.setup(textureManager.get(TEX_DEPTH_MAP_SUN));
 }
 
 void Game::prepareTerrain()
 {
-  waterMapGenerator->prepareMap(); //prepare water map
-  hillMapGenerator->prepareMap(); //generating hill height map
-  hillMapGenerator->fillBufferData(); //fill hills buffer
-  baseMapGenerator->prepareMap(); //generating base terrain data
-  baseMapGenerator->fillShoreBufferData(); //fill base terrain vertex data
-  baseMapGenerator->fillSquareBufferData(); //generating data for chunk instance rendering
-  baseMapGenerator->fillCellBufferData(); //generating data for 1x1 tile instance rendering
+  waterMapGenerator->prepareMap();
+  hillMapGenerator->prepareMap();
+  hillMapGenerator->fillBufferData();
+  baseMapGenerator->prepareMap();
+  baseMapGenerator->fillShoreBufferData();
+  baseMapGenerator->fillSquareBufferData();
+  baseMapGenerator->fillCellBufferData();
   waterMapGenerator->postPrepareMap();
-  waterMapGenerator->fillBufferData(); //fill water buffer
+  waterMapGenerator->fillBufferData();
   buildableMapGenerator->prepareMap();
   buildableMapGenerator->fillBufferData();
   plantGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
@@ -289,7 +289,7 @@ void Game::loop()
       hillMapGenerator->initializeMap(hillMapGenerator->getMap());
 
       prepareTerrain();
-      saveLoadManager.reset(new SaveLoadManager(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, plantGenerator, camera));
+      saveLoadManager->update(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, plantGenerator, camera);
       options.set(OPT_RECREATE_TERRAIN_REQUEST, false);
       textureManager.createUnderwaterReliefTexture(waterMapGenerator);
       waterNeedNewKeyFrame = true; //it's okay now to begin animating water
@@ -297,10 +297,10 @@ void Game::loop()
 
   if ((options.get(OPT_CREATE_SHADOW_MAP_REQUEST) || updateCount % 16 == 0) && options.get(OPT_USE_SHADOWS))
     {
-      depthmapBuffer.prepareBuffer(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
+      depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
       glClear(GL_DEPTH_BUFFER_BIT);
       drawFrameObjectsDepthmap();
-      depthmapBuffer.restoreDefaultBuffer(screenResolution.getWidth(), screenResolution.getHeight());
+      depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
       options.set(OPT_CREATE_SHADOW_MAP_REQUEST, false);
     }
 
@@ -332,7 +332,7 @@ void Game::loop()
   //render result onto the default FBO and apply HDR/MS if the flag are set
   {
     BENCHMARK("Game: draw frame to screen", true);
-    screenBuffer.drawBuffer(multisamplingEnabled);
+    screenBuffer.draw(multisamplingEnabled);
   }
 
   //save/load routine
