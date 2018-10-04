@@ -21,7 +21,7 @@ public:
   void prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2& cameraPositionXZ,
-                                 Frustum& frustum);
+                                 const Frustum& frustum);
   void processNode(aiNode* node, const aiScene* scene);
   void loadInstances(glm::mat4* models, unsigned int numModels);
   Mesh processMesh(aiMesh* mesh, const aiScene* scene);

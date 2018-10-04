@@ -12,7 +12,7 @@
 #include "generator/UnderwaterQuadMapGenerator.h"
 #include "generator/BuildableMapGenerator.h"
 #include "generator/WaterMapGenerator.h"
-#include "generator/PlantGenerator.h"
+#include "generator/PlantGeneratorFacade.h"
 
 class Renderer
 {
@@ -32,7 +32,7 @@ public:
   void drawSelectedTile(const std::shared_ptr<BuildableMapGenerator> generator);
   void drawWater(bool useFC, std::shared_ptr<WaterMapGenerator> generator, Shader& fc, Shader& nofc);
   void drawSkybox(Skybox* skybox);
-  void drawPlants(const std::shared_ptr<PlantGenerator> generator, Shader& shader,
+  void drawPlants(const std::shared_ptr<PlantGeneratorFacade> generatorFacade, Shader& shader,
                  bool enableFrustumCulling,
                  bool bindTexture,
                  bool updateIndirect,

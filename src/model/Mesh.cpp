@@ -95,7 +95,7 @@ void Mesh::draw(bool useCulling, bool bindTexture, bool updateIndirect)
 void Mesh::prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
                                      unsigned int index,
                                      const glm::vec2 &cameraPositionXZ,
-                                     Frustum& frustum)
+                                     const Frustum &frustum)
 {
   BENCHMARK("(ST)Mesh: update DIB data", true);
   multiDE_I_primCount = 0;

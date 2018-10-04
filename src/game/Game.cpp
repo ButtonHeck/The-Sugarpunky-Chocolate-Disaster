@@ -30,8 +30,8 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
   baseMapGenerator = std::make_shared<BaseMapGenerator>(waterMapGenerator->getMap(), hillMapGenerator->getMap());
   buildableMapGenerator = std::make_shared<BuildableMapGenerator>(baseMapGenerator->getMap(), hillMapGenerator->getMap());
   Model::bindTextureLoader(textureLoader);
-  plantGenerator = std::make_shared<PlantGenerator>(NUM_GRASS_MODELS);
-  saveLoadManager = std::make_unique<SaveLoadManager>(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, plantGenerator, camera);
+  plantGeneratorFacade = std::make_shared<PlantGeneratorFacade>();
+  saveLoadManager = std::make_unique<SaveLoadManager>(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, plantGeneratorFacade, camera);
 #ifdef _DEBUG
   glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ram_size);
   ram_size_float_percentage = (float)ram_size / 100;
@@ -82,7 +82,7 @@ void Game::prepareTerrain()
   waterMapGenerator->postPrepareMap();
   waterMapGenerator->fillBufferData();
   buildableMapGenerator->setup();
-  plantGenerator->setup(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+  plantGeneratorFacade->setup(baseMapGenerator->getMap(), hillMapGenerator->getMap());
 }
 
 void Game::drawFrameObjects(glm::mat4& projectionView)
@@ -135,7 +135,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
                                       options.get(OPT_MODELS_FLAT_BLENDING));
       {
         BENCHMARK("Renderer: draw models", true);
-        renderer.drawPlants(plantGenerator,
+        renderer.drawPlants(plantGeneratorFacade,
                            options.get(OPT_MODELS_PHONG_SHADING) ? shaderManager.get(SHADER_MODELS_PHONG) : shaderManager.get(SHADER_MODELS),
                            options.get(OPT_MODELS_CULLING),
                            true,
@@ -246,7 +246,7 @@ void Game::drawFrameObjectsDepthmap()
       shaderManager.get(SHADER_SHADOW_MODELS).use();
       {
         BENCHMARK("Renderer: draw models depthmap", true);
-        renderer.drawPlants(plantGenerator, shaderManager.get(SHADER_SHADOW_MODELS),
+        renderer.drawPlants(plantGeneratorFacade, shaderManager.get(SHADER_SHADOW_MODELS),
                            options.get(OPT_MODELS_CULLING),
                            false,
                            updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0,
@@ -263,7 +263,10 @@ void Game::loop()
   //even if we don't need to render models make sure we update indirect buffer data for meshes
   {
     BENCHMARK("Game: wait for mesh indirect ready", true);
-    while(!meshBufferReady && !updateCount == 0 && meshBufferNeedUpdate) {}
+    while(!meshBufferReady && !updateCount == 0 && meshBufferNeedUpdate)
+      {
+        std::this_thread::yield();
+      }
   }
   meshBufferReady = false;
 
@@ -284,7 +287,7 @@ void Game::loop()
       hillMapGenerator->initializeMap(hillMapGenerator->getMap());
 
       prepareTerrain();
-      saveLoadManager->update(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, plantGenerator, camera);
+      saveLoadManager->update(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, plantGeneratorFacade, camera);
       options.set(OPT_RECREATE_TERRAIN_REQUEST, false);
       textureManager.createUnderwaterReliefTexture(waterMapGenerator);
       waterNeedNewKeyFrame = true; //it's okay now to begin animating water
@@ -362,10 +365,6 @@ void Game::setupThreads()
 {
   meshIndirectBufferUpdater = std::make_unique<std::thread>([this]()
   {
-      auto& plainPlants = plantGenerator->getPlainPlants();
-      auto& hillTrees = plantGenerator->getHillTrees();
-      auto& plainChunks = plantGenerator->getPlainPlantsModelChunks();
-      auto& hillChunks = plantGenerator->getHillTreeModelChunks();
       while(!glfwWindowShouldClose(window))
         {
           if (meshBufferNeedUpdate)
@@ -374,16 +373,7 @@ void Game::setupThreads()
               float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH);
               float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_WORLD_HEIGHT, (float)HALF_WORLD_HEIGHT);
               glm::vec2 cameraPositionXZ = glm::vec2(cameraOnMapX, cameraOnMapZ);
-              for (unsigned int i = 0; i < plainPlants.size(); i++)
-                {
-                  Model& model = plainPlants[i];
-                  model.prepareMeshesIndirectData(plainChunks, i, cameraPositionXZ, viewFrustum);
-                }
-              for (unsigned int i = 0; i < hillTrees.size(); i++)
-                {
-                  Model& model = hillTrees[i];
-                  model.prepareMeshesIndirectData(hillChunks, i, cameraPositionXZ, viewFrustum);
-                }
+              plantGeneratorFacade->prepareMeshesIndirectData(cameraPositionXZ, viewFrustum);
               meshBufferReady = true;
               meshBufferNeedUpdate = false;
             }

@@ -33,7 +33,7 @@ void Model::draw(bool modelRenderOptimize, bool bindTexture, bool updateIndirect
 void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                       unsigned int index,
                                       const glm::vec2& cameraPositionXZ,
-                                      Frustum& frustum)
+                                      const Frustum &frustum)
 {
   for (unsigned int i = 0; i < meshes.size(); i++)
     meshes[i].prepareIndirectBufferData(chunks, index, cameraPositionXZ, frustum);

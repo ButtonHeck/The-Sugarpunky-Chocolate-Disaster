@@ -192,7 +192,7 @@ void Renderer::drawSkybox(Skybox *skybox)
   glEnable(GL_CULL_FACE);
 }
 
-void Renderer::drawPlants(const std::shared_ptr<PlantGenerator> generator, Shader &shader,
+void Renderer::drawPlants(const std::shared_ptr<PlantGeneratorFacade> generatorFacade, Shader &shader,
                          bool enableFrustumCulling,
                          bool bindTexture,
                          bool updateIndirect,
@@ -204,15 +204,15 @@ void Renderer::drawPlants(const std::shared_ptr<PlantGenerator> generator, Shade
     glEnable(GL_BLEND);
   else
     glDisable(GL_BLEND);
-  auto& plainPlants = generator->getPlainPlants();
-  auto& hillTrees = generator->getHillTrees();
 
-  for (unsigned int i = 0; i < plainPlants.size() - NUM_GRASS_MODELS; i++)
+  auto& plainPlants = generatorFacade->getPlainModels();
+  for (unsigned int i = 0; i < plainPlants.size(); i++)
     {
       Model& model = plainPlants[i];
       model.draw(enableFrustumCulling, bindTexture, updateIndirect);
     }
 
+  auto& hillTrees = generatorFacade->getHillModels();
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
       Model& model = hillTrees[i];
@@ -220,6 +220,7 @@ void Renderer::drawPlants(const std::shared_ptr<PlantGenerator> generator, Shade
     }
 
   //draw grass without face culling
+  auto& grass = generatorFacade->getGrassModels();
   glDisable(GL_CULL_FACE);
   if (screenDraw)
     {
@@ -228,9 +229,9 @@ void Renderer::drawPlants(const std::shared_ptr<PlantGenerator> generator, Shade
       shader.setFloat("u_grassPosDistribution", glfwGetTime());
       shader.setFloat("u_grassPosDistrubutionInfluence", glfwGetTime() * 4.2f);
     }
-  for (unsigned int i = plainPlants.size() - NUM_GRASS_MODELS; i < plainPlants.size(); i++)
+  for (unsigned int i = 0; i < grass.size(); i++)
     {
-      Model& model = plainPlants[i];
+      Model& model = grass[i];
       model.draw(enableFrustumCulling, bindTexture, updateIndirect);
     }
   glEnable(GL_CULL_FACE);

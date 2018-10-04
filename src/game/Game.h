@@ -28,6 +28,7 @@
 #include "model/Model.h"
 #include "timer/Timer.h"
 #include "timer/BenchmarkTimer.h"
+#include "generator/PlantGeneratorFacade.h"
 
 class Game
 {
@@ -71,7 +72,7 @@ private:
   std::shared_ptr<BaseMapGenerator> baseMapGenerator;
   std::shared_ptr<BuildableMapGenerator> buildableMapGenerator;
   std::unique_ptr<SaveLoadManager> saveLoadManager;
-  std::shared_ptr<PlantGenerator> plantGenerator;
+  std::shared_ptr<PlantGeneratorFacade> plantGeneratorFacade;
   UnderwaterQuadMapGenerator underwaterQuadGenerator;
   Skybox skybox;
 

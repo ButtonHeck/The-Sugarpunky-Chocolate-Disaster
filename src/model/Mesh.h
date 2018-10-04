@@ -45,7 +45,7 @@ public:
   void prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2 &cameraPositionXZ,
-                                 Frustum& frustum);
+                                 const Frustum& frustum);
 private:
   void addIndirectBufferData(int directionToChunkLength, GLuint indicesSize, GLuint numInstances, GLuint instanceOffset);
   std::vector<Vertex> vertices;

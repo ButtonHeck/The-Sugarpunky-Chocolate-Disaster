@@ -44,7 +44,11 @@ SOURCES += \
     src/game/DepthmapBuffer.cpp \
     src/game/DebugLogger.cpp \
     src/graphics/TextRenderer.cpp \
-    src/graphics/FontLoader.cpp
+    src/graphics/FontLoader.cpp \
+    src/generator/PlainPlantsGenerator.cpp \
+    src/generator/HillTreesGenerator.cpp \
+    src/generator/GrassGenerator.cpp \
+    src/generator/PlantGeneratorFacade.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -84,7 +88,11 @@ HEADERS += \
     src/game/DepthmapBuffer.h \
     src/game/DebugLogger.h \
     src/graphics/TextRenderer.h \
-    src/graphics/FontLoader.h
+    src/graphics/FontLoader.h \
+    src/generator/PlainPlantsGenerator.h \
+    src/generator/HillTreesGenerator.h \
+    src/generator/GrassGenerator.h \
+    src/generator/PlantGeneratorFacade.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

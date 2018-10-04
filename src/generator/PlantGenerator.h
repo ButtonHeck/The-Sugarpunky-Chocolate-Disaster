@@ -13,44 +13,21 @@
 class PlantGenerator
 {
 public:
-  PlantGenerator(int numGrassModels);
-  ~PlantGenerator();
-  void setup(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
-
-  //plain plants
-  std::vector<Model>& getPlainPlants();
-  std::vector<ModelChunk>& getPlainPlantsModelChunks();
-
-  //hill trees
-  std::vector<Model>& getHillTrees();
-  std::vector<ModelChunk>& getHillTreeModelChunks();
-
-  //save/load routine
+  PlantGenerator();
+  virtual ~PlantGenerator();
+  std::vector<Model>& getModels();
+  std::vector<ModelChunk>& getChunks();
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
-
-private:
-  //both plain plants and hill trees
+protected:
   void setupModelChunks();
-
-  //plain plants
-  void setupPlainMatrices(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
-  void updatePlain(std::vector<glm::mat4*>& models, unsigned int* numAllTrees);
-  std::vector<Model> plainPlants;
-  std::vector<glm::mat4*> plainPlantsMatrices;
-  unsigned int* numPlainPlants = nullptr;
-  int numGrassModels;
-  std::vector<ModelChunk> plainPlantsModelChunks;
-
-  //hill trees
-  void setupHillMatrices(std::vector<std::vector<float>>& hillMap);
-  void updateHill(std::vector<glm::mat4*>& models, unsigned int* numAllTrees);
-  std::vector<Model> hillTrees;
-  std::vector<glm::mat4*> hillTreesMatrices;
-  unsigned int* numHillTrees = nullptr;
-  std::vector<ModelChunk> hillTreesModelChunks;
-
-  //plants distibution
+  void updateMatrices(std::vector<glm::mat4*>& newModels, unsigned int* numAllTrees);
+  std::vector<std::vector<glm::mat4>> substituteMatricesStorage();
+  void loadMatrices(std::vector<std::vector<glm::mat4>>& newMatrices);
+  std::vector<Model> models;
+  std::vector<glm::mat4*> matrices;
+  unsigned int* numPlants = nullptr;
+  std::vector<ModelChunk> chunks;
   std::default_random_engine randomizer;
 };
 

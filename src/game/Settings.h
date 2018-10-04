@@ -43,7 +43,6 @@ constexpr float HILLS_OFFSET_Y = -0.2f;
 constexpr float SHORE_CLIP_LEVEL = -4.0f;
 constexpr float UNDERWATER_TILE_YPOS = -4.0f;
 constexpr int SHORE_SIZE_BASE = 5;
-constexpr int NUM_GRASS_MODELS = 6;
 
 //world update & rendering config
 constexpr int CHUNK_SIZE = 16;
