@@ -6,7 +6,6 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <random>
-#include <chrono>
 #include "game/Settings.h"
 #include "model/Model.h"
 #include "chunk/ModelChunk.h"
@@ -16,20 +15,13 @@ class PlantGenerator
 public:
   PlantGenerator(int numGrassModels);
   ~PlantGenerator();
+  void setup(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
 
   //plain plants
-  void setupPlainModels(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
-  void updatePlainModels(std::vector<glm::mat4*>& models, unsigned int* numAllTrees);
-  std::vector<glm::mat4*>& getPlainPlantsMatrices();
-  unsigned int getNumPlainPlants(int i);
   std::vector<Model>& getPlainPlants();
   std::vector<ModelChunk>& getPlainPlantsModelChunks();
 
   //hill trees
-  void setupHillModels(std::vector<std::vector<float>>& hillMap);
-  void updateHillModels(std::vector<glm::mat4*>& models, unsigned int* numAllTrees);
-  std::vector<glm::mat4*>& getHillTreesMatrices();
-  unsigned int getNumHillTrees(int i);
   std::vector<Model>& getHillTrees();
   std::vector<ModelChunk>& getHillTreeModelChunks();
 
@@ -38,19 +30,24 @@ public:
   void deserialize(std::ifstream& input);
 
 private:
+  //both plain plants and hill trees
+  void setupModelChunks();
+
   //plain plants
+  void setupPlainMatrices(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
+  void updatePlain(std::vector<glm::mat4*>& models, unsigned int* numAllTrees);
   std::vector<Model> plainPlants;
   std::vector<glm::mat4*> plainPlantsMatrices;
-  unsigned int* numPlainPlants;
+  unsigned int* numPlainPlants = nullptr;
   int numGrassModels;
-  bool plainPlantsAlreadyCreated = false;
   std::vector<ModelChunk> plainPlantsModelChunks;
 
   //hill trees
+  void setupHillMatrices(std::vector<std::vector<float>>& hillMap);
+  void updateHill(std::vector<glm::mat4*>& models, unsigned int* numAllTrees);
   std::vector<Model> hillTrees;
   std::vector<glm::mat4*> hillTreesMatrices;
-  unsigned int* numHillTrees;
-  bool hillTreesAlreadyCreated = false;
+  unsigned int* numHillTrees = nullptr;
   std::vector<ModelChunk> hillTreesModelChunks;
 
   //plants distibution

@@ -82,8 +82,7 @@ void Game::prepareTerrain()
   waterMapGenerator->postPrepareMap();
   waterMapGenerator->fillBufferData();
   buildableMapGenerator->setup();
-  plantGenerator->setupPlainModels(baseMapGenerator->getMap(), hillMapGenerator->getMap());
-  plantGenerator->setupHillModels(hillMapGenerator->getMap());
+  plantGenerator->setup(baseMapGenerator->getMap(), hillMapGenerator->getMap());
 }
 
 void Game::drawFrameObjects(glm::mat4& projectionView)
