@@ -28,7 +28,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
   waterMapGenerator = std::make_shared<WaterMapGenerator>(shaderManager.get(SHADER_WATER_CULLING));
   hillMapGenerator = std::make_shared<HillsMapGenerator>(shaderManager.get(SHADER_HILLS_CULLING), waterMapGenerator->getMap());
   baseMapGenerator = std::make_shared<BaseMapGenerator>(waterMapGenerator->getMap(), hillMapGenerator->getMap());
-  buildableMapGenerator = std::make_shared<BuildableMapGenerator>(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+  buildableMapGenerator = std::make_shared<BuildableMapGenerator>(baseMapGenerator, hillMapGenerator);
   Model::bindTextureLoader(textureLoader);
   plantGeneratorFacade = std::make_shared<PlantGeneratorFacade>();
   saveLoadManager = std::make_unique<SaveLoadManager>(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, plantGeneratorFacade, camera);
@@ -81,7 +81,7 @@ void Game::prepareTerrain()
   baseMapGenerator->setup();
   waterMapGenerator->postPrepareMap();
   waterMapGenerator->fillBufferData();
-  buildableMapGenerator->setup();
+  buildableMapGenerator->setup(baseMapGenerator, hillMapGenerator);
   plantGeneratorFacade->setup(baseMapGenerator->getMap(), hillMapGenerator->getMap());
 }
 
@@ -282,7 +282,6 @@ void Game::loop()
         }
       waterNeedNewKeyFrame = false; //explicitly bypass water animation frame update routine
       baseMapGenerator.reset(new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap()));
-      buildableMapGenerator.reset(new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap()));
       waterMapGenerator->initializeMap(waterMapGenerator->getMap());
       hillMapGenerator->initializeMap(hillMapGenerator->getMap());
 
@@ -349,8 +348,7 @@ void Game::loop()
       saveLoadManager->loadFromFile(SAVES_DIR + "testSave.txt");
       options.set(OPT_LOAD_REQUEST, false);
       textureManager.createUnderwaterReliefTexture(waterMapGenerator);
-      buildableMapGenerator.reset(new BuildableMapGenerator(baseMapGenerator->getMap(), hillMapGenerator->getMap()));
-      buildableMapGenerator->setup();
+      buildableMapGenerator->setup(baseMapGenerator, hillMapGenerator);
       waterNeedNewKeyFrame = true;
     }
 
