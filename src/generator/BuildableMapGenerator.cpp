@@ -15,7 +15,10 @@ BuildableMapGenerator::BuildableMapGenerator(std::shared_ptr<BaseMapGenerator>& 
 
 BuildableMapGenerator::~BuildableMapGenerator()
 {
-  deleteGLObjects();
+  glDeleteVertexArrays(1, &selectedVAO);
+  glDeleteBuffers(1, &modelVbo);
+  glDeleteBuffers(1, &selectedVBO);
+  glDeleteBuffers(1, &selectedEBO);
 }
 
 void BuildableMapGenerator::setup(std::shared_ptr<BaseMapGenerator> &baseMapGenerator,
@@ -63,8 +66,8 @@ void BuildableMapGenerator::fillBufferData()
   glBufferData(GL_ARRAY_BUFFER, sizeof(CELL_VERTICES), CELL_VERTICES, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
-  num_instances = tiles.size();
-  std::unique_ptr<glm::mat4[]> instanceModels(new glm::mat4[num_instances]);
+  numInstances = tiles.size();
+  std::unique_ptr<glm::mat4[]> instanceModels(new glm::mat4[numInstances]);
   for (unsigned int i = 0; i < tiles.size(); i++)
     {
       glm::mat4 model;
@@ -94,19 +97,10 @@ void BuildableMapGenerator::fillBufferData()
 
 GLuint &BuildableMapGenerator::getNumInstances()
 {
-  return num_instances;
+  return numInstances;
 }
 
 GLuint &BuildableMapGenerator::getSelectedTileVAO()
 {
   return selectedVAO;
-}
-
-void BuildableMapGenerator::deleteGLObjects()
-{
-  MapGenerator::deleteGLObjects();
-  glDeleteVertexArrays(1, &selectedVAO);
-  glDeleteBuffers(1, &modelVbo);
-  glDeleteBuffers(1, &selectedVBO);
-  glDeleteBuffers(1, &selectedEBO);
 }

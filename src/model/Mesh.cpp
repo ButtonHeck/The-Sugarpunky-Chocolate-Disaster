@@ -31,9 +31,9 @@ void Mesh::setupMesh()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices[0], GL_STATIC_DRAW);
 
-  glCreateBuffers(1, &multiDE_I_DIBO);
-  glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDE_I_DIBO);
-  glNamedBufferStorage(multiDE_I_DIBO, sizeof(multiDrawIndirectData), 0, GL_DYNAMIC_STORAGE_BIT);
+  glCreateBuffers(1, &multiDrawIndirectBO);
+  glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDrawIndirectBO);
+  glNamedBufferStorage(multiDrawIndirectBO, sizeof(multiDrawIndirectData), 0, GL_DYNAMIC_STORAGE_BIT);
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -79,13 +79,13 @@ void Mesh::draw(bool useCulling, bool bindTexture, bool updateIndirect)
     {
       {
         BENCHMARK("Mesh: bind+buffer indirect data", true);
-        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDE_I_DIBO);
+        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDrawIndirectBO);
         if (updateIndirect)
-          glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData);
+          glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * drawIndirectCommandPrimCount, multiDrawIndirectData);
       }
       {
         BENCHMARK("Mesh: multiDrawIndirect", true);
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, multiDE_I_primCount, 0);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCount, 0);
       }
     }
   else
@@ -98,7 +98,7 @@ void Mesh::prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
                                      const Frustum &frustum)
 {
   BENCHMARK("(ST)Mesh: update DIB data", true);
-  multiDE_I_primCount = 0;
+  drawIndirectCommandPrimCount = 0;
   indirectTokensSorted.clear();
   GLuint indicesSize = indices.size();
   for (unsigned int i = 0; i < chunks.size(); i++)
@@ -167,5 +167,5 @@ void Mesh::addIndirectBufferData(int directionToChunkLength,
                                  GLuint instanceOffset)
 {
   indirectTokensSorted.insert(std::pair<int,IndirectBufferToken>(directionToChunkLength, IndirectBufferToken(indicesSize, numInstances, instanceOffset)));
-  ++multiDE_I_primCount;
+  ++drawIndirectCommandPrimCount;
 }

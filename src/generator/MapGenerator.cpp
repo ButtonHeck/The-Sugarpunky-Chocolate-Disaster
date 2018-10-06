@@ -9,6 +9,13 @@ MapGenerator::MapGenerator()
  glCreateBuffers(1, &ebo);
 }
 
+MapGenerator::~MapGenerator()
+{
+  glDeleteVertexArrays(1, &vao);
+  glDeleteBuffers(1, &vbo);
+  glDeleteBuffers(1, &ebo);
+}
+
 void MapGenerator::initializeMap(std::vector<std::vector<float>>& map)
 {
   map.clear();
@@ -92,13 +99,6 @@ GLuint MapGenerator::getVBO() const
 GLuint MapGenerator::getEBO() const
 {
   return ebo;
-}
-
-void MapGenerator::deleteGLObjects()
-{
-  glDeleteVertexArrays(1, &vao);
-  glDeleteBuffers(1, &vbo);
-  glDeleteBuffers(1, &ebo);
 }
 
 void MapGenerator::serialize(std::ofstream &output)

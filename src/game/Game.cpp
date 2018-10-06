@@ -1,8 +1,8 @@
 #include "Game.h"
 
 #ifdef _DEBUG
-int ram_available, ram_size;
-float ram_size_float_percentage;
+int ramAvailable, ramSize;
+float ramSizeFloatPercentage;
 #endif
 
 Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolution &screenResolution)
@@ -33,8 +33,8 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
   plantGeneratorFacade = std::make_shared<PlantGeneratorFacade>();
   saveLoadManager = std::make_unique<SaveLoadManager>(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, plantGeneratorFacade, camera);
 #ifdef _DEBUG
-  glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ram_size);
-  ram_size_float_percentage = (float)ram_size / 100;
+  glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ramSize);
+  ramSizeFloatPercentage = (float)ramSize / 100;
 #endif
 }
 
@@ -212,10 +212,10 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
         textRenderer.addText("Trees culling: " + (options.get(OPT_MODELS_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 60.0f, 0.18f);
 #ifdef _DEBUG
         textRenderer.addText("Water anim thread works: " + (waterAnimatorIsWorking ? std::string("On") : std::string("Off")), 10.0f, 80.0f, 0.18f);
-        glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &ram_available);
-        textRenderer.addText("RAM available: " + (std::to_string(ram_available)
+        glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &ramAvailable);
+        textRenderer.addText("RAM available: " + (std::to_string(ramAvailable)
                                                      .append(", ")
-                                                     .append(std::to_string(ram_available / ram_size_float_percentage))
+                                                     .append(std::to_string(ramAvailable / ramSizeFloatPercentage))
                                                      .append("%")), 10.0f, 100.0f, 0.18f);
         textRenderer.addText("Models Phong: " + (options.get(OPT_MODELS_PHONG_SHADING) ? std::string("On") : std::string("Off")), 10.0f, 120.0f, 0.18f);
 #endif

@@ -51,12 +51,12 @@ private:
   std::vector<Vertex> vertices;
   std::vector<Texture> textures;
   std::vector<GLuint> indices;
-  unsigned int VAO, VBO, EBO, instanceVBO = 0, multiDE_I_DIBO;
+  unsigned int VAO, VBO, EBO, instanceVBO = 0, multiDrawIndirectBO;
   unsigned int numInstances;
   constexpr static int NUM_CHUNKS = (WORLD_WIDTH / CHUNK_SIZE) * (WORLD_HEIGHT / CHUNK_SIZE);
   GLuint multiDrawIndirectData[NUM_CHUNKS * 5] = {0}; //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
   std::multimap<int, IndirectBufferToken> indirectTokensSorted;
-  GLuint multiDE_I_primCount = 0;
+  GLuint drawIndirectCommandPrimCount = 0;
 };
 
 #endif // MESH_H

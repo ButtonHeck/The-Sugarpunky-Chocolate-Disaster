@@ -12,7 +12,6 @@ WaterMapGenerator::WaterMapGenerator(Shader &waterShader)
 
 WaterMapGenerator::~WaterMapGenerator()
 {
-  deleteGLObjects();
   glDeleteVertexArrays(1, &culledVAO);
   glDeleteBuffers(1, &culledVBO);
   glDeleteTransformFeedbacks(1, &TFBO);

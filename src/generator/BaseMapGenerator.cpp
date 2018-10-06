@@ -24,7 +24,17 @@ BaseMapGenerator::BaseMapGenerator(std::vector<std::vector<float> > &waterMap, s
 
 BaseMapGenerator::~BaseMapGenerator()
 {
-  deleteGLObjects();
+  glDeleteVertexArrays(1, &squareVao);
+  glDeleteBuffers(1, &squareVbo);
+  glDeleteBuffers(1, &squareEbo);
+  glDeleteBuffers(1, &squareModelVbo);
+  glDeleteVertexArrays(1, &cellVao);
+  glDeleteBuffers(1, &cellVbo);
+  glDeleteBuffers(1, &cellEbo);
+  glDeleteBuffers(1, &cellModelVbo);
+  glDeleteBuffers(1, &cellMultiDE_I_DIBO);
+  glDeleteVertexArrays(1, &shoreVao);
+  glDeleteBuffers(1, &shoreVbo);
 }
 
 void BaseMapGenerator::setup()
@@ -503,22 +513,6 @@ void BaseMapGenerator::splitCellChunks(int chunkSize)
           offset += instances;
         }
     }
-}
-
-void BaseMapGenerator::deleteGLObjects()
-{
-  MapGenerator::deleteGLObjects();
-  glDeleteVertexArrays(1, &squareVao);
-  glDeleteBuffers(1, &squareVbo);
-  glDeleteBuffers(1, &squareEbo);
-  glDeleteBuffers(1, &squareModelVbo);
-  glDeleteVertexArrays(1, &cellVao);
-  glDeleteBuffers(1, &cellVbo);
-  glDeleteBuffers(1, &cellEbo);
-  glDeleteBuffers(1, &cellModelVbo);
-  glDeleteBuffers(1, &cellMultiDE_I_DIBO);
-  glDeleteVertexArrays(1, &shoreVao);
-  glDeleteBuffers(1, &shoreVbo);
 }
 
 std::vector<TerrainChunk> &BaseMapGenerator::getShoreChunks()

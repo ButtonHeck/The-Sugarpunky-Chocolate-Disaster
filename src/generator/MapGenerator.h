@@ -10,19 +10,18 @@ class MapGenerator
 {
 public:
   MapGenerator();
-  virtual ~MapGenerator() = default;
+  virtual ~MapGenerator();
   void initializeMap(std::vector<std::vector<float>>& map);
-  void resetAllGLBuffers();
   void createTiles(bool flat, bool createOnZeroTiles, std::vector<std::vector<float>>& map, float offsetY);
   std::vector<std::vector<float>>& getMap();
   std::vector<TerrainTile>& getTiles();
   GLuint getVAO() const;
   GLuint getVBO() const;
   GLuint getEBO() const;
-  virtual void deleteGLObjects();
   virtual void serialize(std::ofstream& output);
   virtual void deserialize(std::ifstream& input);
 protected:
+  void resetAllGLBuffers();
   std::vector<std::vector<float>> map;
   std::vector<TerrainTile> tiles;
   GLuint vao, vbo, ebo;

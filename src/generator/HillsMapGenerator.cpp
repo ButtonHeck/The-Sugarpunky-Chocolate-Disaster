@@ -11,7 +11,6 @@ HillsMapGenerator::HillsMapGenerator(Shader &shader, std::vector<std::vector<flo
 
 HillsMapGenerator::~HillsMapGenerator()
 {
-  deleteGLObjects();
   glDeleteVertexArrays(1, &culledVAO);
   glDeleteBuffers(1, &culledVBO);
   glDeleteTransformFeedbacks(1, &TFBO);
@@ -281,18 +280,18 @@ GLuint HillsMapGenerator::getTransformFeedback() const
 void HillsMapGenerator::generateMap(int cycles, HILL_DENSITY density)
 {
   std::uniform_real_distribution<float> heightDistribution(0.3f, 0.8f);
-  float density_value = 3.0f * (float)WORLD_WIDTH;
+  float densityValue = 3.0f * (float)WORLD_WIDTH;
   if (density == HILL_DENSITY::HILLS_THIN)
-      density_value = 3.1f * (float)WORLD_WIDTH;
+      densityValue = 3.1f * (float)WORLD_WIDTH;
   else if (density == HILL_DENSITY::HILLS_DENSE)
-    density_value = 2.9f * (float)WORLD_WIDTH;
+    densityValue = 2.9f * (float)WORLD_WIDTH;
 
   //hills kernel generation cycle
   for (int y = 1; y < WORLD_HEIGHT - 1; y++)
     {
       for (int x = 1; x < WORLD_WIDTH - 1; x++)
         {
-          if (rand() % (int)density_value == 0 && !hasWaterNearby(x, y, cycles + 3))
+          if (rand() % (int)densityValue == 0 && !hasWaterNearby(x, y, cycles + 3))
             {
               map[y][x] += 1.0f;
             }
@@ -379,13 +378,13 @@ bool HillsMapGenerator::hasWaterNearby(unsigned int x, unsigned int y, unsigned 
 
 void HillsMapGenerator::compressMap(float threshold_percent, float ratio)
 {
-  float threshold_value = maxHeight * threshold_percent;
+  float thresholdValue = maxHeight * threshold_percent;
   for (auto& row : map)
     for (auto& height : row)
       {
-        if (height < threshold_value)
+        if (height < thresholdValue)
           continue;
-        height = threshold_value + (height - threshold_value) / ratio;
+        height = thresholdValue + (height - thresholdValue) / ratio;
       }
   updateMaxHeight();
 }

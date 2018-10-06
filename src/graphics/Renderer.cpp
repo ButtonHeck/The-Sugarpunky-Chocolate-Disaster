@@ -64,7 +64,7 @@ void Renderer::drawFlatTerrain(const std::shared_ptr<BaseMapGenerator> generator
   auto& cellChunks = generator->getCellChunks();
   GLuint multiDrawIndirectData[cellChunks.size() * 5]; // { indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
   GLuint dataOffset = 0;
-  GLuint multiDE_I_primCount = 0;
+  GLuint drawIndirectCommandPrimCount = 0;
   for (unsigned int i = 0; i < cellChunks.size(); i++)
     {
       glm::vec2 chunkMidPoint = cellChunks[i].getMidPoint();
@@ -72,7 +72,7 @@ void Renderer::drawFlatTerrain(const std::shared_ptr<BaseMapGenerator> generator
                            chunkMidPoint.y + HALF_CHUNK_SIZE,
                            MODELS_FC_RADIUS))
         {
-          addIndirectBufferData(multiDE_I_primCount,
+          addIndirectBufferData(drawIndirectCommandPrimCount,
                                 multiDrawIndirectData,
                                 dataOffset, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
           continue;
@@ -81,7 +81,7 @@ void Renderer::drawFlatTerrain(const std::shared_ptr<BaseMapGenerator> generator
                            chunkMidPoint.y + HALF_CHUNK_SIZE,
                            MODELS_FC_RADIUS))
         {
-          addIndirectBufferData(multiDE_I_primCount,
+          addIndirectBufferData(drawIndirectCommandPrimCount,
                                 multiDrawIndirectData,
                                 dataOffset, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
           continue;
@@ -90,7 +90,7 @@ void Renderer::drawFlatTerrain(const std::shared_ptr<BaseMapGenerator> generator
                            chunkMidPoint.y - HALF_CHUNK_SIZE,
                            MODELS_FC_RADIUS))
         {
-          addIndirectBufferData(multiDE_I_primCount,
+          addIndirectBufferData(drawIndirectCommandPrimCount,
                                 multiDrawIndirectData,
                                 dataOffset, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
           continue;
@@ -99,14 +99,14 @@ void Renderer::drawFlatTerrain(const std::shared_ptr<BaseMapGenerator> generator
                            chunkMidPoint.y - HALF_CHUNK_SIZE,
                            MODELS_FC_RADIUS))
         {
-          addIndirectBufferData(multiDE_I_primCount,
+          addIndirectBufferData(drawIndirectCommandPrimCount,
                                 multiDrawIndirectData,
                                 dataOffset, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
         }
     }
   glBindBuffer(GL_DRAW_INDIRECT_BUFFER, generator->getCellDIBO());
-  glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * 5 * multiDE_I_primCount, multiDrawIndirectData, GL_STATIC_DRAW);
-  glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_BYTE, 0, multiDE_I_primCount, 0);
+  glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * 5 * drawIndirectCommandPrimCount, multiDrawIndirectData, GL_STATIC_DRAW);
+  glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_BYTE, 0, drawIndirectCommandPrimCount, 0);
 }
 
 void Renderer::addIndirectBufferData(GLuint& primCount,

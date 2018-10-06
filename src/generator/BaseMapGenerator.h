@@ -14,7 +14,6 @@ public:
   BaseMapGenerator(std::vector<std::vector<float>>& waterMap, std::vector<std::vector<float>>& hillMap);
   ~BaseMapGenerator();
   void setup();
-  void deleteGLObjects() override;
   std::vector<TerrainChunk>& getShoreChunks();
   std::vector<TerrainChunk>& getSquareChunks();
   std::vector<TerrainChunk>& getCellChunks();

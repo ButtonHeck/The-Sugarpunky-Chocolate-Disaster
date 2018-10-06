@@ -19,14 +19,13 @@ public:
              std::shared_ptr<HillsMapGenerator> &hillsGenerator);
   GLuint& getNumInstances();
   GLuint& getSelectedTileVAO();
-  void deleteGLObjects();
 private:
   void fillBufferData();
   std::shared_ptr<BaseMapGenerator>& baseMapGenerator;
   std::shared_ptr<HillsMapGenerator>& hillsGenerator;
   GLuint modelVbo;
   GLuint selectedVAO, selectedVBO, selectedEBO;
-  unsigned int num_instances;
+  unsigned int numInstances;
 };
 
 #endif // BUILDABLEMAPGENERATOR_H
