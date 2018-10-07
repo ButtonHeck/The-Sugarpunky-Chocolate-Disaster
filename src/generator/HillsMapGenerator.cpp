@@ -3,7 +3,7 @@
 HillsMapGenerator::HillsMapGenerator(Shader &shader, std::vector<std::vector<float> > &waterMap)
   :
     MapGenerator(),
-    hillsShader(shader),
+    shader(shader),
     waterMap(waterMap)
 {
   randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
@@ -16,207 +16,24 @@ HillsMapGenerator::~HillsMapGenerator()
   glDeleteTransformFeedbacks(1, &TFBO);
 }
 
-void HillsMapGenerator::prepareMap()
+void HillsMapGenerator::setup()
 {
   generateMap(12, HILL_DENSITY::HILLS_DENSE);
   generateMap(6, HILL_DENSITY::HILLS_THIN);
   compressMap(0.00f, 1.33f); //compress entire range
-  compressMap(0.66f, 2.0f);
+  compressMap(0.66f * maxHeight, 2.0f);
   removeMapPlateaus(1.0f);
   for (unsigned int i = 0; i < 4; i++)
     {
       smoothMapHeightChunks(0.6f, 0.05f, 0.05f);
     }
-  removeOrphanHills();
   smoothMapSinks();
-  createTiles();
-  tiles.shrink_to_fit();
+  createTilesAndBufferData();
 }
 
-void HillsMapGenerator::fillBufferData()
+void HillsMapGenerator::createTilesAndBufferData()
 {
-  const size_t VERTEX_DATA_LENGTH = tiles.size() * 48;
-  const size_t ELEMENT_DATA_LENGTH = tiles.size() * 6;
-  GLfloat* vertices = new GLfloat[VERTEX_DATA_LENGTH];
-  GLuint* indices = new GLuint[ELEMENT_DATA_LENGTH];
-  for (unsigned int c = 0; c < tiles.size(); c++)
-    {
-      TerrainTile& tile = tiles[c];
-      int offset = c * 48;
-      int index = c * 6;
-
-      bool indicesCrossed = false;
-      if (tile.lowRight < tile.upperLeft || tile.upperLeft < tile.lowRight)
-        indicesCrossed = true;
-
-      float texCoordXOffset = (tile.mapX % 2) / 2.0f;
-      float texCoordYOffset = ((WORLD_HEIGHT - tile.mapY) % 2) / 2.0f;
-
-      int x = tile.mapX, y = tile.mapY;
-      if (!indicesCrossed)
-        {
-          //ll1
-          vertices[offset] =   -1- HALF_WORLD_WIDTH + tile.mapX;
-          vertices[offset+1] = tile.lowLeft;
-          vertices[offset+2] = - HALF_WORLD_HEIGHT + tile.mapY;
-          vertices[offset+3] = 0.0f + texCoordXOffset;
-          vertices[offset+4] = 0.0f + texCoordYOffset;
-          vertices[offset+5] = normalMap[y][x-1].x;
-          vertices[offset+6] = normalMap[y][x-1].y;
-          vertices[offset+7] = normalMap[y][x-1].z;
-          //lr1
-          vertices[offset+8] =  - HALF_WORLD_WIDTH + tile.mapX;
-          vertices[offset+9] =  tile.lowRight;
-          vertices[offset+10] = - HALF_WORLD_HEIGHT + tile.mapY;
-          vertices[offset+11] = (1.0f / 2.0f + texCoordXOffset);
-          vertices[offset+12] = 0.0f + texCoordYOffset;
-          vertices[offset+13] = normalMap[y][x].x;
-          vertices[offset+14] = normalMap[y][x].y;
-          vertices[offset+15] = normalMap[y][x].z;
-          //ur1
-          vertices[offset+16] = - HALF_WORLD_WIDTH + tile.mapX;
-          vertices[offset+17] = tile.upperRight;
-          vertices[offset+18] = -1 - HALF_WORLD_HEIGHT + tile.mapY;
-          vertices[offset+19] = (1.0f / 2.0f + texCoordXOffset);
-          vertices[offset+20] = (1.0f / 2.0f + texCoordYOffset);
-          vertices[offset+21] = normalMap[y-1][x].x;
-          vertices[offset+22] = normalMap[y-1][x].y;
-          vertices[offset+23] = normalMap[y-1][x].z;
-          //ur2
-          vertices[offset+24] = - HALF_WORLD_WIDTH + tile.mapX;
-          vertices[offset+25] = tile.upperRight;
-          vertices[offset+26] = -1 - HALF_WORLD_HEIGHT + tile.mapY;
-          vertices[offset+27] = (1.0f / 2.0f + texCoordXOffset);
-          vertices[offset+28] = (1.0f / 2.0f + texCoordYOffset);
-          vertices[offset+29] = normalMap[y-1][x].x;
-          vertices[offset+30] = normalMap[y-1][x].y;
-          vertices[offset+31] = normalMap[y-1][x].z;
-          //ul2
-          vertices[offset+32] = -1 - HALF_WORLD_WIDTH + tile.mapX;
-          vertices[offset+33] = tile.upperLeft;
-          vertices[offset+34] = -1 - HALF_WORLD_HEIGHT + tile.mapY;
-          vertices[offset+35] = 0.0f + texCoordXOffset;
-          vertices[offset+36] = (1.0f / 2.0f + texCoordYOffset);
-          vertices[offset+37] = normalMap[y-1][x-1].x;
-          vertices[offset+38] = normalMap[y-1][x-1].y;
-          vertices[offset+39] = normalMap[y-1][x-1].z;
-          //ll2
-          vertices[offset+40] = -1- HALF_WORLD_WIDTH + tile.mapX;
-          vertices[offset+41] = tile.lowLeft;
-          vertices[offset+42] = - HALF_WORLD_HEIGHT + tile.mapY;
-          vertices[offset+43] = 0.0f + texCoordXOffset;
-          vertices[offset+44] = 0.0f + texCoordYOffset;
-          vertices[offset+45] = normalMap[y][x-1].x;
-          vertices[offset+46] = normalMap[y][x-1].y;
-          vertices[offset+47] = normalMap[y][x-1].z;
-        }
-      else
-        {
-          //ul1
-          vertices[offset] =   -1 - HALF_WORLD_WIDTH + tile.mapX;
-          vertices[offset+1] = tile.upperLeft;
-          vertices[offset+2] = -1 - HALF_WORLD_HEIGHT + tile.mapY;
-          vertices[offset+3] = 0.0f + texCoordXOffset;
-          vertices[offset+4] = (1.0f / 2.0f + texCoordYOffset);
-          vertices[offset+5] = normalMap[y-1][x-1].x;
-          vertices[offset+6] = normalMap[y-1][x-1].y;
-          vertices[offset+7] = normalMap[y-1][x-1].z;
-          //ll1
-          vertices[offset+8] =  -1- HALF_WORLD_WIDTH + tile.mapX;
-          vertices[offset+9] =  tile.lowLeft;
-          vertices[offset+10] = - HALF_WORLD_HEIGHT + tile.mapY;
-          vertices[offset+11] = 0.0f + texCoordXOffset;
-          vertices[offset+12] = 0.0f + texCoordYOffset;
-          vertices[offset+13] = normalMap[y][x-1].x;
-          vertices[offset+14] = normalMap[y][x-1].y;
-          vertices[offset+15] = normalMap[y][x-1].z;
-          //lr1
-          vertices[offset+16] = - HALF_WORLD_WIDTH + tile.mapX;
-          vertices[offset+17] = tile.lowRight;
-          vertices[offset+18] = - HALF_WORLD_HEIGHT + tile.mapY;
-          vertices[offset+19] = (1.0f / 2.0f + texCoordXOffset);
-          vertices[offset+20] = 0.0f + texCoordYOffset;
-          vertices[offset+21] = normalMap[y][x].x;
-          vertices[offset+22] = normalMap[y][x].y;
-          vertices[offset+23] = normalMap[y][x].z;
-          //lr2
-          vertices[offset+24] = - HALF_WORLD_WIDTH + tile.mapX;
-          vertices[offset+25] = tile.lowRight;
-          vertices[offset+26] = - HALF_WORLD_HEIGHT + tile.mapY;
-          vertices[offset+27] = (1.0f / 2.0f + texCoordXOffset);
-          vertices[offset+28] = 0.0f + texCoordYOffset;
-          vertices[offset+29] = normalMap[y][x].x;
-          vertices[offset+30] = normalMap[y][x].y;
-          vertices[offset+31] = normalMap[y][x].z;
-          //ur2
-          vertices[offset+32] = - HALF_WORLD_WIDTH + tile.mapX;
-          vertices[offset+33] = tile.upperRight;
-          vertices[offset+34] = -1 - HALF_WORLD_HEIGHT + tile.mapY;
-          vertices[offset+35] = (1.0f / 2.0f + texCoordXOffset);
-          vertices[offset+36] = (1.0f / 2.0f + texCoordYOffset);
-          vertices[offset+37] = normalMap[y-1][x].x;
-          vertices[offset+38] = normalMap[y-1][x].y;
-          vertices[offset+39] = normalMap[y-1][x].z;
-          //ul2
-          vertices[offset+40] = -1 - HALF_WORLD_WIDTH + tile.mapX;
-          vertices[offset+41] = tile.upperLeft;
-          vertices[offset+42] = -1 - HALF_WORLD_HEIGHT + tile.mapY;
-          vertices[offset+43] = 0.0f + texCoordXOffset;
-          vertices[offset+44] = (1.0f / 2.0f + texCoordYOffset);
-          vertices[offset+45] = normalMap[y-1][x-1].x;
-          vertices[offset+46] = normalMap[y-1][x-1].y;
-          vertices[offset+47] = normalMap[y-1][x-1].z;
-        }
-      indices[index] = index;
-      indices[index+1] = index + 1;
-      indices[index+2] = index + 2;
-      indices[index+3] = index + 3;
-      indices[index+4] = index + 4;
-      indices[index+5] = index + 5;
-    }
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * ELEMENT_DATA_LENGTH, indices, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTEX_DATA_LENGTH, vertices, GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
-
-  if (culledVAO != 0)
-    {
-      glDeleteVertexArrays(1, &culledVAO);
-      glDeleteBuffers(1, &culledVBO);
-      glDeleteTransformFeedbacks(1, &TFBO);
-    }
-  glCreateVertexArrays(1, &culledVAO);
-  glCreateBuffers(1, &culledVBO);
-  glCreateTransformFeedbacks(1, &TFBO);
-  glBindVertexArray(culledVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, culledVBO);
-  glNamedBufferStorage(culledVBO, VERTEX_DATA_LENGTH * sizeof(GLfloat), 0, GL_NONE);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
-  glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, TFBO);
-  const GLchar* varyings[3] = {"o_pos", "o_texCoords", "o_normal"};
-  glTransformFeedbackVaryings(hillsShader.getID(), 3, varyings, GL_INTERLEAVED_ATTRIBS);
-  hillsShader.linkAgain();
-  glTransformFeedbackBufferBase(TFBO, 0, culledVBO);
-
-  resetAllGLBuffers();
-  delete[] vertices;
-  delete[] indices;
-}
-
-void HillsMapGenerator::createTiles()
-{
+  verticesToDraw = 0;
   tiles.clear();
   normalMap.clear();
   normalMap.reserve(WORLD_HEIGHT + 1);
@@ -243,23 +60,79 @@ void HillsMapGenerator::createTiles()
               }
         }
     }
+  smoothNormals();
+  tiles.shrink_to_fit();
+  fillBufferData();
+}
 
-  //calculate normals for smooth shading
-  //nX where X is a relative direction for n0 to nearby polygon expressed as a clockface number
-  for (unsigned int y = 1; y < map.size() - 1; y++)
+void HillsMapGenerator::fillBufferData()
+{
+  const size_t VERTEX_DATA_LENGTH = tiles.size() * 48;
+  std::unique_ptr<GLfloat[]> vertices(new GLfloat[VERTEX_DATA_LENGTH]);
+  for (unsigned int c = 0; c < tiles.size(); c++)
     {
-      for (unsigned int x = 1; x < map[0].size() - 1; x++)
+      TerrainTile& tile = tiles[c];
+      int offset = c * 48;
+
+      bool verticesCrossed = false;
+      if (tile.lowRight < tile.upperLeft || tile.upperLeft < tile.lowRight)
+        verticesCrossed = true;
+
+      float texCoordXOffset = (tile.mapX % 2) * 0.5f;
+      float texCoordYOffset = ((WORLD_HEIGHT - tile.mapY) % 2) * 0.5f;
+      int x = tile.mapX, y = tile.mapY;
+
+      Vertex lowLeft(glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY),
+                glm::vec2(texCoordXOffset, texCoordYOffset), normalMap[y][x-1]);
+      Vertex lowRight(glm::vec3(tile.mapX, tile.lowRight, tile.mapY),
+                glm::vec2(0.5f + texCoordXOffset, texCoordYOffset), normalMap[y][x]);
+      Vertex upRight(glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1),
+                glm::vec2(0.5f + texCoordXOffset, 0.5f + texCoordYOffset), normalMap[y-1][x]);
+      Vertex upLeft(glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1),
+                glm::vec2(texCoordXOffset, 0.5f + texCoordYOffset), normalMap[y-1][x-1]);
+      if (!verticesCrossed)
         {
-          glm::vec3 n0 = glm::normalize(glm::vec3(map[y][x-1] - map[y][x], 1, map[y-1][x] - map[y][x]));
-          glm::vec3 n3 = glm::normalize(glm::vec3(map[y][x] - map[y][x+1], 1, map[y-1][x+1] - map[y][x+1]));
-          glm::vec3 n6 = glm::normalize(glm::vec3(map[y+1][x-1] - map[y+1][x], 1, map[y][x] - map[y+1][x]));
-          glm::vec3 n1= glm::normalize(glm::vec3(map[y-1][x] - map[y-1][x+1], 1, map[y-1][x] - map[y][x]));
-          glm::vec3 n4 = glm::normalize(glm::vec3(map[y][x] - map[y][x+1], 1, map[y][x] - map[y+1][x]));
-          glm::vec3 n9 = glm::normalize(glm::vec3(map[y][x-1] - map[y][x], 1, map[y][x-1] - map[y+1][x-1]));
-          glm::vec3 avgNormal = glm::normalize(n0 + n1 + n3 + n4 + n6 + n9);
-          normalMap[y][x] = avgNormal;
+          bufferVertex(vertices.get(), offset, lowLeft); //ll1
+          bufferVertex(vertices.get(), offset+8, lowRight); //lr1
+          bufferVertex(vertices.get(), offset+16, upRight); //ur1
+          bufferVertex(vertices.get(), offset+24, upRight); //ur2
+          bufferVertex(vertices.get(), offset+32, upLeft);//ul2
+          bufferVertex(vertices.get(), offset+40, lowLeft); //ll2
+        }
+      else
+        {
+          bufferVertex(vertices.get(), offset, upLeft); //ul1
+          bufferVertex(vertices.get(), offset+8, lowLeft); //ll1
+          bufferVertex(vertices.get(), offset+16, lowRight); //lr1
+          bufferVertex(vertices.get(), offset+24, lowRight); //lr2
+          bufferVertex(vertices.get(), offset+32, upRight); //ur2
+          bufferVertex(vertices.get(), offset+40, upLeft); //ul2
         }
     }
+  glBindVertexArray(vao);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTEX_DATA_LENGTH, vertices.get(), GL_STATIC_DRAW);
+  setupGLBufferAttributes();
+
+  if (culledVAO != 0)
+    {
+      glDeleteVertexArrays(1, &culledVAO);
+      glDeleteBuffers(1, &culledVBO);
+      glDeleteTransformFeedbacks(1, &TFBO);
+    }
+  glCreateVertexArrays(1, &culledVAO);
+  glCreateBuffers(1, &culledVBO);
+  glCreateTransformFeedbacks(1, &TFBO);
+  glBindVertexArray(culledVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, culledVBO);
+  glNamedBufferStorage(culledVBO, VERTEX_DATA_LENGTH * sizeof(GLfloat), 0, GL_NONE);
+  setupGLBufferAttributes();
+  glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, TFBO);
+  const GLchar* varyings[3] = {"o_pos", "o_texCoords", "o_normal"};
+  glTransformFeedbackVaryings(shader.getID(), 3, varyings, GL_INTERLEAVED_ATTRIBS);
+  shader.linkAgain();
+  glTransformFeedbackBufferBase(TFBO, 0, culledVBO);
+  resetAllGLBuffers();
 }
 
 float HillsMapGenerator::getMaxHeight() const
@@ -277,29 +150,33 @@ GLuint HillsMapGenerator::getTransformFeedback() const
   return TFBO;
 }
 
-void HillsMapGenerator::generateMap(int cycles, HILL_DENSITY density)
+size_t HillsMapGenerator::getVerticesToDraw() const
 {
-  std::uniform_real_distribution<float> heightDistribution(0.3f, 0.8f);
-  float densityValue = 3.0f * (float)WORLD_WIDTH;
-  if (density == HILL_DENSITY::HILLS_THIN)
-      densityValue = 3.1f * (float)WORLD_WIDTH;
-  else if (density == HILL_DENSITY::HILLS_DENSE)
-    densityValue = 2.9f * (float)WORLD_WIDTH;
+  return verticesToDraw;
+}
 
-  //hills kernel generation cycle
+void HillsMapGenerator::generateMap(int cycles, float density)
+{
+  generateKernel(cycles, density);
+  fattenKernel(cycles);
+}
+
+void HillsMapGenerator::generateKernel(int cycles, float density)
+{
   for (int y = 1; y < WORLD_HEIGHT - 1; y++)
     {
       for (int x = 1; x < WORLD_WIDTH - 1; x++)
         {
-          if (rand() % (int)densityValue == 0 && !hasWaterNearby(x, y, cycles + 3))
-            {
-              map[y][x] += 1.0f;
-            }
+          if (rand() % (int)density == 0 && !hasWaterNearby(x, y, cycles + 3))
+            map[y][x] += 1.0f;
         }
     }
   maxHeight = 1.0f;
+}
 
-  //fattening hills around, based on their kernel positions
+void HillsMapGenerator::fattenKernel(int cycles)
+{
+  std::uniform_real_distribution<float> heightDistribution(0.3f, 0.8f);
   for (int cycle = 1; cycle < cycles; cycle++)
     {
       for (int y = cycle; y < WORLD_HEIGHT - cycle; y++)
@@ -310,18 +187,10 @@ void HillsMapGenerator::generateMap(int cycles, HILL_DENSITY density)
                 break;
               if (rand() % (cycle+1) == cycle && (map[y][x] != 0))
                 {
-                  int left = x-cycle;
-                  if (left <= cycle)
-                    left = cycle;
-                  int right = x+cycle;
-                  if (right >= WORLD_WIDTH - cycle - 1)
-                    right = WORLD_WIDTH - cycle - 1;
-                  int top = y-cycle;
-                  if (top <= cycle)
-                    top = cycle;
-                  int bottom = y+cycle;
-                  if (bottom >= WORLD_HEIGHT - cycle - 1)
-                    bottom = WORLD_HEIGHT - cycle - 1;
+                  int left = (x-cycle <= cycle ? cycle : x-cycle);
+                  int right = (x+cycle >= WORLD_WIDTH-cycle-1 ? WORLD_WIDTH-cycle-1 : x+cycle);
+                  int top = (y-cycle <= cycle ? cycle : y-cycle);
+                  int bottom = (y+cycle >= WORLD_HEIGHT-cycle-1 ? WORLD_HEIGHT-cycle-1 : y+cycle);
                   for (int y2 = top; y2 <= bottom; y2++)
                     {
                       for (int x2 = left; x2 <= right; x2++)
@@ -349,36 +218,68 @@ void HillsMapGenerator::generateMap(int cycles, HILL_DENSITY density)
     }
 }
 
-bool HillsMapGenerator::hasWaterNearby(unsigned int x, unsigned int y, unsigned int radius)
+void HillsMapGenerator::bufferVertex(GLfloat* vertices, int offset, Vertex vertex)
 {
-  int xl = x - radius;
-  if (xl <= 0)
-    xl = 0;
-  int xr = x + radius;
-  if (xr >= WORLD_WIDTH)
-    xr = WORLD_WIDTH;
-  int yt = y - radius;
-  if (yt <= 0)
-    yt = 0;
-  int yb = y + radius;
-  if (yb >= WORLD_HEIGHT)
-    yb = WORLD_HEIGHT;
-  for (int x1 = xl; x1 <= xr; x1++)
+  vertices[offset] =   vertex.posX;
+  vertices[offset+1] = vertex.posY;
+  vertices[offset+2] = vertex.posZ;
+  vertices[offset+3] = vertex.texCoordX;
+  vertices[offset+4] = vertex.texCoordY;
+  vertices[offset+5] = vertex.normalX;
+  vertices[offset+6] = vertex.normalY;
+  vertices[offset+7] = vertex.normalZ;
+  ++verticesToDraw;
+}
+
+void HillsMapGenerator::setupGLBufferAttributes()
+{
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
+}
+
+void HillsMapGenerator::smoothNormals()
+{
+  //calculate normals for smooth shading
+  //nX where X is a relative direction for n0 to nearby polygon expressed as a clockface number
+  for (unsigned int y = 1; y < map.size() - 1; y++)
     {
-      for (int y1 = yt; y1 <= yb; y1++)
+      for (unsigned int x = 1; x < map[0].size() - 1; x++)
+        {
+          glm::vec3 n0 = glm::normalize(glm::vec3(map[y][x-1] - map[y][x], 1, map[y-1][x] - map[y][x]));
+          glm::vec3 n3 = glm::normalize(glm::vec3(map[y][x] - map[y][x+1], 1, map[y-1][x+1] - map[y][x+1]));
+          glm::vec3 n6 = glm::normalize(glm::vec3(map[y+1][x-1] - map[y+1][x], 1, map[y][x] - map[y+1][x]));
+          glm::vec3 n1= glm::normalize(glm::vec3(map[y-1][x] - map[y-1][x+1], 1, map[y-1][x] - map[y][x]));
+          glm::vec3 n4 = glm::normalize(glm::vec3(map[y][x] - map[y][x+1], 1, map[y][x] - map[y+1][x]));
+          glm::vec3 n9 = glm::normalize(glm::vec3(map[y][x-1] - map[y][x], 1, map[y][x-1] - map[y+1][x-1]));
+          glm::vec3 avgNormal = glm::normalize(n0 + n1 + n3 + n4 + n6 + n9);
+          normalMap[y][x] = avgNormal;
+        }
+    }
+}
+
+bool HillsMapGenerator::hasWaterNearby(int x, int y, int radius)
+{
+  int xLeft = (x-radius <= 0 ? 0 : x-radius);
+  int xRight = (x+radius >= WORLD_WIDTH ? WORLD_WIDTH : x+radius);
+  int yTop = (y-radius <= 0 ? 0 : y-radius);
+  int yBottom = (y+radius >= WORLD_HEIGHT ? WORLD_HEIGHT : y+radius);
+  for (int x1 = xLeft; x1 <= xRight; x1++)
+    {
+      for (int y1 = yTop; y1 <= yBottom; y1++)
         {
           if (waterMap[y1][x1] != 0)
-            {
-              return true;
-            }
+            return true;
         }
     }
   return false;
 }
 
-void HillsMapGenerator::compressMap(float threshold_percent, float ratio)
+void HillsMapGenerator::compressMap(float thresholdValue, float ratio)
 {
-  float thresholdValue = maxHeight * threshold_percent;
   for (auto& row : map)
     for (auto& height : row)
       {
@@ -397,9 +298,7 @@ void HillsMapGenerator::updateMaxHeight()
       for (int x = 1; x < WORLD_WIDTH - 1; x++)
         {
           if (map[y][x] > newMaxHeight)
-            {
-              newMaxHeight = map[y][x];
-            }
+            newMaxHeight = map[y][x];
         }
     }
   maxHeight = newMaxHeight;
@@ -435,7 +334,7 @@ void HillsMapGenerator::removeMapPlateaus(float plateauHeight)
     }
 }
 
-void HillsMapGenerator::smoothMapHeightChunks(float baseWeight, float evenWeight, float diagonalWeight)
+void HillsMapGenerator::smoothMapHeightChunks(float selfWeight, float sideWeight, float diagonalWeight)
 {
   std::vector<std::vector<float>> hillMapSmoothed;
   initializeMap(hillMapSmoothed);
@@ -446,11 +345,11 @@ void HillsMapGenerator::smoothMapHeightChunks(float baseWeight, float evenWeight
           if (map[y][x] == 0)
             continue;
           float smoothedHeight =
-                map[y][x] * baseWeight
-              + map[y-1][x] * evenWeight
-              + map[y+1][x] * evenWeight
-              + map[y][x-1] * evenWeight
-              + map[y][x+1] * evenWeight
+                map[y][x] * selfWeight
+              + map[y-1][x] * sideWeight
+              + map[y+1][x] * sideWeight
+              + map[y][x-1] * sideWeight
+              + map[y][x+1] * sideWeight
               + map[y-1][x-1] * diagonalWeight
               + map[y-1][x+1] * diagonalWeight
               + map[y+1][x-1] * diagonalWeight
@@ -467,22 +366,18 @@ void HillsMapGenerator::removeOrphanHills()
     {
       for (int x = 1; x < WORLD_WIDTH; x++)
         {
-          if (map[y][x] != 0.0f && isOrphanAt(x, y))
+          if (map[y][x] != 0.0f &&
+              map[y-1][x-1] == 0 &&
+              map[y-1][x] == 0 &&
+              map[y-1][x+1] == 0 &&
+              map[y][x-1] == 0 &&
+              map[y][x+1] == 0 &&
+              map[y+1][x-1] == 0 &&
+              map[y+1][x] == 0 &&
+              map[y+1][x+1] == 0)
             map[y][x] = 0.0f;
         }
     }
-}
-
-bool HillsMapGenerator::isOrphanAt(int x, int y)
-{
-  return (map[y-1][x-1] == 0 &&
-          map[y-1][x] == 0 &&
-          map[y-1][x+1] == 0 &&
-          map[y][x-1] == 0 &&
-          map[y][x+1] == 0 &&
-          map[y+1][x-1] == 0 &&
-          map[y+1][x] == 0 &&
-          map[y+1][x+1] == 0);
 }
 
 void HillsMapGenerator::smoothMapSinks()
@@ -524,3 +419,10 @@ void HillsMapGenerator::smoothMapSinks()
         }
     }
 }
+
+HillsMapGenerator::Vertex::Vertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal)
+  :
+    posX(pos.x - HALF_WORLD_WIDTH), posY(pos.y), posZ(pos.z - HALF_WORLD_HEIGHT),
+    texCoordX(texCoords.x), texCoordY(texCoords.y),
+    normalX(normal.x), normalY(normal.y), normalZ(normal.z)
+{}

@@ -76,8 +76,7 @@ void Game::setupVariables()
 void Game::prepareTerrain()
 {
   waterMapGenerator->prepareMap();
-  hillMapGenerator->prepareMap();
-  hillMapGenerator->fillBufferData();
+  hillMapGenerator->setup();
   baseMapGenerator->setup();
   waterMapGenerator->postPrepareMap();
   waterMapGenerator->fillBufferData();

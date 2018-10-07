@@ -12,7 +12,6 @@ PlantGenerator::PlantGenerator()
 
 PlantGenerator::~PlantGenerator()
 {
-  delete[] numPlants;
   for (size_t i = 0; i < matrices.size(); ++i)
     delete[] matrices[i];
 }
@@ -102,8 +101,7 @@ void PlantGenerator::deserialize(std::ifstream &input)
 
 void PlantGenerator::updateMatrices(std::vector<glm::mat4 *> &newMatrices, unsigned int *numAllTrees)
 {
-  delete[] numPlants;
-  numPlants = new unsigned int[newMatrices.size()];
+  numPlants.reset(new unsigned int[newMatrices.size()]);
   for (unsigned int i = 0; i < matrices.size(); i++)
     delete[] matrices[i];
   matrices.clear();
@@ -138,9 +136,7 @@ std::vector<std::vector<glm::mat4> > PlantGenerator::substituteMatricesStorage()
 
 void PlantGenerator::loadMatrices(std::vector<std::vector<glm::mat4> > &newMatrices)
 {
-  if (numPlants)
-    delete[] numPlants;
-  numPlants = new unsigned int[models.size()];
+  numPlants.reset(new unsigned int[newMatrices.size()]);
   for (unsigned int i = 0; i < newMatrices.size(); i++)
     {
       matrices.emplace_back(new glm::mat4[newMatrices[i].size()]);

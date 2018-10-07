@@ -45,8 +45,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   waterGenerator->deserialize(input);
   plantGeneratorFacade->deserialize(input);
 
-  hillGenerator->createTiles();
-  hillGenerator->fillBufferData();
+  hillGenerator->createTilesAndBufferData();
   baseGenerator->getSquareTiles().clear();
   baseGenerator->getCellTiles().clear();
   baseGenerator->setup();

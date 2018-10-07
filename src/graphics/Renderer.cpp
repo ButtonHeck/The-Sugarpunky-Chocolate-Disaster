@@ -19,7 +19,7 @@ void Renderer::drawHills(bool useFC, const std::shared_ptr<HillsMapGenerator> ge
         glEnable(GL_RASTERIZER_DISCARD);
         glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, tfb);
         glBeginTransformFeedback(GL_TRIANGLES);
-        glDrawElements(GL_TRIANGLES, 6 * generator->getTiles().size(), GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, generator->getVerticesToDraw());
         glEndTransformFeedback();
         glDisable(GL_RASTERIZER_DISCARD);
       }
@@ -34,14 +34,14 @@ void Renderer::drawHills(bool useFC, const std::shared_ptr<HillsMapGenerator> ge
     {
       nofc.use();
       glBindVertexArray(generator->getVAO());
-      glDrawElements(GL_TRIANGLES, 6 * generator->getTiles().size(), GL_UNSIGNED_INT, 0);
+      glDrawArrays(GL_TRIANGLES, 0, generator->getVerticesToDraw());
     }
 }
 
 void Renderer::drawHillsDepthmap(const std::shared_ptr<HillsMapGenerator> generator)
 {
   glBindVertexArray(generator->getVAO());
-  glDrawElements(GL_TRIANGLES, 6 * generator->getTiles().size(), GL_UNSIGNED_INT, 0);
+  glDrawArrays(GL_TRIANGLES, 0, generator->getVerticesToDraw());
 }
 
 void Renderer::drawShore(const std::shared_ptr<BaseMapGenerator> generator)

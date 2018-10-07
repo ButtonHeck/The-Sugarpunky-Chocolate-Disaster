@@ -57,6 +57,7 @@ void BaseMapGenerator::setup()
   tiles.shrink_to_fit();
   splitCellChunks(CHUNK_SIZE);
   splitShoreChunks(CHUNK_SIZE);
+  shoreVerticesToDraw = 0;
   fillShoreBufferData();
   fillSquareBufferData();
   fillCellBufferData();

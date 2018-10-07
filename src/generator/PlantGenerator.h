@@ -2,6 +2,7 @@
 #define PLANTGENERATOR_H
 #include <vector>
 #include <fstream>
+#include <memory>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -26,7 +27,7 @@ protected:
   void loadMatrices(std::vector<std::vector<glm::mat4>>& newMatrices);
   std::vector<Model> models;
   std::vector<glm::mat4*> matrices;
-  unsigned int* numPlants = nullptr;
+  std::unique_ptr<unsigned int[]> numPlants;
   std::vector<ModelChunk> chunks;
   std::default_random_engine randomizer;
 };
