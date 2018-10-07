@@ -24,8 +24,8 @@ public:
   GLuint getTransformFeedback() const;
   size_t getVerticesToDraw() const;
 private:
-  struct Vertex{
-    Vertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal);
+  struct HillVertex{
+    HillVertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal);
     float posX, posY, posZ;
     float texCoordX, texCoordY;
     float normalX, normalY, normalZ;
@@ -40,7 +40,7 @@ private:
   void generateMap(int cycles, float density);
   void generateKernel(int cycles, float density);
   void fattenKernel(int cycles);
-  void bufferVertex(GLfloat* vertices, int offset, Vertex vertex);
+  void bufferVertex(GLfloat* vertices, int offset, HillVertex vertex);
   void fillBufferData();
   void setupGLBufferAttributes();
   void smoothNormals();

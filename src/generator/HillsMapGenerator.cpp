@@ -82,13 +82,13 @@ void HillsMapGenerator::fillBufferData()
       float texCoordYOffset = ((WORLD_HEIGHT - tile.mapY) % 2) * 0.5f;
       int x = tile.mapX, y = tile.mapY;
 
-      Vertex lowLeft(glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY),
+      HillVertex lowLeft(glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY),
                 glm::vec2(texCoordXOffset, texCoordYOffset), normalMap[y][x-1]);
-      Vertex lowRight(glm::vec3(tile.mapX, tile.lowRight, tile.mapY),
+      HillVertex lowRight(glm::vec3(tile.mapX, tile.lowRight, tile.mapY),
                 glm::vec2(0.5f + texCoordXOffset, texCoordYOffset), normalMap[y][x]);
-      Vertex upRight(glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1),
+      HillVertex upRight(glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1),
                 glm::vec2(0.5f + texCoordXOffset, 0.5f + texCoordYOffset), normalMap[y-1][x]);
-      Vertex upLeft(glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1),
+      HillVertex upLeft(glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1),
                 glm::vec2(texCoordXOffset, 0.5f + texCoordYOffset), normalMap[y-1][x-1]);
       if (!verticesCrossed)
         {
@@ -218,7 +218,7 @@ void HillsMapGenerator::fattenKernel(int cycles)
     }
 }
 
-void HillsMapGenerator::bufferVertex(GLfloat* vertices, int offset, Vertex vertex)
+void HillsMapGenerator::bufferVertex(GLfloat* vertices, int offset, HillVertex vertex)
 {
   vertices[offset] =   vertex.posX;
   vertices[offset+1] = vertex.posY;
@@ -420,7 +420,7 @@ void HillsMapGenerator::smoothMapSinks()
     }
 }
 
-HillsMapGenerator::Vertex::Vertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal)
+HillsMapGenerator::HillVertex::HillVertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal)
   :
     posX(pos.x - HALF_WORLD_WIDTH), posY(pos.y), posZ(pos.z - HALF_WORLD_HEIGHT),
     texCoordX(texCoords.x), texCoordY(texCoords.y),

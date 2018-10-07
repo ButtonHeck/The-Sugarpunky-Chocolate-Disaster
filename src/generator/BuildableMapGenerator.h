@@ -20,6 +20,7 @@ public:
   GLuint& getNumInstances();
   GLuint& getSelectedTileVAO();
 private:
+  void setupVAO(GLuint& vao, GLuint& vbo, GLuint& ebo);
   void fillBufferData();
   std::shared_ptr<BaseMapGenerator>& baseMapGenerator;
   std::shared_ptr<HillsMapGenerator>& hillsGenerator;

@@ -14,6 +14,8 @@ PlantGenerator::~PlantGenerator()
 {
   for (size_t i = 0; i < matrices.size(); ++i)
     delete[] matrices[i];
+  for (Model& model : models)
+    model.cleanup();
 }
 
 void PlantGenerator::setupModelChunks()

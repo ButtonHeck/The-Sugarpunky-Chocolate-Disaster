@@ -15,6 +15,7 @@ class Model
 {
 public:
   Model(const std::string& path);
+  void cleanup();
   static void bindTextureLoader(TextureLoader& textureLoader);
   void loadModel(const std::string& path);
   void draw(bool modelRenderOptimize, bool bindTexture, bool updateIndirect);

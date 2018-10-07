@@ -39,6 +39,7 @@ class Mesh
 {
 public:
   Mesh(std::vector<Vertex> vertices, std::vector<Texture> textures, std::vector<GLuint> indices);
+  void cleanup();
   void setupMesh();
   void setupInstances(glm::mat4* models, unsigned int numModels);
   void draw(bool useCulling, bool bindTexture, bool updateIndirect);

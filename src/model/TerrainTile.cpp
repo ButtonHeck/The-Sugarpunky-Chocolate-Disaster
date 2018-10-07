@@ -9,6 +9,4 @@ TerrainTile::TerrainTile(int x, int y, float lowLeft, float lowRight, float uppe
     upperRight(upperRight),
     upperLeft(upperLeft),
     orderCrossed(orderCrossed)
-{
-
-}
+{}

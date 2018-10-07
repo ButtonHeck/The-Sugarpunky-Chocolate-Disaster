@@ -21,9 +21,7 @@ void MapGenerator::initializeMap(std::vector<std::vector<float>>& map)
   map.clear();
   map.reserve(WORLD_HEIGHT + 1);
   for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
-    {
-      map.emplace_back(std::vector<float>(WORLD_WIDTH + 1, 0));
-    }
+    map.emplace_back(std::vector<float>(WORLD_WIDTH + 1, 0));
 }
 
 void MapGenerator::resetAllGLBuffers()
@@ -67,9 +65,7 @@ void MapGenerator::createTiles(bool flat, bool createOnZeroTiles, std::vector<st
                       ul = map[y][x];
                   }
                 else
-                  {
-                    ll = lr = ur = ul = map[y][x];
-                  }
+                  ll = lr = ur = ul = map[y][x];
                 tiles.emplace_back(x, y, ll, lr, ur, ul);
               }
         }
@@ -106,9 +102,7 @@ void MapGenerator::serialize(std::ofstream &output)
   for (std::vector<float>& row : map)
     {
       for (float& value : row)
-        {
-          output << value << " ";
-        }
+        output << value << " ";
     }
 }
 
@@ -117,8 +111,6 @@ void MapGenerator::deserialize(std::ifstream &input)
   for (std::vector<float>& row : map)
     {
       for (float& value : row)
-        {
-          input >> value;
-        }
+        input >> value;
     }
 }

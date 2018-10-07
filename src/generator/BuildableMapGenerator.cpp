@@ -53,19 +53,7 @@ void BuildableMapGenerator::setup(std::shared_ptr<BaseMapGenerator> &baseMapGene
 
 void BuildableMapGenerator::fillBufferData()
 {
-  glBindVertexArray(vao);
-  constexpr GLfloat CELL_VERTICES[12] = {
-       0.05f, 0.01f,  -0.05f,
-       0.95f, 0.01f,  -0.05f,
-       0.95f, 0.01f,  -0.95f,
-       0.05f, 0.01f,  -0.95f
-  };
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(CELL_VERTICES), CELL_VERTICES, GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+  setupVAO(vao, vbo, ebo);
   numInstances = tiles.size();
   std::unique_ptr<glm::mat4[]> instanceModels(new glm::mat4[numInstances]);
   for (unsigned int i = 0; i < tiles.size(); i++)
@@ -85,13 +73,7 @@ void BuildableMapGenerator::fillBufferData()
     }
   resetAllGLBuffers();
 
-  glBindVertexArray(selectedVAO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, selectedEBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, selectedVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(CELL_VERTICES), CELL_VERTICES, GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+  setupVAO(selectedVAO, selectedVBO, selectedEBO);
   resetAllGLBuffers();
 }
 
@@ -103,4 +85,21 @@ GLuint &BuildableMapGenerator::getNumInstances()
 GLuint &BuildableMapGenerator::getSelectedTileVAO()
 {
   return selectedVAO;
+}
+
+void BuildableMapGenerator::setupVAO(GLuint &vao, GLuint &vbo, GLuint &ebo)
+{
+  constexpr static GLfloat CELL_VERTICES[12] = {
+       0.05f, 0.01f,  -0.05f,
+       0.95f, 0.01f,  -0.05f,
+       0.95f, 0.01f,  -0.95f,
+       0.05f, 0.01f,  -0.95f
+  };
+  glBindVertexArray(vao);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(CELL_VERTICES), CELL_VERTICES, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
 }

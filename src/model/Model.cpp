@@ -6,6 +6,12 @@ Model::Model(const std::string& path)
   loadModel(std::string(MODELS_DIR + path));
 }
 
+void Model::cleanup()
+{
+  for (Mesh& mesh : meshes)
+    mesh.cleanup();
+}
+
 TextureLoader* Model::textureLoader;
 void Model::bindTextureLoader(TextureLoader &textureLoader)
 {
@@ -17,9 +23,7 @@ void Model::loadModel(const std::string &path)
   Assimp::Importer importer;
   const aiScene* scene = importer.ReadFile(path, aiProcess_CalcTangentSpace | aiProcess_FlipUVs | aiProcess_Triangulate);
   if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
-    {
-      std::cerr << "Error while loading Assimp" << importer.GetErrorString() << std::endl;
-    }
+    std::cerr << "Error while loading Assimp" << importer.GetErrorString() << std::endl;
   directory = path.substr(0, path.find_last_of('/'));
   processNode(scene->mRootNode, scene);
 }
@@ -47,9 +51,7 @@ void Model::processNode(aiNode *node, const aiScene* scene)
       meshes.emplace_back(std::move(processMesh(mesh, scene)));
     }
   for (unsigned int i = 0; i < node->mNumChildren; i++)
-    {
-      processNode(node->mChildren[i], scene);
-    }
+    processNode(node->mChildren[i], scene);
 }
 
 void Model::loadInstances(glm::mat4 *models, unsigned int numModels)
