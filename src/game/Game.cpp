@@ -75,10 +75,10 @@ void Game::setupVariables()
 
 void Game::prepareTerrain()
 {
-  waterMapGenerator->prepareMap();
+  waterMapGenerator->setup();
   hillMapGenerator->setup();
   baseMapGenerator->setup();
-  waterMapGenerator->postPrepareMap();
+  waterMapGenerator->setupConsiderTerrain();
   waterMapGenerator->fillBufferData();
   buildableMapGenerator->setup(baseMapGenerator, hillMapGenerator);
   plantGeneratorFacade->setup(baseMapGenerator->getMap(), hillMapGenerator->getMap());
@@ -94,7 +94,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   if (options.get(OPT_ANIMATE_WATER))
     {
       BENCHMARK("Water: buffer animation frame", true);
-      waterMapGenerator->bufferVertices();
+      waterMapGenerator->updateVerticesBuffer();
     }
 
   //hills rendering
@@ -397,7 +397,7 @@ void Game::setupThreads()
 #ifdef _DEBUG
                   waterAnimatorIsWorking = false;
 #endif
-                  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                  std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
               std::this_thread::yield();
             }

@@ -29,7 +29,6 @@ public:
           {
             BenchmarkTimer::printBenchmarksPerFrame(updateCount, fps);
             BenchmarkTimer::clearBenchmarksPerFrameValues();
-            WaterMapGenerator::_setWaterAnimationBenchmarkPassThrough(false);
           }
         frames = 0;
         ++updateCount;

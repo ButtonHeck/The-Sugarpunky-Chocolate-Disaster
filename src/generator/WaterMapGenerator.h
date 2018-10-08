@@ -2,6 +2,7 @@
 #define WATERMAPGENERATOR_H
 #include "MapGenerator.h"
 #include <GLFW/glfw3.h>
+#include <memory>
 #include "game/Options.h"
 #include "game/Settings.h"
 #include "timer/BenchmarkTimer.h"
@@ -12,29 +13,46 @@ class WaterMapGenerator : public MapGenerator
 public:
   WaterMapGenerator(Shader& waterShader);
   ~WaterMapGenerator();
-  void prepareMap();
-  void postPrepareMap();
+  void setup();
+  void setupConsiderTerrain();
   void fillBufferData();
-  void bufferVertices();
-  GLfloat* getHeightOffsets();
+  void updateVerticesBuffer();
   void updateAnimationFrame(Options& options);
-  constexpr static int WATER_HEIGHT_OFFSETS_SIZE = NUM_TILES + WORLD_WIDTH * 2;
   GLuint getCulledVAO() const;
   GLuint getTransformFeedback() const;
-  static void _setWaterAnimationBenchmarkPassThrough(bool passThru);
 private:
+  struct WaterVertex
+  {
+    WaterVertex(glm::vec3 position, glm::vec3 normal);
+    float posX, posY, posZ;
+    float normalX, normalY, normalZ;
+  };
+  void bufferVertex(GLfloat* vertices, int offset, WaterVertex vertex);
+  void setupGLBufferAttributes();
   GLuint culledVAO = 0, culledVBO = 0, TFBO = 0;
   Shader& waterShader;
   size_t numVertices;
-  GLfloat* vertices = nullptr;
-  GLfloat* waterHeightOffsets = nullptr; //a bit overhead, because all we use is the part where we have water...
-  //also, we don't have to init waterHeightOffsets, because we update its data every frame
-  void generateMap(int shoreSizeBase, float waterLevel, unsigned int &numWaterTiles);
-  void addWaterNearbyBaseTerrain();
-  void fillSharpTerrainWithWater();
-  void liftWaterLevel(float liftValue);
+  std::unique_ptr<GLfloat[]> vertices;
+  constexpr static int WATER_HEIGHT_OFFSETS_SIZE = NUM_TILES + WORLD_WIDTH * 2;
+  std::unique_ptr<GLfloat[]> waterHeightOffsets;
+  void generateMap(int shoreSizeBase, unsigned int &numWaterTiles);
+  void addWaterNearbyTerrain();
+  enum DIRECTION : int {
+      UP = 0, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, UP_LEFT
+  };
+  void setNewDirection(int x, int y,
+                unsigned int& numTiles,
+                int &numCurveChanges,
+                unsigned int &curveDistanceStep,
+                unsigned int &curveMaxDistance,
+                DIRECTION &dir, DIRECTION limit1, DIRECTION limit2);
+  void fattenKernel(int x, int y,
+                    int shoreSizeBase,
+                    unsigned int& numTiles,
+                    int &riverTileCounter,
+                    int &shoreSizeOffset,
+                    bool &shoreSizeIncrease);
   std::vector<std::vector<float>> postProcessMap;
-  static bool _WATER_ANIMATION_BENCHMARK_PASS_THROUGH;
 };
 
 #endif // WATERMAPGENERATOR_H

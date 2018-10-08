@@ -49,7 +49,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   baseGenerator->getSquareTiles().clear();
   baseGenerator->getCellTiles().clear();
   baseGenerator->setup();
-  waterGenerator->postPrepareMap();
+  waterGenerator->setupConsiderTerrain();
   waterGenerator->fillBufferData();
 
   camera.deserialize(input);

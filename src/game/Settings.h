@@ -9,10 +9,8 @@
 //benchmarking
 #ifdef _DEBUG
 #define BENCHMARK(benchmarkName, perFrame) BenchmarkTimer b(benchmarkName, perFrame);
-#define BENCHMARK_PASS_CHECK(benchmarkName, perFrame, passThru) BenchmarkTimer b(benchmarkName, perFrame, passThru);
 #else
 #define BENCHMARK(dont, care) //noop
-#define BENCHMARK_PASS_CHECK(Feed, me, weird) //things
 #endif
 
 //resource loading related
