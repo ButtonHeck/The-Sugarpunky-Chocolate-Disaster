@@ -47,26 +47,20 @@ void MapGenerator::createTiles(bool flat, bool createOnZeroTiles, std::vector<st
               toCreate = map[y][x] != 0;
             if (toCreate || createOnZeroTiles)
               {
-                float ll;
-                float lr;
-                float ur;
-                float ul;
+                float lowLeft;
+                float lowRight;
+                float upRight;
+                float upLeft;
                 if (!flat)
                   {
-                    ll = map[y][x-1] + offsetY;
-                    if (ll == TILE_NO_RENDER_VALUE)
-                      ll = map[y][x];
-                    lr = map[y][x] + offsetY;
-                    ur = map[y-1][x] + offsetY;
-                    if (ur == TILE_NO_RENDER_VALUE)
-                      ur = map[y][x];
-                    ul = map[y-1][x-1] + offsetY;
-                    if (ul == TILE_NO_RENDER_VALUE)
-                      ul = map[y][x];
+                    lowLeft = (map[y][x-1] + offsetY == TILE_NO_RENDER_VALUE ? map[y][x] : map[y][x-1] + offsetY);
+                    lowRight = map[y][x] + offsetY;
+                    upRight = (map[y-1][x] + offsetY == TILE_NO_RENDER_VALUE ? map[y][x] : map[y-1][x] + offsetY);
+                    upLeft = (map[y-1][x-1] + offsetY == TILE_NO_RENDER_VALUE ? map[y][x] : map[y-1][x-1] + offsetY);
                   }
                 else
-                  ll = lr = ur = ul = map[y][x];
-                tiles.emplace_back(x, y, ll, lr, ur, ul);
+                  lowLeft = lowRight = upRight = upLeft = map[y][x];
+                tiles.emplace_back(x, y, lowLeft, lowRight, upRight, upLeft);
               }
         }
     }
