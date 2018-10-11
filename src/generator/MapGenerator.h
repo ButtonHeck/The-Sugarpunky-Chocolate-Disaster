@@ -6,12 +6,15 @@
 #include "model/TerrainTile.h"
 #include "game/Settings.h"
 
+void initializeMap(std::vector<std::vector<float>>& map);
+void smoothMapHeightChunks(std::vector<std::vector<float>>& map, float selfWeight, float evenWeight, float diagonalWeight);
+void smoothNormals(std::vector<std::vector<float>>& map, std::vector<std::vector<glm::vec3>>& normalMap);
+
 class MapGenerator
 {
 public:
   MapGenerator();
   virtual ~MapGenerator();
-  void initializeMap(std::vector<std::vector<float>>& map);
   void createTiles(bool flat, bool createOnZeroTiles, std::vector<std::vector<float>>& map, float offsetY);
   std::vector<std::vector<float>>& getMap();
   std::vector<TerrainTile>& getTiles();

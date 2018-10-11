@@ -286,9 +286,8 @@ void Game::loop()
         }
       waterNeedNewKeyFrame = false; //explicitly bypass water animation frame update routine
       baseMapGenerator.reset(new BaseMapGenerator());
-      waterMapGenerator->initializeMap(waterMapGenerator->getMap());
-      hillMapGenerator->initializeMap(hillMapGenerator->getMap());
-
+      initializeMap(waterMapGenerator->getMap());
+      initializeMap(hillMapGenerator->getMap());
       prepareTerrain();
       saveLoadManager->update(baseMapGenerator,
                               shoreGenerator,

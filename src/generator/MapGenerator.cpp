@@ -16,14 +16,6 @@ MapGenerator::~MapGenerator()
   glDeleteBuffers(1, &ebo);
 }
 
-void MapGenerator::initializeMap(std::vector<std::vector<float>>& map)
-{
-  map.clear();
-  map.reserve(WORLD_HEIGHT + 1);
-  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
-    map.emplace_back(std::vector<float>(WORLD_WIDTH + 1, 0));
-}
-
 void MapGenerator::resetAllGLBuffers()
 {
   glBindVertexArray(0);
@@ -106,5 +98,67 @@ void MapGenerator::deserialize(std::ifstream &input)
     {
       for (float& value : row)
         input >> value;
+    }
+}
+
+void initializeMap(std::vector<std::vector<float>>& map)
+{
+  map.clear();
+  map.reserve(WORLD_HEIGHT + 1);
+  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
+    map.emplace_back(std::vector<float>(WORLD_WIDTH + 1, 0));
+}
+
+
+void smoothMapHeightChunks(std::vector<std::vector<float> > &map, float selfWeight, float evenWeight, float diagonalWeight)
+{
+  std::vector<std::vector<float>> shoreMapSmoothed;
+  initializeMap(shoreMapSmoothed);
+  for (unsigned int y = 1; y < WORLD_HEIGHT; y++)
+    {
+      for (unsigned int x = 1; x < WORLD_WIDTH; x++)
+        {
+          if (map[y][x] == 0)
+            continue;
+          float smoothedHeight =
+                map[y][x] * selfWeight
+              + map[y-1][x] * evenWeight
+              + map[y+1][x] * evenWeight
+              + map[y][x-1] * evenWeight
+              + map[y][x+1] * evenWeight
+              + map[y-1][x-1] * diagonalWeight
+              + map[y-1][x+1] * diagonalWeight
+              + map[y+1][x-1] * diagonalWeight
+              + map[y+1][x+1] * diagonalWeight;
+          shoreMapSmoothed[y][x] = smoothedHeight;
+        }
+    }
+  map.assign(shoreMapSmoothed.begin(), shoreMapSmoothed.end());
+}
+
+void smoothNormals(std::vector<std::vector<float> > &map, std::vector<std::vector<glm::vec3> > &normalMap)
+{
+  using glm::vec3;
+  normalMap.clear();
+  normalMap.reserve(WORLD_HEIGHT + 1);
+  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
+    {
+      vec3 emptyNormal(0.0f);
+      std::vector<vec3> emptyVec(WORLD_WIDTH + 1, emptyNormal);
+      normalMap.emplace_back(emptyVec);
+    }
+  for (unsigned int y = 1; y < map.size() - 1; y++)
+    {
+      for (unsigned int x = 1; x < map[0].size() - 1; x++)
+        {
+          vec3 n0 = glm::normalize(vec3(map[y][x-1] - map[y][x], 1, map[y-1][x] - map[y][x]));
+          vec3 n3 = glm::normalize(vec3(map[y][x] - map[y][x+1], 1, map[y-1][x+1] - map[y][x+1]));
+          vec3 n6 = glm::normalize(vec3(map[y+1][x-1] - map[y+1][x], 1, map[y][x] - map[y+1][x]));
+          vec3 n1= glm::normalize(vec3(map[y-1][x] - map[y-1][x+1], 1, map[y-1][x] - map[y][x]));
+          vec3 n4 = glm::normalize(vec3(map[y][x] - map[y][x+1], 1, map[y][x] - map[y+1][x]));
+          vec3 n9 = glm::normalize(vec3(map[y][x-1] - map[y][x], 1, map[y][x-1] - map[y+1][x-1]));
+          vec3 avgNormal = glm::normalize(n0 + n1 + n3 + n4 + n6 + n9);
+          normalMap[y][x] = avgNormal;
+        }
     }
 }

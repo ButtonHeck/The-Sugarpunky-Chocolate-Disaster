@@ -14,10 +14,10 @@ void ShoreGenerator::setup()
   for (unsigned int i = 0; i < 5; i++)
     {
       smoothMap();
-      float baseWeight = 0.5f - 0.02f * i;
-      float evenWeight = (1.0f - baseWeight) / 8.0f;
+      float selfWeight = 0.5f - 0.02f * i;
+      float evenWeight = (1.0f - selfWeight) / 8.0f;
       float diagonalWeight = evenWeight;
-      smoothMapHeightChunks(baseWeight, evenWeight, diagonalWeight);
+      smoothMapHeightChunks(map, selfWeight, evenWeight, diagonalWeight);
     }
   randomizeShore();
   compressMap(2.0f);
@@ -25,7 +25,7 @@ void ShoreGenerator::setup()
   removeUnderwaterTiles(SHORE_CLIP_LEVEL);
   createTiles();
   tiles.shrink_to_fit();
-  smoothNormals();
+  smoothNormals(map, normalMap);
   fillBufferData();
 }
 
@@ -78,32 +78,6 @@ void ShoreGenerator::smoothMap()
             map[y][x] += waterLevel * 0.5f;
         }
     }
-}
-
-void ShoreGenerator::smoothMapHeightChunks(float baseWeight, float evenWeight, float diagonalWeight)
-{
-  std::vector<std::vector<float>> shoreMapSmoothed;
-  initializeMap(shoreMapSmoothed);
-  for (unsigned int y = 1; y < WORLD_HEIGHT; y++)
-    {
-      for (unsigned int x = 1; x < WORLD_WIDTH; x++)
-        {
-          if (map[y][x] == 0)
-            continue;
-          float smoothedHeight =
-                map[y][x] * baseWeight
-              + map[y-1][x] * evenWeight
-              + map[y+1][x] * evenWeight
-              + map[y][x-1] * evenWeight
-              + map[y][x+1] * evenWeight
-              + map[y-1][x-1] * diagonalWeight
-              + map[y-1][x+1] * diagonalWeight
-              + map[y+1][x-1] * diagonalWeight
-              + map[y+1][x+1] * diagonalWeight;
-          shoreMapSmoothed[y][x] = smoothedHeight;
-        }
-    }
-  map.assign(shoreMapSmoothed.begin(), shoreMapSmoothed.end());
 }
 
 void ShoreGenerator::randomizeShore()
@@ -180,41 +154,14 @@ void ShoreGenerator::createTiles()
         {
           if (map[y][x] == TILE_NO_RENDER_VALUE)
             continue;
-          bool toCreate = map[y][x] != 0 || map[y-1][x] != 0 || map[y][x-1] != 0 || map[y-1][x-1] != 0;
-            if (toCreate)
-              {
-                float lowLeft = (map[y][x-1] == TILE_NO_RENDER_VALUE ? map[y][x] : map[y][x-1]);
-                float lowRight = map[y][x];
-                float upRight = (map[y-1][x] == TILE_NO_RENDER_VALUE ? map[y][x] : map[y-1][x]);
-                float upLeft = (map[y-1][x-1] == TILE_NO_RENDER_VALUE ? map[y][x] : map[y-1][x-1]);
-                tiles.emplace_back(x, y, lowLeft, lowRight, upRight, upLeft);
-              }
-        }
-    }
-}
-
-void ShoreGenerator::smoothNormals()
-{
-  shoreNormals.clear();
-  shoreNormals.reserve(WORLD_HEIGHT + 1);
-  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
-    {
-      glm::vec3 emptyNormal(0.0f);
-      std::vector<glm::vec3> emptyVec(WORLD_WIDTH + 1, emptyNormal);
-      shoreNormals.emplace_back(emptyVec);
-    }
-  for (unsigned int y = 1; y < map.size() - 1; y++)
-    {
-      for (unsigned int x = 1; x < map[0].size() - 1; x++)
-        {
-          glm::vec3 n0 = glm::normalize(glm::vec3(map[y][x-1] - map[y][x], 1, map[y-1][x] - map[y][x]));
-          glm::vec3 n3 = glm::normalize(glm::vec3(map[y][x] - map[y][x+1], 1, map[y-1][x+1] - map[y][x+1]));
-          glm::vec3 n6 = glm::normalize(glm::vec3(map[y+1][x-1] - map[y+1][x], 1, map[y][x] - map[y+1][x]));
-          glm::vec3 n1= glm::normalize(glm::vec3(map[y-1][x] - map[y-1][x+1], 1, map[y-1][x] - map[y][x]));
-          glm::vec3 n4 = glm::normalize(glm::vec3(map[y][x] - map[y][x+1], 1, map[y][x] - map[y+1][x]));
-          glm::vec3 n9 = glm::normalize(glm::vec3(map[y][x-1] - map[y][x], 1, map[y][x-1] - map[y+1][x-1]));
-          glm::vec3 avgNormal = glm::normalize(n0 + n1 + n3 + n4 + n6 + n9);
-          shoreNormals[y][x] = avgNormal;
+          if (map[y][x] != 0 || map[y-1][x] != 0 || map[y][x-1] != 0 || map[y-1][x-1] != 0)
+            {
+              float lowLeft = (map[y][x-1] == TILE_NO_RENDER_VALUE ? map[y][x] : map[y][x-1]);
+              float lowRight = map[y][x];
+              float upRight = (map[y-1][x] == TILE_NO_RENDER_VALUE ? map[y][x] : map[y-1][x]);
+              float upLeft = (map[y-1][x-1] == TILE_NO_RENDER_VALUE ? map[y][x] : map[y-1][x-1]);
+              tiles.emplace_back(x, y, lowLeft, lowRight, upRight, upLeft);
+            }
         }
     }
 }
@@ -228,10 +175,12 @@ void ShoreGenerator::fillBufferData()
       TerrainTile& tile = tiles[i];
       int offset = i * 48;
       int x = tile.mapX, y = tile.mapY;
-      ShoreVertex lowLeft(glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY), glm::vec2(0.0f), shoreNormals[y][x-1]);
-      ShoreVertex lowRight(glm::vec3(tile.mapX, tile.lowRight, tile.mapY), glm::vec2(1.0f, 0.0f), shoreNormals[y][x]);
-      ShoreVertex upRight(glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1), glm::vec2(1.0f), shoreNormals[y-1][x]);
-      ShoreVertex upLeft(glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1), glm::vec2(0.0f, 1.0f), shoreNormals[y-1][x-1]);
+
+      ShoreVertex lowLeft(glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY), glm::vec2(0.0f), normalMap[y][x-1]);
+      ShoreVertex lowRight(glm::vec3(tile.mapX, tile.lowRight, tile.mapY), glm::vec2(1.0f, 0.0f), normalMap[y][x]);
+      ShoreVertex upRight(glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1), glm::vec2(1.0f), normalMap[y-1][x]);
+      ShoreVertex upLeft(glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1), glm::vec2(0.0f, 1.0f), normalMap[y-1][x-1]);
+
       bufferVertex(vertices.get(), offset, lowLeft); //ll1
       bufferVertex(vertices.get(), offset+8, lowRight); //lr1
       bufferVertex(vertices.get(), offset+16, upRight); //ur1

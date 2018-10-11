@@ -21,17 +21,15 @@ private:
   };
   void generateMap();
   void smoothMap();
-  void smoothMapHeightChunks(float baseWeight, float evenWeight, float diagonalWeight);
   void randomizeShore();
   void correctMapAtEdges();
   void compressMap(float ratio);
   void removeUnderwaterTiles(float thresholdValue);
   void createTiles();
-  void smoothNormals();
   void fillBufferData();
   void bufferVertex(GLfloat* vertices, int offset, ShoreVertex vertex);
   std::vector<std::vector<float>>& waterMap;
-  std::vector<std::vector<glm::vec3>> shoreNormals;
+  std::vector<std::vector<glm::vec3>> normalMap;
   std::default_random_engine randomizer;
 };
 

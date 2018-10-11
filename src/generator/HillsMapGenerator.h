@@ -41,12 +41,10 @@ private:
   void bufferVertex(GLfloat* vertices, int offset, HillVertex vertex);
   void fillBufferData();
   void setupGLBufferAttributes();
-  void smoothNormals();
   bool hasWaterNearby(int x, int y, int radius);
   void compressMap(float thresholdPercent, float ratio);
   void updateMaxHeight();
   void removeMapPlateaus(float plateauHeight);
-  void smoothMapHeightChunks(float selfWeight, float sideWeight, float diagonalWeight);
   void removeOrphanHills();
   void smoothMapSinks();
 };

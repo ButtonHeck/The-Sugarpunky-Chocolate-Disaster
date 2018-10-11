@@ -56,8 +56,8 @@ void Renderer::drawFlatTerrain(const std::shared_ptr<BaseMapGenerator> generator
 {
   glBindTextureUnit(TEX_FLAT, texture);
   //square chunks are better to render without FC
-  glBindVertexArray(generator->getSquareVAO());
-  glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0, generator->getNumSquareInstances());
+  glBindVertexArray(generator->getVAO());
+  glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0, generator->getTiles().size());
 
   //these ones should probably be FC-ed with multiDrawIndirect
   glBindVertexArray(generator->getCellVAO());

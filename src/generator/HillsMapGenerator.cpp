@@ -25,7 +25,7 @@ void HillsMapGenerator::setup()
   removeMapPlateaus(1.0f);
   for (unsigned int i = 0; i < 4; i++)
     {
-      smoothMapHeightChunks(0.6f, 0.05f, 0.05f);
+      smoothMapHeightChunks(map, 0.6f, 0.05f, 0.05f);
     }
   smoothMapSinks();
   createTilesAndBufferData();
@@ -40,18 +40,17 @@ void HillsMapGenerator::createTilesAndBufferData()
         {
           if (map[y][x] == TILE_NO_RENDER_VALUE)
             continue;
-          bool toCreate = map[y][x] != 0 || map[y-1][x] != 0 || map[y][x-1] != 0 || map[y-1][x-1] != 0;
-            if (toCreate)
-              {
-                float ll = map[y][x-1] + HILLS_OFFSET_Y;
-                float lr = map[y][x] + HILLS_OFFSET_Y;
-                float ur = map[y-1][x] + HILLS_OFFSET_Y;
-                float ul = map[y-1][x-1] + HILLS_OFFSET_Y;
-                tiles.emplace_back(x, y, ll, lr, ur, ul);
-              }
+          if (map[y][x] != 0 || map[y-1][x] != 0 || map[y][x-1] != 0 || map[y-1][x-1] != 0)
+            {
+              float ll = map[y][x-1] + HILLS_OFFSET_Y;
+              float lr = map[y][x] + HILLS_OFFSET_Y;
+              float ur = map[y-1][x] + HILLS_OFFSET_Y;
+              float ul = map[y-1][x-1] + HILLS_OFFSET_Y;
+              tiles.emplace_back(x, y, ll, lr, ur, ul);
+            }
         }
     }
-  smoothNormals();
+  smoothNormals(map, normalMap);
   tiles.shrink_to_fit();
   fillBufferData();
 }
@@ -226,32 +225,6 @@ void HillsMapGenerator::setupGLBufferAttributes()
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
 }
 
-void HillsMapGenerator::smoothNormals()
-{
-  normalMap.clear();
-  normalMap.reserve(WORLD_HEIGHT + 1);
-  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
-    {
-      glm::vec3 emptyNormal(0.0f);
-      std::vector<glm::vec3> emptyVec(WORLD_WIDTH + 1, emptyNormal);
-      normalMap.emplace_back(emptyVec);
-    }
-  for (unsigned int y = 1; y < map.size() - 1; y++)
-    {
-      for (unsigned int x = 1; x < map[0].size() - 1; x++)
-        {
-          glm::vec3 n0 = glm::normalize(glm::vec3(map[y][x-1] - map[y][x], 1, map[y-1][x] - map[y][x]));
-          glm::vec3 n3 = glm::normalize(glm::vec3(map[y][x] - map[y][x+1], 1, map[y-1][x+1] - map[y][x+1]));
-          glm::vec3 n6 = glm::normalize(glm::vec3(map[y+1][x-1] - map[y+1][x], 1, map[y][x] - map[y+1][x]));
-          glm::vec3 n1= glm::normalize(glm::vec3(map[y-1][x] - map[y-1][x+1], 1, map[y-1][x] - map[y][x]));
-          glm::vec3 n4 = glm::normalize(glm::vec3(map[y][x] - map[y][x+1], 1, map[y][x] - map[y+1][x]));
-          glm::vec3 n9 = glm::normalize(glm::vec3(map[y][x-1] - map[y][x], 1, map[y][x-1] - map[y+1][x-1]));
-          glm::vec3 avgNormal = glm::normalize(n0 + n1 + n3 + n4 + n6 + n9);
-          normalMap[y][x] = avgNormal;
-        }
-    }
-}
-
 bool HillsMapGenerator::hasWaterNearby(int x, int y, int radius)
 {
   int xLeft = (x-radius <= 0 ? 0 : x-radius);
@@ -297,7 +270,7 @@ void HillsMapGenerator::updateMaxHeight()
 
 void HillsMapGenerator::removeMapPlateaus(float plateauHeight)
 {
-  unsigned int yt, yb, xl, xr;
+  unsigned int yTop, yBottom, xLeft, xRight;
   for (unsigned int y = 1; y < WORLD_HEIGHT - 1; y++)
     {
       for (unsigned int x = 1; x < WORLD_WIDTH - 1; x++)
@@ -305,13 +278,13 @@ void HillsMapGenerator::removeMapPlateaus(float plateauHeight)
           if (map[y][x] == 0)
             continue;
           unsigned int plateauHeightNeighbourTiles = 0, neighboursLimit = 6;
-          yt = y - 1;
-          yb = y + 1;
-          xl = x - 1;
-          xr = x + 1;
-          for (auto y1 = yt; y1 <= yb; y1++)
+          yTop = y - 1;
+          yBottom = y + 1;
+          xLeft = x - 1;
+          xRight = x + 1;
+          for (auto y1 = yTop; y1 <= yBottom; y1++)
             {
-              for (auto x1 = xl; x1 <= xr; x1++)
+              for (auto x1 = xLeft; x1 <= xRight; x1++)
                 {
                   if (y1 == y && x1 == x)
                     continue;
@@ -323,32 +296,6 @@ void HillsMapGenerator::removeMapPlateaus(float plateauHeight)
             map[y][x] = 0;
         }
     }
-}
-
-void HillsMapGenerator::smoothMapHeightChunks(float selfWeight, float sideWeight, float diagonalWeight)
-{
-  std::vector<std::vector<float>> hillMapSmoothed;
-  initializeMap(hillMapSmoothed);
-  for (unsigned int y = 1; y < WORLD_HEIGHT - 1; y++)
-    {
-      for (unsigned int x = 1; x < WORLD_WIDTH - 1; x++)
-        {
-          if (map[y][x] == 0)
-            continue;
-          float smoothedHeight =
-                map[y][x] * selfWeight
-              + map[y-1][x] * sideWeight
-              + map[y+1][x] * sideWeight
-              + map[y][x-1] * sideWeight
-              + map[y][x+1] * sideWeight
-              + map[y-1][x-1] * diagonalWeight
-              + map[y-1][x+1] * diagonalWeight
-              + map[y+1][x-1] * diagonalWeight
-              + map[y+1][x+1] * diagonalWeight;
-          hillMapSmoothed[y][x] = smoothedHeight;
-        }
-    }
-  map.assign(hillMapSmoothed.begin(), hillMapSmoothed.end());
 }
 
 void HillsMapGenerator::removeOrphanHills()
@@ -378,22 +325,15 @@ void HillsMapGenerator::smoothMapSinks()
       for (unsigned int x = 1; x < WORLD_WIDTH; x++)
         {
           unsigned int higherNeighbours = 0;
-          if (map[y][x] < map[y-1][x-1])
-            ++higherNeighbours;
-          if (map[y][x] < map[y-1][x])
-            ++higherNeighbours;
-          if (map[y][x] < map[y-1][x+1])
-            ++higherNeighbours;
-          if (map[y][x] < map[y][x-1])
-            ++higherNeighbours;
-          if (map[y][x] < map[y][x+1])
-            ++higherNeighbours;
-          if (map[y][x] < map[y+1][x-1])
-            ++higherNeighbours;
-          if (map[y][x] < map[y+1][x])
-            ++higherNeighbours;
-          if (map[y][x] < map[y+1][x+1])
-            ++higherNeighbours;
+          for (int yOffset = -1; yOffset <= 1; yOffset++)
+            {
+              for (int xOffset = -1; xOffset <= 1; xOffset++)
+                {
+                  if (yOffset == 0 && xOffset == 0)
+                    continue;
+                  higherNeighbours += (map[y][x] < map[y+yOffset][x+xOffset] ? 1 : 0);
+                }
+            }
           if (higherNeighbours >= 6)
             {
               float avgHeight = map[y-1][x-1]
