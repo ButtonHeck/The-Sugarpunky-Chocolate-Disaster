@@ -25,6 +25,7 @@
 #include "graphics/Skybox.h"
 #include "graphics/TextureManager.h"
 #include "generator/UnderwaterQuadMapGenerator.h"
+#include "generator/ShoreGenerator.h"
 #include "model/Model.h"
 #include "timer/Timer.h"
 #include "timer/BenchmarkTimer.h"
@@ -70,6 +71,7 @@ private:
   std::shared_ptr<WaterMapGenerator> waterMapGenerator;
   std::shared_ptr<HillsMapGenerator> hillMapGenerator;
   std::shared_ptr<BaseMapGenerator> baseMapGenerator;
+  std::shared_ptr<ShoreGenerator> shoreGenerator;
   std::shared_ptr<BuildableMapGenerator> buildableMapGenerator;
   std::unique_ptr<SaveLoadManager> saveLoadManager;
   std::shared_ptr<PlantGeneratorFacade> plantGeneratorFacade;

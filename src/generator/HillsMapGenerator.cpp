@@ -33,16 +33,7 @@ void HillsMapGenerator::setup()
 
 void HillsMapGenerator::createTilesAndBufferData()
 {
-  verticesToDraw = 0;
   tiles.clear();
-  normalMap.clear();
-  normalMap.reserve(WORLD_HEIGHT + 1);
-  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
-    {
-      glm::vec3 emptyNormal(0.0f);
-      std::vector<glm::vec3> emptyVec(WORLD_WIDTH + 1, emptyNormal);
-      normalMap.emplace_back(emptyVec);
-    }
   for (unsigned int y = 1; y < map.size(); y++)
     {
       for (unsigned int x = 1; x < map[0].size(); x++)
@@ -150,11 +141,6 @@ GLuint HillsMapGenerator::getTransformFeedback() const
   return TFBO;
 }
 
-size_t HillsMapGenerator::getVerticesToDraw() const
-{
-  return verticesToDraw;
-}
-
 void HillsMapGenerator::generateMap(int cycles, float density)
 {
   generateKernel(cycles, density);
@@ -228,7 +214,6 @@ void HillsMapGenerator::bufferVertex(GLfloat* vertices, int offset, HillVertex v
   vertices[offset+5] = vertex.normalX;
   vertices[offset+6] = vertex.normalY;
   vertices[offset+7] = vertex.normalZ;
-  ++verticesToDraw;
 }
 
 void HillsMapGenerator::setupGLBufferAttributes()
@@ -243,8 +228,14 @@ void HillsMapGenerator::setupGLBufferAttributes()
 
 void HillsMapGenerator::smoothNormals()
 {
-  //calculate normals for smooth shading
-  //nX where X is a relative direction for n0 to nearby polygon expressed as a clockface number
+  normalMap.clear();
+  normalMap.reserve(WORLD_HEIGHT + 1);
+  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
+    {
+      glm::vec3 emptyNormal(0.0f);
+      std::vector<glm::vec3> emptyVec(WORLD_WIDTH + 1, emptyNormal);
+      normalMap.emplace_back(emptyVec);
+    }
   for (unsigned int y = 1; y < map.size() - 1; y++)
     {
       for (unsigned int x = 1; x < map[0].size() - 1; x++)

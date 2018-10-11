@@ -1,6 +1,7 @@
 #include "game/SaveLoadManager.h"
 
 SaveLoadManager::SaveLoadManager(std::shared_ptr<BaseMapGenerator>& baseGenerator,
+                                 std::shared_ptr<ShoreGenerator> &shoreGenerator,
                                  std::shared_ptr<HillsMapGenerator>& hillGenerator,
                                  std::shared_ptr<WaterMapGenerator>& waterGenerator,
                                  std::shared_ptr<BuildableMapGenerator>& buildableGenerator,
@@ -8,6 +9,7 @@ SaveLoadManager::SaveLoadManager(std::shared_ptr<BaseMapGenerator>& baseGenerato
                                  Camera& camera)
   :
     baseGenerator(baseGenerator),
+    shoreGenerator(shoreGenerator),
     hillGenerator(hillGenerator),
     waterGenerator(waterGenerator),
     buildableGenerator(buildableGenerator),
@@ -24,6 +26,7 @@ bool SaveLoadManager::saveToFile(const std::string &filename)
       return false;
     }
   baseGenerator->serialize(output);
+  shoreGenerator->serialize(output);
   hillGenerator->serialize(output);
   waterGenerator->serialize(output);
   plantGeneratorFacade->serialize(output);
@@ -41,6 +44,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
       return false;
     }
   baseGenerator->deserialize(input);
+  shoreGenerator->deserialize(input);
   hillGenerator->deserialize(input);
   waterGenerator->deserialize(input);
   plantGeneratorFacade->deserialize(input);
@@ -50,6 +54,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
 }
 
 void SaveLoadManager::update(std::shared_ptr<BaseMapGenerator> &baseGenerator,
+                             std::shared_ptr<ShoreGenerator> &shoreGenerator,
                              std::shared_ptr<HillsMapGenerator> &hillGenerator,
                              std::shared_ptr<WaterMapGenerator> &waterGenerator,
                              std::shared_ptr<BuildableMapGenerator> &buildableGenerator,
@@ -57,6 +62,7 @@ void SaveLoadManager::update(std::shared_ptr<BaseMapGenerator> &baseGenerator,
                              Camera &camera)
 {
   this->baseGenerator = baseGenerator;
+  this->shoreGenerator = shoreGenerator;
   this->hillGenerator = hillGenerator;
   this->waterGenerator = waterGenerator;
   this->buildableGenerator = buildableGenerator;

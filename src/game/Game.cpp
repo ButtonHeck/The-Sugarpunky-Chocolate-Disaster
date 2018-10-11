@@ -27,11 +27,18 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
   srand(time(NULL));
   waterMapGenerator = std::make_shared<WaterMapGenerator>(shaderManager.get(SHADER_WATER_CULLING));
   hillMapGenerator = std::make_shared<HillsMapGenerator>(shaderManager.get(SHADER_HILLS_CULLING), waterMapGenerator->getMap());
-  baseMapGenerator = std::make_shared<BaseMapGenerator>(waterMapGenerator->getMap(), hillMapGenerator->getMap());
+  baseMapGenerator = std::make_shared<BaseMapGenerator>();
+  shoreGenerator = std::make_shared<ShoreGenerator>(waterMapGenerator->getMap());
   buildableMapGenerator = std::make_shared<BuildableMapGenerator>(baseMapGenerator, hillMapGenerator);
   Model::bindTextureLoader(textureLoader);
   plantGeneratorFacade = std::make_shared<PlantGeneratorFacade>();
-  saveLoadManager = std::make_unique<SaveLoadManager>(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, plantGeneratorFacade, camera);
+  saveLoadManager = std::make_unique<SaveLoadManager>(baseMapGenerator,
+                                                      shoreGenerator,
+                                                      hillMapGenerator,
+                                                      waterMapGenerator,
+                                                      buildableMapGenerator,
+                                                      plantGeneratorFacade,
+                                                      camera);
 #ifdef _DEBUG
   glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ramSize);
   ramSizeFloatPercentage = (float)ramSize / 100;
@@ -77,7 +84,8 @@ void Game::prepareTerrain()
 {
   waterMapGenerator->setup();
   hillMapGenerator->setup();
-  baseMapGenerator->setup();
+  shoreGenerator->setup();
+  baseMapGenerator->setup(shoreGenerator->getMap());
   waterMapGenerator->setupConsiderTerrain();
   buildableMapGenerator->setup(baseMapGenerator, hillMapGenerator);
   plantGeneratorFacade->setup(baseMapGenerator->getMap(), hillMapGenerator->getMap());
@@ -121,7 +129,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   shaderManager.updateShoreShader(projectionView, options.get(OPT_USE_SHADOWS));
   {
     BENCHMARK("Renderer: draw shore", true);
-    renderer.drawShore(baseMapGenerator);
+    renderer.drawShore(shoreGenerator);
   }
 
   //trees chunks rendering
@@ -237,7 +245,7 @@ void Game::drawFrameObjectsDepthmap()
 
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
   renderer.drawHillsDepthmap(hillMapGenerator);
-  renderer.drawShore(baseMapGenerator);
+  renderer.drawShore(shoreGenerator);
 
   if (options.get(OPT_DRAW_TREES))
     {
@@ -277,12 +285,18 @@ void Game::loop()
           std::this_thread::yield();//busy wait until water thread has done its business...and business is good
         }
       waterNeedNewKeyFrame = false; //explicitly bypass water animation frame update routine
-      baseMapGenerator.reset(new BaseMapGenerator(waterMapGenerator->getMap(), hillMapGenerator->getMap()));
+      baseMapGenerator.reset(new BaseMapGenerator());
       waterMapGenerator->initializeMap(waterMapGenerator->getMap());
       hillMapGenerator->initializeMap(hillMapGenerator->getMap());
 
       prepareTerrain();
-      saveLoadManager->update(baseMapGenerator, hillMapGenerator, waterMapGenerator, buildableMapGenerator, plantGeneratorFacade, camera);
+      saveLoadManager->update(baseMapGenerator,
+                              shoreGenerator,
+                              hillMapGenerator,
+                              waterMapGenerator,
+                              buildableMapGenerator,
+                              plantGeneratorFacade,
+                              camera);
       options.set(OPT_RECREATE_TERRAIN_REQUEST, false);
       textureManager.createUnderwaterReliefTexture(waterMapGenerator);
       waterNeedNewKeyFrame = true; //it's okay now to begin animating water
@@ -341,9 +355,8 @@ void Game::loop()
       waterNeedNewKeyFrame = false;
       saveLoadManager->loadFromFile(SAVES_DIR + "testSave.txt");
       hillMapGenerator->createTilesAndBufferData();
-      baseMapGenerator->getSquareTiles().clear();
-      baseMapGenerator->getCellTiles().clear();
-      baseMapGenerator->setup();
+      shoreGenerator->setup();
+      baseMapGenerator->setup(shoreGenerator->getMap());
       waterMapGenerator->setupConsiderTerrain();
       buildableMapGenerator->setup(baseMapGenerator, hillMapGenerator);
       textureManager.createUnderwaterReliefTexture(waterMapGenerator);

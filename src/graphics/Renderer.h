@@ -9,6 +9,7 @@
 #include "graphics/Skybox.h"
 #include "generator/HillsMapGenerator.h"
 #include "generator/BaseMapGenerator.h"
+#include "generator/ShoreGenerator.h"
 #include "generator/UnderwaterQuadMapGenerator.h"
 #include "generator/BuildableMapGenerator.h"
 #include "generator/WaterMapGenerator.h"
@@ -20,7 +21,7 @@ public:
   Renderer(Camera& camera);
   void drawHills(bool useFC, const std::shared_ptr<HillsMapGenerator> generator, Shader &fc, Shader &nofc);
   void drawHillsDepthmap(const std::shared_ptr<HillsMapGenerator> generator);
-  void drawShore(const std::shared_ptr<BaseMapGenerator> generator);
+  void drawShore(const std::shared_ptr<ShoreGenerator> generator);
   void drawFlatTerrain(const std::shared_ptr<BaseMapGenerator> generator, Frustum& frustum, GLuint texture);
   void addIndirectBufferData(GLuint& primCount,
                              GLuint* buffer,

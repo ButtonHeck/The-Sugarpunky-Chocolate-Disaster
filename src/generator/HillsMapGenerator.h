@@ -22,7 +22,6 @@ public:
   float getMaxHeight() const;
   GLuint getCulledVAO() const;
   GLuint getTransformFeedback() const;
-  size_t getVerticesToDraw() const;
 private:
   struct HillVertex{
     HillVertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal);
@@ -33,7 +32,6 @@ private:
   GLuint culledVAO = 0, culledVBO = 0, TFBO = 0;
   Shader& shader;
   float maxHeight = 0.0f;
-  size_t verticesToDraw = 0;
   std::vector<std::vector<float>>& waterMap;
   std::vector<std::vector<glm::vec3>> normalMap;
   std::default_random_engine randomizer;
