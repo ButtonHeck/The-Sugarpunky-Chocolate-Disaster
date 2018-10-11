@@ -44,14 +44,6 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   hillGenerator->deserialize(input);
   waterGenerator->deserialize(input);
   plantGeneratorFacade->deserialize(input);
-
-  hillGenerator->createTilesAndBufferData();
-  baseGenerator->getSquareTiles().clear();
-  baseGenerator->getCellTiles().clear();
-  baseGenerator->setup();
-  waterGenerator->setupConsiderTerrain();
-  waterGenerator->fillBufferData();
-
   camera.deserialize(input);
   input.close();
   return true;

@@ -32,6 +32,7 @@ void WaterMapGenerator::setupConsiderTerrain()
     addWaterNearbyTerrain();
   createTiles(true, false, postProcessMap, 0);
   tiles.shrink_to_fit();
+  fillBufferData();
 }
 
 void WaterMapGenerator::fillBufferData()

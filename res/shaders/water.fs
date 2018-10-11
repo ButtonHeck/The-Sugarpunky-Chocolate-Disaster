@@ -22,6 +22,7 @@ void main()
     //swizzle z and y to rotate Z-aligned normal map 90 degrees around X axis, as like we look at it upside down
     //also scale up texture mapping a bit
     vec3 sampledNormal = normalize(texture(u_normal_map, v_FragPos.zx * 0.125).xzy);
+    sampledNormal.z = -sampledNormal.z;
     vec3 ShadingNormal = normalize(v_Normal + sampledNormal);
     vec3 specularNormal = ShadingNormal;
     specularNormal.y *= 0.75;

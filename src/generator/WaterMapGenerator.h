@@ -15,7 +15,6 @@ public:
   ~WaterMapGenerator();
   void setup();
   void setupConsiderTerrain();
-  void fillBufferData();
   void updateVerticesBuffer();
   void updateAnimationFrame(Options& options);
   GLuint getCulledVAO() const;
@@ -31,6 +30,7 @@ private:
   void updateVertexNormal(GLfloat* vertices, int offset, glm::vec3 normal);
   void updateTileY(GLfloat* vertices, int offset, glm::vec4 heights);
   void setupGLBufferAttributes();
+  void fillBufferData();
   GLuint culledVAO = 0, culledVBO = 0, TFBO = 0;
   Shader& waterShader;
   size_t numVertices;

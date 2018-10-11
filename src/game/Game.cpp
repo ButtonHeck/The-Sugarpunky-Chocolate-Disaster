@@ -79,7 +79,6 @@ void Game::prepareTerrain()
   hillMapGenerator->setup();
   baseMapGenerator->setup();
   waterMapGenerator->setupConsiderTerrain();
-  waterMapGenerator->fillBufferData();
   buildableMapGenerator->setup(baseMapGenerator, hillMapGenerator);
   plantGeneratorFacade->setup(baseMapGenerator->getMap(), hillMapGenerator->getMap());
 }
@@ -263,9 +262,7 @@ void Game::loop()
   {
     BENCHMARK("Game: wait for mesh indirect ready", true);
     while(!meshBufferReady && !updateCount == 0 && meshBufferNeedUpdate)
-      {
-        std::this_thread::yield();
-      }
+      std::this_thread::yield();
   }
   meshBufferReady = false;
 
@@ -340,14 +337,17 @@ void Game::loop()
   if (options.get(OPT_LOAD_REQUEST))
     {
       while(!waterKeyFrameReady)
-        {
-          std::this_thread::yield(); //busy wait
-        }
+        std::this_thread::yield(); //busy wait
       waterNeedNewKeyFrame = false;
       saveLoadManager->loadFromFile(SAVES_DIR + "testSave.txt");
-      options.set(OPT_LOAD_REQUEST, false);
-      textureManager.createUnderwaterReliefTexture(waterMapGenerator);
+      hillMapGenerator->createTilesAndBufferData();
+      baseMapGenerator->getSquareTiles().clear();
+      baseMapGenerator->getCellTiles().clear();
+      baseMapGenerator->setup();
+      waterMapGenerator->setupConsiderTerrain();
       buildableMapGenerator->setup(baseMapGenerator, hillMapGenerator);
+      textureManager.createUnderwaterReliefTexture(waterMapGenerator);
+      options.set(OPT_LOAD_REQUEST, false);
       waterNeedNewKeyFrame = true;
     }
 

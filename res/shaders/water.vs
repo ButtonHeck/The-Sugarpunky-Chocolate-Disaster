@@ -4,7 +4,6 @@ layout (location = 0) in vec3 i_pos;
 layout (location = 1) in vec3 i_normal;
 
 uniform mat4 u_projectionView;
-uniform vec3 u_lightDir;
 
 out vec3  v_FragPos;
 out vec3  v_Normal;
