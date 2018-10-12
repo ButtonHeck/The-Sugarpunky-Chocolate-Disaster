@@ -25,20 +25,9 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
     textRenderer(fontLoader, shaderManager.get(SHADER_FONT))
 {
   srand(time(NULL));
-  waterMapGenerator = std::make_shared<WaterMapGenerator>(shaderManager.get(SHADER_WATER_CULLING));
-  hillMapGenerator = std::make_shared<HillsMapGenerator>(shaderManager.get(SHADER_HILLS_CULLING), waterMapGenerator->getMap());
-  baseMapGenerator = std::make_shared<BaseMapGenerator>();
-  shoreGenerator = std::make_shared<ShoreGenerator>(waterMapGenerator->getMap());
-  buildableMapGenerator = std::make_shared<BuildableMapGenerator>(baseMapGenerator, hillMapGenerator);
   Model::bindTextureLoader(textureLoader);
-  plantGeneratorFacade = std::make_shared<PlantGeneratorFacade>();
-  saveLoadManager = std::make_unique<SaveLoadManager>(baseMapGenerator,
-                                                      shoreGenerator,
-                                                      hillMapGenerator,
-                                                      waterMapGenerator,
-                                                      buildableMapGenerator,
-                                                      plantGeneratorFacade,
-                                                      camera);
+  worldFacade = std::make_shared<WorldGeneratorFacade>(shaderManager, renderer, options);
+  saveLoadManager = std::make_unique<SaveLoadManager>(worldFacade, camera);
 #ifdef _DEBUG
   glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ramSize);
   ramSizeFloatPercentage = (float)ramSize / 100;
@@ -69,24 +58,13 @@ void Game::setupVariables()
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   {
     BENCHMARK("Game: Prepare Terrain", false);
-    prepareTerrain();
+    worldFacade->prepareTerrain();
   }
   setupThreads();
-  textureManager.createUnderwaterReliefTexture(waterMapGenerator);
+  textureManager.createUnderwaterReliefTexture(worldFacade->getWaterGenerator());
   shaderManager.setupConstantUniforms(glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()));
   screenBuffer.setup();
   depthmapBuffer.setup(textureManager.get(TEX_DEPTH_MAP_SUN));
-}
-
-void Game::prepareTerrain()
-{
-  waterMapGenerator->setup();
-  hillMapGenerator->setup();
-  shoreGenerator->setup();
-  baseMapGenerator->setup(shoreGenerator->getMap());
-  waterMapGenerator->setupConsiderTerrain();
-  buildableMapGenerator->setup(baseMapGenerator, hillMapGenerator);
-  plantGeneratorFacade->setup(baseMapGenerator->getMap(), hillMapGenerator->getMap());
 }
 
 void Game::drawFrameObjects(glm::mat4& projectionView)
@@ -96,96 +74,19 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
 
   glm::vec3 viewPosition = camera.getPosition();
 
-  if (options.get(OPT_ANIMATE_WATER))
-    {
-      BENCHMARK("Water: buffer animation frame", true);
-      waterMapGenerator->updateVerticesBuffer();
-    }
-
-  //hills rendering
-  shaderManager.updateHillsShaders(options.get(OPT_HILLS_CULLING), options.get(OPT_USE_SHADOWS), projectionView, viewPosition, viewFrustum, hillMapGenerator->getMaxHeight());
-  {
-    BENCHMARK("Renderer: draw hills", true);
-    renderer.drawHills(options.get(OPT_HILLS_CULLING), hillMapGenerator, shaderManager.get(SHADER_HILLS_CULLING), shaderManager.get(SHADER_HILLS));
-  }
-
-  //flat terrain chunks drawing
-  if (options.get(OPT_DRAW_FLAT_TERRAIN))
-    {
-      shaderManager.updateFlatShader(projectionView, options.get(OPT_USE_SHADOWS));
-      {
-        BENCHMARK("Renderer: draw flat", true);
-        renderer.drawFlatTerrain(baseMapGenerator, viewFrustum, textureManager.get(TEX_FLAT));
-      }
-    }
-
-  //underwater tile
-  shaderManager.updateUnderwaterShader(projectionView);
-  renderer.drawUnderwaterQuad(underwaterQuadGenerator);
-
-  //shore terrain chunks drawing
-  shaderManager.updateShoreShader(projectionView, options.get(OPT_USE_SHADOWS));
-  {
-    BENCHMARK("Renderer: draw shore", true);
-    renderer.drawShore(shoreGenerator);
-  }
-
-  //trees chunks rendering
-  if (options.get(OPT_DRAW_TREES))
-    {
-      shaderManager.updateModelShader(projectionView, viewPosition,
-                                      options.get(OPT_TREES_SHADOW_EMPHASIZE),
-                                      options.get(OPT_USE_SHADOWS),
-                                      options.get(OPT_MODELS_FLAT_BLENDING));
-      {
-        BENCHMARK("Renderer: draw models", true);
-        renderer.drawPlants(plantGeneratorFacade,
-                           options.get(OPT_MODELS_PHONG_SHADING) ? shaderManager.get(SHADER_MODELS_PHONG) : shaderManager.get(SHADER_MODELS),
-                           options.get(OPT_MODELS_CULLING),
-                           true,
-                           updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0,
-                           true,
-                           options.get(OPT_MODELS_FLAT_BLENDING));
-      }
-    }
-
-  //buildable tiles
-  if (options.get(OPT_DRAW_BUILDABLE))
-    {
-      shaderManager.updateBuildableShader(projectionView);
-      {
-        BENCHMARK("Renderer: draw buildable", true);
-        renderer.drawBuildableTiles(buildableMapGenerator);
-      }
-    }
-
-  //cursor selected tile
-  if (options.get(OPT_SHOW_CURSOR))
-    {
-      mouseInput.updateCursorMappingCoordinates(camera, baseMapGenerator, hillMapGenerator, buildableMapGenerator);
-      if (buildableMapGenerator->getMap()[mouseInput.getCursorMapZ()][mouseInput.getCursorMapX()] != 0)
-        {
-          glm::mat4 selectedModel;
-          selectedModel = glm::translate(selectedModel, glm::vec3(-HALF_WORLD_WIDTH + mouseInput.getCursorMapX(), 0.0f, -HALF_WORLD_HEIGHT + mouseInput.getCursorMapZ()));
-          shaderManager.updateSelectedShader(projectionView, selectedModel);
-          renderer.drawSelectedTile(buildableMapGenerator);
-        }
-    }
-
-  //water rendering
-  if (options.get(OPT_DRAW_WATER))
-    {
-      shaderManager.updateWaterShaders(options.get(OPT_WATER_CULLING), projectionView, viewPosition, viewFrustum);
-      {
-        BENCHMARK("Renderer: draw water (full func)", true);
-        renderer.drawWater(options.get(OPT_WATER_CULLING), waterMapGenerator, shaderManager.get(SHADER_WATER_CULLING), shaderManager.get(SHADER_WATER));
-      }
-    }
+  worldFacade->bufferWaterNewData();
+  worldFacade->drawWorld(projectionView,
+                         viewPosition,
+                         viewFrustum,
+                         textureManager,
+                         camera,
+                         mouseInput,
+                         updateCount);
 
   //Skybox rendering
   glm::mat4 skyProjectionView = projection * glm::mat4(glm::mat3(camera.getViewMatrix()));
   shaderManager.updateSkyShader(skyProjectionView);
-  renderer.drawSkybox(&skybox);
+  renderer.renderSkybox(&skybox);
 
   //font rendering
   if (options.get(OPT_DRAW_DEBUG_TEXT))
@@ -237,31 +138,6 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void Game::drawFrameObjectsDepthmap()
-{
-  glDisable(GL_CULL_FACE); //or set front face culling
-
-  shaderManager.get(SHADER_SHADOW_TERRAIN).use();
-  renderer.drawHillsDepthmap(hillMapGenerator);
-  renderer.drawShore(shoreGenerator);
-
-  if (options.get(OPT_DRAW_TREES))
-    {
-      shaderManager.get(SHADER_SHADOW_MODELS).use();
-      {
-        BENCHMARK("Renderer: draw models depthmap", true);
-        renderer.drawPlants(plantGeneratorFacade, shaderManager.get(SHADER_SHADOW_MODELS),
-                           options.get(OPT_MODELS_CULLING),
-                           false,
-                           updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0,
-                           false,
-                           false);
-      }
-    }
-
-  glEnable(GL_CULL_FACE); //or set back face culling
-}
-
 void Game::loop()
 {
   //even if we don't need to render models make sure we update indirect buffer data for meshes
@@ -273,29 +149,18 @@ void Game::loop()
   meshBufferReady = false;
 
   keyboard.processKeyboard();
-  keyboard.processKeyboardCamera(CPU_timer.tick(), hillMapGenerator->getMap());
+  keyboard.processKeyboardCamera(CPU_timer.tick(), worldFacade->getHillsGenerator()->getMap());
 
   //recreate routine
   if (options.get(OPT_RECREATE_TERRAIN_REQUEST))
     {
       while(!waterKeyFrameReady)
-        {
-          std::this_thread::yield();//busy wait until water thread has done its business...and business is good
-        }
+        std::this_thread::yield();//busy wait until water thread has done its business...and business is good
       waterNeedNewKeyFrame = false; //explicitly bypass water animation frame update routine
-      baseMapGenerator.reset(new BaseMapGenerator());
-      initializeMap(waterMapGenerator->getMap());
-      initializeMap(hillMapGenerator->getMap());
-      prepareTerrain();
-      saveLoadManager->update(baseMapGenerator,
-                              shoreGenerator,
-                              hillMapGenerator,
-                              waterMapGenerator,
-                              buildableMapGenerator,
-                              plantGeneratorFacade,
-                              camera);
+      worldFacade->recreate();
+      saveLoadManager->update(worldFacade, camera);
       options.set(OPT_RECREATE_TERRAIN_REQUEST, false);
-      textureManager.createUnderwaterReliefTexture(waterMapGenerator);
+      textureManager.createUnderwaterReliefTexture(worldFacade->getWaterGenerator());
       waterNeedNewKeyFrame = true; //it's okay now to begin animating water
     }
 
@@ -303,7 +168,7 @@ void Game::loop()
     {
       depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
       glClear(GL_DEPTH_BUFFER_BIT);
-      drawFrameObjectsDepthmap();
+      worldFacade->drawWorldDepthmap(updateCount);
       depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
       options.set(OPT_CREATE_SHADOW_MAP_REQUEST, false);
     }
@@ -351,12 +216,8 @@ void Game::loop()
         std::this_thread::yield(); //busy wait
       waterNeedNewKeyFrame = false;
       saveLoadManager->loadFromFile(SAVES_DIR + "testSave.txt");
-      hillMapGenerator->createTilesAndBufferData();
-      shoreGenerator->setup();
-      baseMapGenerator->setup(shoreGenerator->getMap());
-      waterMapGenerator->setupConsiderTerrain();
-      buildableMapGenerator->setup(baseMapGenerator, hillMapGenerator);
-      textureManager.createUnderwaterReliefTexture(waterMapGenerator);
+      worldFacade->load();
+      textureManager.createUnderwaterReliefTexture(worldFacade->getWaterGenerator());
       options.set(OPT_LOAD_REQUEST, false);
       waterNeedNewKeyFrame = true;
     }
@@ -380,7 +241,7 @@ void Game::setupThreads()
               float cameraOnMapX = glm::clamp(camera.getPosition().x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH);
               float cameraOnMapZ = glm::clamp(camera.getPosition().z, -(float)HALF_WORLD_HEIGHT, (float)HALF_WORLD_HEIGHT);
               glm::vec2 cameraPositionXZ = glm::vec2(cameraOnMapX, cameraOnMapZ);
-              plantGeneratorFacade->prepareMeshesIndirectData(cameraPositionXZ, viewFrustum);
+              worldFacade->getPlantsGeneratorFacade()->prepareMeshesIndirectData(cameraPositionXZ, viewFrustum);
               meshBufferReady = true;
               meshBufferNeedUpdate = false;
             }
@@ -396,7 +257,7 @@ void Game::setupThreads()
                   options.get(OPT_DRAW_WATER))
                 {
                   waterKeyFrameReady = false;
-                  waterMapGenerator->updateAnimationFrame(options);
+                  worldFacade->getWaterGenerator()->updateAnimationFrame(options);
                   waterKeyFrameReady = true;
 #ifdef _DEBUG
                   waterAnimatorIsWorking = true;

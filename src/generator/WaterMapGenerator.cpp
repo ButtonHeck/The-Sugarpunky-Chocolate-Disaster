@@ -84,7 +84,7 @@ void WaterMapGenerator::fillBufferData()
   resetAllGLBuffers();
 }
 
-void WaterMapGenerator::updateVerticesBuffer()
+void WaterMapGenerator::bufferNewData()
 {
   glNamedBufferData(vbo, numVertices * sizeof(GLfloat), vertices.get(), GL_STREAM_DRAW);
 }

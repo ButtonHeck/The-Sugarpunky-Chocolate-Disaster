@@ -1,19 +1,8 @@
 #include "game/SaveLoadManager.h"
 
-SaveLoadManager::SaveLoadManager(std::shared_ptr<BaseMapGenerator>& baseGenerator,
-                                 std::shared_ptr<ShoreGenerator> &shoreGenerator,
-                                 std::shared_ptr<HillsMapGenerator>& hillGenerator,
-                                 std::shared_ptr<WaterMapGenerator>& waterGenerator,
-                                 std::shared_ptr<BuildableMapGenerator>& buildableGenerator,
-                                 std::shared_ptr<PlantGeneratorFacade>& plantGeneratorFacade,
-                                 Camera& camera)
+SaveLoadManager::SaveLoadManager(std::shared_ptr<WorldGeneratorFacade>& worldGenerator, Camera& camera)
   :
-    baseGenerator(baseGenerator),
-    shoreGenerator(shoreGenerator),
-    hillGenerator(hillGenerator),
-    waterGenerator(waterGenerator),
-    buildableGenerator(buildableGenerator),
-    plantGeneratorFacade(plantGeneratorFacade),
+    worldGenerator(worldGenerator),
     camera(camera)
 {}
 
@@ -25,11 +14,7 @@ bool SaveLoadManager::saveToFile(const std::string &filename)
       std::cerr << "Could not open file: " << filename << std::endl;
       return false;
     }
-  baseGenerator->serialize(output);
-  shoreGenerator->serialize(output);
-  hillGenerator->serialize(output);
-  waterGenerator->serialize(output);
-  plantGeneratorFacade->serialize(output);
+  worldGenerator->serialize(output);
   camera.serialize(output);
   output.close();
   return true;
@@ -43,29 +28,14 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
       std::cerr << "Could not open file: " << filename << std::endl;
       return false;
     }
-  baseGenerator->deserialize(input);
-  shoreGenerator->deserialize(input);
-  hillGenerator->deserialize(input);
-  waterGenerator->deserialize(input);
-  plantGeneratorFacade->deserialize(input);
+  worldGenerator->deserialize(input);
   camera.deserialize(input);
   input.close();
   return true;
 }
 
-void SaveLoadManager::update(std::shared_ptr<BaseMapGenerator> &baseGenerator,
-                             std::shared_ptr<ShoreGenerator> &shoreGenerator,
-                             std::shared_ptr<HillsMapGenerator> &hillGenerator,
-                             std::shared_ptr<WaterMapGenerator> &waterGenerator,
-                             std::shared_ptr<BuildableMapGenerator> &buildableGenerator,
-                             std::shared_ptr<PlantGeneratorFacade> &plantGeneratorFacade,
-                             Camera &camera)
+void SaveLoadManager::update(std::shared_ptr<WorldGeneratorFacade>& worldGenerator, Camera& camera)
 {
-  this->baseGenerator = baseGenerator;
-  this->shoreGenerator = shoreGenerator;
-  this->hillGenerator = hillGenerator;
-  this->waterGenerator = waterGenerator;
-  this->buildableGenerator = buildableGenerator;
-  this->plantGeneratorFacade = plantGeneratorFacade;
+  this->worldGenerator = worldGenerator;
   this->camera = camera;
 }

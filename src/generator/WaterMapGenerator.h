@@ -15,7 +15,7 @@ public:
   virtual ~WaterMapGenerator();
   void setup();
   void setupConsiderTerrain();
-  void updateVerticesBuffer();
+  void bufferNewData();
   void updateAnimationFrame(Options& options);
   GLuint getCulledVAO() const;
   GLuint getTransformFeedback() const;

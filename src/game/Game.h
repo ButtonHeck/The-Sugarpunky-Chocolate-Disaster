@@ -7,7 +7,6 @@
 #include <glm/vec3.hpp>
 #include <memory>
 #include "game/Settings.h"
-#include "graphics/TextureUnits.h"
 #include "game/Options.h"
 #include "game/ScreenResolution.h"
 #include "game/ScreenBuffer.h"
@@ -24,12 +23,9 @@
 #include "graphics/CoordinateSystemRenderer.h"
 #include "graphics/Skybox.h"
 #include "graphics/TextureManager.h"
-#include "generator/UnderwaterQuadMapGenerator.h"
-#include "generator/ShoreGenerator.h"
-#include "model/Model.h"
 #include "timer/Timer.h"
 #include "timer/BenchmarkTimer.h"
-#include "generator/PlantGeneratorFacade.h"
+#include "generator/WorldGeneratorFacade.h"
 
 class Game
 {
@@ -37,9 +33,7 @@ public:
   Game(GLFWwindow* window, Camera& camera, Options& options, ScreenResolution& screenResolution);
   virtual ~Game();
   void setupVariables();
-  void prepareTerrain();
   void drawFrameObjects(glm::mat4& projectionView);
-  void drawFrameObjectsDepthmap();
   void loop();
 private:
   //context and hardware
@@ -68,14 +62,8 @@ private:
   DepthmapBuffer depthmapBuffer;
 
   //world
-  std::shared_ptr<WaterMapGenerator> waterMapGenerator;
-  std::shared_ptr<HillsMapGenerator> hillMapGenerator;
-  std::shared_ptr<BaseMapGenerator> baseMapGenerator;
-  std::shared_ptr<ShoreGenerator> shoreGenerator;
-  std::shared_ptr<BuildableMapGenerator> buildableMapGenerator;
+  std::shared_ptr<WorldGeneratorFacade> worldFacade;
   std::unique_ptr<SaveLoadManager> saveLoadManager;
-  std::shared_ptr<PlantGeneratorFacade> plantGeneratorFacade;
-  UnderwaterQuadMapGenerator underwaterQuadGenerator;
   Skybox skybox;
 
   //GUI and text

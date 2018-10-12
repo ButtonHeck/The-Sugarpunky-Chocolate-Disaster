@@ -49,7 +49,8 @@ SOURCES += \
     src/generator/HillTreesGenerator.cpp \
     src/generator/GrassGenerator.cpp \
     src/generator/PlantGeneratorFacade.cpp \
-    src/generator/ShoreGenerator.cpp
+    src/generator/ShoreGenerator.cpp \
+    src/generator/WorldGeneratorFacade.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -94,7 +95,8 @@ HEADERS += \
     src/generator/HillTreesGenerator.h \
     src/generator/GrassGenerator.h \
     src/generator/PlantGeneratorFacade.h \
-    src/generator/ShoreGenerator.h
+    src/generator/ShoreGenerator.h \
+    src/generator/WorldGeneratorFacade.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

@@ -19,27 +19,27 @@ class Renderer
 {
 public:
   Renderer(Camera& camera);
-  void drawHills(bool useFC, const std::shared_ptr<HillsMapGenerator> generator, Shader &fc, Shader &nofc);
-  void drawHillsDepthmap(const std::shared_ptr<HillsMapGenerator> generator);
-  void drawShore(const std::shared_ptr<ShoreGenerator> generator);
-  void drawFlatTerrain(const std::shared_ptr<BaseMapGenerator> generator, Frustum& frustum, GLuint texture);
-  void addIndirectBufferData(GLuint& primCount,
-                             GLuint* buffer,
-                             GLuint& dataOffset,
-                             GLuint numInstances,
-                             GLuint instanceOffset);
-  void drawUnderwaterQuad(const UnderwaterQuadMapGenerator& generator);
-  void drawBuildableTiles(const std::shared_ptr<BuildableMapGenerator> generator);
-  void drawSelectedTile(const std::shared_ptr<BuildableMapGenerator> generator);
-  void drawWater(bool useFC, std::shared_ptr<WaterMapGenerator> generator, Shader& fc, Shader& nofc);
-  void drawSkybox(Skybox* skybox);
-  void drawPlants(const std::shared_ptr<PlantGeneratorFacade> generatorFacade, Shader& shader,
+  void renderHills(bool useFC, const std::shared_ptr<HillsMapGenerator> generator, Shader &fc, Shader &nofc);
+  void renderHillsDepthmap(const std::shared_ptr<HillsMapGenerator> generator);
+  void renderShore(const std::shared_ptr<ShoreGenerator> generator);
+  void renderFlatTerrain(const std::shared_ptr<BaseMapGenerator> generator, Frustum& frustum, GLuint texture);
+  void renderUnderwater(const UnderwaterQuadMapGenerator& generator);
+  void renderBuildableTiles(const std::shared_ptr<BuildableMapGenerator> generator);
+  void renderSelectedTile(const std::shared_ptr<BuildableMapGenerator> generator);
+  void renderWater(bool useFC, std::shared_ptr<WaterMapGenerator> generator, Shader& fc, Shader& nofc);
+  void renderSkybox(Skybox* skybox);
+  void renderPlants(const std::shared_ptr<PlantGeneratorFacade> generatorFacade, Shader& shader,
                  bool enableFrustumCulling,
                  bool bindTexture,
                  bool updateIndirect,
                  bool screenDraw,
                  bool useFlatBlending);
 private:
+  void addIndirectBufferData(GLuint& primCount,
+                             GLuint* buffer,
+                             GLuint& dataOffset,
+                             GLuint numInstances,
+                             GLuint instanceOffset);
   Camera& camera;
 };
 
