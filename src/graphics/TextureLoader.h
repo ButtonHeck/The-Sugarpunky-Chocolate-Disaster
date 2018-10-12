@@ -7,7 +7,7 @@
 #include <glm/common.hpp>
 #include <memory>
 #include "game/ScreenResolution.h"
-#include "generator/WaterMapGenerator.h"
+#include "generator/WaterGenerator.h"
 
 class TextureLoader
 {
@@ -18,7 +18,7 @@ public:
   GLuint createFrameTexture(GLuint textureUnit);
   GLuint createDepthMapTexture(int width, int height, GLuint textureUnit);
   GLuint loadCubemap(const std::string& directory, GLuint textureUnit);
-  GLuint createUnderwaterReliefTexture(const std::shared_ptr<WaterMapGenerator> waterMapGenerator, GLuint textureUnit, GLint magFilter, GLint minFilter);
+  GLuint createUnderwaterReliefTexture(const std::shared_ptr<WaterGenerator> waterMapGenerator, GLuint textureUnit, GLint magFilter, GLint minFilter);
   unsigned int getMaxMip(unsigned int width, unsigned int height);
 private:
   GLuint createAndBindTextureObject(GLenum target, GLuint textureUnit);

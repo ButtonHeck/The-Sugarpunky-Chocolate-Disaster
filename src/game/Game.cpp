@@ -37,21 +37,11 @@ Game::~Game()
   BenchmarkTimer::finish(updateCount);
 }
 
-void Game::setupVariables()
+void Game::setup()
 {
   Shader::cacheUniformsMode(UNIFORMS_NO_CACHE);
-  glEnable(GL_CULL_FACE);
-  glEnable(GL_DEPTH_TEST);
-  glDisable(GL_DITHER);
-  if (options.get(OPT_USE_MULTISAMPLING))
-    glEnable(GL_MULTISAMPLE);
-  else
-    glDisable(GL_MULTISAMPLE);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glfwSetCursorPosCallback(window, MouseInputManager::cursorCallback);
-  glfwSetMouseButtonCallback(window, MouseInputManager::cursorClickCallback);
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  Renderer::setInitialGLState(options.get(OPT_USE_MULTISAMPLING));
+  MouseInputManager::setCallbacks(window);
   worldFacade->setup();
   setupThreads();
   shaderManager.setupConstantUniforms(glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()));
@@ -61,6 +51,7 @@ void Game::setupVariables()
 
 void Game::drawFrameObjects(glm::mat4& projectionView)
 {
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   if (options.get(OPT_POLYGON_LINE))
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -126,10 +117,13 @@ void Game::loop()
     BENCHMARK("Game: wait for mesh indirect ready", true);
     while(!meshBufferReady && !updateCount == 0 && meshBufferNeedUpdate)
       std::this_thread::yield();
+    meshBufferReady = false;
   }
-  meshBufferReady = false;
 
   keyboard.processInput(CPU_timer.tick(), worldFacade->getHillsGenerator()->getMap());
+  glm::mat4 view = camera.getViewMatrix();
+  glm::mat4 projectionView = projection * view;
+  viewFrustum.updateFrustum(projectionView);
 
   //recreate routine
   if (options.get(OPT_RECREATE_TERRAIN_REQUEST))
@@ -145,20 +139,13 @@ void Game::loop()
   if ((options.get(OPT_CREATE_SHADOW_MAP_REQUEST) || updateCount % 16 == 0) && options.get(OPT_USE_SHADOWS))
     {
       depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
-      glClear(GL_DEPTH_BUFFER_BIT);
       worldFacade->drawWorldDepthmap(updateCount);
       depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
       options.set(OPT_CREATE_SHADOW_MAP_REQUEST, false);
     }
 
-  //update view and projection matrices
-  glm::mat4 view = camera.getViewMatrix();
-  glm::mat4 projectionView = projection * view;
-  viewFrustum.updateFrustum(projectionView);
-
   bool multisamplingEnabled = options.get(OPT_USE_MULTISAMPLING);
   screenBuffer.bindAppropriateFBO(multisamplingEnabled);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   //render our world onto separate FBO as usual
   drawFrameObjects(projectionView);

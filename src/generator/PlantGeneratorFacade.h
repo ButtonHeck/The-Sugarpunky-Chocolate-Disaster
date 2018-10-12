@@ -1,7 +1,7 @@
 #ifndef PLANTGENERATORFACADE_H
 #define PLANTGENERATORFACADE_H
 #include <memory>
-#include "generator/PlainPlantsGenerator.h"
+#include "generator/LandPlantsGenerator.h"
 #include "generator/GrassGenerator.h"
 #include "generator/HillTreesGenerator.h"
 #include "graphics/Frustum.h"
@@ -30,7 +30,7 @@ public:
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
 private:
-  std::unique_ptr<PlainPlantsGenerator> plainPlantsGenerator;
+  std::unique_ptr<LandPlantsGenerator> plainPlantsGenerator;
   std::unique_ptr<GrassGenerator> grassGenerator;
   std::unique_ptr<HillTreesGenerator> hillTreesGenerator;
 };

@@ -2,7 +2,7 @@
 
 PlantGeneratorFacade::PlantGeneratorFacade()
   :
-    plainPlantsGenerator(std::make_unique<PlainPlantsGenerator>()),
+    plainPlantsGenerator(std::make_unique<LandPlantsGenerator>()),
     grassGenerator(std::make_unique<GrassGenerator>()),
     hillTreesGenerator(std::make_unique<HillTreesGenerator>())
 {}

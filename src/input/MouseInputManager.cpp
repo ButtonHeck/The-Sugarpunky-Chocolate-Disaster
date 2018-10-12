@@ -14,7 +14,14 @@ MouseInputManager &MouseInputManager::getInstance()
   return instance;
 }
 
-void MouseInputManager::cursorCallback(GLFWwindow *, double x, double y)
+void MouseInputManager::setCallbacks(GLFWwindow *window)
+{
+  glfwSetCursorPosCallback(window, cursorMoveCallback);
+  glfwSetMouseButtonCallback(window, cursorClickCallback);
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
 {
   static bool firstMouseInput = true;
   static double cursorScreenX = 0.0;
@@ -79,9 +86,9 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
 }
 
 void MouseInputManager::updateCursorMappingCoordinates(Camera &camera,
-                                                       const std::shared_ptr<BaseMapGenerator> baseMapGenerator,
-                                                       const std::shared_ptr<HillsMapGenerator> hillMapGenerator,
-                                                       const std::shared_ptr<BuildableMapGenerator> buildableMapGenerator)
+                                                       const std::shared_ptr<LandGenerator> baseMapGenerator,
+                                                       const std::shared_ptr<HillsGenerator> hillMapGenerator,
+                                                       const std::shared_ptr<BuildableGenerator> buildableMapGenerator)
 {
   if (options.get(OPT_SHOW_CURSOR) && cursorToViewportDirection.y < 0.0f)
     {

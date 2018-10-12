@@ -50,7 +50,7 @@ int main()
     }
 #endif
   game = new Game(window, camera, options, screenResolution);
-  game->setupVariables();
+  game->setup();
 
   //game loop
   std::thread inputHandlingThread([]()

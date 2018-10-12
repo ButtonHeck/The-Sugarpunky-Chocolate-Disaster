@@ -22,12 +22,6 @@ SOURCES += \
     src/graphics/Frustum.cpp \
     src/graphics/TextureManager.cpp \
     src/graphics/ShaderManager.cpp \
-    src/generator/MapGenerator.cpp \
-    src/generator/WaterMapGenerator.cpp \
-    src/generator/HillsMapGenerator.cpp \
-    src/generator/UnderwaterQuadMapGenerator.cpp \
-    src/generator/BaseMapGenerator.cpp \
-    src/generator/BuildableMapGenerator.cpp \
     src/model/Mesh.cpp \
     src/model/Model.cpp \
     src/model/TerrainTile.cpp \
@@ -45,12 +39,18 @@ SOURCES += \
     src/game/DebugLogger.cpp \
     src/graphics/TextRenderer.cpp \
     src/graphics/FontLoader.cpp \
-    src/generator/PlainPlantsGenerator.cpp \
     src/generator/HillTreesGenerator.cpp \
     src/generator/GrassGenerator.cpp \
     src/generator/PlantGeneratorFacade.cpp \
     src/generator/ShoreGenerator.cpp \
-    src/generator/WorldGeneratorFacade.cpp
+    src/generator/WorldGeneratorFacade.cpp \
+    src/generator/LandGenerator.cpp \
+    src/generator/BuildableGenerator.cpp \
+    src/generator/HillsGenerator.cpp \
+    src/generator/Generator.cpp \
+    src/generator/LandPlantsGenerator.cpp \
+    src/generator/UnderwaterGenerator.cpp \
+    src/generator/WaterGenerator.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -67,12 +67,6 @@ HEADERS += \
     src/graphics/CoordinateSystemRenderer.h \
     src/graphics/Frustum.h \
     src/graphics/TextureManager.h \
-    src/generator/MapGenerator.h \
-    src/generator/WaterMapGenerator.h \
-    src/generator/HillsMapGenerator.h \
-    src/generator/UnderwaterQuadMapGenerator.h \
-    src/generator/BaseMapGenerator.h \
-    src/generator/BuildableMapGenerator.h \
     src/model/TerrainTile.h \
     src/model/Mesh.h \
     src/model/Model.h \
@@ -91,12 +85,18 @@ HEADERS += \
     src/game/DebugLogger.h \
     src/graphics/TextRenderer.h \
     src/graphics/FontLoader.h \
-    src/generator/PlainPlantsGenerator.h \
     src/generator/HillTreesGenerator.h \
     src/generator/GrassGenerator.h \
     src/generator/PlantGeneratorFacade.h \
     src/generator/ShoreGenerator.h \
-    src/generator/WorldGeneratorFacade.h
+    src/generator/WorldGeneratorFacade.h \
+    src/generator/LandGenerator.h \
+    src/generator/BuildableGenerator.h \
+    src/generator/HillsGenerator.h \
+    src/generator/Generator.h \
+    src/generator/LandPlantsGenerator.h \
+    src/generator/UnderwaterGenerator.h \
+    src/generator/WaterGenerator.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

@@ -1,13 +1,13 @@
 #ifndef TERRAINGENERATORFACADE_H
 #define TERRAINGENERATORFACADE_H
 #include <memory>
-#include "generator/BaseMapGenerator.h"
-#include "generator/HillsMapGenerator.h"
+#include "generator/LandGenerator.h"
+#include "generator/HillsGenerator.h"
 #include "generator/PlantGeneratorFacade.h"
-#include "generator/WaterMapGenerator.h"
-#include "generator/BuildableMapGenerator.h"
+#include "generator/WaterGenerator.h"
+#include "generator/BuildableGenerator.h"
 #include "generator/ShoreGenerator.h"
-#include "generator/UnderwaterQuadMapGenerator.h"
+#include "generator/UnderwaterGenerator.h"
 #include "graphics/Skybox.h"
 #include "graphics/ShaderManager.h"
 #include "graphics/Renderer.h"
@@ -37,8 +37,8 @@ public:
   void drawWorldDepthmap(unsigned long updateCount);
 
   //getters
-  const std::shared_ptr<WaterMapGenerator> getWaterGenerator() const;
-  const std::shared_ptr<HillsMapGenerator> getHillsGenerator() const;
+  const std::shared_ptr<WaterGenerator> getWaterGenerator() const;
+  const std::shared_ptr<HillsGenerator> getHillsGenerator() const;
   const std::shared_ptr<PlantGeneratorFacade> getPlantsGeneratorFacade() const;
 
 private:
@@ -63,14 +63,14 @@ private:
   Options& options;
   TextureManager& textureManager;
   glm::mat4 projectionView;
-  std::shared_ptr<WaterMapGenerator> waterMapGenerator;
-  std::shared_ptr<HillsMapGenerator> hillMapGenerator;
-  std::shared_ptr<BaseMapGenerator> baseMapGenerator;
+  std::shared_ptr<WaterGenerator> waterGenerator;
+  std::shared_ptr<HillsGenerator> hillsGenerator;
+  std::shared_ptr<LandGenerator> landGenerator;
   std::shared_ptr<ShoreGenerator> shoreGenerator;
-  std::shared_ptr<BuildableMapGenerator> buildableMapGenerator;
+  std::shared_ptr<BuildableGenerator> buildableGenerator;
   std::shared_ptr<PlantGeneratorFacade> plantGeneratorFacade;
   Skybox skybox;
-  UnderwaterQuadMapGenerator underwaterQuadGenerator;
+  UnderwaterGenerator underwaterGenerator;
 };
 
 #endif // TERRAINGENERATORFACADE_H

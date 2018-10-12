@@ -3,9 +3,9 @@
 #include <random>
 #include <chrono>
 #include <memory>
-#include "generator/MapGenerator.h"
+#include "generator/Generator.h"
 
-class ShoreGenerator : public MapGenerator
+class ShoreGenerator : public Generator
 {
 public:
   ShoreGenerator(std::vector<std::vector<float>>& waterMap);

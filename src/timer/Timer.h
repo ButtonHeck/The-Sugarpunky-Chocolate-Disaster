@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <chrono>
 #include "timer/BenchmarkTimer.h"
-#include "generator/WaterMapGenerator.h"
+#include "generator/WaterGenerator.h"
 
 class Timer
 {

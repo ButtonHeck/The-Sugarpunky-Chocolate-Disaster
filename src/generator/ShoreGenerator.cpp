@@ -2,7 +2,7 @@
 
 ShoreGenerator::ShoreGenerator(std::vector<std::vector<float> > &waterMap)
   :
-    MapGenerator(),
+    Generator(),
     waterMap(waterMap)
 {
   randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
