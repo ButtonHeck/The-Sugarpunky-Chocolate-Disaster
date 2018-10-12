@@ -8,6 +8,7 @@
 #include "generator/BuildableMapGenerator.h"
 #include "generator/ShoreGenerator.h"
 #include "generator/UnderwaterQuadMapGenerator.h"
+#include "graphics/Skybox.h"
 #include "graphics/ShaderManager.h"
 #include "graphics/Renderer.h"
 #include "graphics/TextureManager.h"
@@ -16,10 +17,10 @@
 class WorldGeneratorFacade
 {
 public:
-  WorldGeneratorFacade(ShaderManager& shaderManager, Renderer& renderer, Options& options);
+  WorldGeneratorFacade(ShaderManager& shaderManager, Renderer& renderer, Options& options, TextureManager& textureManager);
 
   //internal generators functions
-  void prepareTerrain();
+  void setup();
   void recreate();
   void load();
   void serialize(std::ofstream& output);
@@ -28,9 +29,8 @@ public:
 
   //rendering part
   void drawWorld(glm::mat4& projectionView,
-                 glm::vec3 &viewPosition,
+                 glm::mat4& skyProjectionView,
                  Frustum &viewFrustum,
-                 TextureManager& textureManager,
                  Camera& camera,
                  MouseInputManager& mouseInput,
                  unsigned long updateCount);
@@ -44,13 +44,14 @@ public:
 private:
   //rendering on screen
   void drawHills(glm::vec3& viewPosition, Frustum& viewFrustum);
-  void drawFlatTerrain(Frustum &viewFrustum, TextureManager& textureManager);
+  void drawFlatTerrain(Frustum &viewFrustum);
   void drawUnderwater();
   void drawShore();
   void drawPlants(glm::vec3& viewPosition, unsigned long updateCount);
   void drawBuildable();
   void drawSelected(MouseInputManager& mouseInput, Camera& camera);
   void drawWater(glm::vec3 &viewPosition, Frustum &viewFrustum);
+  void drawSkybox(glm::mat4& skyProjectionView);
 
   //rendering offscreen (depthmap)
   void drawTerrainDepthmap();
@@ -60,6 +61,7 @@ private:
   ShaderManager& shaderManager;
   Renderer& renderer;
   Options& options;
+  TextureManager& textureManager;
   glm::mat4 projectionView;
   std::shared_ptr<WaterMapGenerator> waterMapGenerator;
   std::shared_ptr<HillsMapGenerator> hillMapGenerator;
@@ -67,6 +69,7 @@ private:
   std::shared_ptr<ShoreGenerator> shoreGenerator;
   std::shared_ptr<BuildableMapGenerator> buildableMapGenerator;
   std::shared_ptr<PlantGeneratorFacade> plantGeneratorFacade;
+  Skybox skybox;
   UnderwaterQuadMapGenerator underwaterQuadGenerator;
 };
 

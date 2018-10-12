@@ -11,8 +11,7 @@ class KeyboardManager
 {
 public:
   KeyboardManager(GLFWwindow* window, Camera& camera, Options& options);
-  void processKeyboard();
-  void processKeyboardCamera(float delta, std::vector<std::vector<float>>& hillsMap);
+  void processInput(float delta, std::vector<std::vector<float> > &hillsMap);
 private:
   bool keysPressed[GLFW_KEY_LAST];
   void processKey(int keyCode, OPTION option);

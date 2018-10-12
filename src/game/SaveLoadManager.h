@@ -14,7 +14,6 @@ public:
   SaveLoadManager(std::shared_ptr<WorldGeneratorFacade>& worldGenerator, Camera& camera);
   bool saveToFile(const std::string& filename);
   bool loadFromFile(const std::string& filename);
-  void update(std::shared_ptr<WorldGeneratorFacade>& worldGenerator, Camera& camera);
 private:
   std::shared_ptr<WorldGeneratorFacade>& worldGenerator;
   Camera& camera;

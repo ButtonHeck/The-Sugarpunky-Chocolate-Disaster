@@ -1,10 +1,11 @@
 #include "WorldGeneratorFacade.h"
 
-WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Renderer &renderer, Options &options)
+WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Renderer &renderer, Options &options, TextureManager &textureManager)
   :
     shaderManager(shaderManager),
     renderer(renderer),
-    options(options)
+    options(options),
+    textureManager(textureManager)
 {
   waterMapGenerator = std::make_shared<WaterMapGenerator>(shaderManager.get(SHADER_WATER_CULLING));
   hillMapGenerator = std::make_shared<HillsMapGenerator>(shaderManager.get(SHADER_HILLS_CULLING), waterMapGenerator->getMap());
@@ -14,7 +15,7 @@ WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Rendere
   plantGeneratorFacade = std::make_shared<PlantGeneratorFacade>();
 }
 
-void WorldGeneratorFacade::prepareTerrain()
+void WorldGeneratorFacade::setup()
 {
   waterMapGenerator->setup();
   hillMapGenerator->setup();
@@ -23,6 +24,7 @@ void WorldGeneratorFacade::prepareTerrain()
   waterMapGenerator->setupConsiderTerrain();
   buildableMapGenerator->setup(baseMapGenerator, hillMapGenerator);
   plantGeneratorFacade->setup(baseMapGenerator->getMap(), hillMapGenerator->getMap());
+  textureManager.createUnderwaterReliefTexture(waterMapGenerator);
 }
 
 void WorldGeneratorFacade::recreate()
@@ -30,7 +32,7 @@ void WorldGeneratorFacade::recreate()
   baseMapGenerator.reset(new BaseMapGenerator());
   initializeMap(waterMapGenerator->getMap());
   initializeMap(hillMapGenerator->getMap());
-  prepareTerrain();
+  setup();
 }
 
 void WorldGeneratorFacade::load()
@@ -40,6 +42,7 @@ void WorldGeneratorFacade::load()
   baseMapGenerator->setup(shoreGenerator->getMap());
   waterMapGenerator->setupConsiderTerrain();
   buildableMapGenerator->setup(baseMapGenerator, hillMapGenerator);
+  textureManager.createUnderwaterReliefTexture(waterMapGenerator);
 }
 
 void WorldGeneratorFacade::serialize(std::ofstream &output)
@@ -70,22 +73,23 @@ void WorldGeneratorFacade::bufferWaterNewData()
 }
 
 void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
-                                     glm::vec3 &viewPosition,
+                                     glm::mat4 &skyProjectionView,
                                      Frustum &viewFrustum,
-                                     TextureManager& textureManager,
                                      Camera& camera,
                                      MouseInputManager& mouseInput,
                                      unsigned long updateCount)
 {
   this->projectionView = projectionView;
+  glm::vec3 viewPosition = camera.getPosition();
   drawHills(viewPosition, viewFrustum);
-  drawFlatTerrain(viewFrustum, textureManager);
+  drawFlatTerrain(viewFrustum);
   drawUnderwater();
   drawShore();
   drawPlants(viewPosition, updateCount);
   drawBuildable();
   drawSelected(mouseInput, camera);
   drawWater(viewPosition, viewFrustum);
+  drawSkybox(skyProjectionView);
 }
 
 void WorldGeneratorFacade::drawWorldDepthmap(unsigned long updateCount)
@@ -105,7 +109,7 @@ void WorldGeneratorFacade::drawHills(glm::vec3 &viewPosition, Frustum &viewFrust
   }
 }
 
-void WorldGeneratorFacade::drawFlatTerrain(Frustum &viewFrustum, TextureManager& textureManager)
+void WorldGeneratorFacade::drawFlatTerrain(Frustum &viewFrustum)
 {
   if (options.get(OPT_DRAW_FLAT_TERRAIN))
     {
@@ -193,6 +197,12 @@ void WorldGeneratorFacade::drawWater(glm::vec3 &viewPosition, Frustum &viewFrust
         renderer.renderWater(options.get(OPT_WATER_CULLING), waterMapGenerator, shaderManager.get(SHADER_WATER_CULLING), shaderManager.get(SHADER_WATER));
       }
     }
+}
+
+void WorldGeneratorFacade::drawSkybox(glm::mat4& skyProjectionView)
+{
+  shaderManager.updateSkyShader(skyProjectionView);
+  renderer.renderSkybox(&skybox);
 }
 
 void WorldGeneratorFacade::drawTerrainDepthmap()

@@ -1,9 +1,7 @@
 #include "Game.h"
 
-#ifdef _DEBUG
 int ramAvailable, ramSize;
 float ramSizeFloatPercentage;
-#endif
 
 Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolution &screenResolution)
   :
@@ -26,12 +24,10 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
 {
   srand(time(NULL));
   Model::bindTextureLoader(textureLoader);
-  worldFacade = std::make_shared<WorldGeneratorFacade>(shaderManager, renderer, options);
+  worldFacade = std::make_shared<WorldGeneratorFacade>(shaderManager, renderer, options, textureManager);
   saveLoadManager = std::make_unique<SaveLoadManager>(worldFacade, camera);
-#ifdef _DEBUG
   glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ramSize);
   ramSizeFloatPercentage = (float)ramSize / 100;
-#endif
 }
 
 Game::~Game()
@@ -56,12 +52,8 @@ void Game::setupVariables()
   glfwSetMouseButtonCallback(window, MouseInputManager::cursorClickCallback);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  {
-    BENCHMARK("Game: Prepare Terrain", false);
-    worldFacade->prepareTerrain();
-  }
+  worldFacade->setup();
   setupThreads();
-  textureManager.createUnderwaterReliefTexture(worldFacade->getWaterGenerator());
   shaderManager.setupConstantUniforms(glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()));
   screenBuffer.setup();
   depthmapBuffer.setup(textureManager.get(TEX_DEPTH_MAP_SUN));
@@ -72,23 +64,16 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   if (options.get(OPT_POLYGON_LINE))
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  glm::vec3 viewPosition = camera.getPosition();
-
   worldFacade->bufferWaterNewData();
+  glm::mat4 skyboxProjectionView(projection * glm::mat4(glm::mat3(camera.getViewMatrix())));
   worldFacade->drawWorld(projectionView,
-                         viewPosition,
+                         skyboxProjectionView,
                          viewFrustum,
-                         textureManager,
                          camera,
                          mouseInput,
                          updateCount);
 
-  //Skybox rendering
-  glm::mat4 skyProjectionView = projection * glm::mat4(glm::mat3(camera.getViewMatrix()));
-  shaderManager.updateSkyShader(skyProjectionView);
-  renderer.renderSkybox(&skybox);
-
-  //font rendering
+  //text rendering
   if (options.get(OPT_DRAW_DEBUG_TEXT))
     {
       glEnable(GL_BLEND);
@@ -96,6 +81,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
       {
         BENCHMARK("Renderer: add and draw text", true);
         float scrHeight = (float)screenResolution.getHeight();
+        glm::vec3 viewPosition = camera.getPosition();
         textRenderer.addText("CPU UPS: " + std::to_string(CPU_timer.getFPS()), 10.0f, scrHeight - 15.0f, 0.18f);
         textRenderer.addText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
                                + std::to_string(viewPosition.y).substr(0,6) + ": "
@@ -115,7 +101,6 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
         textRenderer.addText("Water culling: " + (options.get(OPT_WATER_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 20.0f, 0.18f);
         textRenderer.addText("Hills culling: " + (options.get(OPT_HILLS_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 40.0f, 0.18f);
         textRenderer.addText("Trees culling: " + (options.get(OPT_MODELS_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 60.0f, 0.18f);
-#ifdef _DEBUG
         textRenderer.addText("Water anim thread works: " + (waterAnimatorIsWorking ? std::string("On") : std::string("Off")), 10.0f, 80.0f, 0.18f);
         glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &ramAvailable);
         textRenderer.addText("RAM available: " + (std::to_string(ramAvailable)
@@ -123,15 +108,11 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
                                                      .append(std::to_string(ramAvailable / ramSizeFloatPercentage))
                                                      .append("%")), 10.0f, 100.0f, 0.18f);
         textRenderer.addText("Models Phong: " + (options.get(OPT_MODELS_PHONG_SHADING) ? std::string("On") : std::string("Off")), 10.0f, 120.0f, 0.18f);
-#endif
         textRenderer.drawText();
       }
       glDisable(GL_BLEND);
       glEnable(GL_CULL_FACE);
-      {
-        BENCHMARK("Renderer: draw cs", true);
-        csRenderer.draw(glm::mat3(camera.getViewMatrix()), screenResolution.getAspectRatio());
-      }
+      csRenderer.draw(glm::mat3(camera.getViewMatrix()), screenResolution.getAspectRatio());
     }
 
   if (options.get(OPT_POLYGON_LINE))
@@ -148,8 +129,7 @@ void Game::loop()
   }
   meshBufferReady = false;
 
-  keyboard.processKeyboard();
-  keyboard.processKeyboardCamera(CPU_timer.tick(), worldFacade->getHillsGenerator()->getMap());
+  keyboard.processInput(CPU_timer.tick(), worldFacade->getHillsGenerator()->getMap());
 
   //recreate routine
   if (options.get(OPT_RECREATE_TERRAIN_REQUEST))
@@ -158,9 +138,7 @@ void Game::loop()
         std::this_thread::yield();//busy wait until water thread has done its business...and business is good
       waterNeedNewKeyFrame = false; //explicitly bypass water animation frame update routine
       worldFacade->recreate();
-      saveLoadManager->update(worldFacade, camera);
       options.set(OPT_RECREATE_TERRAIN_REQUEST, false);
-      textureManager.createUnderwaterReliefTexture(worldFacade->getWaterGenerator());
       waterNeedNewKeyFrame = true; //it's okay now to begin animating water
     }
 
@@ -178,15 +156,6 @@ void Game::loop()
   glm::mat4 projectionView = projection * view;
   viewFrustum.updateFrustum(projectionView);
 
-  /*
-   * If the MULTISAMPLE_ENABLE option is true we only need to rebind fbo to use one with MS
-   * because the msFBO is already configured to use multisample generated texture
-   * with a MULTISAMPLES number of sampling (check Settings.h). If the OPT_USE_MULTISAMPLING set to false
-   * we just bind another one fbo without MS (that is also used as read buffer and then used for buffer blitting
-   * to the default fbo IF the ms enabled), moreover, we do not need to do blitting,
-   * because the fbo itself already contains all the data drawn into it
-   * and it could be used by default fbo immediately
-   */
   bool multisamplingEnabled = options.get(OPT_USE_MULTISAMPLING);
   screenBuffer.bindAppropriateFBO(multisamplingEnabled);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -217,7 +186,6 @@ void Game::loop()
       waterNeedNewKeyFrame = false;
       saveLoadManager->loadFromFile(SAVES_DIR + "testSave.txt");
       worldFacade->load();
-      textureManager.createUnderwaterReliefTexture(worldFacade->getWaterGenerator());
       options.set(OPT_LOAD_REQUEST, false);
       waterNeedNewKeyFrame = true;
     }
@@ -259,15 +227,11 @@ void Game::setupThreads()
                   waterKeyFrameReady = false;
                   worldFacade->getWaterGenerator()->updateAnimationFrame(options);
                   waterKeyFrameReady = true;
-#ifdef _DEBUG
                   waterAnimatorIsWorking = true;
-#endif
                 }
               else
                 {
-#ifdef _DEBUG
                   waterAnimatorIsWorking = false;
-#endif
                   std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
               std::this_thread::yield();

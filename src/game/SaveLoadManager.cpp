@@ -33,9 +33,3 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   input.close();
   return true;
 }
-
-void SaveLoadManager::update(std::shared_ptr<WorldGeneratorFacade>& worldGenerator, Camera& camera)
-{
-  this->worldGenerator = worldGenerator;
-  this->camera = camera;
-}

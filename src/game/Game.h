@@ -21,7 +21,6 @@
 #include "graphics/TextRenderer.h"
 #include "graphics/FontLoader.h"
 #include "graphics/CoordinateSystemRenderer.h"
-#include "graphics/Skybox.h"
 #include "graphics/TextureManager.h"
 #include "timer/Timer.h"
 #include "timer/BenchmarkTimer.h"
@@ -64,7 +63,6 @@ private:
   //world
   std::shared_ptr<WorldGeneratorFacade> worldFacade;
   std::unique_ptr<SaveLoadManager> saveLoadManager;
-  Skybox skybox;
 
   //GUI and text
   FontLoader fontLoader;
@@ -76,9 +74,7 @@ private:
   std::unique_ptr<std::thread> meshIndirectBufferUpdater;
   volatile bool meshBufferReady = false, meshBufferNeedUpdate = false;
   volatile bool waterKeyFrameReady = false, waterNeedNewKeyFrame = true;
-#ifdef _DEBUG
   bool waterAnimatorIsWorking = true;
-#endif
 };
 
 #endif // GAME_H

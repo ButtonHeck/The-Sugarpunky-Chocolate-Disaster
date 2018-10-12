@@ -7,7 +7,7 @@ KeyboardManager::KeyboardManager(GLFWwindow *window, Camera &camera, Options &op
     options(options)
 {}
 
-void KeyboardManager::processKeyboard()
+void KeyboardManager::processInput(float delta, std::vector<std::vector<float> > &hillsMap)
 {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
@@ -50,17 +50,8 @@ void KeyboardManager::processKeyboard()
   processKey(GLFW_KEY_G, OPT_DRAW_WATER);
   processKey(GLFW_KEY_B, OPT_MODELS_FLAT_BLENDING);
   processKey(GLFW_KEY_L, OPT_POLYGON_LINE);
-}
 
-void KeyboardManager::processKeyboardCamera(float delta, std::vector<std::vector<float> > &hillsMap)
-{
-  /*
-   * I've just made an assumption that player won't be trying
-   * to move right and left (or up and down, forward and backward) simultaneously
-   * that's why here are pairs of "if-elif" instead of plain "if-if",
-   * in this case the CPU would not try to process both movements
-   * if the 1st direction is already detected(I guess...)
-   */
+  //process camera
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     camera.processKeyboardInput(delta, FORWARD, hillsMap);
   else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
