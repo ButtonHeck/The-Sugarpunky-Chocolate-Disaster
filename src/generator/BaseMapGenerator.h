@@ -10,7 +10,7 @@ class BaseMapGenerator : public MapGenerator
 {
 public:
   BaseMapGenerator();
-  ~BaseMapGenerator();
+  virtual ~BaseMapGenerator();
   void setup(std::vector<std::vector<float>> &shoreMap);
   std::vector<TerrainChunk>& getCellChunks();
   GLuint& getCellVAO();
@@ -25,7 +25,7 @@ private:
   void setupGLBufferAttributes();
   void setupGLBufferInstancedAttributes();
   GLuint squareModelVbo;
-  GLuint cellVao, cellVbo, cellEbo, cellModelVbo, cellMultiDE_I_DIBO;
+  GLuint cellVao, cellVbo, cellEbo, cellModelVbo, cellIndirectDrawCommandBO;
   std::vector<std::vector<float>> chunkMap;
   std::vector<TerrainTile> cellTiles;
   std::default_random_engine randomizer;

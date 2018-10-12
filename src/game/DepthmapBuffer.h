@@ -7,7 +7,7 @@ class DepthmapBuffer
 {
 public:
   DepthmapBuffer() = default;
-  ~DepthmapBuffer();
+  virtual ~DepthmapBuffer();
   void setup(GLuint depthTextureUnit);
   void bindToViewport(int frameWidth, int frameHeight);
   void unbindToViewport(int frameWidth, int frameHeight);

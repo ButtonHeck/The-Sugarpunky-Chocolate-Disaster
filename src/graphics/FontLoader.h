@@ -16,7 +16,7 @@ class FontLoader
 {
 public:
   FontLoader(const std::string& fontFile, const std::string& fontTexture);
-  ~FontLoader() = default;
+  virtual ~FontLoader() = default;
   const std::map<char, Character>& getAlphabet() const;
   GLuint getTextureWidth() const;
   GLuint getTextureHeight() const;

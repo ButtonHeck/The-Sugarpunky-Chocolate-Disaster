@@ -129,11 +129,7 @@ void BenchmarkTimer::printBenchmarksPerFrame(unsigned int updateCount, unsigned 
 void BenchmarkTimer::clearBenchmarksPerFrameValues()
 {
   for (auto bench = benchmarksTimers.begin(); bench != benchmarksTimers.end(); ++bench)
-    {
-      bench->second = 0;
-    }
+    bench->second = 0;
   for (auto bench = benchmarksInvocations.begin(); bench != benchmarksInvocations.end(); ++bench)
-    {
-      bench->second = 0;
-    }
+    bench->second = 0;
 }

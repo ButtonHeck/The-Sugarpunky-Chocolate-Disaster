@@ -43,10 +43,7 @@ GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, G
   glTextureStorage2D(texture, mipLevel, internalFormat, imageWidth, imageHeight);
   glTextureSubImage2D(texture, 0, 0, 0, imageWidth, imageHeight, dataFormat, GL_UNSIGNED_BYTE, data);
   glGenerateTextureMipmap(texture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapType);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapType);
+  setTexture2DParameters(magFilter, minFilter, wrapType);
   if (useAnisotropy)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, ANISOTROPY);
   ilDeleteImage(ilGetInteger(IL_ACTIVE_IMAGE));
@@ -71,10 +68,7 @@ GLuint TextureLoader::createDepthMapTexture(int width, int height, GLuint textur
 {
   GLuint texture = createAndBindTextureObject(GL_TEXTURE_2D, textureUnit);
   glTextureStorage2D(texture, 1, GL_DEPTH_COMPONENT16, width, height);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+  setTexture2DParameters(GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_BORDER);
   float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
   glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
   return texture;
@@ -117,8 +111,8 @@ GLuint TextureLoader::loadCubemap(const std::string& directory, GLuint textureUn
 GLuint TextureLoader::createUnderwaterReliefTexture(const std::shared_ptr<WaterMapGenerator> waterMapGenerator, GLuint textureUnit, GLint magFilter, GLint minFilter)
 {
   static bool needStorage = true;
-  static GLuint underwaterReliefTexture;
-  GLubyte* textureData = new GLubyte[WORLD_WIDTH * WORLD_HEIGHT];
+  static GLuint texture;
+  std::unique_ptr<GLubyte[]> textureData(new GLubyte[WORLD_WIDTH * WORLD_HEIGHT]);
   int left, right, top, bottom;
   float waterCount;
   for (int y = 1; y < WORLD_HEIGHT; y++)
@@ -146,19 +140,15 @@ GLuint TextureLoader::createUnderwaterReliefTexture(const std::shared_ptr<WaterM
     }
   if (needStorage)
     {
-      glCreateTextures(GL_TEXTURE_2D, 1, &underwaterReliefTexture);
-      glTextureStorage2D(underwaterReliefTexture, 1, GL_R8, WORLD_WIDTH, WORLD_HEIGHT);
+      glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+      glTextureStorage2D(texture, 1, GL_R8, WORLD_WIDTH, WORLD_HEIGHT);
       needStorage = false;
     }
   glActiveTexture(GL_TEXTURE0 + textureUnit);
-  glBindTexture(GL_TEXTURE_2D, underwaterReliefTexture);
-  glTextureSubImage2D(underwaterReliefTexture, 0, 0, 0, WORLD_WIDTH, WORLD_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, textureData);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  delete[] textureData;
-  return underwaterReliefTexture;
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTextureSubImage2D(texture, 0, 0, 0, WORLD_WIDTH, WORLD_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, textureData.get());
+  setTexture2DParameters(magFilter, minFilter, GL_REPEAT);
+  return texture;
 }
 
 unsigned int TextureLoader::getMaxMip(unsigned int width, unsigned int height)
@@ -173,3 +163,10 @@ unsigned int TextureLoader::getMaxMip(unsigned int width, unsigned int height)
   return mip;
 }
 
+void TextureLoader::setTexture2DParameters(GLint magFilter, GLint minFilter, GLenum wrapType)
+{
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapType);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapType);
+}

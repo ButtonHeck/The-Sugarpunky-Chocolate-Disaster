@@ -16,7 +16,7 @@ class HillsMapGenerator : public MapGenerator
 {
 public:
   HillsMapGenerator(Shader& shader, std::vector<std::vector<float>>& waterMap);
-  ~HillsMapGenerator();
+  virtual ~HillsMapGenerator();
   void setup();
   void createTilesAndBufferData();
   float getMaxHeight() const;

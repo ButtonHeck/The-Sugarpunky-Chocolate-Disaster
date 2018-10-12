@@ -3,7 +3,8 @@
 TextRenderer::TextRenderer(FontLoader &font, Shader &shader)
   :
     font(font),
-    shader(shader)
+    shader(shader),
+    vertexData(new GLfloat[MAX_BUFFER_SIZE])
 {
   glCreateVertexArrays(1, &vao);
   glCreateBuffers(1, &vbo);
@@ -12,18 +13,6 @@ TextRenderer::TextRenderer(FontLoader &font, Shader &shader)
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
   glBindVertexArray(0);
-  vertexData = new GLfloat[MAX_BUFFER_SIZE];
-}
-
-TextRenderer::~TextRenderer()
-{
-  delete[] vertexData;
-}
-
-void TextRenderer::resetBufferOffset()
-{
-  bufferOffset = 0;
-  vertexCount = 0;
 }
 
 void TextRenderer::addText(std::string text, GLfloat x, GLfloat y, GLfloat scale)
@@ -83,7 +72,8 @@ void TextRenderer::drawText()
   shader.use();
   glBindVertexArray(vao);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, bufferOffset * sizeof(GLfloat), vertexData, GL_STATIC_DRAW);
-  glDrawArrays(GL_TRIANGLES, 0, vertexCount * 6);
-  resetBufferOffset();
+  glBufferData(GL_ARRAY_BUFFER, bufferOffset * sizeof(GLfloat), vertexData.get(), GL_STATIC_DRAW);
+  glDrawArrays(GL_TRIANGLES, 0, vertexCount * VERTICES_PER_TILE);
+  bufferOffset = 0;
+  vertexCount = 0;
 }

@@ -12,7 +12,7 @@ class WaterMapGenerator : public MapGenerator
 {
 public:
   WaterMapGenerator(Shader& waterShader);
-  ~WaterMapGenerator();
+  virtual ~WaterMapGenerator();
   void setup();
   void setupConsiderTerrain();
   void updateVerticesBuffer();

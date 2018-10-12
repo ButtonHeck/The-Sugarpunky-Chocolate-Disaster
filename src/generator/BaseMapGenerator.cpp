@@ -10,7 +10,7 @@ BaseMapGenerator::BaseMapGenerator()
   glCreateBuffers(1, &cellVbo);
   glCreateBuffers(1, &cellEbo);
   glCreateBuffers(1, &cellModelVbo);
-  glCreateBuffers(1, &cellMultiDE_I_DIBO);
+  glCreateBuffers(1, &cellIndirectDrawCommandBO);
 }
 
 BaseMapGenerator::~BaseMapGenerator()
@@ -20,7 +20,7 @@ BaseMapGenerator::~BaseMapGenerator()
   glDeleteBuffers(1, &cellVbo);
   glDeleteBuffers(1, &cellEbo);
   glDeleteBuffers(1, &cellModelVbo);
-  glDeleteBuffers(1, &cellMultiDE_I_DIBO);
+  glDeleteBuffers(1, &cellIndirectDrawCommandBO);
 }
 
 void BaseMapGenerator::setup(std::vector<std::vector<float> > &shoreMap)
@@ -155,7 +155,7 @@ void BaseMapGenerator::fillCellBufferData()
        0.0f, 0.0f,  0.0f, 0.0f,  1.0f
   };
   glBindVertexArray(cellVao);
-  glBindBuffer(GL_DRAW_INDIRECT_BUFFER, cellMultiDE_I_DIBO);
+  glBindBuffer(GL_DRAW_INDIRECT_BUFFER, cellIndirectDrawCommandBO);
   bufferData(cellEbo, cellVbo, cellVertices, 20);
   setupGLBufferAttributes();
   std::unique_ptr<glm::mat4[]> cellInstanceModels(new glm::mat4[cellTiles.size()]);
@@ -210,5 +210,5 @@ GLuint &BaseMapGenerator::getCellVAO()
 
 GLuint &BaseMapGenerator::getCellDIBO()
 {
-  return cellMultiDE_I_DIBO;
+  return cellIndirectDrawCommandBO;
 }

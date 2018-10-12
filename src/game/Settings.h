@@ -51,6 +51,7 @@ constexpr unsigned int LOADING_DISTANCE_UNITS_SQUARE = LOADING_DISTANCE_UNITS * 
 constexpr float MODELS_FC_RADIUS = HALF_CHUNK_SIZE;
 constexpr unsigned int MESH_INDIRECT_BUFFER_UPDATE_FREQ = 2;
 constexpr unsigned char QUAD_INDICES[6] = {0,1,2,2,3,0};
+constexpr unsigned int VERTICES_PER_TILE = 6;
 
 //textures configuration
 constexpr bool HDR_ENABLED = true;

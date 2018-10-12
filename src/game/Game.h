@@ -35,7 +35,7 @@ class Game
 {
 public:
   Game(GLFWwindow* window, Camera& camera, Options& options, ScreenResolution& screenResolution);
-  ~Game();
+  virtual ~Game();
   void setupVariables();
   void prepareTerrain();
   void drawFrameObjects(glm::mat4& projectionView);

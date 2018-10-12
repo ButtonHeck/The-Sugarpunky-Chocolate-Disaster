@@ -20,6 +20,7 @@ void HillsMapGenerator::setup()
 {
   generateMap(12, HILL_DENSITY::HILLS_DENSE);
   generateMap(6, HILL_DENSITY::HILLS_THIN);
+  smoothMapSinks();
   compressMap(0.00f, 1.33f); //compress entire range
   compressMap(0.66f * maxHeight, 2.0f);
   removeMapPlateaus(1.0f);
@@ -27,7 +28,6 @@ void HillsMapGenerator::setup()
     {
       smoothMapHeightChunks(map, 0.6f, 0.05f, 0.05f);
     }
-  smoothMapSinks();
   createTilesAndBufferData();
 }
 

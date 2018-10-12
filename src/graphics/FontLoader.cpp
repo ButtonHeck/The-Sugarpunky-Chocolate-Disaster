@@ -5,14 +5,12 @@ FontLoader::FontLoader(const std::string &fontFile, const std::string &textureFi
   if (!ilLoadImage(textureFile.c_str()))
     std::cerr << "Error loading font texture " << textureFile.c_str() << std::endl;
   ILubyte* data = ilGetData();
-  auto width = ilGetInteger(IL_IMAGE_WIDTH);
-  textureWidth = width;
-  auto height = ilGetInteger(IL_IMAGE_HEIGHT);
-  textureHeight = height;
+  textureWidth = ilGetInteger(IL_IMAGE_WIDTH);
+  textureHeight = ilGetInteger(IL_IMAGE_HEIGHT);
   glCreateTextures(GL_TEXTURE_2D, 1, &fontTexture);
   glActiveTexture(GL_TEXTURE0 + TEX_FONT);
   glBindTexture(GL_TEXTURE_2D, fontTexture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -21,11 +19,6 @@ FontLoader::FontLoader(const std::string &fontFile, const std::string &textureFi
   std::ifstream input(fontFile);
   std::stringstream stringBuf;
   stringBuf << input.rdbuf();
-  for (unsigned int i = 0; i < 24; i++)
-    {
-      std::string unused;
-      stringBuf >> unused;
-    }
 
   for (unsigned int i = 0; i < 97; ++i)
     {

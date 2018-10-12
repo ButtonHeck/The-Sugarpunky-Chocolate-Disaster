@@ -8,8 +8,7 @@ class CoordinateSystemRenderer
 {
 public:
   CoordinateSystemRenderer(Shader* shader);
-  ~CoordinateSystemRenderer();
-  void deleteGLObjects();
+  virtual ~CoordinateSystemRenderer();
   void draw(const glm::mat3& view, float aspect_ratio);
 private:
   GLuint vao, vbo;

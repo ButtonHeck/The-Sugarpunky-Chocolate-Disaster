@@ -15,7 +15,7 @@ class BenchmarkTimer
 {
 public:
   BenchmarkTimer(const std::string& text, bool perFrameBenchmark, bool isPassThrough = false);
-  ~BenchmarkTimer();
+  virtual ~BenchmarkTimer();
   static void finish(unsigned int updateCount);
   static void printBenchmarksPerApp(unsigned int updateCount);
   static void printBenchmarksPerFrame(unsigned int updateCount, unsigned int ups);

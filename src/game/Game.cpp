@@ -49,8 +49,6 @@ Game::~Game()
 {
   waterAnimator->join();
   meshIndirectBufferUpdater->join();
-  textureManager.deleteTextures();
-  shaderManager.deleteShaders();
   BenchmarkTimer::finish(updateCount);
 }
 

@@ -35,6 +35,7 @@ class ShaderManager
 {
 public:
   ShaderManager();
+  virtual ~ShaderManager();
   void setupConstantUniforms(glm::mat4 fontProjection);
   Shader& get(SHADER type);
   void updateHillsShaders(bool useFC, bool useShadows, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum, float maxHillHeight);
@@ -49,7 +50,6 @@ public:
                          bool shadowOnTrees,
                          bool useShadows,
                          bool useFlatBlending);
-  void deleteShaders();
 private:
   std::vector<std::pair<SHADER, Shader>> shaders;
 };

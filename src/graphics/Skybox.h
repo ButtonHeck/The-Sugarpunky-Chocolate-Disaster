@@ -6,8 +6,7 @@ class Skybox
 {
 public:
   Skybox();
-  ~Skybox();
-  void deleteGLObjects();
+  virtual ~Skybox();
   GLuint& getVAO();
   static constexpr int NUM_POSITIONS = 108;
 private:

@@ -3,9 +3,7 @@
 Renderer::Renderer(Camera &camera)
   :
     camera(camera)
-{
-
-}
+{}
 
 void Renderer::drawHills(bool useFC, const std::shared_ptr<HillsMapGenerator> generator, Shader& fc, Shader& nofc)
 {
@@ -19,7 +17,7 @@ void Renderer::drawHills(bool useFC, const std::shared_ptr<HillsMapGenerator> ge
         glEnable(GL_RASTERIZER_DISCARD);
         glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, tfb);
         glBeginTransformFeedback(GL_TRIANGLES);
-        glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * 6);
+        glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * VERTICES_PER_TILE);
         glEndTransformFeedback();
         glDisable(GL_RASTERIZER_DISCARD);
       }
@@ -34,21 +32,21 @@ void Renderer::drawHills(bool useFC, const std::shared_ptr<HillsMapGenerator> ge
     {
       nofc.use();
       glBindVertexArray(generator->getVAO());
-      glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * 6);
+      glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * VERTICES_PER_TILE);
     }
 }
 
 void Renderer::drawHillsDepthmap(const std::shared_ptr<HillsMapGenerator> generator)
 {
   glBindVertexArray(generator->getVAO());
-  glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * 6);
+  glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * VERTICES_PER_TILE);
 }
 
 void Renderer::drawShore(const std::shared_ptr<ShoreGenerator> generator)
 {
   glBindVertexArray(generator->getVAO());
   glEnable(GL_BLEND);
-  glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * 6);
+  glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * VERTICES_PER_TILE);
   glDisable(GL_BLEND);
 }
 
@@ -57,7 +55,7 @@ void Renderer::drawFlatTerrain(const std::shared_ptr<BaseMapGenerator> generator
   glBindTextureUnit(TEX_FLAT, texture);
   //square chunks are better to render without FC
   glBindVertexArray(generator->getVAO());
-  glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0, generator->getTiles().size());
+  glDrawElementsInstanced(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0, generator->getTiles().size());
 
   //these ones should probably be FC-ed with multiDrawIndirect
   glBindVertexArray(generator->getCellVAO());
@@ -116,7 +114,7 @@ void Renderer::addIndirectBufferData(GLuint& primCount,
                                      GLuint instanceOffset)
 {
   ++primCount;
-  buffer[dataOffset++] = 6;
+  buffer[dataOffset++] = VERTICES_PER_TILE;
   buffer[dataOffset++] = numInstances;
   buffer[dataOffset++] = 0;
   buffer[dataOffset++] = 0;
@@ -126,14 +124,14 @@ void Renderer::addIndirectBufferData(GLuint& primCount,
 void Renderer::drawUnderwaterQuad(const UnderwaterQuadMapGenerator &generator)
 {
   glBindVertexArray(generator.getVAO());
-  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+  glDrawElements(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0);
 }
 
 void Renderer::drawBuildableTiles(const std::shared_ptr<BuildableMapGenerator> generator)
 {
   glBindVertexArray(generator->getVAO());
   glEnable(GL_BLEND);
-  glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0, generator->getNumInstances());
+  glDrawElementsInstanced(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0, generator->getNumInstances());
   glDisable(GL_BLEND);
 }
 
@@ -141,7 +139,7 @@ void Renderer::drawSelectedTile(const std::shared_ptr<BuildableMapGenerator> gen
 {
   glBindVertexArray(generator->getSelectedTileVAO());
   glEnable(GL_BLEND);
-  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+  glDrawElements(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0);
   glDisable(GL_BLEND);
 }
 
@@ -157,7 +155,7 @@ void Renderer::drawWater(bool useFC, std::shared_ptr<WaterMapGenerator> generato
           glEnable(GL_RASTERIZER_DISCARD);
           glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, generator->getTransformFeedback());
           glBeginTransformFeedback(GL_TRIANGLES);
-          glDrawArrays(GL_TRIANGLES, 0, 6 * generator->getTiles().size());
+          glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * VERTICES_PER_TILE);
           glEndTransformFeedback();
           glDisable(GL_RASTERIZER_DISCARD);
         }
@@ -177,7 +175,7 @@ void Renderer::drawWater(bool useFC, std::shared_ptr<WaterMapGenerator> generato
       nofc.use();
       glBindVertexArray(generator->getVAO());
       glEnable(GL_BLEND);
-      glDrawArrays(GL_TRIANGLES, 0, 6 * generator->getTiles().size());
+      glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * VERTICES_PER_TILE);
       glDisable(GL_BLEND);
     }
 }
@@ -187,7 +185,7 @@ void Renderer::drawSkybox(Skybox *skybox)
   glDepthFunc(GL_LEQUAL);
   glDisable(GL_CULL_FACE);
   glBindVertexArray(skybox->getVAO());
-  glDrawArrays(GL_TRIANGLES, 0, 36);
+  glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_TILE * VERTICES_PER_TILE);
   glDepthFunc(GL_LESS);
   glEnable(GL_CULL_FACE);
 }
@@ -235,11 +233,9 @@ void Renderer::drawPlants(const std::shared_ptr<PlantGeneratorFacade> generatorF
       model.draw(enableFrustumCulling, bindTexture, updateIndirect);
     }
   glEnable(GL_CULL_FACE);
-  if (screenDraw)
-    {
-      shader.setBool("u_isGrass", false);
-    }
 
+  if (screenDraw)
+    shader.setBool("u_isGrass", false);
   if (useFlatBlending)
     glDisable(GL_BLEND);
 }

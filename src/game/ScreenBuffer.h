@@ -9,7 +9,7 @@ class ScreenBuffer
 {
 public:
   ScreenBuffer(ScreenResolution& screenResolution, TextureManager& textureManager, ShaderManager& shaderManager);
-  ~ScreenBuffer();
+  virtual ~ScreenBuffer();
   void setup();
   void draw(bool enableMultisampling);
   void bindAppropriateFBO(bool enableMultisampling);

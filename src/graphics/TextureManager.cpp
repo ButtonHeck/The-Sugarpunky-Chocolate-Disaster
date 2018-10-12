@@ -25,6 +25,12 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_DEPTH_MAP_SUN] = loader.createDepthMapTexture(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT, TEX_DEPTH_MAP_SUN);
 }
 
+TextureManager::~TextureManager()
+{
+  for (unsigned int i = 0; i < textures.size(); i++)
+    glDeleteTextures(1, &(textures[i]));
+}
+
 void TextureManager::createUnderwaterReliefTexture(const std::shared_ptr<WaterMapGenerator> generator)
 {
   textures[TEX_UNDERWATER_RELIEF] = loader.createUnderwaterReliefTexture(generator, TEX_UNDERWATER_RELIEF, GL_LINEAR, GL_LINEAR);
@@ -33,10 +39,4 @@ void TextureManager::createUnderwaterReliefTexture(const std::shared_ptr<WaterMa
 GLuint &TextureManager::get(int unit)
 {
   return textures[unit];
-}
-
-void TextureManager::deleteTextures()
-{
-  for (unsigned int i = 0; i < textures.size(); i++)
-    glDeleteTextures(1, &(textures[i]));
 }

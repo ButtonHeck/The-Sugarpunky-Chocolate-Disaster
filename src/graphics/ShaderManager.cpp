@@ -26,6 +26,13 @@ ShaderManager::ShaderManager()
         });
 }
 
+ShaderManager::~ShaderManager()
+{
+  glUseProgram(0);
+  for (unsigned int i = 0; i < shaders.size(); i++)
+    shaders[i].second.cleanUp();
+}
+
 #define bindShaderUnit(shader, type) \
   shader = &shaders[type].second; \
   shader->use();
@@ -221,11 +228,4 @@ void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &view
   shader->setBool("u_shadow", shadowOnTrees);
   shader->setBool("u_shadowEnable", useShadows);
   shader->setBool("u_useFlatBlending", useFlatBlending);
-}
-
-void ShaderManager::deleteShaders()
-{
-  glUseProgram(0);
-  for (unsigned int i = 0; i < shaders.size(); i++)
-    shaders[i].second.cleanUp();
 }

@@ -14,7 +14,7 @@ class BuildableMapGenerator : public MapGenerator
 public:
   BuildableMapGenerator(std::shared_ptr<BaseMapGenerator>& baseMapGenerator,
                         std::shared_ptr<HillsMapGenerator>& hillsGenerator);
-  ~BuildableMapGenerator();
+  virtual ~BuildableMapGenerator();
   void setup(std::shared_ptr<BaseMapGenerator> &baseMapGenerator,
              std::shared_ptr<HillsMapGenerator> &hillsGenerator);
   GLuint& getNumInstances();

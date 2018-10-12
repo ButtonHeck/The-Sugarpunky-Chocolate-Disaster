@@ -9,7 +9,7 @@ class ShoreGenerator : public MapGenerator
 {
 public:
   ShoreGenerator(std::vector<std::vector<float>>& waterMap);
-  ~ShoreGenerator() = default;
+  virtual ~ShoreGenerator() = default;
   void setup();
 private:
   struct ShoreVertex

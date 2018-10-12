@@ -13,7 +13,6 @@ class TextureLoader
 {
 public:
   TextureLoader(ScreenResolution& screenResolution);
-  GLuint createAndBindTextureObject(GLenum target, GLuint textureUnit);
   GLuint loadTexture(const std::string& path, GLuint textureUnit, GLenum wrapType, GLint magFilter, GLint minFilter, bool useAnisotropy, bool includeCWD = true);
   GLuint createFrameMSTexture(int multisample, GLuint textureUnit);
   GLuint createFrameTexture(GLuint textureUnit);
@@ -22,6 +21,8 @@ public:
   GLuint createUnderwaterReliefTexture(const std::shared_ptr<WaterMapGenerator> waterMapGenerator, GLuint textureUnit, GLint magFilter, GLint minFilter);
   unsigned int getMaxMip(unsigned int width, unsigned int height);
 private:
+  GLuint createAndBindTextureObject(GLenum target, GLuint textureUnit);
+  void setTexture2DParameters(GLint magFilter, GLint minFilter, GLenum wrapType);
   ScreenResolution& screenResolution;
 };
 

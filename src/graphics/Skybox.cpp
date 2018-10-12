@@ -15,11 +15,6 @@ Skybox::Skybox()
 
 Skybox::~Skybox()
 {
-  deleteGLObjects();
-}
-
-void Skybox::deleteGLObjects()
-{
   glDeleteVertexArrays(1, &vao);
   glDeleteBuffers(1, &vbo);
 }
