@@ -4,7 +4,7 @@
 #include <chrono>
 #include <memory>
 #include "Generator.h"
-#include "chunk/TerrainChunk.h"
+#include "game/world/terrain/TerrainChunk.h"
 
 class LandGenerator : public Generator
 {

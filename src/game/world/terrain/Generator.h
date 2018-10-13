@@ -3,7 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <GL/glew.h>
-#include "model/TerrainTile.h"
+#include "game/world/terrain/TerrainTile.h"
 #include "util/Settings.h"
 
 void initializeMap(std::vector<std::vector<float>>& map);

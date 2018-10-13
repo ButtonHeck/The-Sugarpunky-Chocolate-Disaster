@@ -15,7 +15,6 @@ SOURCES += \
     src/graphics/Shader.cpp \
     src/graphics/Camera.cpp \
     src/graphics/TextureLoader.cpp \
-    src/graphics/Skybox.cpp \
     src/graphics/Renderer.cpp \
     src/graphics/CoordinateSystemRenderer.cpp \
     src/graphics/Frustum.cpp \
@@ -23,10 +22,7 @@ SOURCES += \
     src/graphics/ShaderManager.cpp \
     src/model/Mesh.cpp \
     src/model/Model.cpp \
-    src/model/TerrainTile.cpp \
     src/model/IndirectBufferToken.cpp \
-    src/chunk/ModelChunk.cpp \
-    src/chunk/TerrainChunk.cpp \
     src/input/KeyboardManager.cpp \
     src/input/MouseInputManager.cpp \
     src/game/ScreenResolution.cpp \
@@ -50,7 +46,11 @@ SOURCES += \
     src/util/BenchmarkTimer.cpp \
     src/util/Chunk.cpp \
     src/util/DebugLogger.cpp \
-    src/util/Settings.cpp
+    src/util/Settings.cpp \
+    src/game/world/plants/ModelChunk.cpp \
+    src/game/world/terrain/TerrainChunk.cpp \
+    src/game/world/terrain/TerrainTile.cpp \
+    src/game/world/Skybox.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -62,15 +62,11 @@ HEADERS += \
     src/graphics/Camera.h \
     src/graphics/TextureLoader.h \
     src/graphics/Renderer.h \
-    src/graphics/Skybox.h \
     src/graphics/CoordinateSystemRenderer.h \
     src/graphics/Frustum.h \
     src/graphics/TextureManager.h \
-    src/model/TerrainTile.h \
     src/model/Mesh.h \
     src/model/Model.h \
-    src/chunk/ModelChunk.h \
-    src/chunk/TerrainChunk.h \
     src/model/IndirectBufferToken.h \
     src/input/KeyboardManager.h \
     src/input/MouseInputManager.h \
@@ -97,7 +93,11 @@ HEADERS += \
     src/util/Chunk.h \
     src/util/DebugLogger.h \
     src/util/Settings.h \
-    src/util/Timer.h
+    src/util/Timer.h \
+    src/game/world/plants/ModelChunk.h \
+    src/game/world/terrain/TerrainChunk.h \
+    src/game/world/terrain/TerrainTile.h \
+    src/game/world/Skybox.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

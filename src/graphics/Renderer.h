@@ -6,7 +6,7 @@
 #include "graphics/Shader.h"
 #include "graphics/Camera.h"
 #include "graphics/Frustum.h"
-#include "graphics/Skybox.h"
+#include "game/world/Skybox.h"
 #include "game/world/terrain/HillsGenerator.h"
 #include "game/world/terrain/LandGenerator.h"
 #include "game/world/terrain/ShoreGenerator.h"

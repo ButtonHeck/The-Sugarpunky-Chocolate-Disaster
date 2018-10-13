@@ -9,7 +9,7 @@
 #include <random>
 #include "util/Settings.h"
 #include "model/Model.h"
-#include "chunk/ModelChunk.h"
+#include "game/world/plants/ModelChunk.h"
 
 class PlantGenerator
 {

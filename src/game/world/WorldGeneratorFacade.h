@@ -8,7 +8,7 @@
 #include "game/world/terrain/BuildableGenerator.h"
 #include "game/world/terrain/ShoreGenerator.h"
 #include "game/world/terrain/UnderwaterGenerator.h"
-#include "graphics/Skybox.h"
+#include "game/world/Skybox.h"
 #include "graphics/ShaderManager.h"
 #include "graphics/Renderer.h"
 #include "graphics/TextureManager.h"

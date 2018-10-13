@@ -1,4 +1,4 @@
-#include "graphics/Skybox.h"
+#include "game/world/Skybox.h"
 
 Skybox::Skybox()
 {

@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 #include "game/world/WorldGeneratorFacade.h"
-#include "chunk/ModelChunk.h"
+#include "game/world/plants/ModelChunk.h"
 #include "graphics/Camera.h"
 
 class SaveLoadManager

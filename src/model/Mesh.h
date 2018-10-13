@@ -10,7 +10,7 @@
 #include <glm/gtx/norm.hpp>
 #include "graphics/Shader.h"
 #include "util/Settings.h"
-#include "chunk/ModelChunk.h"
+#include "game/world/plants/ModelChunk.h"
 #include "graphics/Camera.h"
 #include "graphics/Frustum.h"
 #include "util/Settings.h"

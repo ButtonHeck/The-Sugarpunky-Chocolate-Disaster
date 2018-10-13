@@ -6,7 +6,7 @@
 #include <vector>
 #include "Mesh.h"
 #include "graphics/TextureLoader.h"
-#include "chunk/ModelChunk.h"
+#include "game/world/plants/ModelChunk.h"
 #include "graphics/Camera.h"
 #include "util/Settings.h"
 #include "graphics/Frustum.h"
