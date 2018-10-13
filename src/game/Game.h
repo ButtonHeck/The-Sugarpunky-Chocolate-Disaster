@@ -6,7 +6,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <memory>
-#include "game/Settings.h"
+#include "util/Settings.h"
 #include "game/Options.h"
 #include "game/ScreenResolution.h"
 #include "game/ScreenBuffer.h"
@@ -22,8 +22,8 @@
 #include "graphics/FontLoader.h"
 #include "graphics/CoordinateSystemRenderer.h"
 #include "graphics/TextureManager.h"
-#include "timer/Timer.h"
-#include "timer/BenchmarkTimer.h"
+#include "util/Timer.h"
+#include "util/BenchmarkTimer.h"
 #include "game/world/WorldGeneratorFacade.h"
 
 class Game

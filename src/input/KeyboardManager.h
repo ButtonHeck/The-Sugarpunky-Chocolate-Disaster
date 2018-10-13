@@ -4,7 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <functional>
 #include "graphics/Camera.h"
-#include "game/Settings.h"
+#include "util/Settings.h"
 #include "game/Options.h"
 
 class KeyboardManager

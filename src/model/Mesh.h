@@ -9,12 +9,12 @@
 #include <glm/detail/func_geometric.hpp>
 #include <glm/gtx/norm.hpp>
 #include "graphics/Shader.h"
-#include "game/Settings.h"
+#include "util/Settings.h"
 #include "chunk/ModelChunk.h"
 #include "graphics/Camera.h"
 #include "graphics/Frustum.h"
-#include "game/Settings.h"
-#include "timer/BenchmarkTimer.h"
+#include "util/Settings.h"
+#include "util/BenchmarkTimer.h"
 #include "model/IndirectBufferToken.h"
 #include "graphics/TextureUnits.h"
 #include <map>

@@ -7,11 +7,11 @@
 #include <unordered_set>
 #include "game/Game.h"
 #include "game/Options.h"
-#include "game/Settings.h"
+#include "util/Settings.h"
 #include "game/ScreenResolution.h"
-#include "game/DebugLogger.h"
+#include "util/DebugLogger.h"
 #include "graphics/Camera.h"
-#include "timer/BenchmarkTimer.h"
+#include "util/BenchmarkTimer.h"
 
 GLFWwindow* window;
 ScreenResolution screenResolution;

@@ -10,7 +10,6 @@ INCLUDEPATH += $$PWD/src
 SOURCES += \
     src/main.cpp \
     src/game/Game.cpp \
-    src/game/Settings.cpp \
     src/game/SaveLoadManager.cpp \
     src/game/Options.cpp \
     src/graphics/Shader.cpp \
@@ -27,15 +26,12 @@ SOURCES += \
     src/model/TerrainTile.cpp \
     src/model/IndirectBufferToken.cpp \
     src/chunk/ModelChunk.cpp \
-    src/chunk/Chunk.cpp \
     src/chunk/TerrainChunk.cpp \
-    src/timer/BenchmarkTimer.cpp \
     src/input/KeyboardManager.cpp \
     src/input/MouseInputManager.cpp \
     src/game/ScreenResolution.cpp \
     src/game/ScreenBuffer.cpp \
     src/game/DepthmapBuffer.cpp \
-    src/game/DebugLogger.cpp \
     src/graphics/TextRenderer.cpp \
     src/graphics/FontLoader.cpp \
     src/game/world/plants/GrassGenerator.cpp \
@@ -50,11 +46,14 @@ SOURCES += \
     src/game/world/terrain/UnderwaterGenerator.cpp \
     src/game/world/terrain/WaterGenerator.cpp \
     src/game/world/PlantGeneratorFacade.cpp \
-    src/game/world/WorldGeneratorFacade.cpp
+    src/game/world/WorldGeneratorFacade.cpp \
+    src/util/BenchmarkTimer.cpp \
+    src/util/Chunk.cpp \
+    src/util/DebugLogger.cpp \
+    src/util/Settings.cpp
 
 HEADERS += \
     src/game/Game.h \
-    src/game/Settings.h \
     src/game/SaveLoadManager.h \
     src/game/Options.h \
     src/graphics/TextureUnits.h \
@@ -71,10 +70,7 @@ HEADERS += \
     src/model/Mesh.h \
     src/model/Model.h \
     src/chunk/ModelChunk.h \
-    src/chunk/Chunk.h \
     src/chunk/TerrainChunk.h \
-    src/timer/BenchmarkTimer.h \
-    src/timer/Timer.h \
     src/model/IndirectBufferToken.h \
     src/input/KeyboardManager.h \
     src/input/MouseInputManager.h \
@@ -82,7 +78,6 @@ HEADERS += \
     src/generator/PlantGenerator.h \
     src/game/ScreenBuffer.h \
     src/game/DepthmapBuffer.h \
-    src/game/DebugLogger.h \
     src/graphics/TextRenderer.h \
     src/graphics/FontLoader.h \
     src/game/world/plants/GrassGenerator.h \
@@ -97,7 +92,12 @@ HEADERS += \
     src/game/world/terrain/UnderwaterGenerator.h \
     src/game/world/terrain/WaterGenerator.h \
     src/game/world/PlantGeneratorFacade.h \
-    src/game/world/WorldGeneratorFacade.h
+    src/game/world/WorldGeneratorFacade.h \
+    src/util/BenchmarkTimer.h \
+    src/util/Chunk.h \
+    src/util/DebugLogger.h \
+    src/util/Settings.h \
+    src/util/Timer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

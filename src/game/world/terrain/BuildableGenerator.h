@@ -7,7 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "game/world/terrain/LandGenerator.h"
 #include "game/world/terrain/HillsGenerator.h"
-#include "game/Settings.h"
+#include "util/Settings.h"
 
 class BuildableGenerator : public Generator
 {

@@ -8,7 +8,7 @@
 #include "graphics/TextureLoader.h"
 #include "chunk/ModelChunk.h"
 #include "graphics/Camera.h"
-#include "game/Settings.h"
+#include "util/Settings.h"
 #include "graphics/Frustum.h"
 
 class Model

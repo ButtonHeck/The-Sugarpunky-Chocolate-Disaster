@@ -2,7 +2,7 @@
 #define TIMER_H
 #include <GLFW/glfw3.h>
 #include <chrono>
-#include "timer/BenchmarkTimer.h"
+#include "util/BenchmarkTimer.h"
 #include "game/world/terrain/WaterGenerator.h"
 
 class Timer

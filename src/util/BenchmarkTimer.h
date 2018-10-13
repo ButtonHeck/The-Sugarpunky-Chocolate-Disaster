@@ -9,7 +9,7 @@
 #include <string.h>
 #include <algorithm>
 #include <iomanip>
-#include "game/Settings.h"
+#include "util/Settings.h"
 
 class BenchmarkTimer
 {

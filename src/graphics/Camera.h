@@ -10,7 +10,7 @@
 #include <glm/detail/func_common.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "game/Settings.h"
+#include "util/Settings.h"
 
 enum MOVE_DIRECTION
 {

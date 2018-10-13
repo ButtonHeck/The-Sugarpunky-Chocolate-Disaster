@@ -4,8 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 #include "game/Options.h"
-#include "game/Settings.h"
-#include "timer/BenchmarkTimer.h"
+#include "util/Settings.h"
+#include "util/BenchmarkTimer.h"
 #include "graphics/Shader.h"
 
 class WaterGenerator : public Generator

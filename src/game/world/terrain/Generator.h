@@ -4,7 +4,7 @@
 #include <fstream>
 #include <GL/glew.h>
 #include "model/TerrainTile.h"
-#include "game/Settings.h"
+#include "util/Settings.h"
 
 void initializeMap(std::vector<std::vector<float>>& map);
 void smoothMapHeightChunks(std::vector<std::vector<float>>& map, float selfWeight, float evenWeight, float diagonalWeight);

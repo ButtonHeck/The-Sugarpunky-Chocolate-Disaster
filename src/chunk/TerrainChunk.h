@@ -1,6 +1,6 @@
 #ifndef TERRAINCHUNK_H
 #define TERRAINCHUNK_H
-#include "Chunk.h"
+#include "util/Chunk.h"
 
 class TerrainChunk : public Chunk
 {
