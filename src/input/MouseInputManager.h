@@ -5,9 +5,9 @@
 #include <GLFW/glfw3.h>
 #include "game/Options.h"
 #include "game/ScreenResolution.h"
-#include "generator/LandGenerator.h"
-#include "generator/HillsGenerator.h"
-#include "generator/BuildableGenerator.h"
+#include "game/world/terrain/LandGenerator.h"
+#include "game/world/terrain/HillsGenerator.h"
+#include "game/world/terrain/BuildableGenerator.h"
 
 class MouseInputManager
 {

@@ -1,9 +1,9 @@
 #ifndef PLANTGENERATORFACADE_H
 #define PLANTGENERATORFACADE_H
 #include <memory>
-#include "generator/LandPlantsGenerator.h"
-#include "generator/GrassGenerator.h"
-#include "generator/HillTreesGenerator.h"
+#include "game/world/plants/LandPlantsGenerator.h"
+#include "game/world/plants/GrassGenerator.h"
+#include "game/world/plants/HillTreesGenerator.h"
 #include "graphics/Frustum.h"
 
 class PlantGeneratorFacade

@@ -24,7 +24,7 @@
 #include "graphics/TextureManager.h"
 #include "timer/Timer.h"
 #include "timer/BenchmarkTimer.h"
-#include "generator/WorldGeneratorFacade.h"
+#include "game/world/WorldGeneratorFacade.h"
 
 class Game
 {

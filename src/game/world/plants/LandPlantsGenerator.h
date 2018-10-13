@@ -1,6 +1,6 @@
 #ifndef LANDPLANTSGENERATOR_H
 #define LANDPLANTSGENERATOR_H
-#include "generator/PlantGenerator.h"
+#include "game/world/plants/PlantGenerator.h"
 
 class LandPlantsGenerator : public PlantGenerator
 {

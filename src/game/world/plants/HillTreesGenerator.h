@@ -1,6 +1,6 @@
 #ifndef HILLTREESGENERATOR_H
 #define HILLTREESGENERATOR_H
-#include "generator/PlantGenerator.h"
+#include "game/world/plants/PlantGenerator.h"
 
 class HillTreesGenerator : public PlantGenerator
 {

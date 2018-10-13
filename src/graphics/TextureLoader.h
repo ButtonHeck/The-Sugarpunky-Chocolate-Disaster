@@ -7,7 +7,7 @@
 #include <glm/common.hpp>
 #include <memory>
 #include "game/ScreenResolution.h"
-#include "generator/WaterGenerator.h"
+#include "game/world/terrain/WaterGenerator.h"
 
 class TextureLoader
 {

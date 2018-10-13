@@ -1,4 +1,4 @@
-#include "generator/HillsGenerator.h"
+#include "game/world/terrain/HillsGenerator.h"
 
 HillsGenerator::HillsGenerator(Shader &shader, std::vector<std::vector<float> > &waterMap)
   :

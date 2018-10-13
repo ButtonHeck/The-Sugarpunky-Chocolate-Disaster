@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include "TextureLoader.h"
 #include "graphics/TextureUnits.h"
-#include "generator/WaterGenerator.h"
+#include "game/world/terrain/WaterGenerator.h"
 
 class TextureManager
 {

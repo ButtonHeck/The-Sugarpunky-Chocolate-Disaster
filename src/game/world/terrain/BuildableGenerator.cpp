@@ -1,4 +1,4 @@
-#include "generator/BuildableGenerator.h"
+#include "game/world/terrain/BuildableGenerator.h"
 
 BuildableGenerator::BuildableGenerator(std::shared_ptr<LandGenerator>& baseMapGenerator,
                                              std::shared_ptr<HillsGenerator>& hillsGenerator)

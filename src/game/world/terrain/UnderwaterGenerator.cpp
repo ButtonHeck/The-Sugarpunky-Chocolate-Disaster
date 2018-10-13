@@ -1,4 +1,4 @@
-#include "generator/UnderwaterGenerator.h"
+#include "game/world/terrain/UnderwaterGenerator.h"
 
 UnderwaterGenerator::UnderwaterGenerator()
   :

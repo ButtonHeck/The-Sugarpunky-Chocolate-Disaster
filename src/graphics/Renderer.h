@@ -7,13 +7,13 @@
 #include "graphics/Camera.h"
 #include "graphics/Frustum.h"
 #include "graphics/Skybox.h"
-#include "generator/HillsGenerator.h"
-#include "generator/LandGenerator.h"
-#include "generator/ShoreGenerator.h"
-#include "generator/UnderwaterGenerator.h"
-#include "generator/BuildableGenerator.h"
-#include "generator/WaterGenerator.h"
-#include "generator/PlantGeneratorFacade.h"
+#include "game/world/terrain/HillsGenerator.h"
+#include "game/world/terrain/LandGenerator.h"
+#include "game/world/terrain/ShoreGenerator.h"
+#include "game/world/terrain/UnderwaterGenerator.h"
+#include "game/world/terrain/BuildableGenerator.h"
+#include "game/world/terrain/WaterGenerator.h"
+#include "game/world/PlantGeneratorFacade.h"
 
 class Renderer
 {

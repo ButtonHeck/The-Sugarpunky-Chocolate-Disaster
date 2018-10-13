@@ -1,4 +1,4 @@
-#include "generator/PlantGenerator.h"
+#include "game/world/plants/PlantGenerator.h"
 
 PlantGenerator::PlantGenerator()
 {

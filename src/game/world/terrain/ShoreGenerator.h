@@ -3,7 +3,7 @@
 #include <random>
 #include <chrono>
 #include <memory>
-#include "generator/Generator.h"
+#include "game/world/terrain/Generator.h"
 
 class ShoreGenerator : public Generator
 {

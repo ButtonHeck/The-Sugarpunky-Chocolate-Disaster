@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include "generator/WorldGeneratorFacade.h"
+#include "game/world/WorldGeneratorFacade.h"
 #include "chunk/ModelChunk.h"
 #include "graphics/Camera.h"
 

@@ -25,32 +25,32 @@ SOURCES += \
     src/model/Mesh.cpp \
     src/model/Model.cpp \
     src/model/TerrainTile.cpp \
+    src/model/IndirectBufferToken.cpp \
     src/chunk/ModelChunk.cpp \
     src/chunk/Chunk.cpp \
     src/chunk/TerrainChunk.cpp \
     src/timer/BenchmarkTimer.cpp \
-    src/model/IndirectBufferToken.cpp \
     src/input/KeyboardManager.cpp \
     src/input/MouseInputManager.cpp \
     src/game/ScreenResolution.cpp \
-    src/generator/PlantGenerator.cpp \
     src/game/ScreenBuffer.cpp \
     src/game/DepthmapBuffer.cpp \
     src/game/DebugLogger.cpp \
     src/graphics/TextRenderer.cpp \
     src/graphics/FontLoader.cpp \
-    src/generator/HillTreesGenerator.cpp \
-    src/generator/GrassGenerator.cpp \
-    src/generator/PlantGeneratorFacade.cpp \
-    src/generator/ShoreGenerator.cpp \
-    src/generator/WorldGeneratorFacade.cpp \
-    src/generator/LandGenerator.cpp \
-    src/generator/BuildableGenerator.cpp \
-    src/generator/HillsGenerator.cpp \
-    src/generator/Generator.cpp \
-    src/generator/LandPlantsGenerator.cpp \
-    src/generator/UnderwaterGenerator.cpp \
-    src/generator/WaterGenerator.cpp
+    src/game/world/plants/GrassGenerator.cpp \
+    src/game/world/plants/HillTreesGenerator.cpp \
+    src/game/world/plants/LandPlantsGenerator.cpp \
+    src/game/world/plants/PlantGenerator.cpp \
+    src/game/world/terrain/BuildableGenerator.cpp \
+    src/game/world/terrain/Generator.cpp \
+    src/game/world/terrain/HillsGenerator.cpp \
+    src/game/world/terrain/LandGenerator.cpp \
+    src/game/world/terrain/ShoreGenerator.cpp \
+    src/game/world/terrain/UnderwaterGenerator.cpp \
+    src/game/world/terrain/WaterGenerator.cpp \
+    src/game/world/PlantGeneratorFacade.cpp \
+    src/game/world/WorldGeneratorFacade.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -85,18 +85,19 @@ HEADERS += \
     src/game/DebugLogger.h \
     src/graphics/TextRenderer.h \
     src/graphics/FontLoader.h \
-    src/generator/HillTreesGenerator.h \
-    src/generator/GrassGenerator.h \
-    src/generator/PlantGeneratorFacade.h \
-    src/generator/ShoreGenerator.h \
-    src/generator/WorldGeneratorFacade.h \
-    src/generator/LandGenerator.h \
-    src/generator/BuildableGenerator.h \
-    src/generator/HillsGenerator.h \
-    src/generator/Generator.h \
-    src/generator/LandPlantsGenerator.h \
-    src/generator/UnderwaterGenerator.h \
-    src/generator/WaterGenerator.h
+    src/game/world/plants/GrassGenerator.h \
+    src/game/world/plants/HillTreesGenerator.h \
+    src/game/world/plants/LandPlantsGenerator.h \
+    src/game/world/plants/PlantGenerator.h \
+    src/game/world/terrain/BuildableGenerator.h \
+    src/game/world/terrain/Generator.h \
+    src/game/world/terrain/HillsGenerator.h \
+    src/game/world/terrain/LandGenerator.h \
+    src/game/world/terrain/ShoreGenerator.h \
+    src/game/world/terrain/UnderwaterGenerator.h \
+    src/game/world/terrain/WaterGenerator.h \
+    src/game/world/PlantGeneratorFacade.h \
+    src/game/world/WorldGeneratorFacade.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 
