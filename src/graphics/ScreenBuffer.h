@@ -2,7 +2,7 @@
 #define SCREENBUFFER_H
 #include <GL/glew.h>
 #include "graphics/TextureManager.h"
-#include "game/ScreenResolution.h"
+#include "graphics/ScreenResolution.h"
 #include "graphics/ShaderManager.h"
 
 class ScreenBuffer

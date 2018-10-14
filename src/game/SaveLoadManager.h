@@ -6,7 +6,7 @@
 #include <memory>
 #include "game/world/WorldGeneratorFacade.h"
 #include "game/world/plants/ModelChunk.h"
-#include "graphics/Camera.h"
+#include "game/Camera.h"
 
 class SaveLoadManager
 {

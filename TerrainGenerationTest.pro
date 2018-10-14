@@ -13,7 +13,6 @@ SOURCES += \
     src/game/SaveLoadManager.cpp \
     src/game/Options.cpp \
     src/graphics/Shader.cpp \
-    src/graphics/Camera.cpp \
     src/graphics/TextureLoader.cpp \
     src/graphics/Renderer.cpp \
     src/graphics/CoordinateSystemRenderer.cpp \
@@ -25,9 +24,6 @@ SOURCES += \
     src/model/IndirectBufferToken.cpp \
     src/input/KeyboardManager.cpp \
     src/input/MouseInputManager.cpp \
-    src/game/ScreenResolution.cpp \
-    src/game/ScreenBuffer.cpp \
-    src/game/DepthmapBuffer.cpp \
     src/graphics/TextRenderer.cpp \
     src/graphics/FontLoader.cpp \
     src/game/world/plants/GrassGenerator.cpp \
@@ -50,7 +46,11 @@ SOURCES += \
     src/game/world/plants/ModelChunk.cpp \
     src/game/world/terrain/TerrainChunk.cpp \
     src/game/world/terrain/TerrainTile.cpp \
-    src/game/world/Skybox.cpp
+    src/game/world/Skybox.cpp \
+    src/graphics/DepthmapBuffer.cpp \
+    src/graphics/ScreenBuffer.cpp \
+    src/graphics/ScreenResolution.cpp \
+    src/game/Camera.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -59,7 +59,6 @@ HEADERS += \
     src/graphics/TextureUnits.h \
     src/graphics/Shader.h \
     src/graphics/ShaderManager.h \
-    src/graphics/Camera.h \
     src/graphics/TextureLoader.h \
     src/graphics/Renderer.h \
     src/graphics/CoordinateSystemRenderer.h \
@@ -70,10 +69,7 @@ HEADERS += \
     src/model/IndirectBufferToken.h \
     src/input/KeyboardManager.h \
     src/input/MouseInputManager.h \
-    src/game/ScreenResolution.h \
     src/generator/PlantGenerator.h \
-    src/game/ScreenBuffer.h \
-    src/game/DepthmapBuffer.h \
     src/graphics/TextRenderer.h \
     src/graphics/FontLoader.h \
     src/game/world/plants/GrassGenerator.h \
@@ -97,7 +93,11 @@ HEADERS += \
     src/game/world/plants/ModelChunk.h \
     src/game/world/terrain/TerrainChunk.h \
     src/game/world/terrain/TerrainTile.h \
-    src/game/world/Skybox.h
+    src/game/world/Skybox.h \
+    src/graphics/DepthmapBuffer.h \
+    src/graphics/ScreenBuffer.h \
+    src/graphics/ScreenResolution.h \
+    src/game/Camera.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

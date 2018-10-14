@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <functional>
-#include "graphics/Camera.h"
+#include "game/Camera.h"
 #include "util/Settings.h"
 #include "game/Options.h"
 

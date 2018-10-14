@@ -8,9 +8,9 @@
 #include "game/Game.h"
 #include "game/Options.h"
 #include "util/Settings.h"
-#include "game/ScreenResolution.h"
+#include "graphics/ScreenResolution.h"
 #include "util/DebugLogger.h"
-#include "graphics/Camera.h"
+#include "game/Camera.h"
 #include "util/BenchmarkTimer.h"
 
 GLFWwindow* window;

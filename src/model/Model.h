@@ -7,7 +7,7 @@
 #include "Mesh.h"
 #include "graphics/TextureLoader.h"
 #include "game/world/plants/ModelChunk.h"
-#include "graphics/Camera.h"
+#include "game/Camera.h"
 #include "util/Settings.h"
 #include "graphics/Frustum.h"
 

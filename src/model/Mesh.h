@@ -11,7 +11,7 @@
 #include "graphics/Shader.h"
 #include "util/Settings.h"
 #include "game/world/plants/ModelChunk.h"
-#include "graphics/Camera.h"
+#include "game/Camera.h"
 #include "graphics/Frustum.h"
 #include "util/Settings.h"
 #include "util/BenchmarkTimer.h"

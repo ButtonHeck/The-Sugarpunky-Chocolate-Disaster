@@ -4,7 +4,7 @@
 #include <glm/detail/func_exponential.hpp>
 #include <memory>
 #include "graphics/Shader.h"
-#include "graphics/Camera.h"
+#include "game/Camera.h"
 #include "graphics/Frustum.h"
 #include "game/world/Skybox.h"
 #include "game/world/terrain/HillsGenerator.h"

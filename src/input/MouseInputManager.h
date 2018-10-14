@@ -1,10 +1,10 @@
 #ifndef MOUSEINPUTMANAGER_H
 #define MOUSEINPUTMANAGER_H
 #include <memory>
-#include "graphics/Camera.h"
+#include "game/Camera.h"
 #include <GLFW/glfw3.h>
 #include "game/Options.h"
-#include "game/ScreenResolution.h"
+#include "graphics/ScreenResolution.h"
 #include "game/world/terrain/LandGenerator.h"
 #include "game/world/terrain/HillsGenerator.h"
 #include "game/world/terrain/BuildableGenerator.h"
