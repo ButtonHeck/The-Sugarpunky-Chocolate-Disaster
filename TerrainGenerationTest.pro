@@ -24,7 +24,6 @@ SOURCES += \
     src/model/IndirectBufferToken.cpp \
     src/input/KeyboardManager.cpp \
     src/input/MouseInputManager.cpp \
-    src/graphics/TextRenderer.cpp \
     src/graphics/FontLoader.cpp \
     src/game/world/plants/GrassGenerator.cpp \
     src/game/world/plants/HillTreesGenerator.cpp \
@@ -50,7 +49,8 @@ SOURCES += \
     src/graphics/DepthmapBuffer.cpp \
     src/graphics/ScreenBuffer.cpp \
     src/graphics/ScreenResolution.cpp \
-    src/game/Camera.cpp
+    src/game/Camera.cpp \
+    src/graphics/TextManager.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -70,7 +70,6 @@ HEADERS += \
     src/input/KeyboardManager.h \
     src/input/MouseInputManager.h \
     src/generator/PlantGenerator.h \
-    src/graphics/TextRenderer.h \
     src/graphics/FontLoader.h \
     src/game/world/plants/GrassGenerator.h \
     src/game/world/plants/HillTreesGenerator.h \
@@ -97,7 +96,8 @@ HEADERS += \
     src/graphics/DepthmapBuffer.h \
     src/graphics/ScreenBuffer.h \
     src/graphics/ScreenResolution.h \
-    src/game/Camera.h
+    src/game/Camera.h \
+    src/graphics/TextManager.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

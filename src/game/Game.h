@@ -18,8 +18,7 @@
 #include "graphics/Renderer.h"
 #include "graphics/Frustum.h"
 #include "graphics/ShaderManager.h"
-#include "graphics/TextRenderer.h"
-#include "graphics/FontLoader.h"
+#include "graphics/TextManager.h"
 #include "graphics/CoordinateSystemRenderer.h"
 #include "graphics/TextureManager.h"
 #include "util/Timer.h"
@@ -65,8 +64,7 @@ private:
   std::unique_ptr<SaveLoadManager> saveLoadManager;
 
   //GUI and text
-  FontLoader fontLoader;
-  TextRenderer textRenderer;
+  TextManager textManager;
 
   //multithreading
   void setupThreads();

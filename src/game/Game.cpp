@@ -1,8 +1,5 @@
 #include "Game.h"
 
-int ramAvailable, ramSize;
-float ramSizeFloatPercentage;
-
 Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolution &screenResolution)
   :
     screenResolution(screenResolution),
@@ -19,15 +16,12 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
     csRenderer(CoordinateSystemRenderer(&shaderManager.get(SHADER_CS))),
     screenBuffer(screenResolution, textureManager, shaderManager),
     depthmapBuffer(),
-    fontLoader(FONT_DIR + "font.fnt", FONT_DIR + "font.png"),
-    textRenderer(fontLoader, shaderManager.get(SHADER_FONT))
+    textManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", shaderManager.get(SHADER_FONT))
 {
   srand(time(NULL));
   Model::bindTextureLoader(textureLoader);
   worldFacade = std::make_shared<WorldGeneratorFacade>(shaderManager, renderer, options, textureManager);
   saveLoadManager = std::make_unique<SaveLoadManager>(worldFacade, camera);
-  glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ramSize);
-  ramSizeFloatPercentage = (float)ramSize / 100;
 }
 
 Game::~Game()
@@ -52,8 +46,7 @@ void Game::setup()
 void Game::drawFrameObjects(glm::mat4& projectionView)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  if (options.get(OPT_POLYGON_LINE))
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glPolygonMode(GL_FRONT_AND_BACK, options.get(OPT_POLYGON_LINE) ? GL_LINE : GL_FILL);
 
   worldFacade->bufferWaterNewData();
   glm::mat4 skyboxProjectionView(projection * glm::mat4(glm::mat3(camera.getViewMatrix())));
@@ -64,50 +57,19 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
                          mouseInput,
                          updateCount);
 
-  //text rendering
   if (options.get(OPT_DRAW_DEBUG_TEXT))
     {
-      glEnable(GL_BLEND);
-      glDisable(GL_CULL_FACE);
-      {
-        BENCHMARK("Renderer: add and draw text", true);
-        float scrHeight = (float)screenResolution.getHeight();
-        glm::vec3 viewPosition = camera.getPosition();
-        textRenderer.addText("CPU UPS: " + std::to_string(CPU_timer.getFPS()), 10.0f, scrHeight - 15.0f, 0.18f);
-        textRenderer.addText("Camera pos: " + std::to_string(viewPosition.x).substr(0,6) + ": "
-                               + std::to_string(viewPosition.y).substr(0,6) + ": "
-                               + std::to_string(viewPosition.z).substr(0,6), 10.0f, scrHeight - 35.0f, 0.18f);
-        textRenderer.addText("Camera on map: " + std::to_string(camera.getMapCoordX()) + ": " + std::to_string(camera.getMapCoordZ()),
-                               10.0f, scrHeight - 55.0f, 0.18f);
-        textRenderer.addText("View dir: " + std::to_string(camera.getDirection().x).substr(0,6) + ": "
-                               + std::to_string(camera.getDirection().y).substr(0,6) + ": "
-                               + std::to_string(camera.getDirection().z).substr(0,6), 10.0f, scrHeight - 75.0f, 0.18f);
-        const glm::vec3& cursorToViewportDirection = mouseInput.getCursorToViewportDirection();
-        textRenderer.addText("Cursor at: " + (!options.get(OPT_SHOW_CURSOR) ? "inactive" : (std::to_string(cursorToViewportDirection.x).substr(0,6) + ": "
-                               + std::to_string(cursorToViewportDirection.y).substr(0,6) + ": "
-                               + std::to_string(cursorToViewportDirection.z).substr(0,6))), 10.0f, scrHeight - 95.0f, 0.18f);
-        textRenderer.addText("Cursor on map: " + (!options.get(OPT_SHOW_CURSOR) ? "inactive" : (std::to_string(mouseInput.getCursorMapX()) + ": "
-                               + std::to_string(mouseInput.getCursorMapZ()-1) + ", " + mouseInput.getCursorTileName())),
-                               10.0f, scrHeight - 115.0f, 0.18f);
-        textRenderer.addText("Water culling: " + (options.get(OPT_WATER_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 20.0f, 0.18f);
-        textRenderer.addText("Hills culling: " + (options.get(OPT_HILLS_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 40.0f, 0.18f);
-        textRenderer.addText("Trees culling: " + (options.get(OPT_MODELS_CULLING) ? std::string("On") : std::string("Off")), 10.0f, 60.0f, 0.18f);
-        textRenderer.addText("Water anim thread works: " + (waterAnimatorIsWorking ? std::string("On") : std::string("Off")), 10.0f, 80.0f, 0.18f);
-        glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &ramAvailable);
-        textRenderer.addText("RAM available: " + (std::to_string(ramAvailable)
-                                                     .append(", ")
-                                                     .append(std::to_string(ramAvailable / ramSizeFloatPercentage))
-                                                     .append("%")), 10.0f, 100.0f, 0.18f);
-        textRenderer.addText("Models Phong: " + (options.get(OPT_MODELS_PHONG_SHADING) ? std::string("On") : std::string("Off")), 10.0f, 120.0f, 0.18f);
-        textRenderer.drawText();
-      }
-      glDisable(GL_BLEND);
-      glEnable(GL_CULL_FACE);
+      textManager.addText(screenResolution,
+                          camera,
+                          options,
+                          mouseInput,
+                          CPU_timer.getFPS(),
+                          waterAnimatorIsWorking);
+      textManager.drawText();
       csRenderer.draw(glm::mat3(camera.getViewMatrix()), screenResolution.getAspectRatio());
     }
 
-  if (options.get(OPT_POLYGON_LINE))
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void Game::loop()
@@ -144,23 +106,20 @@ void Game::loop()
       options.set(OPT_CREATE_SHADOW_MAP_REQUEST, false);
     }
 
+  //render our world onto separate FBO as usual
   bool multisamplingEnabled = options.get(OPT_USE_MULTISAMPLING);
   screenBuffer.bindAppropriateFBO(multisamplingEnabled);
-
-  //render our world onto separate FBO as usual
   drawFrameObjects(projectionView);
 
   //after all mesh related draw calls we could start updating meshes indirect data buffers
   //start updating right after we've used it and before we need that data to be updated and buffered again
   meshBufferNeedUpdate = updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1;
 
-  //render result onto the default FBO and apply HDR/MS if the flag are set
   {
     BENCHMARK("Game: draw frame to screen", true);
     screenBuffer.draw(multisamplingEnabled);
   }
 
-  //save/load routine
   if (options.get(OPT_SAVE_REQUEST))
     {
       saveLoadManager->saveToFile(SAVES_DIR + "testSave.txt");
