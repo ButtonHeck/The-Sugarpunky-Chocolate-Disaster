@@ -48,9 +48,9 @@ void GrassGenerator::setupMatrices(std::vector<std::vector<float> > &baseMap, st
                     {
                       glm::mat4 model;
                       model = glm::translate(model,
-                                             glm::vec3(-(float)HALF_WORLD_WIDTH + x1 + 0.5f,
+                                             glm::vec3(-HALF_WORLD_WIDTH_F + x1 + 0.5f,
                                                        0.0f,
-                                                       -(float)HALF_WORLD_HEIGHT + y1 + 0.5f));
+                                                       -HALF_WORLD_HEIGHT_F + y1 + 0.5f));
                       model = glm::rotate(model, glm::radians((float)(rand() * WORLD_WIDTH + x1 * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
                       glm::vec3 scale(modelSizeDistribution(randomizer) * 0.75f,
                                       modelSizeDistribution(randomizer) * 0.66f,

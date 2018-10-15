@@ -69,9 +69,9 @@ void HillTreesGenerator::setupMatrices(std::vector<std::vector<float> > &hillMap
                               std::abs(hillMap[y1][x1+1] - hillMap[y1+1][x1]) / 2)
                             + HILLS_OFFSET_Y;
                       glm::vec3 translation(
-                            -(float)HALF_WORLD_WIDTH + x1 + 0.5f + offsetX,
+                            -HALF_WORLD_WIDTH_F + x1 + 0.5f + offsetX,
                             baseY,
-                            -(float)HALF_WORLD_HEIGHT + y1 + 0.5f + offsetZ);
+                            -HALF_WORLD_HEIGHT_F + y1 + 0.5f + offsetZ);
                       if (translation.y < 0)
                         continue;
                       model = glm::translate(model, translation);

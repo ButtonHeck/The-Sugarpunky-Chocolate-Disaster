@@ -64,7 +64,7 @@ FontLoader::FontLoader(const std::string &fontFile, const std::string &textureFi
   input.close();
 }
 
-const std::map<char, Character> &FontLoader::getAlphabet() const
+std::unordered_map<char, Character> &FontLoader::getAlphabet()
 {
   return alphabet;
 }

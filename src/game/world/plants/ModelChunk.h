@@ -1,7 +1,7 @@
 #ifndef MODELCHUNK_H
 #define MODELCHUNK_H
 #include <vector>
-#include "util/Chunk.h"
+#include "game/world/Chunk.h"
 
 class ModelChunk : public Chunk
 {

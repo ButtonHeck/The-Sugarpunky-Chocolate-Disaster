@@ -94,8 +94,8 @@ void MouseInputManager::updateCursorMappingCoordinates(Camera &camera,
     {
       float ratio = camera.getPosition().y / (-cursorToViewportDirection.y);
       bool cursorOutOfMap = false;
-      cursorAbsX = glm::clamp((cursorToViewportDirection.x * ratio) + camera.getPosition().x, -(float)HALF_WORLD_WIDTH, (float)HALF_WORLD_WIDTH);
-      cursorAbsZ = glm::clamp((cursorToViewportDirection.z * ratio) + camera.getPosition().z, -(float)HALF_WORLD_HEIGHT, (float)HALF_WORLD_HEIGHT);
+      cursorAbsX = glm::clamp((cursorToViewportDirection.x * ratio) + camera.getPosition().x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F);
+      cursorAbsZ = glm::clamp((cursorToViewportDirection.z * ratio) + camera.getPosition().z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F);
       if (cursorAbsX == -HALF_WORLD_WIDTH || cursorAbsX == HALF_WORLD_WIDTH ||
           cursorAbsZ == -HALF_WORLD_HEIGHT || cursorAbsZ == HALF_WORLD_HEIGHT)
         cursorOutOfMap = true;

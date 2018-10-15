@@ -55,9 +55,9 @@ void LandPlantsGenerator::setupMatrices(std::vector<std::vector<float> > &baseMa
                     {
                       glm::mat4 model;
                       model = glm::translate(model,
-                                             glm::vec3(-(float)HALF_WORLD_WIDTH + x1 + modelPositionDistribution(randomizer) + 0.5f,
+                                             glm::vec3(-HALF_WORLD_WIDTH_F + x1 + modelPositionDistribution(randomizer) + 0.5f,
                                                        0.0f,
-                                                       -(float)HALF_WORLD_HEIGHT + y1 + modelPositionDistribution(randomizer) + 0.5f));
+                                                       -HALF_WORLD_HEIGHT_F + y1 + modelPositionDistribution(randomizer) + 0.5f));
                       model = glm::rotate(model, glm::radians((float)(y1 * WORLD_WIDTH + x1 * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
                       model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer)));
                       matricesVecs[matrixCounter % matricesVecs.size()].emplace_back(std::move(model));

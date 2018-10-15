@@ -5,7 +5,7 @@
 #include <sstream>
 #include <GL/glew.h>
 #include <IL/il.h>
-#include <map>
+#include <unordered_map>
 #include "graphics/TextureUnits.h"
 
 struct Character {
@@ -17,11 +17,11 @@ class FontLoader
 public:
   FontLoader(const std::string& fontFile, const std::string& fontTexture);
   virtual ~FontLoader() = default;
-  const std::map<char, Character>& getAlphabet() const;
+  std::unordered_map<char, Character>& getAlphabet();
   GLuint getTextureWidth() const;
   GLuint getTextureHeight() const;
 private:
-  std::map<char, Character> alphabet;
+  std::unordered_map<char, Character> alphabet;
   GLuint fontTexture, textureWidth, textureHeight;
 };
 

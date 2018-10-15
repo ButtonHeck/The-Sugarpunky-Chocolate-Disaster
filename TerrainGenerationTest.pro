@@ -2,8 +2,6 @@ TEMPLATE = app
 CONFIG += console c++14
 CONFIG -= app_bundle
 CONFIG -= qt
-QMAKE_CXXFLAGS+= -fopenmp
-QMAKE_LFLAGS +=  -fopenmp
 
 INCLUDEPATH += $$PWD/src
 
@@ -39,7 +37,6 @@ SOURCES += \
     src/game/world/PlantGeneratorFacade.cpp \
     src/game/world/WorldGeneratorFacade.cpp \
     src/util/BenchmarkTimer.cpp \
-    src/util/Chunk.cpp \
     src/util/DebugLogger.cpp \
     src/util/Settings.cpp \
     src/game/world/plants/ModelChunk.cpp \
@@ -50,7 +47,9 @@ SOURCES += \
     src/graphics/ScreenBuffer.cpp \
     src/graphics/ScreenResolution.cpp \
     src/game/Camera.cpp \
-    src/graphics/TextManager.cpp
+    src/graphics/TextManager.cpp \
+    src/game/world/Chunk.cpp \
+    src/util/VRAM_Monitor.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -85,7 +84,6 @@ HEADERS += \
     src/game/world/PlantGeneratorFacade.h \
     src/game/world/WorldGeneratorFacade.h \
     src/util/BenchmarkTimer.h \
-    src/util/Chunk.h \
     src/util/DebugLogger.h \
     src/util/Settings.h \
     src/util/Timer.h \
@@ -97,7 +95,9 @@ HEADERS += \
     src/graphics/ScreenBuffer.h \
     src/graphics/ScreenResolution.h \
     src/game/Camera.h \
-    src/graphics/TextManager.h
+    src/graphics/TextManager.h \
+    src/game/world/Chunk.h \
+    src/util/VRAM_Monitor.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

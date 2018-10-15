@@ -6,11 +6,10 @@ std::map<std::string, unsigned long> BenchmarkTimer::benchmarksTimers;
 std::map<std::string, int> BenchmarkTimer::benchmarksInvocations;
 std::map<std::string, float> BenchmarkTimer::appBenchmarks;
 
-BenchmarkTimer::BenchmarkTimer(const std::string &text, bool isPerFrame, bool isPassThrough)
+BenchmarkTimer::BenchmarkTimer(const std::string &text, bool isPerFrame)
   :
     benchmark(text),
-    perFrame(isPerFrame),
-    passThrough(isPassThrough)
+    perFrame(isPerFrame)
 {
   if (!outputCreated)
     {
@@ -26,8 +25,6 @@ BenchmarkTimer::BenchmarkTimer(const std::string &text, bool isPerFrame, bool is
       perAppLog << "SI == Single Invocation (per second), ST == separate thread, m.p.u/a/i. == mean per update/app/invocation\n";
       outputCreated = true;
     }
-  if (passThrough)
-    return;
   if (appBenchmarks.find(benchmark) == appBenchmarks.end())
     {
       appBenchmarks[benchmark] = 0;
@@ -41,18 +38,15 @@ BenchmarkTimer::BenchmarkTimer(const std::string &text, bool isPerFrame, bool is
 
 BenchmarkTimer::~BenchmarkTimer()
 {
-  if (!passThrough)
+  endTime = std::chrono::high_resolution_clock::now();
+  unsigned long benchmarkResult = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+  float appBenchmarkResult = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() / 1000.0f;
+  if (perFrame)
     {
-      endTime = std::chrono::high_resolution_clock::now();
-      unsigned long benchmarkResult = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-      float appBenchmarkResult = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() / 1000.0f;
-      if (perFrame)
-        {
-          benchmarksTimers[benchmark] += benchmarkResult;
-          benchmarksInvocations[benchmark]++;
-        }
-      appBenchmarks[benchmark] += appBenchmarkResult;
+      benchmarksTimers[benchmark] += benchmarkResult;
+      benchmarksInvocations[benchmark]++;
     }
+  appBenchmarks[benchmark] += appBenchmarkResult;
 }
 
 void BenchmarkTimer::finish(unsigned int updateCount)

@@ -36,14 +36,8 @@ public:
   float getZoom() const;
   glm::vec3 getPosition() const;
   glm::vec3 getDirection() const;
-  void setPitch(float pitch);
-  void setYaw(float yaw);
-  void setPosition(float x, float y, float z);
-  glm::vec3 getFront() const;
   glm::vec3 getRight() const;
   glm::vec3 getUp() const;
-  float getPitch();
-  float getYaw();
   void updateVectors();
   int getMapCoordX() const;
   int getMapCoordZ() const;
@@ -53,6 +47,9 @@ private:
   //options
   float zoom, moveSpeed, mouseSensitivity;
   bool FPSmode;
+  const float CAMERA_WORLD_BORDER_OFFSET = 8.0f;
+  const float CAMERA_WORLD_MIN_HEIGHT = 2.0f;
+  const float CAMERA_WORLD_MIN_HEIGHT_ON_HILLS = CAMERA_WORLD_MIN_HEIGHT - HILLS_OFFSET_Y;
   //Euler angles
   float yaw, pitch;
   //direction vectors

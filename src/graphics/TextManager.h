@@ -9,6 +9,8 @@
 #include "game/Camera.h"
 #include "game/Options.h"
 #include "input/MouseInputManager.h"
+#include "util/VRAM_Monitor.h"
+#include "util/BenchmarkTimer.h"
 
 class TextManager
 {
@@ -22,15 +24,19 @@ public:
                const bool waterAnimatorIsWorking);
   void drawText();
 private:
-  void addString(std::string text, GLfloat x, GLfloat y, GLfloat scale);
+  struct GlyphVertex
+  {
+    GlyphVertex(glm::vec2 pos, glm::vec2 texCoords);
+    float posX, posY;
+    float texCoordX, texCoordY;
+  };
+  void addString(const std::string &text, GLfloat x, GLfloat y, GLfloat scale);
   FontLoader fontLoader;
   Shader& shader;
   const int MAX_BUFFER_SIZE = 1024 * 24;
   std::unique_ptr<GLfloat[]> vertexData;
-  int bufferOffset = 0, vertexCount = 0;
+  int bufferOffset = 0, glyphsCount = 0;
   GLuint vao, vbo;
-  int ramAvailable, ramSize;
-  float ramSizeFloatPercentage;
 };
 
 #endif // TEXTMANAGER_H

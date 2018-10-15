@@ -14,7 +14,7 @@
 class BenchmarkTimer
 {
 public:
-  BenchmarkTimer(const std::string& text, bool perFrameBenchmark, bool isPassThrough = false);
+  BenchmarkTimer(const std::string& text, bool perFrameBenchmark);
   virtual ~BenchmarkTimer();
   static void finish(unsigned int updateCount);
   static void printBenchmarksPerApp(unsigned int updateCount);
@@ -29,11 +29,6 @@ private:
   static constexpr int FORMAT_VALUE_ASCII = 45, BENCH_NAME_MAX_LENGTH = 40;
   std::string benchmark;
   bool perFrame;
-  /*
-    passThrough - We check this one in case we only need one invocation for benchmarking some part of program
-    For example - for every benchmarks map update we should gather info about water animation frame only once till next update
-  */
-  bool passThrough;
   decltype(std::chrono::high_resolution_clock::now()) startTime = std::chrono::high_resolution_clock::now();
   decltype(startTime) endTime = startTime;
 };
