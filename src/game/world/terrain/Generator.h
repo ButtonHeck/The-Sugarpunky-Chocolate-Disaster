@@ -4,6 +4,7 @@
 #include <fstream>
 #include "game/world/terrain/TerrainTile.h"
 #include "util/Settings.h"
+#include "graphics/OpenglBuffer.h"
 
 void initializeMap(std::vector<std::vector<float>>& map);
 void smoothMapHeightChunks(std::vector<std::vector<float>>& map, float selfWeight, float evenWeight, float diagonalWeight);
@@ -13,20 +14,20 @@ class Generator
 {
 public:
   Generator();
-  virtual ~Generator();
+  virtual ~Generator() = default;
   void createTiles(bool flat, bool createOnZeroTiles, std::vector<std::vector<float>>& map, float offsetY);
   std::vector<std::vector<float>>& getMap();
   std::vector<TerrainTile>& getTiles();
-  GLuint getVAO() const;
-  GLuint getVBO() const;
-  GLuint getEBO() const;
+  GLuint getVAO();
+  GLuint getVBO();
+  GLuint getEBO();
   virtual void serialize(std::ofstream& output);
   virtual void deserialize(std::ifstream& input);
 protected:
   void resetAllGLBuffers();
   std::vector<std::vector<float>> map;
   std::vector<TerrainTile> tiles;
-  GLuint vao, vbo, ebo;
+  OpenglBuffer basicGLBuffers;
 };
 
 #endif // GENERATOR_H

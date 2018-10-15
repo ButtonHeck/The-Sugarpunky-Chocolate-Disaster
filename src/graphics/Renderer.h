@@ -24,7 +24,7 @@ public:
   void renderHillsDepthmap(const std::shared_ptr<HillsGenerator> generator);
   void renderShore(const std::shared_ptr<ShoreGenerator> generator);
   void renderLand(const std::shared_ptr<LandGenerator> generator, Frustum& frustum, GLuint texture);
-  void renderUnderwater(const UnderwaterGenerator& generator);
+  void renderUnderwater(UnderwaterGenerator &generator);
   void renderBuildableTiles(const std::shared_ptr<BuildableGenerator> generator);
   void renderSelectedTile(const std::shared_ptr<BuildableGenerator> generator);
   void renderWater(bool useFC, std::shared_ptr<WaterGenerator> generator, Shader& fc, Shader& nofc);

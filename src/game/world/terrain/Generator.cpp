@@ -1,19 +1,11 @@
 #include "game/world/terrain/Generator.h"
 
 Generator::Generator()
+  :
+    basicGLBuffers(VAO | VBO | EBO)
 {
  initializeMap(map);
  tiles.reserve(NUM_TILES);
- glCreateVertexArrays(1, &vao);
- glCreateBuffers(1, &vbo);
- glCreateBuffers(1, &ebo);
-}
-
-Generator::~Generator()
-{
-  glDeleteVertexArrays(1, &vao);
-  glDeleteBuffers(1, &vbo);
-  glDeleteBuffers(1, &ebo);
 }
 
 void Generator::resetAllGLBuffers()
@@ -68,19 +60,19 @@ std::vector<TerrainTile> &Generator::getTiles()
   return tiles;
 }
 
-GLuint Generator::getVAO() const
+GLuint Generator::getVAO()
 {
-  return vao;
+  return basicGLBuffers.get(VAO);
 }
 
-GLuint Generator::getVBO() const
+GLuint Generator::getVBO()
 {
-  return vbo;
+  return basicGLBuffers.get(VBO);
 }
 
-GLuint Generator::getEBO() const
+GLuint Generator::getEBO()
 {
-  return ebo;
+  return basicGLBuffers.get(EBO);
 }
 
 void Generator::serialize(std::ofstream &output)

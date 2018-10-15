@@ -99,8 +99,7 @@ void HillsGenerator::fillBufferData()
           bufferVertex(vertices.get(), offset+40, upLeft); //ul2
         }
     }
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  basicGLBuffers.bind(VAO | VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTEX_DATA_LENGTH, vertices.get(), GL_STATIC_DRAW);
   setupGLBufferAttributes();
 

@@ -49,7 +49,8 @@ SOURCES += \
     src/game/Camera.cpp \
     src/graphics/TextManager.cpp \
     src/game/world/Chunk.cpp \
-    src/util/VRAM_Monitor.cpp
+    src/util/VRAM_Monitor.cpp \
+    src/graphics/OpenglBuffer.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -97,7 +98,8 @@ HEADERS += \
     src/game/Camera.h \
     src/graphics/TextManager.h \
     src/game/world/Chunk.h \
-    src/util/VRAM_Monitor.h
+    src/util/VRAM_Monitor.h \
+    src/graphics/OpenglBuffer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

@@ -5,20 +5,10 @@ BuildableGenerator::BuildableGenerator(std::shared_ptr<LandGenerator>& baseMapGe
   :
     Generator(),
     baseMapGenerator(baseMapGenerator),
-    hillsGenerator(hillsGenerator)
+    hillsGenerator(hillsGenerator),
+    selectedBuffers(VAO | VBO | EBO)
 {
-  glCreateBuffers(1, &modelVbo);
-  glCreateVertexArrays(1, &selectedVAO);
-  glCreateBuffers(1, &selectedVBO);
-  glCreateBuffers(1, &selectedEBO);
-}
-
-BuildableGenerator::~BuildableGenerator()
-{
-  glDeleteVertexArrays(1, &selectedVAO);
-  glDeleteBuffers(1, &modelVbo);
-  glDeleteBuffers(1, &selectedVBO);
-  glDeleteBuffers(1, &selectedEBO);
+  basicGLBuffers.add(INSTANCE_VBO);
 }
 
 void BuildableGenerator::setup(std::shared_ptr<LandGenerator> &baseMapGenerator,
@@ -53,7 +43,10 @@ void BuildableGenerator::setup(std::shared_ptr<LandGenerator> &baseMapGenerator,
 
 void BuildableGenerator::fillBufferData()
 {
-  setupVAO(vao, vbo, ebo);
+  setupAndBindBuffers(selectedBuffers);
+  resetAllGLBuffers();
+
+  setupAndBindBuffers(basicGLBuffers);
   numInstances = tiles.size();
   std::unique_ptr<glm::mat4[]> instanceModels(new glm::mat4[numInstances]);
   for (unsigned int i = 0; i < tiles.size(); i++)
@@ -63,7 +56,7 @@ void BuildableGenerator::fillBufferData()
       model = glm::translate(model, glm::vec3(-HALF_WORLD_WIDTH + tile.mapX, 0.0f, -HALF_WORLD_HEIGHT + tile.mapY));
       instanceModels[i] = model;
     }
-  glBindBuffer(GL_ARRAY_BUFFER, modelVbo);
+  basicGLBuffers.bind(INSTANCE_VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * tiles.size(), &instanceModels[0], GL_STATIC_DRAW);
   for (unsigned int i = 0; i < 4; ++i)
     {
@@ -71,9 +64,6 @@ void BuildableGenerator::fillBufferData()
       glVertexAttribPointer(i+3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(i * sizeof(glm::vec4)));
       glVertexAttribDivisor(i+3, 1);
     }
-  resetAllGLBuffers();
-
-  setupVAO(selectedVAO, selectedVBO, selectedEBO);
   resetAllGLBuffers();
 }
 
@@ -84,10 +74,10 @@ GLuint &BuildableGenerator::getNumInstances()
 
 GLuint &BuildableGenerator::getSelectedTileVAO()
 {
-  return selectedVAO;
+  return selectedBuffers.get(VAO);
 }
 
-void BuildableGenerator::setupVAO(GLuint &vao, GLuint &vbo, GLuint &ebo)
+void BuildableGenerator::setupAndBindBuffers(OpenglBuffer &buffers)
 {
   constexpr static GLfloat CELL_VERTICES[12] = {
        0.05f, 0.01f,  -0.05f,
@@ -95,10 +85,8 @@ void BuildableGenerator::setupVAO(GLuint &vao, GLuint &vbo, GLuint &ebo)
        0.95f, 0.01f,  -0.95f,
        0.05f, 0.01f,  -0.95f
   };
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+  buffers.bind(VAO | VBO | EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(CELL_VERTICES), CELL_VERTICES, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);

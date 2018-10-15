@@ -189,8 +189,7 @@ void ShoreGenerator::fillBufferData()
       bufferVertex(vertices.get(), offset+40, lowLeft); //ll2
     }
 
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  basicGLBuffers.bind(VAO | VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTEX_DATA_LENGTH, vertices.get(), GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);

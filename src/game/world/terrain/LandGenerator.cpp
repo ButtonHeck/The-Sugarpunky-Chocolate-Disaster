@@ -128,8 +128,8 @@ void LandGenerator::fillBufferData()
        1.0f, 0.0f, -1.0f, (float)CHUNK_SIZE,  (float)CHUNK_SIZE,
       -1.0f, 0.0f, -1.0f, 0.0f,               (float)CHUNK_SIZE
   };
-  glBindVertexArray(vao);
-  bufferData(ebo, vbo, chunkVertices, 20);
+  basicGLBuffers.bind(VAO);
+  bufferData(basicGLBuffers.get(EBO), basicGLBuffers.get(VBO), chunkVertices, 20);
   setupGLBufferAttributes();
   std::unique_ptr<glm::mat4[]> baseInstanceChunkModels(new glm::mat4[tiles.size()]);
   for (unsigned int i = 0; i < tiles.size(); i++)

@@ -11,18 +11,17 @@ class BuildableGenerator : public Generator
 public:
   BuildableGenerator(std::shared_ptr<LandGenerator>& baseMapGenerator,
                         std::shared_ptr<HillsGenerator>& hillsGenerator);
-  virtual ~BuildableGenerator();
+  virtual ~BuildableGenerator() = default;
   void setup(std::shared_ptr<LandGenerator> &baseMapGenerator,
              std::shared_ptr<HillsGenerator> &hillsGenerator);
   GLuint& getNumInstances();
   GLuint& getSelectedTileVAO();
 private:
-  void setupVAO(GLuint& vao, GLuint& vbo, GLuint& ebo);
+  void setupAndBindBuffers(OpenglBuffer& buffers);
   void fillBufferData();
   std::shared_ptr<LandGenerator>& baseMapGenerator;
   std::shared_ptr<HillsGenerator>& hillsGenerator;
-  GLuint modelVbo;
-  GLuint selectedVAO, selectedVBO, selectedEBO;
+  OpenglBuffer selectedBuffers;
   unsigned int numInstances;
 };
 

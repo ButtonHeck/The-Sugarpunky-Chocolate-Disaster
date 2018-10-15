@@ -57,8 +57,7 @@ void WaterGenerator::fillBufferData()
       bufferVertex(vertices.get(), offset+24, upLeft); //ul2
       bufferVertex(vertices.get(), offset+30, lowLeft); //ll2
     }
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  basicGLBuffers.bind(VAO | VBO);
   glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(GLfloat), vertices.get(), GL_STREAM_DRAW);
   setupGLBufferAttributes();
 
@@ -86,7 +85,7 @@ void WaterGenerator::fillBufferData()
 
 void WaterGenerator::bufferNewData()
 {
-  glNamedBufferData(vbo, numVertices * sizeof(GLfloat), vertices.get(), GL_STREAM_DRAW);
+  glNamedBufferData(basicGLBuffers.get(VBO), numVertices * sizeof(GLfloat), vertices.get(), GL_STREAM_DRAW);
 }
 
 void WaterGenerator::addWaterNearbyTerrain()

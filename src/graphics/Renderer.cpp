@@ -108,7 +108,7 @@ void Renderer::addIndirectBufferData(GLuint& primCount,
   buffer[dataOffset++] = instanceOffset;
 }
 
-void Renderer::renderUnderwater(const UnderwaterGenerator &generator)
+void Renderer::renderUnderwater(UnderwaterGenerator &generator)
 {
   glBindVertexArray(generator.getVAO());
   glDrawElements(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0);
