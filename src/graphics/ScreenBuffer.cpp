@@ -1,4 +1,4 @@
-#include "ScreenBuffer.h"
+#include "graphics/ScreenBuffer.h"
 
 ScreenBuffer::ScreenBuffer(ScreenResolution &screenResolution, TextureManager &textureManager, ShaderManager &shaderManager)
   :

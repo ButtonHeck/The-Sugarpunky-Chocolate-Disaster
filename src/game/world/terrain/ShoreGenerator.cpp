@@ -1,4 +1,4 @@
-#include "ShoreGenerator.h"
+#include "game/world/terrain/ShoreGenerator.h"
 
 ShoreGenerator::ShoreGenerator(std::vector<std::vector<float> > &waterMap)
   :

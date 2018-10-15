@@ -1,4 +1,5 @@
-#include "DepthmapBuffer.h"
+#include "graphics/DepthmapBuffer.h"
+#include <iostream>
 
 DepthmapBuffer::~DepthmapBuffer()
 {

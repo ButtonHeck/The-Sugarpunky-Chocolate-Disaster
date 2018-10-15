@@ -1,11 +1,9 @@
 #ifndef TEXTURELOADER_H
 #define TEXTURELOADER_H
-#include <IL/il.h>
-#include <GL/glew.h>
 #include <string>
 #include <vector>
-#include <glm/common.hpp>
 #include <memory>
+#include <IL/il.h>
 #include "graphics/ScreenResolution.h"
 #include "game/world/terrain/WaterGenerator.h"
 

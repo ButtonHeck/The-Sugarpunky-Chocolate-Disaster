@@ -1,7 +1,7 @@
 #ifndef DEPTHMAPBUFFER_H
 #define DEPTHMAPBUFFER_H
 #include <GL/glew.h>
-#include <iostream>
+#include <iosfwd>
 
 class DepthmapBuffer
 {

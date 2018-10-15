@@ -1,8 +1,8 @@
 #ifndef RENDERER_H
 #define RENDERER_H
-#include <glm/vec2.hpp>
-#include <glm/detail/func_exponential.hpp>
 #include <memory>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include "graphics/Shader.h"
 #include "game/Camera.h"
 #include "graphics/Frustum.h"

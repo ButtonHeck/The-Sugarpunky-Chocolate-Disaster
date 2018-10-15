@@ -3,7 +3,7 @@
 #include <random>
 #include <chrono>
 #include <memory>
-#include "Generator.h"
+#include "game/world/terrain/Generator.h"
 #include "game/world/terrain/TerrainChunk.h"
 
 class LandGenerator : public Generator

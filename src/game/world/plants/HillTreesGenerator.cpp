@@ -1,4 +1,4 @@
-#include "HillTreesGenerator.h"
+#include "game/world/plants/HillTreesGenerator.h"
 
 HillTreesGenerator::HillTreesGenerator()
   :

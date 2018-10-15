@@ -1,4 +1,5 @@
-#include "FontLoader.h"
+#include "graphics/FontLoader.h"
+#include <iostream>
 
 FontLoader::FontLoader(const std::string &fontFile, const std::string &textureFile)
 {

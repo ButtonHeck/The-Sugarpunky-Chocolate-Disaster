@@ -2,10 +2,8 @@
 #define BENCHMARKTIMER_H
 #include <chrono>
 #include <fstream>
-#include <iostream>
+#include <iosfwd>
 #include <map>
-#include <stdio.h>
-#include <time.h>
 #include <string.h>
 #include <algorithm>
 #include <iomanip>

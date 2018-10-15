@@ -1,15 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 #include <vector>
-#include <cmath>
 #include <fstream>
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/detail/func_geometric.hpp>
-#include <glm/detail/func_trigonometric.hpp>
-#include <glm/detail/func_common.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include "util/Settings.h"
 
 enum MOVE_DIRECTION

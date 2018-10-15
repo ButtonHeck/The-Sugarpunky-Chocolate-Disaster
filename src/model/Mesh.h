@@ -2,11 +2,6 @@
 #define MESH_H
 #include <vector>
 #include <cstring>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/detail/func_common.hpp>
-#include <glm/detail/func_geometric.hpp>
 #include <glm/gtx/norm.hpp>
 #include "graphics/Shader.h"
 #include "util/Settings.h"

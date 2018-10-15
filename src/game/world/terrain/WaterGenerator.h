@@ -1,6 +1,6 @@
 #ifndef WATERGENERATOR_H
 #define WATERGENERATOR_H
-#include "Generator.h"
+#include "game/world/terrain/Generator.h"
 #include <GLFW/glfw3.h>
 #include <memory>
 #include "game/Options.h"

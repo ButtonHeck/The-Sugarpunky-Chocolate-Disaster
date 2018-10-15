@@ -1,4 +1,4 @@
-#include "IndirectBufferToken.h"
+#include "model/IndirectBufferToken.h"
 
 IndirectBufferToken::IndirectBufferToken(GLuint indicesCount, GLuint numInstances, GLuint instanceOffset)
   :

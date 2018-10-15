@@ -1,4 +1,4 @@
-#include "PlantGeneratorFacade.h"
+#include "game/world/PlantGeneratorFacade.h"
 
 PlantGeneratorFacade::PlantGeneratorFacade()
   :

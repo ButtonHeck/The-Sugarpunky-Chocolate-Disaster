@@ -1,6 +1,6 @@
 #ifndef UNDERWATERGENERATOR_H
 #define UNDERWATERGENERATOR_H
-#include "Generator.h"
+#include "game/world/terrain/Generator.h"
 
 class UnderwaterGenerator : public Generator
 {

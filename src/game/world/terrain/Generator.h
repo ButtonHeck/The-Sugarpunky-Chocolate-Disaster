@@ -2,7 +2,6 @@
 #define GENERATOR_H
 #include <vector>
 #include <fstream>
-#include <GL/glew.h>
 #include "game/world/terrain/TerrainTile.h"
 #include "util/Settings.h"
 

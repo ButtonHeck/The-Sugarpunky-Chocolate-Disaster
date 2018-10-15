@@ -1,6 +1,6 @@
 #ifndef HILLSGENERATOR_H
 #define HILLSGENERATOR_H
-#include "Generator.h"
+#include "game/world/terrain/Generator.h"
 #include "graphics/Shader.h"
 #include <random>
 #include <chrono>

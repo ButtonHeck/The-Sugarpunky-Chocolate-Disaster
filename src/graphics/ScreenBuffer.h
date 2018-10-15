@@ -1,6 +1,5 @@
 #ifndef SCREENBUFFER_H
 #define SCREENBUFFER_H
-#include <GL/glew.h>
 #include "graphics/TextureManager.h"
 #include "graphics/ScreenResolution.h"
 #include "graphics/ShaderManager.h"

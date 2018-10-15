@@ -1,7 +1,5 @@
 #ifndef COORDINATESYSTEMRENDERER_H
 #define COORDINATESYSTEMRENDERER_H
-#include <GL/glew.h>
-#include <glm/mat4x4.hpp>
 #include "graphics/Shader.h"
 
 class CoordinateSystemRenderer

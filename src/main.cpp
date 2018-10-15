@@ -1,17 +1,10 @@
-#include <iostream>
-#include <chrono>
-#include <thread>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glm/vec3.hpp>
-#include <unordered_set>
 #include "game/Game.h"
 #include "game/Options.h"
-#include "util/Settings.h"
 #include "graphics/ScreenResolution.h"
 #include "util/DebugLogger.h"
 #include "game/Camera.h"
-#include "util/BenchmarkTimer.h"
 
 GLFWwindow* window;
 ScreenResolution screenResolution;

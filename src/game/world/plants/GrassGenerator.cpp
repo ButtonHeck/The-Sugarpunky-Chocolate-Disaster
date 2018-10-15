@@ -1,4 +1,4 @@
-#include "GrassGenerator.h"
+#include "game/world/plants/GrassGenerator.h"
 
 GrassGenerator::GrassGenerator()
   :

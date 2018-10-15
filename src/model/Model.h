@@ -4,7 +4,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <vector>
-#include "Mesh.h"
+#include "model/Mesh.h"
 #include "graphics/TextureLoader.h"
 #include "game/world/plants/ModelChunk.h"
 #include "game/Camera.h"

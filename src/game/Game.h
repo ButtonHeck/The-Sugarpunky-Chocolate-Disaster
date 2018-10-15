@@ -1,10 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 #include <thread>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
 #include <memory>
 #include "util/Settings.h"
 #include "game/Options.h"

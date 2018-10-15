@@ -2,7 +2,7 @@
 #define TEXTUREMANAGER_H
 #include <GL/glew.h>
 #include <unordered_map>
-#include "TextureLoader.h"
+#include "graphics/TextureLoader.h"
 #include "graphics/TextureUnits.h"
 #include "game/world/terrain/WaterGenerator.h"
 

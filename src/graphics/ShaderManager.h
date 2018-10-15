@@ -1,12 +1,9 @@
 #ifndef SHADERMANAGER_H
 #define SHADERMANAGER_H
 #include <vector>
-#include <glm/detail/func_geometric.hpp>
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-#include "Shader.h"
+#include "graphics/Shader.h"
 #include "graphics/TextureUnits.h"
-#include "Frustum.h"
+#include "graphics/Frustum.h"
 
 enum SHADER
 {

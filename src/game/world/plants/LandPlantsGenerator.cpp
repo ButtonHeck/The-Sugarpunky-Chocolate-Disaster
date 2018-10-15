@@ -1,4 +1,4 @@
-#include "LandPlantsGenerator.h"
+#include "game/world/plants/LandPlantsGenerator.h"
 
 LandPlantsGenerator::LandPlantsGenerator()
   :

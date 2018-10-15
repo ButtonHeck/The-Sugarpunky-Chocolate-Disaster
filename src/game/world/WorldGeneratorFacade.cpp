@@ -1,4 +1,4 @@
-#include "WorldGeneratorFacade.h"
+#include "game/world/WorldGeneratorFacade.h"
 
 WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Renderer &renderer, Options &options, TextureManager &textureManager)
   :

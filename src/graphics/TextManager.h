@@ -2,7 +2,6 @@
 #define TEXTMANAGER_H
 #include <string>
 #include <memory>
-#include <GL/glew.h>
 #include "graphics/FontLoader.h"
 #include "graphics/Shader.h"
 #include "graphics/ScreenResolution.h"

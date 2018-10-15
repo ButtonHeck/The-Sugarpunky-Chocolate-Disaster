@@ -1,4 +1,4 @@
-#include "Generator.h"
+#include "game/world/terrain/Generator.h"
 
 Generator::Generator()
 {
