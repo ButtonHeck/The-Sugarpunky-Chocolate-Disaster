@@ -42,7 +42,7 @@ public:
   void cleanup();
   void setupMesh();
   void setupInstances(glm::mat4* models, unsigned int numModels);
-  void draw(bool useCulling, bool bindTexture, bool updateIndirect);
+  void draw(bool bindTexture, bool updateIndirect);
   void prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2 &cameraPositionXZ,

@@ -51,14 +51,13 @@ void TextManager::addText(ScreenResolution& screenResolution,
                          10.0f, scrHeight - 115.0f, 0.18f);
   addString("Water culling: " + (options.get(OPT_WATER_CULLING) ? string("On") : string("Off")), 10.0f, 20.0f, 0.18f);
   addString("Hills culling: " + (options.get(OPT_HILLS_CULLING) ? string("On") : string("Off")), 10.0f, 40.0f, 0.18f);
-  addString("Trees culling: " + (options.get(OPT_MODELS_CULLING) ? string("On") : string("Off")), 10.0f, 60.0f, 0.18f);
-  addString("Water anim thread works: " + (waterAnimatorIsWorking ? string("On") : string("Off")), 10.0f, 80.0f, 0.18f);
+  addString("Water anim thread works: " + (waterAnimatorIsWorking ? string("On") : string("Off")), 10.0f, 60.0f, 0.18f);
   glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &ramAvailable);
   addString("RAM available: " + (to_string(ramAvailable)
                                                .append(", ")
                                                .append(to_string(ramAvailable / ramSizeFloatPercentage))
-                                               .append("%")), 10.0f, 100.0f, 0.18f);
-  addString("Models Phong: " + (options.get(OPT_MODELS_PHONG_SHADING) ? string("On") : string("Off")), 10.0f, 120.0f, 0.18f);
+                                               .append("%")), 10.0f, 80.0f, 0.18f);
+  addString("Models Phong: " + (options.get(OPT_MODELS_PHONG_SHADING) ? string("On") : string("Off")), 10.0f, 100.0f, 0.18f);
 }
 
 void TextManager::addString(std::string text, GLfloat x, GLfloat y, GLfloat scale)

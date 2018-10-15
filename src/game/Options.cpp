@@ -13,7 +13,6 @@ Options::Options()
     {OPT_LOAD_REQUEST, false},
     {OPT_SHOW_CURSOR, false},
     {OPT_DRAW_BUILDABLE, false},
-    {OPT_MODELS_CULLING, true},
     {OPT_HILLS_CULLING, false},
     {OPT_WATER_CULLING, false},
     {OPT_USE_MULTISAMPLING, true},

@@ -30,11 +30,6 @@ void KeyboardManager::processInput(float delta, std::vector<std::vector<float> >
       options.set(OPT_LOAD_REQUEST, true);
       options.set(OPT_CREATE_SHADOW_MAP_REQUEST, true);
     });
-  processKey(GLFW_KEY_R, [&]()
-  {
-      options.toggle(OPT_MODELS_CULLING);
-      options.set(OPT_CREATE_SHADOW_MAP_REQUEST, true);
-    });
   processKey(GLFW_KEY_T, OPT_HILLS_CULLING);
   processKey(GLFW_KEY_Y, OPT_WATER_CULLING);
   processKey(GLFW_KEY_M, [&]()

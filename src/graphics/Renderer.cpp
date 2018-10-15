@@ -63,7 +63,7 @@ void Renderer::renderShore(const std::shared_ptr<ShoreGenerator> generator)
   glDisable(GL_BLEND);
 }
 
-void Renderer::renderFlatTerrain(const std::shared_ptr<LandGenerator> generator, Frustum& frustum, GLuint texture)
+void Renderer::renderLand(const std::shared_ptr<LandGenerator> generator, Frustum& frustum, GLuint texture)
 {
   glBindTextureUnit(TEX_FLAT, texture);
   //square chunks are better to render without FC
@@ -79,36 +79,10 @@ void Renderer::renderFlatTerrain(const std::shared_ptr<LandGenerator> generator,
   for (unsigned int i = 0; i < cellChunks.size(); i++)
     {
       glm::vec2 chunkMidPoint = cellChunks[i].getMidPoint();
-      if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE,
-                           chunkMidPoint.y + HALF_CHUNK_SIZE,
-                           MODELS_FC_RADIUS))
-        {
-          addIndirectBufferData(drawIndirectCommandPrimCount,
-                                multiDrawIndirectData,
-                                dataOffset, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
-          continue;
-        }
-      if (frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE,
-                           chunkMidPoint.y + HALF_CHUNK_SIZE,
-                           MODELS_FC_RADIUS))
-        {
-          addIndirectBufferData(drawIndirectCommandPrimCount,
-                                multiDrawIndirectData,
-                                dataOffset, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
-          continue;
-        }
-      if (frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE,
-                           chunkMidPoint.y - HALF_CHUNK_SIZE,
-                           MODELS_FC_RADIUS))
-        {
-          addIndirectBufferData(drawIndirectCommandPrimCount,
-                                multiDrawIndirectData,
-                                dataOffset, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
-          continue;
-        }
-      if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE,
-                           chunkMidPoint.y - HALF_CHUNK_SIZE,
-                           MODELS_FC_RADIUS))
+      if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+          frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+          frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+          frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS))
         {
           addIndirectBufferData(drawIndirectCommandPrimCount,
                                 multiDrawIndirectData,
@@ -204,7 +178,6 @@ void Renderer::renderSkybox(Skybox *skybox)
 }
 
 void Renderer::renderPlants(const std::shared_ptr<PlantGeneratorFacade> generatorFacade, Shader &shader,
-                         bool enableFrustumCulling,
                          bool bindTexture,
                          bool updateIndirect,
                          bool screenDraw,
@@ -220,14 +193,14 @@ void Renderer::renderPlants(const std::shared_ptr<PlantGeneratorFacade> generato
   for (unsigned int i = 0; i < plainPlants.size(); i++)
     {
       Model& model = plainPlants[i];
-      model.draw(enableFrustumCulling, bindTexture, updateIndirect);
+      model.draw(bindTexture, updateIndirect);
     }
 
   auto& hillTrees = generatorFacade->getHillModels();
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
       Model& model = hillTrees[i];
-      model.draw(enableFrustumCulling, bindTexture, updateIndirect);
+      model.draw(bindTexture, updateIndirect);
     }
 
   //draw grass without face culling
@@ -243,7 +216,7 @@ void Renderer::renderPlants(const std::shared_ptr<PlantGeneratorFacade> generato
   for (unsigned int i = 0; i < grass.size(); i++)
     {
       Model& model = grass[i];
-      model.draw(enableFrustumCulling, bindTexture, updateIndirect);
+      model.draw(bindTexture, updateIndirect);
     }
   glEnable(GL_CULL_FACE);
 

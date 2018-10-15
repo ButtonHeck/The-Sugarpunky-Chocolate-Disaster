@@ -23,14 +23,13 @@ public:
   void renderHills(bool useFC, const std::shared_ptr<HillsGenerator> generator, Shader &fc, Shader &nofc);
   void renderHillsDepthmap(const std::shared_ptr<HillsGenerator> generator);
   void renderShore(const std::shared_ptr<ShoreGenerator> generator);
-  void renderFlatTerrain(const std::shared_ptr<LandGenerator> generator, Frustum& frustum, GLuint texture);
+  void renderLand(const std::shared_ptr<LandGenerator> generator, Frustum& frustum, GLuint texture);
   void renderUnderwater(const UnderwaterGenerator& generator);
   void renderBuildableTiles(const std::shared_ptr<BuildableGenerator> generator);
   void renderSelectedTile(const std::shared_ptr<BuildableGenerator> generator);
   void renderWater(bool useFC, std::shared_ptr<WaterGenerator> generator, Shader& fc, Shader& nofc);
   void renderSkybox(Skybox* skybox);
   void renderPlants(const std::shared_ptr<PlantGeneratorFacade> generatorFacade, Shader& shader,
-                 bool enableFrustumCulling,
                  bool bindTexture,
                  bool updateIndirect,
                  bool screenDraw,

@@ -72,7 +72,7 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Mesh::draw(bool useCulling, bool bindTexture, bool updateIndirect)
+void Mesh::draw(bool bindTexture, bool updateIndirect)
 {  
   BENCHMARK("Mesh: draw (full func)", true);
   if (bindTexture)
@@ -84,21 +84,16 @@ void Mesh::draw(bool useCulling, bool bindTexture, bool updateIndirect)
         }
     }
   glBindVertexArray(VAO);
-  if (useCulling)
-    {
-      {
-        BENCHMARK("Mesh: bind+buffer indirect data", true);
-        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDrawIndirectBO);
-        if (updateIndirect)
-          glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * drawIndirectCommandPrimCount, multiDrawIndirectData);
-      }
-      {
-        BENCHMARK("Mesh: multiDrawIndirect", true);
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCount, 0);
-      }
-    }
-  else
-    glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances);
+  {
+    BENCHMARK("Mesh: bind+buffer indirect data", true);
+    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, multiDrawIndirectBO);
+    if (updateIndirect)
+      glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * drawIndirectCommandPrimCount, multiDrawIndirectData);
+  }
+  {
+    BENCHMARK("Mesh: multiDrawIndirect", true);
+    glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCount, 0);
+  }
 }
 
 void Mesh::prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
@@ -119,39 +114,10 @@ void Mesh::prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
         continue;
 
       glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
-      if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE,
-                           chunkMidPoint.y + HALF_CHUNK_SIZE,
-                           MODELS_FC_RADIUS))
-        {
-          addIndirectBufferData(directionToChunkLength,
-                                indicesSize,
-                                chunks[i].getNumInstances(index),
-                                chunks[i].getInstanceOffset(index));
-          continue;
-        }
-      if (frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE,
-                           chunkMidPoint.y + HALF_CHUNK_SIZE,
-                           MODELS_FC_RADIUS))
-        {
-          addIndirectBufferData(directionToChunkLength,
-                                indicesSize,
-                                chunks[i].getNumInstances(index),
-                                chunks[i].getInstanceOffset(index));
-          continue;
-        }
-      if (frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE,
-                           chunkMidPoint.y - HALF_CHUNK_SIZE,
-                           MODELS_FC_RADIUS))
-        {
-          addIndirectBufferData(directionToChunkLength,
-                                indicesSize,
-                                chunks[i].getNumInstances(index),
-                                chunks[i].getInstanceOffset(index));
-          continue;
-        }
-      if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE,
-                           chunkMidPoint.y - HALF_CHUNK_SIZE,
-                           MODELS_FC_RADIUS))
+      if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+          frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+          frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+          frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS))
         {
           addIndirectBufferData(directionToChunkLength,
                                 indicesSize,

@@ -117,7 +117,7 @@ void WorldGeneratorFacade::drawFlatTerrain(Frustum &viewFrustum)
       shaderManager.updateFlatShader(projectionView, options.get(OPT_USE_SHADOWS));
       {
         BENCHMARK("Renderer: draw flat", true);
-        renderer.renderFlatTerrain(landGenerator, viewFrustum, textureManager.get(TEX_FLAT));
+        renderer.renderLand(landGenerator, viewFrustum, textureManager.get(TEX_FLAT));
       }
     }
 }
@@ -149,7 +149,6 @@ void WorldGeneratorFacade::drawPlants(glm::vec3& viewPosition, unsigned long upd
         BENCHMARK("Renderer: draw models", true);
         renderer.renderPlants(plantGeneratorFacade,
                            options.get(OPT_MODELS_PHONG_SHADING) ? shaderManager.get(SHADER_MODELS_PHONG) : shaderManager.get(SHADER_MODELS),
-                           options.get(OPT_MODELS_CULLING),
                            true,
                            updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0,
                            true,
@@ -221,7 +220,6 @@ void WorldGeneratorFacade::drawPlantsDepthmap(unsigned long updateCount)
       {
         BENCHMARK("Renderer: draw models depthmap", true);
         renderer.renderPlants(plantGeneratorFacade, shaderManager.get(SHADER_SHADOW_MODELS),
-                           options.get(OPT_MODELS_CULLING),
                            false,
                            updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0,
                            false,

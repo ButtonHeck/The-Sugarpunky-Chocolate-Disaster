@@ -28,10 +28,10 @@ void Model::loadModel(const std::string &path)
   processNode(scene->mRootNode, scene);
 }
 
-void Model::draw(bool modelRenderOptimize, bool bindTexture, bool updateIndirect)
+void Model::draw(bool bindTexture, bool updateIndirect)
 {
   for (unsigned int i = 0; i < meshes.size(); i++)
-    meshes[i].draw(modelRenderOptimize, bindTexture, updateIndirect);
+    meshes[i].draw(bindTexture, updateIndirect);
 }
 
 void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,

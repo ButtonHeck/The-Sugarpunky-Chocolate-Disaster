@@ -18,7 +18,7 @@ public:
   void cleanup();
   static void bindTextureLoader(TextureLoader& textureLoader);
   void loadModel(const std::string& path);
-  void draw(bool modelRenderOptimize, bool bindTexture, bool updateIndirect);
+  void draw(bool bindTexture, bool updateIndirect);
   void prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2& cameraPositionXZ,

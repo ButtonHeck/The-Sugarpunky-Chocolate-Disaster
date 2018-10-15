@@ -13,10 +13,7 @@ void Frustum::normalizePlane(FRUSTUM_SIDE side)
   float magnitude = (float)glm::sqrt(frustumPlanes[side].x * frustumPlanes[side].x +
                                      frustumPlanes[side].y * frustumPlanes[side].y +
                                      frustumPlanes[side].z * frustumPlanes[side].z);
-  frustumPlanes[side].x /= magnitude;
-  frustumPlanes[side].y /= magnitude;
-  frustumPlanes[side].z /= magnitude;
-  frustumPlanes[side].w /= magnitude;
+  frustumPlanes[side] /= magnitude;
 }
 
 void Frustum::updateFrustum(glm::mat4 &projectionView)
