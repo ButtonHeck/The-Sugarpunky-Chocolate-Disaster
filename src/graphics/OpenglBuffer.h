@@ -17,9 +17,13 @@ class OpenglBuffer
 {
 public:
   explicit OpenglBuffer(int flags);
+  OpenglBuffer(OpenglBuffer&& old) noexcept;
+  OpenglBuffer(const OpenglBuffer& copy);
   virtual ~OpenglBuffer();
   void create(int flags);
+  void reserveNameForFutureStorage(int flags);
   void deleteBuffers();
+  void deleteBuffer(int flag);
   GLuint& get(int flag);
   void bind(int flag);
   void add(int flag);

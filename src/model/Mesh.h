@@ -13,6 +13,7 @@
 #include "model/IndirectBufferToken.h"
 #include "graphics/TextureUnits.h"
 #include <map>
+#include "graphics/OpenglBuffer.h"
 
 struct Vertex
 {
@@ -34,8 +35,10 @@ class Mesh
 {
 public:
   Mesh(std::vector<Vertex> vertices, std::vector<Texture> textures, std::vector<GLuint> indices);
+  Mesh(Mesh&& old) noexcept;
+  Mesh(const Mesh& rhs);
   void cleanup();
-  void setupMesh();
+  void setup();
   void setupInstances(glm::mat4* models, unsigned int numModels);
   void draw(bool bindTexture, bool updateIndirect);
   void prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
@@ -47,7 +50,7 @@ private:
   std::vector<Vertex> vertices;
   std::vector<Texture> textures;
   std::vector<GLuint> indices;
-  unsigned int VAO, VBO, EBO, instanceVBO = 0, multiDrawIndirectBO;
+  OpenglBuffer basicGLBuffers;
   unsigned int numInstances;
   constexpr static int NUM_CHUNKS = (WORLD_WIDTH / CHUNK_SIZE) * (WORLD_HEIGHT / CHUNK_SIZE);
   GLuint multiDrawIndirectData[NUM_CHUNKS * 5] = {0}; //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }

@@ -15,6 +15,7 @@ class Model
 {
 public:
   Model(const std::string& path);
+  Model(Model&& old) noexcept;
   void cleanup();
   static void bindTextureLoader(TextureLoader& textureLoader);
   void loadModel(const std::string& path);
@@ -25,6 +26,7 @@ public:
                                  const Frustum& frustum);
   void processNode(aiNode* node, const aiScene* scene);
   void loadInstances(glm::mat4* models, unsigned int numModels);
+  std::vector<Mesh>& getMeshes();
   Mesh processMesh(aiMesh* mesh, const aiScene* scene);
   std::vector<Texture> loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName);
 private:

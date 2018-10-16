@@ -6,6 +6,13 @@ Model::Model(const std::string& path)
   loadModel(std::string(MODELS_DIR + path));
 }
 
+Model::Model(Model &&old) noexcept
+  :
+    meshes(old.meshes),
+    textures_loaded(old.textures_loaded),
+    directory(old.directory)
+{}
+
 void Model::cleanup()
 {
   for (Mesh& mesh : meshes)
@@ -58,6 +65,11 @@ void Model::loadInstances(glm::mat4 *models, unsigned int numModels)
 {
   for (Mesh& mesh : meshes)
     mesh.setupInstances(models, numModels);
+}
+
+std::vector<Mesh> &Model::getMeshes()
+{
+  return meshes;
 }
 
 Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene)

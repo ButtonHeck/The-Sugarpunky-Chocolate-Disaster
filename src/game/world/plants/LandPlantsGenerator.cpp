@@ -4,6 +4,7 @@ LandPlantsGenerator::LandPlantsGenerator()
   :
     PlantGenerator()
 {
+  models.reserve(32);
   models.emplace_back("tree1/tree1.obj");
   models.emplace_back("tree1_2/tree1_2.obj");
   models.emplace_back("tree2/tree2.obj");
@@ -21,6 +22,11 @@ LandPlantsGenerator::LandPlantsGenerator()
 
 void LandPlantsGenerator::setup(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
 {
+  for (Model& model : models)
+    {
+      for (Mesh& mesh : model.getMeshes())
+        mesh.setup();
+    }
   setupModelChunks();
   setupMatrices(baseMap, hillMap);
 }

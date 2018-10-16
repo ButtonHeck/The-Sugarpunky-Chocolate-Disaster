@@ -4,6 +4,7 @@ HillTreesGenerator::HillTreesGenerator()
   :
     PlantGenerator()
 {
+  models.reserve(32);
   models.emplace_back("hillTree1/hillTree1.obj");
   models.emplace_back("hillTree2/hillTree2.obj");
   models.emplace_back("hillTree3/hillTree3.obj");
@@ -21,6 +22,11 @@ HillTreesGenerator::HillTreesGenerator()
 
 void HillTreesGenerator::setup(std::vector<std::vector<float> > &hillMap)
 {
+  for (Model& model : models)
+    {
+      for (Mesh& mesh : model.getMeshes())
+        mesh.setup();
+    }
   setupModelChunks();
   setupMatrices(hillMap);
 }

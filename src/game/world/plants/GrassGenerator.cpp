@@ -4,6 +4,7 @@ GrassGenerator::GrassGenerator()
   :
     PlantGenerator()
 {
+  models.reserve(16);
   models.emplace_back("grass1/grass1.obj");
   models.emplace_back("grass2/grass2.obj");
   models.emplace_back("grass3/grass3.obj");
@@ -14,6 +15,11 @@ GrassGenerator::GrassGenerator()
 
 void GrassGenerator::setup(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
 {
+  for (Model& model : models)
+    {
+      for (Mesh& mesh : model.getMeshes())
+        mesh.setup();
+    }
   setupModelChunks();
   setupMatrices(baseMap, hillMap);
 }

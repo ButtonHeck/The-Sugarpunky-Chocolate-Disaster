@@ -5,6 +5,40 @@ OpenglBuffer::OpenglBuffer(int flags)
   create(flags);
 }
 
+OpenglBuffer::OpenglBuffer(OpenglBuffer &&old) noexcept
+{
+  if (old.objects[VAO])
+    objects[VAO] = old.objects[VAO];
+  if (old.objects[VBO])
+    objects[VBO] = old.objects[VBO];
+  if (old.objects[INSTANCE_VBO])
+    objects[INSTANCE_VBO] = old.objects[INSTANCE_VBO];
+  if (old.objects[EBO])
+    objects[EBO] = old.objects[EBO];
+  if (old.objects[DIBO])
+    objects[DIBO] = old.objects[DIBO];
+  if (old.objects[TFBO])
+    objects[TFBO] = old.objects[TFBO];
+  old.objects.clear();
+}
+
+OpenglBuffer::OpenglBuffer(const OpenglBuffer &copy)
+{
+  auto& rhs = const_cast<OpenglBuffer&>(copy);
+  if (rhs.objects[VAO])
+    objects[VAO] = rhs.objects[VAO];
+  if (rhs.objects[VBO])
+    objects[VBO] = rhs.objects[VBO];
+  if (rhs.objects[INSTANCE_VBO])
+    objects[INSTANCE_VBO] = rhs.objects[INSTANCE_VBO];
+  if (rhs.objects[EBO])
+    objects[EBO] = rhs.objects[EBO];
+  if (rhs.objects[DIBO])
+    objects[DIBO] = rhs.objects[DIBO];
+  if (rhs.objects[TFBO])
+    objects[TFBO] = rhs.objects[TFBO];
+}
+
 OpenglBuffer::~OpenglBuffer()
 {
   deleteBuffers();
@@ -50,6 +84,22 @@ void OpenglBuffer::create(int flags)
     }
 }
 
+void OpenglBuffer::reserveNameForFutureStorage(int flags)
+{
+  if (flags & VAO)
+    objects[VAO] = 0;
+  if (flags & VBO)
+    objects[VBO] = 0;
+  if (flags & INSTANCE_VBO)
+    objects[INSTANCE_VBO] = 0;
+  if (flags & EBO)
+    objects[EBO] = 0;
+  if (flags & DIBO)
+    objects[DIBO] = 0;
+  if (flags & TFBO)
+    objects[TFBO] = 0;
+}
+
 void OpenglBuffer::deleteBuffers()
 {
   if (objects[VAO])
@@ -64,6 +114,24 @@ void OpenglBuffer::deleteBuffers()
     glDeleteBuffers(1, &objects[DIBO]);
   if (objects[TFBO])
     glDeleteTransformFeedbacks(1, &objects[TFBO]);
+}
+
+void OpenglBuffer::deleteBuffer(int flag)
+{
+  if (flag & VAO)
+    glDeleteVertexArrays(1, &objects[VAO]);
+  else if (flag & VBO)
+    glDeleteBuffers(1, &objects[VBO]);
+  else if (flag & INSTANCE_VBO)
+    glDeleteBuffers(1, &objects[INSTANCE_VBO]);
+  else if (flag & EBO)
+    glDeleteBuffers(1, &objects[EBO]);
+  else if (flag & DIBO)
+    glDeleteBuffers(1, &objects[DIBO]);
+  else if (flag & TFBO)
+    glDeleteTransformFeedbacks(1, &objects[TFBO]);
+  else
+    throw std::invalid_argument("Unknown GL object enum flag");
 }
 
 GLuint &OpenglBuffer::get(int flag)
