@@ -4,10 +4,10 @@ TextureManager::TextureManager(TextureLoader& loader)
   :
     loader(loader)
 {
-  textures[TEX_FLAT] = loader.loadTexture("flat.jpg", TEX_FLAT, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
-  textures[TEX_FLAT_2] = loader.loadTexture("flat2.jpg", TEX_FLAT_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
-  textures[TEX_FLAT_x2] = loader.loadTexture("flat_x2.jpg", TEX_FLAT_x2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
-  textures[TEX_FLAT_2_x2] = loader.loadTexture("flat2_x2.jpg", TEX_FLAT_2_x2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[TEX_LAND] = loader.loadTexture("flat.jpg", TEX_LAND, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[TEX_LAND_2] = loader.loadTexture("flat2.jpg", TEX_LAND_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[TEX_LAND_x2] = loader.loadTexture("flat_x2.jpg", TEX_LAND_x2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[TEX_LAND_2_x2] = loader.loadTexture("flat2_x2.jpg", TEX_LAND_2_x2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[TEX_DIFFUSE_MIX_MAP] = loader.loadTexture("diffuseMixMap.jpg", TEX_DIFFUSE_MIX_MAP, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
   textures[TEX_TERRAIN_NORMAL] = loader.loadTexture("terrainNormal.jpg", TEX_TERRAIN_NORMAL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[TEX_WATER_NORMAL] = loader.loadTexture("waterNormal.jpg", TEX_WATER_NORMAL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);

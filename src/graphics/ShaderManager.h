@@ -1,6 +1,6 @@
 #ifndef SHADERMANAGER_H
 #define SHADERMANAGER_H
-#include <vector>
+#include <unordered_map>
 #include "graphics/Shader.h"
 #include "graphics/TextureUnits.h"
 #include "graphics/Frustum.h"
@@ -8,24 +8,24 @@
 enum SHADER
 {
   SHADER_HILLS_CULLING = 0,
-  SHADER_HILLS = 1,
-  SHADER_SHORE = 2,
-  SHADER_UNDERWATER = 3,
-  SHADER_FLAT = 4,
-  SHADER_WATER_CULLING = 5,
-  SHADER_WATER = 6,
-  SHADER_SKY = 7,
-  SHADER_MODELS = 8,
-  SHADER_FONT = 9,
-  SHADER_CS = 10,
-  SHADER_BUILDABLE = 11,
-  SHADER_SELECTED = 12,
-  SHADER_MS_TO_DEFAULT = 13,
-  SHADER_SHADOW_TERRAIN = 14,
-  SHADER_SHADOW_MODELS = 15,
-  SHADER_SHADOW_TERRAIN_CAMERA = 16,
-  SHADER_SHADOW_MODELS_CAMERA = 17,
-  SHADER_MODELS_PHONG = 18
+  SHADER_HILLS,
+  SHADER_SHORE,
+  SHADER_UNDERWATER,
+  SHADER_LAND,
+  SHADER_WATER_CULLING,
+  SHADER_WATER,
+  SHADER_SKYBOX,
+  SHADER_MODELS,
+  SHADER_MODELS_PHONG,
+  SHADER_FONT,
+  SHADER_COORDINATE_SYSTEM,
+  SHADER_BUILDABLE,
+  SHADER_SELECTED,
+  SHADER_MS_TO_DEFAULT,
+  SHADER_SHADOW_TERRAIN,
+  SHADER_SHADOW_MODELS,
+  SHADER_SHADOW_TERRAIN_CAMERA,
+  SHADER_SHADOW_MODELS_CAMERA
 };
 
 class ShaderManager
@@ -48,7 +48,7 @@ public:
                          bool useShadows,
                          bool useFlatBlending);
 private:
-  std::vector<std::pair<SHADER, Shader>> shaders;
+  std::unordered_map<int, Shader> shaders;
 };
 
 #endif // SHADERMANAGER_H

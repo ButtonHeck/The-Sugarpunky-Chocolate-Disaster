@@ -1,6 +1,6 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
-#include <vector>
+#include <unordered_map>
 
 enum OPTION
 {
@@ -33,7 +33,7 @@ public:
   void set(OPTION value, bool flag);
   void toggle(OPTION value);
 private:
-  std::vector<std::pair<OPTION, bool>> options;
+  std::unordered_map<int, bool> options;
 };
 
 #endif // OPTIONS_H

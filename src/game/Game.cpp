@@ -13,7 +13,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
     renderer(Renderer(camera)),
     textureLoader(TextureLoader(screenResolution)),
     textureManager(TextureManager(textureLoader)),
-    csRenderer(CoordinateSystemRenderer(&shaderManager.get(SHADER_CS))),
+    csRenderer(CoordinateSystemRenderer(&shaderManager.get(SHADER_COORDINATE_SYSTEM))),
     screenBuffer(screenResolution, textureManager, shaderManager),
     depthmapBuffer(),
     textManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", shaderManager.get(SHADER_FONT))

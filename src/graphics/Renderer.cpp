@@ -65,7 +65,7 @@ void Renderer::renderShore(const std::shared_ptr<ShoreGenerator> generator)
 
 void Renderer::renderLand(const std::shared_ptr<LandGenerator> generator, Frustum& frustum, GLuint texture)
 {
-  glBindTextureUnit(TEX_FLAT, texture);
+  glBindTextureUnit(TEX_LAND, texture);
   //square chunks are better to render without FC
   glBindVertexArray(generator->getVAO());
   glDrawElementsInstanced(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0, generator->getTiles().size());

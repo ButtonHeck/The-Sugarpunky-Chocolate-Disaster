@@ -117,7 +117,7 @@ void WorldGeneratorFacade::drawFlatTerrain(Frustum &viewFrustum)
       shaderManager.updateFlatShader(projectionView, options.get(OPT_USE_SHADOWS));
       {
         BENCHMARK("Renderer: draw flat", true);
-        renderer.renderLand(landGenerator, viewFrustum, textureManager.get(TEX_FLAT));
+        renderer.renderLand(landGenerator, viewFrustum, textureManager.get(TEX_LAND));
       }
     }
 }

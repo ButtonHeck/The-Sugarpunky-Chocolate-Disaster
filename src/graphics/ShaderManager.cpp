@@ -2,39 +2,36 @@
 
 ShaderManager::ShaderManager()
 {
-  shaders.assign(
-  {
-    {SHADER_HILLS_CULLING,          Shader("hillsFC.vs", "hillsFC.gs", "_FC.fs")},
-    {SHADER_HILLS,                  Shader("hills.vs", "hills.fs")},
-    {SHADER_SHORE,                  Shader("shore.vs", "shore.fs")},
-    {SHADER_UNDERWATER,             Shader("underwater.vs", "underwater.fs")},
-    {SHADER_FLAT,                   Shader("flat.vs", "flat.fs")},
-    {SHADER_WATER_CULLING,          Shader("waterFC.vs", "waterFC.gs", "_FC.fs")},
-    {SHADER_WATER,                  Shader("water.vs", "water.fs")},
-    {SHADER_SKY,                    Shader("skybox.vs", "skybox.fs")},
-    {SHADER_MODELS,                 Shader("model.vs", "model.fs")},
-    {SHADER_FONT,                   Shader("font.vs", "font.fs")},
-    {SHADER_CS,                     Shader("coordinateSystem.vs", "coordinateSystem.gs", "coordinateSystem.fs")},
-    {SHADER_BUILDABLE,              Shader("buildableTiles.vs", "buildableTiles.fs")},
-    {SHADER_SELECTED,               Shader("selectedTile.vs", "selectedTile.fs")},
-    {SHADER_MS_TO_DEFAULT,          Shader("MS_toDefault.vs", "MS_toDefault_hdr.fs")},
-    {SHADER_SHADOW_TERRAIN,         Shader("terrain_shadow.vs")},
-    {SHADER_SHADOW_MODELS,          Shader("model_shadow.vs")},
-    {SHADER_SHADOW_TERRAIN_CAMERA,  Shader("terrain_shadow.vs")},
-    {SHADER_SHADOW_MODELS_CAMERA,   Shader("model_shadow.vs")},
-    {SHADER_MODELS_PHONG,           Shader("modelPhong.vs", "modelPhong.fs")}
-        });
+  shaders[SHADER_HILLS_CULLING] = Shader("hillsFC.vs", "hillsFC.gs", "_FC.fs");
+  shaders[SHADER_HILLS] = Shader("hills.vs", "hills.fs");
+  shaders[SHADER_SHORE] = Shader("shore.vs", "shore.fs");
+  shaders[SHADER_UNDERWATER] = Shader("underwater.vs", "underwater.fs");
+  shaders[SHADER_LAND] = Shader("flat.vs", "flat.fs");
+  shaders[SHADER_WATER_CULLING] = Shader("waterFC.vs", "waterFC.gs", "_FC.fs");
+  shaders[SHADER_WATER] = Shader("water.vs", "water.fs");
+  shaders[SHADER_SKYBOX] = Shader("skybox.vs", "skybox.fs");
+  shaders[SHADER_MODELS] = Shader("model.vs", "model.fs");
+  shaders[SHADER_FONT] = Shader("font.vs", "font.fs");
+  shaders[SHADER_COORDINATE_SYSTEM] = Shader("coordinateSystem.vs", "coordinateSystem.gs", "coordinateSystem.fs");
+  shaders[SHADER_BUILDABLE] = Shader("buildableTiles.vs", "buildableTiles.fs");
+  shaders[SHADER_SELECTED] = Shader("selectedTile.vs", "selectedTile.fs");
+  shaders[SHADER_MS_TO_DEFAULT] = Shader("MS_toDefault.vs", "MS_toDefault_hdr.fs");
+  shaders[SHADER_SHADOW_TERRAIN] = Shader("terrain_shadow.vs");
+  shaders[SHADER_SHADOW_MODELS] = Shader("model_shadow.vs");
+  shaders[SHADER_SHADOW_TERRAIN_CAMERA] = Shader("terrain_shadow.vs");
+  shaders[SHADER_SHADOW_MODELS_CAMERA] = Shader("model_shadow.vs");
+  shaders[SHADER_MODELS_PHONG] = Shader("modelPhong.vs", "modelPhong.fs");
 }
 
 ShaderManager::~ShaderManager()
 {
   glUseProgram(0);
   for (unsigned int i = 0; i < shaders.size(); i++)
-    shaders[i].second.cleanUp();
+    shaders[i].cleanUp();
 }
 
 #define bindShaderUnit(shader, type) \
-  shader = &shaders[type].second; \
+  shader = &shaders[type]; \
   shader->use();
 
 void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
@@ -42,8 +39,8 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   Shader* shader = nullptr;
   bindShaderUnit(shader, SHADER_HILLS);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  shader->setInt("u_flat_diffuse", TEX_FLAT_x2);
-  shader->setInt("u_flat_diffuse2", TEX_FLAT_2_x2);
+  shader->setInt("u_flat_diffuse", TEX_LAND_x2);
+  shader->setInt("u_flat_diffuse2", TEX_LAND_2_x2);
   shader->setInt("u_hills_diffuse", TEX_HILL);
   shader->setInt("u_hills_diffuse2", TEX_HILL_2);
   shader->setInt("u_hills_specular", TEX_HILL_SPECULAR);
@@ -54,8 +51,8 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
 
   bindShaderUnit(shader, SHADER_SHORE);
-  shader->setInt("u_flat_diffuse", TEX_FLAT);
-  shader->setInt("u_flat_diffuse2", TEX_FLAT_2);
+  shader->setInt("u_flat_diffuse", TEX_LAND);
+  shader->setInt("u_flat_diffuse2", TEX_LAND_2);
   shader->setInt("u_sand_diffuse", TEX_SHORE);
   shader->setInt("u_sand_diffuse2", TEX_SHORE_2);
   shader->setInt("u_diffuse_mix_map", TEX_DIFFUSE_MIX_MAP);
@@ -73,9 +70,9 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
 
-  bindShaderUnit(shader, SHADER_FLAT);
-  shader->setInt("u_flat_diffuse", TEX_FLAT);
-  shader->setInt("u_flat_diffuse2", TEX_FLAT_2);
+  bindShaderUnit(shader, SHADER_LAND);
+  shader->setInt("u_flat_diffuse", TEX_LAND);
+  shader->setInt("u_flat_diffuse2", TEX_LAND_2);
   shader->setInt("u_diffuse_mix_map", TEX_DIFFUSE_MIX_MAP);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
@@ -91,7 +88,7 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_specular_map", TEX_WATER_SPECULAR);
   shader->setFloat("u_mapDimension", 1.0f / WORLD_WIDTH);
 
-  bindShaderUnit(shader, SHADER_SKY);
+  bindShaderUnit(shader, SHADER_SKYBOX);
   shader->setInt("u_skybox", TEX_SKYBOX);
 
   bindShaderUnit(shader, SHADER_FONT);
@@ -125,7 +122,7 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
 
 Shader &ShaderManager::get(SHADER type)
 {
-  return shaders[type].second;
+  return shaders[type];
 }
 
 void ShaderManager::updateHillsShaders(bool useFC, bool useShadows, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum, float maxHillHeight)
@@ -149,7 +146,7 @@ void ShaderManager::updateHillsShaders(bool useFC, bool useShadows, glm::mat4 &p
 
 void ShaderManager::updateShoreShader(glm::mat4 &projectionView, bool useShadows)
 {
-  Shader* shader = &shaders[SHADER_SHORE].second;
+  Shader* shader = &shaders[SHADER_SHORE];
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
   shader->setBool("u_shadowEnable", useShadows);
@@ -157,7 +154,7 @@ void ShaderManager::updateShoreShader(glm::mat4 &projectionView, bool useShadows
 
 void ShaderManager::updateFlatShader(glm::mat4 &projectionView, bool useShadows)
 {
-  Shader* shader = &shaders[SHADER_FLAT].second;
+  Shader* shader = &shaders[SHADER_LAND];
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
   shader->setBool("u_shadowEnable", useShadows);
@@ -165,21 +162,21 @@ void ShaderManager::updateFlatShader(glm::mat4 &projectionView, bool useShadows)
 
 void ShaderManager::updateUnderwaterShader(glm::mat4 &projectionView)
 {
-  Shader* shader = &shaders[SHADER_UNDERWATER].second;
+  Shader* shader = &shaders[SHADER_UNDERWATER];
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
 }
 
 void ShaderManager::updateBuildableShader(glm::mat4 &projectionView)
 {
-  Shader* shader = &shaders[SHADER_BUILDABLE].second;
+  Shader* shader = &shaders[SHADER_BUILDABLE];
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
 }
 
 void ShaderManager::updateSelectedShader(glm::mat4 &projectionView, glm::mat4 &selectedModel)
 {
-  Shader* shader = &shaders[SHADER_SELECTED].second;
+  Shader* shader = &shaders[SHADER_SELECTED];
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
   shader->setMat4("u_model", selectedModel);
@@ -204,7 +201,7 @@ void ShaderManager::updateWaterShaders(bool useFC, glm::mat4 &projectionView, gl
 
 void ShaderManager::updateSkyShader(glm::mat4 &projectionView)
 {
-  Shader* shader = &shaders[SHADER_SKY].second;
+  Shader* shader = &shaders[SHADER_SKYBOX];
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
 }
