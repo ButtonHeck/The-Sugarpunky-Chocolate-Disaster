@@ -1,15 +1,16 @@
 #ifndef COORDINATESYSTEMRENDERER_H
 #define COORDINATESYSTEMRENDERER_H
 #include "graphics/Shader.h"
+#include "graphics/OpenglBuffer.h"
 
 class CoordinateSystemRenderer
 {
 public:
   CoordinateSystemRenderer(Shader* shader);
-  virtual ~CoordinateSystemRenderer();
+  virtual ~CoordinateSystemRenderer() = default;
   void draw(const glm::mat3& view, float aspect_ratio);
 private:
-  GLuint vao, vbo;
+  OpenglBuffer basicGLBuffers;
   Shader* shader;
 };
 

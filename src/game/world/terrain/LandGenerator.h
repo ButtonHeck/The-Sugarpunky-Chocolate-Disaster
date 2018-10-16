@@ -10,7 +10,7 @@ class LandGenerator : public Generator
 {
 public:
   LandGenerator();
-  virtual ~LandGenerator();
+  virtual ~LandGenerator() = default;
   void setup(std::vector<std::vector<float>> &shoreMap);
   std::vector<TerrainChunk>& getCellChunks();
   GLuint& getCellVAO();
@@ -24,8 +24,7 @@ private:
   void bufferData(GLuint& ebo, GLuint& vbo, GLfloat *buffer, size_t size);
   void setupGLBufferAttributes();
   void setupGLBufferInstancedAttributes();
-  GLuint squareModelVbo;
-  GLuint cellVao, cellVbo, cellEbo, cellModelVbo, cellIndirectDrawCommandBO;
+  OpenglBuffer cellBuffers;
   std::vector<std::vector<float>> chunkMap;
   std::vector<TerrainTile> cellTiles;
   std::default_random_engine randomizer;

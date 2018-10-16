@@ -12,13 +12,13 @@ class WaterGenerator : public Generator
 {
 public:
   WaterGenerator(Shader& shader);
-  virtual ~WaterGenerator();
+  virtual ~WaterGenerator() = default;
   void setup();
   void setupConsiderTerrain();
   void bufferNewData();
   void updateAnimationFrame(Options& options);
-  GLuint getCulledVAO() const;
-  GLuint getTransformFeedback() const;
+  GLuint getCulledVAO();
+  GLuint getTransformFeedback();
 private:
   struct WaterVertex
   {
@@ -26,18 +26,6 @@ private:
     float posX, posY, posZ;
     float normalX, normalY, normalZ;
   };
-  void bufferVertex(GLfloat* vertices, int offset, WaterVertex vertex);
-  void updateVertexNormal(GLfloat* vertices, int offset, glm::vec3 normal);
-  void updateTileY(GLfloat* vertices, int offset, glm::vec4 heights);
-  void setupGLBufferAttributes();
-  void fillBufferData();
-  GLuint culledVAO = 0, culledVBO = 0, TFBO = 0;
-  Shader& shader;
-  size_t numVertices;
-  unsigned int numTiles;
-  std::unique_ptr<GLfloat[]> vertices;
-  constexpr static int WATER_HEIGHT_OFFSETS_SIZE = NUM_TILES + WORLD_WIDTH * 2;
-  std::unique_ptr<GLfloat[]> heightOffsets;
   void generateMap();
   void addWaterNearbyTerrain();
   enum DIRECTION : int {
@@ -52,6 +40,18 @@ private:
                     int &riverTileCounter,
                     int &shoreSizeOffset,
                     bool &shoreSizeIncrease);
+  void bufferVertex(GLfloat* vertices, int offset, WaterVertex vertex);
+  void updateVertexNormal(GLfloat* vertices, int offset, glm::vec3 normal);
+  void updateTileY(GLfloat* vertices, int offset, glm::vec4 heights);
+  void setupGLBufferAttributes();
+  void fillBufferData();
+  OpenglBuffer culledBuffers;
+  Shader& shader;
+  size_t numVertices;
+  unsigned int numTiles;
+  std::unique_ptr<GLfloat[]> vertices;
+  constexpr static int WATER_HEIGHT_OFFSETS_SIZE = NUM_TILES + WORLD_WIDTH * 2;
+  std::unique_ptr<GLfloat[]> heightOffsets;
   std::vector<std::vector<float>> postProcessMap;
 };
 

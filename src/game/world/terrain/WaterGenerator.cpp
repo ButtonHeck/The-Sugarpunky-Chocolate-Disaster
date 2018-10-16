@@ -3,16 +3,10 @@
 WaterGenerator::WaterGenerator(Shader &waterShader)
   :
     Generator(),
+    culledBuffers(VAO | VBO | TFBO),
     shader(waterShader),
     heightOffsets(new GLfloat[WATER_HEIGHT_OFFSETS_SIZE])
 {}
-
-WaterGenerator::~WaterGenerator()
-{
-  glDeleteVertexArrays(1, &culledVAO);
-  glDeleteBuffers(1, &culledVBO);
-  glDeleteTransformFeedbacks(1, &TFBO);
-}
 
 void WaterGenerator::setup()
 {
@@ -61,24 +55,16 @@ void WaterGenerator::fillBufferData()
   glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(GLfloat), vertices.get(), GL_STREAM_DRAW);
   setupGLBufferAttributes();
 
-  if (culledVAO != 0)
-    {
-      glDeleteVertexArrays(1, &culledVAO);
-      glDeleteBuffers(1, &culledVBO);
-      glDeleteTransformFeedbacks(1, &TFBO);
-    }
-  glCreateVertexArrays(1, &culledVAO);
-  glCreateBuffers(1, &culledVBO);
-  glCreateTransformFeedbacks(1, &TFBO);
-  glBindVertexArray(culledVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, culledVBO);
-  glNamedBufferStorage(culledVBO, numVertices * sizeof(GLfloat), 0, GL_NONE);
+  if (culledBuffers.get(VAO) != 0)
+    culledBuffers.deleteBuffers();
+  culledBuffers.create(VAO | VBO | TFBO);
+  culledBuffers.bind(VAO | VBO | TFBO);
+  glNamedBufferStorage(culledBuffers.get(VBO), numVertices * sizeof(GLfloat), 0, GL_NONE);
   setupGLBufferAttributes();
-  glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, TFBO);
   const GLchar* varyings[2] = {"o_pos", "o_normal"};
   glTransformFeedbackVaryings(shader.getID(), 2, varyings, GL_INTERLEAVED_ATTRIBS);
   shader.linkAgain();
-  glTransformFeedbackBufferBase(TFBO, 0, culledVBO);
+  glTransformFeedbackBufferBase(culledBuffers.get(TFBO), 0, culledBuffers.get(VBO));
 
   resetAllGLBuffers();
 }
@@ -494,14 +480,14 @@ void WaterGenerator::updateAnimationFrame(Options& options)
     }
 }
 
-GLuint WaterGenerator::getCulledVAO() const
+GLuint WaterGenerator::getCulledVAO()
 {
-  return culledVAO;
+  return culledBuffers.get(VAO);
 }
 
-GLuint WaterGenerator::getTransformFeedback() const
+GLuint WaterGenerator::getTransformFeedback()
 {
-  return TFBO;
+  return culledBuffers.get(TFBO);
 }
 
 void WaterGenerator::bufferVertex(GLfloat *vertices, int offset, WaterGenerator::WaterVertex vertex)

@@ -168,6 +168,8 @@ void ShoreGenerator::createTiles()
 
 void ShoreGenerator::fillBufferData()
 {
+  using glm::vec2;
+  using glm::vec3;
   const size_t VERTEX_DATA_LENGTH = tiles.size() * 48;
   std::unique_ptr<GLfloat[]> vertices(new GLfloat[NUM_TILES * 48]);
   for (unsigned int i = 0; i < tiles.size(); i++)
@@ -176,10 +178,10 @@ void ShoreGenerator::fillBufferData()
       int offset = i * 48;
       int x = tile.mapX, y = tile.mapY;
 
-      ShoreVertex lowLeft(glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY), glm::vec2(0.0f), normalMap[y][x-1]);
-      ShoreVertex lowRight(glm::vec3(tile.mapX, tile.lowRight, tile.mapY), glm::vec2(1.0f, 0.0f), normalMap[y][x]);
-      ShoreVertex upRight(glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1), glm::vec2(1.0f), normalMap[y-1][x]);
-      ShoreVertex upLeft(glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1), glm::vec2(0.0f, 1.0f), normalMap[y-1][x-1]);
+      ShoreVertex lowLeft(vec3(tile.mapX - 1, tile.lowLeft, tile.mapY), vec2(0.0f), normalMap[y][x-1]);
+      ShoreVertex lowRight(vec3(tile.mapX, tile.lowRight, tile.mapY), vec2(1.0f, 0.0f), normalMap[y][x]);
+      ShoreVertex upRight(vec3(tile.mapX, tile.upperRight, tile.mapY - 1), vec2(1.0f), normalMap[y-1][x]);
+      ShoreVertex upLeft(vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1), vec2(0.0f, 1.0f), normalMap[y-1][x-1]);
 
       bufferVertex(vertices.get(), offset, lowLeft); //ll1
       bufferVertex(vertices.get(), offset+8, lowRight); //lr1

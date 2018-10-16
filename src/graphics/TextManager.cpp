@@ -4,21 +4,13 @@ TextManager::TextManager(const std::string &fontFile, const std::string &fontTex
   :
     fontLoader(fontFile, fontTexture),
     shader(shader),
+    basicGLBuffers(VAO | VBO),
     vertexData(new GLfloat[MAX_BUFFER_SIZE])
 {
-  glCreateVertexArrays(1, &vao);
-  glCreateBuffers(1, &vbo);
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  basicGLBuffers.bind(VAO | VBO);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
   glBindVertexArray(0);
-}
-
-TextManager::~TextManager()
-{
-  glDeleteVertexArrays(1, &vao);
-  glDeleteBuffers(1, &vbo);
 }
 
 void TextManager::addText(ScreenResolution& screenResolution,
@@ -177,8 +169,7 @@ void TextManager::addString(const std::string& text, GLfloat x, GLfloat y, GLflo
 void TextManager::drawText()
 {
   shader.use();
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  basicGLBuffers.bind(VAO | VBO);
   glBufferData(GL_ARRAY_BUFFER, bufferOffset * sizeof(GLfloat), vertexData.get(), GL_STATIC_DRAW);
 
   glEnable(GL_BLEND);

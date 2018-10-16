@@ -3,6 +3,7 @@
 #include "graphics/TextureManager.h"
 #include "graphics/ScreenResolution.h"
 #include "graphics/ShaderManager.h"
+#include "graphics/OpenglBuffer.h"
 
 class ScreenBuffer
 {
@@ -18,7 +19,8 @@ private:
   ScreenResolution& screenResolution;
   TextureManager& textureManager;
   ShaderManager& shaderManager;
-  GLuint screenVAO, screenVBO, screenDepthRBO, screenFBO;
+  OpenglBuffer screenBuffers;
+  GLuint screenDepthRBO, screenFBO;
   GLuint multisampleDepthRBO, multisampleFBO;
 };
 

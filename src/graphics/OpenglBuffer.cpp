@@ -2,6 +2,16 @@
 
 OpenglBuffer::OpenglBuffer(int flags)
 {
+  create(flags);
+}
+
+OpenglBuffer::~OpenglBuffer()
+{
+  deleteBuffers();
+}
+
+void OpenglBuffer::create(int flags)
+{
   if (flags & VAO)
     {
       GLuint vao;
@@ -32,9 +42,15 @@ OpenglBuffer::OpenglBuffer(int flags)
       glCreateBuffers(1, &dibo);
       objects[DIBO] = dibo;
     }
+  if (flags & TFBO)
+    {
+      GLuint tfbo;
+      glCreateTransformFeedbacks(1, &tfbo);
+      objects[TFBO] = tfbo;
+    }
 }
 
-OpenglBuffer::~OpenglBuffer()
+void OpenglBuffer::deleteBuffers()
 {
   if (objects[VAO])
     glDeleteVertexArrays(1, &objects[VAO]);
@@ -46,6 +62,8 @@ OpenglBuffer::~OpenglBuffer()
     glDeleteBuffers(1, &objects[EBO]);
   if (objects[DIBO])
     glDeleteBuffers(1, &objects[DIBO]);
+  if (objects[TFBO])
+    glDeleteTransformFeedbacks(1, &objects[TFBO]);
 }
 
 GLuint &OpenglBuffer::get(int flag)
@@ -60,6 +78,8 @@ GLuint &OpenglBuffer::get(int flag)
     return objects[EBO];
   else if (flag & DIBO)
     return objects[DIBO];
+  else if (flag & TFBO)
+    return objects[TFBO];
   else throw std::invalid_argument("Unknown GL object enum flag");
 }
 
@@ -75,6 +95,8 @@ void OpenglBuffer::bind(int flag)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objects[EBO]);
   if (flag & DIBO)
     glBindBuffer(GL_DRAW_INDIRECT_BUFFER, objects[DIBO]);
+  if (flag & TFBO)
+    glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, objects[TFBO]);
 }
 
 void OpenglBuffer::add(int flag)
@@ -108,6 +130,12 @@ void OpenglBuffer::add(int flag)
       GLuint dibo;
       glCreateBuffers(1, &dibo);
       objects[DIBO] = dibo;
+    }
+  else if (flag & TFBO)
+    {
+      GLuint tfbo;
+      glCreateTransformFeedbacks(1, &tfbo);
+      objects[TFBO] = tfbo;
     }
   else
     throw std::invalid_argument("Unknown GL object enum flag");

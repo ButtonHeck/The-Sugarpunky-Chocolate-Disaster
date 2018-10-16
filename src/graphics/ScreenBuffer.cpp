@@ -4,7 +4,8 @@ ScreenBuffer::ScreenBuffer(ScreenResolution &screenResolution, TextureManager &t
   :
     screenResolution(screenResolution),
     textureManager(textureManager),
-    shaderManager(shaderManager)
+    shaderManager(shaderManager),
+    screenBuffers(VAO | VBO)
 {}
 
 ScreenBuffer::~ScreenBuffer()
@@ -13,8 +14,6 @@ ScreenBuffer::~ScreenBuffer()
   glDeleteFramebuffers(1, &screenFBO);
   glDeleteRenderbuffers(1, &screenDepthRBO);
   glDeleteRenderbuffers(1, &multisampleDepthRBO);
-  glDeleteVertexArrays(1, &screenVAO);
-  glDeleteBuffers(1, &screenVBO);
 }
 
 void ScreenBuffer::setup()
@@ -54,10 +53,7 @@ void ScreenBuffer::setupFramebuffers()
 
 void ScreenBuffer::setupScreenQuadBuffer()
 {
-  glGenVertexArrays(1, &screenVAO);
-  glGenBuffers(1, &screenVBO);
-  glBindVertexArray(screenVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
+  screenBuffers.bind(VAO | VBO);
   constexpr float SCREEN_VERTICES[] = {
     -1.0f, -1.0f, 0.0f, 0.0f,
      1.0f, -1.0f, 1.0f, 0.0f,
@@ -90,7 +86,7 @@ void ScreenBuffer::draw(bool enableMultisampling)
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     }
   shaderManager.get(SHADER_MS_TO_DEFAULT).use();
-  glBindVertexArray(screenVAO);
+  screenBuffers.bind(VAO);
   glDisable(GL_DEPTH_TEST);
   glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_TILE);
   glEnable(GL_DEPTH_TEST);

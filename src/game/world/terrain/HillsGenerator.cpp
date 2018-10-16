@@ -3,17 +3,11 @@
 HillsGenerator::HillsGenerator(Shader &shader, std::vector<std::vector<float> > &waterMap)
   :
     Generator(),
+    culledBuffers(VAO | VBO | TFBO),
     shader(shader),
     waterMap(waterMap)
 {
   randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
-}
-
-HillsGenerator::~HillsGenerator()
-{
-  glDeleteVertexArrays(1, &culledVAO);
-  glDeleteBuffers(1, &culledVBO);
-  glDeleteTransformFeedbacks(1, &TFBO);
 }
 
 void HillsGenerator::setup()
@@ -103,24 +97,16 @@ void HillsGenerator::fillBufferData()
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTEX_DATA_LENGTH, vertices.get(), GL_STATIC_DRAW);
   setupGLBufferAttributes();
 
-  if (culledVAO != 0)
-    {
-      glDeleteVertexArrays(1, &culledVAO);
-      glDeleteBuffers(1, &culledVBO);
-      glDeleteTransformFeedbacks(1, &TFBO);
-    }
-  glCreateVertexArrays(1, &culledVAO);
-  glCreateBuffers(1, &culledVBO);
-  glCreateTransformFeedbacks(1, &TFBO);
-  glBindVertexArray(culledVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, culledVBO);
-  glNamedBufferStorage(culledVBO, VERTEX_DATA_LENGTH * sizeof(GLfloat), 0, GL_NONE);
+  if (culledBuffers.get(VAO) != 0)
+    culledBuffers.deleteBuffers();
+  culledBuffers.create(VAO | VBO | TFBO);
+  culledBuffers.bind(VAO | VBO | TFBO);
+  glNamedBufferStorage(culledBuffers.get(VBO), VERTEX_DATA_LENGTH * sizeof(GLfloat), 0, GL_NONE);
   setupGLBufferAttributes();
-  glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, TFBO);
   const GLchar* varyings[3] = {"o_pos", "o_texCoords", "o_normal"};
   glTransformFeedbackVaryings(shader.getID(), 3, varyings, GL_INTERLEAVED_ATTRIBS);
   shader.linkAgain();
-  glTransformFeedbackBufferBase(TFBO, 0, culledVBO);
+  glTransformFeedbackBufferBase(culledBuffers.get(TFBO), 0, culledBuffers.get(VBO));
   resetAllGLBuffers();
 }
 
@@ -129,14 +115,14 @@ float HillsGenerator::getMaxHeight() const
   return maxHeight;
 }
 
-GLuint HillsGenerator::getCulledVAO() const
+GLuint HillsGenerator::getCulledVAO()
 {
-  return culledVAO;
+  return culledBuffers.get(VAO);
 }
 
-GLuint HillsGenerator::getTransformFeedback() const
+GLuint HillsGenerator::getTransformFeedback()
 {
-  return TFBO;
+  return culledBuffers.get(TFBO);
 }
 
 void HillsGenerator::generateMap(int cycles, float density)

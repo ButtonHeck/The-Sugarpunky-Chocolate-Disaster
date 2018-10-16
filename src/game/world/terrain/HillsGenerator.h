@@ -16,12 +16,12 @@ class HillsGenerator : public Generator
 {
 public:
   HillsGenerator(Shader& shader, std::vector<std::vector<float>>& waterMap);
-  virtual ~HillsGenerator();
+  virtual ~HillsGenerator() = default;
   void setup();
   void createTilesAndBufferData();
   float getMaxHeight() const;
-  GLuint getCulledVAO() const;
-  GLuint getTransformFeedback() const;
+  GLuint getCulledVAO();
+  GLuint getTransformFeedback();
 private:
   struct HillVertex{
     HillVertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal);
@@ -29,7 +29,7 @@ private:
     float texCoordX, texCoordY;
     float normalX, normalY, normalZ;
   };
-  GLuint culledVAO = 0, culledVBO = 0, TFBO = 0;
+  OpenglBuffer culledBuffers;
   Shader& shader;
   float maxHeight = 0.0f;
   std::vector<std::vector<float>>& waterMap;

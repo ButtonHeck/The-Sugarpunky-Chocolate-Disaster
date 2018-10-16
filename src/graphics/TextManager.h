@@ -15,7 +15,7 @@ class TextManager
 {
 public:
   TextManager(const std::string& fontFile, const std::string& fontTexture, Shader& shader);
-  virtual ~TextManager();
+  virtual ~TextManager() = default;
   void addText(ScreenResolution& screenResolution,
                Camera& camera, Options& options,
                MouseInputManager& mouseInput,
@@ -32,10 +32,10 @@ private:
   void addString(const std::string &text, GLfloat x, GLfloat y, GLfloat scale);
   FontLoader fontLoader;
   Shader& shader;
+  OpenglBuffer basicGLBuffers;
   const int MAX_BUFFER_SIZE = 1024 * 24;
   std::unique_ptr<GLfloat[]> vertexData;
   int bufferOffset = 0, glyphsCount = 0;
-  GLuint vao, vbo;
 };
 
 #endif // TEXTMANAGER_H

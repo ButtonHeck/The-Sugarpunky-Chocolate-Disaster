@@ -5,11 +5,12 @@
 
 enum OPENGL_OBJECT : int
 {
-  VAO =           0x00001,
-  VBO =           0x00010,
-  INSTANCE_VBO =  0x00100,
-  EBO =           0x01000,
-  DIBO =          0x10000
+  VAO =           0x000001,
+  VBO =           0x000010,
+  INSTANCE_VBO =  0x000100,
+  EBO =           0x001000,
+  DIBO =          0x010000,
+  TFBO =          0x100000
 };
 
 class OpenglBuffer
@@ -17,6 +18,8 @@ class OpenglBuffer
 public:
   explicit OpenglBuffer(int flags);
   virtual ~OpenglBuffer();
+  void create(int flags);
+  void deleteBuffers();
   GLuint& get(int flag);
   void bind(int flag);
   void add(int flag);

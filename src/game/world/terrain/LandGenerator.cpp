@@ -2,25 +2,11 @@
 
 LandGenerator::LandGenerator()
   :
-    Generator()
+    Generator(),
+    cellBuffers(VAO | VBO | INSTANCE_VBO | EBO | DIBO)
 {
   randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
-  glCreateBuffers(1, &squareModelVbo);
-  glCreateVertexArrays(1, &cellVao);
-  glCreateBuffers(1, &cellVbo);
-  glCreateBuffers(1, &cellEbo);
-  glCreateBuffers(1, &cellModelVbo);
-  glCreateBuffers(1, &cellIndirectDrawCommandBO);
-}
-
-LandGenerator::~LandGenerator()
-{
-  glDeleteBuffers(1, &squareModelVbo);
-  glDeleteVertexArrays(1, &cellVao);
-  glDeleteBuffers(1, &cellVbo);
-  glDeleteBuffers(1, &cellEbo);
-  glDeleteBuffers(1, &cellModelVbo);
-  glDeleteBuffers(1, &cellIndirectDrawCommandBO);
+  basicGLBuffers.add(INSTANCE_VBO);
 }
 
 void LandGenerator::setup(std::vector<std::vector<float> > &shoreMap)
@@ -140,7 +126,7 @@ void LandGenerator::fillBufferData()
       model = glm::scale(model, glm::vec3(CHUNK_SIZE / 2, 0.0f, CHUNK_SIZE / 2));
       baseInstanceChunkModels[i] = model;
     }
-  glBindBuffer(GL_ARRAY_BUFFER, squareModelVbo);
+  basicGLBuffers.bind(INSTANCE_VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * tiles.size(), &baseInstanceChunkModels[0], GL_STATIC_DRAW);
   setupGLBufferInstancedAttributes();
   resetAllGLBuffers();
@@ -154,9 +140,9 @@ void LandGenerator::fillCellBufferData()
        1.0f, 0.0f,  0.0f, 1.0f,  1.0f,
        0.0f, 0.0f,  0.0f, 0.0f,  1.0f
   };
-  glBindVertexArray(cellVao);
-  glBindBuffer(GL_DRAW_INDIRECT_BUFFER, cellIndirectDrawCommandBO);
-  bufferData(cellEbo, cellVbo, cellVertices, 20);
+  cellBuffers.bind(VAO);
+  glBindBuffer(GL_DRAW_INDIRECT_BUFFER, cellBuffers.get(DIBO));
+  bufferData(cellBuffers.get(EBO), cellBuffers.get(VBO), cellVertices, 20);
   setupGLBufferAttributes();
   std::unique_ptr<glm::mat4[]> cellInstanceModels(new glm::mat4[cellTiles.size()]);
   for (unsigned int i = 0; i < cellTiles.size(); i++)
@@ -166,7 +152,7 @@ void LandGenerator::fillCellBufferData()
       model = glm::translate(model, glm::vec3(- HALF_WORLD_WIDTH + tile.mapX, 0.0f, -HALF_WORLD_HEIGHT + tile.mapY - 1));
       cellInstanceModels[i] = model;
     }
-  glBindBuffer(GL_ARRAY_BUFFER, cellModelVbo);
+  cellBuffers.bind(INSTANCE_VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * cellTiles.size(), &cellInstanceModels[0], GL_STATIC_DRAW);
   setupGLBufferInstancedAttributes();
   resetAllGLBuffers();
@@ -205,10 +191,10 @@ std::vector<TerrainChunk> &LandGenerator::getCellChunks()
 
 GLuint &LandGenerator::getCellVAO()
 {
-  return cellVao;
+  return cellBuffers.get(VAO);
 }
 
 GLuint &LandGenerator::getCellDIBO()
 {
-  return cellIndirectDrawCommandBO;
+  return cellBuffers.get(DIBO);
 }

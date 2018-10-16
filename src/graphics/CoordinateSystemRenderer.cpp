@@ -2,12 +2,10 @@
 
 CoordinateSystemRenderer::CoordinateSystemRenderer(Shader *shader)
   :
+    basicGLBuffers(VAO | VBO),
     shader(shader)
 {
-  glGenVertexArrays(1, &vao);
-  glGenBuffers(1, &vbo);
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  basicGLBuffers.bind(VAO | VBO);
   constexpr GLfloat POINTS[] = {
       -0.92f, 0.58f, 0.0f, 0.08f, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
       -0.92f, 0.58f, 0.0f, 0.0f,  0.08f, 0.0f,  0.0f, 1.0f, 0.0f,
@@ -24,19 +22,13 @@ CoordinateSystemRenderer::CoordinateSystemRenderer(Shader *shader)
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-CoordinateSystemRenderer::~CoordinateSystemRenderer()
-{
-  glDeleteVertexArrays(1, &vao);
-  glDeleteBuffers(1, &vbo);
-}
-
 void CoordinateSystemRenderer::draw(const glm::mat3 &view, float aspect_ratio)
 {
   glLineWidth(2);
   shader->use();
   shader->setMat3("u_view", view);
   shader->setFloat("u_aspectRatio", aspect_ratio);
-  glBindVertexArray(vao);
+  basicGLBuffers.bind(VAO);
   glDrawArrays(GL_POINTS, 0, 3);
   glLineWidth(1);
 }
