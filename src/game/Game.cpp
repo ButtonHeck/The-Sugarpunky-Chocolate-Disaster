@@ -43,6 +43,49 @@ void Game::setup()
   depthmapBuffer.setup(textureManager.get(TEX_DEPTH_MAP_SUN));
 }
 
+void Game::loop()
+{
+  keyboard.processInput(CPU_timer.tick(), worldFacade->getHillsGenerator()->getMap());
+  glm::mat4 view = camera.getViewMatrix();
+  glm::mat4 projectionView = projection * view;
+  viewFrustum.updateFrustum(projectionView);
+
+  while(!meshBufferReady && !updateCount == 0 && meshBufferNeedUpdate)
+    std::this_thread::yield();
+  meshBufferReady = false;
+
+  if (options.get(OPT_RECREATE_TERRAIN_REQUEST))
+    recreate();
+
+  if ((options.get(OPT_CREATE_SHADOW_MAP_REQUEST) || updateCount % 16 == 0) && options.get(OPT_USE_SHADOWS))
+    updateDepthmap();
+
+  //render our world onto separate FBO as usual
+  bool multisamplingEnabled = options.get(OPT_USE_MULTISAMPLING);
+  screenBuffer.bindAppropriateFBO(multisamplingEnabled);
+  drawFrameObjects(projectionView);
+
+  //after all mesh related draw calls we could start updating meshes indirect data buffers
+  //start updating right after we've used it and before we need that data to be updated and buffered again
+  meshBufferNeedUpdate = updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1;
+
+  {
+    BENCHMARK("Game: draw frame to screen", true);
+    screenBuffer.draw(multisamplingEnabled);
+  }
+
+  if (options.get(OPT_SAVE_REQUEST))
+    saveState();
+  if (options.get(OPT_LOAD_REQUEST))
+    loadState();
+
+  {
+    BENCHMARK("Game: glfwSwapBuffers", true);
+    glfwSwapBuffers(window);
+  }
+  ++updateCount;
+}
+
 void Game::drawFrameObjects(glm::mat4& projectionView)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -72,75 +115,39 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void Game::loop()
+void Game::recreate()
 {
-  //even if we don't need to render models make sure we update indirect buffer data for meshes
-  {
-    BENCHMARK("Game: wait for mesh indirect ready", true);
-    while(!meshBufferReady && !updateCount == 0 && meshBufferNeedUpdate)
-      std::this_thread::yield();
-    meshBufferReady = false;
-  }
+  while(!waterKeyFrameReady)
+    std::this_thread::yield();//busy wait until water thread has done its business...and business is good
+  waterNeedNewKeyFrame = false; //explicitly bypass water animation frame update routine
+  worldFacade->recreate();
+  options.set(OPT_RECREATE_TERRAIN_REQUEST, false);
+  waterNeedNewKeyFrame = true; //it's okay now to begin animating water
+}
 
-  keyboard.processInput(CPU_timer.tick(), worldFacade->getHillsGenerator()->getMap());
-  glm::mat4 view = camera.getViewMatrix();
-  glm::mat4 projectionView = projection * view;
-  viewFrustum.updateFrustum(projectionView);
+void Game::updateDepthmap()
+{
+  depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
+  worldFacade->drawWorldDepthmap(updateCount);
+  depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
+  options.set(OPT_CREATE_SHADOW_MAP_REQUEST, false);
+}
 
-  //recreate routine
-  if (options.get(OPT_RECREATE_TERRAIN_REQUEST))
-    {
-      while(!waterKeyFrameReady)
-        std::this_thread::yield();//busy wait until water thread has done its business...and business is good
-      waterNeedNewKeyFrame = false; //explicitly bypass water animation frame update routine
-      worldFacade->recreate();
-      options.set(OPT_RECREATE_TERRAIN_REQUEST, false);
-      waterNeedNewKeyFrame = true; //it's okay now to begin animating water
-    }
+void Game::saveState()
+{
+  saveLoadManager->saveToFile(SAVES_DIR + "testSave.txt");
+  options.set(OPT_SAVE_REQUEST, false);
+}
 
-  if ((options.get(OPT_CREATE_SHADOW_MAP_REQUEST) || updateCount % 16 == 0) && options.get(OPT_USE_SHADOWS))
-    {
-      depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
-      worldFacade->drawWorldDepthmap(updateCount);
-      depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
-      options.set(OPT_CREATE_SHADOW_MAP_REQUEST, false);
-    }
-
-  //render our world onto separate FBO as usual
-  bool multisamplingEnabled = options.get(OPT_USE_MULTISAMPLING);
-  screenBuffer.bindAppropriateFBO(multisamplingEnabled);
-  drawFrameObjects(projectionView);
-
-  //after all mesh related draw calls we could start updating meshes indirect data buffers
-  //start updating right after we've used it and before we need that data to be updated and buffered again
-  meshBufferNeedUpdate = updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1;
-
-  {
-    BENCHMARK("Game: draw frame to screen", true);
-    screenBuffer.draw(multisamplingEnabled);
-  }
-
-  if (options.get(OPT_SAVE_REQUEST))
-    {
-      saveLoadManager->saveToFile(SAVES_DIR + "testSave.txt");
-      options.set(OPT_SAVE_REQUEST, false);
-    }
-  if (options.get(OPT_LOAD_REQUEST))
-    {
-      while(!waterKeyFrameReady)
-        std::this_thread::yield(); //busy wait
-      waterNeedNewKeyFrame = false;
-      saveLoadManager->loadFromFile(SAVES_DIR + "testSave.txt");
-      worldFacade->load();
-      options.set(OPT_LOAD_REQUEST, false);
-      waterNeedNewKeyFrame = true;
-    }
-
-  {
-    BENCHMARK("Game: glfwSwapBuffers", true);
-    glfwSwapBuffers(window);
-  }
-  ++updateCount;
+void Game::loadState()
+{
+  while(!waterKeyFrameReady)
+    std::this_thread::yield(); //busy wait
+  waterNeedNewKeyFrame = false;
+  saveLoadManager->loadFromFile(SAVES_DIR + "testSave.txt");
+  worldFacade->load();
+  options.set(OPT_LOAD_REQUEST, false);
+  waterNeedNewKeyFrame = true;
 }
 
 void Game::setupThreads()

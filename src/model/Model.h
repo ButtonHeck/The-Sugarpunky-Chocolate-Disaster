@@ -18,18 +18,19 @@ public:
   Model(Model&& old) noexcept;
   void cleanup();
   static void bindTextureLoader(TextureLoader& textureLoader);
-  void loadModel(const std::string& path);
   void draw(bool bindTexture, bool updateIndirect);
   void prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2& cameraPositionXZ,
                                  const Frustum& frustum);
-  void processNode(aiNode* node, const aiScene* scene);
   void loadInstances(glm::mat4* models, unsigned int numModels);
   std::vector<Mesh>& getMeshes();
+
+private:
+  void loadModel(const std::string& path);
+  void processNode(aiNode* node, const aiScene* scene);
   Mesh processMesh(aiMesh* mesh, const aiScene* scene);
   std::vector<Texture> loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName);
-private:
   std::vector<Mesh> meshes;
   std::vector<Texture> textures_loaded;
   std::string directory;

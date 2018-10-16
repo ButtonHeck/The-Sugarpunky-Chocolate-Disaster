@@ -27,9 +27,15 @@ public:
   Game(GLFWwindow* window, Camera& camera, Options& options, ScreenResolution& screenResolution);
   virtual ~Game();
   void setup();
-  void drawFrameObjects(glm::mat4& projectionView);
   void loop();
+
 private:
+  void drawFrameObjects(glm::mat4& projectionView);
+  void recreate();
+  void updateDepthmap();
+  void saveState();
+  void loadState();
+
   //context and hardware
   ScreenResolution& screenResolution;
   GLFWwindow* window;
