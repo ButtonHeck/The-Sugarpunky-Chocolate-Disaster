@@ -16,8 +16,7 @@ TextManager::TextManager(const std::string &fontFile, const std::string &fontTex
 void TextManager::addText(ScreenResolution& screenResolution,
                           Camera& camera, Options& options,
                           MouseInputManager& mouseInput,
-                          const unsigned int fps,
-                          const bool waterAnimatorIsWorking)
+                          const unsigned int fps)
 {
   BENCHMARK("Text: add text", true);
   using std::to_string;
@@ -93,14 +92,9 @@ void TextManager::addText(ScreenResolution& screenResolution,
   addString(ss.str(), 10.0f, 40.0f, 0.18f);
 
   ss.str("");
-  ss << "Water anim thread works: "
-     << (waterAnimatorIsWorking ? "On" : "Off");
-  addString(ss.str(), 10.0f, 60.0f, 0.18f);
-
-  ss.str("");
   ss << "Models Phong: "
      << (options.get(OPT_MODELS_PHONG_SHADING) ? "On" : "Off");
-  addString(ss.str(), 10.0f, 80.0f, 0.18f);
+  addString(ss.str(), 10.0f, 60.0f, 0.18f);
 
   VRAM_Monitor& vram = VRAM_Monitor::getInstance();
   vram.updateAvailable();
@@ -110,7 +104,7 @@ void TextManager::addText(ScreenResolution& screenResolution,
      << ", "
      << to_string(vram.getAvailableMemoryPercent())
      << "%";
-  addString(ss.str(), 10.0f, 100.0f, 0.18f);
+  addString(ss.str(), 10.0f, 80.0f, 0.18f);
 }
 
 void TextManager::addString(const std::string& text, GLfloat x, GLfloat y, GLfloat scale)

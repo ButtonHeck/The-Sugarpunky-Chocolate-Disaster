@@ -179,7 +179,6 @@ void Renderer::renderSkybox(Skybox *skybox)
 
 void Renderer::renderPlants(const std::shared_ptr<PlantGeneratorFacade> generatorFacade, Shader &shader,
                          bool bindTexture,
-                         bool updateIndirect,
                          bool screenDraw,
                          bool useFlatBlending)
 {
@@ -193,14 +192,14 @@ void Renderer::renderPlants(const std::shared_ptr<PlantGeneratorFacade> generato
   for (unsigned int i = 0; i < landPlants.size(); i++)
     {
       Model& model = landPlants[i];
-      model.draw(bindTexture, updateIndirect);
+      model.draw(bindTexture);
     }
 
   auto& hillTrees = generatorFacade->getHillModels();
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
       Model& model = hillTrees[i];
-      model.draw(bindTexture, updateIndirect);
+      model.draw(bindTexture);
     }
 
   //draw grass without face culling
@@ -216,7 +215,7 @@ void Renderer::renderPlants(const std::shared_ptr<PlantGeneratorFacade> generato
   for (unsigned int i = 0; i < grass.size(); i++)
     {
       Model& model = grass[i];
-      model.draw(bindTexture, updateIndirect);
+      model.draw(bindTexture);
     }
   glEnable(GL_CULL_FACE);
 

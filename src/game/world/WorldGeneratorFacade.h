@@ -31,9 +31,8 @@ public:
                  glm::mat4& skyProjectionView,
                  Frustum &viewFrustum,
                  Camera& camera,
-                 MouseInputManager& mouseInput,
-                 unsigned long updateCount);
-  void drawWorldDepthmap(unsigned long updateCount);
+                 MouseInputManager& mouseInput);
+  void drawWorldDepthmap();
 
   //getters
   const std::shared_ptr<WaterGenerator> getWaterGenerator() const;
@@ -46,7 +45,7 @@ private:
   void drawFlatTerrain(Frustum &viewFrustum);
   void drawUnderwater();
   void drawShore();
-  void drawPlants(glm::vec3& viewPosition, unsigned long updateCount);
+  void drawPlants(glm::vec3& viewPosition);
   void drawBuildable();
   void drawSelected(MouseInputManager& mouseInput, Camera& camera);
   void drawWater(glm::vec3 &viewPosition, Frustum &viewFrustum);
@@ -54,7 +53,7 @@ private:
 
   //rendering offscreen (depthmap)
   void drawTerrainDepthmap();
-  void drawPlantsDepthmap(unsigned long updateCount);
+  void drawPlantsDepthmap();
 
   //internals
   ShaderManager& shaderManager;

@@ -18,11 +18,12 @@ public:
   Model(Model&& old) noexcept;
   void cleanup();
   static void bindTextureLoader(TextureLoader& textureLoader);
-  void draw(bool bindTexture, bool updateIndirect);
+  void draw(bool bindTexture);
   void prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2& cameraPositionXZ,
                                  const Frustum& frustum);
+  void updateIndirectBufferData();
   void loadInstances(glm::mat4* models, unsigned int numModels);
   std::vector<Mesh>& getMeshes();
 

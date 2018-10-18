@@ -50,10 +50,6 @@ void Game::loop()
   glm::mat4 projectionView = projection * view;
   viewFrustum.updateFrustum(projectionView);
 
-  while(!meshBufferReady && !updateCount == 0 && meshBufferNeedUpdate)
-    std::this_thread::yield();
-  meshBufferReady = false;
-
   if (options.get(OPT_RECREATE_TERRAIN_REQUEST))
     recreate();
 
@@ -87,23 +83,28 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, options.get(OPT_POLYGON_LINE) ? GL_LINE : GL_FILL);
 
+  while(!meshBufferReady && !updateCount == 0)
+    std::this_thread::yield();
+  meshBufferReady = false;
+
   if (options.get(OPT_ANIMATE_WATER))
     {
       BENCHMARK("Water: buffer animation frame", true);
       worldFacade->getWaterGenerator()->bufferNewData();
       waterNeedNewKeyFrame = true;
     }
+  worldFacade->getPlantsGeneratorFacade()->updateIndirectBufferData();
+
   glm::mat4 skyboxProjectionView(projection * glm::mat4(glm::mat3(camera.getViewMatrix())));
   worldFacade->drawWorld(projectionView,
                          skyboxProjectionView,
                          viewFrustum,
                          camera,
-                         mouseInput,
-                         updateCount);
+                         mouseInput);
 
   //after all mesh related draw calls we could start updating meshes indirect data buffers
   //start updating right after we've used it and before we need that data to be updated and buffered again
-  meshBufferNeedUpdate = updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1;
+  meshBufferNeedUpdate = true;
 
   if (options.get(OPT_DRAW_DEBUG_TEXT))
     {
@@ -111,8 +112,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
                           camera,
                           options,
                           mouseInput,
-                          CPU_timer.getFPS(),
-                          waterAnimatorIsWorking);
+                          CPU_timer.getFPS());
       textManager.drawText();
       csRenderer.draw(glm::mat3(camera.getViewMatrix()), screenResolution.getAspectRatio());
     }
@@ -133,7 +133,7 @@ void Game::recreate()
 void Game::updateDepthmap()
 {
   depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
-  worldFacade->drawWorldDepthmap(updateCount);
+  worldFacade->drawWorldDepthmap();
   depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
   options.set(OPT_CREATE_SHADOW_MAP_REQUEST, false);
 }
@@ -186,10 +186,7 @@ void Game::setupThreads()
                   worldFacade->getWaterGenerator()->updateAnimationFrame(options);
                   waterKeyFrameReady = true;
                   waterNeedNewKeyFrame = false;
-                  waterAnimatorIsWorking = true;
                 }
-              else
-                waterAnimatorIsWorking = false;
               std::this_thread::yield();
             }
         });

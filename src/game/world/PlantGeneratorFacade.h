@@ -13,6 +13,7 @@ public:
   virtual ~PlantGeneratorFacade() = default;
   void setup(std::vector<std::vector<float>>& baseMap, std::vector<std::vector<float>>& hillMap);
   void prepareMeshesIndirectData(const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);
+  void updateIndirectBufferData();
 
   //land plants
   std::vector<Model>& getLandModels();

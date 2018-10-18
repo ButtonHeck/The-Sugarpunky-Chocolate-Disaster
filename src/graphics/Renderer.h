@@ -31,7 +31,6 @@ public:
   void renderSkybox(Skybox* skybox);
   void renderPlants(const std::shared_ptr<PlantGeneratorFacade> generatorFacade, Shader& shader,
                  bool bindTexture,
-                 bool updateIndirect,
                  bool screenDraw,
                  bool useFlatBlending);
 private:

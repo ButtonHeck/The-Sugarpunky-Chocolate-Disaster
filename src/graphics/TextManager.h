@@ -19,8 +19,7 @@ public:
   void addText(ScreenResolution& screenResolution,
                Camera& camera, Options& options,
                MouseInputManager& mouseInput,
-               const unsigned int fps,
-               const bool waterAnimatorIsWorking);
+               const unsigned int fps);
   void drawText();
 private:
   struct GlyphVertex

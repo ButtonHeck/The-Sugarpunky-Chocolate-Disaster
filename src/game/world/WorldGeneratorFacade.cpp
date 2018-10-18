@@ -67,8 +67,7 @@ void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
                                      glm::mat4 &skyProjectionView,
                                      Frustum &viewFrustum,
                                      Camera& camera,
-                                     MouseInputManager& mouseInput,
-                                     unsigned long updateCount)
+                                     MouseInputManager& mouseInput)
 {
   this->projectionView = projectionView;
   glm::vec3 viewPosition = camera.getPosition();
@@ -76,19 +75,19 @@ void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
   drawFlatTerrain(viewFrustum);
   drawUnderwater();
   drawShore();
-  drawPlants(viewPosition, updateCount);
+  drawPlants(viewPosition);
   drawBuildable();
   drawSelected(mouseInput, camera);
   drawWater(viewPosition, viewFrustum);
   drawSkybox(skyProjectionView);
 }
 
-void WorldGeneratorFacade::drawWorldDepthmap(unsigned long updateCount)
+void WorldGeneratorFacade::drawWorldDepthmap()
 {
   glClear(GL_DEPTH_BUFFER_BIT);
   glDisable(GL_CULL_FACE); //or set front face culling
   drawTerrainDepthmap();
-  drawPlantsDepthmap(updateCount);
+  drawPlantsDepthmap();
   glEnable(GL_CULL_FACE); //or set back face culling
 }
 
@@ -128,7 +127,7 @@ void WorldGeneratorFacade::drawShore()
   }
 }
 
-void WorldGeneratorFacade::drawPlants(glm::vec3& viewPosition, unsigned long updateCount)
+void WorldGeneratorFacade::drawPlants(glm::vec3& viewPosition)
 {
   if (options.get(OPT_DRAW_TREES))
     {
@@ -141,7 +140,6 @@ void WorldGeneratorFacade::drawPlants(glm::vec3& viewPosition, unsigned long upd
         renderer.renderPlants(plantGeneratorFacade,
                            options.get(OPT_MODELS_PHONG_SHADING) ? shaderManager.get(SHADER_MODELS_PHONG) : shaderManager.get(SHADER_MODELS),
                            true,
-                           updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0,
                            true,
                            options.get(OPT_MODELS_FLAT_BLENDING));
       }
@@ -203,7 +201,7 @@ void WorldGeneratorFacade::drawTerrainDepthmap()
   renderer.renderShore(shoreGenerator);
 }
 
-void WorldGeneratorFacade::drawPlantsDepthmap(unsigned long updateCount)
+void WorldGeneratorFacade::drawPlantsDepthmap()
 {
   if (options.get(OPT_DRAW_TREES))
     {
@@ -212,7 +210,6 @@ void WorldGeneratorFacade::drawPlantsDepthmap(unsigned long updateCount)
         BENCHMARK("Renderer: draw models depthmap", true);
         renderer.renderPlants(plantGeneratorFacade, shaderManager.get(SHADER_SHADOW_MODELS),
                            false,
-                           updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 0,
                            false,
                            false);
       }

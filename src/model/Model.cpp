@@ -35,10 +35,10 @@ void Model::loadModel(const std::string &path)
   processNode(scene->mRootNode, scene);
 }
 
-void Model::draw(bool bindTexture, bool updateIndirect)
+void Model::draw(bool bindTexture)
 {
   for (unsigned int i = 0; i < meshes.size(); i++)
-    meshes[i].draw(bindTexture, updateIndirect);
+    meshes[i].draw(bindTexture);
 }
 
 void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
@@ -48,6 +48,12 @@ void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
 {
   for (unsigned int i = 0; i < meshes.size(); i++)
     meshes[i].prepareIndirectBufferData(chunks, index, cameraPositionXZ, frustum);
+}
+
+void Model::updateIndirectBufferData()
+{
+  for (unsigned int i = 0; i < meshes.size(); ++i)
+    meshes[i].updateIndirectBufferData();
 }
 
 void Model::processNode(aiNode *node, const aiScene* scene)

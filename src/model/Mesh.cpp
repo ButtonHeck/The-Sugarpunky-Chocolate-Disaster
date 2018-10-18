@@ -89,7 +89,7 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Mesh::draw(bool bindTexture, bool updateIndirect)
+void Mesh::draw(bool bindTexture)
 {  
   BENCHMARK("Mesh: draw (full func)", true);
   if (bindTexture)
@@ -100,15 +100,9 @@ void Mesh::draw(bool bindTexture, bool updateIndirect)
           glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
     }
-  basicGLBuffers.bind(VAO);
-  {
-    BENCHMARK("Mesh: bind+buffer indirect data", true);
-    basicGLBuffers.bind(DIBO);
-    if (updateIndirect)
-      glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * drawIndirectCommandPrimCount, multiDrawIndirectData);
-  }
   {
     BENCHMARK("Mesh: multiDrawIndirect", true);
+    basicGLBuffers.bind(VAO | DIBO);
     glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCount, 0);
   }
 }
@@ -151,6 +145,15 @@ void Mesh::prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
         multiDrawIndirectData[dataOffset++] = token.second.BASE_VERTEX;
         multiDrawIndirectData[dataOffset++] = token.second.instanceOffset;
     }
+}
+
+void Mesh::updateIndirectBufferData()
+{
+  {
+    BENCHMARK("Mesh: bind+buffer indirect data", true);
+    basicGLBuffers.bind(VAO | DIBO);
+    glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * drawIndirectCommandPrimCount, multiDrawIndirectData);
+  }
 }
 
 void Mesh::addIndirectBufferData(int directionToChunkLength,

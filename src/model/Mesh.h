@@ -40,11 +40,12 @@ public:
   void cleanup();
   void setup();
   void setupInstances(glm::mat4* models, unsigned int numModels);
-  void draw(bool bindTexture, bool updateIndirect);
+  void draw(bool bindTexture);
   void prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2 &cameraPositionXZ,
                                  const Frustum& frustum);
+  void updateIndirectBufferData();
 private:
   void addIndirectBufferData(int directionToChunkLength, GLuint indicesSize, GLuint numInstances, GLuint instanceOffset);
   std::vector<Vertex> vertices;

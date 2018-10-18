@@ -74,7 +74,6 @@ private:
   std::unique_ptr<std::thread> meshIndirectBufferUpdater;
   volatile bool meshBufferReady = false, meshBufferNeedUpdate = false;
   volatile bool waterKeyFrameReady = false, waterNeedNewKeyFrame = true;
-  bool waterAnimatorIsWorking = true;
 };
 
 #endif // GAME_H

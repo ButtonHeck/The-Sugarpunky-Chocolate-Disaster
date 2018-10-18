@@ -40,6 +40,29 @@ void PlantGeneratorFacade::prepareMeshesIndirectData(const glm::vec2 &cameraPosi
     }
 }
 
+void PlantGeneratorFacade::updateIndirectBufferData()
+{
+  auto& landPlants = getLandModels();
+  auto& hillTrees = getHillModels();
+  auto& grass = getGrassModels();
+
+  for (unsigned int i = 0; i < landPlants.size(); i++)
+    {
+      Model& model = landPlants[i];
+      model.updateIndirectBufferData();
+    }
+  for (unsigned int i = 0; i < hillTrees.size(); i++)
+    {
+      Model& model = hillTrees[i];
+      model.updateIndirectBufferData();
+    }
+  for (unsigned int i = 0; i < grass.size(); i++)
+    {
+      Model& model = grass[i];
+      model.updateIndirectBufferData();
+    }
+}
+
 std::vector<Model> &PlantGeneratorFacade::getLandModels()
 {
   return landPlantsGenerator->getModels();
