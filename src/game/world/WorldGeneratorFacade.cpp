@@ -63,15 +63,6 @@ void WorldGeneratorFacade::deserialize(std::ifstream &input)
   plantGeneratorFacade->deserialize(input);
 }
 
-void WorldGeneratorFacade::bufferWaterNewData()
-{
-  if (options.get(OPT_ANIMATE_WATER))
-    {
-      BENCHMARK("Water: buffer animation frame", true);
-      waterGenerator->bufferNewData();
-    }
-}
-
 void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
                                      glm::mat4 &skyProjectionView,
                                      Frustum &viewFrustum,

@@ -189,10 +189,10 @@ void Renderer::renderPlants(const std::shared_ptr<PlantGeneratorFacade> generato
   else
     glDisable(GL_BLEND);
 
-  auto& plainPlants = generatorFacade->getPlainModels();
-  for (unsigned int i = 0; i < plainPlants.size(); i++)
+  auto& landPlants = generatorFacade->getLandModels();
+  for (unsigned int i = 0; i < landPlants.size(); i++)
     {
-      Model& model = plainPlants[i];
+      Model& model = landPlants[i];
       model.draw(bindTexture, updateIndirect);
     }
 

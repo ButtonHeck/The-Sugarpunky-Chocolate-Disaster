@@ -6,7 +6,7 @@ ShaderManager::ShaderManager()
   shaders[SHADER_HILLS] = Shader("hills.vs", "hills.fs");
   shaders[SHADER_SHORE] = Shader("shore.vs", "shore.fs");
   shaders[SHADER_UNDERWATER] = Shader("underwater.vs", "underwater.fs");
-  shaders[SHADER_LAND] = Shader("flat.vs", "flat.fs");
+  shaders[SHADER_LAND] = Shader("land.vs", "land.fs");
   shaders[SHADER_WATER_CULLING] = Shader("waterFC.vs", "waterFC.gs", "_FC.fs");
   shaders[SHADER_WATER] = Shader("water.vs", "water.fs");
   shaders[SHADER_SKYBOX] = Shader("skybox.vs", "skybox.fs");

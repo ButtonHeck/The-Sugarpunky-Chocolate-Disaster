@@ -2,31 +2,31 @@
 
 PlantGeneratorFacade::PlantGeneratorFacade()
   :
-    plainPlantsGenerator(std::make_unique<LandPlantsGenerator>()),
+    landPlantsGenerator(std::make_unique<LandPlantsGenerator>()),
     grassGenerator(std::make_unique<GrassGenerator>()),
     hillTreesGenerator(std::make_unique<HillTreesGenerator>())
 {}
 
 void PlantGeneratorFacade::setup(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
 {
-  plainPlantsGenerator->setup(baseMap, hillMap);
+  landPlantsGenerator->setup(baseMap, hillMap);
   grassGenerator->setup(baseMap, hillMap);
   hillTreesGenerator->setup(hillMap);
 }
 
 void PlantGeneratorFacade::prepareMeshesIndirectData(const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum)
 {
-  auto& plainPlants = getPlainModels();
+  auto& landPlants = getLandModels();
   auto& hillTrees = getHillModels();
   auto& grass = getGrassModels();
-  auto& plainChunks = getPlainChunks();
+  auto& landChunks = getLandChunks();
   auto& hillChunks = getHillTreesChunks();
   auto& grassChunks = getGrassModelChunks();
 
-  for (unsigned int i = 0; i < plainPlants.size(); i++)
+  for (unsigned int i = 0; i < landPlants.size(); i++)
     {
-      Model& model = plainPlants[i];
-      model.prepareMeshesIndirectData(plainChunks, i, cameraPositionXZ, viewFrustum);
+      Model& model = landPlants[i];
+      model.prepareMeshesIndirectData(landChunks, i, cameraPositionXZ, viewFrustum);
     }
   for (unsigned int i = 0; i < hillTrees.size(); i++)
     {
@@ -40,14 +40,14 @@ void PlantGeneratorFacade::prepareMeshesIndirectData(const glm::vec2 &cameraPosi
     }
 }
 
-std::vector<Model> &PlantGeneratorFacade::getPlainModels()
+std::vector<Model> &PlantGeneratorFacade::getLandModels()
 {
-  return plainPlantsGenerator->getModels();
+  return landPlantsGenerator->getModels();
 }
 
-std::vector<ModelChunk> &PlantGeneratorFacade::getPlainChunks()
+std::vector<ModelChunk> &PlantGeneratorFacade::getLandChunks()
 {
-  return plainPlantsGenerator->getChunks();
+  return landPlantsGenerator->getChunks();
 }
 
 std::vector<Model> &PlantGeneratorFacade::getGrassModels()
@@ -72,14 +72,14 @@ std::vector<ModelChunk> &PlantGeneratorFacade::getHillTreesChunks()
 
 void PlantGeneratorFacade::serialize(std::ofstream &output)
 {
-  plainPlantsGenerator->serialize(output);
+  landPlantsGenerator->serialize(output);
   grassGenerator->serialize(output);
   hillTreesGenerator->serialize(output);
 }
 
 void PlantGeneratorFacade::deserialize(std::ifstream &input)
 {
-  plainPlantsGenerator->deserialize(input);
+  landPlantsGenerator->deserialize(input);
   grassGenerator->deserialize(input);
   hillTreesGenerator->deserialize(input);
 }

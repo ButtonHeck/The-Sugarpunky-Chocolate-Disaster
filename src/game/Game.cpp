@@ -65,10 +65,6 @@ void Game::loop()
   screenBuffer.bindAppropriateFBO(multisamplingEnabled);
   drawFrameObjects(projectionView);
 
-  //after all mesh related draw calls we could start updating meshes indirect data buffers
-  //start updating right after we've used it and before we need that data to be updated and buffered again
-  meshBufferNeedUpdate = updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1;
-
   {
     BENCHMARK("Game: draw frame to screen", true);
     screenBuffer.draw(multisamplingEnabled);
@@ -91,7 +87,12 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, options.get(OPT_POLYGON_LINE) ? GL_LINE : GL_FILL);
 
-  worldFacade->bufferWaterNewData();
+  if (options.get(OPT_ANIMATE_WATER))
+    {
+      BENCHMARK("Water: buffer animation frame", true);
+      worldFacade->getWaterGenerator()->bufferNewData();
+      waterNeedNewKeyFrame = true;
+    }
   glm::mat4 skyboxProjectionView(projection * glm::mat4(glm::mat3(camera.getViewMatrix())));
   worldFacade->drawWorld(projectionView,
                          skyboxProjectionView,
@@ -99,6 +100,10 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
                          camera,
                          mouseInput,
                          updateCount);
+
+  //after all mesh related draw calls we could start updating meshes indirect data buffers
+  //start updating right after we've used it and before we need that data to be updated and buffered again
+  meshBufferNeedUpdate = updateCount % MESH_INDIRECT_BUFFER_UPDATE_FREQ == 1;
 
   if (options.get(OPT_DRAW_DEBUG_TEXT))
     {
@@ -180,13 +185,11 @@ void Game::setupThreads()
                   waterKeyFrameReady = false;
                   worldFacade->getWaterGenerator()->updateAnimationFrame(options);
                   waterKeyFrameReady = true;
+                  waterNeedNewKeyFrame = false;
                   waterAnimatorIsWorking = true;
                 }
               else
-                {
-                  waterAnimatorIsWorking = false;
-                  std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                }
+                waterAnimatorIsWorking = false;
               std::this_thread::yield();
             }
         });

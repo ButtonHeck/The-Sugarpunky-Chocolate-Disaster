@@ -25,7 +25,6 @@ public:
   void load();
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
-  void bufferWaterNewData();
 
   //rendering part
   void drawWorld(glm::mat4& projectionView,

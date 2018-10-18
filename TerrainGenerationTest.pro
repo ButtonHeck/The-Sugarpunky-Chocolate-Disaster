@@ -157,8 +157,6 @@ DISTFILES += \
     res/fonts/GentiumPlus-R.ttf \
     res/fonts/OCTAPOST_1.ttf \
     res/fonts/Laconic_Bold.otf \
-    res/shaders/flat.vs \
-    res/shaders/flat.fs \
     res/shaders/hills.vs \
     res/shaders/water.vs \
     res/shaders/underwater.vs \
@@ -348,7 +346,9 @@ DISTFILES += \
     res/models/tree6_2/foliage_spec.png \
     res/models/tree7/foliage_spec.png \
     res/models/tree8/foliage_spec.png \
-    res/textures/underwater.jpg
+    res/textures/underwater.jpg \
+    res/shaders/land.vs \
+    res/shaders/land.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
