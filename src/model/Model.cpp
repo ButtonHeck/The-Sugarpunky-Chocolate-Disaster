@@ -30,7 +30,7 @@ void Model::loadModel(const std::string &path)
   Assimp::Importer importer;
   const aiScene* scene = importer.ReadFile(path, aiProcess_CalcTangentSpace | aiProcess_FlipUVs | aiProcess_Triangulate);
   if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
-    std::cerr << "Error while loading Assimp" << importer.GetErrorString() << std::endl;
+    printf("Error while loading Assimp: %s\n", importer.GetErrorString());
   directory = path.substr(0, path.find_last_of('/'));
   processNode(scene->mRootNode, scene);
 }

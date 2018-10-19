@@ -2,12 +2,12 @@
 #define MOUSEINPUTMANAGER_H
 #include <memory>
 #include "game/Camera.h"
-#include <GLFW/glfw3.h>
 #include "game/Options.h"
 #include "graphics/ScreenResolution.h"
 #include "game/world/terrain/LandGenerator.h"
 #include "game/world/terrain/HillsGenerator.h"
 #include "game/world/terrain/BuildableGenerator.h"
+#include <GLFW/glfw3.h>
 
 class MouseInputManager
 {

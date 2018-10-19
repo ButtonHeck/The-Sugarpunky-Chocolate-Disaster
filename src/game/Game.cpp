@@ -50,6 +50,10 @@ void Game::loop()
   glm::mat4 projectionView = projection * view;
   viewFrustum.updateFrustum(projectionView);
 
+  while(!meshBufferReady && !updateCount == 0)
+    std::this_thread::yield();
+  meshBufferReady = false;
+
   if (options.get(OPT_RECREATE_TERRAIN_REQUEST))
     recreate();
 
@@ -82,10 +86,6 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, options.get(OPT_POLYGON_LINE) ? GL_LINE : GL_FILL);
-
-  while(!meshBufferReady && !updateCount == 0)
-    std::this_thread::yield();
-  meshBufferReady = false;
 
   if (options.get(OPT_ANIMATE_WATER))
     {
@@ -183,7 +183,7 @@ void Game::setupThreads()
                   options.get(OPT_DRAW_WATER))
                 {
                   waterKeyFrameReady = false;
-                  worldFacade->getWaterGenerator()->updateAnimationFrame(options);
+                  worldFacade->getWaterGenerator()->updateAnimationFrame(glfwGetTime(), options);
                   waterKeyFrameReady = true;
                   waterNeedNewKeyFrame = false;
                 }

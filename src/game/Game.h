@@ -3,14 +3,11 @@
 #include <thread>
 #include <memory>
 #include "util/Settings.h"
-#include "game/Options.h"
-#include "graphics/ScreenResolution.h"
 #include "graphics/ScreenBuffer.h"
 #include "graphics/DepthmapBuffer.h"
 #include "input/KeyboardManager.h"
 #include "input/MouseInputManager.h"
 #include "game/SaveLoadManager.h"
-#include "game/Camera.h"
 #include "graphics/Renderer.h"
 #include "graphics/Frustum.h"
 #include "graphics/ShaderManager.h"
@@ -20,6 +17,10 @@
 #include "util/Timer.h"
 #include "util/BenchmarkTimer.h"
 #include "game/world/WorldGeneratorFacade.h"
+
+class Camera;
+class Options;
+class ScreenResolution;
 
 class Game
 {

@@ -3,7 +3,6 @@
 #include <GLFW/glfw3.h>
 #include <chrono>
 #include "util/BenchmarkTimer.h"
-#include "game/world/terrain/WaterGenerator.h"
 
 class Timer
 {

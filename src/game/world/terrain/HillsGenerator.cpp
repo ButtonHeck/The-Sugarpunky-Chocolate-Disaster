@@ -105,7 +105,7 @@ void HillsGenerator::fillBufferData()
   setupGLBufferAttributes();
   const GLchar* varyings[3] = {"o_pos", "o_texCoords", "o_normal"};
   glTransformFeedbackVaryings(shader.getID(), 3, varyings, GL_INTERLEAVED_ATTRIBS);
-  shader.linkAgain();
+  shader.link();
   glTransformFeedbackBufferBase(culledBuffers.get(TFBO), 0, culledBuffers.get(VBO));
   resetAllGLBuffers();
 }

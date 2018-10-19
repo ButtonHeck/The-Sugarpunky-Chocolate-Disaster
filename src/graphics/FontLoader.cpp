@@ -1,10 +1,9 @@
 #include "graphics/FontLoader.h"
-#include <iostream>
 
 FontLoader::FontLoader(const std::string &fontFile, const std::string &textureFile)
 {
   if (!ilLoadImage(textureFile.c_str()))
-    std::cerr << "Error loading font texture " << textureFile.c_str() << std::endl;
+    printf("Error loading font texture: %s\n", textureFile.c_str());
   ILubyte* data = ilGetData();
   textureWidth = ilGetInteger(IL_IMAGE_WIDTH);
   textureHeight = ilGetInteger(IL_IMAGE_HEIGHT);

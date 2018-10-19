@@ -1,7 +1,6 @@
 #ifndef WATERGENERATOR_H
 #define WATERGENERATOR_H
 #include "game/world/terrain/Generator.h"
-#include <GLFW/glfw3.h>
 #include <memory>
 #include "game/Options.h"
 #include "util/Settings.h"
@@ -16,7 +15,7 @@ public:
   void setup();
   void setupConsiderTerrain();
   void bufferNewData();
-  void updateAnimationFrame(Options& options);
+  void updateAnimationFrame(double time, Options& options);
   GLuint getCulledVAO();
   GLuint getTransformFeedback();
 private:

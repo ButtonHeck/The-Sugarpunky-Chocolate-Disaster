@@ -3,9 +3,6 @@
 #include <memory>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "graphics/Shader.h"
-#include "game/Camera.h"
-#include "graphics/Frustum.h"
 #include "game/world/Skybox.h"
 #include "game/world/terrain/HillsGenerator.h"
 #include "game/world/terrain/LandGenerator.h"
@@ -14,6 +11,10 @@
 #include "game/world/terrain/BuildableGenerator.h"
 #include "game/world/terrain/WaterGenerator.h"
 #include "game/world/PlantGeneratorFacade.h"
+
+class Camera;
+class Shader;
+class Frustum;
 
 class Renderer
 {

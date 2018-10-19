@@ -63,7 +63,7 @@ void WaterGenerator::fillBufferData()
   setupGLBufferAttributes();
   const GLchar* varyings[2] = {"o_pos", "o_normal"};
   glTransformFeedbackVaryings(shader.getID(), 2, varyings, GL_INTERLEAVED_ATTRIBS);
-  shader.linkAgain();
+  shader.link();
   glTransformFeedbackBufferBase(culledBuffers.get(TFBO), 0, culledBuffers.get(VBO));
 
   resetAllGLBuffers();
@@ -400,13 +400,13 @@ void WaterGenerator::fattenKernel(int x, int y,
     }
 }
 
-void WaterGenerator::updateAnimationFrame(Options& options)
+void WaterGenerator::updateAnimationFrame(double time, Options& options)
 {
   BENCHMARK("(SI/ST)Water: Update animation frame", true);
   constexpr float NORMAL_Y_APPROX = 0.7f; //fake "true" normal calculation (use no sqrt and pow)
   using glm::vec3;
   using glm::vec4;
-  double offsetMultiplier = glfwGetTime() * 0.12;
+  double offsetMultiplier = time * 0.12;
   for (size_t i = 0; i < WATER_HEIGHT_OFFSETS_SIZE; i+=2)
     {
       heightOffsets[i] = std::cos(offsetMultiplier * ((i * i) % 19)) * 0.0825 + WATER_LEVEL;

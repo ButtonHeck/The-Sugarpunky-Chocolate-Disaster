@@ -11,7 +11,7 @@ bool SaveLoadManager::saveToFile(const std::string &filename)
   std::ofstream output(filename);
   if (!output)
     {
-      std::cerr << "Could not open file: " << filename << std::endl;
+      printf("Could not open file: %s\n", filename.c_str());
       return false;
     }
   worldGenerator->serialize(output);
@@ -25,7 +25,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
   std::ifstream input(filename);
   if (!input)
     {
-      std::cerr << "Could not open file: " << filename << std::endl;
+      printf("Could not open file: %s\n", filename.c_str());
       return false;
     }
   worldGenerator->deserialize(input);

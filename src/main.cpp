@@ -31,7 +31,7 @@ int main()
   glewExperimental = GL_TRUE;
   glewInit();
 #ifdef _DEBUG
-  std::cout << glfwGetVersionString() << std::endl;
+  printf("%s\n", glfwGetVersionString());
   GLint flags;
   glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
   if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)

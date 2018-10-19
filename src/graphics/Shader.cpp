@@ -7,13 +7,7 @@ Shader::Shader(const std::string &vertexFile)
   GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile));
   ID = glCreateProgram();
   glAttachShader(ID, vertex);
-  glLinkProgram(ID);
-  glGetProgramiv(ID, GL_LINK_STATUS, &status);
-  if (status != 1)
-    {
-      glGetProgramInfoLog(ID, 512, NULL, infoLog);
-      std::cout << infoLog << std::endl;
-    }
+  link();
   glDeleteShader(vertex);
 }
 
@@ -24,13 +18,7 @@ Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::strin
   ID = glCreateProgram();
   glAttachShader(ID, vertex);
   glAttachShader(ID, fragment);
-  glLinkProgram(ID);
-  glGetProgramiv(ID, GL_LINK_STATUS, &status);
-  if (status != 1)
-    {
-      glGetProgramInfoLog(ID, 512, NULL, infoLog);
-      std::cout << infoLog << std::endl;
-    }
+  link();
   glDeleteShader(vertex);
   glDeleteShader(fragment);
 }
@@ -44,32 +32,34 @@ Shader::Shader(const std::string &vertexFile, const std::string &geometryFile, c
   glAttachShader(ID, vertex);
   glAttachShader(ID, geometry);
   glAttachShader(ID, fragment);
-  glLinkProgram(ID);
-  glGetProgramiv(ID, GL_LINK_STATUS, &status);
-  if (status != 1)
-    {
-      glGetProgramInfoLog(ID, 512, NULL, infoLog);
-      std::cout << infoLog << std::endl;
-    }
+  link();
   glDeleteShader(vertex);
   glDeleteShader(geometry);
   glDeleteShader(fragment);
 }
 
-void Shader::linkAgain()
+void Shader::link()
 {
   glLinkProgram(ID);
   glGetProgramiv(ID, GL_LINK_STATUS, &status);
   if (status != 1)
     {
       glGetProgramInfoLog(ID, 512, NULL, infoLog);
-      std::cout << infoLog << std::endl;
+      printf("%s\n", infoLog);
     }
 }
 
 void Shader::cacheUniformsMode(bool cache)
 {
   Shader::cachedUniforms = cache;
+}
+
+GLuint Shader::getUniformLocation(const std::string &uniformName)
+{
+  auto uniformLocation = glGetUniformLocation(ID, uniformName.c_str());
+  if (uniformLocation == -1)
+    printf("Unknown uniform: %s for ID: %u\n", uniformName.c_str(), ID);
+  return uniformLocation;
 }
 
 void Shader::setInt(const std::__cxx11::string &uniformName, int value)
@@ -204,7 +194,7 @@ GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &filenam
   if (status != 1)
     {
       glGetShaderInfoLog(shader, 512, NULL, infoLog);
-      std::cout << infoLog << std::endl;
+      printf("%s\n", infoLog);
     }
   return shader;
 }

@@ -1,7 +1,6 @@
 #ifndef SHADERPROGRAM_H
 #define SHADERPROGRAM_H
 #include <sstream>
-#include <iostream>
 #include <fstream>
 #include <string>
 #include <regex>
@@ -17,7 +16,7 @@ public:
   Shader(const std::string& vertexFile);
   Shader(const std::string& vertexFile, const std::string& fragmentFile);
   Shader(const std::string& vertexFile, const std::string& geometryFile, const std::string& fragmentFile);
-  void linkAgain();
+  void link();
   static void cacheUniformsMode(bool cache);
   GLuint getUniformLocation(const std::string& uniformName);
   void setInt(const std::string& uniformName, int value);
@@ -42,14 +41,6 @@ private:
   char infoLog[512];
   std::unordered_map<std::string, GLint> uniformCache;
 };
-
-inline GLuint Shader::getUniformLocation(const std::string &uniformName)
-{
-  auto uniformLocation = glGetUniformLocation(ID, uniformName.c_str());
-  if (uniformLocation == -1)
-    std::cerr << "Unknown uniform: " << uniformName.c_str() << " for ID: " << ID << '\n';
-  return uniformLocation;
-}
 
 inline void Shader::setVec4(const std::__cxx11::string &uniformName, glm::vec4 vec)
 {

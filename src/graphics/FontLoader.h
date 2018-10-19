@@ -1,6 +1,5 @@
 #ifndef FONTLOADER_H
 #define FONTLOADER_H
-#include <iosfwd>
 #include <fstream>
 #include <sstream>
 #include <GL/glew.h>

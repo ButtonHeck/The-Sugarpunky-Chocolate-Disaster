@@ -17,7 +17,6 @@ enum MOVE_DIRECTION
 class Camera
 {
 public:
-
   Camera(glm::vec3 position);
   glm::mat4 getViewMatrix() const;
   void processMouseCursor(float xOffset, float yOffset);
