@@ -27,6 +27,8 @@ public:
   float getZoom() const;
   glm::vec3 getPosition() const;
   glm::vec3 getDirection() const;
+  void setYaw(float newYaw);
+  void setPitch(float newPitch);
   glm::vec3 getRight() const;
   glm::vec3 getUp() const;
   void updateVectors();
@@ -41,6 +43,7 @@ private:
   const float CAMERA_WORLD_BORDER_OFFSET = 8.0f;
   const float CAMERA_WORLD_MIN_HEIGHT = 2.0f;
   const float CAMERA_WORLD_MIN_HEIGHT_ON_HILLS = CAMERA_WORLD_MIN_HEIGHT - HILLS_OFFSET_Y;
+  const float CAMERA_WORLD_MAX_HEIGHT = 30.0f;
   //Euler angles
   float yaw, pitch;
   //direction vectors

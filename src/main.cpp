@@ -26,8 +26,10 @@ int main()
   GLFWmonitor* monitor = glfwGetPrimaryMonitor();
   const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
   screenResolution.updateResolution(vidmode->width, vidmode->height);
+//  screenResolution.updateResolution(850, 850);
   window = glfwCreateWindow(screenResolution.getWidth(), screenResolution.getHeight(), "The Sugarpunky Chocolate Disaster", monitor, 0);
   glfwMakeContextCurrent(window);
+//  glfwSetWindowPos(window, 50, 25);
   glewExperimental = GL_TRUE;
   glewInit();
 #ifdef _DEBUG

@@ -72,6 +72,9 @@ void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir, std::vector<s
 
   if (position.y < CAMERA_WORLD_MIN_HEIGHT)
     position.y = CAMERA_WORLD_MIN_HEIGHT;
+  if (position.y > CAMERA_WORLD_MAX_HEIGHT)
+    position.y = CAMERA_WORLD_MAX_HEIGHT;
+
   if (hillsMap[position.z + HALF_WORLD_HEIGHT][position.x + HALF_WORLD_WIDTH] > 0 ||
       hillsMap[position.z + HALF_WORLD_HEIGHT + 1][position.x + HALF_WORLD_WIDTH] > 0 ||
       hillsMap[position.z + HALF_WORLD_HEIGHT][position.x + HALF_WORLD_WIDTH + 1] > 0 ||
@@ -117,6 +120,18 @@ glm::vec3 Camera::getPosition() const
 glm::vec3 Camera::getDirection() const
 {
   return front;
+}
+
+void Camera::setYaw(float newYaw)
+{
+  this->yaw = newYaw;
+  updateVectors();
+}
+
+void Camera::setPitch(float newPitch)
+{
+  pitch = newPitch;
+  updateVectors();
 }
 
 glm::vec3 Camera::getRight() const

@@ -46,6 +46,27 @@ void KeyboardManager::processInput(float delta, std::vector<std::vector<float> >
   processKey(GLFW_KEY_B, OPT_MODELS_FLAT_BLENDING);
   processKey(GLFW_KEY_L, OPT_POLYGON_LINE);
 
+  processKey(GLFW_KEY_KP_8, [&]()
+  {
+      camera.setYaw(-90.0f);
+    });
+  processKey(GLFW_KEY_KP_6, [&]()
+  {
+      camera.setYaw(0.0f);
+    });
+  processKey(GLFW_KEY_KP_2, [&]()
+  {
+      camera.setYaw(90.0f);
+    });
+  processKey(GLFW_KEY_KP_4, [&]()
+  {
+      camera.setYaw(180.0f);
+    });
+  processKey(GLFW_KEY_KP_5, [&]()
+  {
+      camera.setPitch(-90.0f);
+    });
+
   //process camera
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     camera.processKeyboardInput(delta, FORWARD, hillsMap);

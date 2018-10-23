@@ -73,13 +73,13 @@ void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
   glm::vec3 viewPosition = camera.getPosition();
   drawHills(viewPosition, viewFrustum);
   drawFlatTerrain(viewFrustum);
+  drawSkybox(skyProjectionView, camera.getPosition().y);
   drawUnderwater();
   drawShore();
   drawPlants(viewPosition);
   drawBuildable();
   drawSelected(mouseInput, camera);
   drawWater(viewPosition, viewFrustum);
-  drawSkybox(skyProjectionView);
 }
 
 void WorldGeneratorFacade::drawWorldDepthmap()
@@ -188,10 +188,14 @@ void WorldGeneratorFacade::drawWater(glm::vec3 &viewPosition, Frustum &viewFrust
     }
 }
 
-void WorldGeneratorFacade::drawSkybox(glm::mat4& skyProjectionView)
+void WorldGeneratorFacade::drawSkybox(glm::mat4& skyProjectionView, float cameraY)
 {
-  shaderManager.updateSkyShader(skyProjectionView);
+  glDepthMask(GL_FALSE);
+  shaderManager.updateSkyShader(skyProjectionView, cameraY, 0);
   renderer.renderSkybox(&skybox);
+  shaderManager.updateSkyShader(skyProjectionView, cameraY, 1);
+  renderer.renderSkybox(&skybox);
+  glDepthMask(GL_TRUE);
 }
 
 void WorldGeneratorFacade::drawTerrainDepthmap()

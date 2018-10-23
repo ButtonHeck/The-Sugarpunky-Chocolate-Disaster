@@ -348,7 +348,13 @@ DISTFILES += \
     res/models/tree8/foliage_spec.png \
     res/textures/underwater.jpg \
     res/shaders/land.vs \
-    res/shaders/land.fs
+    res/shaders/land.fs \
+    res/textures/cubemapFar/back.png \
+    res/textures/cubemapFar/down.png \
+    res/textures/cubemapFar/front.png \
+    res/textures/cubemapFar/left.png \
+    res/textures/cubemapFar/right.png \
+    res/textures/cubemapFar/up.png
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

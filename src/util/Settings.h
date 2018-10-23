@@ -25,7 +25,7 @@ constexpr bool INCLUDE_RES_DIR = true;
 //view frustum config
 constexpr float NEAR_PLANE = 0.1f;
 constexpr float FAR_PLANE = 500.0f;
-constexpr float FOV = 40.0f;
+constexpr float FOV = 60.0f;
 
 //world config
 constexpr int WORLD_WIDTH = 384;

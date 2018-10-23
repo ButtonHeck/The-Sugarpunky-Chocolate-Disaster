@@ -89,7 +89,8 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setFloat("u_mapDimension", 1.0f / WORLD_WIDTH);
 
   bindShaderUnit(shader, SHADER_SKYBOX);
-  shader->setInt("u_skybox", TEX_SKYBOX);
+  shader->setInt("u_skybox[1]", TEX_SKYBOX);
+  shader->setInt("u_skybox[0]", TEX_SKYBOX_FAR);
 
   bindShaderUnit(shader, SHADER_FONT);
   shader->setMat4("u_projection", fontProjection);
@@ -199,11 +200,13 @@ void ShaderManager::updateWaterShaders(bool useFC, glm::mat4 &projectionView, gl
   shader->setVec3("u_viewPosition", viewPosition);
 }
 
-void ShaderManager::updateSkyShader(glm::mat4 &projectionView)
+void ShaderManager::updateSkyShader(glm::mat4 &projectionView, float cameraY, int backgroundIndex)
 {
   Shader* shader = &shaders[SHADER_SKYBOX];
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
+  shader->setFloat("u_cameraY", cameraY);
+  shader->setInt("u_index", backgroundIndex);
 }
 
 void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &viewPosition,

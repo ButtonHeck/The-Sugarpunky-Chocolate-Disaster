@@ -49,7 +49,7 @@ private:
   void drawBuildable();
   void drawSelected(MouseInputManager& mouseInput, Camera& camera);
   void drawWater(glm::vec3 &viewPosition, Frustum &viewFrustum);
-  void drawSkybox(glm::mat4& skyProjectionView);
+  void drawSkybox(glm::mat4& skyProjectionView, float cameraY);
 
   //rendering offscreen (depthmap)
   void drawTerrainDepthmap();

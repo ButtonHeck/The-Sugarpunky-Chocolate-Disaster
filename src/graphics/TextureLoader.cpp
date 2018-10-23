@@ -96,7 +96,7 @@ GLuint TextureLoader::loadCubemap(const std::string& directory, GLuint textureUn
       auto width = ilGetInteger(IL_IMAGE_WIDTH);
       auto height = ilGetInteger(IL_IMAGE_HEIGHT);
       ILubyte* data = ilGetData();
-      GLenum internalFormat = HDR_ENABLED ? GL_SRGB8 : GL_RGB8;
+      GLenum internalFormat = HDR_ENABLED ? GL_SRGB8_ALPHA8 : GL_RGBA8;
       glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
       ilDeleteImage(ilGetInteger(IL_ACTIVE_IMAGE));
     }
