@@ -20,7 +20,9 @@ LandPlantsGenerator::LandPlantsGenerator()
   models.emplace_back("tree8/tree8.obj");
 }
 
-void LandPlantsGenerator::setup(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
+void LandPlantsGenerator::setup(std::vector<std::vector<float> > &baseMap,
+                                std::vector<std::vector<float> > &hillMap,
+                                std::vector<std::vector<int> > &distributionMap)
 {
   for (Model& model : models)
     {
@@ -28,10 +30,12 @@ void LandPlantsGenerator::setup(std::vector<std::vector<float> > &baseMap, std::
         mesh.setup();
     }
   setupModelChunks();
-  setupMatrices(baseMap, hillMap);
+  setupMatrices(baseMap, hillMap, distributionMap);
 }
 
-void LandPlantsGenerator::setupMatrices(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
+void LandPlantsGenerator::setupMatrices(std::vector<std::vector<float> > &baseMap,
+                                        std::vector<std::vector<float> > &hillMap,
+                                        std::vector<std::vector<int> > &distributionMap)
 {
   auto matricesVecs = substituteMatricesStorage();
   std::uniform_real_distribution<float> modelSizeDistribution(0.27f, 0.32f);
@@ -57,7 +61,8 @@ void LandPlantsGenerator::setupMatrices(std::vector<std::vector<float> > &baseMa
                 {
                   if ((baseMap[y1][x1] == 0 && baseMap[y1+1][x1+1] == 0 && baseMap[y1+1][x1] == 0 && baseMap[y1][x1+1] == 0)
                       && !(hillMap[y1][x1] != 0 || hillMap[y1+1][x1+1] != 0 || hillMap[y1+1][x1] != 0 || hillMap[y1][x1+1] != 0)
-                      && rand() % 8 == 0)
+                      && rand() % (MODELS_DISTRIBUTION_FREQ / 2) == 0
+                      && distributionMap[y1][x1] > MODELS_DISTRIBUTION_FREQ / 2)
                     {
                       glm::mat4 model;
                       model = glm::translate(model,

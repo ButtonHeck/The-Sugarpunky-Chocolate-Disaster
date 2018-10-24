@@ -32,6 +32,8 @@ public:
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
 private:
+  void prepareDistributionMap(int cycles);
+  std::vector<std::vector<int>> distributionMap;
   std::unique_ptr<LandPlantsGenerator> landPlantsGenerator;
   std::unique_ptr<GrassGenerator> grassGenerator;
   std::unique_ptr<HillTreesGenerator> hillTreesGenerator;

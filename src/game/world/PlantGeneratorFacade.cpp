@@ -9,9 +9,10 @@ PlantGeneratorFacade::PlantGeneratorFacade()
 
 void PlantGeneratorFacade::setup(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
 {
-  landPlantsGenerator->setup(baseMap, hillMap);
-  grassGenerator->setup(baseMap, hillMap);
-  hillTreesGenerator->setup(hillMap);
+  prepareDistributionMap(MODELS_DISTRIBUTION_FREQ);
+  landPlantsGenerator->setup(baseMap, hillMap, distributionMap);
+  grassGenerator->setup(baseMap, hillMap, distributionMap);
+  hillTreesGenerator->setup(hillMap, distributionMap);
 }
 
 void PlantGeneratorFacade::prepareMeshesIndirectData(const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum)
@@ -105,4 +106,36 @@ void PlantGeneratorFacade::deserialize(std::ifstream &input)
   landPlantsGenerator->deserialize(input);
   grassGenerator->deserialize(input);
   hillTreesGenerator->deserialize(input);
+}
+
+void PlantGeneratorFacade::prepareDistributionMap(int cycles)
+{
+  initializeMap(distributionMap);
+  for (int cycle = 1; cycle <= cycles; cycle++)
+    {
+      for (unsigned int y = 0; y < distributionMap.size(); y++)
+        {
+          for (unsigned int x = 0; x < distributionMap[0].size(); x++)
+            {
+              if (rand() % (cycles * 5) == 0)
+                {
+                  unsigned int yBorder = y + cycle - 1;
+                  if (yBorder >= distributionMap.size())
+                    yBorder = distributionMap.size() - 1;
+                  unsigned int xBorder = x + cycle - 1;
+                  if (xBorder >= distributionMap[0].size())
+                    xBorder = distributionMap.size() - 1;
+                  for (unsigned int y2 = y; y2 <= yBorder; y2++)
+                    {
+                      for (unsigned int x2 = x; x2 <= xBorder; x2++)
+                        {
+                          if (distributionMap[y2][x2] < cycles)
+                            distributionMap[y2][x2]++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

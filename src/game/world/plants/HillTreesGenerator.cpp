@@ -20,7 +20,8 @@ HillTreesGenerator::HillTreesGenerator()
   models.emplace_back("hillTree7/hillTree7.obj");
 }
 
-void HillTreesGenerator::setup(std::vector<std::vector<float> > &hillMap)
+void HillTreesGenerator::setup(std::vector<std::vector<float> > &hillMap,
+                               std::vector<std::vector<int> > &distributionMap)
 {
   for (Model& model : models)
     {
@@ -28,10 +29,11 @@ void HillTreesGenerator::setup(std::vector<std::vector<float> > &hillMap)
         mesh.setup();
     }
   setupModelChunks();
-  setupMatrices(hillMap);
+  setupMatrices(hillMap, distributionMap);
 }
 
-void HillTreesGenerator::setupMatrices(std::vector<std::vector<float> > &hillMap)
+void HillTreesGenerator::setupMatrices(std::vector<std::vector<float> > &hillMap,
+                                       std::vector<std::vector<int> > &distributionMap)
 {
   auto matricesVecs = substituteMatricesStorage();
   std::uniform_real_distribution<float> modelSizeDistribution(0.36f, 0.51f);
@@ -61,7 +63,8 @@ void HillTreesGenerator::setupMatrices(std::vector<std::vector<float> > &hillMap
                   auto slope = maxHeight - minHeight;
                   if (slope < 1.0f
                       && (hillMap[y1][x1] != 0 || hillMap[y1+1][x1+1] != 0 || hillMap[y1+1][x1] != 0 || hillMap[y1][x1+1] != 0)
-                      && rand() % 3 == 0)
+                      && rand() % (MODELS_DISTRIBUTION_FREQ / 2 - 1) == 0
+                      && distributionMap[y1][x1] > (MODELS_DISTRIBUTION_FREQ / 2 - 1))
                     {
                       bool indicesCrossed = false;
                       if ((hillMap[y1][x1+1] > 0 && hillMap[y1][x1] == 0 && hillMap[y1+1][x1] == 0 && hillMap[y1+1][x1+1] == 0)

@@ -13,7 +13,9 @@ GrassGenerator::GrassGenerator()
   models.emplace_back("grass6/grass6.obj");
 }
 
-void GrassGenerator::setup(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
+void GrassGenerator::setup(std::vector<std::vector<float> > &baseMap,
+                           std::vector<std::vector<float> > &hillMap,
+                           std::vector<std::vector<int> > &distributionMap)
 {
   for (Model& model : models)
     {
@@ -21,10 +23,12 @@ void GrassGenerator::setup(std::vector<std::vector<float> > &baseMap, std::vecto
         mesh.setup();
     }
   setupModelChunks();
-  setupMatrices(baseMap, hillMap);
+  setupMatrices(baseMap, hillMap, distributionMap);
 }
 
-void GrassGenerator::setupMatrices(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
+void GrassGenerator::setupMatrices(std::vector<std::vector<float> > &baseMap,
+                                   std::vector<std::vector<float> > &hillMap,
+                                   std::vector<std::vector<int> > &distributionMap)
 {
   auto matricesVecs = substituteMatricesStorage();
   std::uniform_real_distribution<float> modelSizeDistribution(0.27f, 0.32f);
@@ -50,7 +54,8 @@ void GrassGenerator::setupMatrices(std::vector<std::vector<float> > &baseMap, st
                 {
                   if ((baseMap[y1][x1] == 0 && baseMap[y1+1][x1+1] == 0 && baseMap[y1+1][x1] == 0 && baseMap[y1][x1+1] == 0)
                       && !(hillMap[y1][x1] != 0 || hillMap[y1+1][x1+1] != 0 || hillMap[y1+1][x1] != 0 || hillMap[y1][x1+1] != 0)
-                      && rand() % 6 == 0)
+                      && rand() % (MODELS_DISTRIBUTION_FREQ / 2 - 1) == 0
+                      && distributionMap[y1][x1] > MODELS_DISTRIBUTION_FREQ / 2)
                     {
                       glm::mat4 model;
                       model = glm::translate(model,

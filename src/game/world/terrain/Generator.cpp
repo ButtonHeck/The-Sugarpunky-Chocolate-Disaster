@@ -93,15 +93,6 @@ void Generator::deserialize(std::ifstream &input)
     }
 }
 
-void initializeMap(std::vector<std::vector<float>>& map)
-{
-  map.clear();
-  map.reserve(WORLD_HEIGHT + 1);
-  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
-    map.emplace_back(std::vector<float>(WORLD_WIDTH + 1, 0));
-}
-
-
 void smoothMapHeightChunks(std::vector<std::vector<float> > &map, float selfWeight, float evenWeight, float diagonalWeight)
 {
   std::vector<std::vector<float>> shoreMapSmoothed;

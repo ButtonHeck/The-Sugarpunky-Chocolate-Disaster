@@ -50,6 +50,7 @@ constexpr unsigned int LOADING_DISTANCE_CHUNKS = 8;
 constexpr unsigned int LOADING_DISTANCE_UNITS = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS;
 constexpr unsigned int LOADING_DISTANCE_UNITS_SQUARE = LOADING_DISTANCE_UNITS * LOADING_DISTANCE_UNITS;
 constexpr float MODELS_FC_RADIUS = HALF_CHUNK_SIZE;
+constexpr int MODELS_DISTRIBUTION_FREQ = 8;
 constexpr unsigned char QUAD_INDICES[6] = {0,1,2,2,3,0};
 constexpr unsigned int VERTICES_PER_TILE = 6;
 
