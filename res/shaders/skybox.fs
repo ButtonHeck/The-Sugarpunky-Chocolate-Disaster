@@ -4,7 +4,7 @@ out vec4 o_FragColor;
 
 in vec3 v_TexCoords;
 
-uniform samplerCube u_skybox[2];
+uniform samplerCube u_skybox[3];
 uniform int u_index;
 
 void main()

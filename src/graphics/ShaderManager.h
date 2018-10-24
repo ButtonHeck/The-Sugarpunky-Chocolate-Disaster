@@ -42,7 +42,7 @@ public:
   void updateBuildableShader(glm::mat4& projectionView);
   void updateSelectedShader(glm::mat4& projectionView, glm::mat4& selectedModel);
   void updateWaterShaders(bool useFC, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum);
-  void updateSkyShader(glm::mat4 &projectionView, glm::vec3 &cameraPos, int backgroundIndex);
+  void updateSkyShader(glm::mat4 &projectionView, glm::vec3 &cameraPos, int backgroundIndex, bool isStatic);
   void updateModelShader(glm::mat4& projectionView, glm::vec3& viewPosition,
                          bool shadowOnTrees,
                          bool useShadows,

@@ -354,7 +354,13 @@ DISTFILES += \
     res/textures/cubemapFar/front.png \
     res/textures/cubemapFar/left.png \
     res/textures/cubemapFar/right.png \
-    res/textures/cubemapFar/up.png
+    res/textures/cubemapFar/up.png \
+    res/textures/cubemapSky/back.png \
+    res/textures/cubemapSky/down.png \
+    res/textures/cubemapSky/front.png \
+    res/textures/cubemapSky/left.png \
+    res/textures/cubemapSky/right.png \
+    res/textures/cubemapSky/up.png
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
