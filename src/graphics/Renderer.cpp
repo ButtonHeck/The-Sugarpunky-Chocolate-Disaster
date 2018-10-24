@@ -15,7 +15,7 @@ void Renderer::setInitialGLState(bool useMultisample)
   else
     glDisable(GL_MULTISAMPLE);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glClearColor(0.12f, 0.12f, 0.74f, 1.0f);
+  glClearColor(0.85f, 0.44f, 0.35f, 1.0f);
 }
 
 void Renderer::renderHills(bool useFC, const std::shared_ptr<HillsGenerator> generator, Shader& fc, Shader& nofc)

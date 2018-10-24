@@ -200,12 +200,12 @@ void ShaderManager::updateWaterShaders(bool useFC, glm::mat4 &projectionView, gl
   shader->setVec3("u_viewPosition", viewPosition);
 }
 
-void ShaderManager::updateSkyShader(glm::mat4 &projectionView, float cameraY, int backgroundIndex)
+void ShaderManager::updateSkyShader(glm::mat4 &projectionView, glm::vec3& viewPosition, int backgroundIndex)
 {
   Shader* shader = &shaders[SHADER_SKYBOX];
   shader->use();
   shader->setMat4("u_projectionView", projectionView);
-  shader->setFloat("u_cameraY", cameraY);
+  shader->setVec3("u_viewPosition", viewPosition);
   shader->setInt("u_index", backgroundIndex);
 }
 
