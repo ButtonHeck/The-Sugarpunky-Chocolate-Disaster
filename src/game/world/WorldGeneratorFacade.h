@@ -9,6 +9,7 @@
 #include "game/world/terrain/ShoreGenerator.h"
 #include "game/world/terrain/UnderwaterGenerator.h"
 #include "game/world/Skybox.h"
+#include "game/world/TheSun.h"
 #include "graphics/ShaderManager.h"
 #include "graphics/Renderer.h"
 #include "graphics/TextureManager.h"
@@ -49,7 +50,9 @@ private:
   void drawBuildable();
   void drawSelected(MouseInputManager& mouseInput, Camera& camera);
   void drawWater(glm::vec3 &viewPosition, Frustum &viewFrustum);
+  void drawAmbient(glm::mat4& skyProjectionView, glm::vec3 &viewPosition);
   void drawSkybox(glm::mat4& skyProjectionView, glm::vec3 &viewPosition);
+  void drawSun(glm::mat4& skyProjectionView);
 
   //rendering offscreen (depthmap)
   void drawTerrainDepthmap();
@@ -68,6 +71,7 @@ private:
   std::shared_ptr<BuildableGenerator> buildableGenerator;
   std::shared_ptr<PlantGeneratorFacade> plantGeneratorFacade;
   Skybox skybox;
+  TheSun theSun;
   UnderwaterGenerator underwaterGenerator;
 };
 

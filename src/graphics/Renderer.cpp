@@ -18,6 +18,24 @@ void Renderer::setInitialGLState(bool useMultisample)
   glClearColor(0.85f, 0.44f, 0.35f, 1.0f);
 }
 
+void Renderer::setAmbientRenderingState(bool isOn)
+{
+  if (isOn)
+    {
+      glDisable(GL_CULL_FACE);
+      glDepthFunc(GL_LEQUAL);
+      glEnable(GL_BLEND);
+      glDepthMask(GL_FALSE);
+    }
+  else
+    {
+      glDepthMask(GL_TRUE);
+      glDisable(GL_BLEND);
+      glDepthFunc(GL_LESS);
+      glEnable(GL_CULL_FACE);
+    }
+}
+
 void Renderer::renderHills(bool useFC, const std::shared_ptr<HillsGenerator> generator, Shader& fc, Shader& nofc)
 {
   if (useFC)
@@ -169,14 +187,20 @@ void Renderer::renderWater(bool useFC, std::shared_ptr<WaterGenerator> generator
 
 void Renderer::renderSkybox(Skybox *skybox)
 {
-  glDepthFunc(GL_LEQUAL);
-  glDisable(GL_CULL_FACE);
-  glEnable(GL_BLEND);
+  setAmbientRenderingState(true);
   glBindVertexArray(skybox->getVAO());
   glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_TILE * VERTICES_PER_TILE);
-  glDisable(GL_BLEND);
-  glDepthFunc(GL_LESS);
-  glEnable(GL_CULL_FACE);
+  setAmbientRenderingState(false);
+}
+
+void Renderer::renderSun(TheSun *theSun)
+{
+  glPointSize(64.0f);
+  setAmbientRenderingState(true);
+  glBindVertexArray(theSun->getVAO());
+  glDrawArrays(GL_POINTS, 0, 1);
+  setAmbientRenderingState(false);
+  glPointSize(1.0f);
 }
 
 void Renderer::renderPlants(const std::shared_ptr<PlantGeneratorFacade> generatorFacade, Shader &shader,

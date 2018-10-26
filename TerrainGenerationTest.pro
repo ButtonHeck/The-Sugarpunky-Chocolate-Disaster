@@ -50,7 +50,8 @@ SOURCES += \
     src/graphics/TextManager.cpp \
     src/game/world/Chunk.cpp \
     src/util/VRAM_Monitor.cpp \
-    src/graphics/OpenglBuffer.cpp
+    src/graphics/OpenglBuffer.cpp \
+    src/game/world/TheSun.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -99,7 +100,8 @@ HEADERS += \
     src/graphics/TextManager.h \
     src/game/world/Chunk.h \
     src/util/VRAM_Monitor.h \
-    src/graphics/OpenglBuffer.h
+    src/graphics/OpenglBuffer.h \
+    src/game/world/TheSun.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 
@@ -360,7 +362,10 @@ DISTFILES += \
     res/textures/cubemapSky/front.png \
     res/textures/cubemapSky/left.png \
     res/textures/cubemapSky/right.png \
-    res/textures/cubemapSky/up.png
+    res/textures/cubemapSky/up.png \
+    res/textures/theSun.png \
+    res/shaders/theSun.vs \
+    res/shaders/theSun.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

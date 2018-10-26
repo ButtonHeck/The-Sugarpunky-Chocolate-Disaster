@@ -10,6 +10,7 @@ ShaderManager::ShaderManager()
   shaders[SHADER_WATER_CULLING] = Shader("waterFC.vs", "waterFC.gs", "_FC.fs");
   shaders[SHADER_WATER] = Shader("water.vs", "water.fs");
   shaders[SHADER_SKYBOX] = Shader("skybox.vs", "skybox.fs");
+  shaders[SHADER_SUN] = Shader("theSun.vs", "theSun.fs");
   shaders[SHADER_MODELS] = Shader("model.vs", "model.fs");
   shaders[SHADER_FONT] = Shader("font.vs", "font.fs");
   shaders[SHADER_COORDINATE_SYSTEM] = Shader("coordinateSystem.vs", "coordinateSystem.gs", "coordinateSystem.fs");
@@ -92,6 +93,9 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_skybox[1]", TEX_SKYBOX);
   shader->setInt("u_skybox[0]", TEX_SKYBOX_FAR);
   shader->setInt("u_skybox[2]", TEX_SKYBOX_SKY);
+
+  bindShaderUnit(shader, SHADER_SUN);
+  shader->setInt("u_texture", TEX_THE_SUN);
 
   bindShaderUnit(shader, SHADER_FONT);
   shader->setMat4("u_projection", fontProjection);
@@ -209,6 +213,14 @@ void ShaderManager::updateSkyShader(glm::mat4 &projectionView, glm::vec3& viewPo
   shader->setVec3("u_viewPosition", viewPosition);
   shader->setInt("u_index", backgroundIndex);
   shader->setInt("u_static", isStatic);
+}
+
+void ShaderManager::updateSunShader(glm::mat4 &projectionView, glm::mat4 &model)
+{
+  Shader* shader = nullptr;
+  bindShaderUnit(shader, SHADER_SUN);
+  shader->setMat4("u_projectionView", projectionView);
+  shader->setMat4("u_model", model);
 }
 
 void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &viewPosition,

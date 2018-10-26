@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "game/world/Skybox.h"
+#include "game/world/TheSun.h"
 #include "game/world/terrain/HillsGenerator.h"
 #include "game/world/terrain/LandGenerator.h"
 #include "game/world/terrain/ShoreGenerator.h"
@@ -30,11 +31,13 @@ public:
   void renderSelectedTile(const std::shared_ptr<BuildableGenerator> generator);
   void renderWater(bool useFC, std::shared_ptr<WaterGenerator> generator, Shader& fc, Shader& nofc);
   void renderSkybox(Skybox* skybox);
+  void renderSun(TheSun* theSun);
   void renderPlants(const std::shared_ptr<PlantGeneratorFacade> generatorFacade, Shader& shader,
                  bool bindTexture,
                  bool screenDraw,
                  bool useFlatBlending);
 private:
+  static void setAmbientRenderingState(bool isOn);
   void addIndirectBufferData(GLuint& primCount,
                              GLuint* buffer,
                              GLuint& dataOffset,

@@ -15,6 +15,7 @@ enum SHADER
   SHADER_WATER_CULLING,
   SHADER_WATER,
   SHADER_SKYBOX,
+  SHADER_SUN,
   SHADER_MODELS,
   SHADER_MODELS_PHONG,
   SHADER_FONT,
@@ -43,6 +44,7 @@ public:
   void updateSelectedShader(glm::mat4& projectionView, glm::mat4& selectedModel);
   void updateWaterShaders(bool useFC, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum);
   void updateSkyShader(glm::mat4 &projectionView, glm::vec3 &cameraPos, int backgroundIndex, bool isStatic);
+  void updateSunShader(glm::mat4 &projectionView, glm::mat4& model);
   void updateModelShader(glm::mat4& projectionView, glm::vec3& viewPosition,
                          bool shadowOnTrees,
                          bool useShadows,

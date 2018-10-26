@@ -79,7 +79,7 @@ void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
   drawBuildable();
   drawSelected(mouseInput, camera);
   drawWater(viewPosition, viewFrustum);
-  drawSkybox(skyProjectionView, viewPosition);
+  drawAmbient(skyProjectionView, viewPosition);
 }
 
 void WorldGeneratorFacade::drawWorldDepthmap()
@@ -188,16 +188,27 @@ void WorldGeneratorFacade::drawWater(glm::vec3 &viewPosition, Frustum &viewFrust
     }
 }
 
+void WorldGeneratorFacade::drawAmbient(glm::mat4 &skyProjectionView, glm::vec3 &viewPosition)
+{
+  drawSun(skyProjectionView);
+  drawSkybox(skyProjectionView, viewPosition);
+}
+
 void WorldGeneratorFacade::drawSkybox(glm::mat4& skyProjectionView, glm::vec3& viewPosition)
 {
-  glDepthMask(GL_FALSE);
   shaderManager.updateSkyShader(skyProjectionView, viewPosition, 2, true);
   renderer.renderSkybox(&skybox);
   shaderManager.updateSkyShader(skyProjectionView, viewPosition, 0, false);
   renderer.renderSkybox(&skybox);
   shaderManager.updateSkyShader(skyProjectionView, viewPosition, 1, false);
   renderer.renderSkybox(&skybox);
-  glDepthMask(GL_TRUE);
+}
+
+void WorldGeneratorFacade::drawSun(glm::mat4& skyProjectionView)
+{
+  glm::mat4 model = theSun.move(glfwGetTime());
+  shaderManager.updateSunShader(skyProjectionView, model);
+  renderer.renderSun(&theSun);
 }
 
 void WorldGeneratorFacade::drawTerrainDepthmap()
