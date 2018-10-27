@@ -19,7 +19,6 @@ void TextManager::addText(ScreenResolution& screenResolution,
                           const unsigned int fps)
 {
   BENCHMARK("Text: add text", true);
-  using std::to_string;
   float scrHeight = (float)screenResolution.getHeight();
   glm::vec3 viewPosition = camera.getPosition();
   std::stringstream ss;
@@ -28,28 +27,28 @@ void TextManager::addText(ScreenResolution& screenResolution,
   addString(ss.str(), 10.0f, scrHeight - 15.0f, 0.18f);
 
   ss.str("");
-  ss << "Camera pos: "
-     << to_string(viewPosition.x).substr(0,6)
+  ss << "Camera pos: " << std::setprecision(4) << std::setw(4)
+     << viewPosition.x
      << ": "
-     << to_string(viewPosition.y).substr(0,6)
+     << viewPosition.y
      << ": "
-     << to_string(viewPosition.z).substr(0,6);
+     << viewPosition.z;
   addString(ss.str(), 10.0f, scrHeight - 35.0f, 0.18f);
 
   ss.str("");
   ss << "Camera on map: "
-     << to_string(camera.getMapCoordX())
+     << camera.getMapCoordX()
      << ": "
-     << to_string(camera.getMapCoordZ());
+     << camera.getMapCoordZ();
   addString(ss.str(), 10.0f, scrHeight - 55.0f, 0.18f);
 
   ss.str("");
-  ss << "View dir: "
-     << to_string(camera.getDirection().x).substr(0,6)
+  ss << "View dir: " << std::setprecision(3) << std::setw(3)
+     << camera.getDirection().x
      << ": "
-     << to_string(camera.getDirection().y).substr(0,6)
+     << camera.getDirection().y
      << ": "
-     << to_string(camera.getDirection().z).substr(0,6);
+     << camera.getDirection().z;
   addString(ss.str(), 10.0f, scrHeight - 75.0f, 0.18f);
 
   const glm::vec3& cursorToViewportDirection = mouseInput.getCursorToViewportDirection();
@@ -59,11 +58,12 @@ void TextManager::addText(ScreenResolution& screenResolution,
     ss << "inactive";
   else
     {
-      ss << to_string(cursorToViewportDirection.x).substr(0,6)
+      ss << std::setprecision(3) << std::setw(3)
+         << cursorToViewportDirection.x
          << ": "
-         << to_string(cursorToViewportDirection.y).substr(0,6)
+         << cursorToViewportDirection.y
          << ": "
-         << to_string(cursorToViewportDirection.z).substr(0,6);
+         << cursorToViewportDirection.z;
     }
   addString(ss.str(), 10.0f, scrHeight - 95.0f, 0.18f);
 
@@ -73,36 +73,34 @@ void TextManager::addText(ScreenResolution& screenResolution,
     ss << "inactive";
   else
     {
-      ss << to_string(mouseInput.getCursorMapX())
+      ss << std::setprecision(3) << std::setw(3)
+         << mouseInput.getCursorMapX()
          << ": "
-         << to_string(mouseInput.getCursorMapZ()-1)
+         << mouseInput.getCursorMapZ()-1
          << ", "
          << mouseInput.getCursorTileName();
     }
   addString(ss.str(), 10.0f, scrHeight - 115.0f, 0.18f);
 
   ss.str("");
-  ss << "Water culling: "
-     << (options.get(OPT_WATER_CULLING) ? "On" : "Off");
+  ss << "Water culling: " << std::boolalpha << options.get(OPT_WATER_CULLING);
   addString(ss.str(), 10.0f, 20.0f, 0.18f);
 
   ss.str("");
-  ss << "Hills culling: "
-     << (options.get(OPT_HILLS_CULLING) ? "On" : "Off");
+  ss << "Hills culling: " << std::boolalpha << options.get(OPT_HILLS_CULLING);
   addString(ss.str(), 10.0f, 40.0f, 0.18f);
 
   ss.str("");
-  ss << "Models Phong: "
-     << (options.get(OPT_MODELS_PHONG_SHADING) ? "On" : "Off");
+  ss << "Models Phong: " << std::boolalpha << options.get(OPT_MODELS_PHONG_SHADING);
   addString(ss.str(), 10.0f, 60.0f, 0.18f);
 
   VRAM_Monitor& vram = VRAM_Monitor::getInstance();
   vram.updateAvailable();
   ss.str("");
-  ss << "RAM available: "
-     << to_string(vram.getAvailableMemory())
+  ss << "RAM available: " << std::setprecision(6) << std::setw(8)
+     << vram.getAvailableMemory()
      << ", "
-     << to_string(vram.getAvailableMemoryPercent())
+     << vram.getAvailableMemoryPercent()
      << "%";
   addString(ss.str(), 10.0f, 80.0f, 0.18f);
 }
