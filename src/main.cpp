@@ -3,7 +3,7 @@
 #include "game/Game.h"
 #include "game/Options.h"
 #include "graphics/ScreenResolution.h"
-#include "util/DebugLogger.h"
+#include "util/Logger.h"
 #include "game/Camera.h"
 
 GLFWwindow* window;
@@ -14,7 +14,7 @@ Game* game;
 
 int main()
 {
-  DebugLogger::setupWindowLibraryErrorCallback();
+  Logger::setupWindowLibraryErrorCallback();
   if (!glfwInit())
     throw std::runtime_error("Error while loading GLFW\n");
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -33,14 +33,14 @@ int main()
   glewExperimental = GL_TRUE;
   glewInit();
 #ifdef _DEBUG
-  printf("%s\n", glfwGetVersionString());
+  Logger::log("%\n", glfwGetVersionString());
   GLint flags;
   glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
   if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
     {
       glEnable(GL_DEBUG_OUTPUT);
       glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-      glDebugMessageCallback(DebugLogger::glDebugCallback, nullptr);
+      glDebugMessageCallback(Logger::glDebugCallback, nullptr);
       glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
 #endif

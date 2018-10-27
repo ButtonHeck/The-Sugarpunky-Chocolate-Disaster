@@ -33,7 +33,7 @@ void ScreenBuffer::setupFramebuffers()
   glRenderbufferStorageMultisample(GL_RENDERBUFFER, MULTISAMPLES, GL_DEPTH24_STENCIL8, screenResolution.getWidth(), screenResolution.getHeight());
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, multisampleDepthRBO);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE)
-    printf("MS Framebuffer is not complete\n");
+    Logger::log("MS Framebuffer is not complete\n");
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   //intermediate FBO (or direct off-screen FBO without multisampling)
@@ -47,7 +47,7 @@ void ScreenBuffer::setupFramebuffers()
   glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenResolution.getWidth(), screenResolution.getHeight());
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, screenDepthRBO);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    printf("Intermediate Framebuffer is not complete\n");
+    Logger::log("Intermediate Framebuffer is not complete\n");
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

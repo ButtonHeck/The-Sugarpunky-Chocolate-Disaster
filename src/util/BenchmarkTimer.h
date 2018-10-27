@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iomanip>
 #include "util/Settings.h"
+#include "util/Logger.h"
 
 class BenchmarkTimer
 {

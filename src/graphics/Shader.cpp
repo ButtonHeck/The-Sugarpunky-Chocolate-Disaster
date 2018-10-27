@@ -45,7 +45,7 @@ void Shader::link()
   if (status != 1)
     {
       glGetProgramInfoLog(ID, 512, NULL, infoLog);
-      printf("%s\n", infoLog);
+      Logger::log("%\n", infoLog);
     }
 }
 
@@ -58,7 +58,7 @@ GLuint Shader::getUniformLocation(const std::string &uniformName)
 {
   auto uniformLocation = glGetUniformLocation(ID, uniformName.c_str());
   if (uniformLocation == -1)
-    printf("Unknown uniform: %s for ID: %u\n", uniformName.c_str(), ID);
+    Logger::log("Unknown uniform: % for ID %\n", uniformName.c_str(), ID);
   return uniformLocation;
 }
 
@@ -194,7 +194,7 @@ GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &filenam
   if (status != 1)
     {
       glGetShaderInfoLog(shader, 512, NULL, infoLog);
-      printf("%s\n", infoLog);
+      Logger::log("%\n", infoLog);
     }
   return shader;
 }

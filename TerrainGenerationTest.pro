@@ -37,7 +37,6 @@ SOURCES += \
     src/game/world/PlantGeneratorFacade.cpp \
     src/game/world/WorldGeneratorFacade.cpp \
     src/util/BenchmarkTimer.cpp \
-    src/util/DebugLogger.cpp \
     src/util/Settings.cpp \
     src/game/world/plants/ModelChunk.cpp \
     src/game/world/terrain/TerrainChunk.cpp \
@@ -51,7 +50,8 @@ SOURCES += \
     src/game/world/Chunk.cpp \
     src/util/VRAM_Monitor.cpp \
     src/graphics/OpenglBuffer.cpp \
-    src/game/world/TheSun.cpp
+    src/game/world/TheSun.cpp \
+    src/util/Logger.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -86,7 +86,6 @@ HEADERS += \
     src/game/world/PlantGeneratorFacade.h \
     src/game/world/WorldGeneratorFacade.h \
     src/util/BenchmarkTimer.h \
-    src/util/DebugLogger.h \
     src/util/Settings.h \
     src/util/Timer.h \
     src/game/world/plants/ModelChunk.h \
@@ -101,7 +100,8 @@ HEADERS += \
     src/game/world/Chunk.h \
     src/util/VRAM_Monitor.h \
     src/graphics/OpenglBuffer.h \
-    src/game/world/TheSun.h
+    src/game/world/TheSun.h \
+    src/util/Logger.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

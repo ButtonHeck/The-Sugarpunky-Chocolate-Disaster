@@ -4,6 +4,7 @@
 #include "graphics/ScreenResolution.h"
 #include "graphics/ShaderManager.h"
 #include "graphics/OpenglBuffer.h"
+#include "util/Logger.h"
 
 class ScreenBuffer
 {

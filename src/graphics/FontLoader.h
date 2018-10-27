@@ -6,6 +6,7 @@
 #include <IL/il.h>
 #include <unordered_map>
 #include "graphics/TextureUnits.h"
+#include "util/Logger.h"
 
 struct Character {
   int asciiCode, x, y, width, height, xoffset, yoffset, xadvance;

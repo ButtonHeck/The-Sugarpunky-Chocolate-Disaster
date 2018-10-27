@@ -6,6 +6,7 @@
 #include <memory>
 #include "game/world/WorldGeneratorFacade.h"
 #include "game/world/plants/ModelChunk.h"
+#include "util/Logger.h"
 
 class Camera;
 

@@ -1,12 +1,12 @@
-#include "util/DebugLogger.h"
+#include "util/Logger.h"
 
-namespace DebugLogger
+namespace Logger
 {
   void setupWindowLibraryErrorCallback()
   {
     glfwSetErrorCallback([](int, const char* msg)
     {
-        printf("Error with window library: %s\n", msg);
+        std::cout << "Error with window library: " << msg << std::endl;
       });
   }
 
@@ -44,6 +44,14 @@ namespace DebugLogger
       case GL_DEBUG_SEVERITY_LOW:           message.append("Severity: Low"); break;
       case GL_DEBUG_SEVERITY_NOTIFICATION:  message.append("Severity: Notification"); break;
       }
-    printf("%s\n%s\n\n", message.c_str(), glMessage);
+    std::cout << message << std::endl << glMessage << std::endl << std::endl;
   }
+
+  void log(const char *msg)
+  {
+    std::cout << msg;
+  }
+
 }
+
+

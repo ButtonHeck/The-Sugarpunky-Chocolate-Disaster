@@ -1,5 +1,4 @@
 #include "graphics/DepthmapBuffer.h"
-#include <iostream>
 
 DepthmapBuffer::~DepthmapBuffer()
 {
@@ -14,7 +13,7 @@ void DepthmapBuffer::setup(GLuint depthTextureUnit)
   glDrawBuffer(GL_NONE);
   glReadBuffer(GL_NONE);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    std::cout << "Depthmap framebuffer is not complete\n";
+    Logger::log("Depthmap framebuffer is not complete\n");
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

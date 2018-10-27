@@ -23,7 +23,7 @@ GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, G
   GLuint texture = createAndBindTextureObject(GL_TEXTURE_2D, textureUnit);
   std::string fullPath = includeCWD ? std::string(TEXTURES_DIR + path) : path;
   if (!ilLoadImage(fullPath.c_str()))
-    printf("Error when loading texture: %s\n", fullPath.c_str());
+    Logger::log("Error when loading texture: %\n", fullPath.c_str());
   ILubyte* data = ilGetData();
   auto imageWidth = ilGetInteger(IL_IMAGE_WIDTH);
   auto imageHeight = ilGetInteger(IL_IMAGE_HEIGHT);
@@ -91,7 +91,7 @@ GLuint TextureLoader::loadCubemap(const std::string& directory, GLuint textureUn
   for (unsigned int i = 0; i < faces.size(); i++)
     {
       if (!ilLoadImage(faces[i].c_str()))
-        printf("Error while loading cubemap element: %s\n", faces[i].c_str());
+        Logger::log("Error while loading cubemap element: %\n", faces[i].c_str());
       auto format = ilGetInteger(IL_IMAGE_FORMAT);
       auto width = ilGetInteger(IL_IMAGE_WIDTH);
       auto height = ilGetInteger(IL_IMAGE_HEIGHT);

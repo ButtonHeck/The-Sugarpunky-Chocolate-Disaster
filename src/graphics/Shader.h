@@ -8,6 +8,7 @@
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 #include "util/Settings.h"
+#include "util/Logger.h"
 
 class Shader
 {
