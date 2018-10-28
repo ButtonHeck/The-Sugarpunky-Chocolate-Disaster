@@ -5,7 +5,7 @@
 #include "game/world/terrain/hills/HillsFacade.h"
 #include "game/world/PlantGeneratorFacade.h"
 #include "game/world/terrain/WaterGenerator.h"
-#include "game/world/terrain/BuildableGenerator.h"
+#include "game/world/terrain/buildable/BuildableFacade.h"
 #include "game/world/terrain/shore/ShoreFacade.h"
 #include "game/world/terrain/UnderwaterGenerator.h"
 #include "game/world/Skybox.h"
@@ -45,8 +45,6 @@ private:
   void drawFlatTerrain(Frustum &viewFrustum);
   void drawUnderwater();
   void drawPlants(glm::vec3& viewPosition);
-  void drawBuildable();
-  void drawSelected(MouseInputManager& mouseInput, Camera& camera);
   void drawWater(glm::vec3 &viewPosition, Frustum &viewFrustum);
   void drawAmbient(glm::mat4& skyProjectionView, glm::vec3 &viewPosition);
   void drawSkybox(glm::mat4& skyProjectionView, glm::vec3 &viewPosition);
@@ -66,7 +64,7 @@ private:
   std::shared_ptr<HillsFacade> hillsFacade;
   std::shared_ptr<LandGenerator> landGenerator;
   std::shared_ptr<ShoreFacade> shoreFacade;
-  std::shared_ptr<BuildableGenerator> buildableGenerator;
+  std::shared_ptr<BuildableFacade> buildableFacade;
   std::shared_ptr<PlantGeneratorFacade> plantGeneratorFacade;
   Skybox skybox;
   TheSun theSun;

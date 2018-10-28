@@ -11,7 +11,7 @@ WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Rendere
   hillsFacade = std::make_shared<HillsFacade>(shaderManager.get(SHADER_HILLS), shaderManager.get(SHADER_HILLS_CULLING), waterGenerator->getMap());
   landGenerator = std::make_shared<LandGenerator>();
   shoreFacade = std::make_shared<ShoreFacade>(shaderManager.get(SHADER_SHORE), waterGenerator->getMap());
-  buildableGenerator = std::make_shared<BuildableGenerator>();
+  buildableFacade = std::make_shared<BuildableFacade>(shaderManager.get(SHADER_BUILDABLE), shaderManager.get(SHADER_SELECTED));
   plantGeneratorFacade = std::make_shared<PlantGeneratorFacade>();
 }
 
@@ -22,7 +22,7 @@ void WorldGeneratorFacade::setup()
   shoreFacade->setup();
   landGenerator->setup(shoreFacade->getMap());
   waterGenerator->setupConsiderTerrain();
-  buildableGenerator->setup(landGenerator->getMap(), hillsFacade->getMap());
+  buildableFacade->setup(landGenerator->getMap(), hillsFacade->getMap());
   plantGeneratorFacade->setup(landGenerator->getMap(), hillsFacade->getMap());
   textureManager.createUnderwaterReliefTexture(waterGenerator);
 }
@@ -41,7 +41,7 @@ void WorldGeneratorFacade::load()
   shoreFacade->setup();
   landGenerator->setup(shoreFacade->getMap());
   waterGenerator->setupConsiderTerrain();
-  buildableGenerator->setup(landGenerator->getMap(), hillsFacade->getMap());
+  buildableFacade->setup(landGenerator->getMap(), hillsFacade->getMap());
   textureManager.createUnderwaterReliefTexture(waterGenerator);
 }
 
@@ -76,8 +76,13 @@ void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
   drawUnderwater();
   shoreFacade->draw(projectionView, options.get(OPT_USE_SHADOWS));
   drawPlants(viewPosition);
-  drawBuildable();
-  drawSelected(mouseInput, camera);
+  if (options.get(OPT_DRAW_BUILDABLE))
+    buildableFacade->drawBuildable(projectionView);
+  if (options.get(OPT_SHOW_CURSOR))
+    {
+      mouseInput.updateCursorMappingCoordinates(camera, landGenerator, hillsFacade->getMap(), buildableFacade->getMap());
+      buildableFacade->drawSelected(mouseInput, projectionView);
+    }
   drawWater(viewPosition, viewFrustum);
   drawAmbient(skyProjectionView, viewPosition);
 }
@@ -125,36 +130,6 @@ void WorldGeneratorFacade::drawPlants(glm::vec3& viewPosition)
                            true,
                            options.get(OPT_MODELS_FLAT_BLENDING));
       }
-    }
-}
-
-void WorldGeneratorFacade::drawBuildable()
-{
-  if (options.get(OPT_DRAW_BUILDABLE))
-    {
-      shaderManager.updateBuildableShader(projectionView);
-      {
-        BENCHMARK("Renderer: draw buildable", true);
-        renderer.renderBuildableTiles(buildableGenerator);
-      }
-    }
-}
-
-void WorldGeneratorFacade::drawSelected(MouseInputManager& mouseInput, Camera& camera)
-{
-  if (options.get(OPT_SHOW_CURSOR))
-    {
-      mouseInput.updateCursorMappingCoordinates(camera,
-                                                landGenerator,
-                                                hillsFacade->getMap(),
-                                                buildableGenerator);
-      if (buildableGenerator->getMap()[mouseInput.getCursorMapZ()][mouseInput.getCursorMapX()] != 0)
-        {
-          glm::mat4 selectedModel;
-          selectedModel = glm::translate(selectedModel, glm::vec3(-HALF_WORLD_WIDTH + mouseInput.getCursorMapX(), 0.0f, -HALF_WORLD_HEIGHT + mouseInput.getCursorMapZ()));
-          shaderManager.updateSelectedShader(projectionView, selectedModel);
-          renderer.renderSelectedTile(buildableGenerator);
-        }
     }
 }
 

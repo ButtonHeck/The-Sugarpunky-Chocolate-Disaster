@@ -87,22 +87,6 @@ void Renderer::renderUnderwater(UnderwaterGenerator &generator)
   glDrawElements(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0);
 }
 
-void Renderer::renderBuildableTiles(const std::shared_ptr<BuildableGenerator> generator)
-{
-  glBindVertexArray(generator->getVAO());
-  glEnable(GL_BLEND);
-  glDrawElementsInstanced(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0, generator->getNumInstances());
-  glDisable(GL_BLEND);
-}
-
-void Renderer::renderSelectedTile(const std::shared_ptr<BuildableGenerator> generator)
-{
-  glBindVertexArray(generator->getSelectedTileVAO());
-  glEnable(GL_BLEND);
-  glDrawElements(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0);
-  glDisable(GL_BLEND);
-}
-
 void Renderer::renderWater(bool useFC, std::shared_ptr<WaterGenerator> generator, Shader& fc, Shader& nofc)
 {
   if (useFC)

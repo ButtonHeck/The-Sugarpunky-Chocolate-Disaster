@@ -146,21 +146,6 @@ void ShaderManager::updateUnderwaterShader(glm::mat4 &projectionView)
   shader->setMat4("u_projectionView", projectionView);
 }
 
-void ShaderManager::updateBuildableShader(glm::mat4 &projectionView)
-{
-  Shader* shader = &shaders[SHADER_BUILDABLE];
-  shader->use();
-  shader->setMat4("u_projectionView", projectionView);
-}
-
-void ShaderManager::updateSelectedShader(glm::mat4 &projectionView, glm::mat4 &selectedModel)
-{
-  Shader* shader = &shaders[SHADER_SELECTED];
-  shader->use();
-  shader->setMat4("u_projectionView", projectionView);
-  shader->setMat4("u_model", selectedModel);
-}
-
 void ShaderManager::updateWaterShaders(bool useFC, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
 {
   Shader* shader = nullptr;

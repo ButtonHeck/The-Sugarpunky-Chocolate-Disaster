@@ -5,7 +5,6 @@
 #include "game/Options.h"
 #include "graphics/ScreenResolution.h"
 #include "game/world/terrain/LandGenerator.h"
-#include "game/world/terrain/BuildableGenerator.h"
 #include <GLFW/glfw3.h>
 
 class MouseInputManager
@@ -16,7 +15,7 @@ public:
   void updateCursorMappingCoordinates(Camera& camera,
                          const std::shared_ptr<LandGenerator> baseMapGenerator,
                          const std::vector<std::vector<float> > &hillMap,
-                         const std::shared_ptr<BuildableGenerator> buildableMapGenerator);
+                         const std::vector<std::vector<float> > &buildableMap);
   int getCursorMapX() const;
   int getCursorMapZ() const;
   const glm::vec3& getCursorToViewportDirection() const;

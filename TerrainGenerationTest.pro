@@ -27,7 +27,7 @@ SOURCES += \
     src/game/world/plants/HillTreesGenerator.cpp \
     src/game/world/plants/LandPlantsGenerator.cpp \
     src/game/world/plants/PlantGenerator.cpp \
-    src/game/world/terrain/BuildableGenerator.cpp \
+    src/game/world/terrain/buildable/BuildableGenerator.cpp \
     src/game/world/terrain/Generator.cpp \
     src/game/world/terrain/hills/HillsGenerator.cpp \
     src/game/world/terrain/LandGenerator.cpp \
@@ -57,7 +57,10 @@ SOURCES += \
     src/game/world/terrain/hills/HillsRenderer.cpp \
     src/game/world/terrain/shore/ShoreFacade.cpp \
     src/game/world/terrain/shore/ShoreShader.cpp \
-    src/game/world/terrain/shore/ShoreRenderer.cpp
+    src/game/world/terrain/shore/ShoreRenderer.cpp \
+    src/game/world/terrain/buildable/BuildableFacade.cpp \
+    src/game/world/terrain/buildable/BuildableShader.cpp \
+    src/game/world/terrain/buildable/BuildableRenderer.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -82,7 +85,7 @@ HEADERS += \
     src/game/world/plants/HillTreesGenerator.h \
     src/game/world/plants/LandPlantsGenerator.h \
     src/game/world/plants/PlantGenerator.h \
-    src/game/world/terrain/BuildableGenerator.h \
+    src/game/world/terrain/buildable/BuildableGenerator.h \
     src/game/world/terrain/Generator.h \
     src/game/world/terrain/hills/HillsGenerator.h \
     src/game/world/terrain/LandGenerator.h \
@@ -114,7 +117,10 @@ HEADERS += \
     src/graphics/ShaderUnits.h \
     src/game/world/terrain/shore/ShoreFacade.h \
     src/game/world/terrain/shore/ShoreShader.h \
-    src/game/world/terrain/shore/ShoreRenderer.h
+    src/game/world/terrain/shore/ShoreRenderer.h \
+    src/game/world/terrain/buildable/BuildableFacade.h \
+    src/game/world/terrain/buildable/BuildableShader.h \
+    src/game/world/terrain/buildable/BuildableRenderer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 
