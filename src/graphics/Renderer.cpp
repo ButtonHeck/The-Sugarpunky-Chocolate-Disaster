@@ -81,12 +81,6 @@ void Renderer::addIndirectBufferData(GLuint& primCount,
   buffer[dataOffset++] = instanceOffset;
 }
 
-void Renderer::renderUnderwater(UnderwaterGenerator &generator)
-{
-  glBindVertexArray(generator.getVAO());
-  glDrawElements(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0);
-}
-
 void Renderer::renderWater(bool useFC, std::shared_ptr<WaterGenerator> generator, Shader& fc, Shader& nofc)
 {
   if (useFC)

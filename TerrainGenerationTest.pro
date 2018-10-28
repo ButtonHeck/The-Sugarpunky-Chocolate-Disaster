@@ -27,12 +27,8 @@ SOURCES += \
     src/game/world/plants/HillTreesGenerator.cpp \
     src/game/world/plants/LandPlantsGenerator.cpp \
     src/game/world/plants/PlantGenerator.cpp \
-    src/game/world/terrain/buildable/BuildableGenerator.cpp \
     src/game/world/terrain/Generator.cpp \
-    src/game/world/terrain/hills/HillsGenerator.cpp \
     src/game/world/terrain/LandGenerator.cpp \
-    src/game/world/terrain/shore/ShoreGenerator.cpp \
-    src/game/world/terrain/UnderwaterGenerator.cpp \
     src/game/world/terrain/WaterGenerator.cpp \
     src/game/world/PlantGeneratorFacade.cpp \
     src/game/world/WorldGeneratorFacade.cpp \
@@ -52,15 +48,22 @@ SOURCES += \
     src/graphics/OpenglBuffer.cpp \
     src/game/world/TheSun.cpp \
     src/util/Logger.cpp \
+    src/game/world/terrain/hills/HillsGenerator.cpp \
     src/game/world/terrain/hills/HillsFacade.cpp \
     src/game/world/terrain/hills/HillsShader.cpp \
     src/game/world/terrain/hills/HillsRenderer.cpp \
+    src/game/world/terrain/shore/ShoreGenerator.cpp \
     src/game/world/terrain/shore/ShoreFacade.cpp \
     src/game/world/terrain/shore/ShoreShader.cpp \
     src/game/world/terrain/shore/ShoreRenderer.cpp \
+    src/game/world/terrain/buildable/BuildableGenerator.cpp \
     src/game/world/terrain/buildable/BuildableFacade.cpp \
     src/game/world/terrain/buildable/BuildableShader.cpp \
-    src/game/world/terrain/buildable/BuildableRenderer.cpp
+    src/game/world/terrain/buildable/BuildableRenderer.cpp \
+    src/game/world/terrain/underwater/UnderwaterGenerator.cpp \
+    src/game/world/terrain/underwater/UnderwaterFacade.cpp \
+    src/game/world/terrain/underwater/UnderwaterShader.cpp \
+    src/game/world/terrain/underwater/UnderwaterRenderer.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -85,12 +88,8 @@ HEADERS += \
     src/game/world/plants/HillTreesGenerator.h \
     src/game/world/plants/LandPlantsGenerator.h \
     src/game/world/plants/PlantGenerator.h \
-    src/game/world/terrain/buildable/BuildableGenerator.h \
     src/game/world/terrain/Generator.h \
-    src/game/world/terrain/hills/HillsGenerator.h \
     src/game/world/terrain/LandGenerator.h \
-    src/game/world/terrain/shore/ShoreGenerator.h \
-    src/game/world/terrain/UnderwaterGenerator.h \
     src/game/world/terrain/WaterGenerator.h \
     src/game/world/PlantGeneratorFacade.h \
     src/game/world/WorldGeneratorFacade.h \
@@ -111,16 +110,23 @@ HEADERS += \
     src/graphics/OpenglBuffer.h \
     src/game/world/TheSun.h \
     src/util/Logger.h \
+    src/game/world/terrain/hills/HillsGenerator.h \
     src/game/world/terrain/hills/HillsFacade.h \
     src/game/world/terrain/hills/HillsShader.h \
     src/game/world/terrain/hills/HillsRenderer.h \
     src/graphics/ShaderUnits.h \
+    src/game/world/terrain/shore/ShoreGenerator.h \
     src/game/world/terrain/shore/ShoreFacade.h \
     src/game/world/terrain/shore/ShoreShader.h \
     src/game/world/terrain/shore/ShoreRenderer.h \
+    src/game/world/terrain/buildable/BuildableGenerator.h \
     src/game/world/terrain/buildable/BuildableFacade.h \
     src/game/world/terrain/buildable/BuildableShader.h \
-    src/game/world/terrain/buildable/BuildableRenderer.h
+    src/game/world/terrain/buildable/BuildableRenderer.h \
+    src/game/world/terrain/underwater/UnderwaterGenerator.h \
+    src/game/world/terrain/underwater/UnderwaterFacade.h \
+    src/game/world/terrain/underwater/UnderwaterShader.h \
+    src/game/world/terrain/underwater/UnderwaterRenderer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

@@ -6,7 +6,6 @@
 #include "game/world/Skybox.h"
 #include "game/world/TheSun.h"
 #include "game/world/terrain/LandGenerator.h"
-#include "game/world/terrain/UnderwaterGenerator.h"
 #include "game/world/terrain/WaterGenerator.h"
 #include "game/world/PlantGeneratorFacade.h"
 
@@ -20,7 +19,6 @@ public:
   Renderer(Camera& camera);
   static void setInitialGLState(bool useMultisample);
   void renderLand(const std::shared_ptr<LandGenerator> generator, Frustum& frustum, GLuint texture);
-  void renderUnderwater(UnderwaterGenerator &generator);
   void renderWater(bool useFC, std::shared_ptr<WaterGenerator> generator, Shader& fc, Shader& nofc);
   void renderSkybox(Skybox* skybox);
   void renderSun(TheSun* theSun);

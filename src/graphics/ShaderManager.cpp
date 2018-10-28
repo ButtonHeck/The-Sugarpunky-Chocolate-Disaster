@@ -139,13 +139,6 @@ void ShaderManager::updateFlatShader(glm::mat4 &projectionView, bool useShadows)
   shader->setBool("u_shadowEnable", useShadows);
 }
 
-void ShaderManager::updateUnderwaterShader(glm::mat4 &projectionView)
-{
-  Shader* shader = &shaders[SHADER_UNDERWATER];
-  shader->use();
-  shader->setMat4("u_projectionView", projectionView);
-}
-
 void ShaderManager::updateWaterShaders(bool useFC, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
 {
   Shader* shader = nullptr;

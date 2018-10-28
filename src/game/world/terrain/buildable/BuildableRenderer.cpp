@@ -7,7 +7,7 @@ BuildableRenderer::BuildableRenderer(std::shared_ptr<BuildableGenerator> generat
 
 void BuildableRenderer::renderBuildable()
 {
-  glBindVertexArray(generator->basicGLBuffers.get(VAO));
+  generator->basicGLBuffers.bind(VAO);
   glEnable(GL_BLEND);
   glDrawElementsInstanced(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0, generator->numInstances);
   glDisable(GL_BLEND);
@@ -15,7 +15,7 @@ void BuildableRenderer::renderBuildable()
 
 void BuildableRenderer::renderSelected()
 {
-  glBindVertexArray(generator->selectedBuffers.get(VAO));
+  generator->selectedBuffers.bind(VAO);
   glEnable(GL_BLEND);
   glDrawElements(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0);
   glDisable(GL_BLEND);
