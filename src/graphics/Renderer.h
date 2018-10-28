@@ -5,7 +5,6 @@
 #include <GLFW/glfw3.h>
 #include "game/world/Skybox.h"
 #include "game/world/TheSun.h"
-#include "game/world/terrain/HillsGenerator.h"
 #include "game/world/terrain/LandGenerator.h"
 #include "game/world/terrain/ShoreGenerator.h"
 #include "game/world/terrain/UnderwaterGenerator.h"
@@ -22,8 +21,6 @@ class Renderer
 public:
   Renderer(Camera& camera);
   static void setInitialGLState(bool useMultisample);
-  void renderHills(bool useFC, const std::shared_ptr<HillsGenerator> generator, Shader &fc, Shader &nofc);
-  void renderHillsDepthmap(const std::shared_ptr<HillsGenerator> generator);
   void renderShore(const std::shared_ptr<ShoreGenerator> generator);
   void renderLand(const std::shared_ptr<LandGenerator> generator, Frustum& frustum, GLuint texture);
   void renderUnderwater(UnderwaterGenerator &generator);

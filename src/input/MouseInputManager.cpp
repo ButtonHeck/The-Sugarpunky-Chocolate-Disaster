@@ -87,7 +87,7 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
 
 void MouseInputManager::updateCursorMappingCoordinates(Camera &camera,
                                                        const std::shared_ptr<LandGenerator> baseMapGenerator,
-                                                       const std::shared_ptr<HillsGenerator> hillMapGenerator,
+                                                       const std::vector<std::vector<float>>& hillMap,
                                                        const std::shared_ptr<BuildableGenerator> buildableMapGenerator)
 {
   if (options.get(OPT_SHOW_CURSOR) && cursorToViewportDirection.y < 0.0f)
@@ -110,10 +110,10 @@ void MouseInputManager::updateCursorMappingCoordinates(Camera &camera,
       cursorMapZ = glm::clamp(cursorMapZ, 1, WORLD_HEIGHT - 1);
       if (buildableMapGenerator->getMap()[cursorMapZ][cursorMapX] != 0)
         cursorTileName = "Flat";
-      else if (hillMapGenerator->getMap()[cursorMapZ][cursorMapX] != 0 ||
-               hillMapGenerator->getMap()[cursorMapZ-1][cursorMapX] != 0 ||
-               hillMapGenerator->getMap()[cursorMapZ-1][cursorMapX+1] != 0 ||
-               hillMapGenerator->getMap()[cursorMapZ][cursorMapX+1] != 0)
+      else if (hillMap[cursorMapZ][cursorMapX] != 0 ||
+               hillMap[cursorMapZ-1][cursorMapX] != 0 ||
+               hillMap[cursorMapZ-1][cursorMapX+1] != 0 ||
+               hillMap[cursorMapZ][cursorMapX+1] != 0)
         cursorTileName = "Hills";
       else
         {

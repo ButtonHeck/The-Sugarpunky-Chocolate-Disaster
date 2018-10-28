@@ -29,7 +29,7 @@ SOURCES += \
     src/game/world/plants/PlantGenerator.cpp \
     src/game/world/terrain/BuildableGenerator.cpp \
     src/game/world/terrain/Generator.cpp \
-    src/game/world/terrain/HillsGenerator.cpp \
+    src/game/world/terrain/hills/HillsGenerator.cpp \
     src/game/world/terrain/LandGenerator.cpp \
     src/game/world/terrain/ShoreGenerator.cpp \
     src/game/world/terrain/UnderwaterGenerator.cpp \
@@ -51,7 +51,10 @@ SOURCES += \
     src/util/VRAM_Monitor.cpp \
     src/graphics/OpenglBuffer.cpp \
     src/game/world/TheSun.cpp \
-    src/util/Logger.cpp
+    src/util/Logger.cpp \
+    src/game/world/terrain/hills/HillsFacade.cpp \
+    src/game/world/terrain/hills/HillsShader.cpp \
+    src/game/world/terrain/hills/HillsRenderer.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -78,7 +81,7 @@ HEADERS += \
     src/game/world/plants/PlantGenerator.h \
     src/game/world/terrain/BuildableGenerator.h \
     src/game/world/terrain/Generator.h \
-    src/game/world/terrain/HillsGenerator.h \
+    src/game/world/terrain/hills/HillsGenerator.h \
     src/game/world/terrain/LandGenerator.h \
     src/game/world/terrain/ShoreGenerator.h \
     src/game/world/terrain/UnderwaterGenerator.h \
@@ -101,7 +104,11 @@ HEADERS += \
     src/util/VRAM_Monitor.h \
     src/graphics/OpenglBuffer.h \
     src/game/world/TheSun.h \
-    src/util/Logger.h
+    src/util/Logger.h \
+    src/game/world/terrain/hills/HillsFacade.h \
+    src/game/world/terrain/hills/HillsShader.h \
+    src/game/world/terrain/hills/HillsRenderer.h \
+    src/graphics/ShaderUnits.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

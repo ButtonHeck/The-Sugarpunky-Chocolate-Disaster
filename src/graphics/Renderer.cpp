@@ -36,43 +36,6 @@ void Renderer::setAmbientRenderingState(bool isOn)
     }
 }
 
-void Renderer::renderHills(bool useFC, const std::shared_ptr<HillsGenerator> generator, Shader& fc, Shader& nofc)
-{
-  if (useFC)
-    {
-      GLuint tfb = generator->getTransformFeedback();
-      {
-        BENCHMARK("Renderer: draw hills to TFB", true);
-        fc.use();
-        glBindVertexArray(generator->getVAO());
-        glEnable(GL_RASTERIZER_DISCARD);
-        glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, tfb);
-        glBeginTransformFeedback(GL_TRIANGLES);
-        glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * VERTICES_PER_TILE);
-        glEndTransformFeedback();
-        glDisable(GL_RASTERIZER_DISCARD);
-      }
-      {
-        BENCHMARK("Renderer: draw hills from TFB", true);
-        nofc.use();
-        glBindVertexArray(generator->getCulledVAO());
-        glDrawTransformFeedback(GL_TRIANGLES, tfb);
-      }
-    }
-  else
-    {
-      nofc.use();
-      glBindVertexArray(generator->getVAO());
-      glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * VERTICES_PER_TILE);
-    }
-}
-
-void Renderer::renderHillsDepthmap(const std::shared_ptr<HillsGenerator> generator)
-{
-  glBindVertexArray(generator->getVAO());
-  glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * VERTICES_PER_TILE);
-}
-
 void Renderer::renderShore(const std::shared_ptr<ShoreGenerator> generator)
 {
   glBindVertexArray(generator->getVAO());

@@ -131,25 +131,6 @@ Shader &ShaderManager::get(SHADER type)
   return shaders[type];
 }
 
-void ShaderManager::updateHillsShaders(bool useFC, bool useShadows, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum, float maxHillHeight)
-{
-  Shader* shader = nullptr;
-  if (useFC)
-    {
-      bindShaderUnit(shader, SHADER_HILLS_CULLING);
-      shader->setVec4("u_frustumPlanes[0]", viewFrustum.getPlane(FRUSTUM_LEFT));
-      shader->setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
-      shader->setVec4("u_frustumPlanes[2]", viewFrustum.getPlane(FRUSTUM_BOTTOM));
-      shader->setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
-      shader->setVec4("u_frustumPlanes[4]", viewFrustum.getPlane(FRUSTUM_BACK));
-    }
-  bindShaderUnit(shader, SHADER_HILLS);
-  shader->setMat4("u_projectionView", projectionView);
-  shader->setVec3("u_viewPosition", viewPosition);
-  shader->setBool("u_shadowEnable", useShadows);
-  shader->setFloat("u_maxHillHeight", maxHillHeight);
-}
-
 void ShaderManager::updateShoreShader(glm::mat4 &projectionView, bool useShadows)
 {
   Shader* shader = &shaders[SHADER_SHORE];

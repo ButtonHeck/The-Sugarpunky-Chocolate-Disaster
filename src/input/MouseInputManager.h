@@ -5,7 +5,6 @@
 #include "game/Options.h"
 #include "graphics/ScreenResolution.h"
 #include "game/world/terrain/LandGenerator.h"
-#include "game/world/terrain/HillsGenerator.h"
 #include "game/world/terrain/BuildableGenerator.h"
 #include <GLFW/glfw3.h>
 
@@ -16,7 +15,7 @@ public:
   static void setCallbacks(GLFWwindow* window);
   void updateCursorMappingCoordinates(Camera& camera,
                          const std::shared_ptr<LandGenerator> baseMapGenerator,
-                         const std::shared_ptr<HillsGenerator> hillMapGenerator,
+                         const std::vector<std::vector<float> > &hillMap,
                          const std::shared_ptr<BuildableGenerator> buildableMapGenerator);
   int getCursorMapX() const;
   int getCursorMapZ() const;

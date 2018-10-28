@@ -1,23 +1,15 @@
 #include "game/world/terrain/BuildableGenerator.h"
 
-BuildableGenerator::BuildableGenerator(std::shared_ptr<LandGenerator>& baseMapGenerator,
-                                             std::shared_ptr<HillsGenerator>& hillsGenerator)
+BuildableGenerator::BuildableGenerator()
   :
     Generator(),
-    baseMapGenerator(baseMapGenerator),
-    hillsGenerator(hillsGenerator),
     selectedBuffers(VAO | VBO | EBO)
 {
   basicGLBuffers.add(INSTANCE_VBO);
 }
 
-void BuildableGenerator::setup(std::shared_ptr<LandGenerator> &baseMapGenerator,
-                                  std::shared_ptr<HillsGenerator> &hillsGenerator)
+void BuildableGenerator::setup(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillsMap)
 {
-  this->baseMapGenerator = baseMapGenerator;
-  this->hillsGenerator = hillsGenerator;
-  auto& baseMap = this->baseMapGenerator->getMap();
-  auto& hillMap = this->hillsGenerator->getMap();
   for (unsigned int y = 2; y < WORLD_HEIGHT; y++)
     {
       for (unsigned int x = 0; x < WORLD_WIDTH - 1; x++)
@@ -27,10 +19,10 @@ void BuildableGenerator::setup(std::shared_ptr<LandGenerator> &baseMapGenerator,
               && baseMap[y-1][x] == 0
               && baseMap[y-1][x+1] == 0
               && baseMap[y][x+1] == 0
-              && hillMap[y][x] <= -HILLS_OFFSET_Y
-              && hillMap[y-1][x] <= -HILLS_OFFSET_Y
-              && hillMap[y-1][x+1] <= -HILLS_OFFSET_Y
-              && hillMap[y][x+1] <= -HILLS_OFFSET_Y)
+              && hillsMap[y][x] <= -HILLS_OFFSET_Y
+              && hillsMap[y-1][x] <= -HILLS_OFFSET_Y
+              && hillsMap[y-1][x+1] <= -HILLS_OFFSET_Y
+              && hillsMap[y][x+1] <= -HILLS_OFFSET_Y)
             {
               map[y][x] = true;
             }

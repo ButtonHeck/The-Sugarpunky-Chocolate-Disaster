@@ -2,7 +2,7 @@
 #define TERRAINGENERATORFACADE_H
 #include <memory>
 #include "game/world/terrain/LandGenerator.h"
-#include "game/world/terrain/HillsGenerator.h"
+#include "game/world/terrain/hills/HillsFacade.h"
 #include "game/world/PlantGeneratorFacade.h"
 #include "game/world/terrain/WaterGenerator.h"
 #include "game/world/terrain/BuildableGenerator.h"
@@ -37,12 +37,11 @@ public:
 
   //getters
   const std::shared_ptr<WaterGenerator> getWaterGenerator() const;
-  const std::shared_ptr<HillsGenerator> getHillsGenerator() const;
+  const std::shared_ptr<HillsFacade> getHillsFacade() const;
   const std::shared_ptr<PlantGeneratorFacade> getPlantsGeneratorFacade() const;
 
 private:
   //rendering on screen
-  void drawHills(glm::vec3& viewPosition, Frustum& viewFrustum);
   void drawFlatTerrain(Frustum &viewFrustum);
   void drawUnderwater();
   void drawShore();
@@ -65,7 +64,7 @@ private:
   TextureManager& textureManager;
   glm::mat4 projectionView;
   std::shared_ptr<WaterGenerator> waterGenerator;
-  std::shared_ptr<HillsGenerator> hillsGenerator;
+  std::shared_ptr<HillsFacade> hillsFacade;
   std::shared_ptr<LandGenerator> landGenerator;
   std::shared_ptr<ShoreGenerator> shoreGenerator;
   std::shared_ptr<BuildableGenerator> buildableGenerator;
