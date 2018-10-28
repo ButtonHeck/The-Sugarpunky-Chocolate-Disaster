@@ -31,7 +31,7 @@ SOURCES += \
     src/game/world/terrain/Generator.cpp \
     src/game/world/terrain/hills/HillsGenerator.cpp \
     src/game/world/terrain/LandGenerator.cpp \
-    src/game/world/terrain/ShoreGenerator.cpp \
+    src/game/world/terrain/shore/ShoreGenerator.cpp \
     src/game/world/terrain/UnderwaterGenerator.cpp \
     src/game/world/terrain/WaterGenerator.cpp \
     src/game/world/PlantGeneratorFacade.cpp \
@@ -54,7 +54,10 @@ SOURCES += \
     src/util/Logger.cpp \
     src/game/world/terrain/hills/HillsFacade.cpp \
     src/game/world/terrain/hills/HillsShader.cpp \
-    src/game/world/terrain/hills/HillsRenderer.cpp
+    src/game/world/terrain/hills/HillsRenderer.cpp \
+    src/game/world/terrain/shore/ShoreFacade.cpp \
+    src/game/world/terrain/shore/ShoreShader.cpp \
+    src/game/world/terrain/shore/ShoreRenderer.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -83,7 +86,7 @@ HEADERS += \
     src/game/world/terrain/Generator.h \
     src/game/world/terrain/hills/HillsGenerator.h \
     src/game/world/terrain/LandGenerator.h \
-    src/game/world/terrain/ShoreGenerator.h \
+    src/game/world/terrain/shore/ShoreGenerator.h \
     src/game/world/terrain/UnderwaterGenerator.h \
     src/game/world/terrain/WaterGenerator.h \
     src/game/world/PlantGeneratorFacade.h \
@@ -108,7 +111,10 @@ HEADERS += \
     src/game/world/terrain/hills/HillsFacade.h \
     src/game/world/terrain/hills/HillsShader.h \
     src/game/world/terrain/hills/HillsRenderer.h \
-    src/graphics/ShaderUnits.h
+    src/graphics/ShaderUnits.h \
+    src/game/world/terrain/shore/ShoreFacade.h \
+    src/game/world/terrain/shore/ShoreShader.h \
+    src/game/world/terrain/shore/ShoreRenderer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

@@ -23,7 +23,8 @@ public:
 private:
   friend class HillsRenderer;
   friend class HillsFacade;
-  struct HillVertex{
+  struct HillVertex
+  {
     HillVertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal);
     float posX, posY, posZ;
     float texCoordX, texCoordY;

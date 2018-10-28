@@ -13,7 +13,6 @@ public:
   virtual ~ShaderManager();
   void setupConstantUniforms(glm::mat4 fontProjection);
   Shader& get(SHADER type);
-  void updateShoreShader(glm::mat4& projectionView, bool useShadows);
   void updateFlatShader(glm::mat4& projectionView, bool useShadows);
   void updateUnderwaterShader(glm::mat4& projectionView);
   void updateBuildableShader(glm::mat4& projectionView);

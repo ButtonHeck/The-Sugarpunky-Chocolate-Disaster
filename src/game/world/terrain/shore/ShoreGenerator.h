@@ -11,7 +11,10 @@ public:
   ShoreGenerator(std::vector<std::vector<float>>& waterMap);
   virtual ~ShoreGenerator() = default;
   void setup();
+
 private:
+  friend class ShoreRenderer;
+  friend class ShoreFacade;
   struct ShoreVertex
   {
     ShoreVertex(glm::vec3 position, glm::vec2 texCoords, glm::vec3 normal);
@@ -19,6 +22,7 @@ private:
     float texCoordX, texCoordY;
     float normalX, normalY, normalZ;
   };
+
   void generateMap();
   void smoothMap();
   void randomizeShore();
@@ -28,6 +32,7 @@ private:
   void createTiles();
   void fillBufferData();
   void bufferVertex(GLfloat* vertices, int offset, ShoreVertex vertex);
+
   std::vector<std::vector<float>>& waterMap;
   std::vector<std::vector<glm::vec3>> normalMap;
   std::default_random_engine randomizer;

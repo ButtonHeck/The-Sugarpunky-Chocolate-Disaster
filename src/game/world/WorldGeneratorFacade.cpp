@@ -10,7 +10,7 @@ WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Rendere
   waterGenerator = std::make_shared<WaterGenerator>(shaderManager.get(SHADER_WATER_CULLING));
   hillsFacade = std::make_shared<HillsFacade>(shaderManager.get(SHADER_HILLS), shaderManager.get(SHADER_HILLS_CULLING), waterGenerator->getMap());
   landGenerator = std::make_shared<LandGenerator>();
-  shoreGenerator = std::make_shared<ShoreGenerator>(waterGenerator->getMap());
+  shoreFacade = std::make_shared<ShoreFacade>(shaderManager.get(SHADER_SHORE), waterGenerator->getMap());
   buildableGenerator = std::make_shared<BuildableGenerator>();
   plantGeneratorFacade = std::make_shared<PlantGeneratorFacade>();
 }
@@ -19,8 +19,8 @@ void WorldGeneratorFacade::setup()
 {
   waterGenerator->setup();
   hillsFacade->setup();
-  shoreGenerator->setup();
-  landGenerator->setup(shoreGenerator->getMap());
+  shoreFacade->setup();
+  landGenerator->setup(shoreFacade->getMap());
   waterGenerator->setupConsiderTerrain();
   buildableGenerator->setup(landGenerator->getMap(), hillsFacade->getMap());
   plantGeneratorFacade->setup(landGenerator->getMap(), hillsFacade->getMap());
@@ -38,8 +38,8 @@ void WorldGeneratorFacade::recreate()
 void WorldGeneratorFacade::load()
 {
   hillsFacade->createTilesAndBufferData();
-  shoreGenerator->setup();
-  landGenerator->setup(shoreGenerator->getMap());
+  shoreFacade->setup();
+  landGenerator->setup(shoreFacade->getMap());
   waterGenerator->setupConsiderTerrain();
   buildableGenerator->setup(landGenerator->getMap(), hillsFacade->getMap());
   textureManager.createUnderwaterReliefTexture(waterGenerator);
@@ -48,7 +48,7 @@ void WorldGeneratorFacade::load()
 void WorldGeneratorFacade::serialize(std::ofstream &output)
 {
   landGenerator->serialize(output);
-  shoreGenerator->serialize(output);
+  shoreFacade->serialize(output);
   hillsFacade->serialize(output);
   waterGenerator->serialize(output);
   plantGeneratorFacade->serialize(output);
@@ -57,7 +57,7 @@ void WorldGeneratorFacade::serialize(std::ofstream &output)
 void WorldGeneratorFacade::deserialize(std::ifstream &input)
 {
   landGenerator->deserialize(input);
-  shoreGenerator->deserialize(input);
+  shoreFacade->deserialize(input);
   hillsFacade->deserialize(input);
   waterGenerator->deserialize(input);
   plantGeneratorFacade->deserialize(input);
@@ -74,7 +74,7 @@ void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
   hillsFacade->draw(options.get(OPT_HILLS_CULLING), options.get(OPT_USE_SHADOWS), projectionView, viewPosition, viewFrustum);
   drawFlatTerrain(viewFrustum);
   drawUnderwater();
-  drawShore();
+  shoreFacade->draw(projectionView, options.get(OPT_USE_SHADOWS));
   drawPlants(viewPosition);
   drawBuildable();
   drawSelected(mouseInput, camera);
@@ -107,15 +107,6 @@ void WorldGeneratorFacade::drawUnderwater()
 {
   shaderManager.updateUnderwaterShader(projectionView);
   renderer.renderUnderwater(underwaterGenerator);
-}
-
-void WorldGeneratorFacade::drawShore()
-{
-  shaderManager.updateShoreShader(projectionView, options.get(OPT_USE_SHADOWS));
-  {
-    BENCHMARK("Renderer: draw shore", true);
-    renderer.renderShore(shoreGenerator);
-  }
 }
 
 void WorldGeneratorFacade::drawPlants(glm::vec3& viewPosition)
@@ -206,7 +197,7 @@ void WorldGeneratorFacade::drawTerrainDepthmap()
 {
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
   hillsFacade->drawDepthmap();
-  renderer.renderShore(shoreGenerator);
+  shoreFacade->drawDepthmap();
 }
 
 void WorldGeneratorFacade::drawPlantsDepthmap()

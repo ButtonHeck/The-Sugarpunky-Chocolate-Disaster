@@ -36,14 +36,6 @@ void Renderer::setAmbientRenderingState(bool isOn)
     }
 }
 
-void Renderer::renderShore(const std::shared_ptr<ShoreGenerator> generator)
-{
-  glBindVertexArray(generator->getVAO());
-  glEnable(GL_BLEND);
-  glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * VERTICES_PER_TILE);
-  glDisable(GL_BLEND);
-}
-
 void Renderer::renderLand(const std::shared_ptr<LandGenerator> generator, Frustum& frustum, GLuint texture)
 {
   glBindTextureUnit(TEX_LAND, texture);

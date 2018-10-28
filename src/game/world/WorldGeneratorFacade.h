@@ -6,7 +6,7 @@
 #include "game/world/PlantGeneratorFacade.h"
 #include "game/world/terrain/WaterGenerator.h"
 #include "game/world/terrain/BuildableGenerator.h"
-#include "game/world/terrain/ShoreGenerator.h"
+#include "game/world/terrain/shore/ShoreFacade.h"
 #include "game/world/terrain/UnderwaterGenerator.h"
 #include "game/world/Skybox.h"
 #include "game/world/TheSun.h"
@@ -44,7 +44,6 @@ private:
   //rendering on screen
   void drawFlatTerrain(Frustum &viewFrustum);
   void drawUnderwater();
-  void drawShore();
   void drawPlants(glm::vec3& viewPosition);
   void drawBuildable();
   void drawSelected(MouseInputManager& mouseInput, Camera& camera);
@@ -66,7 +65,7 @@ private:
   std::shared_ptr<WaterGenerator> waterGenerator;
   std::shared_ptr<HillsFacade> hillsFacade;
   std::shared_ptr<LandGenerator> landGenerator;
-  std::shared_ptr<ShoreGenerator> shoreGenerator;
+  std::shared_ptr<ShoreFacade> shoreFacade;
   std::shared_ptr<BuildableGenerator> buildableGenerator;
   std::shared_ptr<PlantGeneratorFacade> plantGeneratorFacade;
   Skybox skybox;

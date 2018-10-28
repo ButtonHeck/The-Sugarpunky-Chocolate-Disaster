@@ -131,14 +131,6 @@ Shader &ShaderManager::get(SHADER type)
   return shaders[type];
 }
 
-void ShaderManager::updateShoreShader(glm::mat4 &projectionView, bool useShadows)
-{
-  Shader* shader = &shaders[SHADER_SHORE];
-  shader->use();
-  shader->setMat4("u_projectionView", projectionView);
-  shader->setBool("u_shadowEnable", useShadows);
-}
-
 void ShaderManager::updateFlatShader(glm::mat4 &projectionView, bool useShadows)
 {
   Shader* shader = &shaders[SHADER_LAND];
