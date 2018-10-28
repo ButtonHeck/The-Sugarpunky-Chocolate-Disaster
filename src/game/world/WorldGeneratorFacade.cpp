@@ -9,7 +9,7 @@ WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Rendere
 {
   waterGenerator = std::make_shared<WaterGenerator>(shaderManager.get(SHADER_WATER_CULLING));
   hillsFacade = std::make_unique<HillsFacade>(shaderManager.get(SHADER_HILLS), shaderManager.get(SHADER_HILLS_CULLING), waterGenerator->getMap());
-  landGenerator = std::make_shared<LandGenerator>();
+  landFacade = std::make_unique<LandFacade>(shaderManager.get(SHADER_LAND));
   shoreFacade = std::make_unique<ShoreFacade>(shaderManager.get(SHADER_SHORE), waterGenerator->getMap());
   buildableFacade = std::make_unique<BuildableFacade>(shaderManager.get(SHADER_BUILDABLE), shaderManager.get(SHADER_SELECTED));
   plantGeneratorFacade = std::make_shared<PlantGeneratorFacade>();
@@ -21,16 +21,16 @@ void WorldGeneratorFacade::setup()
   waterGenerator->setup();
   hillsFacade->setup();
   shoreFacade->setup();
-  landGenerator->setup(shoreFacade->getMap());
+  landFacade->setup(shoreFacade->getMap());
   waterGenerator->setupConsiderTerrain();
-  buildableFacade->setup(landGenerator->getMap(), hillsFacade->getMap());
-  plantGeneratorFacade->setup(landGenerator->getMap(), hillsFacade->getMap());
+  buildableFacade->setup(landFacade->getMap(), hillsFacade->getMap());
+  plantGeneratorFacade->setup(landFacade->getMap(), hillsFacade->getMap());
   textureManager.createUnderwaterReliefTexture(waterGenerator);
 }
 
 void WorldGeneratorFacade::recreate()
 {
-  landGenerator.reset(new LandGenerator());
+  landFacade.reset(new LandFacade(shaderManager.get(SHADER_LAND)));
   initializeMap(waterGenerator->getMap());
   initializeMap(hillsFacade->getMap());
   setup();
@@ -40,15 +40,15 @@ void WorldGeneratorFacade::load()
 {
   hillsFacade->createTilesAndBufferData();
   shoreFacade->setup();
-  landGenerator->setup(shoreFacade->getMap());
+  landFacade->setup(shoreFacade->getMap());
   waterGenerator->setupConsiderTerrain();
-  buildableFacade->setup(landGenerator->getMap(), hillsFacade->getMap());
+  buildableFacade->setup(landFacade->getMap(), hillsFacade->getMap());
   textureManager.createUnderwaterReliefTexture(waterGenerator);
 }
 
 void WorldGeneratorFacade::serialize(std::ofstream &output)
 {
-  landGenerator->serialize(output);
+  landFacade->serialize(output);
   shoreFacade->serialize(output);
   hillsFacade->serialize(output);
   waterGenerator->serialize(output);
@@ -57,7 +57,7 @@ void WorldGeneratorFacade::serialize(std::ofstream &output)
 
 void WorldGeneratorFacade::deserialize(std::ifstream &input)
 {
-  landGenerator->deserialize(input);
+  landFacade->deserialize(input);
   shoreFacade->deserialize(input);
   hillsFacade->deserialize(input);
   waterGenerator->deserialize(input);
@@ -72,8 +72,10 @@ void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
 {
   this->projectionView = projectionView;
   glm::vec3 viewPosition = camera.getPosition();
+
   hillsFacade->draw(options.get(OPT_HILLS_CULLING), options.get(OPT_USE_SHADOWS), projectionView, viewPosition, viewFrustum);
-  drawFlatTerrain(viewFrustum);
+  if (options.get(OPT_DRAW_LAND))
+    landFacade->draw(projectionView, options.get(OPT_USE_SHADOWS), viewFrustum, textureManager.get(TEX_LAND));
   underwaterFacade->draw(projectionView);
   shoreFacade->draw(projectionView, options.get(OPT_USE_SHADOWS));
   drawPlants(viewPosition);
@@ -81,7 +83,7 @@ void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
     buildableFacade->drawBuildable(projectionView);
   if (options.get(OPT_SHOW_CURSOR))
     {
-      mouseInput.updateCursorMappingCoordinates(camera, landGenerator, hillsFacade->getMap(), buildableFacade->getMap());
+      mouseInput.updateCursorMappingCoordinates(camera, landFacade->getMap(), hillsFacade->getMap(), buildableFacade->getMap());
       buildableFacade->drawSelected(mouseInput, projectionView);
     }
   drawWater(viewPosition, viewFrustum);
@@ -95,18 +97,6 @@ void WorldGeneratorFacade::drawWorldDepthmap()
   drawTerrainDepthmap();
   drawPlantsDepthmap();
   glEnable(GL_CULL_FACE); //or set back face culling
-}
-
-void WorldGeneratorFacade::drawFlatTerrain(Frustum &viewFrustum)
-{
-  if (options.get(OPT_DRAW_FLAT_TERRAIN))
-    {
-      shaderManager.updateFlatShader(projectionView, options.get(OPT_USE_SHADOWS));
-      {
-        BENCHMARK("Renderer: draw flat", true);
-        renderer.renderLand(landGenerator, viewFrustum, textureManager.get(TEX_LAND));
-      }
-    }
 }
 
 void WorldGeneratorFacade::drawPlants(glm::vec3& viewPosition)

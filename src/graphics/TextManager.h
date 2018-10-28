@@ -6,6 +6,7 @@
 #include "graphics/FontLoader.h"
 #include "graphics/Shader.h"
 #include "graphics/ScreenResolution.h"
+#include "graphics/OpenglBuffer.h"
 #include "game/Camera.h"
 #include "game/Options.h"
 #include "input/MouseInputManager.h"

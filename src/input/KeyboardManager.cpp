@@ -41,7 +41,7 @@ void KeyboardManager::processInput(float delta, std::vector<std::vector<float> >
         glDisable(GL_MULTISAMPLE);
     });
   processKey(GLFW_KEY_Q, OPT_USE_SHADOWS);
-  processKey(GLFW_KEY_F, OPT_DRAW_FLAT_TERRAIN);
+  processKey(GLFW_KEY_F, OPT_DRAW_LAND);
   processKey(GLFW_KEY_G, OPT_DRAW_WATER);
   processKey(GLFW_KEY_B, OPT_MODELS_FLAT_BLENDING);
   processKey(GLFW_KEY_L, OPT_POLYGON_LINE);

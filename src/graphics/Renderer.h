@@ -5,7 +5,6 @@
 #include <GLFW/glfw3.h>
 #include "game/world/Skybox.h"
 #include "game/world/TheSun.h"
-#include "game/world/terrain/LandGenerator.h"
 #include "game/world/terrain/WaterGenerator.h"
 #include "game/world/PlantGeneratorFacade.h"
 
@@ -18,7 +17,6 @@ class Renderer
 public:
   Renderer(Camera& camera);
   static void setInitialGLState(bool useMultisample);
-  void renderLand(const std::shared_ptr<LandGenerator> generator, Frustum& frustum, GLuint texture);
   void renderWater(bool useFC, std::shared_ptr<WaterGenerator> generator, Shader& fc, Shader& nofc);
   void renderSkybox(Skybox* skybox);
   void renderSun(TheSun* theSun);
@@ -28,11 +26,6 @@ public:
                  bool useFlatBlending);
 private:
   static void setAmbientRenderingState(bool isOn);
-  void addIndirectBufferData(GLuint& primCount,
-                             GLuint* buffer,
-                             GLuint& dataOffset,
-                             GLuint numInstances,
-                             GLuint instanceOffset);
   Camera& camera;
 };
 

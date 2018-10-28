@@ -28,7 +28,6 @@ SOURCES += \
     src/game/world/plants/LandPlantsGenerator.cpp \
     src/game/world/plants/PlantGenerator.cpp \
     src/game/world/terrain/Generator.cpp \
-    src/game/world/terrain/LandGenerator.cpp \
     src/game/world/terrain/WaterGenerator.cpp \
     src/game/world/PlantGeneratorFacade.cpp \
     src/game/world/WorldGeneratorFacade.cpp \
@@ -63,7 +62,11 @@ SOURCES += \
     src/game/world/terrain/underwater/UnderwaterGenerator.cpp \
     src/game/world/terrain/underwater/UnderwaterFacade.cpp \
     src/game/world/terrain/underwater/UnderwaterShader.cpp \
-    src/game/world/terrain/underwater/UnderwaterRenderer.cpp
+    src/game/world/terrain/underwater/UnderwaterRenderer.cpp \
+    src/game/world/terrain/land/LandGenerator.cpp \
+    src/game/world/terrain/land/LandFacade.cpp \
+    src/game/world/terrain/land/LandRenderer.cpp \
+    src/game/world/terrain/land/LandShader.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -89,7 +92,6 @@ HEADERS += \
     src/game/world/plants/LandPlantsGenerator.h \
     src/game/world/plants/PlantGenerator.h \
     src/game/world/terrain/Generator.h \
-    src/game/world/terrain/LandGenerator.h \
     src/game/world/terrain/WaterGenerator.h \
     src/game/world/PlantGeneratorFacade.h \
     src/game/world/WorldGeneratorFacade.h \
@@ -126,7 +128,11 @@ HEADERS += \
     src/game/world/terrain/underwater/UnderwaterGenerator.h \
     src/game/world/terrain/underwater/UnderwaterFacade.h \
     src/game/world/terrain/underwater/UnderwaterShader.h \
-    src/game/world/terrain/underwater/UnderwaterRenderer.h
+    src/game/world/terrain/underwater/UnderwaterRenderer.h \
+    src/game/world/terrain/land/LandGenerator.h \
+    src/game/world/terrain/land/LandFacade.h \
+    src/game/world/terrain/land/LandRenderer.h \
+    src/game/world/terrain/land/LandShader.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

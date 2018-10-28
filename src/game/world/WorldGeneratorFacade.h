@@ -1,7 +1,7 @@
 #ifndef TERRAINGENERATORFACADE_H
 #define TERRAINGENERATORFACADE_H
 #include <memory>
-#include "game/world/terrain/LandGenerator.h"
+#include "game/world/terrain/land/LandFacade.h"
 #include "game/world/terrain/hills/HillsFacade.h"
 #include "game/world/PlantGeneratorFacade.h"
 #include "game/world/terrain/WaterGenerator.h"
@@ -42,7 +42,6 @@ public:
 
 private:
   //rendering on screen
-  void drawFlatTerrain(Frustum &viewFrustum);
   void drawPlants(glm::vec3& viewPosition);
   void drawWater(glm::vec3 &viewPosition, Frustum &viewFrustum);
   void drawAmbient(glm::mat4& skyProjectionView, glm::vec3 &viewPosition);
@@ -61,7 +60,7 @@ private:
   glm::mat4 projectionView;
   std::shared_ptr<WaterGenerator> waterGenerator;
   std::unique_ptr<HillsFacade> hillsFacade;
-  std::shared_ptr<LandGenerator> landGenerator;
+  std::unique_ptr<LandFacade> landFacade;
   std::unique_ptr<ShoreFacade> shoreFacade;
   std::unique_ptr<BuildableFacade> buildableFacade;
   std::shared_ptr<PlantGeneratorFacade> plantGeneratorFacade;

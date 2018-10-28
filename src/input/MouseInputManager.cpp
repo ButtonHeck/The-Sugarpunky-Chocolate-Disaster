@@ -86,7 +86,7 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
 }
 
 void MouseInputManager::updateCursorMappingCoordinates(Camera &camera,
-                                                       const std::shared_ptr<LandGenerator> baseMapGenerator,
+                                                       const std::vector<std::vector<float> > &baseMap,
                                                        const std::vector<std::vector<float>>& hillMap,
                                                        const std::vector<std::vector<float>>& buildableMap)
 {
@@ -117,10 +117,10 @@ void MouseInputManager::updateCursorMappingCoordinates(Camera &camera,
         cursorTileName = "Hills";
       else
         {
-          if (baseMapGenerator->getMap()[cursorMapZ][cursorMapX] == TILE_NO_RENDER_VALUE ||
-              baseMapGenerator->getMap()[cursorMapZ-1][cursorMapX] == TILE_NO_RENDER_VALUE ||
-              baseMapGenerator->getMap()[cursorMapZ-1][cursorMapX+1] == TILE_NO_RENDER_VALUE ||
-              baseMapGenerator->getMap()[cursorMapZ][cursorMapX+1] == TILE_NO_RENDER_VALUE)
+          if (baseMap[cursorMapZ][cursorMapX] == TILE_NO_RENDER_VALUE ||
+              baseMap[cursorMapZ-1][cursorMapX] == TILE_NO_RENDER_VALUE ||
+              baseMap[cursorMapZ-1][cursorMapX+1] == TILE_NO_RENDER_VALUE ||
+              baseMap[cursorMapZ][cursorMapX+1] == TILE_NO_RENDER_VALUE)
             cursorTileName = "Water";
           else
             cursorTileName = "Shore";

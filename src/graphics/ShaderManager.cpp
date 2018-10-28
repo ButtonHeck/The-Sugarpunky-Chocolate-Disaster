@@ -131,14 +131,6 @@ Shader &ShaderManager::get(SHADER type)
   return shaders[type];
 }
 
-void ShaderManager::updateFlatShader(glm::mat4 &projectionView, bool useShadows)
-{
-  Shader* shader = &shaders[SHADER_LAND];
-  shader->use();
-  shader->setMat4("u_projectionView", projectionView);
-  shader->setBool("u_shadowEnable", useShadows);
-}
-
 void ShaderManager::updateWaterShaders(bool useFC, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
 {
   Shader* shader = nullptr;

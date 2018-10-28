@@ -13,7 +13,6 @@ public:
   virtual ~ShaderManager();
   void setupConstantUniforms(glm::mat4 fontProjection);
   Shader& get(SHADER type);
-  void updateFlatShader(glm::mat4& projectionView, bool useShadows);
   void updateWaterShaders(bool useFC, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum);
   void updateSkyShader(glm::mat4 &projectionView, glm::vec3 &cameraPos, int backgroundIndex, bool isStatic);
   void updateSunShader(glm::mat4 &projectionView, glm::mat4& model);
