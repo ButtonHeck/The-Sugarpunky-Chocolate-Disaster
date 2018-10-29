@@ -1,10 +1,5 @@
 #include "graphics/Renderer.h"
 
-Renderer::Renderer(Camera &camera)
-  :
-    camera(camera)
-{}
-
 void Renderer::setInitialGLState(bool useMultisample)
 {
   glEnable(GL_CULL_FACE);
@@ -33,43 +28,6 @@ void Renderer::setAmbientRenderingState(bool isOn)
       glDisable(GL_BLEND);
       glDepthFunc(GL_LESS);
       glEnable(GL_CULL_FACE);
-    }
-}
-
-void Renderer::renderWater(bool useFC, std::shared_ptr<WaterGenerator> generator, Shader& fc, Shader& nofc)
-{
-  if (useFC)
-    {
-      {
-        fc.use();
-        glBindVertexArray(generator->getVAO());
-        {
-          BENCHMARK("Renderer: draw water to TFB", true);
-          glEnable(GL_RASTERIZER_DISCARD);
-          glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, generator->getTransformFeedback());
-          glBeginTransformFeedback(GL_TRIANGLES);
-          glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * VERTICES_PER_TILE);
-          glEndTransformFeedback();
-          glDisable(GL_RASTERIZER_DISCARD);
-        }
-      }
-      {
-        BENCHMARK("Renderer: draw water from TFB", true);
-        nofc.use();
-        glBindVertexArray(generator->getCulledVAO());
-        glEnable(GL_BLEND);
-        glDrawTransformFeedback(GL_TRIANGLES, generator->getTransformFeedback());
-        glDisable(GL_BLEND);
-      }
-    }
-  else
-    {
-      BENCHMARK("Renderer: draw water no FC", true);
-      nofc.use();
-      glBindVertexArray(generator->getVAO());
-      glEnable(GL_BLEND);
-      glDrawArrays(GL_TRIANGLES, 0, generator->getTiles().size() * VERTICES_PER_TILE);
-      glDisable(GL_BLEND);
     }
 }
 

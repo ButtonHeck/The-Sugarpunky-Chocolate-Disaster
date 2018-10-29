@@ -4,7 +4,7 @@
 #include "game/world/terrain/land/LandFacade.h"
 #include "game/world/terrain/hills/HillsFacade.h"
 #include "game/world/PlantGeneratorFacade.h"
-#include "game/world/terrain/WaterGenerator.h"
+#include "game/world/terrain/water/WaterFacade.h"
 #include "game/world/terrain/buildable/BuildableFacade.h"
 #include "game/world/terrain/shore/ShoreFacade.h"
 #include "game/world/terrain/underwater/UnderwaterFacade.h"
@@ -36,14 +36,13 @@ public:
   void drawWorldDepthmap();
 
   //getters
-  const std::shared_ptr<WaterGenerator> getWaterGenerator() const;
+  const std::unique_ptr<WaterFacade> &getWaterGenerator() const;
   const std::unique_ptr<HillsFacade> &getHillsFacade() const;
   const std::shared_ptr<PlantGeneratorFacade> getPlantsGeneratorFacade() const;
 
 private:
   //rendering on screen
   void drawPlants(glm::vec3& viewPosition);
-  void drawWater(glm::vec3 &viewPosition, Frustum &viewFrustum);
   void drawAmbient(glm::mat4& skyProjectionView, glm::vec3 &viewPosition);
   void drawSkybox(glm::mat4& skyProjectionView, glm::vec3 &viewPosition);
   void drawSun(glm::mat4& skyProjectionView);
@@ -58,7 +57,7 @@ private:
   Options& options;
   TextureManager& textureManager;
   glm::mat4 projectionView;
-  std::shared_ptr<WaterGenerator> waterGenerator;
+  std::unique_ptr<WaterFacade> waterFacade;
   std::unique_ptr<HillsFacade> hillsFacade;
   std::unique_ptr<LandFacade> landFacade;
   std::unique_ptr<ShoreFacade> shoreFacade;

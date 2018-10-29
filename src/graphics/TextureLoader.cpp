@@ -108,7 +108,7 @@ GLuint TextureLoader::loadCubemap(const std::string& directory, GLuint textureUn
   return texture;
 }
 
-GLuint TextureLoader::createUnderwaterReliefTexture(const std::shared_ptr<WaterGenerator> waterMapGenerator, GLuint textureUnit, GLint magFilter, GLint minFilter)
+GLuint TextureLoader::createUnderwaterReliefTexture(std::vector<std::vector<float> > &waterMap, GLuint textureUnit, GLint magFilter, GLint minFilter)
 {
   static bool needStorage = true;
   static GLuint texture;
@@ -128,10 +128,10 @@ GLuint TextureLoader::createUnderwaterReliefTexture(const std::shared_ptr<WaterG
             {
               for (int x1 = left; x1 < right; x1++)
                 {
-                  if (waterMapGenerator->getMap()[y1][x1] != 0 &&
-                      waterMapGenerator->getMap()[y1-1][x1] != 0 &&
-                      waterMapGenerator->getMap()[y1-1][x1+1] != 0 &&
-                      waterMapGenerator->getMap()[y1][x1+1] != 0)
+                  if (waterMap[y1][x1] != 0 &&
+                      waterMap[y1-1][x1] != 0 &&
+                      waterMap[y1-1][x1+1] != 0 &&
+                      waterMap[y1][x1+1] != 0)
                     waterCount += 1.0 - ((SHORE_SIZE_BASE - 4) * 0.25);
                 }
             }

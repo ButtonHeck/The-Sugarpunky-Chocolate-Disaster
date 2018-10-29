@@ -28,7 +28,6 @@ SOURCES += \
     src/game/world/plants/LandPlantsGenerator.cpp \
     src/game/world/plants/PlantGenerator.cpp \
     src/game/world/terrain/Generator.cpp \
-    src/game/world/terrain/WaterGenerator.cpp \
     src/game/world/PlantGeneratorFacade.cpp \
     src/game/world/WorldGeneratorFacade.cpp \
     src/util/BenchmarkTimer.cpp \
@@ -66,7 +65,11 @@ SOURCES += \
     src/game/world/terrain/land/LandGenerator.cpp \
     src/game/world/terrain/land/LandFacade.cpp \
     src/game/world/terrain/land/LandRenderer.cpp \
-    src/game/world/terrain/land/LandShader.cpp
+    src/game/world/terrain/land/LandShader.cpp \
+    src/game/world/terrain/water/WaterGenerator.cpp \
+    src/game/world/terrain/water/WaterFacade.cpp \
+    src/game/world/terrain/water/WaterRenderer.cpp \
+    src/game/world/terrain/water/WaterShader.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -92,7 +95,6 @@ HEADERS += \
     src/game/world/plants/LandPlantsGenerator.h \
     src/game/world/plants/PlantGenerator.h \
     src/game/world/terrain/Generator.h \
-    src/game/world/terrain/WaterGenerator.h \
     src/game/world/PlantGeneratorFacade.h \
     src/game/world/WorldGeneratorFacade.h \
     src/util/BenchmarkTimer.h \
@@ -132,7 +134,11 @@ HEADERS += \
     src/game/world/terrain/land/LandGenerator.h \
     src/game/world/terrain/land/LandFacade.h \
     src/game/world/terrain/land/LandRenderer.h \
-    src/game/world/terrain/land/LandShader.h
+    src/game/world/terrain/land/LandShader.h \
+    src/game/world/terrain/water/WaterGenerator.h \
+    src/game/world/terrain/water/WaterFacade.h \
+    src/game/world/terrain/water/WaterRenderer.h \
+    src/game/world/terrain/water/WaterShader.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

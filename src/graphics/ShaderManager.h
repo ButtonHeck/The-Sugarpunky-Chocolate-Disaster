@@ -3,7 +3,6 @@
 #include <unordered_map>
 #include "graphics/Shader.h"
 #include "graphics/TextureUnits.h"
-#include "graphics/Frustum.h"
 #include "graphics/ShaderUnits.h"
 
 class ShaderManager
@@ -13,7 +12,6 @@ public:
   virtual ~ShaderManager();
   void setupConstantUniforms(glm::mat4 fontProjection);
   Shader& get(SHADER type);
-  void updateWaterShaders(bool useFC, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum);
   void updateSkyShader(glm::mat4 &projectionView, glm::vec3 &cameraPos, int backgroundIndex, bool isStatic);
   void updateSunShader(glm::mat4 &projectionView, glm::mat4& model);
   void updateModelShader(glm::mat4& projectionView, glm::vec3& viewPosition,

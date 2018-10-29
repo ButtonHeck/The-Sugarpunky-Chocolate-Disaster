@@ -7,10 +7,10 @@ WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Rendere
     options(options),
     textureManager(textureManager)
 {
-  waterGenerator = std::make_shared<WaterGenerator>(shaderManager.get(SHADER_WATER_CULLING));
-  hillsFacade = std::make_unique<HillsFacade>(shaderManager.get(SHADER_HILLS), shaderManager.get(SHADER_HILLS_CULLING), waterGenerator->getMap());
+  waterFacade = std::make_unique<WaterFacade>(shaderManager.get(SHADER_WATER), shaderManager.get(SHADER_WATER_CULLING));
+  hillsFacade = std::make_unique<HillsFacade>(shaderManager.get(SHADER_HILLS), shaderManager.get(SHADER_HILLS_CULLING), waterFacade->getMap());
   landFacade = std::make_unique<LandFacade>(shaderManager.get(SHADER_LAND));
-  shoreFacade = std::make_unique<ShoreFacade>(shaderManager.get(SHADER_SHORE), waterGenerator->getMap());
+  shoreFacade = std::make_unique<ShoreFacade>(shaderManager.get(SHADER_SHORE), waterFacade->getMap());
   buildableFacade = std::make_unique<BuildableFacade>(shaderManager.get(SHADER_BUILDABLE), shaderManager.get(SHADER_SELECTED));
   plantGeneratorFacade = std::make_shared<PlantGeneratorFacade>();
   underwaterFacade = std::make_unique<UnderwaterFacade>(shaderManager.get(SHADER_UNDERWATER));
@@ -18,20 +18,20 @@ WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Rendere
 
 void WorldGeneratorFacade::setup()
 {
-  waterGenerator->setup();
+  waterFacade->setup();
   hillsFacade->setup();
   shoreFacade->setup();
   landFacade->setup(shoreFacade->getMap());
-  waterGenerator->setupConsiderTerrain();
+  waterFacade->setupConsiderTerrain();
   buildableFacade->setup(landFacade->getMap(), hillsFacade->getMap());
   plantGeneratorFacade->setup(landFacade->getMap(), hillsFacade->getMap());
-  textureManager.createUnderwaterReliefTexture(waterGenerator);
+  textureManager.createUnderwaterReliefTexture(waterFacade->getMap());
 }
 
 void WorldGeneratorFacade::recreate()
 {
   landFacade.reset(new LandFacade(shaderManager.get(SHADER_LAND)));
-  initializeMap(waterGenerator->getMap());
+  initializeMap(waterFacade->getMap());
   initializeMap(hillsFacade->getMap());
   setup();
 }
@@ -41,9 +41,9 @@ void WorldGeneratorFacade::load()
   hillsFacade->createTilesAndBufferData();
   shoreFacade->setup();
   landFacade->setup(shoreFacade->getMap());
-  waterGenerator->setupConsiderTerrain();
+  waterFacade->setupConsiderTerrain();
   buildableFacade->setup(landFacade->getMap(), hillsFacade->getMap());
-  textureManager.createUnderwaterReliefTexture(waterGenerator);
+  textureManager.createUnderwaterReliefTexture(waterFacade->getMap());
 }
 
 void WorldGeneratorFacade::serialize(std::ofstream &output)
@@ -51,7 +51,7 @@ void WorldGeneratorFacade::serialize(std::ofstream &output)
   landFacade->serialize(output);
   shoreFacade->serialize(output);
   hillsFacade->serialize(output);
-  waterGenerator->serialize(output);
+  waterFacade->serialize(output);
   plantGeneratorFacade->serialize(output);
 }
 
@@ -60,7 +60,7 @@ void WorldGeneratorFacade::deserialize(std::ifstream &input)
   landFacade->deserialize(input);
   shoreFacade->deserialize(input);
   hillsFacade->deserialize(input);
-  waterGenerator->deserialize(input);
+  waterFacade->deserialize(input);
   plantGeneratorFacade->deserialize(input);
 }
 
@@ -86,7 +86,8 @@ void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
       mouseInput.updateCursorMappingCoordinates(camera, landFacade->getMap(), hillsFacade->getMap(), buildableFacade->getMap());
       buildableFacade->drawSelected(mouseInput, projectionView);
     }
-  drawWater(viewPosition, viewFrustum);
+  if (options.get(OPT_DRAW_WATER))
+    waterFacade->draw(options.get(OPT_WATER_CULLING), projectionView, viewPosition, viewFrustum);
   drawAmbient(skyProjectionView, viewPosition);
 }
 
@@ -114,18 +115,6 @@ void WorldGeneratorFacade::drawPlants(glm::vec3& viewPosition)
                            true,
                            true,
                            options.get(OPT_MODELS_FLAT_BLENDING));
-      }
-    }
-}
-
-void WorldGeneratorFacade::drawWater(glm::vec3 &viewPosition, Frustum &viewFrustum)
-{
-  if (options.get(OPT_DRAW_WATER))
-    {
-      shaderManager.updateWaterShaders(options.get(OPT_WATER_CULLING), projectionView, viewPosition, viewFrustum);
-      {
-        BENCHMARK("Renderer: draw water (full func)", true);
-        renderer.renderWater(options.get(OPT_WATER_CULLING), waterGenerator, shaderManager.get(SHADER_WATER_CULLING), shaderManager.get(SHADER_WATER));
       }
     }
 }
@@ -175,9 +164,9 @@ void WorldGeneratorFacade::drawPlantsDepthmap()
     }
 }
 
-const std::shared_ptr<WaterGenerator> WorldGeneratorFacade::getWaterGenerator() const
+const std::unique_ptr<WaterFacade>& WorldGeneratorFacade::getWaterGenerator() const
 {
-  return waterGenerator;
+  return waterFacade;
 }
 
 const std::unique_ptr<HillsFacade>& WorldGeneratorFacade::getHillsFacade() const

@@ -131,23 +131,6 @@ Shader &ShaderManager::get(SHADER type)
   return shaders[type];
 }
 
-void ShaderManager::updateWaterShaders(bool useFC, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
-{
-  Shader* shader = nullptr;
-  if (useFC)
-    {
-      bindShaderUnit(shader, SHADER_WATER_CULLING);
-      shader->setVec4("u_frustumPlanes[0]", viewFrustum.getPlane(FRUSTUM_LEFT));
-      shader->setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
-      shader->setVec4("u_frustumPlanes[2]", viewFrustum.getPlane(FRUSTUM_BOTTOM));
-      shader->setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
-      shader->setVec4("u_frustumPlanes[4]", viewFrustum.getPlane(FRUSTUM_BACK));
-    }
-  bindShaderUnit(shader, SHADER_WATER);
-  shader->setMat4("u_projectionView", projectionView);
-  shader->setVec3("u_viewPosition", viewPosition);
-}
-
 void ShaderManager::updateSkyShader(glm::mat4 &projectionView, glm::vec3& viewPosition, int backgroundIndex, bool isStatic)
 {
   Shader* shader = &shaders[SHADER_SKYBOX];

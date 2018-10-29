@@ -10,7 +10,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
     keyboard(KeyboardManager(window, camera, options)),
     mouseInput(MouseInputManager::getInstance()),
     shaderManager(),
-    renderer(Renderer(camera)),
+    renderer(),
     textureLoader(TextureLoader(screenResolution)),
     textureManager(TextureManager(textureLoader)),
     csRenderer(CoordinateSystemRenderer(&shaderManager.get(SHADER_COORDINATE_SYSTEM))),

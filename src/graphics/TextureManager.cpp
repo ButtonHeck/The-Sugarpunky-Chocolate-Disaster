@@ -34,9 +34,9 @@ TextureManager::~TextureManager()
     glDeleteTextures(1, &(textures[i]));
 }
 
-void TextureManager::createUnderwaterReliefTexture(const std::shared_ptr<WaterGenerator> generator)
+void TextureManager::createUnderwaterReliefTexture(std::vector<std::vector<float> > &waterMap)
 {
-  textures[TEX_UNDERWATER_RELIEF] = loader.createUnderwaterReliefTexture(generator, TEX_UNDERWATER_RELIEF, GL_LINEAR, GL_LINEAR);
+  textures[TEX_UNDERWATER_RELIEF] = loader.createUnderwaterReliefTexture(waterMap, TEX_UNDERWATER_RELIEF, GL_LINEAR, GL_LINEAR);
 }
 
 GLuint &TextureManager::get(int unit)

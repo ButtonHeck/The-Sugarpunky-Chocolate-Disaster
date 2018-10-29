@@ -4,14 +4,13 @@
 #include <unordered_map>
 #include "graphics/TextureLoader.h"
 #include "graphics/TextureUnits.h"
-#include "game/world/terrain/WaterGenerator.h"
 
 class TextureManager
 {
 public:
   TextureManager(TextureLoader& loader);
   virtual ~TextureManager();
-  void createUnderwaterReliefTexture(const std::shared_ptr<WaterGenerator> generator);
+  void createUnderwaterReliefTexture(std::vector<std::vector<float>>& waterMap);
   GLuint& get(int unit);
 private:
   TextureLoader& loader;

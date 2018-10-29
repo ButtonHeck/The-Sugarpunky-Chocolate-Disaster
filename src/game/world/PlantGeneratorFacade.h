@@ -4,6 +4,7 @@
 #include "game/world/plants/LandPlantsGenerator.h"
 #include "game/world/plants/GrassGenerator.h"
 #include "game/world/plants/HillTreesGenerator.h"
+#include "game/world/terrain/Generator.h"
 
 class Frustum;
 
