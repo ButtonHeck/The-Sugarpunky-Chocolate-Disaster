@@ -42,7 +42,7 @@ SOURCES += \
     src/game/world/Chunk.cpp \
     src/util/VRAM_Monitor.cpp \
     src/graphics/OpenglBuffer.cpp \
-    src/game/world/TheSun.cpp \
+    src/game/world/ambience/theSun/TheSun.cpp \
     src/util/Logger.cpp \
     src/game/world/terrain/hills/HillsGenerator.cpp \
     src/game/world/terrain/hills/HillsFacade.cpp \
@@ -72,7 +72,10 @@ SOURCES += \
     src/game/world/ambience/skybox/Skybox.cpp \
     src/game/world/ambience/skybox/SkyboxFacade.cpp \
     src/game/world/ambience/skybox/SkyboxShader.cpp \
-    src/game/world/ambience/skybox/SkyboxRenderer.cpp
+    src/game/world/ambience/skybox/SkyboxRenderer.cpp \
+    src/game/world/ambience/theSun/TheSunFacade.cpp \
+    src/game/world/ambience/theSun/TheSunShader.cpp \
+    src/game/world/ambience/theSun/TheSunRenderer.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -113,7 +116,7 @@ HEADERS += \
     src/game/world/Chunk.h \
     src/util/VRAM_Monitor.h \
     src/graphics/OpenglBuffer.h \
-    src/game/world/TheSun.h \
+    src/game/world/ambience/theSun/TheSun.h \
     src/util/Logger.h \
     src/game/world/terrain/hills/HillsGenerator.h \
     src/game/world/terrain/hills/HillsFacade.h \
@@ -144,7 +147,10 @@ HEADERS += \
     src/game/world/ambience/skybox/Skybox.h \
     src/game/world/ambience/skybox/SkyboxFacade.h \
     src/game/world/ambience/skybox/SkyboxShader.h \
-    src/game/world/ambience/skybox/SkyboxRenderer.h
+    src/game/world/ambience/skybox/SkyboxRenderer.h \
+    src/game/world/ambience/theSun/TheSunFacade.h \
+    src/game/world/ambience/theSun/TheSunShader.h \
+    src/game/world/ambience/theSun/TheSunRenderer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

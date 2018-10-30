@@ -13,11 +13,6 @@ glm::mat4 TheSun::move(float delta)
   return glm::rotate(transform, glm::radians(delta), rotateAxis);
 }
 
-GLuint TheSun::getVAO()
-{
-  return basicGLBuffers.get(VAO);
-}
-
 void TheSun::bufferData()
 {
   basicGLBuffers.bind(VAO | VBO);

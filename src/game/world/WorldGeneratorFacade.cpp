@@ -14,6 +14,7 @@ WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Rendere
   buildableFacade = std::make_unique<BuildableFacade>(shaderManager.get(SHADER_BUILDABLE), shaderManager.get(SHADER_SELECTED));
   plantGeneratorFacade = std::make_shared<PlantGeneratorFacade>();
   skyboxFacade = std::make_unique<SkyboxFacade>(shaderManager.get(SHADER_SKYBOX));
+  theSunFacade = std::make_unique<TheSunFacade>(shaderManager.get(SHADER_SUN));
   underwaterFacade = std::make_unique<UnderwaterFacade>(shaderManager.get(SHADER_UNDERWATER));
 }
 
@@ -89,7 +90,8 @@ void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
     }
   if (options.get(OPT_DRAW_WATER))
     waterFacade->draw(options.get(OPT_WATER_CULLING), projectionView, viewPosition, viewFrustum);
-  drawAmbient(skyProjectionView, viewPosition);
+  theSunFacade->draw(skyProjectionView);
+  skyboxFacade->draw(skyProjectionView, viewPosition);
 }
 
 void WorldGeneratorFacade::drawWorldDepthmap()
@@ -118,19 +120,6 @@ void WorldGeneratorFacade::drawPlants(glm::vec3& viewPosition)
                            options.get(OPT_MODELS_FLAT_BLENDING));
       }
     }
-}
-
-void WorldGeneratorFacade::drawAmbient(glm::mat4 &skyProjectionView, glm::vec3 &viewPosition)
-{
-  drawSun(skyProjectionView);
-  skyboxFacade->draw(skyProjectionView, viewPosition);
-}
-
-void WorldGeneratorFacade::drawSun(glm::mat4& skyProjectionView)
-{
-  glm::mat4 model = theSun.move(glfwGetTime());
-  shaderManager.updateSunShader(skyProjectionView, model);
-  renderer.renderSun(&theSun);
 }
 
 void WorldGeneratorFacade::drawTerrainDepthmap()

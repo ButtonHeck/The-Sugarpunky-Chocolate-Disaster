@@ -9,8 +9,8 @@ class TheSun
 public:
   TheSun();
   glm::mat4 move(float delta);
-  GLuint getVAO();
 private:
+  friend class TheSunRenderer;
   void bufferData();
   OpenglBuffer basicGLBuffers;
   glm::vec3 rotateAxis;

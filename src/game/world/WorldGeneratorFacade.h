@@ -9,7 +9,7 @@
 #include "game/world/terrain/shore/ShoreFacade.h"
 #include "game/world/terrain/underwater/UnderwaterFacade.h"
 #include "game/world/ambience/skybox/SkyboxFacade.h"
-#include "game/world/TheSun.h"
+#include "game/world/ambience/theSun/TheSunFacade.h"
 #include "graphics/ShaderManager.h"
 #include "graphics/Renderer.h"
 #include "graphics/TextureManager.h"
@@ -43,8 +43,6 @@ public:
 private:
   //rendering on screen
   void drawPlants(glm::vec3& viewPosition);
-  void drawAmbient(glm::mat4& skyProjectionView, glm::vec3 &viewPosition);
-  void drawSun(glm::mat4& skyProjectionView);
 
   //rendering offscreen (depthmap)
   void drawTerrainDepthmap();
@@ -63,7 +61,7 @@ private:
   std::unique_ptr<BuildableFacade> buildableFacade;
   std::shared_ptr<PlantGeneratorFacade> plantGeneratorFacade;
   std::unique_ptr<SkyboxFacade> skyboxFacade;
-  TheSun theSun;
+  std::unique_ptr<TheSunFacade> theSunFacade;
   std::unique_ptr<UnderwaterFacade> underwaterFacade;
 };
 

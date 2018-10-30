@@ -31,16 +31,6 @@ void Renderer::setAmbientRenderingState(bool isOn)
     }
 }
 
-void Renderer::renderSun(TheSun *theSun)
-{
-  glPointSize(64.0f);
-  setAmbientRenderingState(true);
-  glBindVertexArray(theSun->getVAO());
-  glDrawArrays(GL_POINTS, 0, 1);
-  setAmbientRenderingState(false);
-  glPointSize(1.0f);
-}
-
 void Renderer::renderPlants(const std::shared_ptr<PlantGeneratorFacade> generatorFacade, Shader &shader,
                          bool bindTexture,
                          bool screenDraw,

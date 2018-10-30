@@ -12,7 +12,6 @@ public:
   virtual ~ShaderManager();
   void setupConstantUniforms(glm::mat4 fontProjection);
   Shader& get(SHADER type);
-  void updateSunShader(glm::mat4 &projectionView, glm::mat4& model);
   void updateModelShader(glm::mat4& projectionView, glm::vec3& viewPosition,
                          bool shadowOnTrees,
                          bool useShadows,

@@ -131,14 +131,6 @@ Shader &ShaderManager::get(SHADER type)
   return shaders[type];
 }
 
-void ShaderManager::updateSunShader(glm::mat4 &projectionView, glm::mat4 &model)
-{
-  Shader* shader = nullptr;
-  bindShaderUnit(shader, SHADER_SUN);
-  shader->setMat4("u_projectionView", projectionView);
-  shader->setMat4("u_model", model);
-}
-
 void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &viewPosition,
                                       bool shadowOnTrees,
                                       bool useShadows,
