@@ -4,7 +4,7 @@
 #include <chrono>
 #include <memory>
 #include "game/world/terrain/Generator.h"
-#include "game/world/terrain/TerrainChunk.h"
+#include "game/world/terrain/land/LandChunk.h"
 
 class LandGenerator : public Generator
 {
@@ -30,8 +30,8 @@ private:
   std::vector<std::vector<float>> chunkMap;
   std::vector<TerrainTile> cellTiles;
   std::default_random_engine randomizer;
-  std::vector<TerrainChunk> chunks;
-  std::vector<TerrainChunk> cellChunks;
+  std::vector<LandChunk> chunks;
+  std::vector<LandChunk> cellChunks;
 };
 
 #endif // LANDGENERATOR_H

@@ -8,7 +8,7 @@
 #include "game/world/terrain/buildable/BuildableFacade.h"
 #include "game/world/terrain/shore/ShoreFacade.h"
 #include "game/world/terrain/underwater/UnderwaterFacade.h"
-#include "game/world/Skybox.h"
+#include "game/world/ambience/skybox/SkyboxFacade.h"
 #include "game/world/TheSun.h"
 #include "graphics/ShaderManager.h"
 #include "graphics/Renderer.h"
@@ -44,7 +44,6 @@ private:
   //rendering on screen
   void drawPlants(glm::vec3& viewPosition);
   void drawAmbient(glm::mat4& skyProjectionView, glm::vec3 &viewPosition);
-  void drawSkybox(glm::mat4& skyProjectionView, glm::vec3 &viewPosition);
   void drawSun(glm::mat4& skyProjectionView);
 
   //rendering offscreen (depthmap)
@@ -63,7 +62,7 @@ private:
   std::unique_ptr<ShoreFacade> shoreFacade;
   std::unique_ptr<BuildableFacade> buildableFacade;
   std::shared_ptr<PlantGeneratorFacade> plantGeneratorFacade;
-  Skybox skybox;
+  std::unique_ptr<SkyboxFacade> skyboxFacade;
   TheSun theSun;
   std::unique_ptr<UnderwaterFacade> underwaterFacade;
 };

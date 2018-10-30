@@ -131,16 +131,6 @@ Shader &ShaderManager::get(SHADER type)
   return shaders[type];
 }
 
-void ShaderManager::updateSkyShader(glm::mat4 &projectionView, glm::vec3& viewPosition, int backgroundIndex, bool isStatic)
-{
-  Shader* shader = &shaders[SHADER_SKYBOX];
-  shader->use();
-  shader->setMat4("u_projectionView", projectionView);
-  shader->setVec3("u_viewPosition", viewPosition);
-  shader->setInt("u_index", backgroundIndex);
-  shader->setInt("u_static", isStatic);
-}
-
 void ShaderManager::updateSunShader(glm::mat4 &projectionView, glm::mat4 &model)
 {
   Shader* shader = nullptr;

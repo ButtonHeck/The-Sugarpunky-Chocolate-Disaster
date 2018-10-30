@@ -31,14 +31,6 @@ void Renderer::setAmbientRenderingState(bool isOn)
     }
 }
 
-void Renderer::renderSkybox(Skybox *skybox)
-{
-  setAmbientRenderingState(true);
-  glBindVertexArray(skybox->getVAO());
-  glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_TILE * VERTICES_PER_TILE);
-  setAmbientRenderingState(false);
-}
-
 void Renderer::renderSun(TheSun *theSun)
 {
   glPointSize(64.0f);

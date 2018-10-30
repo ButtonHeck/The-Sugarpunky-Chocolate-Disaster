@@ -33,9 +33,7 @@ SOURCES += \
     src/util/BenchmarkTimer.cpp \
     src/util/Settings.cpp \
     src/game/world/plants/ModelChunk.cpp \
-    src/game/world/terrain/TerrainChunk.cpp \
     src/game/world/terrain/TerrainTile.cpp \
-    src/game/world/Skybox.cpp \
     src/graphics/DepthmapBuffer.cpp \
     src/graphics/ScreenBuffer.cpp \
     src/graphics/ScreenResolution.cpp \
@@ -69,7 +67,12 @@ SOURCES += \
     src/game/world/terrain/water/WaterGenerator.cpp \
     src/game/world/terrain/water/WaterFacade.cpp \
     src/game/world/terrain/water/WaterRenderer.cpp \
-    src/game/world/terrain/water/WaterShader.cpp
+    src/game/world/terrain/water/WaterShader.cpp \
+    src/game/world/terrain/land/LandChunk.cpp \
+    src/game/world/ambience/skybox/Skybox.cpp \
+    src/game/world/ambience/skybox/SkyboxFacade.cpp \
+    src/game/world/ambience/skybox/SkyboxShader.cpp \
+    src/game/world/ambience/skybox/SkyboxRenderer.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -101,9 +104,7 @@ HEADERS += \
     src/util/Settings.h \
     src/util/Timer.h \
     src/game/world/plants/ModelChunk.h \
-    src/game/world/terrain/TerrainChunk.h \
     src/game/world/terrain/TerrainTile.h \
-    src/game/world/Skybox.h \
     src/graphics/DepthmapBuffer.h \
     src/graphics/ScreenBuffer.h \
     src/graphics/ScreenResolution.h \
@@ -138,7 +139,12 @@ HEADERS += \
     src/game/world/terrain/water/WaterGenerator.h \
     src/game/world/terrain/water/WaterFacade.h \
     src/game/world/terrain/water/WaterRenderer.h \
-    src/game/world/terrain/water/WaterShader.h
+    src/game/world/terrain/water/WaterShader.h \
+    src/game/world/terrain/land/LandChunk.h \
+    src/game/world/ambience/skybox/Skybox.h \
+    src/game/world/ambience/skybox/SkyboxFacade.h \
+    src/game/world/ambience/skybox/SkyboxShader.h \
+    src/game/world/ambience/skybox/SkyboxRenderer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

@@ -1,4 +1,4 @@
-#include "game/world/Skybox.h"
+#include "game/world/ambience/skybox/Skybox.h"
 
 Skybox::Skybox()
   :
@@ -10,9 +10,4 @@ Skybox::Skybox()
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-GLuint &Skybox::getVAO()
-{
-  return basicGLBuffers.get(VAO);
 }

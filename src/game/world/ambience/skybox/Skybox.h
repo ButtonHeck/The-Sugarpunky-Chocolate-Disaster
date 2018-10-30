@@ -8,9 +8,9 @@ class Skybox
 public:
   Skybox();
   virtual ~Skybox() = default;
-  GLuint& getVAO();
   static constexpr int NUM_POSITIONS = 108;
 private:
+  friend class SkyboxRenderer;
   OpenglBuffer basicGLBuffers;
   GLfloat positions[NUM_POSITIONS] = {
     -4.0f,  1.2f, -4.0f,

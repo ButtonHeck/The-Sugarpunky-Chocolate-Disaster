@@ -13,6 +13,7 @@ WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Rendere
   shoreFacade = std::make_unique<ShoreFacade>(shaderManager.get(SHADER_SHORE), waterFacade->getMap());
   buildableFacade = std::make_unique<BuildableFacade>(shaderManager.get(SHADER_BUILDABLE), shaderManager.get(SHADER_SELECTED));
   plantGeneratorFacade = std::make_shared<PlantGeneratorFacade>();
+  skyboxFacade = std::make_unique<SkyboxFacade>(shaderManager.get(SHADER_SKYBOX));
   underwaterFacade = std::make_unique<UnderwaterFacade>(shaderManager.get(SHADER_UNDERWATER));
 }
 
@@ -122,17 +123,7 @@ void WorldGeneratorFacade::drawPlants(glm::vec3& viewPosition)
 void WorldGeneratorFacade::drawAmbient(glm::mat4 &skyProjectionView, glm::vec3 &viewPosition)
 {
   drawSun(skyProjectionView);
-  drawSkybox(skyProjectionView, viewPosition);
-}
-
-void WorldGeneratorFacade::drawSkybox(glm::mat4& skyProjectionView, glm::vec3& viewPosition)
-{
-  shaderManager.updateSkyShader(skyProjectionView, viewPosition, 2, true);
-  renderer.renderSkybox(&skybox);
-  shaderManager.updateSkyShader(skyProjectionView, viewPosition, 0, false);
-  renderer.renderSkybox(&skybox);
-  shaderManager.updateSkyShader(skyProjectionView, viewPosition, 1, false);
-  renderer.renderSkybox(&skybox);
+  skyboxFacade->draw(skyProjectionView, viewPosition);
 }
 
 void WorldGeneratorFacade::drawSun(glm::mat4& skyProjectionView)

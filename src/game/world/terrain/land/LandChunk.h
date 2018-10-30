@@ -2,10 +2,10 @@
 #define TERRAINCHUNK_H
 #include "game/world/Chunk.h"
 
-class TerrainChunk : public Chunk
+class LandChunk : public Chunk
 {
 public:
-  TerrainChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom, unsigned int offset, unsigned int instances);
+  LandChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom, unsigned int offset, unsigned int instances);
 
   //instance offset
   void setInstanceOffset(unsigned int offset);
@@ -20,22 +20,22 @@ private:
   unsigned int numInstances;
 };
 
-inline void TerrainChunk::setInstanceOffset(unsigned int offset)
+inline void LandChunk::setInstanceOffset(unsigned int offset)
 {
   this->instanceOffset = offset;
 }
 
-inline unsigned int TerrainChunk::getInstanceOffset() const
+inline unsigned int LandChunk::getInstanceOffset() const
 {
   return instanceOffset;
 }
 
-inline void TerrainChunk::setNumInstances(unsigned int instances)
+inline void LandChunk::setNumInstances(unsigned int instances)
 {
   this->numInstances = instances;
 }
 
-inline unsigned int TerrainChunk::getNumInstances() const
+inline unsigned int LandChunk::getNumInstances() const
 {
   return numInstances;
 }
