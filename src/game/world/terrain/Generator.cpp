@@ -60,21 +60,6 @@ std::vector<TerrainTile> &Generator::getTiles()
   return tiles;
 }
 
-GLuint Generator::getVAO()
-{
-  return basicGLBuffers.get(VAO);
-}
-
-GLuint Generator::getVBO()
-{
-  return basicGLBuffers.get(VBO);
-}
-
-GLuint Generator::getEBO()
-{
-  return basicGLBuffers.get(EBO);
-}
-
 void Generator::serialize(std::ofstream &output)
 {
   for (std::vector<float>& row : map)

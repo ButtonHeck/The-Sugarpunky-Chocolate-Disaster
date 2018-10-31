@@ -3,23 +3,23 @@
 LandFacade::LandFacade(Shader &renderShader)
   :
     shader(renderShader),
-    generator(std::make_shared<LandGenerator>()),
+    generator(),
     renderer(generator)
 {}
 
 void LandFacade::setup(map2D_f &shoreMap)
 {
-  generator->setup(shoreMap);
+  generator.setup(shoreMap);
 }
 
 void LandFacade::serialize(std::ofstream &output)
 {
-  generator->serialize(output);
+  generator.serialize(output);
 }
 
 void LandFacade::deserialize(std::ifstream &input)
 {
-  generator->deserialize(input);
+  generator.deserialize(input);
 }
 
 void LandFacade::draw(glm::mat4& projectionView, bool useShadows, Frustum &viewFrustum, GLuint& texture)
@@ -31,7 +31,7 @@ void LandFacade::draw(glm::mat4& projectionView, bool useShadows, Frustum &viewF
   }
 }
 
-map2D_f &LandFacade::getMap() const
+map2D_f &LandFacade::getMap()
 {
-  return generator->getMap();
+  return generator.getMap();
 }

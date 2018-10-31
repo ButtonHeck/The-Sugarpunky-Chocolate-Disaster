@@ -1,8 +1,8 @@
 #include "game/SaveLoadManager.h"
 
-SaveLoadManager::SaveLoadManager(std::shared_ptr<WorldGeneratorFacade>& worldGenerator, Camera& camera)
+SaveLoadManager::SaveLoadManager(std::shared_ptr<Scene>& scene, Camera& camera)
   :
-    worldGenerator(worldGenerator),
+    scene(scene),
     camera(camera)
 {}
 
@@ -14,7 +14,7 @@ bool SaveLoadManager::saveToFile(const std::string &filename)
       Logger::log("Could not open file: %\n", filename.c_str());
       return false;
     }
-  worldGenerator->serialize(output);
+  scene->serialize(output);
   camera.serialize(output);
   output.close();
   return true;
@@ -28,7 +28,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
       Logger::log("Could not open file: %\n", filename.c_str());
       return false;
     }
-  worldGenerator->deserialize(input);
+  scene->deserialize(input);
   camera.deserialize(input);
   input.close();
   return true;

@@ -1,7 +1,5 @@
 #ifndef BUILDABLEGENERATOR_H
 #define BUILDABLEGENERATOR_H
-#include <vector>
-#include <memory>
 #include "game/world/terrain/Generator.h"
 #include "util/Settings.h"
 
@@ -19,7 +17,6 @@ private:
   void fillBufferData();
 
   OpenglBuffer selectedBuffers;
-  unsigned int numInstances;
 };
 
 #endif // BUILDABLEGENERATOR_H

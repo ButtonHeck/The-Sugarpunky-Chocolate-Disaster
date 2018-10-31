@@ -39,8 +39,7 @@ void BuildableGenerator::fillBufferData()
   resetAllGLBuffers();
 
   setupAndBindBuffers(basicGLBuffers);
-  numInstances = tiles.size();
-  std::unique_ptr<glm::mat4[]> instanceModels(new glm::mat4[numInstances]);
+  glm::mat4 instanceModels[tiles.size()];
   for (unsigned int i = 0; i < tiles.size(); i++)
     {
       glm::mat4 model;

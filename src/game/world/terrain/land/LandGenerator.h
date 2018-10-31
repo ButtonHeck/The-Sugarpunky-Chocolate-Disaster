@@ -2,7 +2,6 @@
 #define LANDGENERATOR_H
 #include <random>
 #include <chrono>
-#include <memory>
 #include "game/world/terrain/Generator.h"
 #include "game/world/terrain/land/LandChunk.h"
 

@@ -28,9 +28,6 @@ public:
   void createTiles(bool flat, bool createOnZeroTiles, map2D_f& map, float offsetY);
   map2D_f& getMap();
   std::vector<TerrainTile>& getTiles();
-  GLuint getVAO();
-  GLuint getVBO();
-  GLuint getEBO();
   virtual void serialize(std::ofstream& output);
   virtual void deserialize(std::ifstream& input);
 protected:

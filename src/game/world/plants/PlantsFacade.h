@@ -30,9 +30,9 @@ private:
   void prepareDistributionMap(int cycles);
   map2D_i distributionMap;
   PlantsShader shaders;
-  std::unique_ptr<LandPlantsGenerator> landPlantsGenerator;
-  std::unique_ptr<GrassGenerator> grassGenerator;
-  std::unique_ptr<HillTreesGenerator> hillTreesGenerator;
+  LandPlantsGenerator landPlantsGenerator;
+  GrassGenerator grassGenerator;
+  HillTreesGenerator hillTreesGenerator;
   PlantsRenderer renderer;
 };
 

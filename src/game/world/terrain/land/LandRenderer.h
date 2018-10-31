@@ -9,7 +9,7 @@
 class LandRenderer
 {
 public:
-  LandRenderer(std::shared_ptr<LandGenerator> generator);
+  LandRenderer(LandGenerator& generator);
   void render(Frustum& frustum, GLuint& texture);
 private:
   void addIndirectBufferData(GLuint& primCount,
@@ -18,7 +18,7 @@ private:
                              GLuint numInstances,
                              GLuint instanceOffset);
 
-  std::shared_ptr<LandGenerator> generator;
+  LandGenerator& generator;
 };
 
 #endif // LANDRENDERER_H

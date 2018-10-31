@@ -1,6 +1,5 @@
 #ifndef SHOREFACADE_H
 #define SHOREFACADE_H
-#include <memory>
 #include "game/world/terrain/shore/ShoreGenerator.h"
 #include "game/world/terrain/shore/ShoreShader.h"
 #include "game/world/terrain/shore/ShoreRenderer.h"
@@ -15,11 +14,11 @@ public:
   void deserialize(std::ifstream& input);
   void draw(glm::mat4& projectionView, bool useShadows);
   void drawDepthmap();
-  map2D_f& getMap() const;
+  map2D_f& getMap();
 
 private:
   ShoreShader shader;
-  std::shared_ptr<ShoreGenerator> generator;
+  ShoreGenerator generator;
   ShoreRenderer renderer;
 };
 

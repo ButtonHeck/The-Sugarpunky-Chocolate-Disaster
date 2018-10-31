@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include "game/world/WorldGeneratorFacade.h"
+#include "game/world/Scene.h"
 #include "util/Logger.h"
 
 class Camera;
@@ -12,11 +12,11 @@ class Camera;
 class SaveLoadManager
 {
 public:
-  SaveLoadManager(std::shared_ptr<WorldGeneratorFacade>& worldGenerator, Camera& camera);
+  SaveLoadManager(std::shared_ptr<Scene>& scene, Camera& camera);
   bool saveToFile(const std::string& filename);
   bool loadFromFile(const std::string& filename);
 private:
-  std::shared_ptr<WorldGeneratorFacade>& worldGenerator;
+  std::shared_ptr<Scene>& scene;
   Camera& camera;
 };
 

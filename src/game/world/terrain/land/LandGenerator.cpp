@@ -117,7 +117,7 @@ void LandGenerator::fillBufferData()
   basicGLBuffers.bind(VAO);
   bufferData(basicGLBuffers.get(EBO), basicGLBuffers.get(VBO), chunkVertices, 20);
   setupGLBufferAttributes();
-  std::unique_ptr<glm::mat4[]> baseInstanceChunkModels(new glm::mat4[tiles.size()]);
+  glm::mat4 baseInstanceChunkModels[tiles.size()];
   for (unsigned int i = 0; i < tiles.size(); i++)
     {
       glm::mat4 model;
@@ -144,7 +144,7 @@ void LandGenerator::fillCellBufferData()
   glBindBuffer(GL_DRAW_INDIRECT_BUFFER, cellBuffers.get(DIBO));
   bufferData(cellBuffers.get(EBO), cellBuffers.get(VBO), cellVertices, 20);
   setupGLBufferAttributes();
-  std::unique_ptr<glm::mat4[]> cellInstanceModels(new glm::mat4[cellTiles.size()]);
+  glm::mat4 cellInstanceModels[cellTiles.size()];
   for (unsigned int i = 0; i < cellTiles.size(); i++)
     {
       glm::mat4 model;
