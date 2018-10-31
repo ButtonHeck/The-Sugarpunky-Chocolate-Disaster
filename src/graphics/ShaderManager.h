@@ -12,10 +12,6 @@ public:
   virtual ~ShaderManager();
   void setupConstantUniforms(glm::mat4 fontProjection);
   Shader& get(SHADER type);
-  void updateModelShader(glm::mat4& projectionView, glm::vec3& viewPosition,
-                         bool shadowOnTrees,
-                         bool useShadows,
-                         bool useFlatBlending);
 private:
   std::unordered_map<int, Shader> shaders;
 };

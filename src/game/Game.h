@@ -8,7 +8,7 @@
 #include "input/KeyboardManager.h"
 #include "input/MouseInputManager.h"
 #include "game/SaveLoadManager.h"
-#include "graphics/Renderer.h"
+#include "graphics/RendererStateManager.h"
 #include "graphics/Frustum.h"
 #include "graphics/ShaderManager.h"
 #include "graphics/TextManager.h"
@@ -55,7 +55,6 @@ private:
 
   //graphics
   ShaderManager shaderManager;
-  Renderer renderer;
   TextureLoader textureLoader;
   TextureManager textureManager;
   CoordinateSystemRenderer csRenderer;

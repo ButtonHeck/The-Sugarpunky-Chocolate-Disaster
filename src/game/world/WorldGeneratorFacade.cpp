@@ -1,9 +1,8 @@
 #include "game/world/WorldGeneratorFacade.h"
 
-WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Renderer &renderer, Options &options, TextureManager &textureManager)
+WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Options &options, TextureManager &textureManager)
   :
     shaderManager(shaderManager),
-    renderer(renderer),
     options(options),
     textureManager(textureManager)
 {
@@ -12,7 +11,7 @@ WorldGeneratorFacade::WorldGeneratorFacade(ShaderManager &shaderManager, Rendere
   landFacade = std::make_unique<LandFacade>(shaderManager.get(SHADER_LAND));
   shoreFacade = std::make_unique<ShoreFacade>(shaderManager.get(SHADER_SHORE), waterFacade->getMap());
   buildableFacade = std::make_unique<BuildableFacade>(shaderManager.get(SHADER_BUILDABLE), shaderManager.get(SHADER_SELECTED));
-  plantGeneratorFacade = std::make_shared<PlantGeneratorFacade>();
+  plantsFacade = std::make_unique<PlantsFacade>(shaderManager.get(SHADER_MODELS_PHONG), shaderManager.get(SHADER_MODELS), shaderManager.get(SHADER_SHADOW_MODELS));
   skyboxFacade = std::make_unique<SkyboxFacade>(shaderManager.get(SHADER_SKYBOX));
   theSunFacade = std::make_unique<TheSunFacade>(shaderManager.get(SHADER_SUN));
   underwaterFacade = std::make_unique<UnderwaterFacade>(shaderManager.get(SHADER_UNDERWATER));
@@ -26,7 +25,7 @@ void WorldGeneratorFacade::setup()
   landFacade->setup(shoreFacade->getMap());
   waterFacade->setupConsiderTerrain();
   buildableFacade->setup(landFacade->getMap(), hillsFacade->getMap());
-  plantGeneratorFacade->setup(landFacade->getMap(), hillsFacade->getMap());
+  plantsFacade->setup(landFacade->getMap(), hillsFacade->getMap());
   textureManager.createUnderwaterReliefTexture(waterFacade->getMap());
 }
 
@@ -54,7 +53,7 @@ void WorldGeneratorFacade::serialize(std::ofstream &output)
   shoreFacade->serialize(output);
   hillsFacade->serialize(output);
   waterFacade->serialize(output);
-  plantGeneratorFacade->serialize(output);
+  plantsFacade->serialize(output);
 }
 
 void WorldGeneratorFacade::deserialize(std::ifstream &input)
@@ -63,7 +62,7 @@ void WorldGeneratorFacade::deserialize(std::ifstream &input)
   shoreFacade->deserialize(input);
   hillsFacade->deserialize(input);
   waterFacade->deserialize(input);
-  plantGeneratorFacade->deserialize(input);
+  plantsFacade->deserialize(input);
 }
 
 void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
@@ -80,7 +79,13 @@ void WorldGeneratorFacade::drawWorld(glm::mat4& projectionView,
     landFacade->draw(projectionView, options.get(OPT_USE_SHADOWS), viewFrustum, textureManager.get(TEX_LAND));
   underwaterFacade->draw(projectionView);
   shoreFacade->draw(projectionView, options.get(OPT_USE_SHADOWS));
-  drawPlants(viewPosition);
+  if (options.get(OPT_DRAW_TREES))
+    plantsFacade->draw(projectionView,
+                       viewPosition,
+                       options.get(OPT_MODELS_PHONG_SHADING),
+                       options.get(OPT_MODELS_SHADOW_EMPHASIZE),
+                       options.get(OPT_USE_SHADOWS),
+                       options.get(OPT_MODELS_FLAT_BLENDING));
   if (options.get(OPT_DRAW_BUILDABLE))
     buildableFacade->drawBuildable(projectionView);
   if (options.get(OPT_SHOW_CURSOR))
@@ -98,53 +103,17 @@ void WorldGeneratorFacade::drawWorldDepthmap()
 {
   glClear(GL_DEPTH_BUFFER_BIT);
   glDisable(GL_CULL_FACE); //or set front face culling
-  drawTerrainDepthmap();
-  drawPlantsDepthmap();
-  glEnable(GL_CULL_FACE); //or set back face culling
-}
 
-void WorldGeneratorFacade::drawPlants(glm::vec3& viewPosition)
-{
-  if (options.get(OPT_DRAW_TREES))
-    {
-      shaderManager.updateModelShader(projectionView, viewPosition,
-                                      options.get(OPT_TREES_SHADOW_EMPHASIZE),
-                                      options.get(OPT_USE_SHADOWS),
-                                      options.get(OPT_MODELS_FLAT_BLENDING));
-      {
-        BENCHMARK("Renderer: draw models", true);
-        renderer.renderPlants(plantGeneratorFacade,
-                           options.get(OPT_MODELS_PHONG_SHADING) ? shaderManager.get(SHADER_MODELS_PHONG) : shaderManager.get(SHADER_MODELS),
-                           true,
-                           true,
-                           options.get(OPT_MODELS_FLAT_BLENDING));
-      }
-    }
-}
-
-void WorldGeneratorFacade::drawTerrainDepthmap()
-{
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
   hillsFacade->drawDepthmap();
   shoreFacade->drawDepthmap();
-}
-
-void WorldGeneratorFacade::drawPlantsDepthmap()
-{
   if (options.get(OPT_DRAW_TREES))
-    {
-      shaderManager.get(SHADER_SHADOW_MODELS).use();
-      {
-        BENCHMARK("Renderer: draw models depthmap", true);
-        renderer.renderPlants(plantGeneratorFacade, shaderManager.get(SHADER_SHADOW_MODELS),
-                           false,
-                           false,
-                           false);
-      }
-    }
+    plantsFacade->drawDepthmap();
+
+  glEnable(GL_CULL_FACE); //or set back face culling
 }
 
-const std::unique_ptr<WaterFacade>& WorldGeneratorFacade::getWaterGenerator() const
+const std::unique_ptr<WaterFacade>& WorldGeneratorFacade::getWaterFacade() const
 {
   return waterFacade;
 }
@@ -154,7 +123,7 @@ const std::unique_ptr<HillsFacade>& WorldGeneratorFacade::getHillsFacade() const
   return hillsFacade;
 }
 
-const std::shared_ptr<PlantGeneratorFacade> WorldGeneratorFacade::getPlantsGeneratorFacade() const
+const std::unique_ptr<PlantsFacade> &WorldGeneratorFacade::getPlantsFacade() const
 {
-  return plantGeneratorFacade;
+  return plantsFacade;
 }

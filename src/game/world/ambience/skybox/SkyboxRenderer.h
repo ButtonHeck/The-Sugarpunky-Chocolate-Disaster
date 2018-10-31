@@ -1,7 +1,8 @@
 #ifndef SKYBOXRENDERER_H
 #define SKYBOXRENDERER_H
 #include "game/world/ambience/skybox/Skybox.h"
-#include "graphics/Renderer.h"
+#include "graphics/RendererStateManager.h"
+#include "util/Settings.h"
 
 class SkyboxRenderer
 {

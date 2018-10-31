@@ -7,8 +7,8 @@ SkyboxRenderer::SkyboxRenderer(Skybox &skybox)
 
 void SkyboxRenderer::render()
 {
-  Renderer::setAmbientRenderingState(true);
+  RendererStateManager::setAmbienceRenderingState(true);
   skybox.basicGLBuffers.bind(VAO);
   glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_TILE * VERTICES_PER_TILE);
-  Renderer::setAmbientRenderingState(false);
+  RendererStateManager::setAmbienceRenderingState(false);
 }

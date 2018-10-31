@@ -12,7 +12,6 @@ SOURCES += \
     src/game/Options.cpp \
     src/graphics/Shader.cpp \
     src/graphics/TextureLoader.cpp \
-    src/graphics/Renderer.cpp \
     src/graphics/CoordinateSystemRenderer.cpp \
     src/graphics/Frustum.cpp \
     src/graphics/TextureManager.cpp \
@@ -28,7 +27,6 @@ SOURCES += \
     src/game/world/plants/LandPlantsGenerator.cpp \
     src/game/world/plants/PlantGenerator.cpp \
     src/game/world/terrain/Generator.cpp \
-    src/game/world/PlantGeneratorFacade.cpp \
     src/game/world/WorldGeneratorFacade.cpp \
     src/util/BenchmarkTimer.cpp \
     src/util/Settings.cpp \
@@ -75,7 +73,11 @@ SOURCES += \
     src/game/world/ambience/skybox/SkyboxRenderer.cpp \
     src/game/world/ambience/theSun/TheSunFacade.cpp \
     src/game/world/ambience/theSun/TheSunShader.cpp \
-    src/game/world/ambience/theSun/TheSunRenderer.cpp
+    src/game/world/ambience/theSun/TheSunRenderer.cpp \
+    src/game/world/plants/PlantsFacade.cpp \
+    src/game/world/plants/PlantsShader.cpp \
+    src/game/world/plants/PlantsRenderer.cpp \
+    src/graphics/RendererStateManager.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -85,7 +87,6 @@ HEADERS += \
     src/graphics/Shader.h \
     src/graphics/ShaderManager.h \
     src/graphics/TextureLoader.h \
-    src/graphics/Renderer.h \
     src/graphics/CoordinateSystemRenderer.h \
     src/graphics/Frustum.h \
     src/graphics/TextureManager.h \
@@ -101,7 +102,6 @@ HEADERS += \
     src/game/world/plants/LandPlantsGenerator.h \
     src/game/world/plants/PlantGenerator.h \
     src/game/world/terrain/Generator.h \
-    src/game/world/PlantGeneratorFacade.h \
     src/game/world/WorldGeneratorFacade.h \
     src/util/BenchmarkTimer.h \
     src/util/Settings.h \
@@ -150,7 +150,11 @@ HEADERS += \
     src/game/world/ambience/skybox/SkyboxRenderer.h \
     src/game/world/ambience/theSun/TheSunFacade.h \
     src/game/world/ambience/theSun/TheSunShader.h \
-    src/game/world/ambience/theSun/TheSunRenderer.h
+    src/game/world/ambience/theSun/TheSunRenderer.h \
+    src/game/world/plants/PlantsFacade.h \
+    src/game/world/plants/PlantsShader.h \
+    src/game/world/plants/PlantsRenderer.h \
+    src/graphics/RendererStateManager.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

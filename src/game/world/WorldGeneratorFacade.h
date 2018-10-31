@@ -3,7 +3,7 @@
 #include <memory>
 #include "game/world/terrain/land/LandFacade.h"
 #include "game/world/terrain/hills/HillsFacade.h"
-#include "game/world/PlantGeneratorFacade.h"
+#include "game/world/plants/PlantsFacade.h"
 #include "game/world/terrain/water/WaterFacade.h"
 #include "game/world/terrain/buildable/BuildableFacade.h"
 #include "game/world/terrain/shore/ShoreFacade.h"
@@ -11,14 +11,13 @@
 #include "game/world/ambience/skybox/SkyboxFacade.h"
 #include "game/world/ambience/theSun/TheSunFacade.h"
 #include "graphics/ShaderManager.h"
-#include "graphics/Renderer.h"
 #include "graphics/TextureManager.h"
 #include "input/MouseInputManager.h"
 
 class WorldGeneratorFacade
 {
 public:
-  WorldGeneratorFacade(ShaderManager& shaderManager, Renderer& renderer, Options& options, TextureManager& textureManager);
+  WorldGeneratorFacade(ShaderManager& shaderManager, Options& options, TextureManager& textureManager);
 
   //internal generators functions
   void setup();
@@ -36,21 +35,13 @@ public:
   void drawWorldDepthmap();
 
   //getters
-  const std::unique_ptr<WaterFacade> &getWaterGenerator() const;
+  const std::unique_ptr<WaterFacade> &getWaterFacade() const;
   const std::unique_ptr<HillsFacade> &getHillsFacade() const;
-  const std::shared_ptr<PlantGeneratorFacade> getPlantsGeneratorFacade() const;
+  const std::unique_ptr<PlantsFacade> &getPlantsFacade() const;
 
 private:
-  //rendering on screen
-  void drawPlants(glm::vec3& viewPosition);
-
-  //rendering offscreen (depthmap)
-  void drawTerrainDepthmap();
-  void drawPlantsDepthmap();
-
   //internals
   ShaderManager& shaderManager;
-  Renderer& renderer;
   Options& options;
   TextureManager& textureManager;
   glm::mat4 projectionView;
@@ -59,7 +50,7 @@ private:
   std::unique_ptr<LandFacade> landFacade;
   std::unique_ptr<ShoreFacade> shoreFacade;
   std::unique_ptr<BuildableFacade> buildableFacade;
-  std::shared_ptr<PlantGeneratorFacade> plantGeneratorFacade;
+  std::unique_ptr<PlantsFacade> plantsFacade;
   std::unique_ptr<SkyboxFacade> skyboxFacade;
   std::unique_ptr<TheSunFacade> theSunFacade;
   std::unique_ptr<UnderwaterFacade> underwaterFacade;

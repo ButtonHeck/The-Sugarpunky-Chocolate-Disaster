@@ -1,7 +1,7 @@
 #ifndef THESUNRENDERER_H
 #define THESUNRENDERER_H
 #include "game/world/ambience/theSun/TheSun.h"
-#include "graphics/Renderer.h"
+#include "graphics/RendererStateManager.h"
 
 class TheSunRenderer
 {

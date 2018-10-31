@@ -10,7 +10,6 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
     keyboard(KeyboardManager(window, camera, options)),
     mouseInput(MouseInputManager::getInstance()),
     shaderManager(),
-    renderer(),
     textureLoader(TextureLoader(screenResolution)),
     textureManager(TextureManager(textureLoader)),
     csRenderer(CoordinateSystemRenderer(&shaderManager.get(SHADER_COORDINATE_SYSTEM))),
@@ -20,7 +19,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
 {
   srand(time(NULL));
   Model::bindTextureLoader(textureLoader);
-  worldFacade = std::make_shared<WorldGeneratorFacade>(shaderManager, renderer, options, textureManager);
+  worldFacade = std::make_shared<WorldGeneratorFacade>(shaderManager, options, textureManager);
   saveLoadManager = std::make_unique<SaveLoadManager>(worldFacade, camera);
 }
 
@@ -34,7 +33,7 @@ Game::~Game()
 void Game::setup()
 {
   Shader::cacheUniformsMode(UNIFORMS_NO_CACHE);
-  Renderer::setInitialGLState(options.get(OPT_USE_MULTISAMPLING));
+  RendererStateManager::setInitialRenderingState(options.get(OPT_USE_MULTISAMPLING));
   MouseInputManager::setCallbacks(window);
   worldFacade->setup();
   setupThreads();

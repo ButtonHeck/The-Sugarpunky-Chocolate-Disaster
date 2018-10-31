@@ -2,7 +2,7 @@
 
 Options::Options()
 {
-  options[OPT_TREES_SHADOW_EMPHASIZE] = true;
+  options[OPT_MODELS_SHADOW_EMPHASIZE] = true;
   options[OPT_DRAW_TREES] = true;
   options[OPT_ANIMATE_WATER] = true;
   options[OPT_DRAW_DEBUG_TEXT] = true;

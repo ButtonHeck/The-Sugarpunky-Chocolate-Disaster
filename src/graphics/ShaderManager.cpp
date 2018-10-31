@@ -130,24 +130,3 @@ Shader &ShaderManager::get(SHADER type)
 {
   return shaders[type];
 }
-
-void ShaderManager::updateModelShader(glm::mat4 &projectionView, glm::vec3 &viewPosition,
-                                      bool shadowOnTrees,
-                                      bool useShadows,
-                                      bool useFlatBlending)
-{
-  Shader* shader = nullptr;
-  bindShaderUnit(shader, SHADER_MODELS);
-  shader->setMat4("u_projectionView", projectionView);
-  shader->setVec3("u_viewPosition", viewPosition);
-  shader->setBool("u_shadow", shadowOnTrees);
-  shader->setBool("u_shadowEnable", useShadows);
-  shader->setBool("u_useFlatBlending", useFlatBlending);
-
-  bindShaderUnit(shader, SHADER_MODELS_PHONG);
-  shader->setMat4("u_projectionView", projectionView);
-  shader->setVec3("u_viewPosition", viewPosition);
-  shader->setBool("u_shadow", shadowOnTrees);
-  shader->setBool("u_shadowEnable", useShadows);
-  shader->setBool("u_useFlatBlending", useFlatBlending);
-}
