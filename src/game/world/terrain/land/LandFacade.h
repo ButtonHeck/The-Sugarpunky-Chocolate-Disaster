@@ -1,6 +1,5 @@
 #ifndef LANDFACADE_H
 #define LANDFACADE_H
-#include <memory>
 #include "game/world/terrain/land/LandGenerator.h"
 #include "game/world/terrain/land/LandShader.h"
 #include "game/world/terrain/land/LandRenderer.h"
@@ -13,11 +12,11 @@ public:
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
   void draw(glm::mat4 &projectionView, bool useShadows, Frustum &viewFrustum, GLuint &texture);
-  map2D_f &getMap() const;
+  map2D_f &getMap();
 
 private:
   LandShader shader;
-  std::shared_ptr<LandGenerator> generator;
+  LandGenerator generator;
   LandRenderer renderer;
 };
 

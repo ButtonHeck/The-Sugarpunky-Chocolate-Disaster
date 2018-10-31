@@ -16,7 +16,7 @@
 #include "graphics/TextureManager.h"
 #include "util/Timer.h"
 #include "util/BenchmarkTimer.h"
-#include "game/world/WorldGeneratorFacade.h"
+#include "game/world/Scene.h"
 
 class Camera;
 class Options;
@@ -62,8 +62,8 @@ private:
   DepthmapBuffer depthmapBuffer;
 
   //world
-  std::shared_ptr<WorldGeneratorFacade> worldFacade;
-  std::unique_ptr<SaveLoadManager> saveLoadManager;
+  Scene scene;
+  SaveLoadManager saveLoadManager;
 
   //GUI and text
   TextManager textManager;

@@ -6,11 +6,11 @@
 class BuildableRenderer
 {
 public:
-  BuildableRenderer(std::shared_ptr<BuildableGenerator> generator);
+  BuildableRenderer(BuildableGenerator& generator);
   void renderBuildable();
   void renderSelected();
 private:
-  std::shared_ptr<BuildableGenerator> generator;
+  BuildableGenerator& generator;
 };
 
 #endif // BUIDABLERENDERER_H

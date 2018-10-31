@@ -20,11 +20,11 @@ public:
             glm::vec3 &viewPosition,
             Frustum &viewFrustum);
   void drawDepthmap();
-  map2D_f& getMap() const;
+  map2D_f& getMap();
 
 private:
   HillsShader shaders;
-  std::shared_ptr<HillsGenerator> generator;
+  HillsGenerator generator;
   HillsRenderer renderer;
 };
 

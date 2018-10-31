@@ -3,13 +3,13 @@
 BuildableFacade::BuildableFacade(Shader &buildableRenderShader, Shader &selectedRenderShader)
   :
     shader(buildableRenderShader, selectedRenderShader),
-    generator(std::make_shared<BuildableGenerator>()),
+    generator(),
     renderer(generator)
 {}
 
 void BuildableFacade::setup(map2D_f &landMap, map2D_f &hillsMap)
 {
-  generator->setup(landMap, hillsMap);
+  generator.setup(landMap, hillsMap);
 }
 
 void BuildableFacade::drawBuildable(glm::mat4& projectionView)
@@ -23,7 +23,7 @@ void BuildableFacade::drawBuildable(glm::mat4& projectionView)
 
 void BuildableFacade::drawSelected(MouseInputManager& mouseInput, glm::mat4& projectionView)
 {
-  if (generator->getMap()[mouseInput.getCursorMapZ()][mouseInput.getCursorMapX()] != 0)
+  if (generator.getMap()[mouseInput.getCursorMapZ()][mouseInput.getCursorMapX()] != 0)
     {
       glm::mat4 selectedModel;
       selectedModel = glm::translate(selectedModel, glm::vec3(-HALF_WORLD_WIDTH + mouseInput.getCursorMapX(), 0.0f, -HALF_WORLD_HEIGHT + mouseInput.getCursorMapZ()));
@@ -32,7 +32,7 @@ void BuildableFacade::drawSelected(MouseInputManager& mouseInput, glm::mat4& pro
     }
 }
 
-map2D_f &BuildableFacade::getMap() const
+map2D_f &BuildableFacade::getMap()
 {
-  return generator->getMap();
+  return generator.getMap();
 }

@@ -1,6 +1,6 @@
 #include "LandRenderer.h"
 
-LandRenderer::LandRenderer(std::shared_ptr<LandGenerator> generator)
+LandRenderer::LandRenderer(LandGenerator &generator)
   :
     generator(generator)
 {}
@@ -9,12 +9,12 @@ void LandRenderer::render(Frustum &frustum, GLuint &texture)
 {
   glBindTextureUnit(TEX_LAND, texture);
   //square chunks are better to render without FC
-  generator->basicGLBuffers.bind(VAO);
-  glDrawElementsInstanced(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0, generator->tiles.size());
+  generator.basicGLBuffers.bind(VAO);
+  glDrawElementsInstanced(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0, generator.tiles.size());
 
   //these ones should probably be FC-ed with multiDrawIndirect
-  generator->cellBuffers.bind(VAO);
-  auto& cellChunks = generator->cellChunks;
+  generator.cellBuffers.bind(VAO);
+  auto& cellChunks = generator.cellChunks;
   GLuint multiDrawIndirectData[cellChunks.size() * 5]; // { indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
   GLuint dataOffset = 0;
   GLuint drawIndirectCommandPrimCount = 0;
@@ -31,7 +31,7 @@ void LandRenderer::render(Frustum &frustum, GLuint &texture)
                                 dataOffset, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
         }
     }
-  generator->cellBuffers.bind(DIBO);
+  generator.cellBuffers.bind(DIBO);
   glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * 5 * drawIndirectCommandPrimCount, multiDrawIndirectData, GL_STATIC_DRAW);
   glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_BYTE, 0, drawIndirectCommandPrimCount, 0);
 }

@@ -3,28 +3,28 @@
 WaterFacade::WaterFacade(Shader &renderShader, Shader &cullingShader)
   :
     shaders(renderShader, cullingShader),
-    generator(std::make_shared<WaterGenerator>(shaders)),
+    generator(shaders),
     renderer(shaders, generator)
 {}
 
 void WaterFacade::setup()
 {
-  generator->setup();
+  generator.setup();
 }
 
 void WaterFacade::setupConsiderTerrain()
 {
-  generator->setupConsiderTerrain();
+  generator.setupConsiderTerrain();
 }
 
 void WaterFacade::serialize(std::ofstream &output)
 {
-  generator->serialize(output);
+  generator.serialize(output);
 }
 
 void WaterFacade::deserialize(std::ifstream &input)
 {
-  generator->deserialize(input);
+  generator.deserialize(input);
 }
 
 void WaterFacade::draw(bool useCulling, glm::mat4& projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
@@ -38,15 +38,15 @@ void WaterFacade::draw(bool useCulling, glm::mat4& projectionView, glm::vec3 &vi
 
 void WaterFacade::bufferNewData()
 {
-  generator->bufferNewData();
+  generator.bufferNewData();
 }
 
 void WaterFacade::updateAnimationFrame(double time, Options &options)
 {
-  generator->updateAnimationFrame(time, options);
+  generator.updateAnimationFrame(time, options);
 }
 
-map2D_f &WaterFacade::getMap() const
+map2D_f &WaterFacade::getMap()
 {
-  return generator->getMap();
+  return generator.getMap();
 }

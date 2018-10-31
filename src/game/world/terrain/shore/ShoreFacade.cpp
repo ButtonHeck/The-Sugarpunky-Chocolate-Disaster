@@ -3,23 +3,23 @@
 ShoreFacade::ShoreFacade(Shader &renderShader, map2D_f& waterMap)
   :
     shader(renderShader),
-    generator(std::make_shared<ShoreGenerator>(waterMap)),
+    generator(waterMap),
     renderer(generator)
 {}
 
 void ShoreFacade::setup()
 {
-  generator->setup();
+  generator.setup();
 }
 
 void ShoreFacade::serialize(std::ofstream &output)
 {
-  generator->serialize(output);
+  generator.serialize(output);
 }
 
 void ShoreFacade::deserialize(std::ifstream &input)
 {
-  generator->deserialize(input);
+  generator.deserialize(input);
 }
 
 void ShoreFacade::draw(glm::mat4 &projectionView, bool useShadows)
@@ -36,7 +36,7 @@ void ShoreFacade::drawDepthmap()
   renderer.render();
 }
 
-map2D_f &ShoreFacade::getMap() const
+map2D_f &ShoreFacade::getMap()
 {
-  return generator->getMap();
+  return generator.getMap();
 }

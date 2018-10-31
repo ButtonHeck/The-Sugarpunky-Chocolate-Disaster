@@ -1,6 +1,5 @@
 #ifndef WATERFACADE_H
 #define WATERFACADE_H
-#include <memory>
 #include "game/world/terrain/water/WaterGenerator.h"
 #include "game/world/terrain/water/WaterShader.h"
 #include "game/world/terrain/water/WaterRenderer.h"
@@ -17,11 +16,11 @@ public:
   void draw(bool useCulling, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum);
   void bufferNewData();
   void updateAnimationFrame(double time, Options& options);
-  map2D_f& getMap() const;
+  map2D_f& getMap();
 
 private:
   WaterShader shaders;
-  std::shared_ptr<WaterGenerator> generator;
+  WaterGenerator generator;
   WaterRenderer renderer;
 };
 
