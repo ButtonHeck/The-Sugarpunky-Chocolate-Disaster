@@ -1,6 +1,5 @@
 #ifndef BENCHMARKTIMER_H
 #define BENCHMARKTIMER_H
-#include <chrono>
 #include <fstream>
 #include <map>
 #include <string.h>
@@ -8,6 +7,7 @@
 #include <iomanip>
 #include "util/Settings.h"
 #include "util/Logger.h"
+#include "util/typeAliases.h"
 
 class BenchmarkTimer
 {
@@ -27,7 +27,7 @@ private:
   static constexpr int FORMAT_VALUE_ASCII = 45, BENCH_NAME_MAX_LENGTH = 40;
   std::string benchmark;
   bool perFrame;
-  decltype(std::chrono::high_resolution_clock::now()) startTime = std::chrono::high_resolution_clock::now();
+  decltype(chronoClock::now()) startTime = chronoClock::now();
   decltype(startTime) endTime = startTime;
 };
 

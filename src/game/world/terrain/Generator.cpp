@@ -15,7 +15,7 @@ void Generator::resetAllGLBuffers()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Generator::createTiles(bool flat, bool createOnZeroTiles, std::vector<std::vector<float>>& map, float offsetY)
+void Generator::createTiles(bool flat, bool createOnZeroTiles, map2D_f& map, float offsetY)
 {
   tiles.clear();
   for (unsigned int y = 1; y < map.size(); y++)
@@ -50,7 +50,7 @@ void Generator::createTiles(bool flat, bool createOnZeroTiles, std::vector<std::
     }
 }
 
-std::vector<std::vector<float> > &Generator::getMap()
+map2D_f &Generator::getMap()
 {
   return map;
 }
@@ -93,9 +93,9 @@ void Generator::deserialize(std::ifstream &input)
     }
 }
 
-void smoothMapHeightChunks(std::vector<std::vector<float> > &map, float selfWeight, float evenWeight, float diagonalWeight)
+void smoothMapHeightChunks(map2D_f &map, float selfWeight, float evenWeight, float diagonalWeight)
 {
-  std::vector<std::vector<float>> shoreMapSmoothed;
+  map2D_f shoreMapSmoothed;
   initializeMap(shoreMapSmoothed);
   for (unsigned int y = 1; y < WORLD_HEIGHT; y++)
     {
@@ -119,7 +119,7 @@ void smoothMapHeightChunks(std::vector<std::vector<float> > &map, float selfWeig
   map.assign(shoreMapSmoothed.begin(), shoreMapSmoothed.end());
 }
 
-void smoothNormals(std::vector<std::vector<float> > &map, std::vector<std::vector<glm::vec3> > &normalMap)
+void smoothNormals(map2D_f &map, map2D_vec3 &normalMap)
 {
   using glm::vec3;
   normalMap.clear();

@@ -46,7 +46,7 @@ void WaterFacade::updateAnimationFrame(double time, Options &options)
   generator->updateAnimationFrame(time, options);
 }
 
-std::vector<std::vector<float> > &WaterFacade::getMap() const
+map2D_f &WaterFacade::getMap() const
 {
   return generator->getMap();
 }

@@ -20,8 +20,8 @@ public:
 protected:
   void setupModelChunks();
   void updateMatrices(std::vector<glm::mat4*>& newModels, unsigned int* numAllTrees);
-  std::vector<std::vector<glm::mat4>> substituteMatricesStorage();
-  void loadMatrices(std::vector<std::vector<glm::mat4>>& newMatrices);
+  map2D_mat4 substituteMatricesStorage();
+  void loadMatrices(map2D_mat4& newMatrices);
   std::vector<Model> models;
   std::vector<glm::mat4*> matrices;
   std::unique_ptr<unsigned int[]> numPlants;

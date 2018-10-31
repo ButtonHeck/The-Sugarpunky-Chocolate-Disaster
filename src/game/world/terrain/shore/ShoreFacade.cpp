@@ -1,6 +1,6 @@
 #include "ShoreFacade.h"
 
-ShoreFacade::ShoreFacade(Shader &renderShader, std::vector<std::vector<float>>& waterMap)
+ShoreFacade::ShoreFacade(Shader &renderShader, map2D_f& waterMap)
   :
     shader(renderShader),
     generator(std::make_shared<ShoreGenerator>(waterMap)),
@@ -36,7 +36,7 @@ void ShoreFacade::drawDepthmap()
   renderer.render();
 }
 
-std::vector<std::vector<float> > &ShoreFacade::getMap() const
+map2D_f &ShoreFacade::getMap() const
 {
   return generator->getMap();
 }

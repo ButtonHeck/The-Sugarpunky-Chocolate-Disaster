@@ -10,7 +10,6 @@
 #include "graphics/Frustum.h"
 #include "util/Settings.h"
 #include "util/BenchmarkTimer.h"
-#include "model/IndirectBufferToken.h"
 #include "graphics/TextureUnits.h"
 #include <map>
 #include "graphics/OpenglBuffer.h"
@@ -46,7 +45,17 @@ public:
                                  const glm::vec2 &cameraPositionXZ,
                                  const Frustum& frustum);
   void updateIndirectBufferData();
+
 private:
+  struct IndirectBufferToken
+  {
+    IndirectBufferToken(GLuint indicesCount, GLuint numInstances, GLuint instanceOffset);
+    //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
+    GLuint indicesCount, numInstances, instanceOffset;
+    static const GLuint FIRST_INDEX = 0, BASE_VERTEX = 0;
+    friend class Mesh;
+  };
+
   void addIndirectBufferData(int directionToChunkLength, GLuint indicesSize, GLuint numInstances, GLuint instanceOffset);
   std::vector<Vertex> vertices;
   std::vector<Texture> textures;

@@ -12,9 +12,9 @@ public:
   static MouseInputManager& getInstance();
   static void setCallbacks(GLFWwindow* window);
   void updateCursorMappingCoordinates(Camera& camera,
-                         const std::vector<std::vector<float> > &baseMap,
-                         const std::vector<std::vector<float> > &hillMap,
-                         const std::vector<std::vector<float> > &buildableMap);
+                         const map2D_f &baseMap,
+                         const map2D_f &hillMap,
+                         const map2D_f &buildableMap);
   int getCursorMapX() const;
   int getCursorMapZ() const;
   const glm::vec3& getCursorToViewportDirection() const;

@@ -11,13 +11,13 @@ class LandGenerator : public Generator
 public:
   LandGenerator();
   virtual ~LandGenerator() = default;
-  void setup(std::vector<std::vector<float>> &shoreMap);
+  void setup(map2D_f &shoreMap);
 
 private:
   friend class LandRenderer;
   friend class LandFacade;
 
-  void generateMap(std::vector<std::vector<float>> &shoreMap);
+  void generateMap(map2D_f &shoreMap);
   void splitChunks(int chunkSize);
   void splitCellChunks(int chunkSize);
   void fillBufferData();
@@ -27,7 +27,7 @@ private:
   void setupGLBufferInstancedAttributes();
 
   OpenglBuffer cellBuffers;
-  std::vector<std::vector<float>> chunkMap;
+  map2D_f chunkMap;
   std::vector<TerrainTile> cellTiles;
   std::default_random_engine randomizer;
   std::vector<LandChunk> chunks;

@@ -10,7 +10,7 @@ class BuildableGenerator : public Generator
 public:
   BuildableGenerator();
   virtual ~BuildableGenerator() = default;
-  void setup(std::vector<std::vector<float>> &landMap, std::vector<std::vector<float>> &hillsMap);
+  void setup(map2D_f &landMap, map2D_f &hillsMap);
 
 private:
   friend class BuildableRenderer;

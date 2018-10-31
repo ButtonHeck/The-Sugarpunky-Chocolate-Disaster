@@ -7,7 +7,7 @@ KeyboardManager::KeyboardManager(GLFWwindow *window, Camera &camera, Options &op
     options(options)
 {}
 
-void KeyboardManager::processInput(float delta, std::vector<std::vector<float> > &hillsMap)
+void KeyboardManager::processInput(float delta, map2D_f &hillsMap)
 {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);

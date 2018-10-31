@@ -11,10 +11,10 @@ class BuildableFacade
 {
 public:
   BuildableFacade(Shader& buildableRenderShader, Shader& selectedRenderShader);
-  void setup(std::vector<std::vector<float>>& landMap, std::vector<std::vector<float>>& hillsMap);
+  void setup(map2D_f& landMap, map2D_f& hillsMap);
   void drawBuildable(glm::mat4 &projectionView);
   void drawSelected(MouseInputManager& mouseInput, glm::mat4& projectionView);
-  std::vector<std::vector<float>>& getMap() const;
+  map2D_f& getMap() const;
 
 private:
   BuildableShader shader;

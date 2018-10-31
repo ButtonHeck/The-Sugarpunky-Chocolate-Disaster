@@ -1,6 +1,6 @@
 #include "game/world/terrain/hills/HillsGenerator.h"
 
-HillsGenerator::HillsGenerator(HillsShader &shaders, std::vector<std::vector<float> > &waterMap)
+HillsGenerator::HillsGenerator(HillsShader &shaders, map2D_f &waterMap)
   :
     Generator(),
     culledBuffers(VAO | VBO | TFBO),

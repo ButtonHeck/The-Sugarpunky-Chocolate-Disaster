@@ -1,13 +1,13 @@
 #ifndef TEXTURELOADER_H
 #define TEXTURELOADER_H
 #include <string>
-#include <vector>
 #include <memory>
 #include <GL/glew.h>
 #include <IL/il.h>
 #include "graphics/ScreenResolution.h"
 #include "util/Settings.h"
 #include "util/Logger.h"
+#include "util/typeAliases.h"
 
 class TextureLoader
 {
@@ -18,7 +18,7 @@ public:
   GLuint createFrameTexture(GLuint textureUnit);
   GLuint createDepthMapTexture(int width, int height, GLuint textureUnit);
   GLuint loadCubemap(const std::string& directory, GLuint textureUnit);
-  GLuint createUnderwaterReliefTexture(std::vector<std::vector<float>>& waterMap, GLuint textureUnit, GLint magFilter, GLint minFilter);
+  GLuint createUnderwaterReliefTexture(map2D_f& waterMap, GLuint textureUnit, GLint magFilter, GLint minFilter);
   unsigned int getMaxMip(unsigned int width, unsigned int height);
 private:
   GLuint createAndBindTextureObject(GLenum target, GLuint textureUnit);

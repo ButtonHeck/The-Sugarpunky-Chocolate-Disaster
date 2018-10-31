@@ -9,13 +9,13 @@
 class ShoreFacade
 {
 public:
-  ShoreFacade(Shader &renderShader, std::vector<std::vector<float>>& waterMap);
+  ShoreFacade(Shader &renderShader, map2D_f& waterMap);
   void setup();
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
   void draw(glm::mat4& projectionView, bool useShadows);
   void drawDepthmap();
-  std::vector<std::vector<float>>& getMap() const;
+  map2D_f& getMap() const;
 
 private:
   ShoreShader shader;

@@ -13,9 +13,9 @@ GrassGenerator::GrassGenerator()
   models.emplace_back("grass6/grass6.obj");
 }
 
-void GrassGenerator::setup(std::vector<std::vector<float> > &baseMap,
-                           std::vector<std::vector<float> > &hillMap,
-                           std::vector<std::vector<int> > &distributionMap)
+void GrassGenerator::setup(map2D_f &baseMap,
+                           map2D_f &hillMap,
+                           map2D_i &distributionMap)
 {
   for (Model& model : models)
     {
@@ -26,9 +26,9 @@ void GrassGenerator::setup(std::vector<std::vector<float> > &baseMap,
   setupMatrices(baseMap, hillMap, distributionMap);
 }
 
-void GrassGenerator::setupMatrices(std::vector<std::vector<float> > &baseMap,
-                                   std::vector<std::vector<float> > &hillMap,
-                                   std::vector<std::vector<int> > &distributionMap)
+void GrassGenerator::setupMatrices(map2D_f &baseMap,
+                                   map2D_f &hillMap,
+                                   map2D_i &distributionMap)
 {
   auto matricesVecs = substituteMatricesStorage();
   std::uniform_real_distribution<float> modelSizeDistribution(0.27f, 0.32f);

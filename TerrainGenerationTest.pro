@@ -18,7 +18,6 @@ SOURCES += \
     src/graphics/ShaderManager.cpp \
     src/model/Mesh.cpp \
     src/model/Model.cpp \
-    src/model/IndirectBufferToken.cpp \
     src/input/KeyboardManager.cpp \
     src/input/MouseInputManager.cpp \
     src/graphics/FontLoader.cpp \
@@ -92,7 +91,6 @@ HEADERS += \
     src/graphics/TextureManager.h \
     src/model/Mesh.h \
     src/model/Model.h \
-    src/model/IndirectBufferToken.h \
     src/input/KeyboardManager.h \
     src/input/MouseInputManager.h \
     src/generator/PlantGenerator.h \
@@ -154,7 +152,8 @@ HEADERS += \
     src/game/world/plants/PlantsFacade.h \
     src/game/world/plants/PlantsShader.h \
     src/game/world/plants/PlantsRenderer.h \
-    src/graphics/RendererStateManager.h
+    src/graphics/RendererStateManager.h \
+    src/util/typeAliases.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

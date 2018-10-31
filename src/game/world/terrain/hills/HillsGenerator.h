@@ -15,7 +15,7 @@ namespace HILL_DENSITY
 class HillsGenerator : public Generator
 {
 public:
-  HillsGenerator(HillsShader& shaders, std::vector<std::vector<float>>& waterMap);
+  HillsGenerator(HillsShader& shaders, map2D_f& waterMap);
   virtual ~HillsGenerator() = default;
   void setup();
   void createTilesAndBufferData();
@@ -47,8 +47,8 @@ private:
   OpenglBuffer culledBuffers;
   HillsShader& shaders;
   float maxHeight = 0.0f;
-  std::vector<std::vector<float>>& waterMap;
-  std::vector<std::vector<glm::vec3>> normalMap;
+  map2D_f& waterMap;
+  map2D_vec3 normalMap;
   std::default_random_engine randomizer;
 };
 

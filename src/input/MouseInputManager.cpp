@@ -86,9 +86,9 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
 }
 
 void MouseInputManager::updateCursorMappingCoordinates(Camera &camera,
-                                                       const std::vector<std::vector<float> > &baseMap,
-                                                       const std::vector<std::vector<float>>& hillMap,
-                                                       const std::vector<std::vector<float>>& buildableMap)
+                                                       const map2D_f &baseMap,
+                                                       const map2D_f& hillMap,
+                                                       const map2D_f& buildableMap)
 {
   if (options.get(OPT_SHOW_CURSOR) && cursorToViewportDirection.y < 0.0f)
     {

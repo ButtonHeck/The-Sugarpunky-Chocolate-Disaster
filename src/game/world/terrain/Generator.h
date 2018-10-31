@@ -5,10 +5,11 @@
 #include <GL/glew.h>
 #include "game/world/terrain/TerrainTile.h"
 #include "util/Settings.h"
+#include "util/typeAliases.h"
 #include "graphics/OpenglBuffer.h"
 
 template <typename T>
-void initializeMap(std::vector<std::vector<T>>& map)
+void initializeMap(map2D_template<T>& map)
 {
   map.clear();
   map.reserve(WORLD_HEIGHT + 1);
@@ -16,16 +17,16 @@ void initializeMap(std::vector<std::vector<T>>& map)
     map.emplace_back(std::vector<T>(WORLD_WIDTH + 1, 0));
 }
 
-void smoothMapHeightChunks(std::vector<std::vector<float>>& map, float selfWeight, float evenWeight, float diagonalWeight);
-void smoothNormals(std::vector<std::vector<float>>& map, std::vector<std::vector<glm::vec3>>& normalMap);
+void smoothMapHeightChunks(map2D_f& map, float selfWeight, float evenWeight, float diagonalWeight);
+void smoothNormals(map2D_f& map, map2D_vec3& normalMap);
 
 class Generator
 {
 public:
   Generator();
   virtual ~Generator() = default;
-  void createTiles(bool flat, bool createOnZeroTiles, std::vector<std::vector<float>>& map, float offsetY);
-  std::vector<std::vector<float>>& getMap();
+  void createTiles(bool flat, bool createOnZeroTiles, map2D_f& map, float offsetY);
+  map2D_f& getMap();
   std::vector<TerrainTile>& getTiles();
   GLuint getVAO();
   GLuint getVBO();
@@ -34,7 +35,7 @@ public:
   virtual void deserialize(std::ifstream& input);
 protected:
   void resetAllGLBuffers();
-  std::vector<std::vector<float>> map;
+  map2D_f map;
   std::vector<TerrainTile> tiles;
   OpenglBuffer basicGLBuffers;
 };

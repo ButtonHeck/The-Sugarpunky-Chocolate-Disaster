@@ -9,7 +9,7 @@ PlantsFacade::PlantsFacade(Shader &renderPhongShader, Shader &renderGouraudShade
     renderer()
 {}
 
-void PlantsFacade::setup(std::vector<std::vector<float> > &baseMap, std::vector<std::vector<float> > &hillMap)
+void PlantsFacade::setup(map2D_f &baseMap, map2D_f &hillMap)
 {
   prepareDistributionMap(MODELS_DISTRIBUTION_FREQ);
   landPlantsGenerator->setup(baseMap, hillMap, distributionMap);

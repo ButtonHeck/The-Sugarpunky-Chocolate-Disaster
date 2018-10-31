@@ -164,3 +164,10 @@ void Mesh::addIndirectBufferData(int directionToChunkLength,
   indirectTokensSorted.insert(std::pair<int,IndirectBufferToken>(directionToChunkLength, IndirectBufferToken(indicesSize, numInstances, instanceOffset)));
   ++drawIndirectCommandPrimCount;
 }
+
+Mesh::IndirectBufferToken::IndirectBufferToken(GLuint indicesCount, GLuint numInstances, GLuint instanceOffset)
+  :
+    indicesCount(indicesCount),
+    numInstances(numInstances),
+    instanceOffset(instanceOffset)
+{}

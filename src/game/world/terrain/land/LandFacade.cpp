@@ -7,7 +7,7 @@ LandFacade::LandFacade(Shader &renderShader)
     renderer(generator)
 {}
 
-void LandFacade::setup(std::vector<std::vector<float> > &shoreMap)
+void LandFacade::setup(map2D_f &shoreMap)
 {
   generator->setup(shoreMap);
 }
@@ -31,7 +31,7 @@ void LandFacade::draw(glm::mat4& projectionView, bool useShadows, Frustum &viewF
   }
 }
 
-std::vector<std::vector<float> > &LandFacade::getMap() const
+map2D_f &LandFacade::getMap() const
 {
   return generator->getMap();
 }

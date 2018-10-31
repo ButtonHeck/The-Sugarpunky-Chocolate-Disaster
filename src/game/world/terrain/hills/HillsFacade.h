@@ -9,7 +9,7 @@
 class HillsFacade
 {
 public:
-  HillsFacade(Shader &renderShader, Shader& cullingShader, std::vector<std::vector<float> > &waterMap);
+  HillsFacade(Shader &renderShader, Shader& cullingShader, map2D_f &waterMap);
   void setup();
   void createTilesAndBufferData();
   void serialize(std::ofstream &output);
@@ -20,7 +20,7 @@ public:
             glm::vec3 &viewPosition,
             Frustum &viewFrustum);
   void drawDepthmap();
-  std::vector<std::vector<float>>& getMap() const;
+  map2D_f& getMap() const;
 
 private:
   HillsShader shaders;

@@ -38,7 +38,7 @@ BenchmarkTimer::BenchmarkTimer(const std::string &text, bool isPerFrame)
 
 BenchmarkTimer::~BenchmarkTimer()
 {
-  endTime = std::chrono::high_resolution_clock::now();
+  endTime = chronoClock::now();
   unsigned long benchmarkResult = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
   float appBenchmarkResult = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() / 1000.0f;
   if (perFrame)

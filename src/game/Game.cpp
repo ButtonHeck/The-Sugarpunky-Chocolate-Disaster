@@ -89,10 +89,10 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
   if (options.get(OPT_ANIMATE_WATER))
     {
       BENCHMARK("Water: buffer animation frame", true);
-      worldFacade->getWaterGenerator()->bufferNewData();
+      worldFacade->getWaterFacade()->bufferNewData();
       waterNeedNewKeyFrame = true;
     }
-  worldFacade->getPlantsGeneratorFacade()->updateIndirectBufferData();
+  worldFacade->getPlantsFacade()->updateIndirectBufferData();
 
   glm::mat4 skyboxProjectionView(projection * glm::mat4(glm::mat3(camera.getViewMatrix())));
   worldFacade->drawWorld(projectionView,
@@ -166,7 +166,7 @@ void Game::setupThreads()
               float cameraOnMapX = glm::clamp(camera.getPosition().x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F);
               float cameraOnMapZ = glm::clamp(camera.getPosition().z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F);
               glm::vec2 cameraPositionXZ = glm::vec2(cameraOnMapX, cameraOnMapZ);
-              worldFacade->getPlantsGeneratorFacade()->prepareMeshesIndirectData(cameraPositionXZ, viewFrustum);
+              worldFacade->getPlantsFacade()->prepareMeshesIndirectData(cameraPositionXZ, viewFrustum);
               meshBufferReady = true;
               meshBufferNeedUpdate = false;
             }
@@ -182,7 +182,7 @@ void Game::setupThreads()
                   options.get(OPT_DRAW_WATER))
                 {
                   waterKeyFrameReady = false;
-                  worldFacade->getWaterGenerator()->updateAnimationFrame(glfwGetTime(), options);
+                  worldFacade->getWaterFacade()->updateAnimationFrame(glfwGetTime(), options);
                   waterKeyFrameReady = true;
                   waterNeedNewKeyFrame = false;
                 }

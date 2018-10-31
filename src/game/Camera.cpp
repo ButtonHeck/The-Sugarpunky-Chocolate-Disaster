@@ -43,7 +43,7 @@ void Camera::processMouseScroll(float yOffset)
   updateVectors();
 }
 
-void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir, std::vector<std::vector<float>>& hillsMap)
+void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir, map2D_f& hillsMap)
 {
   float velocity = delta * moveSpeed;
 

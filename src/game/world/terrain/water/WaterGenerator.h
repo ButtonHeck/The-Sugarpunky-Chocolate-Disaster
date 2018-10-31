@@ -52,7 +52,7 @@ private:
   std::unique_ptr<GLfloat[]> vertices;
   constexpr static int WATER_HEIGHT_OFFSETS_SIZE = NUM_TILES + WORLD_WIDTH * 2;
   std::unique_ptr<GLfloat[]> heightOffsets;
-  std::vector<std::vector<float>> postProcessMap;
+  map2D_f postProcessMap;
 };
 
 #endif // WATERGENERATOR_H

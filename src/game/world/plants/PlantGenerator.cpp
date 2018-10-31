@@ -123,9 +123,9 @@ void PlantGenerator::updateMatrices(std::vector<glm::mat4 *> &newMatrices, unsig
     models[i].loadInstances(matrices[i], numPlants[i]);
 }
 
-std::vector<std::vector<glm::mat4> > PlantGenerator::substituteMatricesStorage()
+map2D_mat4 PlantGenerator::substituteMatricesStorage()
 {
-  std::vector<std::vector<glm::mat4>> newMatrices;
+  map2D_mat4 newMatrices;
   for (unsigned int i = 0; i < models.size(); i++)
     {
       newMatrices.emplace_back(std::vector<glm::mat4>());
@@ -136,7 +136,7 @@ std::vector<std::vector<glm::mat4> > PlantGenerator::substituteMatricesStorage()
   return newMatrices;
 }
 
-void PlantGenerator::loadMatrices(std::vector<std::vector<glm::mat4> > &newMatrices)
+void PlantGenerator::loadMatrices(map2D_mat4 &newMatrices)
 {
   numPlants.reset(new unsigned int[newMatrices.size()]);
   for (unsigned int i = 0; i < newMatrices.size(); i++)

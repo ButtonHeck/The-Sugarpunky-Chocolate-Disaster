@@ -9,7 +9,7 @@ class Timer
 public:
   Timer()
     :
-      frameTime(std::chrono::high_resolution_clock::now()),
+      frameTime(chronoClock::now()),
       currentTime(frameTime)
   {}
 
@@ -19,7 +19,7 @@ public:
     delta = nowTime - lastTime;
     lastTime = nowTime;
     ++frames;
-    currentTime = std::chrono::high_resolution_clock::now();
+    currentTime = chronoClock::now();
     if (std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - frameTime).count() > 1000)
       {
         frameTime = currentTime;
@@ -40,7 +40,7 @@ public:
   }
 private:
   float lastTime, nowTime, delta;
-  decltype(std::chrono::high_resolution_clock::now()) frameTime, currentTime;
+  decltype(chronoClock::now()) frameTime, currentTime;
   unsigned int frames = 0, fps = 0, updateCount = 0;
 };
 
