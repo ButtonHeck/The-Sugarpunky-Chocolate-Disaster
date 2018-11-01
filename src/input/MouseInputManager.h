@@ -4,6 +4,7 @@
 #include "game/Camera.h"
 #include "game/Options.h"
 #include "graphics/ScreenResolution.h"
+#include "util/BenchmarkTimer.h"
 #include <GLFW/glfw3.h>
 
 class MouseInputManager

@@ -4,6 +4,7 @@
 #include "graphics/Shader.h"
 #include "graphics/TextureUnits.h"
 #include "graphics/ShaderUnits.h"
+#include "util/BenchmarkTimer.h"
 
 class ShaderManager
 {

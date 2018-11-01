@@ -3,6 +3,7 @@
 #include "game/world/ambience/skybox/Skybox.h"
 #include "game/world/ambience/skybox/SkyboxShader.h"
 #include "game/world/ambience/skybox/SkyboxRenderer.h"
+#include "util/BenchmarkTimer.h"
 
 class SkyboxFacade
 {

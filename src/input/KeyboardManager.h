@@ -6,6 +6,7 @@
 #include "game/Camera.h"
 #include "util/Settings.h"
 #include "game/Options.h"
+#include "util/BenchmarkTimer.h"
 
 class KeyboardManager
 {

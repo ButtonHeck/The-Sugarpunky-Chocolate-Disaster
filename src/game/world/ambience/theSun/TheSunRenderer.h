@@ -2,6 +2,7 @@
 #define THESUNRENDERER_H
 #include "game/world/ambience/theSun/TheSun.h"
 #include "graphics/RendererStateManager.h"
+#include "util/BenchmarkTimer.h"
 
 class TheSunRenderer
 {

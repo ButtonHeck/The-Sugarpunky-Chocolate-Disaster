@@ -3,6 +3,7 @@
 #include "game/world/terrain/underwater/UnderwaterGenerator.h"
 #include "game/world/terrain/underwater/UnderwaterShader.h"
 #include "game/world/terrain/underwater/UnderwaterRenderer.h"
+#include "util/BenchmarkTimer.h"
 
 class UnderwaterFacade
 {

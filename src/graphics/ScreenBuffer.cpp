@@ -18,6 +18,7 @@ ScreenBuffer::~ScreenBuffer()
 
 void ScreenBuffer::setup()
 {
+  BENCHMARK("ScreenBuffer: setup", false);
   setupFramebuffers();
   setupScreenQuadBuffer();
 }
@@ -73,6 +74,7 @@ void ScreenBuffer::setupScreenQuadBuffer()
 
 void ScreenBuffer::draw(bool enableMultisampling)
 {
+  BENCHMARK("ScreenBuffer: draw", true);
   if (enableMultisampling)
     {
       glBindFramebuffer(GL_READ_FRAMEBUFFER, multisampleFBO);

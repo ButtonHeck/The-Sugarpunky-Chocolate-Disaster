@@ -32,6 +32,7 @@ Game::~Game()
 
 void Game::setup()
 {
+  BENCHMARK("Game: setup", false);
   Shader::cacheUniformsMode(UNIFORMS_NO_CACHE);
   RendererStateManager::setInitialRenderingState(options.get(OPT_USE_MULTISAMPLING));
   MouseInputManager::setCallbacks(window);
@@ -49,9 +50,12 @@ void Game::loop()
   glm::mat4 projectionView = projection * view;
   viewFrustum.updateFrustum(projectionView);
 
-  while(!meshBufferReady && !updateCount == 0)
-    std::this_thread::yield();
-  meshBufferReady = false;
+  {
+    BENCHMARK("Game loop: wait mesh buffer ready", true);
+    while(!meshBufferReady && !updateCount == 0)
+      std::this_thread::yield();
+    meshBufferReady = false;
+  }
 
   if (options.get(OPT_RECREATE_TERRAIN_REQUEST))
     recreate();
@@ -62,12 +66,8 @@ void Game::loop()
   //render our world onto separate FBO as usual
   bool multisamplingEnabled = options.get(OPT_USE_MULTISAMPLING);
   screenBuffer.bindAppropriateFBO(multisamplingEnabled);
-  drawFrameObjects(projectionView);
-
-  {
-    BENCHMARK("Game: draw frame to screen", true);
-    screenBuffer.draw(multisamplingEnabled);
-  }
+  drawFrame(projectionView);
+  screenBuffer.draw(multisamplingEnabled);
 
   if (options.get(OPT_SAVE_REQUEST))
     saveState();
@@ -75,14 +75,15 @@ void Game::loop()
     loadState();
 
   {
-    BENCHMARK("Game: glfwSwapBuffers", true);
+    BENCHMARK("GLFW: swapBuffers", true);
     glfwSwapBuffers(window);
   }
   ++updateCount;
 }
 
-void Game::drawFrameObjects(glm::mat4& projectionView)
+void Game::drawFrame(glm::mat4& projectionView)
 {
+  BENCHMARK("Game loop: draw frame", true);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, options.get(OPT_POLYGON_LINE) ? GL_LINE : GL_FILL);
 
@@ -121,6 +122,7 @@ void Game::drawFrameObjects(glm::mat4& projectionView)
 
 void Game::recreate()
 {
+  BENCHMARK("Game loop: recreate", true);
   while(!waterKeyFrameReady)
     std::this_thread::yield();//busy wait until water thread has done its business...and business is good
   waterNeedNewKeyFrame = false; //explicitly bypass water animation frame update routine

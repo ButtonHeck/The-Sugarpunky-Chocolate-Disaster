@@ -9,6 +9,7 @@ SkyboxFacade::SkyboxFacade(Shader &renderShader)
 
 void SkyboxFacade::draw(glm::mat4 &skyProjectionView, glm::vec3 &viewPosition)
 {
+  BENCHMARK("SkyboxFacade: draw all boxes", true);
   shader.update(skyProjectionView, viewPosition, 2, true);
   renderer.render();
   shader.update(skyProjectionView, viewPosition, 0, false);

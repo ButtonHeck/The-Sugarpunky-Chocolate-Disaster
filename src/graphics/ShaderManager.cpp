@@ -37,6 +37,8 @@ ShaderManager::~ShaderManager()
 
 void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
 {
+  BENCHMARK("Shader Manager: setup", false);
+
   Shader* shader = nullptr;
   bindShaderUnit(shader, SHADER_HILLS);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));

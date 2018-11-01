@@ -25,10 +25,7 @@ void LandFacade::deserialize(std::ifstream &input)
 void LandFacade::draw(glm::mat4& projectionView, bool useShadows, Frustum &viewFrustum, GLuint& texture)
 {
   shader.update(projectionView, useShadows);
-  {
-    BENCHMARK("Renderer: draw flat", true);
-    renderer.render(viewFrustum, texture);
-  }
+  renderer.render(viewFrustum, texture);
 }
 
 const map2D_f &LandFacade::getMap() const

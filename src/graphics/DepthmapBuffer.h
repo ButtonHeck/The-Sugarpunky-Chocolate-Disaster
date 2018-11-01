@@ -2,6 +2,7 @@
 #define DEPTHMAPBUFFER_H
 #include <GL/glew.h>
 #include "util/Logger.h"
+#include "util/BenchmarkTimer.h"
 
 class DepthmapBuffer
 {

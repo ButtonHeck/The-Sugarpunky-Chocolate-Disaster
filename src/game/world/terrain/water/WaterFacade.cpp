@@ -30,10 +30,7 @@ void WaterFacade::deserialize(std::ifstream &input)
 void WaterFacade::draw(bool useCulling, glm::mat4& projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
 {
   shaders.update(useCulling, projectionView, viewPosition, viewFrustum);
-  {
-    BENCHMARK("Renderer: draw water (full func)", true);
-    renderer.render(useCulling);
-  }
+  renderer.render(useCulling);
 }
 
 void WaterFacade::bufferNewData()

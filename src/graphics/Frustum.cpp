@@ -18,6 +18,7 @@ void Frustum::normalizePlane(FRUSTUM_SIDE side)
 
 void Frustum::updateFrustum(glm::mat4 &projectionView)
 {
+  BENCHMARK("Frustum: update", true);
   float* clip = glm::value_ptr(projectionView);
   frustumPlanes[FRUSTUM_RIGHT].x = clip[3] - clip[0];
   frustumPlanes[FRUSTUM_RIGHT].y = clip[7] - clip[4];

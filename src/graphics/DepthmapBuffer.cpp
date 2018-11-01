@@ -7,6 +7,7 @@ DepthmapBuffer::~DepthmapBuffer()
 
 void DepthmapBuffer::setup(GLuint depthTextureUnit)
 {
+  BENCHMARK("DepthmapBuffer: setup", false);
   glGenFramebuffers(1, &FBO);
   glBindFramebuffer(GL_FRAMEBUFFER, FBO);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTextureUnit, 0);

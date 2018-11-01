@@ -12,7 +12,7 @@ void HillsRenderer::render(bool useFC)
     {
       GLuint tfb = generator.culledBuffers.get(TFBO);
       {
-        BENCHMARK("Renderer: draw hills to TFB", true);
+        BENCHMARK("HillsRenderer: draw to TFB", true);
         shaders.cullingShader.use();
         generator.basicGLBuffers.bind(VAO);
         glEnable(GL_RASTERIZER_DISCARD);
@@ -23,7 +23,7 @@ void HillsRenderer::render(bool useFC)
         glDisable(GL_RASTERIZER_DISCARD);
       }
       {
-        BENCHMARK("Renderer: draw hills from TFB", true);
+        BENCHMARK("HillsRenderer: draw from TFB", true);
         shaders.renderShader.use();
         generator.culledBuffers.bind(VAO);
         glDrawTransformFeedback(GL_TRIANGLES, tfb);
@@ -31,6 +31,7 @@ void HillsRenderer::render(bool useFC)
     }
   else
     {
+      BENCHMARK("HillsRenderer: draw", true);
       shaders.renderShader.use();
       generator.basicGLBuffers.bind(VAO);
       glDrawArrays(GL_TRIANGLES, 0, generator.tiles.size() * VERTICES_PER_TILE);
@@ -39,6 +40,7 @@ void HillsRenderer::render(bool useFC)
 
 void HillsRenderer::renderDepthmap()
 {
+  BENCHMARK("HillsRenderer: render depthmap", true);
   generator.basicGLBuffers.bind(VAO);
   glDrawArrays(GL_TRIANGLES, 0, generator.tiles.size() * VERTICES_PER_TILE);
 }

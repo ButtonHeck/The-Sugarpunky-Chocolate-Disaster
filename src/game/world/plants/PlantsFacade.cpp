@@ -27,6 +27,7 @@ void PlantsFacade::prepareMeshesIndirectData(const glm::vec2 &cameraPositionXZ, 
 
 void PlantsFacade::updateIndirectBufferData()
 {
+  BENCHMARK("PlantsFacade: updateIndirectBuffer", true);
   updateIndirectBufferData(landPlantsGenerator);
   updateIndirectBufferData(hillTreesGenerator);
   updateIndirectBufferData(grassGenerator);
@@ -46,13 +47,10 @@ void PlantsFacade::draw(glm::mat4& projectionView,
                           useShadowEmphasize,
                           useShadows,
                           useFlatBlending);
-  {
-    BENCHMARK("Renderer: draw models", true);
-    treesRenderer.render(landPlantsGenerator.models,
-                         hillTreesGenerator.models,
-                         true,
-                         useFlatBlending);
-  }
+  treesRenderer.render(landPlantsGenerator.models,
+                       hillTreesGenerator.models,
+                       true,
+                       useFlatBlending);
 
   shaders.switchToGrass(usePhongShading, true);
   shaders.updateGrass(usePhongShading);
@@ -63,7 +61,6 @@ void PlantsFacade::draw(glm::mat4& projectionView,
 
 void PlantsFacade::drawDepthmap()
 {
-  BENCHMARK("Renderer: draw models depthmap", true);
   shaders.shadowShader.use();
   treesRenderer.render(landPlantsGenerator.models,
                        hillTreesGenerator.models,

@@ -19,6 +19,7 @@ Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &tex
 
 void Scene::setup()
 {
+  BENCHMARK("Scene: setup", false);
   waterFacade.setup();
   hillsFacade.setup();
   shoreFacade.setup();
@@ -71,6 +72,7 @@ void Scene::drawWorld(glm::mat4& projectionView,
                       Camera& camera,
                       MouseInputManager& mouseInput)
 {
+  BENCHMARK("Scene: draw all", true);
   this->projectionView = projectionView;
   glm::vec3 viewPosition = camera.getPosition();
 
@@ -101,6 +103,7 @@ void Scene::drawWorld(glm::mat4& projectionView,
 
 void Scene::drawWorldDepthmap()
 {
+  BENCHMARK("Scene: draw depthmap all", true);
   glClear(GL_DEPTH_BUFFER_BIT);
   glDisable(GL_CULL_FACE); //or set front face culling
 

@@ -14,7 +14,7 @@ void WaterRenderer::render(bool useCulling)
         shaders.cullingShader.use();
         generator.basicGLBuffers.bind(VAO);
         {
-          BENCHMARK("Renderer: draw water to TFB", true);
+          BENCHMARK("WaterRenderer: draw to TFB", true);
           glEnable(GL_RASTERIZER_DISCARD);
           glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, generator.culledBuffers.get(TFBO));
           glBeginTransformFeedback(GL_TRIANGLES);
@@ -24,7 +24,7 @@ void WaterRenderer::render(bool useCulling)
         }
       }
       {
-        BENCHMARK("Renderer: draw water from TFB", true);
+        BENCHMARK("WaterRenderer: draw from TFB", true);
         shaders.renderShader.use();
         generator.culledBuffers.bind(VAO);
         glEnable(GL_BLEND);
@@ -34,7 +34,7 @@ void WaterRenderer::render(bool useCulling)
     }
   else
     {
-      BENCHMARK("Renderer: draw water no FC", true);
+      BENCHMARK("WaterRenderer: draw", true);
       shaders.renderShader.use();
       generator.basicGLBuffers.bind(VAO);
       glEnable(GL_BLEND);

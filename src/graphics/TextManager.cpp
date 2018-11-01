@@ -18,7 +18,7 @@ void TextManager::addText(ScreenResolution& screenResolution,
                           MouseInputManager& mouseInput,
                           const unsigned int fps)
 {
-  BENCHMARK("Text: add text", true);
+  BENCHMARK("TextManager: add text", true);
   float scrHeight = (float)screenResolution.getHeight();
   glm::vec3 viewPosition = camera.getPosition();
   std::stringstream ss;
@@ -160,6 +160,7 @@ void TextManager::addString(const std::string& text, GLfloat x, GLfloat y, GLflo
 
 void TextManager::drawText()
 {
+  BENCHMARK("TextManager: draw", true);
   shader.use();
   basicGLBuffers.bind(VAO | VBO);
   glBufferData(GL_ARRAY_BUFFER, bufferOffset * sizeof(GLfloat), vertexData.get(), GL_STATIC_DRAW);

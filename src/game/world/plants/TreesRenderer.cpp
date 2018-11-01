@@ -5,6 +5,12 @@ void TreesRenderer::render(std::vector<Model> &landModels,
                            bool bindTexture,
                            bool useFlatBlending)
 {
+  BenchmarkTimer BENCHMARK_;
+  if (bindTexture)
+    BENCHMARK_("TreesRenderer: render", true);
+  else
+    BENCHMARK_("TreesRenderer: render depthmap", true);
+
   if (useFlatBlending)
     glEnable(GL_BLEND);
   else

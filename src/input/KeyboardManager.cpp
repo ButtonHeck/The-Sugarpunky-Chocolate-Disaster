@@ -9,6 +9,7 @@ KeyboardManager::KeyboardManager(GLFWwindow *window, Camera &camera, Options &op
 
 void KeyboardManager::processInput(float delta, const map2D_f &hillsMap)
 {
+  BENCHMARK("KeyboardManager: processInput", true);
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 

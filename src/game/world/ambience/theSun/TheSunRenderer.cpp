@@ -7,6 +7,7 @@ TheSunRenderer::TheSunRenderer(TheSun &theSun)
 
 void TheSunRenderer::render()
 {
+  BENCHMARK("SunRenderer: draw", true);
   glPointSize(64.0f);
   RendererStateManager::setAmbienceRenderingState(true);
   theSun.basicGLBuffers.bind(VAO);

@@ -12,7 +12,9 @@
 class BenchmarkTimer
 {
 public:
+  BenchmarkTimer() = default;
   BenchmarkTimer(const std::string& text, bool perFrameBenchmark);
+  void operator()(const std::string& text, bool perFrameBenchmark);
   virtual ~BenchmarkTimer();
   static void finish(unsigned int updateCount);
   static void printBenchmarksPerApp(unsigned int updateCount);

@@ -36,6 +36,12 @@ BenchmarkTimer::BenchmarkTimer(const std::string &text, bool isPerFrame)
     }
 }
 
+void BenchmarkTimer::operator()(const std::string &text, bool perFrameBenchmark)
+{
+  benchmark = text;
+  perFrame = perFrameBenchmark;
+}
+
 BenchmarkTimer::~BenchmarkTimer()
 {
   endTime = chronoClock::now();
@@ -109,9 +115,9 @@ void BenchmarkTimer::printBenchmarksPerFrame(unsigned int updateCount, unsigned 
       benchmarkName[BENCH_NAME_MAX_LENGTH-1] = '\0';
       perFrameLog << benchmarkName << ": "
                   << std::setw(8) << bench->second
-                  << ",\t"
+                  << ",  "
                   << std::setw(8) << ((float)(bench->second) / ups)
-                  << "us (m.p.u.), invocations: "
+                  << "us (m.p.u.), calls: "
                   << benchmarksInvocations[bench->first]
                   << ",\t"
                   << std::setw(8) << ((float)(bench->second) / benchmarksInvocations[bench->first])

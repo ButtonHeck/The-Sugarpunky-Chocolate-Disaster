@@ -30,10 +30,7 @@ void HillsFacade::deserialize(std::ifstream &input)
 void HillsFacade::draw(bool useFC, bool useShadows, glm::mat4& projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
 {
   shaders.update(useFC, useShadows, projectionView, viewPosition, viewFrustum, generator.maxHeight);
-  {
-    BENCHMARK("Renderer: draw hills", true);
-    renderer.render(useFC);
-  }
+  renderer.render(useFC);
 }
 
 void HillsFacade::drawDepthmap()

@@ -26,13 +26,14 @@ void ShoreFacade::draw(glm::mat4 &projectionView, bool useShadows)
 {
   shader.update(projectionView, useShadows);
   {
-    BENCHMARK("Renderer: draw shore", true);
+    BENCHMARK("ShoreRenderer: draw", true);
     renderer.render();
   }
 }
 
 void ShoreFacade::drawDepthmap()
 {
+  BENCHMARK("ShoreRenderer: draw depthmap", true);
   renderer.render();
 }
 

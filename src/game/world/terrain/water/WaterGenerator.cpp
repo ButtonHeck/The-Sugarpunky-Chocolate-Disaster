@@ -399,7 +399,7 @@ void WaterGenerator::fattenKernel(int x, int y,
 
 void WaterGenerator::updateAnimationFrame(double time, Options& options)
 {
-  BENCHMARK("(SI/ST)Water: Update animation frame", true);
+  BENCHMARK("(ST)Water: Update animation frame", true);
   constexpr float NORMAL_Y_APPROX = 0.7f; //fake "true" normal calculation (use no sqrt and pow)
   using glm::vec3;
   using glm::vec4;

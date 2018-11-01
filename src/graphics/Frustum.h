@@ -2,6 +2,7 @@
 #define FRUSTUM_H
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
+#include "util/BenchmarkTimer.h"
 
 enum FRUSTUM_SIDE
 {

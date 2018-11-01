@@ -31,7 +31,7 @@ public:
   void loop();
 
 private:
-  void drawFrameObjects(glm::mat4& projectionView);
+  void drawFrame(glm::mat4& projectionView);
   void recreate();
   void updateDepthmap();
   void saveState();

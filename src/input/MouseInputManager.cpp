@@ -90,6 +90,7 @@ void MouseInputManager::updateCursorMappingCoordinates(Camera &camera,
                                                        const map2D_f& hillMap,
                                                        const map2D_f& buildableMap)
 {
+  BENCHMARK("MouseInputManager: update cursor", true);
   if (options.get(OPT_SHOW_CURSOR) && cursorToViewportDirection.y < 0.0f)
     {
       float ratio = camera.getPosition().y / (-cursorToViewportDirection.y);

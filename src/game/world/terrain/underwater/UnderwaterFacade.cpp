@@ -9,6 +9,7 @@ UnderwaterFacade::UnderwaterFacade(Shader &renderShader)
 
 void UnderwaterFacade::draw(glm::mat4& projectionView)
 {
+  BENCHMARK("UnderwaterRenderer: draw", true);
   shader.update(projectionView);
   renderer.render();
 }
