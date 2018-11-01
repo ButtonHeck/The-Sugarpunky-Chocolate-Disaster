@@ -7,7 +7,7 @@ BuildableFacade::BuildableFacade(Shader &buildableRenderShader, Shader &selected
     renderer(generator)
 {}
 
-void BuildableFacade::setup(map2D_f &landMap, map2D_f &hillsMap)
+void BuildableFacade::setup(const map2D_f &landMap, const map2D_f &hillsMap)
 {
   generator.setup(landMap, hillsMap);
 }
@@ -32,7 +32,7 @@ void BuildableFacade::drawSelected(MouseInputManager& mouseInput, glm::mat4& pro
     }
 }
 
-map2D_f &BuildableFacade::getMap()
+const map2D_f &BuildableFacade::getMap() const
 {
   return generator.getMap();
 }

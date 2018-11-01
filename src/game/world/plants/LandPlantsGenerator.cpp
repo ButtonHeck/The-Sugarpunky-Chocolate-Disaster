@@ -20,9 +20,9 @@ LandPlantsGenerator::LandPlantsGenerator()
   models.emplace_back("tree8/tree8.obj");
 }
 
-void LandPlantsGenerator::setup(map2D_f &baseMap,
-                                map2D_f &hillMap,
-                                map2D_i &distributionMap)
+void LandPlantsGenerator::setup(const map2D_f &baseMap,
+                                const map2D_f &hillMap,
+                                const map2D_i &distributionMap)
 {
   for (Model& model : models)
     {
@@ -33,9 +33,9 @@ void LandPlantsGenerator::setup(map2D_f &baseMap,
   setupMatrices(baseMap, hillMap, distributionMap);
 }
 
-void LandPlantsGenerator::setupMatrices(map2D_f &baseMap,
-                                        map2D_f &hillMap,
-                                        map2D_i &distributionMap)
+void LandPlantsGenerator::setupMatrices(const map2D_f &baseMap,
+                                        const map2D_f &hillMap,
+                                        const map2D_i &distributionMap)
 {
   auto matricesVecs = substituteMatricesStorage();
   std::uniform_real_distribution<float> modelSizeDistribution(0.27f, 0.32f);

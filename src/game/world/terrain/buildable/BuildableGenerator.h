@@ -8,7 +8,7 @@ class BuildableGenerator : public Generator
 public:
   BuildableGenerator();
   virtual ~BuildableGenerator() = default;
-  void setup(map2D_f &landMap, map2D_f &hillsMap);
+  void setup(const map2D_f &landMap, const map2D_f &hillsMap);
 
 private:
   friend class BuildableRenderer;

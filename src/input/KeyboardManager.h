@@ -11,7 +11,7 @@ class KeyboardManager
 {
 public:
   KeyboardManager(GLFWwindow* window, Camera& camera, Options& options);
-  void processInput(float delta, map2D_f &hillsMap);
+  void processInput(float delta, const map2D_f &hillsMap);
 private:
   bool keysPressed[GLFW_KEY_LAST];
   void processKey(int keyCode, OPTION option);

@@ -10,7 +10,7 @@ class TextureManager
 public:
   TextureManager(TextureLoader& loader);
   virtual ~TextureManager();
-  void createUnderwaterReliefTexture(map2D_f& waterMap);
+  void createUnderwaterReliefTexture(const map2D_f &waterMap);
   GLuint& get(int unit);
 private:
   TextureLoader& loader;

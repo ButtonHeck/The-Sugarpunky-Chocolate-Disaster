@@ -1,6 +1,6 @@
 #include "game/world/terrain/shore/ShoreGenerator.h"
 
-ShoreGenerator::ShoreGenerator(map2D_f &waterMap)
+ShoreGenerator::ShoreGenerator(const map2D_f &waterMap)
   :
     Generator(),
     waterMap(waterMap)

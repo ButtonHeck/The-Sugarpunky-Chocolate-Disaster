@@ -21,7 +21,7 @@ public:
   glm::mat4 getViewMatrix() const;
   void processMouseCursor(float xOffset, float yOffset);
   void processMouseScroll(float yOffset);
-  void processKeyboardInput(float delta, MOVE_DIRECTION dir, map2D_f& hillsMap);
+  void processKeyboardInput(float delta, MOVE_DIRECTION dir, const map2D_f& hillsMap);
   void switchFPSmode();
   bool getFPSmode() const;
   float getZoom() const;

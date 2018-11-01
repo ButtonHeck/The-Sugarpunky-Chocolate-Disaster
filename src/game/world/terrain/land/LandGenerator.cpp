@@ -9,7 +9,7 @@ LandGenerator::LandGenerator()
   basicGLBuffers.add(INSTANCE_VBO);
 }
 
-void LandGenerator::setup(map2D_f &shoreMap)
+void LandGenerator::setup(const map2D_f &shoreMap)
 {
   initializeMap(chunkMap);
   generateMap(shoreMap);
@@ -20,7 +20,7 @@ void LandGenerator::setup(map2D_f &shoreMap)
   fillCellBufferData();
 }
 
-void LandGenerator::generateMap(map2D_f& shoreMap)
+void LandGenerator::generateMap(const map2D_f &shoreMap)
 {
   for (unsigned int y = 0; y <= WORLD_HEIGHT; y++)
     {

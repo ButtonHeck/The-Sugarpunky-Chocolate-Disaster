@@ -10,13 +10,13 @@ class LandGenerator : public Generator
 public:
   LandGenerator();
   virtual ~LandGenerator() = default;
-  void setup(map2D_f &shoreMap);
+  void setup(const map2D_f &shoreMap);
 
 private:
   friend class LandRenderer;
   friend class LandFacade;
 
-  void generateMap(map2D_f &shoreMap);
+  void generateMap(const map2D_f &shoreMap);
   void splitChunks(int chunkSize);
   void splitCellChunks(int chunkSize);
   void fillBufferData();

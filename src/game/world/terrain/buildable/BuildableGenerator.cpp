@@ -8,7 +8,7 @@ BuildableGenerator::BuildableGenerator()
   basicGLBuffers.add(INSTANCE_VBO);
 }
 
-void BuildableGenerator::setup(map2D_f &landMap, map2D_f &hillsMap)
+void BuildableGenerator::setup(const map2D_f &landMap, const map2D_f &hillsMap)
 {
   for (unsigned int y = 2; y < WORLD_HEIGHT; y++)
     {

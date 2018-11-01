@@ -50,7 +50,7 @@ void Generator::createTiles(bool flat, bool createOnZeroTiles, map2D_f& map, flo
     }
 }
 
-map2D_f &Generator::getMap()
+const map2D_f &Generator::getMap() const
 {
   return map;
 }
@@ -78,10 +78,10 @@ void Generator::deserialize(std::ifstream &input)
     }
 }
 
-void smoothMapHeightChunks(map2D_f &map, float selfWeight, float evenWeight, float diagonalWeight)
+void Generator::smoothMapHeightChunks(map2D_f &map, float selfWeight, float evenWeight, float diagonalWeight)
 {
   map2D_f shoreMapSmoothed;
-  initializeMap(shoreMapSmoothed);
+  Generator::initializeMap(shoreMapSmoothed);
   for (unsigned int y = 1; y < WORLD_HEIGHT; y++)
     {
       for (unsigned int x = 1; x < WORLD_WIDTH; x++)
@@ -104,7 +104,7 @@ void smoothMapHeightChunks(map2D_f &map, float selfWeight, float evenWeight, flo
   map.assign(shoreMapSmoothed.begin(), shoreMapSmoothed.end());
 }
 
-void smoothNormals(map2D_f &map, map2D_vec3 &normalMap)
+void Generator::smoothNormals(map2D_f &map, map2D_vec3 &normalMap)
 {
   using glm::vec3;
   normalMap.clear();

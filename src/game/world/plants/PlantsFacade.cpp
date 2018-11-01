@@ -9,7 +9,7 @@ PlantsFacade::PlantsFacade(Shader &renderPhongShader, Shader &renderGouraudShade
     renderer()
 {}
 
-void PlantsFacade::setup(map2D_f &baseMap, map2D_f &hillMap)
+void PlantsFacade::setup(const map2D_f &baseMap, const map2D_f &hillMap)
 {
   prepareDistributionMap(MODELS_DISTRIBUTION_FREQ);
   landPlantsGenerator.setup(baseMap, hillMap, distributionMap);
@@ -118,7 +118,7 @@ void PlantsFacade::deserialize(std::ifstream &input)
 
 void PlantsFacade::prepareDistributionMap(int cycles)
 {
-  initializeMap(distributionMap);
+  Generator::initializeMap(distributionMap);
   for (int cycle = 1; cycle <= cycles; cycle++)
     {
       for (unsigned int y = 0; y < distributionMap.size(); y++)

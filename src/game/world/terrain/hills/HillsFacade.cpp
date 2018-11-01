@@ -1,6 +1,6 @@
 #include "game/world/terrain/hills/HillsFacade.h"
 
-HillsFacade::HillsFacade(Shader &renderShader, Shader &cullingShader, map2D_f &waterMap)
+HillsFacade::HillsFacade(Shader &renderShader, Shader &cullingShader, const map2D_f &waterMap)
   :
     shaders(renderShader, cullingShader),
     generator(shaders, waterMap),
@@ -41,7 +41,7 @@ void HillsFacade::drawDepthmap()
   renderer.renderDepthmap();
 }
 
-map2D_f &HillsFacade::getMap()
+const map2D_f &HillsFacade::getMap() const
 {
   return generator.getMap();
 }

@@ -16,7 +16,7 @@ public:
   void draw(bool useCulling, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum);
   void bufferNewData();
   void updateAnimationFrame(double time, Options& options);
-  map2D_f& getMap();
+  const map2D_f& getMap() const;
 
 private:
   WaterShader shaders;

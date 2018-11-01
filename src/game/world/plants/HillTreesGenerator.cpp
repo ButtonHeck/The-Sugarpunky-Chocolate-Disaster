@@ -20,8 +20,8 @@ HillTreesGenerator::HillTreesGenerator()
   models.emplace_back("hillTree7/hillTree7.obj");
 }
 
-void HillTreesGenerator::setup(map2D_f &hillMap,
-                               map2D_i &distributionMap)
+void HillTreesGenerator::setup(const map2D_f &hillMap,
+                               const map2D_i &distributionMap)
 {
   for (Model& model : models)
     {
@@ -32,8 +32,8 @@ void HillTreesGenerator::setup(map2D_f &hillMap,
   setupMatrices(hillMap, distributionMap);
 }
 
-void HillTreesGenerator::setupMatrices(map2D_f &hillMap,
-                                       map2D_i &distributionMap)
+void HillTreesGenerator::setupMatrices(const map2D_f &hillMap,
+                                       const map2D_i &distributionMap)
 {
   auto matricesVecs = substituteMatricesStorage();
   std::uniform_real_distribution<float> modelSizeDistribution(0.36f, 0.51f);

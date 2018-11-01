@@ -8,7 +8,7 @@
 class ShoreGenerator : public Generator
 {
 public:
-  ShoreGenerator(map2D_f& waterMap);
+  ShoreGenerator(const map2D_f& waterMap);
   virtual ~ShoreGenerator() = default;
   void setup();
 
@@ -33,7 +33,7 @@ private:
   void fillBufferData();
   void bufferVertex(GLfloat* vertices, int offset, ShoreVertex vertex);
 
-  map2D_f& waterMap;
+  const map2D_f& waterMap;
   map2D_vec3 normalMap;
   std::default_random_engine randomizer;
 };

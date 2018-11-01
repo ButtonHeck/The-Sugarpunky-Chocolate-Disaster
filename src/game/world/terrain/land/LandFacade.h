@@ -8,11 +8,11 @@ class LandFacade
 {
 public:
   LandFacade(Shader& renderShader);
-  void setup(map2D_f& shoreMap);
+  void setup(const map2D_f& shoreMap);
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
   void draw(glm::mat4 &projectionView, bool useShadows, Frustum &viewFrustum, GLuint &texture);
-  map2D_f &getMap();
+  const map2D_f &getMap() const;
 
 private:
   LandShader shader;

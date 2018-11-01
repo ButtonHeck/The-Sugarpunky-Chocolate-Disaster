@@ -18,7 +18,7 @@ public:
   GLuint createFrameTexture(GLuint textureUnit);
   GLuint createDepthMapTexture(int width, int height, GLuint textureUnit);
   GLuint loadCubemap(const std::string& directory, GLuint textureUnit);
-  GLuint createUnderwaterReliefTexture(map2D_f& waterMap, GLuint textureUnit, GLint magFilter, GLint minFilter);
+  GLuint createUnderwaterReliefTexture(const map2D_f& waterMap, GLuint textureUnit, GLint magFilter, GLint minFilter);
   unsigned int getMaxMip(unsigned int width, unsigned int height);
 private:
   GLuint createAndBindTextureObject(GLenum target, GLuint textureUnit);

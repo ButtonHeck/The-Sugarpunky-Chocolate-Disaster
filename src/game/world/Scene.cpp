@@ -32,8 +32,8 @@ void Scene::setup()
 void Scene::recreate()
 {
   landFacade.reset(new LandFacade(shaderManager.get(SHADER_LAND)));
-  initializeMap(waterFacade.getMap());
-  initializeMap(hillsFacade.getMap());
+  Generator::initializeMap(const_cast<map2D_f&>(waterFacade.getMap()));
+  Generator::initializeMap(const_cast<map2D_f&>(hillsFacade.getMap()));
   setup();
 }
 

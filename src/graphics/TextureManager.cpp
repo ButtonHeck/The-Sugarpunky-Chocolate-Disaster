@@ -34,7 +34,7 @@ TextureManager::~TextureManager()
     glDeleteTextures(1, &(textures[i]));
 }
 
-void TextureManager::createUnderwaterReliefTexture(map2D_f &waterMap)
+void TextureManager::createUnderwaterReliefTexture(const map2D_f &waterMap)
 {
   textures[TEX_UNDERWATER_RELIEF] = loader.createUnderwaterReliefTexture(waterMap, TEX_UNDERWATER_RELIEF, GL_LINEAR, GL_LINEAR);
 }
