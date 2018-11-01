@@ -7,7 +7,8 @@
 #include "game/world/plants/HillTreesGenerator.h"
 #include "game/world/terrain/Generator.h"
 #include "game/world/plants/PlantsShader.h"
-#include "game/world/plants/PlantsRenderer.h"
+#include "game/world/plants/TreesRenderer.h"
+#include "game/world/plants/GrassRenderer.h"
 
 class Frustum;
 
@@ -28,12 +29,16 @@ public:
 
 private:
   void prepareDistributionMap(int cycles);
+  void prepareMeshesIndirectData(PlantGenerator& generator, const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);
+  void updateIndirectBufferData(PlantGenerator& generator);
+
   map2D_i distributionMap;
   PlantsShader shaders;
   LandPlantsGenerator landPlantsGenerator;
   GrassGenerator grassGenerator;
   HillTreesGenerator hillTreesGenerator;
-  PlantsRenderer renderer;
+  TreesRenderer treesRenderer;
+  GrassRenderer grassRenderer;
 };
 
 #endif // PLANTSFACADE_H

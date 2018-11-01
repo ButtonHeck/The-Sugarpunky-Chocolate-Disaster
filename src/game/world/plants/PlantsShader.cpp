@@ -7,23 +7,34 @@ PlantsShader::PlantsShader(Shader &renderPhongShader, Shader &renderGouraudShade
     shadowShader(shadowShader)
 {}
 
-void PlantsShader::update(glm::mat4 &projectionView,
-                          glm::vec3 &viewPosition,
-                          bool shadowOnTrees,
-                          bool useShadows,
-                          bool useFlatBlending)
+void PlantsShader::updateAllPlants(glm::mat4 &projectionView,
+                                glm::vec3 &viewPosition,
+                                bool usePhongShading,
+                                bool shadowOnTrees,
+                                bool useShadows,
+                                bool useFlatBlending)
 {
-  renderGouraudShader.use();
-  renderGouraudShader.setMat4("u_projectionView", projectionView);
-  renderGouraudShader.setVec3("u_viewPosition", viewPosition);
-  renderGouraudShader.setBool("u_shadow", shadowOnTrees);
-  renderGouraudShader.setBool("u_shadowEnable", useShadows);
-  renderGouraudShader.setBool("u_useFlatBlending", useFlatBlending);
+  Shader& shader = usePhongShading ? renderPhongShader : renderGouraudShader;
+  shader.use();
+  shader.setMat4("u_projectionView", projectionView);
+  shader.setVec3("u_viewPosition", viewPosition);
+  shader.setBool("u_shadow", shadowOnTrees);
+  shader.setBool("u_shadowEnable", useShadows);
+  shader.setBool("u_useFlatBlending", useFlatBlending);
+}
 
-  renderPhongShader.use();
-  renderPhongShader.setMat4("u_projectionView", projectionView);
-  renderPhongShader.setVec3("u_viewPosition", viewPosition);
-  renderPhongShader.setBool("u_shadow", shadowOnTrees);
-  renderPhongShader.setBool("u_shadowEnable", useShadows);
-  renderPhongShader.setBool("u_useFlatBlending", useFlatBlending);
+void PlantsShader::updateGrass(bool usePhongShading)
+{
+  Shader& shader = usePhongShading ? renderPhongShader : renderGouraudShader;
+  shader.use();
+  shader.setBool("u_shadow", false);
+  shader.setFloat("u_grassPosDistribution", glfwGetTime());
+  shader.setFloat("u_grassPosDistrubutionInfluence", glfwGetTime() * 4.2f);
+}
+
+void PlantsShader::switchToGrass(bool usePhongShading, bool isGrass)
+{
+  Shader& shader = usePhongShading ? renderPhongShader : renderGouraudShader;
+  shader.use();
+  shader.setBool("u_isGrass", isGrass);
 }

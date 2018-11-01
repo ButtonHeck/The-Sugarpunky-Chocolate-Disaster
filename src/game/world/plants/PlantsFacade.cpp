@@ -6,7 +6,8 @@ PlantsFacade::PlantsFacade(Shader &renderPhongShader, Shader &renderGouraudShade
     landPlantsGenerator(),
     grassGenerator(),
     hillTreesGenerator(),
-    renderer()
+    treesRenderer(),
+    grassRenderer()
 {}
 
 void PlantsFacade::setup(const map2D_f &baseMap, const map2D_f &hillMap)
@@ -19,51 +20,16 @@ void PlantsFacade::setup(const map2D_f &baseMap, const map2D_f &hillMap)
 
 void PlantsFacade::prepareMeshesIndirectData(const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum)
 {
-  auto& landPlants = landPlantsGenerator.getModels();
-  auto& hillTrees = hillTreesGenerator.getModels();
-  auto& grass = grassGenerator.getModels();
-  auto& landChunks = landPlantsGenerator.getChunks();
-  auto& hillChunks = hillTreesGenerator.getChunks();
-  auto& grassChunks = grassGenerator.getChunks();
-
-  for (unsigned int i = 0; i < landPlants.size(); i++)
-    {
-      Model& model = landPlants[i];
-      model.prepareMeshesIndirectData(landChunks, i, cameraPositionXZ, viewFrustum);
-    }
-  for (unsigned int i = 0; i < hillTrees.size(); i++)
-    {
-      Model& model = hillTrees[i];
-      model.prepareMeshesIndirectData(hillChunks, i, cameraPositionXZ, viewFrustum);
-    }
-  for (unsigned int i = 0; i < grass.size(); i++)
-    {
-      Model& model = grass[i];
-      model.prepareMeshesIndirectData(grassChunks, i, cameraPositionXZ, viewFrustum);
-    }
+  prepareMeshesIndirectData(landPlantsGenerator, cameraPositionXZ, viewFrustum);
+  prepareMeshesIndirectData(hillTreesGenerator, cameraPositionXZ, viewFrustum);
+  prepareMeshesIndirectData(grassGenerator, cameraPositionXZ, viewFrustum);
 }
 
 void PlantsFacade::updateIndirectBufferData()
 {
-  auto& landPlants = landPlantsGenerator.getModels();
-  auto& hillTrees = hillTreesGenerator.getModels();
-  auto& grass = grassGenerator.getModels();
-
-  for (unsigned int i = 0; i < landPlants.size(); i++)
-    {
-      Model& model = landPlants[i];
-      model.updateIndirectBufferData();
-    }
-  for (unsigned int i = 0; i < hillTrees.size(); i++)
-    {
-      Model& model = hillTrees[i];
-      model.updateIndirectBufferData();
-    }
-  for (unsigned int i = 0; i < grass.size(); i++)
-    {
-      Model& model = grass[i];
-      model.updateIndirectBufferData();
-    }
+  updateIndirectBufferData(landPlantsGenerator);
+  updateIndirectBufferData(hillTreesGenerator);
+  updateIndirectBufferData(grassGenerator);
 }
 
 void PlantsFacade::draw(glm::mat4& projectionView,
@@ -73,33 +39,39 @@ void PlantsFacade::draw(glm::mat4& projectionView,
                         bool useShadows,
                         bool useFlatBlending)
 {
-  shaders.update(projectionView,
-                 viewPosition,
-                 useShadowEmphasize,
-                 useShadows,
-                 useFlatBlending);
+  shaders.switchToGrass(usePhongShading, false);
+  shaders.updateAllPlants(projectionView,
+                          viewPosition,
+                          usePhongShading,
+                          useShadowEmphasize,
+                          useShadows,
+                          useFlatBlending);
   {
     BENCHMARK("Renderer: draw models", true);
-    renderer.render(landPlantsGenerator.getModels(),
-                    hillTreesGenerator.getModels(),
-                    grassGenerator.getModels(),
-                    usePhongShading ? shaders.renderPhongShader : shaders.renderGouraudShader,
-                    true,
-                    true,
-                    useFlatBlending);
+    treesRenderer.render(landPlantsGenerator.models,
+                         hillTreesGenerator.models,
+                         true,
+                         useFlatBlending);
   }
+
+  shaders.switchToGrass(usePhongShading, true);
+  shaders.updateGrass(usePhongShading);
+  grassRenderer.render(grassGenerator.models,
+                       true,
+                       useFlatBlending);
 }
 
 void PlantsFacade::drawDepthmap()
 {
   BENCHMARK("Renderer: draw models depthmap", true);
-  renderer.render(landPlantsGenerator.getModels(),
-                  hillTreesGenerator.getModels(),
-                  grassGenerator.getModels(),
-                  shaders.shadowShader,
-                  false,
-                  false,
-                  false);
+  shaders.shadowShader.use();
+  treesRenderer.render(landPlantsGenerator.models,
+                       hillTreesGenerator.models,
+                       false,
+                       false);
+  grassRenderer.render(grassGenerator.models,
+                       false,
+                       false);
 }
 
 void PlantsFacade::serialize(std::ofstream &output)
@@ -145,5 +117,25 @@ void PlantsFacade::prepareDistributionMap(int cycles)
             }
         }
     }
+}
 
+void PlantsFacade::prepareMeshesIndirectData(PlantGenerator &generator, const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum)
+{
+  auto& models = generator.models;
+  auto& chunks = generator.chunks;
+  for (unsigned int i = 0; i < models.size(); i++)
+    {
+      Model& model = models[i];
+      model.prepareMeshesIndirectData(chunks, i, cameraPositionXZ, viewFrustum);
+    }
+}
+
+void PlantsFacade::updateIndirectBufferData(PlantGenerator &generator)
+{
+  auto& models = generator.models;
+  for (unsigned int i = 0; i < models.size(); i++)
+    {
+      Model& model = models[i];
+      model.updateIndirectBufferData();
+    }
 }

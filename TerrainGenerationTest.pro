@@ -74,9 +74,10 @@ SOURCES += \
     src/game/world/ambience/theSun/TheSunRenderer.cpp \
     src/game/world/plants/PlantsFacade.cpp \
     src/game/world/plants/PlantsShader.cpp \
-    src/game/world/plants/PlantsRenderer.cpp \
     src/graphics/RendererStateManager.cpp \
-    src/game/world/Scene.cpp
+    src/game/world/Scene.cpp \
+    src/game/world/plants/GrassRenderer.cpp \
+    src/game/world/plants/TreesRenderer.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -150,10 +151,11 @@ HEADERS += \
     src/game/world/ambience/theSun/TheSunRenderer.h \
     src/game/world/plants/PlantsFacade.h \
     src/game/world/plants/PlantsShader.h \
-    src/game/world/plants/PlantsRenderer.h \
     src/graphics/RendererStateManager.h \
     src/util/typeAliases.h \
-    src/game/world/Scene.h
+    src/game/world/Scene.h \
+    src/game/world/plants/GrassRenderer.h \
+    src/game/world/plants/TreesRenderer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

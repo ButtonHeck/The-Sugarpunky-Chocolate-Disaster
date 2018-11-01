@@ -28,16 +28,6 @@ void PlantGenerator::setupModelChunks()
     }
 }
 
-std::vector<Model> &PlantGenerator::getModels()
-{
-  return models;
-}
-
-std::vector<ModelChunk> &PlantGenerator::getChunks()
-{
-  return chunks;
-}
-
 void PlantGenerator::serialize(std::ofstream &output)
 {
   for (unsigned int chunk = 0; chunk < chunks.size(); chunk++)
