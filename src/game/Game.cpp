@@ -46,6 +46,7 @@ void Game::setup()
 void Game::loop()
 {
   keyboard.processInput(CPU_timer.tick(), scene.getHillsFacade().getMap());
+  camera.processMouseCursor();
   glm::mat4 view = camera.getViewMatrix();
   glm::mat4 projectionView = projection * view;
   viewFrustum.updateFrustum(projectionView);

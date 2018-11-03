@@ -38,6 +38,7 @@ private:
   static bool cachedUniforms;
   GLuint loadShader(GLenum shaderType, const std::string& filename);
   GLuint ID;
+  std::string shaderName;
   int status;
   char infoLog[512];
   std::unordered_map<std::string, GLint> uniformCache;

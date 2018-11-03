@@ -4,7 +4,8 @@ Camera::Camera(glm::vec3 position)
   :
     zoom(FOV),
     moveSpeed(8),
-    mouseSensitivity(0.04f),
+    mouseSensitivity(0.015f),
+    accelerationSensitivity(0.001f),
     FPSmode(false),
     yaw(-90.0f),
     pitch(0.0f),
@@ -20,27 +21,32 @@ glm::mat4 Camera::getViewMatrix() const
   return glm::lookAt(position, position + front, worldUp);
 }
 
-void Camera::processMouseCursor(float xOffset, float yOffset)
+void Camera::updateAcceleration(float xOffset, float yOffset)
 {
-  xOffset *= mouseSensitivity;
-  yOffset *= mouseSensitivity;
-  yaw -= xOffset;
-  pitch -= yOffset;
+  accelerationX += xOffset * mouseSensitivity;
+  accelerationY += yOffset * mouseSensitivity;
+}
+
+void Camera::processMouseCursor()
+{
+  BENCHMARK("Camera: processMouse", true);
+  yaw -= accelerationX;
+  pitch -= accelerationY;
   if (pitch >= 89.9f)
     pitch = 89.9f;
   if (pitch <= -65.0f)
     pitch = -65.0f;
+
+  accelerationX *= 0.9f;
+  accelerationY *= 0.9f;
+
   updateVectors();
 }
 
 void Camera::processMouseScroll(float yOffset)
 {
-  zoom -= yOffset;
-  if (zoom >= 45.0f)
-    zoom = 45.0f;
-  if (zoom <= 1.0)
-    zoom = 1.0f;
-  updateVectors();
+  mouseSensitivity += yOffset * accelerationSensitivity;
+  mouseSensitivity = glm::clamp(mouseSensitivity, 0.002f, 0.02f);
 }
 
 void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir, const map2D_f &hillsMap)

@@ -23,6 +23,7 @@ public:
 private:
   MouseInputManager() = default;
   static void cursorMoveCallback(GLFWwindow*, double x, double y);
+  static void scrollCallback(GLFWwindow*, double, double y);
   static void cursorClickCallback(GLFWwindow*, int, int, int);
   glm::vec3 cursorToViewportDirection;
   float lastX, lastY;

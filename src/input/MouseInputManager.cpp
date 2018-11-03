@@ -19,6 +19,7 @@ void MouseInputManager::setCallbacks(GLFWwindow *window)
   glfwSetCursorPosCallback(window, cursorMoveCallback);
   glfwSetMouseButtonCallback(window, cursorClickCallback);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetScrollCallback(window, scrollCallback);
 }
 
 void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
@@ -62,7 +63,12 @@ void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
   float dy = y - mouseInput.lastY;
   mouseInput.lastX = x;
   mouseInput.lastY = y;
-  camera.processMouseCursor(dx, dy);
+  camera.updateAcceleration(dx, dy);
+}
+
+void MouseInputManager::scrollCallback(GLFWwindow *, double, double y)
+{
+  camera.processMouseScroll(y);
 }
 
 void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int action, int)

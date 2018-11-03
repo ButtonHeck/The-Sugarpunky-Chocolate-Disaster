@@ -3,6 +3,7 @@
 #include <fstream>
 #include "util/Settings.h"
 #include "util/typeAliases.h"
+#include "util/BenchmarkTimer.h"
 
 enum MOVE_DIRECTION
 {
@@ -19,7 +20,8 @@ class Camera
 public:
   Camera(glm::vec3 position);
   glm::mat4 getViewMatrix() const;
-  void processMouseCursor(float xOffset, float yOffset);
+  void updateAcceleration(float xOffset, float yOffset);
+  void processMouseCursor();
   void processMouseScroll(float yOffset);
   void processKeyboardInput(float delta, MOVE_DIRECTION dir, const map2D_f& hillsMap);
   void switchFPSmode();
@@ -39,6 +41,7 @@ public:
 private:
   //options
   float zoom, moveSpeed, mouseSensitivity;
+  float accelerationX, accelerationY, accelerationSensitivity;
   bool FPSmode;
   const float CAMERA_WORLD_BORDER_OFFSET = 8.0f;
   const float CAMERA_WORLD_MIN_HEIGHT = 2.0f;
