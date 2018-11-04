@@ -67,6 +67,10 @@ void KeyboardManager::processInput()
   {
       camera.setPitch(-90.0f);
     });
+  processKey(GLFW_KEY_E, [&]()
+  {
+      camera.switchAcceleration();
+    });
 
   //process camera
   camera.disableMoveAcceleration();

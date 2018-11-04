@@ -15,7 +15,6 @@ enum MOVE_DIRECTION
   DOWN
 };
 
-//TODO: add toggle for view/move acceleration mode on/off
 class Camera
 {
 public:
@@ -27,6 +26,7 @@ public:
   void updateAccelerations(MOVE_DIRECTION dir);
   void move(float delta, const map2D_f& hillsMap);
   void switchFPSmode();
+  void switchAcceleration();
   void disableMoveAcceleration();
   bool getFPSmode() const;
   float getZoom() const;
@@ -43,11 +43,12 @@ public:
 
 private:
   void updateVectors();
-  void diminishMoveAcceleration(float& accelerationDirection);
+  void diminishMoveAcceleration(float& accelerationDirectionValue);
   void moveCameraFrontAxial(float velocity);
 
   //options
   float zoom, moveSpeed, mouseSensitivity;
+  bool useAcceleration;
   float viewAccelerationX, viewAccelerationY, viewAccelerationSensitivity;
   float moveAccelerationSide, moveAccelerationY, moveAccelerationFront;
   float moveAccelerationSensitivity;

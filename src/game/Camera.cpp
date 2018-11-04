@@ -5,6 +5,7 @@ Camera::Camera(glm::vec3 position)
     zoom(FOV),
     moveSpeed(8),
     mouseSensitivity(0.015f),
+    useAcceleration(true),
     viewAccelerationSensitivity(0.001f),
     moveAccelerationSensitivity(0.05f),
     FPSmode(false),
@@ -38,8 +39,8 @@ void Camera::processMouseCursor()
   if (pitch <= -65.0f)
     pitch = -65.0f;
 
-  viewAccelerationX *= 0.85f;
-  viewAccelerationY *= 0.85f;
+  viewAccelerationX *= useAcceleration ? 0.85f : 0;
+  viewAccelerationY *= useAcceleration ? 0.85f : 0;
 
   updateVectors();
 }
@@ -55,40 +56,70 @@ void Camera::updateAccelerations(MOVE_DIRECTION dir)
   if (dir == FORWARD)
     {
       accumulateMoveFront = true;
-      moveAccelerationFront += moveAccelerationSensitivity;
-      moveAccelerationFront = glm::min(moveAccelerationFront, 1.0f);
+      if (!useAcceleration)
+        moveAccelerationFront = 1.0f;
+      else
+        {
+          moveAccelerationFront += moveAccelerationSensitivity;
+          moveAccelerationFront = glm::min(moveAccelerationFront, 1.0f);
+        }
     }
   else if (dir == BACKWARD)
     {
       accumulateMoveFront = true;
-      moveAccelerationFront -= moveAccelerationSensitivity;
-      moveAccelerationFront = glm::max(moveAccelerationFront, -1.0f);
+      if (!useAcceleration)
+        moveAccelerationFront = -1.0f;
+      else
+        {
+          moveAccelerationFront -= moveAccelerationSensitivity;
+          moveAccelerationFront = glm::max(moveAccelerationFront, -1.0f);
+        }
     }
 
   if (dir == RIGHT)
     {
       accumulateMoveSide = true;
-      moveAccelerationSide += moveAccelerationSensitivity;
-      moveAccelerationSide = glm::min(moveAccelerationSide, 1.0f);
+      if (!useAcceleration)
+        moveAccelerationSide = 1.0f;
+      else
+        {
+          moveAccelerationSide += moveAccelerationSensitivity;
+          moveAccelerationSide = glm::min(moveAccelerationSide, 1.0f);
+        }
     }
   else if (dir == LEFT)
     {
       accumulateMoveSide = true;
-      moveAccelerationSide -= moveAccelerationSensitivity;
-      moveAccelerationSide = glm::max(moveAccelerationSide, -1.0f);
+      if (!useAcceleration)
+        moveAccelerationSide = -1.0f;
+      else
+        {
+          moveAccelerationSide -= moveAccelerationSensitivity;
+          moveAccelerationSide = glm::max(moveAccelerationSide, -1.0f);
+        }
     }
 
   if (dir == UP)
     {
       accumulateMoveY = true;
-      moveAccelerationY += moveAccelerationSensitivity;
-      moveAccelerationY = glm::min(moveAccelerationY, 1.0f);
+      if (!useAcceleration)
+        moveAccelerationY = 1.0f;
+      else
+        {
+          moveAccelerationY += moveAccelerationSensitivity;
+          moveAccelerationY = glm::min(moveAccelerationY, 1.0f);
+        }
     }
   else if (dir == DOWN)
     {
       accumulateMoveY = true;
-      moveAccelerationY -= moveAccelerationSensitivity;
-      moveAccelerationY = glm::max(moveAccelerationY, -1.0f);
+      if (!useAcceleration)
+        moveAccelerationY = -1.0f;
+      else
+        {
+          moveAccelerationY -= moveAccelerationSensitivity;
+          moveAccelerationY = glm::max(moveAccelerationY, -1.0f);
+        }
     }
 }
 
@@ -155,6 +186,11 @@ void Camera::switchFPSmode()
   FPSmode = !FPSmode;
 }
 
+void Camera::switchAcceleration()
+{
+  useAcceleration = !useAcceleration;
+}
+
 void Camera::disableMoveAcceleration()
 {
   accumulateMoveSide = accumulateMoveFront = accumulateMoveY = false;
@@ -213,11 +249,19 @@ void Camera::updateVectors()
   up = glm::normalize(glm::cross(right, front));
 }
 
-void Camera::diminishMoveAcceleration(float &accelerationDirection)
+void Camera::diminishMoveAcceleration(float &accelerationDirectionValue)
 {
-  accelerationDirection *= 0.9f;
-  if (glm::abs(accelerationDirection) <= 0.01f)
-    accelerationDirection = 0.0f;
+  if (!useAcceleration)
+    {
+      accelerationDirectionValue = 0.0f;
+      return;
+    }
+  else
+    {
+      accelerationDirectionValue *= 0.92f;
+      if (glm::abs(accelerationDirectionValue) <= 0.01f)
+        accelerationDirectionValue = 0.0f;
+    }
 }
 
 int Camera::getMapCoordX() const
