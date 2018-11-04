@@ -7,7 +7,7 @@ KeyboardManager::KeyboardManager(GLFWwindow *window, Camera &camera, Options &op
     options(options)
 {}
 
-void KeyboardManager::processInput(float delta, const map2D_f &hillsMap)
+void KeyboardManager::processInput()
 {
   BENCHMARK("KeyboardManager: processInput", true);
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -69,18 +69,25 @@ void KeyboardManager::processInput(float delta, const map2D_f &hillsMap)
     });
 
   //process camera
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    camera.processKeyboardInput(delta, FORWARD, hillsMap);
-  else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    camera.processKeyboardInput(delta, BACKWARD, hillsMap);
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    camera.processKeyboardInput(delta, LEFT, hillsMap);
-  else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    camera.processKeyboardInput(delta, RIGHT, hillsMap);
-  if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    camera.processKeyboardInput(delta, DOWN, hillsMap);
-  else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-    camera.processKeyboardInput(delta, UP, hillsMap);
+  camera.disableMoveAcceleration();
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS &&
+      glfwGetKey(window, GLFW_KEY_S) != GLFW_PRESS)
+    camera.updateAccelerations(FORWARD);
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS &&
+      glfwGetKey(window, GLFW_KEY_W) != GLFW_PRESS)
+    camera.updateAccelerations(BACKWARD);
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS &&
+      glfwGetKey(window, GLFW_KEY_D) != GLFW_PRESS)
+    camera.updateAccelerations(LEFT);
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS &&
+      glfwGetKey(window, GLFW_KEY_A) != GLFW_PRESS)
+    camera.updateAccelerations(RIGHT);
+  if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+      glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_PRESS)
+    camera.updateAccelerations(DOWN);
+  if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS &&
+      glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_PRESS)
+    camera.updateAccelerations(UP);
 }
 
 void KeyboardManager::processKey(int keyCode, OPTION option)

@@ -63,7 +63,7 @@ void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
   float dy = y - mouseInput.lastY;
   mouseInput.lastX = x;
   mouseInput.lastY = y;
-  camera.updateAcceleration(dx, dy);
+  camera.updateViewAcceleration(dx, dy);
 }
 
 void MouseInputManager::scrollCallback(GLFWwindow *, double, double y)

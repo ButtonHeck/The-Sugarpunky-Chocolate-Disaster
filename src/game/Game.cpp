@@ -45,11 +45,17 @@ void Game::setup()
 
 void Game::loop()
 {
-  keyboard.processInput(CPU_timer.tick(), scene.getHillsFacade().getMap());
-  camera.processMouseCursor();
-  glm::mat4 view = camera.getViewMatrix();
-  glm::mat4 projectionView = projection * view;
-  viewFrustum.updateFrustum(projectionView);
+  glm::mat4 view, projectionView;
+  {
+    BENCHMARK("Game loop: process input and camera", true);
+    float timerDelta = CPU_timer.tick();
+    keyboard.processInput();
+    camera.processMouseCursor();
+    camera.move(timerDelta, scene.getHillsFacade().getMap());
+    view = camera.getViewMatrix();
+    projectionView = projection * view;
+    viewFrustum.updateFrustum(projectionView);
+  }
 
   {
     BENCHMARK("Game loop: wait mesh buffer ready", true);

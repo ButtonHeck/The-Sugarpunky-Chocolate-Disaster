@@ -5,7 +5,8 @@ Camera::Camera(glm::vec3 position)
     zoom(FOV),
     moveSpeed(8),
     mouseSensitivity(0.015f),
-    accelerationSensitivity(0.001f),
+    viewAccelerationSensitivity(0.001f),
+    moveAccelerationSensitivity(0.05f),
     FPSmode(false),
     yaw(-90.0f),
     pitch(0.0f),
@@ -21,65 +22,111 @@ glm::mat4 Camera::getViewMatrix() const
   return glm::lookAt(position, position + front, worldUp);
 }
 
-void Camera::updateAcceleration(float xOffset, float yOffset)
+void Camera::updateViewAcceleration(float xOffset, float yOffset)
 {
-  accelerationX += xOffset * mouseSensitivity;
-  accelerationY += yOffset * mouseSensitivity;
+  viewAccelerationX += xOffset * mouseSensitivity;
+  viewAccelerationY += yOffset * mouseSensitivity;
 }
 
 void Camera::processMouseCursor()
 {
   BENCHMARK("Camera: processMouse", true);
-  yaw -= accelerationX;
-  pitch -= accelerationY;
+  yaw -= viewAccelerationX;
+  pitch -= viewAccelerationY;
   if (pitch >= 89.9f)
     pitch = 89.9f;
   if (pitch <= -65.0f)
     pitch = -65.0f;
 
-  accelerationX *= 0.9f;
-  accelerationY *= 0.9f;
+  viewAccelerationX *= 0.85f;
+  viewAccelerationY *= 0.85f;
 
   updateVectors();
 }
 
 void Camera::processMouseScroll(float yOffset)
 {
-  mouseSensitivity += yOffset * accelerationSensitivity;
+  mouseSensitivity += yOffset * viewAccelerationSensitivity;
   mouseSensitivity = glm::clamp(mouseSensitivity, 0.002f, 0.02f);
 }
 
-void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir, const map2D_f &hillsMap)
+void Camera::updateAccelerations(MOVE_DIRECTION dir)
 {
-  float velocity = delta * moveSpeed;
-
   if (dir == FORWARD)
-    moveCameraFrontAxial(true, velocity);
+    {
+      accumulateMoveFront = true;
+      moveAccelerationFront += moveAccelerationSensitivity;
+      moveAccelerationFront = glm::min(moveAccelerationFront, 1.0f);
+    }
   else if (dir == BACKWARD)
-    moveCameraFrontAxial(false, velocity);
+    {
+      accumulateMoveFront = true;
+      moveAccelerationFront -= moveAccelerationSensitivity;
+      moveAccelerationFront = glm::max(moveAccelerationFront, -1.0f);
+    }
 
   if (dir == RIGHT)
-    position += right * velocity;
+    {
+      accumulateMoveSide = true;
+      moveAccelerationSide += moveAccelerationSensitivity;
+      moveAccelerationSide = glm::min(moveAccelerationSide, 1.0f);
+    }
   else if (dir == LEFT)
-    position -= right * velocity;
+    {
+      accumulateMoveSide = true;
+      moveAccelerationSide -= moveAccelerationSensitivity;
+      moveAccelerationSide = glm::max(moveAccelerationSide, -1.0f);
+    }
+
   if (dir == UP)
-    position += worldUp * velocity;
+    {
+      accumulateMoveY = true;
+      moveAccelerationY += moveAccelerationSensitivity;
+      moveAccelerationY = glm::min(moveAccelerationY, 1.0f);
+    }
   else if (dir == DOWN)
-    position -= worldUp * velocity;
+    {
+      accumulateMoveY = true;
+      moveAccelerationY -= moveAccelerationSensitivity;
+      moveAccelerationY = glm::max(moveAccelerationY, -1.0f);
+    }
+}
 
-  if (position.x > HALF_WORLD_WIDTH - CAMERA_WORLD_BORDER_OFFSET)
-    position.x = HALF_WORLD_WIDTH - CAMERA_WORLD_BORDER_OFFSET;
-  else if (position.x < -HALF_WORLD_WIDTH + CAMERA_WORLD_BORDER_OFFSET)
-    position.x = -HALF_WORLD_WIDTH + CAMERA_WORLD_BORDER_OFFSET;
-  if (position.z > HALF_WORLD_HEIGHT - CAMERA_WORLD_BORDER_OFFSET)
-    position.z = HALF_WORLD_HEIGHT - CAMERA_WORLD_BORDER_OFFSET;
-  else if (position.z < -HALF_WORLD_HEIGHT + CAMERA_WORLD_BORDER_OFFSET)
-    position.z = -HALF_WORLD_HEIGHT + CAMERA_WORLD_BORDER_OFFSET;
+void Camera::move(float delta, const map2D_f &hillsMap)
+{
+  BENCHMARK("Camera: move", true);
+  float velocity = delta * moveSpeed;
 
-  if (position.y < CAMERA_WORLD_MIN_HEIGHT)
-    position.y = CAMERA_WORLD_MIN_HEIGHT;
-  if (position.y > CAMERA_WORLD_MAX_HEIGHT)
-    position.y = CAMERA_WORLD_MAX_HEIGHT;
+  if (moveAccelerationFront != 0.0f)
+    {
+      if (!accumulateMoveFront)
+        diminishMoveAcceleration(moveAccelerationFront);
+      moveCameraFrontAxial(velocity);
+    }
+
+  if (moveAccelerationSide != 0.0f)
+    {
+      if (!accumulateMoveSide)
+        diminishMoveAcceleration(moveAccelerationSide);
+      glm::vec3 move = right * velocity * moveAccelerationSide;
+      position += move;
+    }
+
+  if (moveAccelerationY != 0.0f)
+    {
+      if (!accumulateMoveY)
+        diminishMoveAcceleration(moveAccelerationY);
+      glm::vec3 move = worldUp * velocity * moveAccelerationY;
+      position += move;
+    }
+
+  position.x = glm::clamp(position.x,
+                          -HALF_WORLD_WIDTH + CAMERA_WORLD_BORDER_OFFSET,
+                          HALF_WORLD_WIDTH - CAMERA_WORLD_BORDER_OFFSET);
+  position.y = glm::clamp(position.y, CAMERA_WORLD_MIN_HEIGHT, CAMERA_WORLD_MAX_HEIGHT);
+  position.z = glm::clamp(position.z,
+                          -HALF_WORLD_HEIGHT + CAMERA_WORLD_BORDER_OFFSET,
+                          HALF_WORLD_HEIGHT - CAMERA_WORLD_BORDER_OFFSET);
 
   if (hillsMap[position.z + HALF_WORLD_HEIGHT][position.x + HALF_WORLD_WIDTH] > 0 ||
       hillsMap[position.z + HALF_WORLD_HEIGHT + 1][position.x + HALF_WORLD_WIDTH] > 0 ||
@@ -106,6 +153,11 @@ void Camera::processKeyboardInput(float delta, MOVE_DIRECTION dir, const map2D_f
 void Camera::switchFPSmode()
 {
   FPSmode = !FPSmode;
+}
+
+void Camera::disableMoveAcceleration()
+{
+  accumulateMoveSide = accumulateMoveFront = accumulateMoveY = false;
 }
 
 bool Camera::getFPSmode() const
@@ -161,6 +213,13 @@ void Camera::updateVectors()
   up = glm::normalize(glm::cross(right, front));
 }
 
+void Camera::diminishMoveAcceleration(float &accelerationDirection)
+{
+  accelerationDirection *= 0.9f;
+  if (glm::abs(accelerationDirection) <= 0.01f)
+    accelerationDirection = 0.0f;
+}
+
 int Camera::getMapCoordX() const
 {
   return glm::clamp((int)(WORLD_WIDTH + glm::clamp(position.x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F)) - HALF_WORLD_WIDTH, 0, WORLD_WIDTH - 1);
@@ -186,13 +245,16 @@ void Camera::deserialize(std::ifstream &input)
   updateVectors();
 }
 
-void Camera::moveCameraFrontAxial(bool forward, float velocity)
+void Camera::moveCameraFrontAxial(float velocity)
 {
+  float moveDistance = velocity * moveAccelerationFront;
   if (!FPSmode)
-    position += forward ? front * velocity : -front * velocity;
+    {
+      position += front * moveDistance;
+    }
   else
     {
-      position.x += forward ? front.x * velocity : -front.x * velocity;
-      position.z += forward ? front.z * velocity : -front.z * velocity;
+      position.x += front.x * moveDistance;
+      position.z += front.z * moveDistance;
     }
 }
