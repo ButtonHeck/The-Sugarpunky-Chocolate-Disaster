@@ -42,8 +42,8 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   Shader* shader = nullptr;
   bindShaderUnit(shader, SHADER_HILLS);
   shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  shader->setInt("u_flat_diffuse", TEX_LAND_x2);
-  shader->setInt("u_flat_diffuse2", TEX_LAND_2_x2);
+  shader->setInt("u_flat_diffuse", TEX_LAND);
+  shader->setInt("u_flat_diffuse2", TEX_LAND_2);
   shader->setInt("u_hills_diffuse", TEX_HILL);
   shader->setInt("u_hills_diffuse2", TEX_HILL_2);
   shader->setInt("u_hills_specular", TEX_HILL_SPECULAR);

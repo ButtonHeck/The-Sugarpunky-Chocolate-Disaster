@@ -81,7 +81,7 @@ void createCanyonRings(inout vec4 fragColor, vec3 circleColor, float minHeight, 
 void main()
 {
     vec4 sampledDiffuse =
-        mix(mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), v_TextureMixRatio),
+        mix(mix(texture(u_flat_diffuse, v_TexCoords * 2.0), texture(u_flat_diffuse2, v_TexCoords * 2.0), v_TextureMixRatio),
             mix(texture(u_hills_diffuse, v_TexCoords), texture(u_hills_diffuse2, v_TexCoords), v_TextureMixRatio),
             clamp(v_PosHeight, 0.0, 1.0));
     vec4 sampledSpecular =
