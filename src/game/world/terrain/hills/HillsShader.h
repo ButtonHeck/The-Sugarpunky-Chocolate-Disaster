@@ -6,7 +6,7 @@
 class HillsShader
 {
 public:
-  HillsShader(Shader& renderShader, Shader& cullingShader);
+  HillsShader(Shader& renderShader, Shader& cullingShader, Shader& normalsShader);
   void setupCulling();
   void update(bool useFC,
               bool useShadows,
@@ -14,10 +14,13 @@ public:
               glm::vec3& viewPosition,
               Frustum& viewFrustum,
               float maxHillHeight);
+  void updateNormals(glm::mat4& projectionView);
+  void debugRenderMode(bool enable);
 private:
   friend class HillsRenderer;
   Shader& renderShader;
   Shader& cullingShader;
+  Shader& normalsShader;
 };
 
 #endif // HILLSSHADER_H

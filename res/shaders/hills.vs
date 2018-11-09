@@ -15,7 +15,6 @@ out vec3  v_FragPos;
 out vec3  v_Normal;
 out vec2  v_TexCoords;
 out float v_PosHeight;
-out float v_TextureMixRatio;
 out float v_SpecularComponent;
 out vec3  v_ProjectedCoords;
 
@@ -31,7 +30,6 @@ void main()
 
     vec3 DiffuseTextureMix = texture(u_diffuse_mix_map, i_pos.xz * u_mapDimension + 0.5).rgb;
     v_PosHeight = i_pos.y * (1.0 - DiffuseTextureMix.g * 0.75);
-    v_TextureMixRatio = DiffuseTextureMix.r;
 
     //calculate how much each normal (flat or hill) would define the actual shading normal vector
     float TransitionRatio = clamp(i_pos.y, 0.0, 1.0);

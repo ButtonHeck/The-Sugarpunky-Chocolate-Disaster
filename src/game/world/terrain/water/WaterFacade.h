@@ -8,12 +8,12 @@
 class WaterFacade
 {
 public:
-  WaterFacade(Shader& renderShader, Shader& cullingShader);
+  WaterFacade(Shader& renderShader, Shader& cullingShader, Shader &normalsShader);
   void setup();
   void setupConsiderTerrain();
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
-  void draw(bool useCulling, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum);
+  void draw(bool useCulling, bool useDebugRender, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum);
   void bufferNewData();
   void updateAnimationFrame(double time, Options& options);
   const map2D_f& getMap() const;

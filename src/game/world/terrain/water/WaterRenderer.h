@@ -9,6 +9,7 @@ class WaterRenderer
 public:
   WaterRenderer(WaterShader& shaders, WaterGenerator& generator);
   void render(bool useCulling);
+  void debugRender(GLenum primitiveType);
 private:
   WaterShader& shaders;
   WaterGenerator& generator;

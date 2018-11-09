@@ -10,6 +10,7 @@ public:
   HillsRenderer(HillsShader& shaders, HillsGenerator& generator);
   void render(bool useFC);
   void renderDepthmap();
+  void debugRender(GLenum primitiveType);
 private:
   HillsShader& shaders;
   HillsGenerator& generator;

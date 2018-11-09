@@ -6,7 +6,6 @@ in vec3  v_FragPos;
 in float v_PositionDiffuseComponent;
 in vec2  v_TexCoords;
 in float v_PosHeight;
-in float v_TextureMixRatio;
 in float v_DiffuseComponent;
 in vec3  v_Normal;
 in vec3  v_ProjectedCoords;
@@ -16,10 +15,13 @@ uniform sampler2D u_flat_diffuse;
 uniform sampler2D u_flat_diffuse2;
 uniform sampler2D u_sand_diffuse;
 uniform sampler2D u_sand_diffuse2;
+uniform sampler2D u_diffuse_mix_map;
+uniform float     u_mapDimension;
 uniform sampler2D u_normal_map;
 uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
+uniform bool      u_debugRenderMode;
 
 const float SHADOW_INFLUENCE = 0.4;
 const float DESATURATING_INFLUENCE = 1.1 - SHADOW_INFLUENCE;
@@ -60,45 +62,51 @@ vec4 desaturate(vec4 fragColor, float desaturatingValue)
 
 void main()
 {
-    vec4 sampledDiffuse =
-                mix(mix(texture(u_sand_diffuse, v_TexCoords), texture(u_sand_diffuse2, v_TexCoords), v_TextureMixRatio),
-                    mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), v_TextureMixRatio),
-                    clamp(v_PosHeight + 1.0, 0.0, 1.0));
-
-    vec3 ambientColor = 0.12 * sampledDiffuse.rgb;
-    vec3 diffuseColor;
-    vec3 resultColor;
-
-    //swizzle z and y to rotate Z-aligned normal map 90 degrees around X axis, as like we look at it upside down
-    //also scale up texture mapping a bit
-    vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
-    vec3 ShadingNormalFlat = ShadingNormal;
-    ShadingNormalFlat.y *= 0.4;
-    ShadingNormalFlat = normalize(ShadingNormalFlat);
-    vec3 ShadingNormalShore = ShadingNormal;
-    ShadingNormalShore.y *= 0.4;
-    ShadingNormalShore = normalize(ShadingNormalShore + v_Normal);
-
-    float DiffuseComponentShore = max(dot(ShadingNormalShore, u_lightDir), 0.0);
-    float DiffuseComponentFlat = dot(ShadingNormalFlat, u_lightDir);
-    float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentShore, clamp(v_PosHeight, 0.0, 1.0));
-
-    if (u_shadowEnable)
-    {
-        float luminosity = calculateLuminosity(ShadingNormalShore);
-        diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent * v_PositionDiffuseComponent;
-        resultColor = ambientColor + diffuseColor;
-        o_FragColor = vec4(resultColor, sampledDiffuse.a);
-        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - DESATURATING_INFLUENCE);
-        o_FragColor = desaturate(o_FragColor, desaturatingValue);
-    }
+    if (u_debugRenderMode)
+        o_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
     else
     {
-        diffuseColor = sampledDiffuse.rgb * diffuseComponent * v_PositionDiffuseComponent;
-        resultColor = ambientColor + diffuseColor;
-        o_FragColor = vec4(resultColor, sampledDiffuse.a);
-    }
+        float DiffuseTextureMix = texture(u_diffuse_mix_map, v_FragPos.xz * u_mapDimension + 0.5).r;
+        vec4 sampledDiffuse =
+                    mix(mix(texture(u_sand_diffuse, v_TexCoords), texture(u_sand_diffuse2, v_TexCoords), DiffuseTextureMix),
+                        mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), DiffuseTextureMix),
+                        clamp(v_PosHeight + 1.0, 0.0, 1.0));
 
-    float flatBlend = clamp(v_FlatBlend, 0.0, 1.0);
-    o_FragColor.a = mix(0.0, 1.0, flatBlend);
+        vec3 ambientColor = 0.12 * sampledDiffuse.rgb;
+        vec3 diffuseColor;
+        vec3 resultColor;
+
+        //swizzle z and y to rotate Z-aligned normal map 90 degrees around X axis, as like we look at it upside down
+        //also scale up texture mapping a bit
+        vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
+        vec3 ShadingNormalFlat = ShadingNormal;
+        ShadingNormalFlat.y *= 0.4;
+        ShadingNormalFlat = normalize(ShadingNormalFlat);
+        vec3 ShadingNormalShore = ShadingNormal;
+        ShadingNormalShore.y *= 0.4;
+        ShadingNormalShore = normalize(ShadingNormalShore + v_Normal);
+
+        float DiffuseComponentShore = max(dot(ShadingNormalShore, u_lightDir), 0.0);
+        float DiffuseComponentFlat = dot(ShadingNormalFlat, u_lightDir);
+        float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentShore, clamp(v_PosHeight, 0.0, 1.0));
+
+        if (u_shadowEnable)
+        {
+            float luminosity = calculateLuminosity(ShadingNormalShore);
+            diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent * v_PositionDiffuseComponent;
+            resultColor = ambientColor + diffuseColor;
+            o_FragColor = vec4(resultColor, sampledDiffuse.a);
+            float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - DESATURATING_INFLUENCE);
+            o_FragColor = desaturate(o_FragColor, desaturatingValue);
+        }
+        else
+        {
+            diffuseColor = sampledDiffuse.rgb * diffuseComponent * v_PositionDiffuseComponent;
+            resultColor = ambientColor + diffuseColor;
+            o_FragColor = vec4(resultColor, sampledDiffuse.a);
+        }
+
+        float flatBlend = clamp(v_FlatBlend, 0.0, 1.0);
+        o_FragColor.a = mix(0.0, 1.0, flatBlend);
+    }
 }

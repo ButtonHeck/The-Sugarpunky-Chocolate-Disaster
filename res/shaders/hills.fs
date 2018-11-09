@@ -7,7 +7,6 @@ in vec3  v_FragPos;
 in vec3  v_Normal;
 in vec2  v_TexCoords;
 in float v_PosHeight;
-in float v_TextureMixRatio;
 in float v_SpecularComponent;
 in vec3  v_ProjectedCoords;
 
@@ -23,6 +22,7 @@ uniform sampler2D u_shadowMap;
 uniform sampler2D u_normal_map;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
+uniform bool      u_debugRenderMode;
 
 const float TEXEL_SIZE_MULTIPLIER_OFFSET = 1.0 + clamp((v_PosHeight * 10.0), 0.0, 1.5);
 const vec2  TEXEL_SIZE = 0.75 / textureSize(u_shadowMap, 0);
@@ -80,49 +80,55 @@ void createCanyonRings(inout vec4 fragColor, vec3 circleColor, float minHeight, 
 
 void main()
 {
-    vec4 sampledDiffuse =
-        mix(mix(texture(u_flat_diffuse, v_TexCoords * 2.0), texture(u_flat_diffuse2, v_TexCoords * 2.0), v_TextureMixRatio),
-            mix(texture(u_hills_diffuse, v_TexCoords), texture(u_hills_diffuse2, v_TexCoords), v_TextureMixRatio),
-            clamp(v_PosHeight, 0.0, 1.0));
-    vec4 sampledSpecular =
-        mix(vec4(0.0), texture(u_hills_specular, v_TexCoords), clamp(v_PosHeight, 0.0, 1.0));
-
-    vec3 ambientColor = 0.12 * sampledDiffuse.rgb;
-    vec3 diffuseColor;
-    vec3 specularColor;
-    vec3 resultColor;
-
-    //swizzle z and y to rotate Z-aligned normal map 90 degrees around X axis, as like we look at it upside down
-    //also scale up texture mapping a bit
-    vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
-    vec3 ShadingNormalFlat = ShadingNormal;
-    ShadingNormalFlat.y *= 0.4;
-    ShadingNormalFlat = normalize(ShadingNormalFlat);
-    vec3 ShadingNormalHill = ShadingNormal;
-    ShadingNormalHill.y *= 0.5;
-    ShadingNormalHill = normalize(v_Normal * 4.0 - ShadingNormalHill * 3.2);
-
-    float DiffuseComponentHill = max(dot(ShadingNormalHill, u_lightDir), 0.0) + 0.1;
-    float DiffuseComponentFlat = dot(ShadingNormalFlat, u_lightDir);
-    float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentHill, clamp(v_PosHeight, 0.0, 1.0));
-
-    if (u_shadowEnable)
-    {
-        float luminosity = calculateLuminosity(ShadingNormalHill);
-        diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
-        specularColor = v_SpecularComponent * sampledSpecular.rgb;
-        resultColor = ambientColor + diffuseColor + specularColor;
-        o_FragColor = vec4(resultColor, sampledDiffuse.a);
-        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - DESATURATING_INFLUENCE);
-        o_FragColor = desaturate(o_FragColor, desaturatingValue);
-    }
+    if (u_debugRenderMode)
+        o_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
     else
     {
-        diffuseColor = sampledDiffuse.rgb * diffuseComponent;
-        specularColor = v_SpecularComponent * sampledSpecular.rgb;
-        resultColor = ambientColor + diffuseColor + specularColor;
-        o_FragColor = vec4(resultColor, sampledDiffuse.a);
-    }
+        float DiffuseTextureMix = texture(u_diffuse_mix_map, v_FragPos.xz * u_mapDimension + 0.5).r;
+        vec4 sampledDiffuse =
+            mix(mix(texture(u_flat_diffuse, v_TexCoords * 2.0), texture(u_flat_diffuse2, v_TexCoords * 2.0), DiffuseTextureMix),
+                mix(texture(u_hills_diffuse, v_TexCoords), texture(u_hills_diffuse2, v_TexCoords), DiffuseTextureMix),
+                clamp(v_PosHeight, 0.0, 1.0));
+        vec4 sampledSpecular =
+            mix(vec4(0.0), texture(u_hills_specular, v_TexCoords), clamp(v_PosHeight, 0.0, 1.0));
 
-    createCanyonRings(o_FragColor, ambientColor + diffuseColor, MIN_CANYON_CIRCLE_HEIGHT, u_maxHillHeight, NUM_CANYON_CIRCLES, 4);
+        vec3 ambientColor = 0.12 * sampledDiffuse.rgb;
+        vec3 diffuseColor;
+        vec3 specularColor;
+        vec3 resultColor;
+
+        //swizzle z and y to rotate Z-aligned normal map 90 degrees around X axis, as like we look at it upside down
+        //also scale up texture mapping a bit
+        vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
+        vec3 ShadingNormalFlat = ShadingNormal;
+        ShadingNormalFlat.y *= 0.4;
+        ShadingNormalFlat = normalize(ShadingNormalFlat);
+        vec3 ShadingNormalHill = ShadingNormal;
+        ShadingNormalHill.y *= 0.5;
+        ShadingNormalHill = normalize(v_Normal * 4.0 - ShadingNormalHill * 3.2);
+
+        float DiffuseComponentHill = max(dot(ShadingNormalHill, u_lightDir), 0.0) + 0.1;
+        float DiffuseComponentFlat = dot(ShadingNormalFlat, u_lightDir);
+        float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentHill, clamp(v_PosHeight, 0.0, 1.0));
+
+        if (u_shadowEnable)
+        {
+            float luminosity = calculateLuminosity(ShadingNormalHill);
+            diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
+            specularColor = v_SpecularComponent * sampledSpecular.rgb;
+            resultColor = ambientColor + diffuseColor + specularColor;
+            o_FragColor = vec4(resultColor, sampledDiffuse.a);
+            float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - DESATURATING_INFLUENCE);
+            o_FragColor = desaturate(o_FragColor, desaturatingValue);
+        }
+        else
+        {
+            diffuseColor = sampledDiffuse.rgb * diffuseComponent;
+            specularColor = v_SpecularComponent * sampledSpecular.rgb;
+            resultColor = ambientColor + diffuseColor + specularColor;
+            o_FragColor = vec4(resultColor, sampledDiffuse.a);
+        }
+
+        createCanyonRings(o_FragColor, ambientColor + diffuseColor, MIN_CANYON_CIRCLE_HEIGHT, u_maxHillHeight, NUM_CANYON_CIRCLES, 4);
+    }
 }

@@ -1,8 +1,8 @@
 #include "ShoreFacade.h"
 
-ShoreFacade::ShoreFacade(Shader &renderShader, const map2D_f &waterMap)
+ShoreFacade::ShoreFacade(Shader &renderShader, Shader &normalsShader, const map2D_f &waterMap)
   :
-    shader(renderShader),
+    shader(renderShader, normalsShader),
     generator(waterMap),
     renderer(generator)
 {}
@@ -22,13 +22,22 @@ void ShoreFacade::deserialize(std::ifstream &input)
   generator.deserialize(input);
 }
 
-void ShoreFacade::draw(glm::mat4 &projectionView, bool useShadows)
+void ShoreFacade::draw(glm::mat4 &projectionView, bool useShadows, bool useDebugRender)
 {
   shader.update(projectionView, useShadows);
   {
     BENCHMARK("ShoreRenderer: draw", true);
+    shader.debugRenderMode(false);
     renderer.render();
   }
+
+  if (useDebugRender)
+    {
+      shader.debugRenderMode(true);
+      renderer.debugRender(GL_TRIANGLES);
+      shader.updateNormals(projectionView);
+      renderer.debugRender(GL_POINTS);
+    }
 }
 
 void ShoreFacade::drawDepthmap()

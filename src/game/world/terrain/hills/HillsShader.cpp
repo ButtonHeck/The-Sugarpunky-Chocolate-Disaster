@@ -1,9 +1,10 @@
 #include "HillsShader.h"
 
-HillsShader::HillsShader(Shader &renderShader, Shader &cullingShader)
+HillsShader::HillsShader(Shader &renderShader, Shader &cullingShader, Shader &normalsShader)
   :
     renderShader(renderShader),
-    cullingShader(cullingShader)
+    cullingShader(cullingShader),
+    normalsShader(normalsShader)
 {}
 
 void HillsShader::setupCulling()
@@ -34,4 +35,16 @@ void HillsShader::update(bool useFC,
   renderShader.setVec3("u_viewPosition", viewPosition);
   renderShader.setBool("u_shadowEnable", useShadows);
   renderShader.setFloat("u_maxHillHeight", maxHillHeight);
+}
+
+void HillsShader::updateNormals(glm::mat4 &projectionView)
+{
+  normalsShader.use();
+  normalsShader.setMat4("u_projectionView", projectionView);
+}
+
+void HillsShader::debugRenderMode(bool enable)
+{
+  renderShader.use();
+  renderShader.setBool("u_debugRenderMode", enable);
 }

@@ -21,6 +21,7 @@ Options::Options()
   options[OPT_MODELS_FLAT_BLENDING] = true;
   options[OPT_MODELS_PHONG_SHADING] = true;
   options[OPT_POLYGON_LINE] = false;
+  options[OPT_DEBUG_RENDER] = false;
 }
 
 bool Options::get(OPTION value)

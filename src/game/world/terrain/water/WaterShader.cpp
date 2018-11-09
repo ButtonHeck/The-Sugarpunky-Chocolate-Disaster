@@ -1,9 +1,10 @@
 #include "WaterShader.h"
 
-WaterShader::WaterShader(Shader &renderShader, Shader &cullingShader)
+WaterShader::WaterShader(Shader &renderShader, Shader &cullingShader, Shader &normalsShader)
   :
     renderShader(renderShader),
-    cullingShader(cullingShader)
+    cullingShader(cullingShader),
+    normalsShader(normalsShader)
 {}
 
 void WaterShader::setupCulling()
@@ -27,4 +28,16 @@ void WaterShader::update(bool useFC, glm::mat4 &projectionView, glm::vec3 &viewP
   renderShader.use();
   renderShader.setMat4("u_projectionView", projectionView);
   renderShader.setVec3("u_viewPosition", viewPosition);
+}
+
+void WaterShader::updateNormals(glm::mat4 &projectionView)
+{
+  normalsShader.use();
+  normalsShader.setMat4("u_projectionView", projectionView);
+}
+
+void WaterShader::debugRenderMode(bool enable)
+{
+  renderShader.use();
+  renderShader.setBool("u_debugRenderMode", enable);
 }

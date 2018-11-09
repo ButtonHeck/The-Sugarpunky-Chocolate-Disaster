@@ -42,3 +42,16 @@ void WaterRenderer::render(bool useCulling)
       glDisable(GL_BLEND);
     }
 }
+
+void WaterRenderer::debugRender(GLenum primitiveType)
+{
+  BENCHMARK("WaterRenderer: draw normals", true);
+  generator.basicGLBuffers.bind(VAO);
+  glLineWidth(2.0f);
+  glDisable(GL_CULL_FACE);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glDrawArrays(primitiveType, 0, generator.tiles.size() * VERTICES_PER_TILE);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glEnable(GL_CULL_FACE);
+  glLineWidth(1.0f);
+}

@@ -5,11 +5,21 @@ Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &tex
     shaderManager(shaderManager),
     options(options),
     textureManager(textureManager),
-    waterFacade(shaderManager.get(SHADER_WATER), shaderManager.get(SHADER_WATER_CULLING)),
-    hillsFacade(shaderManager.get(SHADER_HILLS), shaderManager.get(SHADER_HILLS_CULLING), waterFacade.getMap()),
-    shoreFacade(shaderManager.get(SHADER_SHORE), waterFacade.getMap()),
-    buildableFacade(shaderManager.get(SHADER_BUILDABLE), shaderManager.get(SHADER_SELECTED)),
-    plantsFacade(shaderManager.get(SHADER_MODELS_PHONG), shaderManager.get(SHADER_MODELS), shaderManager.get(SHADER_SHADOW_MODELS)),
+    waterFacade(shaderManager.get(SHADER_WATER),
+                shaderManager.get(SHADER_WATER_CULLING),
+                shaderManager.get(SHADER_WATER_NORMALS)),
+    hillsFacade(shaderManager.get(SHADER_HILLS),
+                shaderManager.get(SHADER_HILLS_CULLING),
+                shaderManager.get(SHADER_HILLS_NORMALS),
+                waterFacade.getMap()),
+    shoreFacade(shaderManager.get(SHADER_SHORE),
+                shaderManager.get(SHADER_SHORE_NORMALS),
+                waterFacade.getMap()),
+    buildableFacade(shaderManager.get(SHADER_BUILDABLE),
+                    shaderManager.get(SHADER_SELECTED)),
+    plantsFacade(shaderManager.get(SHADER_MODELS_PHONG),
+                 shaderManager.get(SHADER_MODELS),
+                 shaderManager.get(SHADER_SHADOW_MODELS)),
     skyboxFacade(shaderManager.get(SHADER_SKYBOX)),
     theSunFacade(shaderManager.get(SHADER_SUN)),
     underwaterFacade(shaderManager.get(SHADER_UNDERWATER))
@@ -76,18 +86,21 @@ void Scene::drawWorld(glm::mat4& projectionView,
   this->projectionView = projectionView;
   glm::vec3 viewPosition = camera.getPosition();
 
-  hillsFacade.draw(options.get(OPT_HILLS_CULLING), options.get(OPT_USE_SHADOWS), projectionView, viewPosition, viewFrustum);
+  hillsFacade.draw(options.get(OPT_HILLS_CULLING),
+                   options.get(OPT_USE_SHADOWS),
+                   options.get(OPT_DEBUG_RENDER),
+                   projectionView, viewPosition, viewFrustum);
   if (options.get(OPT_DRAW_LAND))
     landFacade->draw(projectionView, options.get(OPT_USE_SHADOWS), viewFrustum, textureManager.get(TEX_LAND));
   underwaterFacade.draw(projectionView);
-  shoreFacade.draw(projectionView, options.get(OPT_USE_SHADOWS));
+  shoreFacade.draw(projectionView, options.get(OPT_USE_SHADOWS), options.get(OPT_DEBUG_RENDER));
   if (options.get(OPT_DRAW_TREES))
     plantsFacade.draw(projectionView,
-                       viewPosition,
-                       options.get(OPT_MODELS_PHONG_SHADING),
-                       options.get(OPT_MODELS_SHADOW_EMPHASIZE),
-                       options.get(OPT_USE_SHADOWS),
-                       options.get(OPT_MODELS_FLAT_BLENDING));
+                      viewPosition,
+                      options.get(OPT_MODELS_PHONG_SHADING),
+                      options.get(OPT_MODELS_SHADOW_EMPHASIZE),
+                      options.get(OPT_USE_SHADOWS),
+                      options.get(OPT_MODELS_FLAT_BLENDING));
   if (options.get(OPT_DRAW_BUILDABLE))
     buildableFacade.drawBuildable(projectionView);
   if (options.get(OPT_SHOW_CURSOR))
@@ -96,7 +109,7 @@ void Scene::drawWorld(glm::mat4& projectionView,
       buildableFacade.drawSelected(mouseInput, projectionView);
     }
   if (options.get(OPT_DRAW_WATER))
-    waterFacade.draw(options.get(OPT_WATER_CULLING), projectionView, viewPosition, viewFrustum);
+    waterFacade.draw(options.get(OPT_WATER_CULLING), options.get(OPT_DEBUG_RENDER), projectionView, viewPosition, viewFrustum);
   theSunFacade.draw(skyProjectionView);
   skyboxFacade.draw(skyProjectionView, viewPosition);
 }

@@ -1,8 +1,8 @@
 #include "game/world/terrain/hills/HillsFacade.h"
 
-HillsFacade::HillsFacade(Shader &renderShader, Shader &cullingShader, const map2D_f &waterMap)
+HillsFacade::HillsFacade(Shader &renderShader, Shader &cullingShader, Shader &normalsShader, const map2D_f &waterMap)
   :
-    shaders(renderShader, cullingShader),
+    shaders(renderShader, cullingShader, normalsShader),
     generator(shaders, waterMap),
     renderer(shaders, generator)
 {}
@@ -27,10 +27,24 @@ void HillsFacade::deserialize(std::ifstream &input)
   generator.deserialize(input);
 }
 
-void HillsFacade::draw(bool useFC, bool useShadows, glm::mat4& projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
+void HillsFacade::draw(bool useFC,
+                       bool useShadows,
+                       bool useDebugRender,
+                       glm::mat4& projectionView,
+                       glm::vec3 &viewPosition,
+                       Frustum &viewFrustum)
 {
   shaders.update(useFC, useShadows, projectionView, viewPosition, viewFrustum, generator.maxHeight);
+  shaders.debugRenderMode(false);
   renderer.render(useFC);
+
+  if (useDebugRender)
+    {
+      shaders.debugRenderMode(true);
+      renderer.debugRender(GL_TRIANGLES);
+      shaders.updateNormals(projectionView);
+      renderer.debugRender(GL_POINTS);
+    }
 }
 
 void HillsFacade::drawDepthmap()

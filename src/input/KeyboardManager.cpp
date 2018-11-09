@@ -46,6 +46,7 @@ void KeyboardManager::processInput()
   processKey(GLFW_KEY_G, OPT_DRAW_WATER);
   processKey(GLFW_KEY_B, OPT_MODELS_FLAT_BLENDING);
   processKey(GLFW_KEY_L, OPT_POLYGON_LINE);
+  processKey(GLFW_KEY_P, OPT_DEBUG_RENDER);
 
   processKey(GLFW_KEY_KP_8, [&]()
   {

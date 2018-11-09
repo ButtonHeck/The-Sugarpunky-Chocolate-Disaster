@@ -419,7 +419,12 @@ DISTFILES += \
     res/textures/cubemapSky/up.png \
     res/textures/theSun.png \
     res/shaders/theSun.vs \
-    res/shaders/theSun.fs
+    res/shaders/theSun.fs \
+    res/shaders/shore_normals.vs \
+    res/shaders/hills_normals.vs \
+    res/shaders/water_normals.vs \
+    res/shaders/_normals.gs \
+    res/shaders/_normals.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

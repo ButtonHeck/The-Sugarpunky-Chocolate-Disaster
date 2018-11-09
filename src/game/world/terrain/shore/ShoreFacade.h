@@ -8,11 +8,11 @@
 class ShoreFacade
 {
 public:
-  ShoreFacade(Shader &renderShader, const map2D_f& waterMap);
+  ShoreFacade(Shader &renderShader, Shader &normalsShader, const map2D_f& waterMap);
   void setup();
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
-  void draw(glm::mat4& projectionView, bool useShadows);
+  void draw(glm::mat4& projectionView, bool useShadows, bool useDebugRender);
   void drawDepthmap();
   const map2D_f& getMap() const;
 
