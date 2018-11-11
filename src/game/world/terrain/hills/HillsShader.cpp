@@ -14,12 +14,12 @@ void HillsShader::setupCulling()
   cullingShader.link();
 }
 
-void HillsShader::update(bool useFC,
-                         bool useShadows,
-                         glm::mat4 &projectionView,
+void HillsShader::update(glm::mat4 &projectionView,
                          glm::vec3 &viewPosition,
                          Frustum &viewFrustum,
-                         float maxHillHeight)
+                         float maxHillHeight,
+                         bool useFC,
+                         bool useShadows)
 {
   if (useFC)
     {

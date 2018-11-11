@@ -27,14 +27,14 @@ void HillsFacade::deserialize(std::ifstream &input)
   generator.deserialize(input);
 }
 
-void HillsFacade::draw(bool useFC,
-                       bool useShadows,
-                       bool useDebugRender,
-                       glm::mat4& projectionView,
+void HillsFacade::draw(glm::mat4& projectionView,
                        glm::vec3 &viewPosition,
-                       Frustum &viewFrustum)
+                       Frustum &viewFrustum,
+                       bool useFC,
+                       bool useShadows,
+                       bool useDebugRender)
 {
-  shaders.update(useFC, useShadows, projectionView, viewPosition, viewFrustum, generator.maxHeight);
+  shaders.update(projectionView, viewPosition, viewFrustum, generator.maxHeight, useFC, useShadows);
   shaders.debugRenderMode(false);
   renderer.render(useFC);
 

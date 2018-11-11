@@ -14,12 +14,12 @@ public:
   void createTilesAndBufferData();
   void serialize(std::ofstream &output);
   void deserialize(std::ifstream& input);
-  void draw(bool useFC,
-            bool useShadows,
-            bool useDebugRender,
-            glm::mat4& projectionView,
+  void draw(glm::mat4& projectionView,
             glm::vec3 &viewPosition,
-            Frustum &viewFrustum);
+            Frustum &viewFrustum,
+            bool useFC,
+            bool useShadows,
+            bool useDebugRender);
   void drawDepthmap();
   const map2D_f& getMap() const;
 

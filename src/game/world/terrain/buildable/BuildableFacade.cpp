@@ -21,7 +21,7 @@ void BuildableFacade::drawBuildable(glm::mat4& projectionView)
   }
 }
 
-void BuildableFacade::drawSelected(MouseInputManager& mouseInput, glm::mat4& projectionView)
+void BuildableFacade::drawSelected(glm::mat4& projectionView, MouseInputManager& mouseInput)
 {
   if (generator.getMap()[mouseInput.getCursorMapZ()][mouseInput.getCursorMapX()] != 0)
     {

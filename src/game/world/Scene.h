@@ -43,7 +43,6 @@ private:
   ShaderManager& shaderManager;
   Options& options;
   TextureManager& textureManager;
-  glm::mat4 projectionView;
 
   WaterFacade waterFacade;
   HillsFacade hillsFacade;

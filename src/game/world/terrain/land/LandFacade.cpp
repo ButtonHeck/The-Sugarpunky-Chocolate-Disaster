@@ -22,7 +22,7 @@ void LandFacade::deserialize(std::ifstream &input)
   generator.deserialize(input);
 }
 
-void LandFacade::draw(glm::mat4& projectionView, bool useShadows, Frustum &viewFrustum, GLuint& texture)
+void LandFacade::draw(glm::mat4& projectionView, Frustum &viewFrustum, bool useShadows, GLuint& texture)
 {
   shader.update(projectionView, useShadows);
   renderer.render(viewFrustum, texture);

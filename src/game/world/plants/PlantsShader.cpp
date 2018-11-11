@@ -1,10 +1,9 @@
 #include "PlantsShader.h"
 
-PlantsShader::PlantsShader(Shader &renderPhongShader, Shader &renderGouraudShader, Shader &shadowShader)
+PlantsShader::PlantsShader(Shader &renderPhongShader, Shader &renderGouraudShader)
   :
     renderPhongShader(renderPhongShader),
-    renderGouraudShader(renderGouraudShader),
-    shadowShader(shadowShader)
+    renderGouraudShader(renderGouraudShader)
 {}
 
 void PlantsShader::updateAllPlants(glm::mat4 &projectionView,

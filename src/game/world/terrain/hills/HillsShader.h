@@ -8,12 +8,12 @@ class HillsShader
 public:
   HillsShader(Shader& renderShader, Shader& cullingShader, Shader& normalsShader);
   void setupCulling();
-  void update(bool useFC,
-              bool useShadows,
-              glm::mat4& projectionView,
+  void update(glm::mat4& projectionView,
               glm::vec3& viewPosition,
               Frustum& viewFrustum,
-              float maxHillHeight);
+              float maxHillHeight,
+              bool useFC,
+              bool useShadows);
   void updateNormals(glm::mat4& projectionView);
   void debugRenderMode(bool enable);
 private:

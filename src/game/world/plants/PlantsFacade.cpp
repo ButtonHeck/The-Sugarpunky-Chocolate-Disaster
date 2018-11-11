@@ -1,8 +1,8 @@
 #include "game/world/plants/PlantsFacade.h"
 
-PlantsFacade::PlantsFacade(Shader &renderPhongShader, Shader &renderGouraudShader, Shader &shadowShader)
+PlantsFacade::PlantsFacade(Shader &renderPhongShader, Shader &renderGouraudShader)
   :
-    shaders(renderPhongShader, renderGouraudShader, shadowShader),
+    shaders(renderPhongShader, renderGouraudShader),
     landPlantsGenerator(),
     grassGenerator(),
     hillTreesGenerator(),
@@ -61,7 +61,6 @@ void PlantsFacade::draw(glm::mat4& projectionView,
 
 void PlantsFacade::drawDepthmap()
 {
-  shaders.shadowShader.use();
   treesRenderer.render(landPlantsGenerator.models,
                        hillTreesGenerator.models,
                        false,

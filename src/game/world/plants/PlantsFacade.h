@@ -15,7 +15,7 @@ class Frustum;
 class PlantsFacade
 {
 public:
-  PlantsFacade(Shader& renderPhongShader, Shader& renderGouraudShader, Shader& shadowShader);
+  PlantsFacade(Shader& renderPhongShader, Shader& renderGouraudShader);
   virtual ~PlantsFacade() = default;
   void setup(const map2D_f &baseMap, const map2D_f &hillMap);
   void prepareMeshesIndirectData(const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);

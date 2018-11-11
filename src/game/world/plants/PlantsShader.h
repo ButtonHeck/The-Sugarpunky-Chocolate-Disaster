@@ -5,7 +5,7 @@
 class PlantsShader
 {
 public:
-  PlantsShader(Shader& renderPhongShader, Shader& renderGouraudShader, Shader& shadowShader);
+  PlantsShader(Shader& renderPhongShader, Shader& renderGouraudShader);
   void updateAllPlants(glm::mat4& projectionView,
                     glm::vec3& viewPosition,
                     bool usePhongShading,
@@ -18,7 +18,6 @@ private:
   friend class PlantsFacade;
   Shader& renderPhongShader;
   Shader& renderGouraudShader;
-  Shader& shadowShader;
 };
 
 #endif // PLANTSSHADER_H
