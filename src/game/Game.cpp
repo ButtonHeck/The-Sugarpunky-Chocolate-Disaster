@@ -34,7 +34,7 @@ void Game::setup()
 {
   BENCHMARK("Game: setup", false);
   Shader::cacheUniformsMode(UNIFORMS_NO_CACHE);
-  RendererStateManager::setInitialRenderingState(options.get(OPT_USE_MULTISAMPLING));
+  RendererStateManager::setInitialRenderingState(options[OPT_USE_MULTISAMPLING]);
   MouseInputManager::setCallbacks(window);
   scene.setup();
   setupThreads();
@@ -64,21 +64,21 @@ void Game::loop()
     meshBufferReady = false;
   }
 
-  if (options.get(OPT_RECREATE_TERRAIN_REQUEST))
+  if (options[OPT_RECREATE_TERRAIN_REQUEST])
     recreate();
 
-  if ((options.get(OPT_CREATE_SHADOW_MAP_REQUEST) || updateCount % 16 == 0) && options.get(OPT_USE_SHADOWS))
+  if ((options[OPT_CREATE_SHADOW_MAP_REQUEST] || updateCount % 16 == 0) && options[OPT_USE_SHADOWS])
     updateDepthmap();
 
   //render our world onto separate FBO as usual
-  bool multisamplingEnabled = options.get(OPT_USE_MULTISAMPLING);
+  bool multisamplingEnabled = options[OPT_USE_MULTISAMPLING];
   screenBuffer.bindAppropriateFBO(multisamplingEnabled);
   drawFrame(projectionView);
   screenBuffer.draw(multisamplingEnabled);
 
-  if (options.get(OPT_SAVE_REQUEST))
+  if (options[OPT_SAVE_REQUEST])
     saveState();
-  if (options.get(OPT_LOAD_REQUEST))
+  if (options[OPT_LOAD_REQUEST])
     loadState();
 
   {
@@ -92,9 +92,9 @@ void Game::drawFrame(glm::mat4& projectionView)
 {
   BENCHMARK("Game loop: draw frame", true);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glPolygonMode(GL_FRONT_AND_BACK, options.get(OPT_POLYGON_LINE) ? GL_LINE : GL_FILL);
+  glPolygonMode(GL_FRONT_AND_BACK, options[OPT_POLYGON_LINE] ? GL_LINE : GL_FILL);
 
-  if (options.get(OPT_ANIMATE_WATER))
+  if (options[OPT_ANIMATE_WATER])
     {
       BENCHMARK("Water: buffer animation frame", true);
       scene.getWaterFacade().bufferNewData();
@@ -113,7 +113,7 @@ void Game::drawFrame(glm::mat4& projectionView)
   //start updating right after we've used it and before we need that data to be updated and buffered again
   meshBufferNeedUpdate = true;
 
-  if (options.get(OPT_DRAW_DEBUG_TEXT))
+  if (options[OPT_DRAW_DEBUG_TEXT])
     {
       textManager.addText(screenResolution,
                           camera,
@@ -134,7 +134,7 @@ void Game::recreate()
     std::this_thread::yield();//busy wait until water thread has done its business...and business is good
   waterNeedNewKeyFrame = false; //explicitly bypass water animation frame update routine
   scene.recreate();
-  options.set(OPT_RECREATE_TERRAIN_REQUEST, false);
+  options[OPT_RECREATE_TERRAIN_REQUEST] = false;
   waterNeedNewKeyFrame = true; //it's okay now to begin animating water
 }
 
@@ -143,13 +143,13 @@ void Game::updateDepthmap()
   depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
   scene.drawWorldDepthmap();
   depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
-  options.set(OPT_CREATE_SHADOW_MAP_REQUEST, false);
+  options[OPT_CREATE_SHADOW_MAP_REQUEST] = false;
 }
 
 void Game::saveState()
 {
   saveLoadManager.saveToFile(SAVES_DIR + "testSave.txt");
-  options.set(OPT_SAVE_REQUEST, false);
+  options[OPT_SAVE_REQUEST] = false;
 }
 
 void Game::loadState()
@@ -159,7 +159,7 @@ void Game::loadState()
   waterNeedNewKeyFrame = false;
   saveLoadManager.loadFromFile(SAVES_DIR + "testSave.txt");
   scene.load();
-  options.set(OPT_LOAD_REQUEST, false);
+  options[OPT_LOAD_REQUEST] = false;
   waterNeedNewKeyFrame = true;
 }
 
@@ -187,8 +187,8 @@ void Game::setupThreads()
       while(!glfwWindowShouldClose(window))
             {
               if (waterNeedNewKeyFrame &&
-                  options.get(OPT_ANIMATE_WATER) &&
-                  options.get(OPT_DRAW_WATER))
+                  options[OPT_ANIMATE_WATER] &&
+                  options[OPT_DRAW_WATER])
                 {
                   waterKeyFrameReady = false;
                   scene.getWaterFacade().updateAnimationFrame(glfwGetTime(), options);

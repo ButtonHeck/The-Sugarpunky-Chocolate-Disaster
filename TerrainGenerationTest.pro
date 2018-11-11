@@ -155,7 +155,8 @@ HEADERS += \
     src/util/typeAliases.h \
     src/game/world/Scene.h \
     src/game/world/plants/GrassRenderer.h \
-    src/game/world/plants/TreesRenderer.h
+    src/game/world/plants/TreesRenderer.h \
+    src/game/OptionsUnits.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

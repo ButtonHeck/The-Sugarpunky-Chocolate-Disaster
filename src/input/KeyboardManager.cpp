@@ -22,21 +22,21 @@ void KeyboardManager::processInput()
   processKey(GLFW_KEY_F7, OPT_MODELS_PHONG_SHADING);
   processKey(GLFW_KEY_F9, [&]()
   {
-      options.set(OPT_RECREATE_TERRAIN_REQUEST, true);
-      options.set(OPT_CREATE_SHADOW_MAP_REQUEST, true);
+      options[OPT_RECREATE_TERRAIN_REQUEST] = true;
+      options[OPT_CREATE_SHADOW_MAP_REQUEST] = true;
     });
-  processKey(GLFW_KEY_F10, [&](){options.set(OPT_SAVE_REQUEST, true);});
+  processKey(GLFW_KEY_F10, [&](){options[OPT_SAVE_REQUEST] = true;});
   processKey(GLFW_KEY_F11, [&]()
   {
-      options.set(OPT_LOAD_REQUEST, true);
-      options.set(OPT_CREATE_SHADOW_MAP_REQUEST, true);
+      options[OPT_LOAD_REQUEST] = true;
+      options[OPT_CREATE_SHADOW_MAP_REQUEST] = true;
     });
   processKey(GLFW_KEY_T, OPT_HILLS_CULLING);
   processKey(GLFW_KEY_Y, OPT_WATER_CULLING);
   processKey(GLFW_KEY_M, [&]()
   {
       options.toggle(OPT_USE_MULTISAMPLING);
-      if (options.get(OPT_USE_MULTISAMPLING))
+      if (options[OPT_USE_MULTISAMPLING])
         glEnable(GL_MULTISAMPLE);
       else
         glDisable(GL_MULTISAMPLE);

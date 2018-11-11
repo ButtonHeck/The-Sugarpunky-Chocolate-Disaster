@@ -54,7 +54,7 @@ void TextManager::addText(ScreenResolution& screenResolution,
   const glm::vec3& cursorToViewportDirection = mouseInput.getCursorToViewportDirection();
   ss.str("");
   ss << "Cursor at: ";
-  if (!options.get(OPT_SHOW_CURSOR))
+  if (!options[OPT_SHOW_CURSOR])
     ss << "inactive";
   else
     {
@@ -69,7 +69,7 @@ void TextManager::addText(ScreenResolution& screenResolution,
 
   ss.str("");
   ss << "Cursor on map: ";
-  if (!options.get(OPT_SHOW_CURSOR))
+  if (!options[OPT_SHOW_CURSOR])
     ss << "inactive";
   else
     {
@@ -83,15 +83,15 @@ void TextManager::addText(ScreenResolution& screenResolution,
   addString(ss.str(), 10.0f, scrHeight - 115.0f, 0.18f);
 
   ss.str("");
-  ss << "Water culling: " << std::boolalpha << options.get(OPT_WATER_CULLING);
+  ss << "Water culling: " << std::boolalpha << options[OPT_WATER_CULLING];
   addString(ss.str(), 10.0f, 20.0f, 0.18f);
 
   ss.str("");
-  ss << "Hills culling: " << std::boolalpha << options.get(OPT_HILLS_CULLING);
+  ss << "Hills culling: " << std::boolalpha << options[OPT_HILLS_CULLING];
   addString(ss.str(), 10.0f, 40.0f, 0.18f);
 
   ss.str("");
-  ss << "Models Phong: " << std::boolalpha << options.get(OPT_MODELS_PHONG_SHADING);
+  ss << "Models Phong: " << std::boolalpha << options[OPT_MODELS_PHONG_SHADING];
   addString(ss.str(), 10.0f, 60.0f, 0.18f);
 
   VRAM_Monitor& vram = VRAM_Monitor::getInstance();

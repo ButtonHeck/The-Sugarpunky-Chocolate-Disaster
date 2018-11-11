@@ -24,17 +24,13 @@ Options::Options()
   options[OPT_DEBUG_RENDER] = false;
 }
 
-bool Options::get(OPTION value)
+std::bitset<OPTIONS_COUNT>::reference Options::operator[](OPTION value)
 {
   return options[value];
 }
 
-void Options::set(OPTION value, bool flag)
-{
-  options[value] = flag;
-}
-
 void Options::toggle(OPTION value)
 {
-  options[value] = !options[value];
+  options.flip(value);
 }
+

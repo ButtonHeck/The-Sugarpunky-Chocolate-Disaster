@@ -412,7 +412,7 @@ void WaterGenerator::updateAnimationFrame(double time, Options& options)
   unsigned int numWaterTiles = tiles.size();
   for (unsigned int i = 0; i < numWaterTiles; ++i)
     {
-      if (options.get(OPT_RECREATE_TERRAIN_REQUEST))
+      if (options[OPT_RECREATE_TERRAIN_REQUEST])
         return;
       TerrainTile& tile = tiles[i];
       unsigned int pointerOffsetWithStride = i * 36;

@@ -1,40 +1,16 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
-#include <unordered_map>
-
-enum OPTION
-{
-  OPT_MODELS_SHADOW_EMPHASIZE = 0,
-  OPT_DRAW_TREES,
-  OPT_ANIMATE_WATER,
-  OPT_DRAW_DEBUG_TEXT,
-  OPT_RECREATE_TERRAIN_REQUEST,
-  OPT_SAVE_REQUEST,
-  OPT_LOAD_REQUEST,
-  OPT_SHOW_CURSOR,
-  OPT_DRAW_BUILDABLE,
-  OPT_HILLS_CULLING,
-  OPT_WATER_CULLING,
-  OPT_USE_MULTISAMPLING,
-  OPT_USE_SHADOWS,
-  OPT_CREATE_SHADOW_MAP_REQUEST,
-  OPT_DRAW_LAND,
-  OPT_DRAW_WATER,
-  OPT_MODELS_FLAT_BLENDING,
-  OPT_MODELS_PHONG_SHADING,
-  OPT_POLYGON_LINE,
-  OPT_DEBUG_RENDER
-};
+#include <bitset>
+#include "game/OptionsUnits.h"
 
 class Options
 {
 public:
   Options();
-  bool get(OPTION value);
-  void set(OPTION value, bool flag);
+  std::bitset<OPTIONS_COUNT>::reference operator[](OPTION value);
   void toggle(OPTION value);
 private:
-  std::unordered_map<int, bool> options;
+  std::bitset<OPTIONS_COUNT> options;
 };
 
 #endif // OPTIONS_H
