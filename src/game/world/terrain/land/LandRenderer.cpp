@@ -5,10 +5,8 @@ LandRenderer::LandRenderer(LandGenerator &generator)
     generator(generator)
 {}
 
-void LandRenderer::render(Frustum &frustum, GLuint &texture)
+void LandRenderer::render(Frustum &frustum)
 {
-  glBindTextureUnit(TEX_LAND, texture);
-
   //square chunks are better to render without FC
   {
     BENCHMARK("LandRenderer: draw chunks", true);

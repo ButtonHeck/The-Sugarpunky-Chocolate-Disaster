@@ -166,7 +166,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *material, aiTexture
           Texture texture;
           texture.type = typeName;
           std::string path = this->directory + '/' + std::string(texturePath.C_Str());
-          texture.id = textureLoader->loadTexture(path, 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, !INCLUDE_RES_DIR);
+          texture.id = textureLoader->loadTexture(path, TEX_MESH_DIFFUSE + i, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, !INCLUDE_RES_DIR);
           texture.path = texturePath.C_Str();
           textures.emplace_back(texture);
           textures_loaded.emplace_back(texture);

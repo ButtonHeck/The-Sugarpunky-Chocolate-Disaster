@@ -4,13 +4,12 @@
 #include "game/world/terrain/land/LandGenerator.h"
 #include "graphics/Frustum.h"
 #include "util/BenchmarkTimer.h"
-#include "graphics/TextureUnits.h"
 
 class LandRenderer
 {
 public:
   LandRenderer(LandGenerator& generator);
-  void render(Frustum& frustum, GLuint& texture);
+  void render(Frustum& frustum);
 private:
   void addIndirectBufferData(GLuint& primCount,
                              GLuint* buffer,

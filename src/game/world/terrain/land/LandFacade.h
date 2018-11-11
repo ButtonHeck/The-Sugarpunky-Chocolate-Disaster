@@ -11,7 +11,7 @@ public:
   void setup(const map2D_f& shoreMap);
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
-  void draw(glm::mat4 &projectionView, Frustum &viewFrustum, bool useShadows, GLuint &texture);
+  void draw(glm::mat4 &projectionView, Frustum &viewFrustum, bool useShadows);
   const map2D_f &getMap() const;
 
 private:

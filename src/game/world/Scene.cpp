@@ -89,8 +89,7 @@ void Scene::drawWorld(glm::mat4& projectionView,
                    options[OPT_DEBUG_RENDER]);
 
   if (options[OPT_DRAW_LAND])
-    landFacade->draw(projectionView, viewFrustum,
-                     options[OPT_USE_SHADOWS], textureManager.get(TEX_LAND));
+    landFacade->draw(projectionView, viewFrustum, options[OPT_USE_SHADOWS]);
 
   underwaterFacade.draw(projectionView);
 
