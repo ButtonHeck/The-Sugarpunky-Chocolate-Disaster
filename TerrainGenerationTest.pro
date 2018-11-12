@@ -196,41 +196,41 @@ DISTFILES += \
     res/textures/flat2.jpg \
     res/textures/flat2_x2.jpg \
     res/textures/flat_x2.jpg \
-    res/shaders/skybox.vs \
-    res/shaders/skybox.fs \
-    res/shaders/water.fs \
-    res/shaders/hills.fs \
-    res/shaders/underwater.fs \
-    res/shaders/model.vs \
-    res/shaders/model.fs \
-    res/shaders/font.vs \
-    res/shaders/font.fs \
-    res/shaders/coordinateSystem.vs \
-    res/shaders/coordinateSystem.gs \
-    res/shaders/coordinateSystem.fs \
-    res/shaders/buildableTiles.fs \
-    res/shaders/buildableTiles.vs \
-    res/shaders/selectedTile.vs \
+    res/shaders/skybox/skybox.vs \
+    res/shaders/skybox/skybox.fs \
+    res/shaders/modelGouraud/model.vs \
+    res/shaders/modelGouraud/model.fs \
+    res/shaders/font/font.vs \
+    res/shaders/font/font.fs \
+    res/shaders/coordinateSystem/coordinateSystem.vs \
+    res/shaders/coordinateSystem/coordinateSystem.gs \
+    res/shaders/coordinateSystem/coordinateSystem.fs \
+    res/shaders/buildable/buildableTiles.fs \
+    res/shaders/buildable/buildableTiles.vs \
+    res/shaders/selected/selectedTile.vs \
+    res/shaders/selected/selectedTile.fs \
     res/fonts/GentiumPlus-R.ttf \
     res/fonts/OCTAPOST_1.ttf \
     res/fonts/Laconic_Bold.otf \
-    res/shaders/hills.vs \
-    res/shaders/water.vs \
-    res/shaders/underwater.vs \
-    res/shaders/shore.fs \
-    res/shaders/shore.vs \
-    res/shaders/selectedTile.fs \
+    res/shaders/hills/hills.vs \
+    res/shaders/hills/hills.fs \
+    res/shaders/water/water.vs \
+    res/shaders/water/water.fs \
+    res/shaders/underwater/underwater.vs \
+    res/shaders/underwater/underwater.fs \
+    res/shaders/shore/shore.vs \
+    res/shaders/shore/shore.fs \
     res/saves/testSave.txt \
-    res/shaders/MS_toDefault.vs \
-    res/shaders/model_shadow.vs \
-    res/shaders/terrain_shadow.vs \
-    res/shaders/MS_toDefault_hdr.fs \
+    res/shaders/screen/MS_toDefault.vs \
+    res/shaders/screen/MS_toDefault_hdr.fs \
+    res/shaders/shadow/model_shadow.vs \
+    res/shaders/shadow/terrain_shadow.vs \
     res/perAppLog.txt \
     res/perFrameLog.txt \
-    res/shaders/waterFC.gs \
-    res/shaders/waterFC.vs \
-    res/shaders/hillsFC.vs \
-    res/shaders/hillsFC.gs \
+    res/shaders/waterFC/waterFC.gs \
+    res/shaders/waterFC/waterFC.vs \
+    res/shaders/hillsFC/hillsFC.vs \
+    res/shaders/hillsFC/hillsFC.gs \
     res/shaders/_FC.fs \
     res/fonts/font.png \
     res/fonts/font.fnt \
@@ -358,8 +358,8 @@ DISTFILES += \
     res/models/grass4/grass4.obj \
     res/models/grass5/grass5.obj \
     res/models/grass6/grass6.obj \
-    res/shaders/modelPhong.fs \
-    res/shaders/modelPhong.vs \
+    res/shaders/modelPhong/modelPhong.fs \
+    res/shaders/modelPhong/modelPhong.vs \
     res/models/grass5/rock_spec.png \
     res/models/grass6/rock_spec.png \
     res/models/hillTree1/tree_spec.jpg \
@@ -404,8 +404,8 @@ DISTFILES += \
     res/models/tree7/foliage_spec.png \
     res/models/tree8/foliage_spec.png \
     res/textures/underwater.jpg \
-    res/shaders/land.vs \
-    res/shaders/land.fs \
+    res/shaders/land/land.vs \
+    res/shaders/land/land.fs \
     res/textures/cubemapFar/back.png \
     res/textures/cubemapFar/down.png \
     res/textures/cubemapFar/front.png \
@@ -419,13 +419,13 @@ DISTFILES += \
     res/textures/cubemapSky/right.png \
     res/textures/cubemapSky/up.png \
     res/textures/theSun.png \
-    res/shaders/theSun.vs \
-    res/shaders/theSun.fs \
-    res/shaders/shore_normals.vs \
-    res/shaders/hills_normals.vs \
-    res/shaders/water_normals.vs \
-    res/shaders/_normals.gs \
-    res/shaders/_normals.fs
+    res/shaders/theSun/theSun.vs \
+    res/shaders/theSun/theSun.fs \
+    res/shaders/normals/shore_normals.vs \
+    res/shaders/normals/hills_normals.vs \
+    res/shaders/normals/water_normals.vs \
+    res/shaders/normals/_normals.gs \
+    res/shaders/normals/_normals.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

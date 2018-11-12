@@ -2,29 +2,54 @@
 
 ShaderManager::ShaderManager()
 {
-  shaders[SHADER_HILLS_CULLING] = Shader("hillsFC.vs", "hillsFC.gs", "_FC.fs");
-  shaders[SHADER_HILLS] = Shader("hills.vs", "hills.fs");
-  shaders[SHADER_HILLS_NORMALS] = Shader("hills_normals.vs", "_normals.gs", "_normals.fs");
-  shaders[SHADER_SHORE] = Shader("shore.vs", "shore.fs");
-  shaders[SHADER_SHORE_NORMALS] = Shader("shore_normals.vs", "_normals.gs", "_normals.fs");
-  shaders[SHADER_UNDERWATER] = Shader("underwater.vs", "underwater.fs");
-  shaders[SHADER_LAND] = Shader("land.vs", "land.fs");
-  shaders[SHADER_WATER_CULLING] = Shader("waterFC.vs", "waterFC.gs", "_FC.fs");
-  shaders[SHADER_WATER] = Shader("water.vs", "water.fs");
-  shaders[SHADER_WATER_NORMALS] = Shader("water_normals.vs", "_normals.gs", "_normals.fs");
-  shaders[SHADER_SKYBOX] = Shader("skybox.vs", "skybox.fs");
-  shaders[SHADER_SUN] = Shader("theSun.vs", "theSun.fs");
-  shaders[SHADER_MODELS] = Shader("model.vs", "model.fs");
-  shaders[SHADER_FONT] = Shader("font.vs", "font.fs");
-  shaders[SHADER_COORDINATE_SYSTEM] = Shader("coordinateSystem.vs", "coordinateSystem.gs", "coordinateSystem.fs");
-  shaders[SHADER_BUILDABLE] = Shader("buildableTiles.vs", "buildableTiles.fs");
-  shaders[SHADER_SELECTED] = Shader("selectedTile.vs", "selectedTile.fs");
-  shaders[SHADER_MS_TO_DEFAULT] = Shader("MS_toDefault.vs", "MS_toDefault_hdr.fs");
-  shaders[SHADER_SHADOW_TERRAIN] = Shader("terrain_shadow.vs");
-  shaders[SHADER_SHADOW_MODELS] = Shader("model_shadow.vs");
-  shaders[SHADER_SHADOW_TERRAIN_CAMERA] = Shader("terrain_shadow.vs");
-  shaders[SHADER_SHADOW_MODELS_CAMERA] = Shader("model_shadow.vs");
-  shaders[SHADER_MODELS_PHONG] = Shader("modelPhong.vs", "modelPhong.fs");
+  shaders[SHADER_HILLS_CULLING] = Shader("hillsFC/hillsFC.vs",
+                                         "hillsFC/hillsFC.gs",
+                                         "_FC.fs");
+  shaders[SHADER_HILLS] = Shader("hills/hills.vs",
+                                 "hills/hills.fs");
+  shaders[SHADER_HILLS_NORMALS] = Shader("normals/hills_normals.vs",
+                                         "normals/_normals.gs",
+                                         "normals/_normals.fs");
+  shaders[SHADER_SHORE] = Shader("shore/shore.vs",
+                                 "shore/shore.fs");
+  shaders[SHADER_SHORE_NORMALS] = Shader("normals/shore_normals.vs",
+                                         "normals/_normals.gs",
+                                         "normals/_normals.fs");
+  shaders[SHADER_UNDERWATER] = Shader("underwater/underwater.vs",
+                                      "underwater/underwater.fs");
+  shaders[SHADER_LAND] = Shader("land/land.vs",
+                                "land/land.fs");
+  shaders[SHADER_WATER_CULLING] = Shader("waterFC/waterFC.vs",
+                                         "waterFC/waterFC.gs",
+                                         "_FC.fs");
+  shaders[SHADER_WATER] = Shader("water/water.vs",
+                                 "water/water.fs");
+  shaders[SHADER_WATER_NORMALS] = Shader("normals/water_normals.vs",
+                                         "normals/_normals.gs",
+                                         "normals/_normals.fs");
+  shaders[SHADER_SKYBOX] = Shader("skybox/skybox.vs",
+                                  "skybox/skybox.fs");
+  shaders[SHADER_SUN] = Shader("theSun/theSun.vs",
+                               "theSun/theSun.fs");
+  shaders[SHADER_MODELS] = Shader("modelGouraud/model.vs",
+                                  "modelGouraud/model.fs");
+  shaders[SHADER_MODELS_PHONG] = Shader("modelPhong/modelPhong.vs",
+                                        "modelPhong/modelPhong.fs");
+  shaders[SHADER_FONT] = Shader("font/font.vs",
+                                "font/font.fs");
+  shaders[SHADER_COORDINATE_SYSTEM] = Shader("coordinateSystem/coordinateSystem.vs",
+                                             "coordinateSystem/coordinateSystem.gs",
+                                             "coordinateSystem/coordinateSystem.fs");
+  shaders[SHADER_BUILDABLE] = Shader("buildable/buildableTiles.vs",
+                                     "buildable/buildableTiles.fs");
+  shaders[SHADER_SELECTED] = Shader("selected/selectedTile.vs",
+                                    "selected/selectedTile.fs");
+  shaders[SHADER_MS_TO_DEFAULT] = Shader("screen/MS_toDefault.vs",
+                                         "screen/MS_toDefault_hdr.fs");
+  shaders[SHADER_SHADOW_TERRAIN] = Shader("shadow/terrain_shadow.vs");
+  shaders[SHADER_SHADOW_MODELS] = Shader("shadow/model_shadow.vs");
+  shaders[SHADER_SHADOW_TERRAIN_CAMERA] = Shader("shadow/terrain_shadow.vs");
+  shaders[SHADER_SHADOW_MODELS_CAMERA] = Shader("shadow/model_shadow.vs");
 }
 
 ShaderManager::~ShaderManager()

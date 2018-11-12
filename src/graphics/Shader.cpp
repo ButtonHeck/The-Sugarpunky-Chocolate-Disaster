@@ -6,7 +6,7 @@ Shader::Shader(const std::string &vertexFile)
 {
   GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile));
   ID = glCreateProgram();
-  shaderName = vertexFile.substr(0, vertexFile.find('.'));
+  shaderName = vertexFile.substr(0, vertexFile.find('/'));
   glAttachShader(ID, vertex);
   link();
   glDeleteShader(vertex);
@@ -17,7 +17,7 @@ Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::strin
   GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile));
   GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(SHADER_DIR + fragmentFile));
   ID = glCreateProgram();
-  shaderName = vertexFile.substr(0, vertexFile.find('.'));
+  shaderName = vertexFile.substr(0, vertexFile.find('/'));
   glAttachShader(ID, vertex);
   glAttachShader(ID, fragment);
   link();
@@ -31,7 +31,7 @@ Shader::Shader(const std::string &vertexFile, const std::string &geometryFile, c
   GLuint geometry = loadShader(GL_GEOMETRY_SHADER, std::string(SHADER_DIR + geometryFile));
   GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(SHADER_DIR + fragmentFile));
   ID = glCreateProgram();
-  shaderName = vertexFile.substr(0, vertexFile.find('.'));
+  shaderName = vertexFile.substr(0, vertexFile.find('/'));
   glAttachShader(ID, vertex);
   glAttachShader(ID, geometry);
   glAttachShader(ID, fragment);
