@@ -55,7 +55,6 @@ float SampleShadowMapLinear(sampler2D shadowMap, vec2 coords, float compare, vec
 
 float calculateLuminosity(vec3 normal)
 {
-    float closestDepth = texture(u_shadowMap, v_ProjectedCoords.xy).r;
     float currentDepth = v_ProjectedCoords.z;
     float shadow = 0.0;
     float bias = 6.0 / 8192;
@@ -125,16 +124,15 @@ void main()
         //also scale up texture mapping a bit
         vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
         ShadingNormal.z *= -1;
+        ShadingNormal.x = ShadingNormal.x * 2.0 - 0.5;
 
-        vec3 ShadingNormalFlat = ShadingNormal;
-        ShadingNormalFlat.y *= 0.4;
-        ShadingNormalFlat = normalize(ShadingNormalFlat);
+        vec3 ShadingNormalFlat = normalize(vec3(0.0, 1.0, 0.0) + 0.5 * ShadingNormal);
         vec3 ShadingNormalHill = ShadingNormal;
         ShadingNormalHill.y *= 0.5;
         ShadingNormalHill = normalize(v_Normal + 0.5 * ShadingNormalHill);
 
         float DiffuseComponentHill = max(dot(ShadingNormalHill, u_lightDir), 0.0);
-        float DiffuseComponentFlat = dot(ShadingNormalFlat, u_lightDir);
+        float DiffuseComponentFlat = max(dot(ShadingNormalFlat, u_lightDir), 0.0);
         float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentHill, clamp(v_PosHeight, 0.0, 1.0))
                                 * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
 

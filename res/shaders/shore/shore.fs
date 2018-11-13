@@ -23,33 +23,52 @@ uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
 uniform bool      u_debugRenderMode;
 
-const float SHADOW_INFLUENCE = 0.4;
-const float DESATURATING_INFLUENCE = 1.1 - SHADOW_INFLUENCE;
-const float MAX_DESATURATING_VALUE = 0.8 / DESATURATING_INFLUENCE;
-const vec2 TEXEL_SIZE = 0.75 / textureSize(u_shadowMap, 0);
-const float POISSON_SHADOW_VALUE_GAIN = clamp(-v_PosHeight * 5.0, 0.0, 4.0);
-const vec2 POISSON_DISK[4] = vec2[](
-  vec2( -0.94201624, -0.39906216 ),
-  vec2( 0.94558609, -0.76890725 ),
-  vec2( -0.094184101, -0.92938870 ),
-  vec2( 0.34495938, 0.29387760 )
-);
+const float SHADOW_INFLUENCE = 0.5;
+const float MAX_DESATURATING_VALUE = 0.4;
+const vec2 TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
+
+float SampleShadowMap(sampler2D shadowMap, vec2 coords, float compare)
+{
+    return step(texture2D(shadowMap, coords.xy).r, compare);
+}
+
+float SampleShadowMapLinear(sampler2D shadowMap, vec2 coords, float compare, vec2 texelSize)
+{
+    vec2 pixelPos = coords/texelSize + vec2(0.5);
+    vec2 fracPart = fract(pixelPos);
+    vec2 startTexel = (pixelPos - fracPart) * texelSize;
+
+    float blTexel = SampleShadowMap(shadowMap, startTexel, compare);
+    float brTexel = SampleShadowMap(shadowMap, startTexel + vec2(texelSize.x, 0.0), compare);
+    float tlTexel = SampleShadowMap(shadowMap, startTexel + vec2(0.0, texelSize.y), compare);
+    float trTexel = SampleShadowMap(shadowMap, startTexel + texelSize, compare);
+
+    float mixA = mix(blTexel, tlTexel, fracPart.y);
+    float mixB = mix(brTexel, trTexel, fracPart.y);
+
+    return mix(mixA, mixB, fracPart.x);
+}
 
 float calculateLuminosity(vec3 normal)
 {
-    float closestDepth = texture(u_shadowMap, v_ProjectedCoords.xy).r;
     float currentDepth = v_ProjectedCoords.z;
-    float shadow = 0.0;
-    float bias = max(0.0004 * (1.0 - dot(normal, u_lightDir)), 0.00025);
+    float shadow = 0.0f;
+    float bias = 6.0 / 8192;
 
-    //poisson filtering
-    for (int i = 0; i < 4; i++)
+    //PCF filtering
+    const int NUM_SAMPLES = 3;
+    const int SAMPLE_START = (NUM_SAMPLES - 1) / 2;
+    const int NUM_SAMPLES_SQUARED = NUM_SAMPLES * NUM_SAMPLES;
+    for (int x = -SAMPLE_START; x <= SAMPLE_START; ++x)
     {
-        float poissonDiskDepth = texture(u_shadowMap, v_ProjectedCoords.xy + POISSON_DISK[i] * TEXEL_SIZE).r;
-        shadow += currentDepth - bias > poissonDiskDepth ? 1.0 : 0.0;
+        for (int y = -SAMPLE_START; y <= SAMPLE_START; ++y)
+        {
+            vec2 coordsOffset = vec2(x,y) * TEXEL_SIZE;
+            shadow += SampleShadowMapLinear(u_shadowMap, v_ProjectedCoords.xy + coordsOffset, currentDepth - bias, TEXEL_SIZE);
+        }
     }
-    shadow /= (4.0 + POISSON_SHADOW_VALUE_GAIN);
-    return (1.0 - shadow * SHADOW_INFLUENCE);
+
+    return 1.0 - (shadow / NUM_SAMPLES_SQUARED * SHADOW_INFLUENCE);
 }
 
 vec4 desaturate(vec4 fragColor, float desaturatingValue)
@@ -79,16 +98,16 @@ void main()
         //swizzle z and y to rotate Z-aligned normal map 90 degrees around X axis, as like we look at it upside down
         //also scale up texture mapping a bit
         vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
-        vec3 ShadingNormalFlat = ShadingNormal;
-        ShadingNormalFlat.y *= 0.4;
-        ShadingNormalFlat = normalize(ShadingNormalFlat);
-        vec3 ShadingNormalShore = ShadingNormal;
-        ShadingNormalShore.y *= 0.4;
-        ShadingNormalShore = normalize(ShadingNormalShore + v_Normal);
+        ShadingNormal.z *= -1;
+        ShadingNormal.x = ShadingNormal.x * 2.0 - 0.5;
+
+        vec3 ShadingNormalFlat = normalize(vec3(0.0, 1.0, 0.0) + 0.5 * ShadingNormal);
+        vec3 ShadingNormalShore = normalize(v_Normal + 0.5 * ShadingNormal);
 
         float DiffuseComponentShore = max(dot(ShadingNormalShore, u_lightDir), 0.0);
-        float DiffuseComponentFlat = dot(ShadingNormalFlat, u_lightDir);
-        float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentShore, clamp(v_PosHeight, 0.0, 1.0));
+        float DiffuseComponentFlat = max(dot(ShadingNormalFlat, u_lightDir), 0.0);
+        float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentShore, clamp(v_PosHeight, 0.0, 1.0))
+                                * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
 
         if (u_shadowEnable)
         {
@@ -96,7 +115,7 @@ void main()
             diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent * v_PositionDiffuseComponent;
             resultColor = ambientColor + diffuseColor;
             o_FragColor = vec4(resultColor, sampledDiffuse.a);
-            float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - DESATURATING_INFLUENCE);
+            float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity);
             o_FragColor = desaturate(o_FragColor, desaturatingValue);
         }
         else
