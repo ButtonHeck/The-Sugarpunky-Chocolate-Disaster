@@ -12,7 +12,11 @@ public:
   void setup();
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
-  void draw(glm::mat4& projectionView, bool useShadows, bool useDebugRender);
+  void draw(glm::vec3& lightDir,
+            glm::mat4& lightSpaceMatrix,
+            glm::mat4& projectionView,
+            bool useShadows,
+            bool useDebugRender);
   void drawDepthmap();
   const map2D_f& getMap() const;
 

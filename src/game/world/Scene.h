@@ -27,17 +27,20 @@ public:
   void deserialize(std::ifstream& input);
 
   //rendering part
-  void drawWorld(glm::mat4& projectionView,
+  void drawWorld(glm::vec3 lightDir,
+                 glm::mat4 lightSpaceMatrix,
+                 glm::mat4& projectionView,
                  glm::mat4& skyProjectionView,
                  Frustum &viewFrustum,
                  Camera& camera,
                  MouseInputManager& mouseInput);
-  void drawWorldDepthmap();
+  void drawWorldDepthmap(glm::mat4 lightSpaceMatrix);
 
   //getters
   WaterFacade &getWaterFacade();
   HillsFacade &getHillsFacade();
   PlantsFacade &getPlantsFacade();
+  TheSunFacade &getSunFacade();
 
 private:
   ShaderManager& shaderManager;

@@ -8,7 +8,11 @@ class WaterShader
 public:
   WaterShader(Shader& renderShader, Shader& cullingShader, Shader& normalsShader);
   void setupCulling();
-  void update(bool useFC, glm::mat4& projectionView, glm::vec3& viewPosition, Frustum& viewFrustum);
+  void update(glm::vec3 &lightDir,
+              bool useFC,
+              glm::mat4& projectionView,
+              glm::vec3& viewPosition,
+              Frustum& viewFrustum);
   void updateNormals(glm::mat4& projectionView);
   void debugRenderMode(bool enable);
 private:

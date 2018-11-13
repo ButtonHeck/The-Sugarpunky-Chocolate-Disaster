@@ -17,6 +17,7 @@
 #include "util/Timer.h"
 #include "util/BenchmarkTimer.h"
 #include "game/world/Scene.h"
+#include "graphics/ShadowVolume.h"
 
 class Camera;
 class Options;
@@ -63,6 +64,7 @@ private:
 
   //world
   Scene scene;
+  ShadowVolume shadowVolume;
   SaveLoadManager saveLoadManager;
 
   //GUI and text

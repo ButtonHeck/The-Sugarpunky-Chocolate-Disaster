@@ -10,7 +10,13 @@ TheSun::TheSun()
 
 glm::mat4 TheSun::move(float delta)
 {
+  currentPosition = glm::rotateZ(START_POSITION, glm::radians(delta));
   return glm::rotate(transform, glm::radians(delta), rotateAxis);
+}
+
+glm::vec3 TheSun::getPosition() const
+{
+  return currentPosition;
 }
 
 void TheSun::bufferData()

@@ -20,7 +20,14 @@ public:
   void setup(const map2D_f &baseMap, const map2D_f &hillMap);
   void prepareMeshesIndirectData(const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);
   void updateIndirectBufferData();
-  void draw(glm::mat4 &projectionView, glm::vec3 &viewPosition, bool usePhongShading, bool useShadowEmphasize, bool useShadows, bool useFlatBlending);
+  void draw(glm::vec3 &lightDir,
+            glm::mat4 &lightSpaceMatrix,
+            glm::mat4 &projectionView,
+            glm::vec3 &viewPosition,
+            bool usePhongShading,
+            bool useShadowEmphasize,
+            bool useShadows,
+            bool useFlatBlending);
   void drawDepthmap();
 
   //save/load routine

@@ -6,7 +6,10 @@ class LandShader
 {
 public:
   LandShader(Shader& renderShader);
-  void update(glm::mat4& projectionView, bool useShadows);
+  void update(glm::vec3 &lightDir,
+              glm::mat4 &lightSpaceMatrix,
+              glm::mat4& projectionView,
+              bool useShadows);
 private:
   Shader& renderShader;
 };

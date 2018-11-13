@@ -8,7 +8,9 @@ class HillsShader
 public:
   HillsShader(Shader& renderShader, Shader& cullingShader, Shader& normalsShader);
   void setupCulling();
-  void update(glm::mat4& projectionView,
+  void update(glm::vec3& lightDir,
+              glm::mat4& lightSpaceMatrix,
+              glm::mat4& projectionView,
               glm::vec3& viewPosition,
               Frustum& viewFrustum,
               float maxHillHeight,

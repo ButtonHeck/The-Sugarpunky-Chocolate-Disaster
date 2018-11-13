@@ -6,7 +6,7 @@ class UnderwaterShader
 {
 public:
   UnderwaterShader(Shader& renderShader);
-  void update(glm::mat4& projectionView);
+  void update(glm::vec3& lightDir, glm::mat4& projectionView);
 private:
   Shader& renderShader;
 };

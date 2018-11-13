@@ -74,8 +74,10 @@ void Scene::deserialize(std::ifstream &input)
   plantsFacade.deserialize(input);
 }
 
-void Scene::drawWorld(glm::mat4& projectionView,
-                      glm::mat4 &skyProjectionView,
+void Scene::drawWorld(glm::vec3 lightDir,
+                      glm::mat4 lightSpaceMatrix,
+                      glm::mat4& projectionView,
+                      glm::mat4& skyProjectionView,
                       Frustum &viewFrustum,
                       Camera& camera,
                       MouseInputManager& mouseInput)
@@ -83,21 +85,25 @@ void Scene::drawWorld(glm::mat4& projectionView,
   BENCHMARK("Scene: draw all", true);
   glm::vec3 viewPosition = camera.getPosition();
 
-  hillsFacade.draw(projectionView, viewPosition, viewFrustum,
+  hillsFacade.draw(lightDir, lightSpaceMatrix,
+                   projectionView, viewPosition, viewFrustum,
                    options[OPT_HILLS_CULLING],
                    options[OPT_USE_SHADOWS],
                    options[OPT_DEBUG_RENDER]);
 
   if (options[OPT_DRAW_LAND])
-    landFacade->draw(projectionView, viewFrustum, options[OPT_USE_SHADOWS]);
+    landFacade->draw(lightDir, lightSpaceMatrix,
+                     projectionView, viewFrustum, options[OPT_USE_SHADOWS]);
 
-  underwaterFacade.draw(projectionView);
+  underwaterFacade.draw(lightDir, projectionView);
 
-  shoreFacade.draw(projectionView,
+  shoreFacade.draw(lightDir, lightSpaceMatrix,
+                   projectionView,
                    options[OPT_USE_SHADOWS], options[OPT_DEBUG_RENDER]);
 
   if (options[OPT_DRAW_TREES])
-    plantsFacade.draw(projectionView, viewPosition,
+    plantsFacade.draw(lightDir, lightSpaceMatrix,
+                      projectionView, viewPosition,
                       options[OPT_MODELS_PHONG_SHADING],
                       options[OPT_MODELS_SHADOW_EMPHASIZE],
                       options[OPT_USE_SHADOWS],
@@ -113,7 +119,7 @@ void Scene::drawWorld(glm::mat4& projectionView,
     }
 
   if (options[OPT_DRAW_WATER])
-    waterFacade.draw(projectionView, viewPosition, viewFrustum,
+    waterFacade.draw(lightDir, projectionView, viewPosition, viewFrustum,
                      options[OPT_WATER_CULLING], options[OPT_DEBUG_RENDER]);
 
   theSunFacade.draw(skyProjectionView);
@@ -121,18 +127,21 @@ void Scene::drawWorld(glm::mat4& projectionView,
   skyboxFacade.draw(skyProjectionView, viewPosition);
 }
 
-void Scene::drawWorldDepthmap()
+void Scene::drawWorldDepthmap(glm::mat4 lightSpaceMatrix)
 {
   BENCHMARK("Scene: draw depthmap all", true);
   glClear(GL_DEPTH_BUFFER_BIT);
 
   glDisable(GL_CULL_FACE); //or set front face culling
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
+  shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix", lightSpaceMatrix);
   hillsFacade.drawDepthmap();
   shoreFacade.drawDepthmap();
+  underwaterFacade.drawDepthmap();
   if (options[OPT_DRAW_TREES])
     {
       shaderManager.get(SHADER_SHADOW_MODELS).use();
+      shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix", lightSpaceMatrix);
       plantsFacade.drawDepthmap();
     }
   glEnable(GL_CULL_FACE); //or set back face culling
@@ -151,4 +160,9 @@ HillsFacade &Scene::getHillsFacade()
 PlantsFacade &Scene::getPlantsFacade()
 {
   return plantsFacade;
+}
+
+TheSunFacade &Scene::getSunFacade()
+{
+  return theSunFacade;
 }

@@ -77,7 +77,8 @@ SOURCES += \
     src/graphics/RendererStateManager.cpp \
     src/game/world/Scene.cpp \
     src/game/world/plants/GrassRenderer.cpp \
-    src/game/world/plants/TreesRenderer.cpp
+    src/game/world/plants/TreesRenderer.cpp \
+    src/graphics/ShadowVolume.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -156,7 +157,8 @@ HEADERS += \
     src/game/world/Scene.h \
     src/game/world/plants/GrassRenderer.h \
     src/game/world/plants/TreesRenderer.h \
-    src/game/OptionsUnits.h
+    src/game/OptionsUnits.h \
+    src/graphics/ShadowVolume.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

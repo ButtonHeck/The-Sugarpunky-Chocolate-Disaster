@@ -60,15 +60,8 @@ constexpr unsigned int MULTISAMPLES = 8;
 constexpr float ANISOTROPY = 2.0f;
 
 //constants for shadow calculations
-constexpr float NEAR_PLANE_SHADOWING = 280.0f;
-constexpr float FAR_PLANE_SHADOWING = 700.0f;
-const glm::vec3 LIGHT_DIR_TO = glm::vec3(-0.2f, -0.16f, -0.08f);
-const glm::vec3 LIGHT_POS = glm::vec3(328.0f, 254.0f, 311.0f);
-const glm::mat4 LIGHT_PROJECTION = glm::ortho(-80.0f, 420.0f, -120.0f, 200.0f, NEAR_PLANE_SHADOWING, FAR_PLANE_SHADOWING);
-const glm::mat4 LIGHT_VIEW = glm::lookAt(LIGHT_POS, LIGHT_POS + LIGHT_DIR_TO, glm::vec3(0.0f, 1.0f, 0.0f));
-const glm::mat4 LIGHT_SPACE_MATRIX = LIGHT_PROJECTION * LIGHT_VIEW;
-constexpr int DEPTH_MAP_TEXTURE_WIDTH = 16184;
-constexpr int DEPTH_MAP_TEXTURE_HEIGHT = 10000;
+constexpr int DEPTH_MAP_TEXTURE_WIDTH = 8192;
+constexpr int DEPTH_MAP_TEXTURE_HEIGHT = 8192;
 
 //shader uniform strategy
 constexpr bool UNIFORMS_NO_CACHE = false;

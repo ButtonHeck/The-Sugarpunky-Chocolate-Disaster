@@ -7,9 +7,18 @@ TheSunFacade::TheSunFacade(Shader &renderShader)
     renderer(theSun)
 {}
 
+void TheSunFacade::move()
+{
+  model = theSun.move(glfwGetTime() * 0.5f);
+}
+
 void TheSunFacade::draw(glm::mat4 &skyProjectionView)
 {
-  glm::mat4 model = theSun.move(glfwGetTime());
   shader.update(skyProjectionView, model);
   renderer.render();
+}
+
+glm::vec3 TheSunFacade::getCurrentPosition() const
+{
+  return theSun.getPosition();
 }

@@ -15,7 +15,6 @@ Options::Options()
   options[OPT_WATER_CULLING] = false;
   options[OPT_USE_MULTISAMPLING] = true;
   options[OPT_USE_SHADOWS] = true;
-  options[OPT_CREATE_SHADOW_MAP_REQUEST] = true;
   options[OPT_DRAW_LAND] = true;
   options[OPT_DRAW_WATER] = true;
   options[OPT_MODELS_FLAT_BLENDING] = true;

@@ -23,13 +23,11 @@ void KeyboardManager::processInput()
   processKey(GLFW_KEY_F9, [&]()
   {
       options[OPT_RECREATE_TERRAIN_REQUEST] = true;
-      options[OPT_CREATE_SHADOW_MAP_REQUEST] = true;
     });
   processKey(GLFW_KEY_F10, [&](){options[OPT_SAVE_REQUEST] = true;});
   processKey(GLFW_KEY_F11, [&]()
   {
       options[OPT_LOAD_REQUEST] = true;
-      options[OPT_CREATE_SHADOW_MAP_REQUEST] = true;
     });
   processKey(GLFW_KEY_T, OPT_HILLS_CULLING);
   processKey(GLFW_KEY_Y, OPT_WATER_CULLING);

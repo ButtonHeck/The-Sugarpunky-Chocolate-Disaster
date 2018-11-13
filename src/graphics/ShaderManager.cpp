@@ -48,8 +48,6 @@ ShaderManager::ShaderManager()
                                          "screen/MS_toDefault_hdr.fs");
   shaders[SHADER_SHADOW_TERRAIN] = Shader("shadow/terrain_shadow.vs");
   shaders[SHADER_SHADOW_MODELS] = Shader("shadow/model_shadow.vs");
-  shaders[SHADER_SHADOW_TERRAIN_CAMERA] = Shader("shadow/terrain_shadow.vs");
-  shaders[SHADER_SHADOW_MODELS_CAMERA] = Shader("shadow/model_shadow.vs");
 }
 
 ShaderManager::~ShaderManager()
@@ -69,7 +67,6 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
 
   Shader* shader = nullptr;
   bindShaderUnit(shader, SHADER_HILLS);
-  shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setInt("u_flat_diffuse", TEX_LAND);
   shader->setInt("u_flat_diffuse2", TEX_LAND_2);
   shader->setInt("u_hills_diffuse", TEX_HILL);
@@ -78,7 +75,6 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_diffuse_mix_map", TEX_DIFFUSE_MIX_MAP);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
-  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
 
   bindShaderUnit(shader, SHADER_SHORE);
@@ -89,8 +85,6 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_diffuse_mix_map", TEX_DIFFUSE_MIX_MAP);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
-  shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setFloat("U_UNDERWATER_TILE_YPOS", -UNDERWATER_TILE_YPOS);
 
@@ -98,7 +92,6 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_underwater_diffuse", TEX_UNDERWATER_DIFFUSE);
   shader->setInt("u_bottomRelief_diffuse", TEX_UNDERWATER_RELIEF);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
-  shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
 
   bindShaderUnit(shader, SHADER_LAND);
@@ -107,12 +100,9 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_diffuse_mix_map", TEX_DIFFUSE_MIX_MAP);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
-  shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
 
   bindShaderUnit(shader, SHADER_WATER);
-  shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
   shader->setInt("u_skybox", TEX_SKYBOX);
   shader->setInt("u_bottomRelief_diffuse", TEX_UNDERWATER_RELIEF);
   shader->setInt("u_normal_map", TEX_WATER_NORMAL);
@@ -132,15 +122,11 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_fontTexture", TEX_FONT);
 
   bindShaderUnit(shader, SHADER_MODELS);
-  shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setInt("u_texture_diffuse1", TEX_MESH_DIFFUSE);
   shader->setInt("u_texture_specular1", TEX_MESH_SPECULAR);
 
   bindShaderUnit(shader, SHADER_MODELS_PHONG);
-  shader->setVec3("u_lightDir", glm::normalize(-LIGHT_DIR_TO));
-  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setInt("u_texture_diffuse1", TEX_MESH_DIFFUSE);
   shader->setInt("u_texture_specular1", TEX_MESH_SPECULAR);
@@ -148,12 +134,6 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   bindShaderUnit(shader, SHADER_MS_TO_DEFAULT);
   shader->setInt("u_frameTexture", HDR_ENABLED ? TEX_FRAME_HDR : TEX_FRAME);
   shader->setFloat("u_exposure", 2.2f);
-
-  bindShaderUnit(shader, SHADER_SHADOW_TERRAIN);
-  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
-
-  bindShaderUnit(shader, SHADER_SHADOW_MODELS);
-  shader->setMat4("u_lightSpaceMatrix", LIGHT_SPACE_MATRIX);
 }
 
 Shader &ShaderManager::get(SHADER type)

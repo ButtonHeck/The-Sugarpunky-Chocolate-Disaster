@@ -16,6 +16,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
     screenBuffer(screenResolution, textureManager, shaderManager),
     depthmapBuffer(),
     scene(shaderManager, options, textureManager),
+    shadowVolume(scene.getSunFacade()),
     saveLoadManager(scene, camera),
     textManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", shaderManager.get(SHADER_FONT))
 {
@@ -57,6 +58,12 @@ void Game::loop()
     viewFrustum.updateFrustum(projectionView);
   }
 
+  scene.getSunFacade().move();
+  {
+    BENCHMARK("Shadow volume: update", true);
+    shadowVolume.update();
+  }
+
   {
     BENCHMARK("Game loop: wait mesh buffer ready", true);
     while(!meshBufferReady && !updateCount == 0)
@@ -67,7 +74,7 @@ void Game::loop()
   if (options[OPT_RECREATE_TERRAIN_REQUEST])
     recreate();
 
-  if ((options[OPT_CREATE_SHADOW_MAP_REQUEST] || updateCount % 16 == 0) && options[OPT_USE_SHADOWS])
+  if (options[OPT_USE_SHADOWS] && updateCount % 2 == 0)
     updateDepthmap();
 
   //render our world onto separate FBO as usual
@@ -101,13 +108,15 @@ void Game::drawFrame(glm::mat4& projectionView)
       waterNeedNewKeyFrame = true;
     }
   scene.getPlantsFacade().updateIndirectBufferData();
-
   glm::mat4 skyboxProjectionView(projection * glm::mat4(glm::mat3(camera.getViewMatrix())));
-  scene.drawWorld(projectionView,
-                   skyboxProjectionView,
-                   viewFrustum,
-                   camera,
-                   mouseInput);
+
+  scene.drawWorld(shadowVolume.getLightDir(),
+                  shadowVolume.getLightSpaceMatrix(),
+                  projectionView,
+                  skyboxProjectionView,
+                  viewFrustum,
+                  camera,
+                  mouseInput);
 
   //after all mesh related draw calls we could start updating meshes indirect data buffers
   //start updating right after we've used it and before we need that data to be updated and buffered again
@@ -141,9 +150,8 @@ void Game::recreate()
 void Game::updateDepthmap()
 {
   depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
-  scene.drawWorldDepthmap();
+  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrix());
   depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
-  options[OPT_CREATE_SHADOW_MAP_REQUEST] = false;
 }
 
 void Game::saveState()

@@ -6,12 +6,14 @@ PlantsShader::PlantsShader(Shader &renderPhongShader, Shader &renderGouraudShade
     renderGouraudShader(renderGouraudShader)
 {}
 
-void PlantsShader::updateAllPlants(glm::mat4 &projectionView,
-                                glm::vec3 &viewPosition,
-                                bool usePhongShading,
-                                bool shadowOnTrees,
-                                bool useShadows,
-                                bool useFlatBlending)
+void PlantsShader::updateAllPlants(glm::vec3 &lightDir,
+                                   glm::mat4 &lightSpaceMatrix,
+                                   glm::mat4 &projectionView,
+                                   glm::vec3 &viewPosition,
+                                   bool usePhongShading,
+                                   bool shadowOnTrees,
+                                   bool useShadows,
+                                   bool useFlatBlending)
 {
   Shader& shader = usePhongShading ? renderPhongShader : renderGouraudShader;
   shader.use();
@@ -20,6 +22,8 @@ void PlantsShader::updateAllPlants(glm::mat4 &projectionView,
   shader.setBool("u_shadow", shadowOnTrees);
   shader.setBool("u_shadowEnable", useShadows);
   shader.setBool("u_useFlatBlending", useFlatBlending);
+  shader.setVec3("u_lightDir", -lightDir);
+  shader.setMat4("u_lightSpaceMatrix", lightSpaceMatrix);
 }
 
 void PlantsShader::updateGrass(bool usePhongShading)

@@ -33,15 +33,19 @@ void PlantsFacade::updateIndirectBufferData()
   updateIndirectBufferData(grassGenerator);
 }
 
-void PlantsFacade::draw(glm::mat4& projectionView,
-                        glm::vec3& viewPosition,
+void PlantsFacade::draw(glm::vec3 &lightDir,
+                        glm::mat4 &lightSpaceMatrix,
+                        glm::mat4 &projectionView,
+                        glm::vec3 &viewPosition,
                         bool usePhongShading,
                         bool useShadowEmphasize,
                         bool useShadows,
                         bool useFlatBlending)
 {
   shaders.switchToGrass(usePhongShading, false);
-  shaders.updateAllPlants(projectionView,
+  shaders.updateAllPlants(lightDir,
+                          lightSpaceMatrix,
+                          projectionView,
                           viewPosition,
                           usePhongShading,
                           useShadowEmphasize,
