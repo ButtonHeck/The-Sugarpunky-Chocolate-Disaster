@@ -16,6 +16,7 @@ TextManager::TextManager(const std::string &fontFile, const std::string &fontTex
 void TextManager::addText(ScreenResolution& screenResolution,
                           Camera& camera, Options& options,
                           MouseInputManager& mouseInput,
+                          glm::vec3 sunPosition,
                           const unsigned int fps)
 {
   BENCHMARK("TextManager: add text", true);
@@ -103,6 +104,15 @@ void TextManager::addText(ScreenResolution& screenResolution,
      << vram.getAvailableMemoryPercent()
      << "%";
   addString(ss.str(), 10.0f, 80.0f, 0.18f);
+
+  ss.str("");
+  ss << "Sun position: " << std::setprecision(3) << std::setw(3)
+     << sunPosition.x
+     << ": "
+     << sunPosition.y
+     << ": "
+     << sunPosition.z;
+  addString(ss.str(), 10.0f, 100.0f, 0.18f);
 }
 
 void TextManager::addString(const std::string& text, GLfloat x, GLfloat y, GLfloat scale)

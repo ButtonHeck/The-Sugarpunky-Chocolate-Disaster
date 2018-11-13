@@ -61,7 +61,7 @@ constexpr float ANISOTROPY = 2.0f;
 
 //constants for shadow calculations
 constexpr int DEPTH_MAP_TEXTURE_WIDTH = 8192;
-constexpr int DEPTH_MAP_TEXTURE_HEIGHT = 8192;
+constexpr int DEPTH_MAP_TEXTURE_HEIGHT = 12000;
 
 //shader uniform strategy
 constexpr bool UNIFORMS_NO_CACHE = false;

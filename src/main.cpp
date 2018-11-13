@@ -12,6 +12,8 @@ Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
 Options options;
 Game* game;
 
+float debug_sunSpeed = 2.0f;
+
 int main()
 {
   Logger::setupWindowLibraryErrorCallback();

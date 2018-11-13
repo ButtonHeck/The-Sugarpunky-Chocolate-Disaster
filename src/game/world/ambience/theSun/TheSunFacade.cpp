@@ -7,9 +7,11 @@ TheSunFacade::TheSunFacade(Shader &renderShader)
     renderer(theSun)
 {}
 
-void TheSunFacade::move()
+extern float debug_sunSpeed;
+
+void TheSunFacade::move(float delta)
 {
-  model = theSun.move(glfwGetTime() * 0.5f);
+  model = theSun.move(delta * debug_sunSpeed);
 }
 
 void TheSunFacade::draw(glm::mat4 &skyProjectionView)

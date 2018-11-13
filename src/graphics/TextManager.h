@@ -20,7 +20,7 @@ public:
   virtual ~TextManager() = default;
   void addText(ScreenResolution& screenResolution,
                Camera& camera, Options& options,
-               MouseInputManager& mouseInput,
+               MouseInputManager& mouseInput, glm::vec3 sunPosition,
                const unsigned int fps);
   void drawText();
 private:

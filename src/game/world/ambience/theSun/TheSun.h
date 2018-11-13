@@ -18,8 +18,7 @@ private:
   OpenglBuffer basicGLBuffers;
   glm::vec3 rotateAxis;
   glm::mat4 transform;
-  glm::vec3 currentPosition;
-  const glm::vec3 START_POSITION = glm::vec3(HALF_WORLD_WIDTH_F, 0.0f, 0.0f);
+  glm::vec3 currentPosition = glm::vec3(HALF_WORLD_WIDTH_F, 0.0f, 0.0f);
 };
 
 #endif // THESUN_H

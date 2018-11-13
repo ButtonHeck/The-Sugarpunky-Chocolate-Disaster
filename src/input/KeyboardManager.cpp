@@ -1,5 +1,7 @@
 #include "input/KeyboardManager.h"
 
+extern float debug_sunSpeed;
+
 KeyboardManager::KeyboardManager(GLFWwindow *window, Camera &camera, Options &options)
   :
     window(window),
@@ -69,6 +71,18 @@ void KeyboardManager::processInput()
   processKey(GLFW_KEY_E, [&]()
   {
       camera.switchAcceleration();
+    });
+  processKey(GLFW_KEY_UP, []()
+  {
+      debug_sunSpeed += 0.5f;
+    });
+  processKey(GLFW_KEY_DOWN, []()
+  {
+      debug_sunSpeed -= 0.5f;
+    });
+  processKey(GLFW_KEY_0, []()
+  {
+      debug_sunSpeed = 0.0f;
     });
 
   //process camera

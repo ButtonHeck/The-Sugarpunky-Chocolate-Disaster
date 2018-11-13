@@ -47,9 +47,9 @@ void Game::setup()
 void Game::loop()
 {
   glm::mat4 view, projectionView;
+  float timerDelta = CPU_timer.tick();
   {
     BENCHMARK("Game loop: process input and camera", true);
-    float timerDelta = CPU_timer.tick();
     keyboard.processInput();
     camera.processMouseCursor();
     camera.move(timerDelta, scene.getHillsFacade().getMap());
@@ -58,7 +58,7 @@ void Game::loop()
     viewFrustum.updateFrustum(projectionView);
   }
 
-  scene.getSunFacade().move();
+  scene.getSunFacade().move(timerDelta);
   {
     BENCHMARK("Shadow volume: update", true);
     shadowVolume.update();
@@ -74,7 +74,7 @@ void Game::loop()
   if (options[OPT_RECREATE_TERRAIN_REQUEST])
     recreate();
 
-  if (options[OPT_USE_SHADOWS] && updateCount % 2 == 0)
+  if (options[OPT_USE_SHADOWS])
     updateDepthmap();
 
   //render our world onto separate FBO as usual
@@ -128,6 +128,7 @@ void Game::drawFrame(glm::mat4& projectionView)
                           camera,
                           options,
                           mouseInput,
+                          scene.getSunFacade().getCurrentPosition(),
                           CPU_timer.getFPS());
       textManager.drawText();
       csRenderer.draw(glm::mat3(camera.getViewMatrix()), screenResolution.getAspectRatio());
