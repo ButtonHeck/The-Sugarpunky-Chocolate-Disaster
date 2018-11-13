@@ -12,7 +12,6 @@ namespace RendererStateManager
     else
       glDisable(GL_MULTISAMPLE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glClearColor(0.85f, 0.44f, 0.35f, 1.0f);
   }
 
   void setAmbienceRenderingState(bool isOn)

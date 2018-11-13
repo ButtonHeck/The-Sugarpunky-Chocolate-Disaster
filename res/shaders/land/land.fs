@@ -83,7 +83,7 @@ void main()
     ShadingNormal.x = ShadingNormal.x * 2.0 - 0.5;
     ShadingNormal = normalize(vec3(0.0, 1.0, 0.0) + 0.5 * ShadingNormal);
 
-    vec3 ambientColor = 0.12 * sampledDiffuse.rgb;
+    vec3 ambientColor = 0.08 * sampledDiffuse.rgb;
     vec3 diffuseColor;
     vec3 resultColor;
     float diffuseComponent = max(dot(ShadingNormal, u_lightDir), 0.0)

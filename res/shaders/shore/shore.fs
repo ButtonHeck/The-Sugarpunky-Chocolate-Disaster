@@ -91,7 +91,7 @@ void main()
                         mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), DiffuseTextureMix),
                         clamp(v_PosHeight + 1.0, 0.0, 1.0));
 
-        vec3 ambientColor = 0.12 * sampledDiffuse.rgb;
+        vec3 ambientColor = 0.08 * sampledDiffuse.rgb;
         vec3 diffuseColor;
         vec3 resultColor;
 

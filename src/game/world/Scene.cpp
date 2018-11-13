@@ -118,13 +118,13 @@ void Scene::drawWorld(glm::vec3 lightDir,
       buildableFacade.drawSelected(projectionView, mouseInput);
     }
 
-  if (options[OPT_DRAW_WATER])
-    waterFacade.draw(lightDir, projectionView, viewPosition, viewFrustum,
-                     options[OPT_WATER_CULLING], options[OPT_DEBUG_RENDER]);
-
   theSunFacade.draw(skyProjectionView);
 
   skyboxFacade.draw(skyProjectionView, viewPosition);
+
+  if (options[OPT_DRAW_WATER])
+    waterFacade.draw(lightDir, projectionView, viewPosition, viewFrustum,
+                     options[OPT_WATER_CULLING], options[OPT_DEBUG_RENDER]);
 }
 
 void Scene::drawWorldDepthmap(glm::mat4 lightSpaceMatrix)
