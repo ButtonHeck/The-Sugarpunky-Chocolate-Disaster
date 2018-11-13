@@ -19,37 +19,51 @@ uniform bool      u_shadowEnable;
 uniform bool      u_useFlatBlending;
 
 const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
-const float SHADOW_INFLUENCE = 0.3;
-const float SHADOW_INFLUENCE_FOR_NEGATIVE_DOT = 0.4;
-const float DESATURATING_INFLUENCE = 1.0 - SHADOW_INFLUENCE;
-const float MAX_DESATURATING_VALUE = 0.8 / DESATURATING_INFLUENCE;
-const vec2  POISSON_DISK[4] = vec2[](
-  vec2( -0.94201624, -0.39906216 ),
-  vec2( 0.94558609, -0.76890725 ),
-  vec2( -0.094184101, -0.92938870 ),
-  vec2( 0.34495938, 0.29387760 )
-);
+const float SHADOW_INFLUENCE = 0.5;
+const float MAX_DESATURATING_VALUE = 0.6;
+
+float SampleShadowMap(sampler2D shadowMap, vec2 coords, float compare)
+{
+    return step(texture2D(shadowMap, coords.xy).r, compare);
+}
+
+float SampleShadowMapLinear(sampler2D shadowMap, vec2 coords, float compare, vec2 texelSize)
+{
+    vec2 pixelPos = coords/texelSize + vec2(0.5);
+    vec2 fracPart = fract(pixelPos);
+    vec2 startTexel = (pixelPos - fracPart) * texelSize;
+
+    float blTexel = SampleShadowMap(shadowMap, startTexel, compare);
+    float brTexel = SampleShadowMap(shadowMap, startTexel + vec2(texelSize.x, 0.0), compare);
+    float tlTexel = SampleShadowMap(shadowMap, startTexel + vec2(0.0, texelSize.y), compare);
+    float trTexel = SampleShadowMap(shadowMap, startTexel + texelSize, compare);
+
+    float mixA = mix(blTexel, tlTexel, fracPart.y);
+    float mixB = mix(brTexel, trTexel, fracPart.y);
+
+    return mix(mixA, mixB, fracPart.x);
+}
 
 float calculateLuminosity(vec3 normal)
 {
-    if (dot(normal, u_lightDir) < 0)
-        return (1.0 + dot(normal.xz, u_lightDir.xz) * SHADOW_INFLUENCE_FOR_NEGATIVE_DOT);
-
-    float closestDepth = texture(u_shadowMap, v_ProjectedCoords.xy).r;
     float currentDepth = v_ProjectedCoords.z;
     float shadow = 0.0f;
-    float bias = max(0.0007 * (1.0 - dot(normal, u_lightDir)), 0.00007);
+    float bias = 6.0 / 8192;
 
     //PCF filtering
-    for (int x = -1; x <= 1; ++x)
+    const int NUM_SAMPLES = 3;
+    const int SAMPLE_START = (NUM_SAMPLES - 1) / 2;
+    const int NUM_SAMPLES_SQUARED = NUM_SAMPLES * NUM_SAMPLES;
+    for (int x = -SAMPLE_START; x <= SAMPLE_START; ++x)
     {
-        for (int y = -2; y <= 2; ++y)
+        for (int y = -SAMPLE_START; y <= SAMPLE_START; ++y)
         {
-            float pcfDepth = texture(u_shadowMap, v_ProjectedCoords.xy + vec2(x,y) * TEXEL_SIZE).r;
-            shadow += currentDepth - bias > pcfDepth ? 0.066 : 0.0;
+            vec2 coordsOffset = vec2(x,y) * TEXEL_SIZE;
+            shadow += SampleShadowMapLinear(u_shadowMap, v_ProjectedCoords.xy + coordsOffset, currentDepth - bias, TEXEL_SIZE);
         }
     }
-    return (1.0 - shadow * SHADOW_INFLUENCE);
+
+    return 1.0 - (shadow / NUM_SAMPLES_SQUARED * SHADOW_INFLUENCE);
 }
 
 vec4 desaturate(vec4 fragColor, float desaturatingValue)
@@ -63,7 +77,7 @@ void main()
 {
     vec4 sampledDiffuse = texture(u_texture_diffuse1, v_TexCoords);
     vec4 sampledSpecular = sampledDiffuse * texture(u_texture_specular1, v_TexCoords).r;
-    vec3 ambientColor = 0.25 * sampledDiffuse.rgb;
+    vec3 ambientColor = 0.08 * sampledDiffuse.rgb;
     vec3 diffuseColor;
     vec3 specularColor;
     vec3 resultColor;
@@ -76,7 +90,7 @@ void main()
         specularColor = luminosity * sampledSpecular.rgb * v_SpecularComponent;
         resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
-        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity - DESATURATING_INFLUENCE);
+        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity);
         o_FragColor = desaturate(o_FragColor, desaturatingValue);
     }
     else

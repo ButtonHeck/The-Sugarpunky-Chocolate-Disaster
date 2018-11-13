@@ -51,10 +51,12 @@ void main()
     v_ProjectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
 
     //diffuse
-    v_DiffuseComponent = max(dot(v_Normal, u_lightDir), 0.0);
+    v_DiffuseComponent = max(dot(v_Normal, u_lightDir), 0.0)
+                        * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
 
     //specular
     vec3 Reflect = reflect(-u_lightDir, v_Normal);
     vec3 ViewDir = normalize(u_viewPosition - FragPos);
-    v_SpecularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 4.0) * 1.33;
+    v_SpecularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 4.0) * 1.33
+                        * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
 }

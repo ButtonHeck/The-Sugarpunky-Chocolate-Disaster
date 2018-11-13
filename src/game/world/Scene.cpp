@@ -137,7 +137,6 @@ void Scene::drawWorldDepthmap(glm::mat4 lightSpaceMatrix)
   shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix", lightSpaceMatrix);
   hillsFacade.drawDepthmap();
   shoreFacade.drawDepthmap();
-  underwaterFacade.drawDepthmap();
   if (options[OPT_DRAW_TREES])
     {
       shaderManager.get(SHADER_SHADOW_MODELS).use();
