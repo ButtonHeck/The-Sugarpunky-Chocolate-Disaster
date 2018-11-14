@@ -123,7 +123,8 @@ void Scene::drawWorld(glm::vec3 lightDir,
   skyboxFacade.draw(skyProjectionView, viewPosition);
 
   if (options[OPT_DRAW_WATER])
-    waterFacade.draw(lightDir, projectionView, viewPosition, viewFrustum,
+    waterFacade.draw(lightDir, lightSpaceMatrix,
+                     projectionView, viewPosition, viewFrustum,
                      options[OPT_WATER_CULLING], options[OPT_DEBUG_RENDER]);
 }
 

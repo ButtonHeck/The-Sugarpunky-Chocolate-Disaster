@@ -14,6 +14,7 @@ public:
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
   void draw(glm::vec3 &lightDir,
+            glm::mat4 &lightSpaceMatrix,
             glm::mat4 &projectionView,
             glm::vec3 &viewPosition,
             Frustum &viewFrustum,

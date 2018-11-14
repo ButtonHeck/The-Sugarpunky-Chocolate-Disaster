@@ -9,6 +9,7 @@ public:
   WaterShader(Shader& renderShader, Shader& cullingShader, Shader& normalsShader);
   void setupCulling();
   void update(glm::vec3 &lightDir,
+              glm::mat4 &lightSpaceMatrix,
               bool useFC,
               glm::mat4& projectionView,
               glm::vec3& viewPosition,

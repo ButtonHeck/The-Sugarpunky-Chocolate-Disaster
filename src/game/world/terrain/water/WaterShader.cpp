@@ -14,7 +14,7 @@ void WaterShader::setupCulling()
   cullingShader.link();
 }
 
-void WaterShader::update(glm::vec3 &lightDir, bool useFC, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
+void WaterShader::update(glm::vec3 &lightDir, glm::mat4 &lightSpaceMatrix, bool useFC, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
 {
   if (useFC)
     {
@@ -29,6 +29,7 @@ void WaterShader::update(glm::vec3 &lightDir, bool useFC, glm::mat4 &projectionV
   renderShader.setMat4("u_projectionView", projectionView);
   renderShader.setVec3("u_viewPosition", viewPosition);
   renderShader.setVec3("u_lightDir", -lightDir);
+  renderShader.setMat4("u_lightSpaceMatrix", lightSpaceMatrix);
 }
 
 void WaterShader::updateNormals(glm::mat4 &projectionView)

@@ -6,7 +6,6 @@ layout (location = 3) in mat4 i_instanceModel;
 
 uniform mat4        u_projectionView;
 uniform mat4        u_lightSpaceMatrix;
-uniform sampler2D   u_shadowMap;
 
 out vec2 v_TexCoords;
 out vec3 v_FragPos;
