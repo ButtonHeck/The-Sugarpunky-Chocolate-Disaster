@@ -24,7 +24,7 @@ uniform bool      u_shadowEnable;
 uniform bool      u_debugRenderMode;
 
 const float SHADOW_INFLUENCE = 0.5;
-const float MAX_DESATURATING_VALUE = 0.6;
+const float MAX_DESATURATING_VALUE = 0.5;
 const vec2 TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 
 float SampleShadowMap(sampler2D shadowMap, vec2 coords, float compare)
@@ -53,7 +53,7 @@ float calculateLuminosity(vec3 normal)
 {
     float currentDepth = v_ProjectedCoords.z;
     float shadow = 0.0f;
-    float bias = 6.0 / 8192;
+    float bias = 1.0 / 8192;
 
     //PCF filtering
     const int NUM_SAMPLES = 3;

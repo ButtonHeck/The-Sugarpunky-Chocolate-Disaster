@@ -135,10 +135,10 @@ void Scene::drawWorldDepthmap(glm::mat4 lightSpaceMatrix)
   glClear(GL_DEPTH_BUFFER_BIT);
 
   glDisable(GL_CULL_FACE); //or set front face culling
+  glDisable(GL_MULTISAMPLE);
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
   shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix", lightSpaceMatrix);
   hillsFacade.drawDepthmap();
-  shoreFacade.drawDepthmap();
   underwaterFacade.drawDepthmap();
   if (options[OPT_DRAW_TREES])
     {
@@ -146,6 +146,7 @@ void Scene::drawWorldDepthmap(glm::mat4 lightSpaceMatrix)
       shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix", lightSpaceMatrix);
       plantsFacade.drawDepthmap();
     }
+  glEnable(GL_MULTISAMPLE);
   glEnable(GL_CULL_FACE); //or set back face culling
 }
 

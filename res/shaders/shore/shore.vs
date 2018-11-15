@@ -22,7 +22,7 @@ const float POSITION_HEIGHT_MULTIPLIER = 2.1;
 void main()
 {
     gl_Position = u_projectionView * i_pos;
-    v_FlatBlend = (i_pos.y + U_UNDERWATER_TILE_YPOS) * 0.33;
+    v_FlatBlend = (i_pos.y + U_UNDERWATER_TILE_YPOS) * 0.5;
 
     v_FragPos = i_pos.xyz;
     v_TexCoords = i_texCoords;

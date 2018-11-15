@@ -57,6 +57,6 @@ void main()
     //specular
     vec3 Reflect = reflect(-u_lightDir, v_Normal);
     vec3 ViewDir = normalize(u_viewPosition - FragPos);
-    v_SpecularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 4.0) * 1.33
+    v_SpecularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 4.0) * 0.75
                         * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
 }

@@ -26,7 +26,7 @@ uniform bool      u_debugRenderMode;
 
 const float SHADOW_INFLUENCE = 0.5;
 const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
-const float MAX_DESATURATING_VALUE = 0.6;
+const float MAX_DESATURATING_VALUE = 0.5;
 const float MIN_CANYON_CIRCLE_HEIGHT = 2.5;
 const int   NUM_CANYON_CIRCLES = 12;
 

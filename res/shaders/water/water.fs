@@ -22,7 +22,7 @@ const float KISSEL_ALPHA = 0.5;
 const vec2 TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.5;
 const float SHADOW_BIAS = 0.00025;
-const float MAX_DESATURATING_VALUE = 0.6;
+const float MAX_DESATURATING_VALUE = 0.5;
 
 float SampleShadowMap(sampler2D shadowMap, vec2 coords, float compare)
 {

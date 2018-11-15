@@ -20,7 +20,7 @@ uniform bool      u_useFlatBlending;
 
 const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.5;
-const float MAX_DESATURATING_VALUE = 0.6;
+const float MAX_DESATURATING_VALUE = 0.5;
 
 float SampleShadowMap(sampler2D shadowMap, vec2 coords, float compare)
 {
@@ -88,7 +88,7 @@ void main()
                             * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
     vec3 Reflect = reflect(-u_lightDir, shadingNormal);
     vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
-    float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 4.0) * 1.33
+    float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 4.0) * 0.75
                             * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
 
     if (u_shadowEnable)
