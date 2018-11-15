@@ -118,9 +118,10 @@ void Scene::drawWorld(glm::vec3 lightDir,
       buildableFacade.drawSelected(projectionView, mouseInput);
     }
 
+  glDisable(GL_MULTISAMPLE);
   theSunFacade.draw(skyProjectionView);
-
   skyboxFacade.draw(skyProjectionView, viewPosition);
+  glEnable(GL_MULTISAMPLE);
 
   if (options[OPT_DRAW_WATER])
     waterFacade.draw(lightDir, lightSpaceMatrix,
@@ -138,6 +139,7 @@ void Scene::drawWorldDepthmap(glm::mat4 lightSpaceMatrix)
   shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix", lightSpaceMatrix);
   hillsFacade.drawDepthmap();
   shoreFacade.drawDepthmap();
+  underwaterFacade.drawDepthmap();
   if (options[OPT_DRAW_TREES])
     {
       shaderManager.get(SHADER_SHADOW_MODELS).use();

@@ -59,7 +59,9 @@ constexpr bool HDR_ENABLED = true;
 constexpr unsigned int MULTISAMPLES = 8;
 constexpr float ANISOTROPY = 2.0f;
 
-//constants for shadow calculations
+//constants for lighting calculations
+const glm::vec4 NIGHT_SKY_COLOR(0.025f, 0.014f, 0.011f, 1.0f);
+const glm::vec4 DAY_SKY_COLOR(0.85f, 0.44f, 0.35f, 1.0f);
 constexpr int DEPTH_MAP_TEXTURE_WIDTH = 8192;
 constexpr int DEPTH_MAP_TEXTURE_HEIGHT = 12000;
 

@@ -427,7 +427,8 @@ DISTFILES += \
     res/shaders/normals/hills_normals.vs \
     res/shaders/normals/water_normals.vs \
     res/shaders/normals/_normals.gs \
-    res/shaders/normals/_normals.fs
+    res/shaders/normals/_normals.fs \
+    .gitignore
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

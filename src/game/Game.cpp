@@ -64,9 +64,7 @@ void Game::loop()
     shadowVolume.update();
   }
 
-  glm::vec4 nightColor(0.025f, 0.014f, 0.011f, 1.0f);
-  glm::vec4 dayColor(0.85f, 0.44f, 0.35f, 1.0f);
-  glm::vec4 currentColor = glm::mix(nightColor, dayColor, glm::clamp(-shadowVolume.getLightDir().y * 5, 0.0f, 1.0f));
+  glm::vec4 currentColor = glm::mix(NIGHT_SKY_COLOR, DAY_SKY_COLOR, glm::clamp(-shadowVolume.getLightDir().y * 5, 0.0f, 1.0f));
   glClearColor(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
 
   {

@@ -53,14 +53,14 @@ GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, G
 GLuint TextureLoader::createFrameMSTexture(int samples, GLuint textureUnit)
 {
   GLuint texture = createAndBindTextureObject(GL_TEXTURE_2D_MULTISAMPLE, textureUnit);
-  glTextureStorage2DMultisample(texture, samples, GL_RGB8, screenResolution.getWidth(), screenResolution.getHeight(), GL_TRUE);
+  glTextureStorage2DMultisample(texture, samples, GL_RGB16, screenResolution.getWidth(), screenResolution.getHeight(), GL_TRUE);
   return texture;
 }
 
 GLuint TextureLoader::createFrameTexture(GLuint textureUnit)
 {
   GLuint texture = createAndBindTextureObject(GL_TEXTURE_2D, textureUnit);
-  glTextureStorage2D(texture, 1, GL_RGB8, screenResolution.getWidth(), screenResolution.getHeight());
+  glTextureStorage2D(texture, 1, GL_RGB16, screenResolution.getWidth(), screenResolution.getHeight());
   return texture;
 }
 
