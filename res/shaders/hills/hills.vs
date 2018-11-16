@@ -14,7 +14,7 @@ uniform mat4        u_lightSpaceMatrix;
 out vec3  v_FragPos;
 out vec3  v_Normal;
 out vec2  v_TexCoords;
-out float v_PosHeight;
+out float v_TerrainTypeMix;
 out float v_SpecularComponent;
 out vec3  v_ProjectedCoords;
 
@@ -25,17 +25,15 @@ void main()
     v_FragPos = i_pos;
     v_Normal = i_normal;
     v_TexCoords = i_texCoords;
-    vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(i_pos, 1.0);
-    v_ProjectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
 
-    vec3 DiffuseTextureMix = texture(u_diffuse_mix_map, i_pos.xz * u_mapDimension + 0.5).rgb;
-    v_PosHeight = i_pos.y * (1.0 - DiffuseTextureMix.g * 0.75);
-
-    //calculate how much each normal (flat or hill) would define the actual shading normal vector
-    float TransitionRatio = clamp(i_pos.y, 0.0, 1.0);
+    float TerrainSplattingRatio = texture(u_diffuse_mix_map, i_pos.xz * u_mapDimension + 0.5).g;
+    v_TerrainTypeMix = i_pos.y * (1.0 - TerrainSplattingRatio * 0.75);
 
     //specular component
     vec3 Reflect = reflect(-u_lightDir, i_normal);
     vec3 ViewDir = normalize(u_viewPosition - i_pos);
     v_SpecularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 64.0);
+
+    vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(i_pos, 1.0);
+    v_ProjectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
 }

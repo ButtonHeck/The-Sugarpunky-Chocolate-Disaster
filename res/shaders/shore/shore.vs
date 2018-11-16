@@ -23,11 +23,11 @@ const float TERRAIN_TYPE_TRANSITION_RATIO = 1.75;
 void main()
 {
     gl_Position = u_projectionView * i_pos;
-    v_AlphaBlend = (i_pos.y + U_UNDERWATER_TILE_YPOS) * 0.5;
 
     v_FragPos = i_pos.xyz;
     v_TexCoords = i_texCoords;
     v_Normal = i_normal;
+    v_AlphaBlend = (i_pos.y + U_UNDERWATER_TILE_YPOS) * 0.5;
 
     float TerrainSplattingRatio = texture(u_diffuse_mix_map, i_pos.xz * u_mapDimension + 0.5).g;
     v_TerrainTypeMix = i_pos.y * TERRAIN_TYPE_TRANSITION_RATIO + 1.5 - TerrainSplattingRatio * 0.5;

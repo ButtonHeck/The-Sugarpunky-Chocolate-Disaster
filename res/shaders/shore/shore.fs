@@ -74,8 +74,7 @@ float calculateLuminosity()
 vec4 desaturate(vec4 fragColor, float desaturatingValue)
 {
     float colorMedian = (fragColor.r + fragColor.g + fragColor.b) * 0.333;
-    vec3 gray = vec3(colorMedian);
-    vec4 desaturated = vec4(mix(fragColor.rgb, gray, desaturatingValue), fragColor.a);
+    vec4 desaturated = vec4(mix(fragColor.rgb, vec3(colorMedian), desaturatingValue), fragColor.a);
     return desaturated;
 }
 

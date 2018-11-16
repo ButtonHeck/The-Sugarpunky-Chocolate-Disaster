@@ -1,12 +1,11 @@
 #version 450
-layout (early_fragment_tests) in;
 
 out vec4 o_FragColor;
 
 in vec3  v_FragPos;
 in vec3  v_Normal;
 in vec2  v_TexCoords;
-in float v_PosHeight;
+in float v_TerrainTypeMix;
 in float v_SpecularComponent;
 in vec3  v_ProjectedCoords;
 
@@ -24,9 +23,11 @@ uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
 uniform bool      u_debugRenderMode;
 
-const float SHADOW_INFLUENCE = 0.5;
+const vec3  NORMAL = vec3(0.0, 1.0, 0.0);
 const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
-const float MAX_DESATURATING_VALUE = 0.5;
+const float SHADOW_INFLUENCE = 0.5;
+const float MAX_DESATURATING_VALUE_HILL = 0.4;
+const float MAX_DESATURATING_VALUE_LAND = 0.5;
 const float MIN_CANYON_CIRCLE_HEIGHT = 2.5;
 const int   NUM_CANYON_CIRCLES = 12;
 
@@ -53,7 +54,7 @@ float SampleShadowMapLinear(sampler2D shadowMap, vec2 coords, float compare, vec
 }
 
 
-float calculateLuminosity(vec3 normal)
+float calculateLuminosity()
 {
     float currentDepth = v_ProjectedCoords.z;
     float shadow = 0.0;
@@ -108,48 +109,47 @@ void main()
     else
     {
         float DiffuseTextureMix = texture(u_diffuse_mix_map, v_FragPos.xz * u_mapDimension + 0.5).r;
-        vec4 sampledDiffuse =
-            mix(mix(texture(u_flat_diffuse, v_TexCoords * 2.0), texture(u_flat_diffuse2, v_TexCoords * 2.0), DiffuseTextureMix),
-                mix(texture(u_hills_diffuse, v_TexCoords), texture(u_hills_diffuse2, v_TexCoords), DiffuseTextureMix),
-                clamp(v_PosHeight, 0.0, 1.0));
-        vec4 sampledSpecular =
-            mix(vec4(0.0), texture(u_hills_specular, v_TexCoords), clamp(v_PosHeight, 0.0, 1.0));
+        float TerrainTypeMixClamped = clamp(v_TerrainTypeMix, 0.0, 1.0);
+        vec4 sampledDiffuse = mix(mix(texture(u_flat_diffuse, v_TexCoords * 2.0),
+                                      texture(u_flat_diffuse2, v_TexCoords * 2.0),
+                                      DiffuseTextureMix),
+                                  mix(texture(u_hills_diffuse, v_TexCoords),
+                                      texture(u_hills_diffuse2, v_TexCoords),
+                                      DiffuseTextureMix),
+                                  TerrainTypeMixClamped);
+        vec4 sampledSpecular = mix(vec4(0.0), texture(u_hills_specular, v_TexCoords), TerrainTypeMixClamped);
 
         vec3 ambientColor = 0.08 * sampledDiffuse.rgb;
         vec3 diffuseColor;
         vec3 specularColor;
         vec3 resultColor;
 
-        //swizzle z and y to rotate Z-aligned normal map 90 degrees around X axis, as like we look at it upside down
-        //also scale up texture mapping a bit
-        vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
-        ShadingNormal.z *= -1;
-        ShadingNormal.x = ShadingNormal.x * 2.0 - 0.5;
-
-        vec3 ShadingNormalFlat = normalize(vec3(0.0, 1.0, 0.0) + 0.5 * ShadingNormal);
+        vec3 ShadingNormal = (texture(u_normal_map, v_FragPos.xz * 0.125).xyz) * 2.0 - 0.66;
+        vec3 ShadingNormalFlat = normalize(NORMAL + 0.6 * ShadingNormal);
         vec3 ShadingNormalHill = ShadingNormal;
-        ShadingNormalHill.y *= 0.5;
-        ShadingNormalHill = normalize(v_Normal + 0.5 * ShadingNormalHill);
+        ShadingNormalHill = normalize(v_Normal + 0.6 * ShadingNormalHill);
 
         float DiffuseComponentHill = max(dot(ShadingNormalHill, u_lightDir), 0.0);
         float DiffuseComponentFlat = max(dot(ShadingNormalFlat, u_lightDir), 0.0);
-        float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentHill, clamp(v_PosHeight, 0.0, 1.0))
-                                * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+        float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+        float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentHill, TerrainTypeMixClamped) * sunPositionAttenuation;
 
         if (u_shadowEnable)
         {
-            float luminosity = calculateLuminosity(ShadingNormalHill);
+            float luminosity = calculateLuminosity();
             diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
-            specularColor = v_SpecularComponent * sampledSpecular.rgb;
+            specularColor = v_SpecularComponent * sampledSpecular.rgb * sunPositionAttenuation;
             resultColor = ambientColor + diffuseColor + specularColor;
             o_FragColor = vec4(resultColor, sampledDiffuse.a);
-            float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity);
+            float desaturatingValue = mix(0.0,
+                                          mix(MAX_DESATURATING_VALUE_LAND, MAX_DESATURATING_VALUE_HILL, TerrainTypeMixClamped),
+                                          min(luminosity, diffuseComponent + SHADOW_INFLUENCE));
             o_FragColor = desaturate(o_FragColor, desaturatingValue);
         }
         else
         {
             diffuseColor = sampledDiffuse.rgb * diffuseComponent;
-            specularColor = v_SpecularComponent * sampledSpecular.rgb;
+            specularColor = v_SpecularComponent * sampledSpecular.rgb * sunPositionAttenuation;
             resultColor = ambientColor + diffuseColor + specularColor;
             o_FragColor = vec4(resultColor, sampledDiffuse.a);
         }
