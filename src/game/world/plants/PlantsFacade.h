@@ -27,7 +27,7 @@ public:
             bool usePhongShading,
             bool useShadowEmphasize,
             bool useShadows,
-            bool useFlatBlending);
+            bool useLandBlending);
   void drawDepthmap();
 
   //save/load routine

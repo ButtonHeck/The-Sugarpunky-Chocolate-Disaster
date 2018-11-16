@@ -3,7 +3,7 @@
 void TreesRenderer::render(std::vector<Model> &landModels,
                            std::vector<Model> &hillModels,
                            bool bindTexture,
-                           bool useFlatBlending)
+                           bool useLandBlending)
 {
   BenchmarkTimer BENCHMARK_;
   if (bindTexture)
@@ -11,7 +11,7 @@ void TreesRenderer::render(std::vector<Model> &landModels,
   else
     BENCHMARK_("TreesRenderer: render depthmap", true);
 
-  if (useFlatBlending)
+  if (useLandBlending)
     glEnable(GL_BLEND);
   else
     glDisable(GL_BLEND);
@@ -28,6 +28,6 @@ void TreesRenderer::render(std::vector<Model> &landModels,
       model.draw(bindTexture);
     }
 
-  if (useFlatBlending)
+  if (useLandBlending)
     glDisable(GL_BLEND);
 }

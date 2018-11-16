@@ -22,7 +22,7 @@ out vec3  v_Normal;
 out float v_DiffuseComponent;
 out float v_SpecularComponent;
 out vec3  v_ProjectedCoords;
-out float v_FlatBlend;
+out float v_LandBlend;
 
 void main()
 {
@@ -36,11 +36,11 @@ void main()
             ModelWorldPosition.xyz += (mix(GRASS_WAVE_XYZ, GRASS_WAVE_XYZ + i_normal * 0.005, dot(normalize(GRASS_WAVE_XYZ), i_normal)))
                                     * distribution * influence * clamp(i_pos.y, 0.0, 1.0);
         }
-        v_FlatBlend = ModelWorldPosition.y * 32;
+        v_LandBlend = ModelWorldPosition.y * 32;
     }
     else
     {
-        v_FlatBlend = ModelWorldPosition.y * 48;
+        v_LandBlend = ModelWorldPosition.y * 48;
     }
 
     gl_Position = u_projectionView * ModelWorldPosition;

@@ -194,8 +194,6 @@ DISTFILES += \
     res/textures/cubemap/up.png \
     res/textures/shore.jpg \
     res/textures/shore2.jpg \
-    res/textures/flat.jpg \
-    res/textures/flat2.jpg \
     res/textures/flat2_x2.jpg \
     res/textures/flat_x2.jpg \
     res/shaders/skybox/skybox.vs \
@@ -428,7 +426,9 @@ DISTFILES += \
     res/shaders/normals/water_normals.vs \
     res/shaders/normals/_normals.gs \
     res/shaders/normals/_normals.fs \
-    .gitignore
+    .gitignore \
+    res/textures/land.jpg \
+    res/textures/land2.jpg
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

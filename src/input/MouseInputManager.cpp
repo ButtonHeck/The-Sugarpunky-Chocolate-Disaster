@@ -116,7 +116,7 @@ void MouseInputManager::updateCursorMappingCoordinates(Camera &camera,
       cursorMapZ = (int)(WORLD_HEIGHT + cursorAbsZ) - HALF_WORLD_HEIGHT + 1;
       cursorMapZ = glm::clamp(cursorMapZ, 1, WORLD_HEIGHT - 1);
       if (buildableMap[cursorMapZ][cursorMapX] != 0)
-        cursorTileName = "Flat";
+        cursorTileName = "Land";
       else if (hillMap[cursorMapZ][cursorMapX] != 0 ||
                hillMap[cursorMapZ-1][cursorMapX] != 0 ||
                hillMap[cursorMapZ-1][cursorMapX+1] != 0 ||

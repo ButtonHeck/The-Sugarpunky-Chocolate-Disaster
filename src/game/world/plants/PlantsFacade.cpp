@@ -40,7 +40,7 @@ void PlantsFacade::draw(glm::vec3 &lightDir,
                         bool usePhongShading,
                         bool useShadowEmphasize,
                         bool useShadows,
-                        bool useFlatBlending)
+                        bool useLandBlending)
 {
   shaders.switchToGrass(usePhongShading, false);
   shaders.updateAllPlants(lightDir,
@@ -50,17 +50,17 @@ void PlantsFacade::draw(glm::vec3 &lightDir,
                           usePhongShading,
                           useShadowEmphasize,
                           useShadows,
-                          useFlatBlending);
+                          useLandBlending);
   treesRenderer.render(landPlantsGenerator.models,
                        hillTreesGenerator.models,
                        true,
-                       useFlatBlending);
+                       useLandBlending);
 
   shaders.switchToGrass(usePhongShading, true);
   shaders.updateGrass(usePhongShading);
   grassRenderer.render(grassGenerator.models,
                        true,
-                       useFlatBlending);
+                       useLandBlending);
 }
 
 void PlantsFacade::drawDepthmap()

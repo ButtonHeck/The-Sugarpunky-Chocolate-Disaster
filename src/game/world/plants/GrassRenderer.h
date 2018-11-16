@@ -9,7 +9,7 @@ public:
   GrassRenderer() = default;
   void render(std::vector<Model>& models,
               bool bindTexture,
-              bool useFlatBlending);
+              bool useLandBlending);
 };
 
 #endif // GRASSRENDERER_H

@@ -107,7 +107,7 @@ void Scene::drawWorld(glm::vec3 lightDir,
                       options[OPT_MODELS_PHONG_SHADING],
                       options[OPT_MODELS_SHADOW_EMPHASIZE],
                       options[OPT_USE_SHADOWS],
-                      options[OPT_MODELS_FLAT_BLENDING]);
+                      options[OPT_MODELS_LAND_BLENDING]);
 
   if (options[OPT_DRAW_BUILDABLE])
     buildableFacade.drawBuildable(projectionView);

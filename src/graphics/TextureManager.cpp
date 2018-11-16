@@ -4,8 +4,8 @@ TextureManager::TextureManager(TextureLoader& loader)
   :
     loader(loader)
 {
-  textures[TEX_LAND] = loader.loadTexture("flat.jpg", TEX_LAND, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
-  textures[TEX_LAND_2] = loader.loadTexture("flat2.jpg", TEX_LAND_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[TEX_LAND] = loader.loadTexture("land.jpg", TEX_LAND, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[TEX_LAND_2] = loader.loadTexture("land2.jpg", TEX_LAND_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[TEX_DIFFUSE_MIX_MAP] = loader.loadTexture("diffuseMixMap.jpg", TEX_DIFFUSE_MIX_MAP, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
   textures[TEX_TERRAIN_NORMAL] = loader.loadTexture("terrainNormal.jpg", TEX_TERRAIN_NORMAL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[TEX_WATER_NORMAL] = loader.loadTexture("waterNormal.jpg", TEX_WATER_NORMAL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);

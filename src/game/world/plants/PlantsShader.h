@@ -13,7 +13,7 @@ public:
                        bool usePhongShading,
                        bool shadowOnTrees,
                        bool useShadows,
-                       bool useFlatBlending);
+                       bool useLandBlending);
   void updateGrass(bool usePhongShading);
   void switchToGrass(bool usePhongShading, bool isGrass);
 private:

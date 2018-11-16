@@ -67,8 +67,8 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
 
   Shader* shader = nullptr;
   bindShaderUnit(shader, SHADER_HILLS);
-  shader->setInt("u_flat_diffuse", TEX_LAND);
-  shader->setInt("u_flat_diffuse2", TEX_LAND_2);
+  shader->setInt("u_land_diffuse", TEX_LAND);
+  shader->setInt("u_land_diffuse2", TEX_LAND_2);
   shader->setInt("u_hills_diffuse", TEX_HILL);
   shader->setInt("u_hills_diffuse2", TEX_HILL_2);
   shader->setInt("u_hills_specular", TEX_HILL_SPECULAR);
@@ -78,8 +78,8 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
 
   bindShaderUnit(shader, SHADER_SHORE);
-  shader->setInt("u_flat_diffuse", TEX_LAND);
-  shader->setInt("u_flat_diffuse2", TEX_LAND_2);
+  shader->setInt("u_land_diffuse", TEX_LAND);
+  shader->setInt("u_land_diffuse2", TEX_LAND_2);
   shader->setInt("u_sand_diffuse", TEX_SHORE);
   shader->setInt("u_sand_diffuse2", TEX_SHORE_2);
   shader->setInt("u_diffuse_mix_map", TEX_DIFFUSE_MIX_MAP);
@@ -95,8 +95,8 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
 
   bindShaderUnit(shader, SHADER_LAND);
-  shader->setInt("u_flat_diffuse", TEX_LAND);
-  shader->setInt("u_flat_diffuse2", TEX_LAND_2);
+  shader->setInt("u_land_diffuse", TEX_LAND);
+  shader->setInt("u_land_diffuse2", TEX_LAND_2);
   shader->setInt("u_diffuse_mix_map", TEX_DIFFUSE_MIX_MAP);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);

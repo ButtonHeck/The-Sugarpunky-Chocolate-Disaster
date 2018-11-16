@@ -9,8 +9,8 @@ in float v_TerrainTypeMix;
 in float v_SpecularComponent;
 in vec3  v_ProjectedCoords;
 
-uniform sampler2D u_flat_diffuse;
-uniform sampler2D u_flat_diffuse2;
+uniform sampler2D u_land_diffuse;
+uniform sampler2D u_land_diffuse2;
 uniform sampler2D u_hills_diffuse;
 uniform sampler2D u_hills_diffuse2;
 uniform sampler2D u_hills_specular;
@@ -110,8 +110,8 @@ void main()
     {
         float DiffuseTextureMix = texture(u_diffuse_mix_map, v_FragPos.xz * u_mapDimension + 0.5).r;
         float TerrainTypeMixClamped = clamp(v_TerrainTypeMix, 0.0, 1.0);
-        vec4 sampledDiffuse = mix(mix(texture(u_flat_diffuse, v_TexCoords * 2.0),
-                                      texture(u_flat_diffuse2, v_TexCoords * 2.0),
+        vec4 sampledDiffuse = mix(mix(texture(u_land_diffuse, v_TexCoords * 2.0),
+                                      texture(u_land_diffuse2, v_TexCoords * 2.0),
                                       DiffuseTextureMix),
                                   mix(texture(u_hills_diffuse, v_TexCoords),
                                       texture(u_hills_diffuse2, v_TexCoords),
@@ -125,14 +125,14 @@ void main()
         vec3 resultColor;
 
         vec3 ShadingNormal = (texture(u_normal_map, v_FragPos.xz * 0.125).xyz) * 2.0 - 0.66;
-        vec3 ShadingNormalFlat = normalize(NORMAL + 0.6 * ShadingNormal);
+        vec3 ShadingNormalLand = normalize(NORMAL + 0.6 * ShadingNormal);
         vec3 ShadingNormalHill = ShadingNormal;
         ShadingNormalHill = normalize(v_Normal + 0.6 * ShadingNormalHill);
 
         float DiffuseComponentHill = max(dot(ShadingNormalHill, u_lightDir), 0.0);
-        float DiffuseComponentFlat = max(dot(ShadingNormalFlat, u_lightDir), 0.0);
+        float DiffuseComponentLand = max(dot(ShadingNormalLand, u_lightDir), 0.0);
         float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
-        float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentHill, TerrainTypeMixClamped) * sunPositionAttenuation;
+        float diffuseComponent = mix(DiffuseComponentLand, DiffuseComponentHill, TerrainTypeMixClamped) * sunPositionAttenuation;
 
         if (u_shadowEnable)
         {

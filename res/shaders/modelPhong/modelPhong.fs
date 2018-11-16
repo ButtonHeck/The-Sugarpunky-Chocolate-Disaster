@@ -6,7 +6,7 @@ out vec4 o_FragColor;
 in vec2  v_TexCoords;
 in vec3  v_Normal;
 in vec3  v_ProjectedCoords;
-in float v_FlatBlend;
+in float v_LandBlend;
 in vec3  v_FragPos;
 
 uniform sampler2D u_texture_diffuse1;
@@ -16,7 +16,7 @@ uniform bool      u_shadow;
 uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
-uniform bool      u_useFlatBlending;
+uniform bool      u_useLandBlending;
 
 const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.5;
@@ -112,10 +112,10 @@ void main()
     if (u_shadow)
         o_FragColor += clamp(o_FragColor * shadingNormal.y * 0.5, -0.05, 0.01);
 
-    //perform flat blending
-    if(u_useFlatBlending)
+    //perform Land blending
+    if(u_useLandBlending)
     {
-        float flatBlend = clamp(v_FlatBlend, 0.0, 1.0);
-        o_FragColor.a = mix(0.0, 1.0, flatBlend);
+        float LandBlend = clamp(v_LandBlend, 0.0, 1.0);
+        o_FragColor.a = mix(0.0, 1.0, LandBlend);
     }
 }

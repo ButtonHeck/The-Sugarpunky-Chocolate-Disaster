@@ -10,7 +10,7 @@ public:
   void render(std::vector<Model>& landModels,
               std::vector<Model>& hillModels,
               bool bindTexture,
-              bool useFlatBlending);
+              bool useLandBlending);
 };
 
 #endif // TREESRENDERER_H

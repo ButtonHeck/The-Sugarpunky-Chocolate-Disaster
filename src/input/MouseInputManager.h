@@ -31,7 +31,7 @@ private:
   float cursorAbsZ = 0.0f;
   int cursorMapX = 0;
   int cursorMapZ = 0;
-  std::string cursorTileName = "Flat";
+  std::string cursorTileName = "Land";
 };
 
 #endif // MOUSEINPUTMANAGER_H

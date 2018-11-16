@@ -2,7 +2,7 @@
 
 void GrassRenderer::render(std::vector<Model> &models,
                            bool bindTexture,
-                           bool useFlatBlending)
+                           bool useLandBlending)
 {
   BenchmarkTimer BENCHMARK_;
   if (bindTexture)
@@ -10,7 +10,7 @@ void GrassRenderer::render(std::vector<Model> &models,
   else
     BENCHMARK_("GrassRenderer: render depthmap", true);
 
-  if (useFlatBlending)
+  if (useLandBlending)
     glEnable(GL_BLEND);
   else
     glDisable(GL_BLEND);
@@ -23,6 +23,6 @@ void GrassRenderer::render(std::vector<Model> &models,
     }
   glEnable(GL_CULL_FACE);
 
-  if (useFlatBlending)
+  if (useLandBlending)
     glDisable(GL_BLEND);
 }

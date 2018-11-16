@@ -17,7 +17,7 @@ Options::Options()
   options[OPT_USE_SHADOWS] = true;
   options[OPT_DRAW_LAND] = true;
   options[OPT_DRAW_WATER] = true;
-  options[OPT_MODELS_FLAT_BLENDING] = true;
+  options[OPT_MODELS_LAND_BLENDING] = true;
   options[OPT_MODELS_PHONG_SHADING] = true;
   options[OPT_POLYGON_LINE] = false;
   options[OPT_DEBUG_RENDER] = false;

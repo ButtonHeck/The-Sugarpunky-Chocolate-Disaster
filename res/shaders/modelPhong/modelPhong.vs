@@ -18,7 +18,7 @@ const vec3 GRASS_WAVE_XYZ = vec3(0.007, 0.0023, 0.0035);
 out vec2  v_TexCoords;
 out vec3  v_Normal;
 out vec3  v_ProjectedCoords;
-out float v_FlatBlend;
+out float v_LandBlend;
 out vec3  v_FragPos;
 
 void main()
@@ -33,11 +33,11 @@ void main()
             ModelWorldPosition.xyz += (mix(GRASS_WAVE_XYZ, GRASS_WAVE_XYZ + i_normal * 0.005, dot(normalize(GRASS_WAVE_XYZ), i_normal)))
                                     * distribution * influence * clamp(i_pos.y, 0.0, 1.0);
         }
-        v_FlatBlend = ModelWorldPosition.y * 32;
+        v_LandBlend = ModelWorldPosition.y * 32;
     }
     else
     {
-        v_FlatBlend = ModelWorldPosition.y * 48;
+        v_LandBlend = ModelWorldPosition.y * 48;
     }
 
     gl_Position = u_projectionView * ModelWorldPosition;

@@ -9,8 +9,8 @@ in vec3  v_Normal;
 in vec3  v_ProjectedCoords;
 in float v_AlphaBlend;
 
-uniform sampler2D u_flat_diffuse;
-uniform sampler2D u_flat_diffuse2;
+uniform sampler2D u_land_diffuse;
+uniform sampler2D u_land_diffuse2;
 uniform sampler2D u_sand_diffuse;
 uniform sampler2D u_sand_diffuse2;
 uniform sampler2D u_diffuse_mix_map;
@@ -89,8 +89,8 @@ void main()
         vec4 sampledDiffuse = mix(mix(texture(u_sand_diffuse, v_TexCoords),
                                       texture(u_sand_diffuse2, v_TexCoords),
                                       DiffuseTextureMix),
-                                  mix(texture(u_flat_diffuse, v_TexCoords),
-                                      texture(u_flat_diffuse2, v_TexCoords),
+                                  mix(texture(u_land_diffuse, v_TexCoords),
+                                      texture(u_land_diffuse2, v_TexCoords),
                                       DiffuseTextureMix),
                                   TerrainTypeMixClamped);
 
@@ -99,13 +99,13 @@ void main()
         vec3 resultColor;
 
         vec3 ShadingNormal = (texture(u_normal_map, v_FragPos.xz * 0.125).xyz) * 2.0 - 0.66;
-        vec3 ShadingNormalFlat = normalize(NORMAL + 0.6 * ShadingNormal);
+        vec3 ShadingNormalLand = normalize(NORMAL + 0.6 * ShadingNormal);
         vec3 ShadingNormalShore = normalize(v_Normal + 0.2 * ShadingNormal);
 
         float DiffuseComponentShore = max(dot(ShadingNormalShore, u_lightDir), 0.0);
-        float DiffuseComponentFlat = max(dot(ShadingNormalFlat, u_lightDir), 0.0);
+        float DiffuseComponentLand = max(dot(ShadingNormalLand, u_lightDir), 0.0);
         float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
-        float diffuseComponent = mix(DiffuseComponentShore, DiffuseComponentFlat, TerrainTypeMixClamped) * sunPositionAttenuation;
+        float diffuseComponent = mix(DiffuseComponentShore, DiffuseComponentLand, TerrainTypeMixClamped) * sunPositionAttenuation;
 
         if (u_shadowEnable)
         {

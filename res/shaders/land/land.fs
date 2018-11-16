@@ -6,8 +6,8 @@ in vec3 v_FragPos;
 in vec2 v_TexCoords;
 in vec3 v_ProjectedCoords;
 
-uniform sampler2D u_flat_diffuse;
-uniform sampler2D u_flat_diffuse2;
+uniform sampler2D u_land_diffuse;
+uniform sampler2D u_land_diffuse2;
 uniform sampler2D u_diffuse_mix_map;
 uniform sampler2D u_normal_map;
 uniform vec3      u_lightDir;
@@ -74,8 +74,8 @@ vec4 desaturate(vec4 fragColor, float desaturatingValue)
 void main()
 {
     float DiffuseTextureMix = texture(u_diffuse_mix_map, v_FragPos.xz * u_mapDimension + 0.5).r;
-    vec4 sampledDiffuse = mix(texture(u_flat_diffuse, v_TexCoords),
-                              texture(u_flat_diffuse2, v_TexCoords),
+    vec4 sampledDiffuse = mix(texture(u_land_diffuse, v_TexCoords),
+                              texture(u_land_diffuse2, v_TexCoords),
                               DiffuseTextureMix);
 
     vec3 ambientColor = 0.08 * sampledDiffuse.rgb;
