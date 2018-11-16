@@ -4,7 +4,6 @@ layout (location = 0) in vec4 i_pos;
 layout (location = 1) in vec2 i_texCoords;
 
 uniform mat4        u_projectionView;
-uniform vec3        u_lightDir;
 
 out vec2  v_TexCoords;
 out vec2  v_FragPosXZ;
