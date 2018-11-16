@@ -9,6 +9,7 @@ class TheSunFacade
 public:
   TheSunFacade(Shader& renderShader);
   void move(float delta);
+  void setPos(float posDegrees);
   void draw(glm::mat4& skyProjectionView);
   glm::vec3 getCurrentPosition() const;
 private:

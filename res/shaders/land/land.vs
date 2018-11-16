@@ -17,6 +17,7 @@ void main()
     gl_Position = u_projectionView * worldPosition;
     v_FragPos = vec3(worldPosition);
     v_TexCoords = i_texCoords;
+
     vec4 fragPosLightSpace = u_lightSpaceMatrix * vec4(v_FragPos, 1.0);
     v_ProjectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
 }

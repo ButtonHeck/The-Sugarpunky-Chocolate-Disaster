@@ -15,9 +15,9 @@ uniform float     u_mapDimension;
 uniform sampler2D u_shadowMap;
 uniform bool      u_shadowEnable;
 
-const vec2 TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
+const vec3  NORMAL = vec3(0.0, 1.0, 0.0);
+const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.5;
-const float SHADOW_BIAS = 0.00025;
 const float MAX_DESATURATING_VALUE = 0.5;
 
 float SampleShadowMap(sampler2D shadowMap, vec2 coords, float compare)
@@ -74,20 +74,19 @@ vec4 desaturate(vec4 fragColor, float desaturatingValue)
 void main()
 {
     float DiffuseTextureMix = texture(u_diffuse_mix_map, v_FragPos.xz * u_mapDimension + 0.5).r;
-    vec4 sampledDiffuse = mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), DiffuseTextureMix);
-
-    //swizzle z and y to rotate Z-aligned normal map 90 degrees around X axis, as like we look at it upside down
-    //also scale up texture mapping a bit
-    vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
-    ShadingNormal.z *= -1;
-    ShadingNormal.x = ShadingNormal.x * 2.0 - 0.5;
-    ShadingNormal = normalize(vec3(0.0, 1.0, 0.0) + 0.5 * ShadingNormal);
+    vec4 sampledDiffuse = mix(texture(u_flat_diffuse, v_TexCoords),
+                              texture(u_flat_diffuse2, v_TexCoords),
+                              DiffuseTextureMix);
 
     vec3 ambientColor = 0.08 * sampledDiffuse.rgb;
     vec3 diffuseColor;
     vec3 resultColor;
-    float diffuseComponent = max(dot(ShadingNormal, u_lightDir), 0.0)
-                           * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+
+    vec3 ShadingNormal = (texture(u_normal_map, v_FragPos.xz * 0.125).xyz) * 2.0 - 0.66;
+    ShadingNormal = normalize(NORMAL + 0.6 * ShadingNormal);
+
+    float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+    float diffuseComponent = max(dot(ShadingNormal, u_lightDir), 0.0) * sunPositionAttenuation;
 
     if (u_shadowEnable)
     {
@@ -95,7 +94,9 @@ void main()
         diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
         resultColor = ambientColor + diffuseColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
-        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity);
+        float desaturatingValue = mix(0.0,
+                                      MAX_DESATURATING_VALUE,
+                                      min(luminosity, diffuseComponent + SHADOW_INFLUENCE));
         o_FragColor = desaturate(o_FragColor, desaturatingValue);
     }
     else

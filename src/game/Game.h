@@ -49,10 +49,8 @@ private:
   Frustum viewFrustum;
   glm::mat4 projection;
 
-  //input and options
+  //options
   Options& options;
-  KeyboardManager keyboard;
-  MouseInputManager& mouseInput;
 
   //graphics
   ShaderManager shaderManager;
@@ -66,6 +64,10 @@ private:
   Scene scene;
   ShadowVolume shadowVolume;
   SaveLoadManager saveLoadManager;
+
+  //input
+  KeyboardManager keyboard;
+  MouseInputManager& mouseInput;
 
   //GUI and text
   TextManager textManager;

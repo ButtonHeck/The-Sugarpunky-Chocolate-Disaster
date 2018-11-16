@@ -3,13 +3,11 @@
 out vec4 o_FragColor;
 
 in vec3  v_FragPos;
-in float v_PositionDiffuseComponent;
 in vec2  v_TexCoords;
-in float v_PosHeight;
-in float v_DiffuseComponent;
+in float v_TerrainTypeMix;
 in vec3  v_Normal;
 in vec3  v_ProjectedCoords;
-in float v_FlatBlend;
+in float v_AlphaBlend;
 
 uniform sampler2D u_flat_diffuse;
 uniform sampler2D u_flat_diffuse2;
@@ -23,9 +21,11 @@ uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
 uniform bool      u_debugRenderMode;
 
+const vec3  NORMAL = vec3(0.0, 1.0, 0.0);
+const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.5;
-const float MAX_DESATURATING_VALUE = 0.5;
-const vec2 TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
+const float MAX_DESATURATING_VALUE_LAND = 0.5;
+const float MAX_DESATURATING_VALUE_SHORE = 0.7;
 
 float SampleShadowMap(sampler2D shadowMap, vec2 coords, float compare)
 {
@@ -49,7 +49,7 @@ float SampleShadowMapLinear(sampler2D shadowMap, vec2 coords, float compare, vec
     return mix(mixA, mixB, fracPart.x);
 }
 
-float calculateLuminosity(vec3 normal)
+float calculateLuminosity()
 {
     float currentDepth = v_ProjectedCoords.z;
     float shadow = 0.0f;
@@ -86,46 +86,47 @@ void main()
     else
     {
         float DiffuseTextureMix = texture(u_diffuse_mix_map, v_FragPos.xz * u_mapDimension + 0.5).r;
-        vec4 sampledDiffuse =
-                    mix(mix(texture(u_sand_diffuse, v_TexCoords), texture(u_sand_diffuse2, v_TexCoords), DiffuseTextureMix),
-                        mix(texture(u_flat_diffuse, v_TexCoords), texture(u_flat_diffuse2, v_TexCoords), DiffuseTextureMix),
-                        clamp(v_PosHeight + 1.0, 0.0, 1.0));
+        float TerrainTypeMixClamped = clamp(v_TerrainTypeMix, 0.0, 1.0);
+        vec4 sampledDiffuse = mix(mix(texture(u_sand_diffuse, v_TexCoords),
+                                      texture(u_sand_diffuse2, v_TexCoords),
+                                      DiffuseTextureMix),
+                                  mix(texture(u_flat_diffuse, v_TexCoords),
+                                      texture(u_flat_diffuse2, v_TexCoords),
+                                      DiffuseTextureMix),
+                                  TerrainTypeMixClamped);
 
         vec3 ambientColor = 0.08 * sampledDiffuse.rgb;
         vec3 diffuseColor;
         vec3 resultColor;
 
-        //swizzle z and y to rotate Z-aligned normal map 90 degrees around X axis, as like we look at it upside down
-        //also scale up texture mapping a bit
-        vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.0625).xzy;
-        ShadingNormal.z *= -1;
-        ShadingNormal.x = ShadingNormal.x * 2.0 - 0.5;
-
-        vec3 ShadingNormalFlat = normalize(vec3(0.0, 1.0, 0.0) + 0.5 * ShadingNormal);
-        vec3 ShadingNormalShore = normalize(v_Normal + 0.5 * ShadingNormal);
+        vec3 ShadingNormal = (texture(u_normal_map, v_FragPos.xz * 0.125).xyz) * 2.0 - 0.66;
+        vec3 ShadingNormalFlat = normalize(NORMAL + 0.6 * ShadingNormal);
+        vec3 ShadingNormalShore = normalize(v_Normal + 0.2 * ShadingNormal);
 
         float DiffuseComponentShore = max(dot(ShadingNormalShore, u_lightDir), 0.0);
         float DiffuseComponentFlat = max(dot(ShadingNormalFlat, u_lightDir), 0.0);
-        float diffuseComponent = mix(DiffuseComponentFlat, DiffuseComponentShore, clamp(v_PosHeight, 0.0, 1.0))
-                                * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+        float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+        float diffuseComponent = mix(DiffuseComponentShore, DiffuseComponentFlat, TerrainTypeMixClamped) * sunPositionAttenuation;
 
         if (u_shadowEnable)
         {
-            float luminosity = calculateLuminosity(ShadingNormalShore);
-            diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent * v_PositionDiffuseComponent;
+            float luminosity = calculateLuminosity();
+            diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
             resultColor = ambientColor + diffuseColor;
             o_FragColor = vec4(resultColor, sampledDiffuse.a);
-            float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity);
+            float desaturatingValue = mix(0.0,
+                                          mix(MAX_DESATURATING_VALUE_SHORE, MAX_DESATURATING_VALUE_LAND, TerrainTypeMixClamped),
+                                          min(luminosity, diffuseComponent + SHADOW_INFLUENCE));
             o_FragColor = desaturate(o_FragColor, desaturatingValue);
         }
         else
         {
-            diffuseColor = sampledDiffuse.rgb * diffuseComponent * v_PositionDiffuseComponent;
+            diffuseColor = sampledDiffuse.rgb * diffuseComponent;
             resultColor = ambientColor + diffuseColor;
             o_FragColor = vec4(resultColor, sampledDiffuse.a);
         }
 
-        float flatBlend = clamp(v_FlatBlend, 0.0, 1.0);
-        o_FragColor.a = mix(0.0, 1.0, flatBlend);
+        float alphaBlend = clamp(v_AlphaBlend, 0.0, 1.0);
+        o_FragColor.a = mix(0.0, 1.0, alphaBlend);
     }
 }

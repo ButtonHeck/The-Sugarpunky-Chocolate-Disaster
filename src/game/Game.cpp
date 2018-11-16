@@ -7,8 +7,6 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
     camera(camera),
     projection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE)),
     options(options),
-    keyboard(KeyboardManager(window, camera, options)),
-    mouseInput(MouseInputManager::getInstance()),
     shaderManager(),
     textureLoader(TextureLoader(screenResolution)),
     textureManager(TextureManager(textureLoader)),
@@ -18,6 +16,8 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
     scene(shaderManager, options, textureManager),
     shadowVolume(scene.getSunFacade()),
     saveLoadManager(scene, camera),
+    keyboard(KeyboardManager(window, camera, options, scene.getSunFacade())),
+    mouseInput(MouseInputManager::getInstance()),
     textManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", shaderManager.get(SHADER_FONT))
 {
   srand(time(NULL));

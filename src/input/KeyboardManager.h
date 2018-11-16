@@ -7,11 +7,12 @@
 #include "util/Settings.h"
 #include "game/Options.h"
 #include "util/BenchmarkTimer.h"
+#include "game/world/ambience/theSun/TheSunFacade.h"
 
 class KeyboardManager
 {
 public:
-  KeyboardManager(GLFWwindow* window, Camera& camera, Options& options);
+  KeyboardManager(GLFWwindow* window, Camera& camera, Options& options, TheSunFacade &sun);
   void processInput();
 private:
   bool keysPressed[GLFW_KEY_LAST];
@@ -20,6 +21,7 @@ private:
   GLFWwindow* window;
   Camera& camera;
   Options& options;
+  TheSunFacade& sun;
 };
 
 #endif // KEYBOARDMANAGER_H
