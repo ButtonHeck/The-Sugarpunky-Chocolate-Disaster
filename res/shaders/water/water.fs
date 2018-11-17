@@ -18,7 +18,7 @@ const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.5;
 const float MAX_DESATURATING_VALUE = 0.5;
 const vec3  KISSEL_COLOR = vec3(107.0, 30.0, 15.0) / 255.0;
-const float KISSEL_ALPHA_MIN = 0.66;
+const float KISSEL_ALPHA_MIN = 0.7;
 const float REFLECTION_MIX_DAY = 0.25;
 const float REFLECTION_MIX_NIGHT = 0.1;
 
@@ -84,8 +84,10 @@ void main()
         vec3 specularColor;
         vec3 resultColor;
 
-        vec3 ShadingNormal = (texture(u_normal_map, v_FragPos.xz * 0.125).xyz) * 2.0 - 0.66;
-        ShadingNormal = normalize(v_Normal + 0.5 * ShadingNormal);
+        vec3 ShadingNormal = clamp((texture(u_normal_map, v_FragPos.xz * 0.125).xzy) * 2.2, vec3(0.0), vec3(1.0));
+        ShadingNormal.xyz -= vec3(0.5);
+        ShadingNormal = normalize(v_Normal + ShadingNormal);
+
         vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
         float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
 

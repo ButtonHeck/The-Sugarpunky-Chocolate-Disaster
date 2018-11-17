@@ -124,10 +124,11 @@ void main()
         vec3 specularColor;
         vec3 resultColor;
 
-        vec3 ShadingNormal = (texture(u_normal_map, v_FragPos.xz * 0.125).xyz) * 2.0 - 0.66;
-        vec3 ShadingNormalLand = normalize(NORMAL + 0.6 * ShadingNormal);
-        vec3 ShadingNormalHill = ShadingNormal;
-        ShadingNormalHill = normalize(v_Normal + 0.6 * ShadingNormalHill);
+        vec3 ShadingNormal = clamp((texture(u_normal_map, v_FragPos.xz * 0.125).xzy) * 2.2, vec3(0.0), vec3(1.0));
+        ShadingNormal.xyz -= vec3(0.5);
+
+        vec3 ShadingNormalLand = normalize(NORMAL + 1.5 * ShadingNormal);
+        vec3 ShadingNormalHill = normalize(v_Normal + 1.2 * ShadingNormal);
 
         float DiffuseComponentHill = max(dot(ShadingNormalHill, u_lightDir), 0.0);
         float DiffuseComponentLand = max(dot(ShadingNormalLand, u_lightDir), 0.0);
