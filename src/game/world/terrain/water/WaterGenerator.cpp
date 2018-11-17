@@ -400,15 +400,56 @@ void WaterGenerator::fattenKernel(int x, int y,
 void WaterGenerator::updateAnimationFrame(double time, Options& options)
 {
   BENCHMARK("(ST)Water: Update animation frame", true);
-  constexpr float NORMAL_Y_APPROX = 0.7f; //fake "true" normal calculation (use no sqrt and pow)
   using glm::vec3;
   using glm::vec4;
   double offsetMultiplier = time * 0.12;
   for (size_t i = 0; i < WATER_HEIGHT_OFFSETS_SIZE; i+=2)
     {
-      heightOffsets[i] = std::cos(offsetMultiplier * ((i * i) % 19)) * 0.0825 + WATER_LEVEL;
-      heightOffsets[i+1] = std::sin(offsetMultiplier * ((i * i) % 29)) * 0.0889 + WATER_LEVEL;
+      heightOffsets[i] = std::cos(offsetMultiplier * ((i * i) % 19)) * 0.0825f + WATER_LEVEL;
+      heightOffsets[i+1] = std::sin(offsetMultiplier * ((i * i) % 29)) * 0.0889f + WATER_LEVEL;
     }
+
+  static bool mapCreated = false;
+  if (!mapCreated)
+    {
+      normalMap.clear();
+      normalMap.reserve(WORLD_HEIGHT + 1);
+      for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
+        {
+          vec3 defaultNormal(0.0f, 1.0f, 0.0f);
+          normalMap.emplace_back(WORLD_WIDTH + 1, defaultNormal);
+        }
+      mapCreated = true;
+    }
+
+  constexpr float NORMAL_Y_APPROX = 0.5f; //fake "true" normal calculation (use no sqrt and pow)
+  for (unsigned int y = 1; y < WORLD_HEIGHT - 1; y++)
+    {
+      for (unsigned int x = 1; x < WORLD_WIDTH - 1; x++)
+        {
+          vec3 n0 = glm::normalize(vec3(heightOffsets[y * WORLD_WIDTH + x-1] - heightOffsets[y * WORLD_WIDTH + x],
+                                        NORMAL_Y_APPROX,
+                                        heightOffsets[(y-1) * WORLD_WIDTH + x] - heightOffsets[y * WORLD_WIDTH + x]));
+          vec3 n3 = glm::normalize(vec3(heightOffsets[y * WORLD_WIDTH + x] - heightOffsets[y * WORLD_WIDTH + x+1],
+                                        NORMAL_Y_APPROX,
+                                        heightOffsets[(y-1) * WORLD_WIDTH + x+1] - heightOffsets[y * WORLD_WIDTH + x+1]));
+          vec3 n6 = glm::normalize(vec3(heightOffsets[(y+1) * WORLD_WIDTH + x-1] - heightOffsets[(y+1) * WORLD_WIDTH + x],
+                                        NORMAL_Y_APPROX,
+                                        heightOffsets[y * WORLD_WIDTH + x] - heightOffsets[(y+1) * WORLD_WIDTH + x]));
+          vec3 n1 = glm::normalize(vec3(heightOffsets[(y-1) * WORLD_WIDTH + x] - heightOffsets[(y-1) * WORLD_WIDTH + x+1],
+                                        NORMAL_Y_APPROX,
+                                        heightOffsets[(y-1) * WORLD_WIDTH + x] - heightOffsets[y * WORLD_WIDTH + x]));
+          vec3 n4 = glm::normalize(vec3(heightOffsets[y * WORLD_WIDTH + x] - heightOffsets[y * WORLD_WIDTH + x+1],
+                                        NORMAL_Y_APPROX,
+                                        heightOffsets[y * WORLD_WIDTH + x] - heightOffsets[(y+1) * WORLD_WIDTH + x]));
+          vec3 n9 = glm::normalize(vec3(heightOffsets[y * WORLD_WIDTH + x-1] - heightOffsets[y * WORLD_WIDTH + x],
+                                        NORMAL_Y_APPROX,
+                                        heightOffsets[y * WORLD_WIDTH + x-1] - heightOffsets[(y+1) * WORLD_WIDTH + x-1]));
+          vec3 avgNormal = n0 + n1 + n3 + n4 + n6 + n9; //intentionally left unnormalized
+          normalMap[y][x] = avgNormal;
+        }
+    }
+
   unsigned int numWaterTiles = tiles.size();
   for (unsigned int i = 0; i < numWaterTiles; ++i)
     {
@@ -425,55 +466,12 @@ void WaterGenerator::updateAnimationFrame(double time, Options& options)
       float ul = heightOffsets[heightOffsetWithStrideForUpper + tile.mapX];
       updateTileY(vertices.get(), pointerOffsetWithStride, vec4(ll, lr, ur, ul));
 
-      float ll_xm1 = heightOffsets[heightOffsetWithStrideForLow + tile.mapX - 1];
-      float ll_yp1 = heightOffsets[heightOffsetWithStrideForLow + tile.mapX + WORLD_WIDTH];
-      float ll_xm1_yp1 = heightOffsets[heightOffsetWithStrideForLow + tile.mapX + WORLD_WIDTH - 1];
-      float lr_yp1 = heightOffsets[heightOffsetWithStrideForLow + tile.mapX + WORLD_WIDTH + 1];
-      float lr_xp1 = heightOffsets[heightOffsetWithStrideForLow + tile.mapX + 2];
-      float ur_xp1 = heightOffsets[heightOffsetWithStrideForUpper + tile.mapX + 2];
-      float ur_ym1 = heightOffsets[heightOffsetWithStrideForUpper + tile.mapX - WORLD_WIDTH + 1];
-      float ur_xp1_ym1 = heightOffsets[heightOffsetWithStrideForUpper + tile.mapX - WORLD_WIDTH + 2];
-      float ul_ym1 = heightOffsets[heightOffsetWithStrideForUpper + tile.mapX - WORLD_WIDTH];
-      float ul_xm1 = heightOffsets[heightOffsetWithStrideForUpper + tile.mapX - 1];
-
-      vec3 normalLL3 =  vec3(ll - lr, NORMAL_Y_APPROX, ur - lr);
-      vec3 normalLL12 = vec3(ul - ur, NORMAL_Y_APPROX, ul - ll);
-      vec3 normalLL0 =  vec3(ll_xm1 - ll, NORMAL_Y_APPROX, ul - ll);
-      vec3 normalLL9 =  vec3(ll_xm1 - ll, NORMAL_Y_APPROX, ll_xm1 - ll_xm1_yp1);
-      vec3 normalLL6 =  vec3(ll_xm1_yp1 - ll_yp1, NORMAL_Y_APPROX, ll - ll_yp1);
-      vec3 normalLL4 =  vec3(ll - lr, NORMAL_Y_APPROX, ll - ll_yp1);
-      vec3 normalLL = normalLL3 + normalLL12 + normalLL0 + normalLL9 + normalLL6 + normalLL4;
-
-      vec3 normalLR3 =  vec3(lr - lr_xp1, NORMAL_Y_APPROX, ur_xp1 - lr_xp1);
-      vec3 normalLR12 = vec3(ur - ur_xp1, NORMAL_Y_APPROX, ur - lr);
-      vec3 normalLR0 = normalLL3;
-      vec3 normalLR9 = normalLL4;
-      vec3 normalLR6 =  vec3(ll_yp1 - lr_yp1, NORMAL_Y_APPROX, lr - lr_yp1);
-      vec3 normalLR4 =  vec3(lr - lr_xp1, NORMAL_Y_APPROX, lr - lr_xp1);
-      vec3 normalLR = normalLR3 + normalLR12 + normalLR0 + normalLR9 + normalLR6 + normalLR4;
-
-      vec3 normalUR3 =  vec3(ur - ur_xp1, NORMAL_Y_APPROX, ur_xp1_ym1 - ur_xp1);
-      vec3 normalUR12 = vec3(ur_ym1 - ur_xp1_ym1, NORMAL_Y_APPROX, ur_ym1 - ur);
-      vec3 normalUR0 =  vec3(ul - ur, NORMAL_Y_APPROX, ur_ym1 - ur);
-      vec3 normalUR9 = normalLL12;
-      vec3 normalUR6 = normalLL3;
-      vec3 normalUR4 = normalLR12;
-      vec3 normalUR = normalUR3 + normalUR12 + normalUR0 + normalUR9 + normalUR6 + normalUR4;
-
-      vec3 normalUL3 = normalUR0;
-      vec3 normalUL12 = vec3(ul_ym1 - ur_ym1, NORMAL_Y_APPROX, ul_ym1 - ul);
-      vec3 normalUL0 =  vec3(ul_xm1 - ul, NORMAL_Y_APPROX, ul_ym1 - ul);
-      vec3 normalUL9 =  vec3(ul_xm1 - ul, NORMAL_Y_APPROX, ul_xm1 - ll_xm1);
-      vec3 normalUL6 = normalLL0;
-      vec3 normalUL4 = normalLL12;
-      vec3 normalUL = normalUL3 + normalUL12 + normalUL0 + normalUL9 + normalUL6 + normalUL4;
-
-      updateVertexNormal(vertices.get(), pointerOffsetWithStride+3, normalLL);
-      updateVertexNormal(vertices.get(), pointerOffsetWithStride+9, normalLR);
-      updateVertexNormal(vertices.get(), pointerOffsetWithStride+15, normalUR);
-      updateVertexNormal(vertices.get(), pointerOffsetWithStride+21, normalUR);
-      updateVertexNormal(vertices.get(), pointerOffsetWithStride+27, normalUL);
-      updateVertexNormal(vertices.get(), pointerOffsetWithStride+33, normalLL);
+      updateVertexNormal(vertices.get(), pointerOffsetWithStride+3, normalMap[tile.mapY][tile.mapX]);
+      updateVertexNormal(vertices.get(), pointerOffsetWithStride+9, normalMap[tile.mapY][tile.mapX+1]);
+      updateVertexNormal(vertices.get(), pointerOffsetWithStride+15, normalMap[tile.mapY-1][tile.mapX+1]);
+      updateVertexNormal(vertices.get(), pointerOffsetWithStride+21, normalMap[tile.mapY-1][tile.mapX+1]);
+      updateVertexNormal(vertices.get(), pointerOffsetWithStride+27, normalMap[tile.mapY-1][tile.mapX]);
+      updateVertexNormal(vertices.get(), pointerOffsetWithStride+33, normalMap[tile.mapY][tile.mapX]);
     }
 }
 
@@ -487,14 +485,14 @@ void WaterGenerator::bufferVertex(GLfloat *vertices, int offset, WaterGenerator:
   vertices[offset+5] = vertex.normalZ;
 }
 
-void WaterGenerator::updateVertexNormal(GLfloat *vertices, int offset, glm::vec3 normal)
+void WaterGenerator::updateVertexNormal(GLfloat *vertices, int offset, glm::vec3& normal)
 {
   vertices[offset+0] = normal.x;
   vertices[offset+1] = normal.y;
   vertices[offset+2] = normal.z;
 }
 
-void WaterGenerator::updateTileY(GLfloat *vertices, int offset, glm::vec4 heights)
+void WaterGenerator::updateTileY(GLfloat *vertices, int offset, glm::vec4&& heights)
 {
   vertices[offset+1] = heights.x;
   vertices[offset+7] = heights.y;

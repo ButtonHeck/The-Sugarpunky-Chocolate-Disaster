@@ -104,10 +104,8 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
 
   bindShaderUnit(shader, SHADER_WATER);
   shader->setInt("u_skybox", TEX_SKYBOX_SKY);
-  shader->setInt("u_bottomRelief_diffuse", TEX_UNDERWATER_RELIEF);
   shader->setInt("u_normal_map", TEX_WATER_NORMAL);
   shader->setInt("u_specular_map", TEX_WATER_SPECULAR);
-  shader->setFloat("u_mapDimension", 1.0f / WORLD_WIDTH);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
 
   bindShaderUnit(shader, SHADER_SKYBOX);

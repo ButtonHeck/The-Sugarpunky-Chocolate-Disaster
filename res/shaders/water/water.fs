@@ -7,22 +7,20 @@ in vec3  v_Normal;
 in vec3  v_ProjectedCoords;
 
 uniform samplerCube u_skybox;
-uniform sampler2D   u_bottomRelief_diffuse;
 uniform sampler2D   u_specular_map;
 uniform sampler2D   u_normal_map;
 uniform vec3        u_lightDir;
-uniform float       u_mapDimension;
 uniform sampler2D   u_shadowMap;
 uniform vec3        u_viewPosition;
 uniform bool        u_debugRenderMode;
 
-const vec3 KISSEL_COLOR = vec3(107.0, 30.0, 7.0) / 255.0;
-const float REFLECTION_MIX = 0.1;
-const float KISSEL_ALPHA = 0.5;
-const vec2 TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
+const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.5;
-const float SHADOW_BIAS = 0.00025;
 const float MAX_DESATURATING_VALUE = 0.5;
+const vec3  KISSEL_COLOR = vec3(107.0, 30.0, 15.0) / 255.0;
+const float KISSEL_ALPHA_MIN = 0.66;
+const float REFLECTION_MIX_DAY = 0.25;
+const float REFLECTION_MIX_NIGHT = 0.1;
 
 float SampleShadowMap(sampler2D shadowMap, vec2 coords, float compare)
 {
@@ -50,7 +48,7 @@ float calculateLuminosity()
 {
     float currentDepth = v_ProjectedCoords.z;
     float shadow = 0.0f;
-    float bias = 6.0 / 8192;
+    float bias = 4.0 / 8192;
 
     //PCF filtering
     const int NUM_SAMPLES = 3;
@@ -81,40 +79,42 @@ void main()
         o_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
     else
     {
-        //swizzle z and y to rotate Z-aligned normal map 90 degrees around X axis, as like we look at it upside down
-        //also scale up texture mapping a bit
-        vec3 sampledNormal = normalize(texture(u_normal_map, v_FragPos.zx * 0.125).xzy);
-        sampledNormal.z *= -1;
-        sampledNormal.x = sampledNormal.x * 2.0 - 0.5;
+        vec3 ambientColor = 0.08 * KISSEL_COLOR;
+        vec3 diffuseColor;
+        vec3 specularColor;
+        vec3 resultColor;
 
-        vec3 ShadingNormal = normalize(v_Normal + sampledNormal);
-        vec3 specularNormal = sampledNormal;
-        specularNormal.y *= 0.75;
-        specularNormal = normalize(specularNormal);
-        float diffuseComponent = max(dot(ShadingNormal, u_lightDir), 0.0)
-                               * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+        vec3 ShadingNormal = (texture(u_normal_map, v_FragPos.xz * 0.125).xyz) * 2.0 - 0.66;
+        ShadingNormal = normalize(v_Normal + 0.5 * ShadingNormal);
+        vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
+        float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+
+        //fresnel
+        float fresnelEffect = (1.0 - clamp(dot(ViewDir, ShadingNormal) + 0.2, 0.0, 1.0))
+                               * mix(REFLECTION_MIX_NIGHT, REFLECTION_MIX_DAY, clamp(u_lightDir.y * 10, 0.0, 1.0));
+
+        //diffuse
+        float diffuseComponent = max(dot(ShadingNormal, u_lightDir), 0.0) * sunPositionAttenuation;
 
         //specular
-        vec3 Reflect = reflect(-u_lightDir, specularNormal);
-        vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
-        float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 16.0);
-        vec3 sampledSpecular = texture(u_specular_map, v_FragPos.zx * 0.125).rgb
-                                * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+        vec3 Reflect = reflect(-u_lightDir, ShadingNormal);
+        float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 32.0) * 8 * fresnelEffect;
+        vec3 sampledSpecular = texture(u_specular_map, v_FragPos.zx * 0.125).rgb * sunPositionAttenuation;
 
         //reflect skybox component
         vec3 skyboxCoords = reflect(-ViewDir, ShadingNormal);
         vec4 sampledDiffuseSkybox = vec4(texture(u_skybox, skyboxCoords).rgb, 1.0);
 
-        vec3 ambientColor = 0.08 * KISSEL_COLOR;
         float luminosity = calculateLuminosity();
-        vec3 diffuseColor = luminosity * KISSEL_COLOR * diffuseComponent;
-        vec3 specularColor = specularComponent * sampledSpecular;
-        vec3 resultColor = ambientColor + diffuseColor + specularColor;
+        diffuseColor = luminosity * KISSEL_COLOR * diffuseComponent;
+        specularColor = specularComponent * sampledSpecular;
+        resultColor = ambientColor + diffuseColor + specularColor;
 
-        float alphaAttenuation = texture(u_bottomRelief_diffuse, v_FragPos.xz * u_mapDimension + 0.5).r * 0.5;
-        o_FragColor = vec4(mix(resultColor, sampledDiffuseSkybox.rgb, REFLECTION_MIX), KISSEL_ALPHA + alphaAttenuation);
+        o_FragColor = vec4(mix(resultColor, sampledDiffuseSkybox.rgb, fresnelEffect), fresnelEffect + KISSEL_ALPHA_MIN);
 
-        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity);
+        float desaturatingValue = mix(0.0,
+                                      MAX_DESATURATING_VALUE,
+                                      min(luminosity, diffuseComponent + SHADOW_INFLUENCE));
         o_FragColor = desaturate(o_FragColor, desaturatingValue);
     }
 }

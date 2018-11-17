@@ -40,8 +40,8 @@ private:
                     int &shoreSizeOffset,
                     bool &shoreSizeIncrease);
   void bufferVertex(GLfloat* vertices, int offset, WaterVertex vertex);
-  void updateVertexNormal(GLfloat* vertices, int offset, glm::vec3 normal);
-  void updateTileY(GLfloat* vertices, int offset, glm::vec4 heights);
+  void updateVertexNormal(GLfloat* vertices, int offset, glm::vec3 &normal);
+  void updateTileY(GLfloat* vertices, int offset, glm::vec4&& heights);
   void setupGLBufferAttributes();
   void fillBufferData();
 
@@ -53,6 +53,7 @@ private:
   constexpr static int WATER_HEIGHT_OFFSETS_SIZE = NUM_TILES + WORLD_WIDTH * 2;
   std::unique_ptr<GLfloat[]> heightOffsets;
   map2D_f postProcessMap;
+  map2D_vec3 normalMap;
 };
 
 #endif // WATERGENERATOR_H
