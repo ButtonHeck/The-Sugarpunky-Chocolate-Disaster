@@ -99,7 +99,7 @@ void main()
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
         float desaturatingValue = mix(0.0,
                                       MAX_DESATURATING_VALUE,
-                                      min(luminosity, v_DiffuseComponent + SHADOW_INFLUENCE));
+                                      min(luminosity * v_SunPositionAttenuation, v_DiffuseComponent + SHADOW_INFLUENCE));
         o_FragColor = desaturate(o_FragColor, desaturatingValue);
         o_FragColor += clamp(o_FragColor * v_NormalY * 0.5, -0.04, 0.0);
     }

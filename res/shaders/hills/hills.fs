@@ -150,7 +150,7 @@ void main()
             o_FragColor = vec4(resultColor, sampledDiffuse.a);
             float desaturatingValue = mix(0.0,
                                           mix(MAX_DESATURATING_VALUE_LAND, MAX_DESATURATING_VALUE_HILL, TerrainTypeMixClamped),
-                                          min(luminosity, diffuseComponent + SHADOW_INFLUENCE));
+                                          min(luminosity * sunPositionAttenuation, diffuseComponent + SHADOW_INFLUENCE));
             o_FragColor = desaturate(o_FragColor, desaturatingValue);
         }
         else

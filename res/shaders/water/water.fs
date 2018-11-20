@@ -20,7 +20,7 @@ const float MAX_DESATURATING_VALUE = 0.5;
 const vec3  KISSEL_COLOR = vec3(107.0, 30.0, 15.0) / 255.0;
 const float KISSEL_ALPHA_MIN = 0.7;
 const float REFLECTION_MIX_DAY = 0.25;
-const float REFLECTION_MIX_NIGHT = 0.1;
+const float REFLECTION_MIX_NIGHT = 0.025;
 
 float SampleShadowMap(sampler2D shadowMap, vec2 coords, float compare)
 {
@@ -122,7 +122,7 @@ void main()
 
         float desaturatingValue = mix(0.0,
                                       MAX_DESATURATING_VALUE,
-                                      min(luminosity, diffuseComponent + SHADOW_INFLUENCE));
+                                      min(luminosity * sunPositionAttenuation, diffuseComponent + SHADOW_INFLUENCE));
         o_FragColor = desaturate(o_FragColor, desaturatingValue);
     }
 }

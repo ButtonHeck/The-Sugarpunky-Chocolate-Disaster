@@ -65,12 +65,12 @@ void main()
     vec4 fragPosLightSpace = u_lightSpaceMatrix * ModelWorldPosition;
     v_ProjectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
 
-    //diffuse
+    v_SunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 5, 0.0, 1.0));
     vec3 shadingNormal = normal;
     if (u_isGrass)
-        shadingNormal.y *= sign(shadingNormal.y) * u_lightDir.y; //intentionally left unnormalized
+        shadingNormal.y *= sign(shadingNormal.y) * mix(1.0, u_lightDir.y, v_SunPositionAttenuation); //intentionally left unnormalized
 
-    v_SunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 5, 0.0, 1.0));
+    //diffuse
     v_DiffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0) * v_SunPositionAttenuation;
 
     //specular
