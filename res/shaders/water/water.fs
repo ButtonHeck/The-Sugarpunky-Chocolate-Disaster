@@ -79,7 +79,10 @@ void main()
         o_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
     else
     {
-        vec3 ambientColor = 0.08 * KISSEL_COLOR;
+        vec3 ambientColorDaySelf = 0.08 * KISSEL_COLOR;
+        vec3 ambientColorNightSelf = 0.03 * KISSEL_COLOR;
+        vec3 nightAmbientColor = vec3(0.0034, 0.0012, 0.0009);
+        vec3 ambientColor;
         vec3 diffuseColor;
         vec3 specularColor;
         vec3 resultColor;
@@ -97,6 +100,9 @@ void main()
 
         //diffuse
         float diffuseComponent = max(dot(ShadingNormal, u_lightDir), 0.0) * sunPositionAttenuation;
+
+        ambientColor = mix(ambientColorNightSelf, ambientColorDaySelf, sunPositionAttenuation);
+        ambientColor += nightAmbientColor * (1.0 - sunPositionAttenuation);
 
         //specular
         vec3 Reflect = reflect(-u_lightDir, ShadingNormal);

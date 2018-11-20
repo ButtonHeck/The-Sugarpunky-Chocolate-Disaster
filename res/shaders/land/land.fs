@@ -78,7 +78,10 @@ void main()
                               texture(u_land_diffuse2, v_TexCoords),
                               DiffuseTextureMix);
 
-    vec3 ambientColor = 0.08 * sampledDiffuse.rgb;
+    vec3 ambientColorDaySelf = 0.08 * sampledDiffuse.rgb;
+    vec3 ambientColorNightSelf = 0.03 * sampledDiffuse.rgb;
+    vec3 nightAmbientColor = vec3(0.0034, 0.0012, 0.0009);
+    vec3 ambientColor;
     vec3 diffuseColor;
     vec3 resultColor;
 
@@ -88,6 +91,9 @@ void main()
 
     float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
     float diffuseComponent = max(dot(ShadingNormal, u_lightDir), 0.0) * sunPositionAttenuation;
+
+    ambientColor = mix(ambientColorNightSelf, ambientColorDaySelf, sunPositionAttenuation);
+    ambientColor += nightAmbientColor * (1.0 - sunPositionAttenuation);
 
     if (u_shadowEnable)
     {

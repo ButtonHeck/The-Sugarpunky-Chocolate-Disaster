@@ -79,12 +79,16 @@ void main()
     vec4 sampledDiffuse = texture(u_texture_diffuse1, v_TexCoords);
     vec4 sampledSpecular = sampledDiffuse * texture(u_texture_specular1, v_TexCoords).r;
 
-    vec3 ambientColorDay = 0.12 * sampledDiffuse.rgb;
-    vec3 ambientColorNight = 0.08 * sampledDiffuse.rgb;
-    vec3 ambientColor = mix(ambientColorNight, ambientColorDay, v_SunPositionAttenuation);
+    vec3 ambientColorDaySelf = 0.12 * sampledDiffuse.rgb;
+    vec3 ambientColorNightSelf = 0.03 * sampledDiffuse.rgb;
+    vec3 nightAmbientColor = vec3(0.0034, 0.0012, 0.0009);
+    vec3 ambientColor;
     vec3 diffuseColor;
     vec3 specularColor;
     vec3 resultColor;
+
+    ambientColor = mix(ambientColorNightSelf, ambientColorDaySelf, v_SunPositionAttenuation);
+    ambientColor += nightAmbientColor * (1.0 - v_SunPositionAttenuation);
 
     if (u_shadowEnable)
     {
@@ -97,6 +101,7 @@ void main()
                                       MAX_DESATURATING_VALUE,
                                       min(luminosity, v_DiffuseComponent + SHADOW_INFLUENCE));
         o_FragColor = desaturate(o_FragColor, desaturatingValue);
+        o_FragColor += clamp(o_FragColor * v_NormalY * 0.5, -0.04, 0.0);
     }
     else
     {
@@ -108,8 +113,5 @@ void main()
     }
 
     if(u_useLandBlending)
-    {
-        float LandBlend = clamp(v_AlphaValue, 0.0, 1.0);
-        o_FragColor.a = mix(0.0, 1.0, LandBlend);
-    }
+        o_FragColor.a = mix(0.0, 1.0, v_AlphaValue);
 }

@@ -28,7 +28,7 @@ void main()
 
     float distanceToObject = distance(u_viewPosition, v_FragPos);
     float normalDistributionImitation = 1.0;
-    v_AlphaValue = 1.0;
+    v_AlphaValue = 4.0;
 
     if (distanceToObject < 30.0)
     {
@@ -49,7 +49,7 @@ void main()
         }
         else
         {
-            v_AlphaValue = ModelWorldPosition.y * 48;
+            v_AlphaValue = clamp(ModelWorldPosition.y * 48, 0.0, 4.0);
         }
     }
 
