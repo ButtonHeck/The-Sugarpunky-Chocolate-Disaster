@@ -6,7 +6,7 @@ out vec4 o_FragColor;
 in vec2  v_TexCoords;
 in vec3  v_Normal;
 in vec3  v_ProjectedCoords;
-in float v_LandBlend;
+in float v_AlphaValue;
 in vec3  v_FragPos;
 
 uniform sampler2D u_texture_diffuse1;
@@ -17,6 +17,7 @@ uniform sampler2D u_shadowMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
 uniform bool      u_useLandBlending;
+uniform bool      u_isGrass;
 
 const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
 const float SHADOW_INFLUENCE = 0.5;
@@ -48,7 +49,7 @@ float calculateLuminosity()
 {
     float currentDepth = v_ProjectedCoords.z;
     float shadow = 0.0f;
-    float bias = 6.0 / 8192;
+    float bias = 3.0 / 8192;
 
     //PCF filtering
     const int NUM_SAMPLES = 3;
@@ -77,28 +78,36 @@ void main()
 {
     vec4 sampledDiffuse = texture(u_texture_diffuse1, v_TexCoords);
     vec4 sampledSpecular = sampledDiffuse * texture(u_texture_specular1, v_TexCoords).r;
-    vec3 ambientColor = 0.08 * sampledDiffuse.rgb;
+
+    vec3 ambientColorDay = 0.12 * sampledDiffuse.rgb;
+    vec3 ambientColorNight = 0.08 * sampledDiffuse.rgb;
+    vec3 ambientColor;
     vec3 diffuseColor;
     vec3 specularColor;
     vec3 resultColor;
 
-    float luminosity = 0.0;
     vec3 shadingNormal = normalize(v_Normal);
-    float diffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0)
-                            * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+    if (u_isGrass)
+        shadingNormal.y *= sign(shadingNormal.y) * u_lightDir.y; //intentionally left unnormalized
+
+    float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 5, 0.0, 1.0));
+    ambientColor = mix(ambientColorNight, ambientColorDay, sunPositionAttenuation);
+    float diffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0) * sunPositionAttenuation;
+
     vec3 Reflect = reflect(-u_lightDir, shadingNormal);
     vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
-    float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 4.0) * 0.75
-                            * mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+    float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 4.0) * 0.75 * sunPositionAttenuation;
 
     if (u_shadowEnable)
     {
-        luminosity = calculateLuminosity();
+        float luminosity = calculateLuminosity();
         diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
         specularColor = luminosity * specularComponent * sampledSpecular.rgb;
         resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
-        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity);
+        float desaturatingValue = mix(0.0,
+                                      MAX_DESATURATING_VALUE,
+                                      min(luminosity, diffuseComponent + SHADOW_INFLUENCE));
         o_FragColor = desaturate(o_FragColor, desaturatingValue);
     }
     else
@@ -107,15 +116,12 @@ void main()
         specularColor = sampledSpecular.rgb * specularComponent;
         resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
+        o_FragColor += clamp(o_FragColor * shadingNormal.y * 0.5, -0.04, 0.0);
     }
 
-    if (u_shadow)
-        o_FragColor += clamp(o_FragColor * shadingNormal.y * 0.5, -0.05, 0.01);
-
-    //perform Land blending
     if(u_useLandBlending)
     {
-        float LandBlend = clamp(v_LandBlend, 0.0, 1.0);
+        float LandBlend = clamp(v_AlphaValue, 0.0, 1.0);
         o_FragColor.a = mix(0.0, 1.0, LandBlend);
     }
 }

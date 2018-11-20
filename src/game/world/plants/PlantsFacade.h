@@ -25,7 +25,6 @@ public:
             glm::mat4 &projectionView,
             glm::vec3 &viewPosition,
             bool usePhongShading,
-            bool useShadowEmphasize,
             bool useShadows,
             bool useLandBlending);
   void drawDepthmap();

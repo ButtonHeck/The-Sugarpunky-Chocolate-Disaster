@@ -4,11 +4,12 @@ layout (early_fragment_tests) in;
 out vec4 o_FragColor;
 
 in vec2  v_TexCoords;
-in vec3  v_Normal;
 in float v_DiffuseComponent;
 in float v_SpecularComponent;
 in vec3  v_ProjectedCoords;
-in float v_LandBlend;
+in float v_AlphaValue;
+in float v_SunPositionAttenuation;
+in float v_NormalY;
 
 uniform sampler2D u_texture_diffuse1;
 uniform sampler2D u_texture_specular1;
@@ -44,11 +45,11 @@ float SampleShadowMapLinear(sampler2D shadowMap, vec2 coords, float compare, vec
     return mix(mixA, mixB, fracPart.x);
 }
 
-float calculateLuminosity(vec3 normal)
+float calculateLuminosity()
 {
     float currentDepth = v_ProjectedCoords.z;
     float shadow = 0.0f;
-    float bias = 6.0 / 8192;
+    float bias = 3.0 / 8192;
 
     //PCF filtering
     const int NUM_SAMPLES = 3;
@@ -77,20 +78,24 @@ void main()
 {
     vec4 sampledDiffuse = texture(u_texture_diffuse1, v_TexCoords);
     vec4 sampledSpecular = sampledDiffuse * texture(u_texture_specular1, v_TexCoords).r;
-    vec3 ambientColor = 0.08 * sampledDiffuse.rgb;
+
+    vec3 ambientColorDay = 0.12 * sampledDiffuse.rgb;
+    vec3 ambientColorNight = 0.08 * sampledDiffuse.rgb;
+    vec3 ambientColor = mix(ambientColorNight, ambientColorDay, v_SunPositionAttenuation);
     vec3 diffuseColor;
     vec3 specularColor;
     vec3 resultColor;
 
-    float luminosity = 0.0;
     if (u_shadowEnable)
     {
-        luminosity = calculateLuminosity(v_Normal);
+        float luminosity = calculateLuminosity();
         diffuseColor = luminosity * sampledDiffuse.rgb * v_DiffuseComponent;
         specularColor = luminosity * sampledSpecular.rgb * v_SpecularComponent;
         resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
-        float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, luminosity);
+        float desaturatingValue = mix(0.0,
+                                      MAX_DESATURATING_VALUE,
+                                      min(luminosity, v_DiffuseComponent + SHADOW_INFLUENCE));
         o_FragColor = desaturate(o_FragColor, desaturatingValue);
     }
     else
@@ -99,15 +104,12 @@ void main()
         specularColor = sampledSpecular.rgb * v_SpecularComponent;
         resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
+        o_FragColor += clamp(o_FragColor * v_NormalY * 0.5, -0.04, 0.0);
     }
 
-    if (u_shadow)
-        o_FragColor += clamp(o_FragColor * v_Normal.y * 0.5, -0.05, 0.01);
-
-    //perform Land blending
     if(u_useLandBlending)
     {
-        float LandBlend = clamp(v_LandBlend, 0.0, 1.0);
+        float LandBlend = clamp(v_AlphaValue, 0.0, 1.0);
         o_FragColor.a = mix(0.0, 1.0, LandBlend);
     }
 }

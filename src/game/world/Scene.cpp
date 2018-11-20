@@ -105,7 +105,6 @@ void Scene::drawWorld(glm::vec3 lightDir,
     plantsFacade.draw(lightDir, lightSpaceMatrix,
                       projectionView, viewPosition,
                       options[OPT_MODELS_PHONG_SHADING],
-                      options[OPT_MODELS_SHADOW_EMPHASIZE],
                       options[OPT_USE_SHADOWS],
                       options[OPT_MODELS_LAND_BLENDING]);
 

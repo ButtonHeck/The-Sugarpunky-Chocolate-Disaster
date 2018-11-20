@@ -11,7 +11,6 @@ public:
                        glm::mat4& projectionView,
                        glm::vec3& viewPosition,
                        bool usePhongShading,
-                       bool shadowOnTrees,
                        bool useShadows,
                        bool useLandBlending);
   void updateGrass(bool usePhongShading);

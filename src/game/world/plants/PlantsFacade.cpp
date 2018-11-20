@@ -38,7 +38,6 @@ void PlantsFacade::draw(glm::vec3 &lightDir,
                         glm::mat4 &projectionView,
                         glm::vec3 &viewPosition,
                         bool usePhongShading,
-                        bool useShadowEmphasize,
                         bool useShadows,
                         bool useLandBlending)
 {
@@ -48,7 +47,6 @@ void PlantsFacade::draw(glm::vec3 &lightDir,
                           projectionView,
                           viewPosition,
                           usePhongShading,
-                          useShadowEmphasize,
                           useShadows,
                           useLandBlending);
   treesRenderer.render(landPlantsGenerator.models,

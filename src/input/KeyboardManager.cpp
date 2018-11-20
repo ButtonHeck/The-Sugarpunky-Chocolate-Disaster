@@ -17,7 +17,6 @@ void KeyboardManager::processInput()
     glfwSetWindowShouldClose(window, GL_TRUE);
 
   processKey(GLFW_KEY_F1, [&](){camera.switchFPSmode();});
-  processKey(GLFW_KEY_F2, OPT_MODELS_SHADOW_EMPHASIZE);
   processKey(GLFW_KEY_F3, OPT_ANIMATE_WATER);
   processKey(GLFW_KEY_F4, OPT_DRAW_TREES);
   processKey(GLFW_KEY_F5, OPT_DRAW_DEBUG_TEXT);
