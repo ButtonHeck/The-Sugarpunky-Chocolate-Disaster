@@ -4,7 +4,7 @@ LandPlantsGenerator::LandPlantsGenerator()
   :
     PlantGenerator()
 {
-  models.reserve(32);
+  models.reserve(16);
   models.emplace_back("tree1/tree1.obj");
   models.emplace_back("tree1_2/tree1_2.obj");
   models.emplace_back("tree2/tree2.obj");
@@ -25,10 +25,7 @@ void LandPlantsGenerator::setup(const map2D_f &baseMap,
                                 const map2D_i &distributionMap)
 {
   for (Model& model : models)
-    {
-      for (Mesh& mesh : model.getMeshes())
-        mesh.setup();
-    }
+    model.setup();
   setupModelChunks();
   setupMatrices(baseMap, hillMap, distributionMap);
 }

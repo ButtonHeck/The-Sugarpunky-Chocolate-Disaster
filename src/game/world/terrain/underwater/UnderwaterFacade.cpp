@@ -13,10 +13,3 @@ void UnderwaterFacade::draw(glm::vec3 &lightDir, glm::mat4& projectionView)
   shader.update(lightDir, projectionView);
   renderer.render();
 }
-
-void UnderwaterFacade::drawDepthmap()
-{
-  BENCHMARK("UnderwaterRenderer: draw depthmap", true);
-  renderer.render();
-}
-

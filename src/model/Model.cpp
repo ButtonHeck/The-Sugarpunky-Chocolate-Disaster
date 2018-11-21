@@ -2,9 +2,9 @@
 #include <IL/il.h>
 
 Model::Model(const std::string& path)
-{
-  loadModel(std::string(MODELS_DIR + path));
-}
+  :
+    path(path)
+{}
 
 Model::Model(Model &&old) noexcept
   :
@@ -12,6 +12,13 @@ Model::Model(Model &&old) noexcept
     textures_loaded(old.textures_loaded),
     directory(old.directory)
 {}
+
+void Model::setup()
+{
+  loadModel(std::string(MODELS_DIR + path));
+  for (Mesh& mesh : meshes)
+    mesh.setup();
+}
 
 void Model::cleanup()
 {

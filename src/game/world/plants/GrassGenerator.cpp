@@ -4,7 +4,7 @@ GrassGenerator::GrassGenerator()
   :
     PlantGenerator()
 {
-  models.reserve(16);
+  models.reserve(8);
   models.emplace_back("grass1/grass1.obj");
   models.emplace_back("grass2/grass2.obj");
   models.emplace_back("grass3/grass3.obj");
@@ -18,10 +18,7 @@ void GrassGenerator::setup(const map2D_f &baseMap,
                            const map2D_i &distributionMap)
 {
   for (Model& model : models)
-    {
-      for (Mesh& mesh : model.getMeshes())
-        mesh.setup();
-    }
+    model.setup();
   setupModelChunks();
   setupMatrices(baseMap, hillMap, distributionMap);
 }
