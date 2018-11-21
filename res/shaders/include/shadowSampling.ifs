@@ -1,0 +1,46 @@
+in vec3           v_ProjectedCoords;
+uniform sampler2D u_shadowMap;
+uniform float     u_bias;
+const vec2        TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
+const float       SHADOW_INFLUENCE = 0.5;
+
+float sampleShadowMap(sampler2D shadowMap, vec2 coords)
+{
+    return step(texture2D(shadowMap, coords.xy).r, v_ProjectedCoords.z - u_bias);
+}
+
+float sampleShadowMapLinear(sampler2D shadowMap, vec2 coords)
+{
+    vec2 pixelPos = coords / TEXEL_SIZE + vec2(0.5);
+    vec2 fractionalPart = fract(pixelPos);
+    vec2 startTexel = (pixelPos - fractionalPart) * TEXEL_SIZE;
+
+    float lowLeftTexel = sampleShadowMap(shadowMap, startTexel);
+    float lowRightTexel = sampleShadowMap(shadowMap, startTexel + vec2(TEXEL_SIZE.x, 0.0));
+    float topRightTexel = sampleShadowMap(shadowMap, startTexel + TEXEL_SIZE);
+    float topLeftTexel = sampleShadowMap(shadowMap, startTexel + vec2(0.0, TEXEL_SIZE.y));
+
+    float mixLeft = mix(lowLeftTexel, topLeftTexel, fractionalPart.y);
+    float mixRight = mix(lowRightTexel, topRightTexel, fractionalPart.y);
+
+    return mix(mixLeft, mixRight, fractionalPart.x);
+}
+
+float ext_calculateLuminosity()
+{
+    float shadow = 0.0f;
+
+    //PCF filtering
+    const int NUM_SAMPLES = 3;
+    const int SAMPLE_START = (NUM_SAMPLES - 1) / 2;
+    const int NUM_SAMPLES_SQUARED = NUM_SAMPLES * NUM_SAMPLES;
+    for (int x = -SAMPLE_START; x <= SAMPLE_START; ++x)
+    {
+        for (int y = -SAMPLE_START; y <= SAMPLE_START; ++y)
+        {
+            vec2 coordsOffset = vec2(x,y) * TEXEL_SIZE;
+            shadow += sampleShadowMapLinear(u_shadowMap, v_ProjectedCoords.xy + coordsOffset);
+        }
+    }
+    return 1.0 - (shadow / NUM_SAMPLES_SQUARED * SHADOW_INFLUENCE);
+}

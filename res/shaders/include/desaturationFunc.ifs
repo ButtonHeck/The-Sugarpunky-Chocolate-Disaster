@@ -1,0 +1,5 @@
+void ext_desaturate(inout vec4 o_FragColor, float desaturatingValue)
+{
+    float colorMedian = (o_FragColor.r + o_FragColor.g + o_FragColor.b) * 0.333;
+    o_FragColor = vec4(mix(o_FragColor.rgb, vec3(colorMedian), desaturatingValue), o_FragColor.a);
+}

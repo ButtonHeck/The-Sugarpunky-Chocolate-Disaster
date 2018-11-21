@@ -2,9 +2,10 @@
 
 bool Shader::cachedUniforms = false;
 
-Shader::Shader(const std::string &vertexFile)
+Shader::Shader(const std::string &vertexFile,
+               ShaderIncludeList includes)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile));
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile), includes);
   ID = glCreateProgram();
   shaderName = vertexFile.substr(0, vertexFile.find('/'));
   glAttachShader(ID, vertex);
@@ -12,10 +13,12 @@ Shader::Shader(const std::string &vertexFile)
   glDeleteShader(vertex);
 }
 
-Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::string &fragmentFile)
+Shader::Shader(const std::__cxx11::string &vertexFile,
+               const std::__cxx11::string &fragmentFile,
+               ShaderIncludeList includes)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile));
-  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(SHADER_DIR + fragmentFile));
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile), includes);
+  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(SHADER_DIR + fragmentFile), includes);
   ID = glCreateProgram();
   shaderName = vertexFile.substr(0, vertexFile.find('/'));
   glAttachShader(ID, vertex);
@@ -25,11 +28,14 @@ Shader::Shader(const std::__cxx11::string &vertexFile, const std::__cxx11::strin
   glDeleteShader(fragment);
 }
 
-Shader::Shader(const std::string &vertexFile, const std::string &geometryFile, const std::string &fragmentFile)
+Shader::Shader(const std::string &vertexFile,
+               const std::string &geometryFile,
+               const std::string &fragmentFile,
+               ShaderIncludeList includes)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile));
-  GLuint geometry = loadShader(GL_GEOMETRY_SHADER, std::string(SHADER_DIR + geometryFile));
-  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(SHADER_DIR + fragmentFile));
+  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile), includes);
+  GLuint geometry = loadShader(GL_GEOMETRY_SHADER, std::string(SHADER_DIR + geometryFile), includes);
+  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(SHADER_DIR + fragmentFile), includes);
   ID = glCreateProgram();
   shaderName = vertexFile.substr(0, vertexFile.find('/'));
   glAttachShader(ID, vertex);
@@ -61,7 +67,7 @@ GLuint Shader::getUniformLocation(const std::string &uniformName)
 {
   auto uniformLocation = glGetUniformLocation(ID, uniformName.c_str());
   if (uniformLocation == -1)
-    Logger::log("Unknown uniform: % for: %\n", uniformName.c_str(), shaderName);
+    Logger::log("Unknown uniform: %\n", uniformName + " for: " + shaderName);
   return uniformLocation;
 }
 
@@ -176,7 +182,7 @@ void Shader::cleanUp()
   glDeleteProgram(ID);
 }
 
-GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &filename)
+GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &filename, ShaderIncludeList includes)
 {
   std::fstream fileStream(filename);
   std::stringstream fileStringStream;
@@ -187,6 +193,14 @@ GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &filenam
   std::string debugPragmaString = "#pragma debug(on)\n";
   stringSrc.insert(13, debugPragmaString);
 #endif
+  try
+  {
+    parseIncludes(shaderType, stringSrc, includes);
+  }
+  catch(std::runtime_error e)
+  {
+    std::cerr << e.what() << " in file: " << filename << std::endl;
+  }
   if (filename.find_first_of("_hdr") != std::string::npos && HDR_ENABLED)
     stringSrc = std::regex_replace(stringSrc, std::regex("#version 450\n"), "#version 450\n#define HDR_ENABLED\n");
   const char* src = stringSrc.c_str();
@@ -200,4 +214,26 @@ GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &filenam
       Logger::log("%\n", infoLog);
     }
   return shader;
+}
+
+void Shader::parseIncludes(GLenum shaderType,
+                           std::string &stringSrc,
+                           ShaderIncludeList includes)
+{
+  for (auto i = includes.begin(); i < includes.end(); i++)
+    {
+      if (i->first != shaderType)
+        continue;
+      std::string includeFileName = i->second;
+      std::fstream includeStream(std::string(SHADER_DIR + "include/" + i->second));
+      std::stringstream includeStringStream;
+      includeStringStream << includeStream.rdbuf();
+      includeStream.close();
+      std::string includeSrc = includeStringStream.str();
+      std::string includeToken = std::string("@include ").append(includeFileName);
+      if (stringSrc.find(includeToken) != std::string::npos)
+        stringSrc = std::regex_replace(stringSrc, std::regex(includeToken), includeSrc);
+    }
+  if (stringSrc.find("@include") != std::string::npos)
+    throw std::invalid_argument("Some expected includes were not found");
 }

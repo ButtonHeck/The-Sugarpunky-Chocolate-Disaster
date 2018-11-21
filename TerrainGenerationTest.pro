@@ -428,7 +428,11 @@ DISTFILES += \
     res/shaders/normals/_normals.fs \
     .gitignore \
     res/textures/land.jpg \
-    res/textures/land2.jpg
+    res/textures/land2.jpg \
+    res/shaders/include/shadowSampling.ifs \
+    res/shaders/include/desaturationFunc.ifs \
+    res/shaders/include/shadingVariables.ifs \
+    res/shaders/include/modelGrassAnimationAndBlending.ivs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

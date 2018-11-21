@@ -13,10 +13,17 @@
 class Shader
 {
 public:
+  using ShaderIncludeList = std::initializer_list<std::pair<GLenum, std::string>>;
   Shader() = default;
-  Shader(const std::string& vertexFile);
-  Shader(const std::string& vertexFile, const std::string& fragmentFile);
-  Shader(const std::string& vertexFile, const std::string& geometryFile, const std::string& fragmentFile);
+  Shader(const std::string& vertexFile,
+         ShaderIncludeList includes = {});
+  Shader(const std::string& vertexFile,
+         const std::string& fragmentFile,
+         ShaderIncludeList includes = {});
+  Shader(const std::string& vertexFile,
+         const std::string& geometryFile,
+         const std::string& fragmentFile,
+         ShaderIncludeList includes = {});
   void link();
   static void cacheUniformsMode(bool cache);
   GLuint getUniformLocation(const std::string& uniformName);
@@ -36,7 +43,12 @@ public:
   void cleanUp();
 private:
   static bool cachedUniforms;
-  GLuint loadShader(GLenum shaderType, const std::string& filename);
+  GLuint loadShader(GLenum shaderType,
+                    const std::string& filename,
+                    ShaderIncludeList includes);
+  void parseIncludes(GLenum shaderType,
+                     std::string& stringSrc,
+                     ShaderIncludeList includes);
   GLuint ID;
   std::string shaderName;
   int status;

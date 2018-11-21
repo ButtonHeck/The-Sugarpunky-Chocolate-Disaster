@@ -14,15 +14,14 @@ uniform bool  u_isGrass;
 uniform float u_grassPosDistrubution;
 uniform vec3  u_viewPosition;
 
-const vec3 GRASS_WAVE_XYZ = vec3(0.007, 0.0023, 0.0035);
-
 out vec2  v_TexCoords;
 out float v_DiffuseComponent;
 out float v_SpecularComponent;
 out vec3  v_ProjectedCoords;
-out float v_AlphaValue;
 out float v_SunPositionAttenuation;
 out float v_NormalY;
+
+@include modelGrassAnimationAndBlending.ivs
 
 void main()
 {
@@ -34,27 +33,7 @@ void main()
     v_AlphaValue = 4.0;
 
     if (distanceToObject < 30.0)
-    {
-        if (u_isGrass)
-        {
-            if (i_pos.y > 0.38)
-            {
-                float fractionOfWorldX = fract(ModelWorldPosition.x); //coarse phase offset tweak
-                float fractionOfWorldZ = fract(ModelWorldPosition.z); //fine phase offset tweak
-                float influence = sin(u_grassPosDistrubution * max(fractionOfWorldX, 0.75) + fractionOfWorldZ) * 0.5 + 0.5;
-                ModelWorldPosition.xyz += (mix(GRASS_WAVE_XYZ,
-                                               GRASS_WAVE_XYZ + i_normal * 0.005,
-                                               dot(normalize(GRASS_WAVE_XYZ), i_normal)))
-                                         * influence;
-                normalDistributionImitation = 0.66 * influence + 0.66;
-            }
-            v_AlphaValue = ModelWorldPosition.y * 32;
-        }
-        else
-        {
-            v_AlphaValue = clamp(ModelWorldPosition.y * 48, 0.0, 4.0);
-        }
-    }
+        ext_animateAndBlend(ModelWorldPosition, normalDistributionImitation);
 
     gl_Position = u_projectionView * ModelWorldPosition;
     v_TexCoords = i_texCoords;

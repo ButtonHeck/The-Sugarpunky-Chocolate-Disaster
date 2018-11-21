@@ -10,27 +10,19 @@ uniform sampler2D u_bottomRelief_diffuse;
 uniform sampler2D u_normal_map;
 uniform float     u_mapDimension;
 uniform vec3      u_lightDir;
+uniform float     u_ambientDay;
+uniform float     u_ambientNight;
 
 const vec3  NORMAL = vec3(0.0, 1.0, 0.0);
 const float MAX_DESATURATING_VALUE = 0.7;
 
-vec4 desaturate(vec4 fragColor, float desaturatingValue)
-{
-    float colorMedian = (fragColor.r + fragColor.g + fragColor.b) * 0.333;
-    vec4 desaturated = vec4(mix(fragColor.rgb, vec3(colorMedian), desaturatingValue), fragColor.a);
-    return desaturated;
-}
+@include desaturationFunc.ifs
 
 void main()
 {
     vec4 sampledDiffuse = texture(u_underwater_diffuse, v_TexCoords);
 
-    vec3 ambientColorDaySelf = 0.08 * sampledDiffuse.rgb;
-    vec3 ambientColorNightSelf = 0.03 * sampledDiffuse.rgb;
-    vec3 nightAmbientColor = vec3(0.0034, 0.0012, 0.0009);
-    vec3 ambientColor;
-    vec3 diffuseColor;
-    vec3 resultColor;
+    @include shadingVariables.ifs
 
     vec3 ShadingNormal = clamp((texture(u_normal_map, v_FragPosXZ * 0.125).xzy) * 2.2, vec3(0.0), vec3(1.0));
     ShadingNormal.xyz -= vec3(0.5);
@@ -47,5 +39,5 @@ void main()
     resultColor = ambientColor + diffuseColor;
     o_FragColor = vec4(resultColor, sampledDiffuse.a);
     float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, diffuseComponent);
-    o_FragColor = desaturate(o_FragColor, desaturatingValue);
+    ext_desaturate(o_FragColor, desaturatingValue);
 }

@@ -13,14 +13,20 @@ namespace Logger
   template <typename T, typename... Args>
   void log(const char* pattern, T token, Args... rest)
   {
-    for ( ; *pattern != '\0'; pattern++ ) {
-        if (*pattern == '%') {
-          std::cout << token;
-          log(pattern+1, rest...);
-          return;
+    static std::unordered_set<std::string> messages;
+    std::string message = std::string(pattern).append(token);
+    if (messages.count(message) == 0)
+      {
+        messages.emplace(message);
+        for ( ; *pattern != '\0'; pattern++ ) {
+            if (*pattern == '%') {
+              std::cout << token;
+              log(pattern+1, rest...);
+              return;
+            }
+            std::cout << *pattern;
         }
-        std::cout << *pattern;
-    }
+      }
   }
   void setupWindowLibraryErrorCallback();
   void APIENTRY glDebugCallback(GLenum source,
