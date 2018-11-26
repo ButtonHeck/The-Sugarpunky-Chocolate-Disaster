@@ -98,7 +98,7 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
-  shader->setFloat("u_bias", 6.0f / 8192);
+  shader->setFloat("u_bias", 8.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
 
@@ -112,7 +112,7 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setFloat("U_UNDERWATER_TILE_YPOS", -UNDERWATER_TILE_YPOS);
-  shader->setFloat("u_bias", 1.0f / 8192);
+  shader->setFloat("u_bias", 1.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
 
@@ -131,7 +131,7 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
-  shader->setFloat("u_bias", 4.0f / 8192);
+  shader->setFloat("u_bias", 6.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
 
@@ -140,7 +140,7 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_normal_map", TEX_WATER_NORMAL);
   shader->setInt("u_specular_map", TEX_WATER_SPECULAR);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
-  shader->setFloat("u_bias", 4.0f / 8192);
+  shader->setFloat("u_bias", 4.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
 
@@ -160,7 +160,7 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setInt("u_texture_diffuse1", TEX_MESH_DIFFUSE);
   shader->setInt("u_texture_specular1", TEX_MESH_SPECULAR);
-  shader->setFloat("u_bias", 3.0f / 8192);
+  shader->setFloat("u_bias", 3.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.12f);
   shader->setFloat("u_ambientNight", 0.03f);
 
@@ -168,7 +168,7 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setInt("u_texture_diffuse1", TEX_MESH_DIFFUSE);
   shader->setInt("u_texture_specular1", TEX_MESH_SPECULAR);
-  shader->setFloat("u_bias", 3.0f / 8192);
+  shader->setFloat("u_bias", 3.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.12f);
   shader->setFloat("u_ambientNight", 0.03f);
 

@@ -2,12 +2,13 @@
 #define SHADOWVOLUME_H
 #include "util/Settings.h"
 #include "game/world/ambience/theSun/TheSunFacade.h"
+#include "game/Camera.h"
 
 class ShadowVolume
 {
 public:
   ShadowVolume(TheSunFacade &sun);
-  void update();
+  void update(Camera &camera);
   glm::vec3 getLightDir() const;
   glm::mat4 getLightSpaceMatrix() const;
 private:

@@ -61,7 +61,7 @@ void Game::loop()
   scene.getSunFacade().move(timerDelta);
   {
     BENCHMARK("Shadow volume: update", true);
-    shadowVolume.update();
+    shadowVolume.update(camera);
   }
 
   glm::vec4 currentColor = glm::mix(NIGHT_SKY_COLOR, DAY_SKY_COLOR, glm::clamp(-shadowVolume.getLightDir().y * 5, 0.0f, 1.0f));

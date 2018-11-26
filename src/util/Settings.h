@@ -56,14 +56,14 @@ constexpr unsigned int VERTICES_PER_TILE = 6;
 
 //textures configuration
 constexpr bool HDR_ENABLED = true;
-constexpr unsigned int MULTISAMPLES = 8;
+constexpr unsigned int MULTISAMPLES = 4;
 constexpr float ANISOTROPY = 2.0f;
 
 //constants for lighting calculations
 const glm::vec4 NIGHT_SKY_COLOR(0.02f, 0.0112f, 0.0088f, 1.0f);
 const glm::vec4 DAY_SKY_COLOR(0.85f, 0.44f, 0.35f, 1.0f);
-constexpr int DEPTH_MAP_TEXTURE_WIDTH = 8192;
-constexpr int DEPTH_MAP_TEXTURE_HEIGHT = 12000;
+constexpr int DEPTH_MAP_TEXTURE_WIDTH = 2048;
+constexpr int DEPTH_MAP_TEXTURE_HEIGHT = 2048;
 
 //shader uniform strategy
 constexpr bool UNIFORMS_NO_CACHE = false;
