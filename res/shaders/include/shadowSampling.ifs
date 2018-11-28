@@ -1,24 +1,24 @@
-in vec3           v_ProjectedCoords;
-uniform sampler2D u_shadowMap;
+uniform sampler2D u_shadowMap[2];
 uniform float     u_bias;
-const vec2        TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0);
+
+const vec2        TEXEL_SIZE = 1.0 / textureSize(u_shadowMap[0], 0);
 const float       SHADOW_INFLUENCE = 0.5;
 
-float sampleShadowMap(sampler2D shadowMap, vec2 coords)
+float sampleShadowMap(sampler2D shadowMap, vec2 coords, vec3 projectedCoords)
 {
-    return step(texture2D(shadowMap, coords.xy).r, v_ProjectedCoords.z - u_bias);
+    return step(texture2D(shadowMap, coords.xy).r, projectedCoords.z - u_bias);
 }
 
-float sampleShadowMapLinear(sampler2D shadowMap, vec2 coords)
+float sampleShadowMapLinear(sampler2D shadowMap, vec2 coords, vec3 projectedCoords)
 {
     vec2 pixelPos = coords / TEXEL_SIZE + vec2(0.5);
     vec2 fractionalPart = fract(pixelPos);
     vec2 startTexel = (pixelPos - fractionalPart) * TEXEL_SIZE;
 
-    float lowLeftTexel = sampleShadowMap(shadowMap, startTexel);
-    float lowRightTexel = sampleShadowMap(shadowMap, startTexel + vec2(TEXEL_SIZE.x, 0.0));
-    float topRightTexel = sampleShadowMap(shadowMap, startTexel + TEXEL_SIZE);
-    float topLeftTexel = sampleShadowMap(shadowMap, startTexel + vec2(0.0, TEXEL_SIZE.y));
+    float lowLeftTexel = sampleShadowMap(shadowMap, startTexel, projectedCoords);
+    float lowRightTexel = sampleShadowMap(shadowMap, startTexel + vec2(TEXEL_SIZE.x, 0.0), projectedCoords);
+    float topRightTexel = sampleShadowMap(shadowMap, startTexel + TEXEL_SIZE, projectedCoords);
+    float topLeftTexel = sampleShadowMap(shadowMap, startTexel + vec2(0.0, TEXEL_SIZE.y), projectedCoords);
 
     float mixLeft = mix(lowLeftTexel, topLeftTexel, fractionalPart.y);
     float mixRight = mix(lowRightTexel, topRightTexel, fractionalPart.y);
@@ -26,7 +26,7 @@ float sampleShadowMapLinear(sampler2D shadowMap, vec2 coords)
     return mix(mixLeft, mixRight, fractionalPart.x);
 }
 
-float ext_calculateLuminosity()
+float ext_calculateLuminosity(int index, vec3 projectedCoords)
 {
     float shadow = 0.0f;
 
@@ -39,7 +39,7 @@ float ext_calculateLuminosity()
         for (int y = -SAMPLE_START; y <= SAMPLE_START; ++y)
         {
             vec2 coordsOffset = vec2(x,y) * TEXEL_SIZE;
-            shadow += sampleShadowMapLinear(u_shadowMap, v_ProjectedCoords.xy + coordsOffset);
+            shadow += sampleShadowMapLinear(u_shadowMap[index], projectedCoords.xy + coordsOffset, projectedCoords);
         }
     }
     return 1.0 - (shadow / NUM_SAMPLES_SQUARED * SHADOW_INFLUENCE);

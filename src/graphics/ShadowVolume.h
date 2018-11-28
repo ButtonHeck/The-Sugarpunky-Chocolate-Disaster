@@ -10,7 +10,8 @@ public:
   ShadowVolume(TheSunFacade &sun);
   void update(Camera &camera);
   glm::vec3 getLightDir() const;
-  glm::mat4 getLightSpaceMatrix() const;
+  glm::mat4 getLightSpaceMatrixNear() const;
+  glm::mat4 getLightSpaceMatrixFar() const;
 private:
   TheSunFacade& sun;
   float nearPlane = 0.1f;
@@ -21,7 +22,8 @@ private:
   float bottomPlane = -HALF_WORLD_HEIGHT_F;
 
   glm::vec3 lightDirTo;
-  glm::mat4 lightSpaceMatrix;
+  glm::mat4 lightSpaceMatrixNear;
+  glm::mat4 lightSpaceMatrixFar;
 };
 
 #endif // SHADOWVOLUME_H

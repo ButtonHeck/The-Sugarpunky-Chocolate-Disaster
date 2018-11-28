@@ -59,6 +59,7 @@ private:
   CoordinateSystemRenderer csRenderer;
   ScreenBuffer screenBuffer;
   DepthmapBuffer depthmapBuffer;
+  DepthmapBuffer depthmapBufferFar;
 
   //world
   Scene scene;

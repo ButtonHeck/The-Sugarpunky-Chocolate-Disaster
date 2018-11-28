@@ -75,7 +75,8 @@ void Scene::deserialize(std::ifstream &input)
 }
 
 void Scene::drawWorld(glm::vec3 lightDir,
-                      glm::mat4 lightSpaceMatrix,
+                      glm::mat4 lightSpaceMatrixNear,
+                      glm::mat4 lightSpaceMatrixFar,
                       glm::mat4& projectionView,
                       glm::mat4& skyProjectionView,
                       Frustum &viewFrustum,
@@ -85,24 +86,24 @@ void Scene::drawWorld(glm::vec3 lightDir,
   BENCHMARK("Scene: draw all", true);
   glm::vec3 viewPosition = camera.getPosition();
 
-  hillsFacade.draw(lightDir, lightSpaceMatrix,
+  hillsFacade.draw(lightDir, lightSpaceMatrixNear, lightSpaceMatrixFar,
                    projectionView, viewPosition, viewFrustum,
                    options[OPT_HILLS_CULLING],
                    options[OPT_USE_SHADOWS],
                    options[OPT_DEBUG_RENDER]);
 
   if (options[OPT_DRAW_LAND])
-    landFacade->draw(lightDir, lightSpaceMatrix,
-                     projectionView, viewFrustum, options[OPT_USE_SHADOWS]);
+    landFacade->draw(lightDir, lightSpaceMatrixNear, lightSpaceMatrixFar,
+                     projectionView, viewPosition, viewFrustum, options[OPT_USE_SHADOWS]);
 
   underwaterFacade.draw(lightDir, projectionView);
 
-  shoreFacade.draw(lightDir, lightSpaceMatrix,
-                   projectionView,
+  shoreFacade.draw(lightDir, lightSpaceMatrixNear, lightSpaceMatrixFar,
+                   projectionView, viewPosition,
                    options[OPT_USE_SHADOWS], options[OPT_DEBUG_RENDER]);
 
   if (options[OPT_DRAW_TREES])
-    plantsFacade.draw(lightDir, lightSpaceMatrix,
+    plantsFacade.draw(lightDir, lightSpaceMatrixNear, lightSpaceMatrixFar,
                       projectionView, viewPosition,
                       options[OPT_MODELS_PHONG_SHADING],
                       options[OPT_USE_SHADOWS],
@@ -123,7 +124,7 @@ void Scene::drawWorld(glm::vec3 lightDir,
   glEnable(GL_MULTISAMPLE);
 
   if (options[OPT_DRAW_WATER])
-    waterFacade.draw(lightDir, lightSpaceMatrix,
+    waterFacade.draw(lightDir, lightSpaceMatrixNear, lightSpaceMatrixFar,
                      projectionView, viewPosition, viewFrustum,
                      options[OPT_WATER_CULLING], options[OPT_DEBUG_RENDER]);
 }

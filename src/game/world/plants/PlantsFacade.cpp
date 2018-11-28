@@ -34,7 +34,8 @@ void PlantsFacade::updateIndirectBufferData()
 }
 
 void PlantsFacade::draw(glm::vec3 &lightDir,
-                        glm::mat4 &lightSpaceMatrix,
+                        glm::mat4 &lightSpaceMatrixNear,
+                        glm::mat4 &lightSpaceMatrixFar,
                         glm::mat4 &projectionView,
                         glm::vec3 &viewPosition,
                         bool usePhongShading,
@@ -43,7 +44,8 @@ void PlantsFacade::draw(glm::vec3 &lightDir,
 {
   shaders.switchToGrass(usePhongShading, false);
   shaders.updateAllPlants(lightDir,
-                          lightSpaceMatrix,
+                          lightSpaceMatrixNear,
+                          lightSpaceMatrixFar,
                           projectionView,
                           viewPosition,
                           usePhongShading,

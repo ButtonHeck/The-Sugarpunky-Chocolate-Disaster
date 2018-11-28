@@ -9,7 +9,6 @@ in vec3  v_FragPos;
 
 uniform sampler2D u_texture_diffuse1;
 uniform sampler2D u_texture_specular1;
-uniform vec3      u_viewPosition;
 uniform bool      u_shadow;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
@@ -17,6 +16,9 @@ uniform bool      u_useLandBlending;
 uniform bool      u_isGrass;
 uniform float     u_ambientDay;
 uniform float     u_ambientNight;
+uniform vec3      u_viewPosition;
+uniform mat4      u_lightSpaceMatrix[2];
+uniform float     u_shadowNearDistance;
 
 const float MAX_DESATURATING_VALUE = 0.5;
 
@@ -46,7 +48,15 @@ void main()
 
     if (u_shadowEnable)
     {
-        float luminosity = ext_calculateLuminosity();
+        int shadowMapIndex;
+        if (length(vec2(v_FragPos.xz) - vec2(u_viewPosition.xz)) < u_shadowNearDistance)
+            shadowMapIndex = 0;
+        else
+            shadowMapIndex = 1;
+        vec4 fragPosLightSpace = u_lightSpaceMatrix[shadowMapIndex] * vec4(v_FragPos, 1.0);
+        vec3 projectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
+        float luminosity = ext_calculateLuminosity(shadowMapIndex, projectedCoords);
+
         diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
         specularColor = luminosity * specularComponent * sampledSpecular.rgb;
         resultColor = ambientColor + diffuseColor + specularColor;

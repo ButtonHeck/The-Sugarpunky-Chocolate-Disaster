@@ -8,27 +8,24 @@ layout (location = 4) in vec3 i_bitangent;
 layout (location = 5) in mat4 i_model;
 
 uniform mat4  u_projectionView;
-uniform mat4  u_lightSpaceMatrix;
 uniform vec3  u_lightDir;
-uniform bool  u_isGrass;
-uniform float u_grassPosDistrubution;
 uniform vec3  u_viewPosition;
 
 out vec2  v_TexCoords;
 out float v_DiffuseComponent;
 out float v_SpecularComponent;
-out vec3  v_ProjectedCoords;
 out float v_SunPositionAttenuation;
 out float v_NormalY;
+out vec3  v_FragPos;
 
 @include modelGrassAnimationAndBlending.ivs
 
 void main()
 {
     vec4 ModelWorldPosition = i_model * i_pos;
-    vec3 FragPos = vec3(ModelWorldPosition);
+    v_FragPos = vec3(ModelWorldPosition);
 
-    float distanceToObject = distance(u_viewPosition, FragPos);
+    float distanceToObject = distance(u_viewPosition, v_FragPos);
     float normalDistributionImitation = 1.0;
     v_AlphaValue = 4.0;
 
@@ -41,8 +38,6 @@ void main()
     vec3 normal = normalize(vec3(i_model * vec4(i_normal, 0)));
     v_NormalY = normal.y;
     v_NormalY *= normalDistributionImitation; //as far as we render no grass this stays 1.0
-    vec4 fragPosLightSpace = u_lightSpaceMatrix * ModelWorldPosition;
-    v_ProjectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
 
     v_SunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 5, 0.0, 1.0));
     vec3 shadingNormal = normal;
@@ -54,6 +49,6 @@ void main()
 
     //specular
     vec3 Reflect = reflect(-u_lightDir, normal);
-    vec3 ViewDir = normalize(u_viewPosition - FragPos);
+    vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
     v_SpecularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 4.0) * 0.75 * v_SunPositionAttenuation;
 }

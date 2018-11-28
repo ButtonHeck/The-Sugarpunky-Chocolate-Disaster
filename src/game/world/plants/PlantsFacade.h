@@ -21,7 +21,8 @@ public:
   void prepareMeshesIndirectData(const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);
   void updateIndirectBufferData();
   void draw(glm::vec3 &lightDir,
-            glm::mat4 &lightSpaceMatrix,
+            glm::mat4 &lightSpaceMatrixNear,
+            glm::mat4 &lightSpaceMatrixFar,
             glm::mat4 &projectionView,
             glm::vec3 &viewPosition,
             bool usePhongShading,

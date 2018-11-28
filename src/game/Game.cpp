@@ -42,6 +42,7 @@ void Game::setup()
   shaderManager.setupConstantUniforms(glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()));
   screenBuffer.setup();
   depthmapBuffer.setup(textureManager.get(TEX_DEPTH_MAP_SUN));
+  depthmapBufferFar.setup(textureManager.get(TEX_DEPTH_MAP_SUN_FAR));
 }
 
 void Game::loop()
@@ -57,6 +58,19 @@ void Game::loop()
     projectionView = projection * view;
     viewFrustum.updateFrustum(projectionView);
   }
+
+  //TEMPORARY FOR VISUAL DEBUGGING
+//  if (options[OPT_USE_MULTISAMPLING])
+//    {
+//      shaderManager.get(SHADER_MS_TO_DEFAULT).use();
+//      shaderManager.get(SHADER_MS_TO_DEFAULT).setInt("u_frameTexture", TEX_DEPTH_MAP_SUN);
+//    }
+//  else
+//    {
+//      shaderManager.get(SHADER_MS_TO_DEFAULT).use();
+//      shaderManager.get(SHADER_MS_TO_DEFAULT).setInt("u_frameTexture", HDR_ENABLED ? TEX_FRAME_HDR : TEX_FRAME);
+//    }
+  //CODE BELOW IS TO DELETE AFTER CSM IS DONE
 
   scene.getSunFacade().move(timerDelta);
   {
@@ -114,7 +128,8 @@ void Game::drawFrame(glm::mat4& projectionView)
   glm::mat4 skyboxProjectionView(projection * glm::mat4(glm::mat3(camera.getViewMatrix())));
 
   scene.drawWorld(shadowVolume.getLightDir(),
-                  shadowVolume.getLightSpaceMatrix(),
+                  shadowVolume.getLightSpaceMatrixNear(),
+                  shadowVolume.getLightSpaceMatrixFar(),
                   projectionView,
                   skyboxProjectionView,
                   viewFrustum,
@@ -154,8 +169,12 @@ void Game::recreate()
 void Game::updateDepthmap()
 {
   depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
-  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrix());
+  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrixNear());
   depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
+
+  depthmapBufferFar.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
+  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrixFar());
+  depthmapBufferFar.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
 }
 
 void Game::saveState()

@@ -28,7 +28,8 @@ public:
 
   //rendering part
   void drawWorld(glm::vec3 lightDir,
-                 glm::mat4 lightSpaceMatrix,
+                 glm::mat4 lightSpaceMatrixNear,
+                 glm::mat4 lightSpaceMatrixFar,
                  glm::mat4& projectionView,
                  glm::mat4& skyProjectionView,
                  Frustum &viewFrustum,

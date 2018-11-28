@@ -13,6 +13,9 @@ uniform float     u_mapDimension;
 uniform bool      u_shadowEnable;
 uniform float     u_ambientDay;
 uniform float     u_ambientNight;
+uniform vec3      u_viewPosition;
+uniform mat4      u_lightSpaceMatrix[2];
+uniform float     u_shadowNearDistance;
 
 const vec3  NORMAL = vec3(0.0, 1.0, 0.0);
 const float MAX_DESATURATING_VALUE = 0.5;
@@ -41,7 +44,15 @@ void main()
 
     if (u_shadowEnable)
     {
-        float luminosity = ext_calculateLuminosity();
+        int shadowMapIndex;
+        if (length(vec2(v_FragPos.xz) - vec2(u_viewPosition.xz)) < u_shadowNearDistance)
+            shadowMapIndex = 0;
+        else
+            shadowMapIndex = 1;
+        vec4 fragPosLightSpace = u_lightSpaceMatrix[shadowMapIndex] * vec4(v_FragPos, 1.0);
+        vec3 projectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
+        float luminosity = ext_calculateLuminosity(shadowMapIndex, projectedCoords);
+
         diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
         resultColor = ambientColor + diffuseColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);

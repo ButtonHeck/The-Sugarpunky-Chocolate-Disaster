@@ -1,3 +1,6 @@
+uniform bool  u_isGrass;
+uniform float u_grassPosDistrubution;
+
 const vec3 GRASS_WAVE_XYZ = vec3(0.007, 0.0023, 0.0035);
 out float v_AlphaValue;
 

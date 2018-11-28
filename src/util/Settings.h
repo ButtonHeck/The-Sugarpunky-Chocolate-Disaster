@@ -54,7 +54,7 @@ constexpr int MODELS_DISTRIBUTION_FREQ = 8;
 constexpr unsigned char QUAD_INDICES[6] = {0,1,2,2,3,0};
 constexpr unsigned int VERTICES_PER_TILE = 6;
 
-//textures configuration
+//visual quality configuration
 constexpr bool HDR_ENABLED = true;
 constexpr unsigned int MULTISAMPLES = 4;
 constexpr float ANISOTROPY = 2.0f;
@@ -64,6 +64,9 @@ const glm::vec4 NIGHT_SKY_COLOR(0.02f, 0.0112f, 0.0088f, 1.0f);
 const glm::vec4 DAY_SKY_COLOR(0.85f, 0.44f, 0.35f, 1.0f);
 constexpr int DEPTH_MAP_TEXTURE_WIDTH = 2048;
 constexpr int DEPTH_MAP_TEXTURE_HEIGHT = 2048;
+const float SHADOW_NEAR_DISTANCE = 20.0f;
+const float SHADOW_FAR_DISTANCE = 100.0f;
+const float TAN_FOV_DIV2 = glm::tan(glm::radians(FOV / 2.0f));
 
 //shader uniform strategy
 constexpr bool UNIFORMS_NO_CACHE = false;

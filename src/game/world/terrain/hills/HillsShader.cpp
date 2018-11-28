@@ -15,7 +15,8 @@ void HillsShader::setupCulling()
 }
 
 void HillsShader::update(glm::vec3 &lightDir,
-                         glm::mat4 &lightSpaceMatrix,
+                         glm::mat4 &lightSpaceMatrixNear,
+                         glm::mat4 &lightSpaceMatrixFar,
                          glm::mat4 &projectionView,
                          glm::vec3 &viewPosition,
                          Frustum &viewFrustum,
@@ -38,7 +39,8 @@ void HillsShader::update(glm::vec3 &lightDir,
   renderShader.setBool("u_shadowEnable", useShadows);
   renderShader.setFloat("u_maxHillHeight", maxHillHeight);
   renderShader.setVec3("u_lightDir", -lightDir);
-  renderShader.setMat4("u_lightSpaceMatrix", lightSpaceMatrix);
+  renderShader.setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrixNear);
+  renderShader.setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrixFar);
 }
 
 void HillsShader::updateNormals(glm::mat4 &projectionView)

@@ -7,8 +7,10 @@ class ShoreShader
 public:
   ShoreShader(Shader& renderShader, Shader &normalsShader);
   void update(glm::vec3& lightDir,
-              glm::mat4& lightSpaceMatrix,
+              glm::mat4& lightSpaceMatrixNear,
+              glm::mat4& lightSpaceMatrixFar,
               glm::mat4 &projectionView,
+              glm::vec3& viewPosition,
               bool useShadows);
   void updateNormals(glm::mat4& projectionView);
   void debugRenderMode(bool enable);

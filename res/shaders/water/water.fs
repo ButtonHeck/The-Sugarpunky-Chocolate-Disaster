@@ -13,6 +13,8 @@ uniform vec3        u_viewPosition;
 uniform bool        u_debugRenderMode;
 uniform float       u_ambientDay;
 uniform float       u_ambientNight;
+uniform mat4        u_lightSpaceMatrix[2];
+uniform float       u_shadowNearDistance;
 
 const float MAX_DESATURATING_VALUE = 0.5;
 const vec3  KISSEL_COLOR = vec3(107.0, 30.0, 15.0) / 255.0;
@@ -59,7 +61,15 @@ void main()
         vec3 skyboxCoords = reflect(-ViewDir, ShadingNormal);
         vec4 sampledDiffuseSkybox = vec4(texture(u_skybox, skyboxCoords).rgb, 1.0);
 
-        float luminosity = ext_calculateLuminosity();
+        int shadowMapIndex;
+        if (length(vec2(v_FragPos.xz) - vec2(u_viewPosition.xz)) < u_shadowNearDistance)
+            shadowMapIndex = 0;
+        else
+            shadowMapIndex = 1;
+        vec4 fragPosLightSpace = u_lightSpaceMatrix[shadowMapIndex] * vec4(v_FragPos, 1.0);
+        vec3 projectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
+        float luminosity = ext_calculateLuminosity(shadowMapIndex, projectedCoords);
+
         diffuseColor = luminosity * sampledDiffuse * diffuseComponent;
         specularColor = specularComponent * sampledSpecular;
         resultColor = ambientColor + diffuseColor + specularColor;

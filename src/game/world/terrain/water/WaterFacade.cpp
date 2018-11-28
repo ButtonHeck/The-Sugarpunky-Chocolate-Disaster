@@ -27,9 +27,9 @@ void WaterFacade::deserialize(std::ifstream &input)
   generator.deserialize(input);
 }
 
-void WaterFacade::draw(glm::vec3 &lightDir, glm::mat4 &lightSpaceMatrix, glm::mat4& projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum, bool useCulling, bool useDebugRender)
+void WaterFacade::draw(glm::vec3 &lightDir, glm::mat4 &lightSpaceMatrixNear, glm::mat4 &lightSpaceMatrixFar, glm::mat4& projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum, bool useCulling, bool useDebugRender)
 {
-  shaders.update(lightDir, lightSpaceMatrix, useCulling, projectionView, viewPosition, viewFrustum);
+  shaders.update(lightDir, lightSpaceMatrixNear, lightSpaceMatrixFar, useCulling, projectionView, viewPosition, viewFrustum);
   shaders.debugRenderMode(false);
   renderer.render(useCulling);
 

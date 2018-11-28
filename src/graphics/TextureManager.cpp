@@ -24,6 +24,7 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_FRAME] = loader.createFrameTexture(TEX_FRAME);
   textures[TEX_FRAME_HDR] = loader.createFrameTexture(TEX_FRAME_HDR);
   textures[TEX_DEPTH_MAP_SUN] = loader.createDepthMapTexture(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT, TEX_DEPTH_MAP_SUN);
+  textures[TEX_DEPTH_MAP_SUN_FAR] = loader.createDepthMapTexture(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT, TEX_DEPTH_MAP_SUN_FAR);
 }
 
 TextureManager::~TextureManager()
