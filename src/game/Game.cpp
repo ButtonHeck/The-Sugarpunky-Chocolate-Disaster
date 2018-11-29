@@ -20,6 +20,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     depthmapBuffer(),
     scene(shaderManager, options, textureManager),
     shadowVolume(scene.getSunFacade()),
+    shadowVolumeRenderer(shadowVolume),
     saveLoadManager(scene, camera),
     keyboard(KeyboardManager(window, camera, shadowCamera, options, scene.getSunFacade())),
     mouseInput(MouseInputManager::getInstance()),
@@ -52,7 +53,7 @@ void Game::setup()
 
 void Game::loop()
 {
-  glm::mat4 view, projectionView, shadowNearProjectionView, shadowFarProjectionView;
+  glm::mat4 view, projectionView;
   float timerDelta = CPU_timer.tick();
   {
     BENCHMARK("Game loop: process input and camera", true);
@@ -68,15 +69,6 @@ void Game::loop()
         shadowCamera.processMouseCursor();
         shadowCamera.move(timerDelta, scene.getHillsFacade().getMap());
       }
-    glm::mat4 shadowView = shadowCamera.getViewMatrix();
-
-    shadowNearProjectionView = shadowNearProjection * shadowView;
-    shadowNearFrustum.updateFrustum(shadowNearProjectionView);
-    shadowNearFrustum.calculateIntersectionPoints();
-
-    shadowFarProjectionView = shadowFarProjection * shadowView;
-    shadowFarFrustum.updateFrustum(shadowFarProjectionView);
-    shadowFarFrustum.calculateIntersectionPoints();
   }
 
   //TEMPORARY FOR VISUAL DEBUGGING
@@ -93,10 +85,6 @@ void Game::loop()
   //CODE BELOW IS TO DELETE AFTER CSM IS DONE
 
   scene.getSunFacade().move(timerDelta);
-  {
-    BENCHMARK("Shadow volume: update", true);
-    shadowVolume.update(camera, shadowNearFrustum, shadowFarFrustum, screenResolution.getAspectRatio());
-  }
 
   glm::vec4 currentColor = glm::mix(NIGHT_SKY_COLOR, DAY_SKY_COLOR, glm::clamp(-shadowVolume.getLightDir().y * 5, 0.0f, 1.0f));
   glClearColor(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
@@ -141,10 +129,16 @@ void Game::drawFrame(glm::mat4& projectionView)
   //EXPERIMENTAL
   shaderManager.get(SHADER_FRUSTUM).use();
   shaderManager.get(SHADER_FRUSTUM).setMat4("u_projectionView", projectionView);
+  shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolume", false);
   shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
   shadowNearFrustumRenderer.render();
   shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
   shadowFarFrustumRenderer.render();
+  shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolume", true);
+  shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
+  shadowVolumeRenderer.render(true);
+  shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
+  shadowVolumeRenderer.render(false);
 
   if (options[OPT_ANIMATE_WATER])
     {
@@ -196,6 +190,20 @@ void Game::recreate()
 
 void Game::updateDepthmap()
 {
+  glm::mat4 shadowView = shadowCamera.getViewMatrix();
+  glm::mat4 shadowNearProjectionView = shadowNearProjection * shadowView;
+  shadowNearFrustum.updateFrustum(shadowNearProjectionView);
+  shadowNearFrustum.calculateIntersectionPoints();
+
+  glm::mat4 shadowFarProjectionView = shadowFarProjection * shadowView;
+  shadowFarFrustum.updateFrustum(shadowFarProjectionView);
+  shadowFarFrustum.calculateIntersectionPoints();
+
+  {
+    BENCHMARK("Shadow volume: update", true);
+    shadowVolume.update(camera, shadowNearFrustum, shadowFarFrustum, screenResolution.getAspectRatio());
+  }
+
   depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
   scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrixNear());
   depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());

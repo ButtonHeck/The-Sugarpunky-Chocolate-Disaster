@@ -79,7 +79,8 @@ SOURCES += \
     src/game/world/plants/GrassRenderer.cpp \
     src/game/world/plants/TreesRenderer.cpp \
     src/graphics/ShadowVolume.cpp \
-    src/graphics/FrustumRenderer.cpp
+    src/graphics/FrustumRenderer.cpp \
+    src/graphics/ShadowVolumeRenderer.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -160,7 +161,8 @@ HEADERS += \
     src/game/world/plants/TreesRenderer.h \
     src/game/OptionsUnits.h \
     src/graphics/ShadowVolume.h \
-    src/graphics/FrustumRenderer.h
+    src/graphics/FrustumRenderer.h \
+    src/graphics/ShadowVolumeRenderer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

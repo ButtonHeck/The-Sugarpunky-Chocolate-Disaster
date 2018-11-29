@@ -19,6 +19,7 @@
 #include "game/world/Scene.h"
 #include "graphics/ShadowVolume.h"
 #include "graphics/FrustumRenderer.h"
+#include "graphics/ShadowVolumeRenderer.h"
 
 class Camera;
 class Options;
@@ -72,6 +73,7 @@ private:
   //world
   Scene scene;
   ShadowVolume shadowVolume;
+  ShadowVolumeRenderer shadowVolumeRenderer;
   SaveLoadManager saveLoadManager;
 
   //input

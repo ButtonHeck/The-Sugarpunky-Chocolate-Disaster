@@ -5,12 +5,13 @@ ShadowVolume::ShadowVolume(TheSunFacade& sun)
     sun(sun)
 {}
 
-void ShadowVolume::update(Camera& camera, Frustum& nearFrustum, Frustum &farFrustum, float aspect)
+void ShadowVolume::update(Frustum& nearFrustum, Frustum &farFrustum, float aspect)
 {
   glm::vec3 sunPosition = sun.getCurrentPosition();
   lightDirTo = glm::normalize(glm::vec3(0.0f) - sunPosition);
   bool isPosX = sunPosition.x > 0.0f;
 
+  //step 1 - calculate bounding boxes bounds
   float boxPosX_n = std::max({nearFrustum.nearLL.x,
                               nearFrustum.nearLR.x,
                               nearFrustum.nearUR.x,
@@ -76,42 +77,6 @@ void ShadowVolume::update(Camera& camera, Frustum& nearFrustum, Frustum &farFrus
                               farFrustum.farLR.z,
                               farFrustum.farUR.z,
                               farFrustum.farUL.z,});
-
-
-//  const float VFOV = FOV / aspect;
-//  const float TAN_VFOV_DIV2 = glm::tan(glm::radians(VFOV / 2.0f));
-
-  //step 1 - create key points
-//  glm::vec3 camPos = camera.getPosition();
-//  glm::vec3 camFront = camera.getDirection();
-//  glm::vec3 camRight = camera.getRight();
-//  glm::vec3 camUp = camera.getUp();
-
-//  glm::vec3 camMid_n = camPos + SHADOW_NEAR_DISTANCE * camFront;
-//  glm::vec3 camRight_n = camMid_n + SHADOW_NEAR_DISTANCE * TAN_FOV_DIV2 * camRight;
-//  glm::vec3 camLeft_n = camMid_n - SHADOW_NEAR_DISTANCE * TAN_FOV_DIV2 * camRight;
-//  glm::vec3 camLL_n = camLeft_n - SHADOW_NEAR_DISTANCE * TAN_VFOV_DIV2 * camUp;
-//  glm::vec3 camUL_n = camLeft_n + SHADOW_NEAR_DISTANCE * TAN_VFOV_DIV2 * camUp;
-//  glm::vec3 camLR_n = camRight_n - SHADOW_NEAR_DISTANCE * TAN_VFOV_DIV2 * camUp;
-//  glm::vec3 camUR_n = camRight_n + SHADOW_NEAR_DISTANCE * TAN_VFOV_DIV2 * camUp;
-
-//  glm::vec3 camMid_f = camPos + SHADOW_FAR_DISTANCE * camFront;
-//  glm::vec3 camRight_f = camMid_f + SHADOW_FAR_DISTANCE * TAN_FOV_DIV2 * camRight;
-//  glm::vec3 camLeft_f = camMid_f - SHADOW_FAR_DISTANCE * TAN_FOV_DIV2 * camRight;
-//  glm::vec3 camLL_f = camLeft_f - SHADOW_FAR_DISTANCE * TAN_VFOV_DIV2 * camUp;
-//  glm::vec3 camUL_f = camLeft_f + SHADOW_FAR_DISTANCE * TAN_VFOV_DIV2 * camUp;
-//  glm::vec3 camLR_f = camRight_f - SHADOW_FAR_DISTANCE * TAN_VFOV_DIV2 * camUp;
-//  glm::vec3 camUR_f = camRight_f + SHADOW_FAR_DISTANCE * TAN_VFOV_DIV2 * camUp;
-
-  //step 1 - create bounding box
-//  float boxPosX_n = std::max({camLL_n.x, camUL_n.x, camLR_n.x, camUR_n.x, camPos.x});
-//  float boxNegX_n = std::min({camLL_n.x, camUL_n.x, camLR_n.x, camUR_n.x, camPos.x});
-//  float boxPosZ_n = std::max({camLL_n.z, camUL_n.z, camLR_n.z, camUR_n.z, camPos.z});
-//  float boxNegZ_n = std::min({camLL_n.z, camUL_n.z, camLR_n.z, camUR_n.z, camPos.z});
-//  float boxPosX_f = std::max({camLL_n.x, camUL_n.x, camLR_n.x, camUR_n.x, camLL_f.x, camUL_f.x, camLR_f.x, camUR_f.x});
-//  float boxNegX_f = std::min({camLL_n.x, camUL_n.x, camLR_n.x, camUR_n.x, camLL_f.x, camUL_f.x, camLR_f.x, camUR_f.x});
-//  float boxPosZ_f = std::max({camLL_n.z, camUL_n.z, camLR_n.z, camUR_n.z, camLL_f.z, camUL_f.z, camLR_f.z, camUR_f.z});
-//  float boxNegZ_f = std::min({camLL_n.z, camUL_n.z, camLR_n.z, camUR_n.z, camLL_f.z, camUL_f.z, camLR_f.z, camUR_f.z});
 
   //step 2 - correct bounding box
   float offset;
@@ -180,6 +145,15 @@ void ShadowVolume::update(Camera& camera, Frustum& nearFrustum, Frustum &farFrus
                                             farFrustumFar);
   glm::mat4 lightViewFar = glm::lookAt(lightSource_f, lightSource_f + lightDirTo, glm::vec3(0.0f, 1.0f, 0.0f));
   lightSpaceMatrixFar = lightProjectionFar * lightViewFar;
+
+  nearBox.ll = glm::vec2(boxNegX_n, boxPosZ_n);
+  nearBox.lr = glm::vec2(boxPosX_n, boxPosZ_n);
+  nearBox.ur = glm::vec2(boxPosX_n, boxNegZ_n);
+  nearBox.ul = glm::vec2(boxNegX_n, boxNegZ_n);
+  farBox.ll = glm::vec2(boxNegX_f, boxPosZ_f);
+  farBox.lr = glm::vec2(boxPosX_f, boxPosZ_f);
+  farBox.ur = glm::vec2(boxPosX_f, boxNegZ_f);
+  farBox.ul = glm::vec2(boxNegX_f, boxNegZ_f);
 }
 
 glm::vec3 ShadowVolume::getLightDir() const

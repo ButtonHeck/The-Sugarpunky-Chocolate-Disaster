@@ -8,6 +8,7 @@ FrustumRenderer::FrustumRenderer(Frustum &frustum)
   basicGLBuffers.bind(VAO | VBO | EBO);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 }
 
 void FrustumRenderer::render()
@@ -47,10 +48,7 @@ void FrustumRenderer::render()
   vertices[23] = frustum.farUL.z;
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
   glLineWidth(2.0f);
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   glDrawElements(GL_LINE_STRIP, 24, GL_UNSIGNED_INT, 0);
-  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
