@@ -1,10 +1,11 @@
 #include "game/Game.h"
 
-Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolution &screenResolution)
+Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& options, ScreenResolution &screenResolution)
   :
     screenResolution(screenResolution),
     window(window),
     camera(camera),
+    shadowCamera(shadowCamera),
     projection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE)),
     shadowNearProjection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, SHADOW_NEAR_DISTANCE)),
     shadowFarProjection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_NEAR_DISTANCE, SHADOW_FAR_DISTANCE)),
@@ -18,7 +19,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
     scene(shaderManager, options, textureManager),
     shadowVolume(scene.getSunFacade()),
     saveLoadManager(scene, camera),
-    keyboard(KeyboardManager(window, camera, options, scene.getSunFacade())),
+    keyboard(KeyboardManager(window, camera, shadowCamera, options, scene.getSunFacade())),
     mouseInput(MouseInputManager::getInstance()),
     textManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", shaderManager.get(SHADER_FONT))
 {
@@ -60,11 +61,18 @@ void Game::loop()
     projectionView = projection * view;
     viewFrustum.updateFrustum(projectionView);
 
-    glm::mat4 shadowNearProjectionView = shadowNearProjection * view;
+    if (!options[OPT_SHADOW_CAMERA_FIXED])
+      {
+        shadowCamera.processMouseCursor();
+        shadowCamera.move(timerDelta, scene.getHillsFacade().getMap());
+      }
+    glm::mat4 shadowView = shadowCamera.getViewMatrix();
+
+    glm::mat4 shadowNearProjectionView = shadowNearProjection * shadowView;
     shadowNearFrustum.updateFrustum(shadowNearProjectionView);
     shadowNearFrustum.calculateIntersectionPoints();
 
-    glm::mat4 shadowFarProjectionView = shadowFarProjection * view;
+    glm::mat4 shadowFarProjectionView = shadowFarProjection * shadowView;
     shadowFarFrustum.updateFrustum(shadowFarProjectionView);
     shadowFarFrustum.calculateIntersectionPoints();
   }

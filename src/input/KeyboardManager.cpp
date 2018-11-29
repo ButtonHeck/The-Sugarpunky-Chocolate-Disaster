@@ -2,10 +2,11 @@
 
 extern float debug_sunSpeed;
 
-KeyboardManager::KeyboardManager(GLFWwindow *window, Camera &camera, Options &options, TheSunFacade &sun)
+KeyboardManager::KeyboardManager(GLFWwindow *window, Camera &camera, Camera &shadowCamera, Options &options, TheSunFacade &sun)
   :
     window(window),
     camera(camera),
+    shadowCamera(shadowCamera),
     options(options),
     sun(sun)
 {}
@@ -16,7 +17,11 @@ void KeyboardManager::processInput()
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 
-  processKey(GLFW_KEY_F1, [&](){camera.switchFPSmode();});
+  processKey(GLFW_KEY_F1, [&]()
+  {
+      camera.switchFPSmode();
+      shadowCamera.switchFPSmode();
+    });
   processKey(GLFW_KEY_F3, OPT_ANIMATE_WATER);
   processKey(GLFW_KEY_F4, OPT_DRAW_TREES);
   processKey(GLFW_KEY_F5, OPT_DRAW_DEBUG_TEXT);
@@ -47,30 +52,44 @@ void KeyboardManager::processInput()
   processKey(GLFW_KEY_B, OPT_MODELS_LAND_BLENDING);
   processKey(GLFW_KEY_L, OPT_POLYGON_LINE);
   processKey(GLFW_KEY_P, OPT_DEBUG_RENDER);
+  processKey(GLFW_KEY_X, [&]()
+  {
+      options.toggle(OPT_SHADOW_CAMERA_FIXED);
+      if (!options[OPT_SHADOW_CAMERA_FIXED])
+        {
+          shadowCamera = camera;
+        }
+    });
 
   processKey(GLFW_KEY_KP_8, [&]()
   {
       camera.setYaw(-90.0f);
+      shadowCamera.setYaw(-90.0f);
     });
   processKey(GLFW_KEY_KP_6, [&]()
   {
       camera.setYaw(0.0f);
+      shadowCamera.setYaw(0.0f);
     });
   processKey(GLFW_KEY_KP_2, [&]()
   {
       camera.setYaw(90.0f);
+      shadowCamera.setYaw(90.0f);
     });
   processKey(GLFW_KEY_KP_4, [&]()
   {
       camera.setYaw(180.0f);
+      shadowCamera.setYaw(180.0f);
     });
   processKey(GLFW_KEY_KP_5, [&]()
   {
       camera.setPitch(-90.0f);
+      shadowCamera.setPitch(-90.0f);
     });
   processKey(GLFW_KEY_E, [&]()
   {
       camera.switchAcceleration();
+      shadowCamera.switchAcceleration();
     });
   processKey(GLFW_KEY_UP, []()
   {
@@ -148,24 +167,43 @@ void KeyboardManager::processInput()
 
   //process camera
   camera.disableMoveAcceleration();
+  shadowCamera.disableMoveAcceleration();
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS &&
       glfwGetKey(window, GLFW_KEY_S) != GLFW_PRESS)
-    camera.updateAccelerations(FORWARD);
+    {
+      camera.updateAccelerations(FORWARD);
+      shadowCamera.updateAccelerations(FORWARD);
+    }
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS &&
       glfwGetKey(window, GLFW_KEY_W) != GLFW_PRESS)
-    camera.updateAccelerations(BACKWARD);
+    {
+      camera.updateAccelerations(BACKWARD);
+      shadowCamera.updateAccelerations(BACKWARD);
+    }
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS &&
       glfwGetKey(window, GLFW_KEY_D) != GLFW_PRESS)
-    camera.updateAccelerations(LEFT);
+    {
+      camera.updateAccelerations(LEFT);
+      shadowCamera.updateAccelerations(LEFT);
+    }
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS &&
       glfwGetKey(window, GLFW_KEY_A) != GLFW_PRESS)
-    camera.updateAccelerations(RIGHT);
+    {
+      camera.updateAccelerations(RIGHT);
+      shadowCamera.updateAccelerations(RIGHT);
+    }
   if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
       glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_PRESS)
-    camera.updateAccelerations(DOWN);
+    {
+      camera.updateAccelerations(DOWN);
+      shadowCamera.updateAccelerations(DOWN);
+    }
   if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS &&
       glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_PRESS)
-    camera.updateAccelerations(UP);
+    {
+      camera.updateAccelerations(UP);
+      shadowCamera.updateAccelerations(UP);
+    }
 }
 
 void KeyboardManager::processKey(int keyCode, OPTION option)

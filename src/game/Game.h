@@ -26,7 +26,7 @@ class ScreenResolution;
 class Game
 {
 public:
-  Game(GLFWwindow* window, Camera& camera, Options& options, ScreenResolution& screenResolution);
+  Game(GLFWwindow* window, Camera& camera, Camera& shadowCamera, Options& options, ScreenResolution& screenResolution);
   virtual ~Game();
   void setup();
   void loop();
@@ -46,6 +46,7 @@ private:
 
   //camera and related stuff
   Camera& camera;
+  Camera& shadowCamera;
   Frustum viewFrustum;
   Frustum shadowNearFrustum;
   Frustum shadowFarFrustum;

@@ -12,7 +12,7 @@
 class KeyboardManager
 {
 public:
-  KeyboardManager(GLFWwindow* window, Camera& camera, Options& options, TheSunFacade &sun);
+  KeyboardManager(GLFWwindow* window, Camera& camera, Camera& shadowCamera, Options& options, TheSunFacade &sun);
   void processInput();
 private:
   bool keysPressed[GLFW_KEY_LAST];
@@ -20,6 +20,7 @@ private:
   void processKey(int keyCode, std::function<void()> function);
   GLFWwindow* window;
   Camera& camera;
+  Camera& shadowCamera;
   Options& options;
   TheSunFacade& sun;
 };

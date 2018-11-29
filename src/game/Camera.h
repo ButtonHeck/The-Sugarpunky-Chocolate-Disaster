@@ -19,6 +19,7 @@ class Camera
 {
 public:
   Camera(glm::vec3 position);
+  Camera& operator=(const Camera& rhs);
   glm::mat4 getViewMatrix() const;
   void updateViewAcceleration(float xOffset, float yOffset);
   void processMouseCursor();

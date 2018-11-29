@@ -18,6 +18,28 @@ Camera::Camera(glm::vec3 position)
   updateVectors();
 }
 
+Camera &Camera::operator=(const Camera &rhs)
+{
+  this->mouseSensitivity = rhs.mouseSensitivity;
+  this->useAcceleration = rhs.useAcceleration;
+  this->FPSmode = rhs.FPSmode;
+  this->yaw = rhs.yaw;
+  this->pitch = rhs.pitch;
+  this->position = rhs.position;
+  this->front = rhs.front;
+  this->viewAccelerationX = rhs.viewAccelerationX;
+  this->viewAccelerationY = rhs.viewAccelerationY;
+  this->viewAccelerationSensitivity = rhs.viewAccelerationSensitivity;
+  this->moveAccelerationSide = rhs.moveAccelerationSide;
+  this->moveAccelerationFront = rhs.moveAccelerationFront;
+  this->moveAccelerationY = rhs.moveAccelerationY;
+  this->accumulateMoveFront = rhs.accumulateMoveFront;
+  this->accumulateMoveSide = rhs.accumulateMoveSide;
+  this->accumulateMoveY = rhs.accumulateMoveY;
+  this->updateVectors();
+  return *this;
+}
+
 glm::mat4 Camera::getViewMatrix() const
 {
   return glm::lookAt(position, position + front, worldUp);

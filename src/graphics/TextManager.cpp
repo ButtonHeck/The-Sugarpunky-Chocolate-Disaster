@@ -95,6 +95,10 @@ void TextManager::addText(ScreenResolution& screenResolution,
   ss << "Models Phong: " << std::boolalpha << options[OPT_MODELS_PHONG_SHADING];
   addString(ss.str(), 10.0f, 60.0f, 0.18f);
 
+  ss.str("");
+  ss << "Shadow cam fixed: " << std::boolalpha << options[OPT_SHADOW_CAMERA_FIXED];
+  addString(ss.str(), 10.0f, 80.0f, 0.18f);
+
   VRAM_Monitor& vram = VRAM_Monitor::getInstance();
   vram.updateAvailable();
   ss.str("");
@@ -103,7 +107,7 @@ void TextManager::addText(ScreenResolution& screenResolution,
      << ", "
      << vram.getAvailableMemoryPercent()
      << "%";
-  addString(ss.str(), 10.0f, 80.0f, 0.18f);
+  addString(ss.str(), 10.0f, 100.0f, 0.18f);
 
   ss.str("");
   ss << "Sun position: " << std::setprecision(3) << std::setw(3)
@@ -112,7 +116,7 @@ void TextManager::addText(ScreenResolution& screenResolution,
      << sunPosition.y
      << ": "
      << sunPosition.z;
-  addString(ss.str(), 10.0f, 100.0f, 0.18f);
+  addString(ss.str(), 10.0f, 120.0f, 0.18f);
 }
 
 void TextManager::addString(const std::string& text, GLfloat x, GLfloat y, GLfloat scale)

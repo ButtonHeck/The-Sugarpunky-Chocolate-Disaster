@@ -9,6 +9,7 @@
 GLFWwindow* window;
 ScreenResolution screenResolution;
 Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
+Camera shadowCamera(glm::vec3(0.0f, 12.0f, 0.0f));
 Options options;
 Game* game;
 
@@ -44,7 +45,7 @@ int main()
       glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
 #endif
-  game = new Game(window, camera, options, screenResolution);
+  game = new Game(window, camera, shadowCamera, options, screenResolution);
   game->setup();
 
   //game loop

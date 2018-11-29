@@ -20,6 +20,7 @@ Options::Options()
   options[OPT_MODELS_PHONG_SHADING] = true;
   options[OPT_POLYGON_LINE] = false;
   options[OPT_DEBUG_RENDER] = false;
+  options[OPT_SHADOW_CAMERA_FIXED] = false;
 }
 
 std::bitset<OPTIONS_COUNT>::reference Options::operator[](OPTION value)

@@ -2,6 +2,7 @@
 
 extern GLFWwindow* window;
 extern Camera camera;
+extern Camera shadowCamera;
 extern Options options;
 extern ScreenResolution screenResolution;
 
@@ -64,11 +65,13 @@ void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
   mouseInput.lastX = x;
   mouseInput.lastY = y;
   camera.updateViewAcceleration(dx, dy);
+  shadowCamera.updateViewAcceleration(dx, dy);
 }
 
 void MouseInputManager::scrollCallback(GLFWwindow *, double, double y)
 {
   camera.processMouseScroll(y);
+  shadowCamera.processMouseScroll(y);
 }
 
 void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int action, int)
