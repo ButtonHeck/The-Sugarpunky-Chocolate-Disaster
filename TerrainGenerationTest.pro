@@ -78,7 +78,8 @@ SOURCES += \
     src/game/world/Scene.cpp \
     src/game/world/plants/GrassRenderer.cpp \
     src/game/world/plants/TreesRenderer.cpp \
-    src/graphics/ShadowVolume.cpp
+    src/graphics/ShadowVolume.cpp \
+    src/graphics/FrustumRenderer.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -158,7 +159,8 @@ HEADERS += \
     src/game/world/plants/GrassRenderer.h \
     src/game/world/plants/TreesRenderer.h \
     src/game/OptionsUnits.h \
-    src/graphics/ShadowVolume.h
+    src/graphics/ShadowVolume.h \
+    src/graphics/FrustumRenderer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 
@@ -432,7 +434,9 @@ DISTFILES += \
     res/shaders/include/shadowSampling.ifs \
     res/shaders/include/desaturationFunc.ifs \
     res/shaders/include/shadingVariables.ifs \
-    res/shaders/include/modelGrassAnimationAndBlending.ivs
+    res/shaders/include/modelGrassAnimationAndBlending.ivs \
+    res/shaders/frustum/frustum.vs \
+    res/shaders/frustum/frustum.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

@@ -6,6 +6,8 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     window(window),
     camera(camera),
     shadowCamera(shadowCamera),
+    shadowNearFrustumRenderer(shadowNearFrustum),
+    shadowFarFrustumRenderer(shadowFarFrustum),
     projection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE)),
     shadowNearProjection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, SHADOW_NEAR_DISTANCE)),
     shadowFarProjection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_NEAR_DISTANCE, SHADOW_FAR_DISTANCE)),
@@ -50,7 +52,7 @@ void Game::setup()
 
 void Game::loop()
 {
-  glm::mat4 view, projectionView;
+  glm::mat4 view, projectionView, shadowNearProjectionView, shadowFarProjectionView;
   float timerDelta = CPU_timer.tick();
   {
     BENCHMARK("Game loop: process input and camera", true);
@@ -68,11 +70,11 @@ void Game::loop()
       }
     glm::mat4 shadowView = shadowCamera.getViewMatrix();
 
-    glm::mat4 shadowNearProjectionView = shadowNearProjection * shadowView;
+    shadowNearProjectionView = shadowNearProjection * shadowView;
     shadowNearFrustum.updateFrustum(shadowNearProjectionView);
     shadowNearFrustum.calculateIntersectionPoints();
 
-    glm::mat4 shadowFarProjectionView = shadowFarProjection * shadowView;
+    shadowFarProjectionView = shadowFarProjection * shadowView;
     shadowFarFrustum.updateFrustum(shadowFarProjectionView);
     shadowFarFrustum.calculateIntersectionPoints();
   }
@@ -135,6 +137,14 @@ void Game::drawFrame(glm::mat4& projectionView)
   BENCHMARK("Game loop: draw frame", true);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, options[OPT_POLYGON_LINE] ? GL_LINE : GL_FILL);
+
+  //EXPERIMENTAL
+  shaderManager.get(SHADER_FRUSTUM).use();
+  shaderManager.get(SHADER_FRUSTUM).setMat4("u_projectionView", projectionView);
+  shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
+  shadowNearFrustumRenderer.render();
+  shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
+  shadowFarFrustumRenderer.render();
 
   if (options[OPT_ANIMATE_WATER])
     {

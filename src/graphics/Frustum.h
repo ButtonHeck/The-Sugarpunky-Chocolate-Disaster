@@ -25,6 +25,7 @@ public:
   glm::vec4 getPlane(FRUSTUM_SIDE side);
 private:
   friend class ShadowVolume;
+  friend class FrustumRenderer;
   void normalizePlane(FRUSTUM_SIDE side);
   glm::vec3 kramerIntersection(glm::vec4 frontOrBack, glm::vec4 topOrBottom, glm::vec4 rightOrLeft);
   std::vector<glm::vec4> frustumPlanes;

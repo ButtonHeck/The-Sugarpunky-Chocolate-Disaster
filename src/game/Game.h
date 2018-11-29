@@ -18,6 +18,7 @@
 #include "util/BenchmarkTimer.h"
 #include "game/world/Scene.h"
 #include "graphics/ShadowVolume.h"
+#include "graphics/FrustumRenderer.h"
 
 class Camera;
 class Options;
@@ -49,7 +50,9 @@ private:
   Camera& shadowCamera;
   Frustum viewFrustum;
   Frustum shadowNearFrustum;
+  FrustumRenderer shadowNearFrustumRenderer;
   Frustum shadowFarFrustum;
+  FrustumRenderer shadowFarFrustumRenderer;
   glm::mat4 projection;
   glm::mat4 shadowNearProjection;
   glm::mat4 shadowFarProjection;

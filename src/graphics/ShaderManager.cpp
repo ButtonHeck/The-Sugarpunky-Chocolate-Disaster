@@ -70,6 +70,8 @@ ShaderManager::ShaderManager()
                                          "screen/MS_toDefault_hdr.fs");
   shaders[SHADER_SHADOW_TERRAIN] = Shader("shadow/terrain_shadow.vs");
   shaders[SHADER_SHADOW_MODELS] = Shader("shadow/model_shadow.vs");
+  shaders[SHADER_FRUSTUM] = Shader("frustum/frustum.vs",
+                                   "frustum/frustum.fs");
 }
 
 ShaderManager::~ShaderManager()
