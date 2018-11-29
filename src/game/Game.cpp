@@ -6,6 +6,8 @@ Game::Game(GLFWwindow *window, Camera& camera, Options& options, ScreenResolutio
     window(window),
     camera(camera),
     projection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE)),
+    shadowNearProjection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, SHADOW_NEAR_DISTANCE)),
+    shadowFarProjection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_NEAR_DISTANCE, SHADOW_FAR_DISTANCE)),
     options(options),
     shaderManager(),
     textureLoader(TextureLoader(screenResolution)),
@@ -57,6 +59,14 @@ void Game::loop()
     view = camera.getViewMatrix();
     projectionView = projection * view;
     viewFrustum.updateFrustum(projectionView);
+
+    glm::mat4 shadowNearProjectionView = shadowNearProjection * view;
+    shadowNearFrustum.updateFrustum(shadowNearProjectionView);
+    shadowNearFrustum.calculateIntersectionPoints();
+
+    glm::mat4 shadowFarProjectionView = shadowFarProjection * view;
+    shadowFarFrustum.updateFrustum(shadowFarProjectionView);
+    shadowFarFrustum.calculateIntersectionPoints();
   }
 
   //TEMPORARY FOR VISUAL DEBUGGING
@@ -75,7 +85,7 @@ void Game::loop()
   scene.getSunFacade().move(timerDelta);
   {
     BENCHMARK("Shadow volume: update", true);
-    shadowVolume.update(camera);
+    shadowVolume.update(camera, shadowNearFrustum, shadowFarFrustum, screenResolution.getAspectRatio());
   }
 
   glm::vec4 currentColor = glm::mix(NIGHT_SKY_COLOR, DAY_SKY_COLOR, glm::clamp(-shadowVolume.getLightDir().y * 5, 0.0f, 1.0f));

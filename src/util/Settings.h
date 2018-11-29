@@ -65,7 +65,7 @@ const glm::vec4 DAY_SKY_COLOR(0.85f, 0.44f, 0.35f, 1.0f);
 constexpr int DEPTH_MAP_TEXTURE_WIDTH = 2048;
 constexpr int DEPTH_MAP_TEXTURE_HEIGHT = 2048;
 const float SHADOW_NEAR_DISTANCE = 20.0f;
-const float SHADOW_FAR_DISTANCE = 100.0f;
+const float SHADOW_FAR_DISTANCE = 60.0f;
 const float TAN_FOV_DIV2 = glm::tan(glm::radians(FOV / 2.0f));
 
 //shader uniform strategy

@@ -1,14 +1,16 @@
 #ifndef SHADOWVOLUME_H
 #define SHADOWVOLUME_H
+#include <algorithm>
 #include "util/Settings.h"
 #include "game/world/ambience/theSun/TheSunFacade.h"
 #include "game/Camera.h"
+#include "graphics/Frustum.h"
 
 class ShadowVolume
 {
 public:
   ShadowVolume(TheSunFacade &sun);
-  void update(Camera &camera);
+  void update(Camera &camera, Frustum &nearFrustum, Frustum& farFrustum, float aspect);
   glm::vec3 getLightDir() const;
   glm::mat4 getLightSpaceMatrixNear() const;
   glm::mat4 getLightSpaceMatrixFar() const;

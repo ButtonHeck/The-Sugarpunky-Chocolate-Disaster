@@ -47,7 +47,11 @@ private:
   //camera and related stuff
   Camera& camera;
   Frustum viewFrustum;
+  Frustum shadowNearFrustum;
+  Frustum shadowFarFrustum;
   glm::mat4 projection;
+  glm::mat4 shadowNearProjection;
+  glm::mat4 shadowFarProjection;
 
   //options
   Options& options;

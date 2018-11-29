@@ -44,13 +44,24 @@ void main()
 
     if (u_shadowEnable)
     {
+        vec4 fragPosLightSpaceNear = u_lightSpaceMatrix[0] * vec4(v_FragPos, 1.0);
+        vec3 projectedCoordsNear = fragPosLightSpaceNear.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
         int shadowMapIndex;
-        if (length(vec2(v_FragPos.xz) - vec2(u_viewPosition.xz)) < u_shadowNearDistance)
+        vec3 projectedCoords;
+        if (projectedCoordsNear.x > 0.0 && projectedCoordsNear.x < 1.0 &&
+            projectedCoordsNear.y > 0.0 && projectedCoordsNear.y < 1.0 &&
+            projectedCoordsNear.z > 0.0 && projectedCoordsNear.z < 1.0)
+        {
             shadowMapIndex = 0;
+            projectedCoords = projectedCoordsNear;
+        }
         else
+        {
             shadowMapIndex = 1;
-        vec4 fragPosLightSpace = u_lightSpaceMatrix[shadowMapIndex] * vec4(v_FragPos, 1.0);
-        vec3 projectedCoords = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
+            vec4 fragPosLightSpaceFar = u_lightSpaceMatrix[1] * vec4(v_FragPos, 1.0);
+            vec3 projectedCoordsFar = fragPosLightSpaceFar.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
+            projectedCoords = projectedCoordsFar;
+        }
         float luminosity = ext_calculateLuminosity(shadowMapIndex, projectedCoords);
 
         diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
