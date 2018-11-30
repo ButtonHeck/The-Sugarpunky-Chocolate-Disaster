@@ -17,6 +17,9 @@ private:
   struct Box
   {
     glm::vec2 ll, lr, ur, ul;
+    glm::vec3 nearLL, nearLR, nearUR, nearUL;
+    glm::vec3 farLL, farLR, farUR, farUL;
+    glm::vec3 lightSource;
   };
   friend class ShadowVolumeRenderer;
 

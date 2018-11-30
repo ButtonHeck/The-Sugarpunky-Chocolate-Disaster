@@ -129,16 +129,23 @@ void Game::drawFrame(glm::mat4& projectionView)
   //EXPERIMENTAL
   shaderManager.get(SHADER_FRUSTUM).use();
   shaderManager.get(SHADER_FRUSTUM).setMat4("u_projectionView", projectionView);
+  shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolumeSquare", false);
   shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolume", false);
   shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
   shadowNearFrustumRenderer.render();
   shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
   shadowFarFrustumRenderer.render();
+  shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolumeSquare", true);
+  shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
+  shadowVolumeRenderer.renderTerrainSquare(true);
+  shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
+  shadowVolumeRenderer.renderTerrainSquare(false);
+  //VOLUME ITSELF
   shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolume", true);
   shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
-  shadowVolumeRenderer.render(true);
+  shadowVolumeRenderer.renderVolume(true);
   shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
-  shadowVolumeRenderer.render(false);
+  shadowVolumeRenderer.renderVolume(false);
 
   if (options[OPT_ANIMATE_WATER])
     {
@@ -201,7 +208,7 @@ void Game::updateDepthmap()
 
   {
     BENCHMARK("Shadow volume: update", true);
-    shadowVolume.update(camera, shadowNearFrustum, shadowFarFrustum, screenResolution.getAspectRatio());
+    shadowVolume.update(shadowNearFrustum, shadowFarFrustum, screenResolution.getAspectRatio());
   }
 
   depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
