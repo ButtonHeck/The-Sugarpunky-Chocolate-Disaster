@@ -5,7 +5,7 @@ ShadowVolume::ShadowVolume(TheSunFacade& sun)
     sun(sun)
 {}
 
-void ShadowVolume::update(Frustum& nearFrustum, Frustum &farFrustum, float aspect)
+void ShadowVolume::update(Frustum& nearFrustum, Frustum &farFrustum)
 {
   glm::vec3 sunPosition = sun.getCurrentPosition();
   lightDirTo = glm::normalize(glm::vec3(0.0f) - sunPosition);
@@ -98,8 +98,10 @@ void ShadowVolume::update(Frustum& nearFrustum, Frustum &farFrustum, float aspec
       boxNegX_f += offset;
       boxNegX_f = glm::max(-192.0f, boxNegX_f);
     }
+
   //step 3 - check sunPosition
   float sunDeltaX = sunPosition.x / 192.0f;
+
   //step 4 - calculate box center
   float BOX_WIDTH_N = boxPosX_n - boxNegX_n;
   float boxMidX_n = (boxPosX_n + boxNegX_n) / 2.0f;
@@ -107,6 +109,7 @@ void ShadowVolume::update(Frustum& nearFrustum, Frustum &farFrustum, float aspec
   float BOX_WIDTH_F = boxPosX_f - boxNegX_f;
   float boxMidX_f = (boxPosX_f + boxNegX_f) / 2.0f;
   float boxMidZ_f = (boxPosZ_f + boxNegZ_f) / 2.0f;
+
   //step 5 - calculate light source position
   glm::vec3 lightSource_n;
   lightSource_n.x = boxMidX_n + sunDeltaX * BOX_WIDTH_N / 2.0f;
@@ -116,6 +119,7 @@ void ShadowVolume::update(Frustum& nearFrustum, Frustum &farFrustum, float aspec
   lightSource_f.x = boxMidX_f + sunDeltaX * BOX_WIDTH_F / 2.0f;
   lightSource_f.y = (sunPosition.y / 192.0f) * (BOX_WIDTH_F / 2.0f);
   lightSource_f.z = boxMidZ_f;
+
   //step 6 - calculate frustum borders
   float frustumRight = glm::abs(boxNegZ_n - boxMidZ_n);
   float frustumLeft = -frustumRight;
@@ -123,6 +127,7 @@ void ShadowVolume::update(Frustum& nearFrustum, Frustum &farFrustum, float aspec
   float frustumBottom = -frustumTop;
   float frustumNear = 0.1f;
   float frustumFar = BOX_WIDTH_N;
+
   float farFrustumRight = glm::abs(boxNegZ_f - boxMidZ_f);
   float farFrustumLeft = -farFrustumRight;
   float farFrustumTop = glm::abs(boxNegX_f - boxMidX_f);
@@ -153,28 +158,28 @@ void ShadowVolume::update(Frustum& nearFrustum, Frustum &farFrustum, float aspec
   nearBox.ur = glm::vec2(boxPosX_n, boxNegZ_n);
   nearBox.ul = glm::vec2(boxNegX_n, boxNegZ_n);
   nearBox.lightSource = lightSource_n;
-  nearBox.nearLL = lightSource_n + (frustumNear * lightDirTo) - (frustumRight * lightDirRight) - (frustumTop * lightDirUp);
-  nearBox.nearLR = lightSource_n + (frustumNear * lightDirTo) + (frustumRight * lightDirRight) - (frustumTop * lightDirUp);
+  nearBox.nearLL = lightSource_n + (frustumNear * lightDirTo) + (frustumLeft * lightDirRight) + (frustumBottom * lightDirUp);
+  nearBox.nearLR = lightSource_n + (frustumNear * lightDirTo) + (frustumRight * lightDirRight) + (frustumBottom * lightDirUp);
   nearBox.nearUR = lightSource_n + (frustumNear * lightDirTo) + (frustumRight * lightDirRight) + (frustumTop * lightDirUp);
-  nearBox.nearUL = lightSource_n + (frustumNear * lightDirTo) - (frustumRight * lightDirRight) + (frustumTop * lightDirUp);
-  nearBox.farLL = lightSource_n + (frustumFar * lightDirTo) - (frustumRight * lightDirRight) - (frustumTop * lightDirUp);
-  nearBox.farLR = lightSource_n + (frustumFar * lightDirTo) + (frustumRight * lightDirRight) - (frustumTop * lightDirUp);
+  nearBox.nearUL = lightSource_n + (frustumNear * lightDirTo) + (frustumLeft * lightDirRight) + (frustumTop * lightDirUp);
+  nearBox.farLL = lightSource_n + (frustumFar * lightDirTo) + (frustumLeft * lightDirRight) + (frustumBottom * lightDirUp);
+  nearBox.farLR = lightSource_n + (frustumFar * lightDirTo) + (frustumRight * lightDirRight) + (frustumBottom * lightDirUp);
   nearBox.farUR = lightSource_n + (frustumFar * lightDirTo) + (frustumRight * lightDirRight) + (frustumTop * lightDirUp);
-  nearBox.farUL = lightSource_n + (frustumFar * lightDirTo) - (frustumRight * lightDirRight) + (frustumTop * lightDirUp);
+  nearBox.farUL = lightSource_n + (frustumFar * lightDirTo) + (frustumLeft * lightDirRight) + (frustumTop * lightDirUp);
 
   farBox.ll = glm::vec2(boxNegX_f, boxPosZ_f);
   farBox.lr = glm::vec2(boxPosX_f, boxPosZ_f);
   farBox.ur = glm::vec2(boxPosX_f, boxNegZ_f);
   farBox.ul = glm::vec2(boxNegX_f, boxNegZ_f);
   farBox.lightSource = lightSource_f;
-  farBox.nearLL = lightSource_f + (farFrustumNear * lightDirTo) - (farFrustumRight * lightDirRight) - (farFrustumTop * lightDirUp);
-  farBox.nearLR = lightSource_f + (farFrustumNear * lightDirTo) + (farFrustumRight * lightDirRight) - (farFrustumTop * lightDirUp);
+  farBox.nearLL = lightSource_f + (farFrustumNear * lightDirTo) + (farFrustumLeft * lightDirRight) + (farFrustumBottom * lightDirUp);
+  farBox.nearLR = lightSource_f + (farFrustumNear * lightDirTo) + (farFrustumRight * lightDirRight) + (farFrustumBottom * lightDirUp);
   farBox.nearUR = lightSource_f + (farFrustumNear * lightDirTo) + (farFrustumRight * lightDirRight) + (farFrustumTop * lightDirUp);
-  farBox.nearUL = lightSource_f + (farFrustumNear * lightDirTo) - (farFrustumRight * lightDirRight) + (farFrustumTop * lightDirUp);
-  farBox.farLL = lightSource_f + (farFrustumFar * lightDirTo) - (farFrustumRight * lightDirRight) - (farFrustumTop * lightDirUp);
-  farBox.farLR = lightSource_f + (farFrustumFar * lightDirTo) + (farFrustumRight * lightDirRight) - (farFrustumTop * lightDirUp);
+  farBox.nearUL = lightSource_f + (farFrustumNear * lightDirTo) + (farFrustumLeft * lightDirRight) + (farFrustumTop * lightDirUp);
+  farBox.farLL = lightSource_f + (farFrustumFar * lightDirTo) + (farFrustumLeft * lightDirRight) + (farFrustumBottom * lightDirUp);
+  farBox.farLR = lightSource_f + (farFrustumFar * lightDirTo) + (farFrustumRight * lightDirRight) + (farFrustumBottom * lightDirUp);
   farBox.farUR = lightSource_f + (farFrustumFar * lightDirTo) + (farFrustumRight * lightDirRight) + (farFrustumTop * lightDirUp);
-  farBox.farUL = lightSource_f + (farFrustumFar * lightDirTo) - (farFrustumRight * lightDirRight) + (farFrustumTop * lightDirUp);
+  farBox.farUL = lightSource_f + (farFrustumFar * lightDirTo) + (farFrustumLeft * lightDirRight) + (farFrustumTop * lightDirUp);
 }
 
 glm::vec3 ShadowVolume::getLightDir() const

@@ -50,7 +50,7 @@ void main()
         vec3 projectedCoords;
         if (projectedCoordsNear.x > 0.0 && projectedCoordsNear.x < 1.0 &&
             projectedCoordsNear.y > 0.0 && projectedCoordsNear.y < 1.0 &&
-            projectedCoordsNear.z > 0.1 && projectedCoordsNear.z < 1.0)
+            projectedCoordsNear.z > 0.02 && projectedCoordsNear.z < 1.0)
         {
             shadowMapIndex = 0;
             projectedCoords = projectedCoordsNear;
@@ -63,6 +63,9 @@ void main()
             projectedCoords = projectedCoordsFar;
         }
         float luminosity = ext_calculateLuminosity(shadowMapIndex, projectedCoords);
+        //if we hit the point further than in the farthest shadow map, let it be unshadowed
+        if (projectedCoords.z > 1.0)
+            luminosity = 1.0;
 
         diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
         resultColor = ambientColor + diffuseColor;

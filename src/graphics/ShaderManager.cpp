@@ -101,7 +101,7 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
   shader->setInt("u_shadowMap[0]", TEX_DEPTH_MAP_SUN);
   shader->setInt("u_shadowMap[1]", TEX_DEPTH_MAP_SUN_FAR);
-  shader->setFloat("u_bias", 8.0f / DEPTH_MAP_TEXTURE_WIDTH);
+  shader->setFloat("u_bias", 6.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
   shader->setFloat("u_shadowNearDistance", SHADOW_NEAR_DISTANCE);

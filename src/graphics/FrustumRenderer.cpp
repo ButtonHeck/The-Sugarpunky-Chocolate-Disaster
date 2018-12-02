@@ -48,7 +48,5 @@ void FrustumRenderer::render()
   vertices[23] = frustum.farUL.z;
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  glLineWidth(2.0f);
   glDrawElements(GL_LINE_STRIP, 24, GL_UNSIGNED_INT, 0);
 }

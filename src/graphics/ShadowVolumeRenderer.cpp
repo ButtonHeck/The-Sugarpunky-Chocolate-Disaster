@@ -37,27 +37,62 @@ void ShadowVolumeRenderer::renderTerrainSquare(bool near)
   vertices[10] = 0.001f;
   vertices[11] = volume.nearBox.ul.y;
 
-  vertices[12] = volume.farBox.ll.x;
-  vertices[13] = 0.001f;
-  vertices[14] = volume.farBox.ll.y;
 
-  vertices[15] = volume.farBox.lr.x;
-  vertices[16] = 0.001f;
-  vertices[17] = volume.farBox.lr.y;
+  vertices[12] = volume.nearBox.ll.x;
+  vertices[13] = 14.0f;
+  vertices[14] = volume.nearBox.ll.y;
 
-  vertices[18] = volume.farBox.ur.x;
-  vertices[19] = 0.001f;
-  vertices[20] = volume.farBox.ur.y;
+  vertices[15] = volume.nearBox.lr.x;
+  vertices[16] = 14.0f;
+  vertices[17] = volume.nearBox.lr.y;
 
-  vertices[21] = volume.farBox.ul.x;
-  vertices[22] = 0.001f;
-  vertices[23] = volume.farBox.ul.y;
+  vertices[18] = volume.nearBox.ur.x;
+  vertices[19] = 14.0f;
+  vertices[20] = volume.nearBox.ur.y;
+
+  vertices[21] = volume.nearBox.ul.x;
+  vertices[22] = 14.0f;
+  vertices[23] = volume.nearBox.ul.y;
+
+
+  vertices[24] = volume.farBox.ll.x;
+  vertices[25] = 0.001f;
+  vertices[26] = volume.farBox.ll.y;
+
+  vertices[27] = volume.farBox.lr.x;
+  vertices[28] = 0.001f;
+  vertices[29] = volume.farBox.lr.y;
+
+  vertices[30] = volume.farBox.ur.x;
+  vertices[31] = 0.001f;
+  vertices[32] = volume.farBox.ur.y;
+
+  vertices[33] = volume.farBox.ul.x;
+  vertices[34] = 0.001f;
+  vertices[35] = volume.farBox.ul.y;
+
+
+  vertices[36] = volume.farBox.ll.x;
+  vertices[37] = 14.0f;
+  vertices[38] = volume.farBox.ll.y;
+
+  vertices[39] = volume.farBox.lr.x;
+  vertices[40] = 14.0f;
+  vertices[41] = volume.farBox.lr.y;
+
+  vertices[42] = volume.farBox.ur.x;
+  vertices[43] = 14.0f;
+  vertices[44] = volume.farBox.ur.y;
+
+  vertices[45] = volume.farBox.ul.x;
+  vertices[46] = 14.0f;
+  vertices[47] = volume.farBox.ul.y;
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
   if (near)
-    glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);
   else
-    glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, (void*)(8 * sizeof(GLuint)));
+    glDrawElementsBaseVertex(GL_LINES, 24, GL_UNSIGNED_INT, 0, 8);
 }
 
 void ShadowVolumeRenderer::renderVolume(bool near, bool drawLightSource)

@@ -8,4 +8,6 @@ uniform mat4 u_lightSpaceMatrix;
 void main()
 {
     gl_Position = u_lightSpaceMatrix * i_model * i_pos;
+    if (gl_Position.z < -1.0)
+        gl_Position.z = -1.0;
 }

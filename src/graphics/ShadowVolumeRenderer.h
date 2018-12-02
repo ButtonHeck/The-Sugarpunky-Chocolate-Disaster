@@ -12,9 +12,10 @@ public:
 private:
   ShadowVolume& volume;
   OpenglBuffer terrainSquareGLBuffers;
-  float vertices[24] = {0};
-  GLuint indices[16] = {0,1,1,2,2,3,3,0,
-                       4,5,5,6,6,7,7,4};
+  float vertices[48] = {0};
+  GLuint indices[24] = {0,1,1,2,2,3,3,0,
+                        4,5,5,6,6,7,7,4,
+                        0,4,1,5,2,6,3,7};
   OpenglBuffer volumeGLBuffers;
   float volumeVertices[54] = {0};
   GLuint volumeIndices[36] = {0,1,2,2,3,0,
