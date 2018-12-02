@@ -52,6 +52,8 @@ void KeyboardManager::processInput()
   processKey(GLFW_KEY_B, OPT_MODELS_LAND_BLENDING);
   processKey(GLFW_KEY_L, OPT_POLYGON_LINE);
   processKey(GLFW_KEY_P, OPT_DEBUG_RENDER);
+  processKey(GLFW_KEY_C, OPT_USE_SHADOW_CAMERA_MATRIX);
+  processKey(GLFW_KEY_Z, OPT_SHOW_SHADOW_VOLUME_VISUALIZATION);
   processKey(GLFW_KEY_X, [&]()
   {
       options.toggle(OPT_SHADOW_CAMERA_FIXED);

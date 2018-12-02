@@ -109,11 +109,11 @@ void ShadowVolume::update(Frustum& nearFrustum, Frustum &farFrustum, float aspec
   float boxMidZ_f = (boxPosZ_f + boxNegZ_f) / 2.0f;
   //step 5 - calculate light source position
   glm::vec3 lightSource_n;
-  lightSource_n.x = boxMidX_n + (sunDeltaX / (float)WORLD_WIDTH) * BOX_WIDTH_N;
+  lightSource_n.x = boxMidX_n + sunDeltaX * BOX_WIDTH_N / 2.0f;
   lightSource_n.y = (sunPosition.y / 192.0f) * (BOX_WIDTH_N / 2.0f);
   lightSource_n.z = boxMidZ_n;
   glm::vec3 lightSource_f;
-  lightSource_f.x = boxMidX_f + (sunDeltaX / (float)WORLD_WIDTH) * BOX_WIDTH_F;
+  lightSource_f.x = boxMidX_f + sunDeltaX * BOX_WIDTH_F / 2.0f;
   lightSource_f.y = (sunPosition.y / 192.0f) * (BOX_WIDTH_F / 2.0f);
   lightSource_f.z = boxMidZ_f;
   //step 6 - calculate frustum borders

@@ -60,7 +60,10 @@ void Game::loop()
     keyboard.processInput();
     camera.processMouseCursor();
     camera.move(timerDelta, scene.getHillsFacade().getMap());
-    view = camera.getViewMatrix();
+    if (!options[OPT_USE_SHADOW_CAMERA_MATRIX])
+      view = camera.getViewMatrix();
+    else
+      view = shadowCamera.getViewMatrix();
     projectionView = projection * view;
     viewFrustum.updateFrustum(projectionView);
 
@@ -127,25 +130,34 @@ void Game::drawFrame(glm::mat4& projectionView)
   glPolygonMode(GL_FRONT_AND_BACK, options[OPT_POLYGON_LINE] ? GL_LINE : GL_FILL);
 
   //EXPERIMENTAL
-  shaderManager.get(SHADER_FRUSTUM).use();
-  shaderManager.get(SHADER_FRUSTUM).setMat4("u_projectionView", projectionView);
-  shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolumeSquare", false);
-  shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolume", false);
-  shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
-  shadowNearFrustumRenderer.render();
-  shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
-  shadowFarFrustumRenderer.render();
-  shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolumeSquare", true);
-  shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
-  shadowVolumeRenderer.renderTerrainSquare(true);
-  shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
-  shadowVolumeRenderer.renderTerrainSquare(false);
-  //VOLUME ITSELF
-  shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolume", true);
-  shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
-  shadowVolumeRenderer.renderVolume(true);
-  shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
-  shadowVolumeRenderer.renderVolume(false);
+  if (options[OPT_SHOW_SHADOW_VOLUME_VISUALIZATION])
+    {
+      shaderManager.get(SHADER_FRUSTUM).use();
+      shaderManager.get(SHADER_FRUSTUM).setMat4("u_projectionView", projectionView);
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolumeSquare", false);
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolume", false);
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isLightSource", false);
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
+      shadowNearFrustumRenderer.render();
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
+      shadowFarFrustumRenderer.render();
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolumeSquare", true);
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
+      shadowVolumeRenderer.renderTerrainSquare(true);
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
+      shadowVolumeRenderer.renderTerrainSquare(false);
+      //VOLUME ITSELF
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isVolume", true);
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
+      shadowVolumeRenderer.renderVolume(true, false);
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
+      shadowVolumeRenderer.renderVolume(false, false);
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isLightSource", true);
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
+      shadowVolumeRenderer.renderVolume(true, true);
+      shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
+      shadowVolumeRenderer.renderVolume(false, true);
+    }
 
   if (options[OPT_ANIMATE_WATER])
     {

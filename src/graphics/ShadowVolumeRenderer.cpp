@@ -60,7 +60,7 @@ void ShadowVolumeRenderer::renderTerrainSquare(bool near)
     glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, (void*)(8 * sizeof(GLuint)));
 }
 
-void ShadowVolumeRenderer::renderVolume(bool near)
+void ShadowVolumeRenderer::renderVolume(bool near, bool drawLightSource)
 {
   volumeGLBuffers.bind(VAO | VBO | EBO);
 
@@ -129,9 +129,28 @@ void ShadowVolumeRenderer::renderVolume(bool near)
   volumeVertices[46] = volume.farBox.farUL.y;
   volumeVertices[47] = volume.farBox.farUL.z;
 
+  volumeVertices[48] = volume.nearBox.lightSource.x;
+  volumeVertices[49] = volume.nearBox.lightSource.y;
+  volumeVertices[50] = volume.nearBox.lightSource.z;
+
+  volumeVertices[51] = volume.farBox.lightSource.x;
+  volumeVertices[52] = volume.farBox.lightSource.y;
+  volumeVertices[53] = volume.farBox.lightSource.z;
+
   glBufferData(GL_ARRAY_BUFFER, sizeof(volumeVertices), volumeVertices, GL_STATIC_DRAW);
-  if (near)
-    glDrawElements(GL_LINE_STRIP, 24, GL_UNSIGNED_INT, 0);
+  if (drawLightSource)
+    {
+      glPointSize(12.0f);
+      if (near)
+        glDrawElementsBaseVertex(GL_POINTS, 1, GL_UNSIGNED_INT, 0, 16);
+      else
+        glDrawElementsBaseVertex(GL_POINTS, 1, GL_UNSIGNED_INT, 0, 17);
+    }
   else
-    glDrawElementsBaseVertex(GL_LINE_STRIP, 24, GL_UNSIGNED_INT, 0, 8);
+    {
+      if (near)
+        glDrawElements(GL_LINE_STRIP, 24, GL_UNSIGNED_INT, 0);
+      else
+        glDrawElementsBaseVertex(GL_LINE_STRIP, 24, GL_UNSIGNED_INT, 0, 8);
+    }
 }

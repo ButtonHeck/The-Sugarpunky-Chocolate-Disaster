@@ -50,7 +50,7 @@ void main()
         vec3 projectedCoords;
         if (projectedCoordsNear.x > 0.0 && projectedCoordsNear.x < 1.0 &&
             projectedCoordsNear.y > 0.0 && projectedCoordsNear.y < 1.0 &&
-            projectedCoordsNear.z > 0.0 && projectedCoordsNear.z < 1.0)
+            projectedCoordsNear.z > 0.1 && projectedCoordsNear.z < 1.0)
         {
             shadowMapIndex = 0;
             projectedCoords = projectedCoordsNear;

@@ -21,6 +21,8 @@ Options::Options()
   options[OPT_POLYGON_LINE] = false;
   options[OPT_DEBUG_RENDER] = false;
   options[OPT_SHADOW_CAMERA_FIXED] = false;
+  options[OPT_USE_SHADOW_CAMERA_MATRIX] = false;
+  options[OPT_SHOW_SHADOW_VOLUME_VISUALIZATION] = true;
 }
 
 std::bitset<OPTIONS_COUNT>::reference Options::operator[](OPTION value)
