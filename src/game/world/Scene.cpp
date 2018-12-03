@@ -76,6 +76,7 @@ void Scene::deserialize(std::ifstream &input)
 
 void Scene::drawWorld(glm::vec3 lightDir,
                       glm::mat4 lightSpaceMatrixNear,
+                      glm::mat4 lightSpaceMatrixMiddle,
                       glm::mat4 lightSpaceMatrixFar,
                       glm::mat4& projectionView,
                       glm::mat4& skyProjectionView,
@@ -86,23 +87,27 @@ void Scene::drawWorld(glm::vec3 lightDir,
   BENCHMARK("Scene: draw all", true);
   glm::vec3 viewPosition = camera.getPosition();
 
-  hillsFacade.draw(lightDir, lightSpaceMatrixNear, lightSpaceMatrixFar,
+  hillsFacade.draw(lightDir,
+                   lightSpaceMatrixNear, lightSpaceMatrixMiddle, lightSpaceMatrixFar,
                    projectionView, viewPosition, viewFrustum,
                    options[OPT_HILLS_CULLING],
                    options[OPT_USE_SHADOWS],
                    options[OPT_DEBUG_RENDER]);
 
   if (options[OPT_DRAW_LAND])
-    landFacade->draw(lightDir, lightSpaceMatrixNear, lightSpaceMatrixFar,
+    landFacade->draw(lightDir,
+                     lightSpaceMatrixNear, lightSpaceMatrixMiddle, lightSpaceMatrixFar,
                      projectionView, viewFrustum, options[OPT_USE_SHADOWS]);
 
   underwaterFacade.draw(lightDir, projectionView);
 
-  shoreFacade.draw(lightDir, lightSpaceMatrixNear, lightSpaceMatrixFar,
+  shoreFacade.draw(lightDir,
+                   lightSpaceMatrixNear, lightSpaceMatrixMiddle, lightSpaceMatrixFar,
                    projectionView, options[OPT_USE_SHADOWS], options[OPT_DEBUG_RENDER]);
 
   if (options[OPT_DRAW_TREES])
-    plantsFacade.draw(lightDir, lightSpaceMatrixNear, lightSpaceMatrixFar,
+    plantsFacade.draw(lightDir,
+                      lightSpaceMatrixNear, lightSpaceMatrixMiddle, lightSpaceMatrixFar,
                       projectionView, viewPosition,
                       options[OPT_MODELS_PHONG_SHADING],
                       options[OPT_USE_SHADOWS],
@@ -123,12 +128,13 @@ void Scene::drawWorld(glm::vec3 lightDir,
   glEnable(GL_MULTISAMPLE);
 
   if (options[OPT_DRAW_WATER])
-    waterFacade.draw(lightDir, lightSpaceMatrixNear, lightSpaceMatrixFar,
+    waterFacade.draw(lightDir,
+                     lightSpaceMatrixNear, lightSpaceMatrixMiddle, lightSpaceMatrixFar,
                      projectionView, viewPosition, viewFrustum,
                      options[OPT_WATER_CULLING], options[OPT_DEBUG_RENDER]);
 }
 
-void Scene::drawWorldDepthmap(glm::mat4 lightSpaceMatrix, glm::mat4 lightSpaceMatrixFar)
+void Scene::drawWorldDepthmap(glm::mat4 lightSpaceMatrixNear, glm::mat4 lightSpaceMatrixMiddle, glm::mat4 lightSpaceMatrixFar)
 {
   BENCHMARK("Scene: draw depthmap all", true);
   glClear(GL_DEPTH_BUFFER_BIT);
@@ -136,14 +142,16 @@ void Scene::drawWorldDepthmap(glm::mat4 lightSpaceMatrix, glm::mat4 lightSpaceMa
   glDisable(GL_CULL_FACE); //or set front face culling
   glDisable(GL_MULTISAMPLE);
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
-  shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrix);
-  shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrixFar);
+  shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrixNear);
+  shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrixMiddle);
+  shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrixFar);
   hillsFacade.drawDepthmap();
   if (options[OPT_DRAW_TREES])
     {
       shaderManager.get(SHADER_SHADOW_MODELS).use();
-      shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrix);
-      shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrixFar);
+      shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrixNear);
+      shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrixMiddle);
+      shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrixFar);
       plantsFacade.drawDepthmap();
     }
   glEnable(GL_MULTISAMPLE);

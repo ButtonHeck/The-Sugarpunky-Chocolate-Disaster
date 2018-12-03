@@ -13,6 +13,7 @@ public:
   void deserialize(std::ifstream& input);
   void draw(glm::vec3 &lightDir,
             glm::mat4 &lightSpaceMatrixNear,
+            glm::mat4 &lightSpaceMatrixMiddle,
             glm::mat4 &lightSpaceMatrixFar,
             glm::mat4 &projectionView,
             Frustum &viewFrustum,

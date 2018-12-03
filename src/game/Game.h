@@ -52,10 +52,12 @@ private:
   Frustum viewFrustum;
   Frustum shadowNearFrustum;
   FrustumRenderer shadowNearFrustumRenderer;
+  Frustum shadowMiddleFrustum;
+  FrustumRenderer shadowMiddleFrustumRenderer;
   Frustum shadowFarFrustum;
-  FrustumRenderer shadowFarFrustumRenderer;
   glm::mat4 projection;
   glm::mat4 shadowNearProjection;
+  glm::mat4 shadowMiddleProjection;
   glm::mat4 shadowFarProjection;
 
   //options

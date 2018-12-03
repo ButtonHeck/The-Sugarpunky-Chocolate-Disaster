@@ -9,9 +9,10 @@ class ShadowVolume
 {
 public:
   ShadowVolume(TheSunFacade &sun);
-  void update(Frustum &nearFrustum, Frustum& farFrustum);
+  void update(Frustum &nearFrustum, Frustum& middleFrustum, Frustum& farFrustum);
   glm::vec3 getLightDir() const;
   glm::mat4 getLightSpaceMatrixNear() const;
+  glm::mat4 getLightSpaceMatrixMiddle() const;
   glm::mat4 getLightSpaceMatrixFar() const;
 private:
   struct Box
@@ -26,8 +27,10 @@ private:
   TheSunFacade& sun;
   glm::vec3 lightDirTo;
   glm::mat4 lightSpaceMatrixNear;
+  glm::mat4 lightSpaceMatrixMiddle;
   glm::mat4 lightSpaceMatrixFar;
   Box nearBox;
+  Box middleBox;
   Box farBox;
 };
 

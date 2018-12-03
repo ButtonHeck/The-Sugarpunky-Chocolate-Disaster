@@ -1,14 +1,16 @@
 #version 450
 
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 6) out;
+layout (triangle_strip, max_vertices = 9) out;
 
-uniform mat4 u_lightSpaceMatrix[2];
+const int NUM_LAYERS = 3;
+
+uniform mat4 u_lightSpaceMatrix[NUM_LAYERS];
 
 void main()
 {
     int layer, i;
-    for (layer = 0; layer < 2; layer++)
+    for (layer = 0; layer < NUM_LAYERS; layer++)
     {
         gl_Layer = layer;
         for (i = 0; i < gl_in.length(); i++)

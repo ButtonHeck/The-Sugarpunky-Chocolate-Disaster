@@ -7,10 +7,11 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     camera(camera),
     shadowCamera(shadowCamera),
     shadowNearFrustumRenderer(shadowNearFrustum),
-    shadowFarFrustumRenderer(shadowFarFrustum),
+    shadowMiddleFrustumRenderer(shadowMiddleFrustum),
     projection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE)),
     shadowNearProjection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, SHADOW_NEAR_DISTANCE)),
-    shadowFarProjection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_NEAR_DISTANCE, SHADOW_FAR_DISTANCE)),
+    shadowMiddleProjection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_NEAR_DISTANCE, SHADOW_FAR_DISTANCE)),
+    shadowFarProjection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_FAR_DISTANCE, FAR_PLANE)),
     options(options),
     shaderManager(),
     textureLoader(TextureLoader(screenResolution)),
@@ -141,7 +142,7 @@ void Game::drawFrame(glm::mat4& projectionView)
           shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
           shadowNearFrustumRenderer.render();
           shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
-          shadowFarFrustumRenderer.render();
+          shadowMiddleFrustumRenderer.render();
         }
       if (options[OPT_EXPECTED_VOLUME_VISUALIZATION])
         {
@@ -177,6 +178,7 @@ void Game::drawFrame(glm::mat4& projectionView)
 
   scene.drawWorld(shadowVolume.getLightDir(),
                   shadowVolume.getLightSpaceMatrixNear(),
+                  shadowVolume.getLightSpaceMatrixMiddle(),
                   shadowVolume.getLightSpaceMatrixFar(),
                   projectionView,
                   skyboxProjectionView,
@@ -217,9 +219,14 @@ void Game::recreate()
 void Game::updateDepthmap()
 {
   glm::mat4 shadowView = shadowCamera.getViewMatrix();
+
   glm::mat4 shadowNearProjectionView = shadowNearProjection * shadowView;
   shadowNearFrustum.updateFrustum(shadowNearProjectionView);
   shadowNearFrustum.calculateIntersectionPoints();
+
+  glm::mat4 shadowMiddleProjectionView = shadowMiddleProjection * shadowView;
+  shadowMiddleFrustum.updateFrustum(shadowMiddleProjectionView);
+  shadowMiddleFrustum.calculateIntersectionPoints();
 
   glm::mat4 shadowFarProjectionView = shadowFarProjection * shadowView;
   shadowFarFrustum.updateFrustum(shadowFarProjectionView);
@@ -227,11 +234,13 @@ void Game::updateDepthmap()
 
   {
     BENCHMARK("Shadow volume: update", true);
-    shadowVolume.update(shadowNearFrustum, shadowFarFrustum);
+    shadowVolume.update(shadowNearFrustum, shadowMiddleFrustum, shadowFarFrustum);
   }
 
   depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
-  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrixNear(), shadowVolume.getLightSpaceMatrixFar());
+  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrixNear(),
+                          shadowVolume.getLightSpaceMatrixMiddle(),
+                          shadowVolume.getLightSpaceMatrixFar());
   depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
 }
 

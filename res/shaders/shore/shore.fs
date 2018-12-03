@@ -19,7 +19,7 @@ uniform bool      u_debugRenderMode;
 uniform float     u_ambientDay;
 uniform float     u_ambientNight;
 uniform vec3      u_viewPosition;
-uniform mat4      u_lightSpaceMatrix[2];
+uniform mat4      u_lightSpaceMatrix[3];
 
 const vec3  NORMAL = vec3(0.0, 1.0, 0.0);
 const float MAX_DESATURATING_VALUE_LAND = 0.5;
@@ -62,12 +62,12 @@ void main()
 
         if (u_shadowEnable)
         {
-            vec4 fragPosLightSpaceNear = u_lightSpaceMatrix[0] * vec4(v_FragPos, 1.0);
-            vec3 projectedCoordsNear = fragPosLightSpaceNear.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
             int shadowMapIndex;
             vec3 projectedCoords;
-            if (projectedCoordsNear.x > 0.0 && projectedCoordsNear.x < 1.0 &&
-                projectedCoordsNear.y > 0.0 && projectedCoordsNear.y < 1.0 &&
+            vec4 fragPosLightSpaceNear = u_lightSpaceMatrix[0] * vec4(v_FragPos, 1.0);
+            vec3 projectedCoordsNear = fragPosLightSpaceNear.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
+            if (projectedCoordsNear.x > 0.0  && projectedCoordsNear.x < 1.0 &&
+                projectedCoordsNear.y > 0.0  && projectedCoordsNear.y < 1.0 &&
                 projectedCoordsNear.z > 0.02 && projectedCoordsNear.z < 1.0)
             {
                 shadowMapIndex = 0;
@@ -75,15 +75,24 @@ void main()
             }
             else
             {
-                shadowMapIndex = 1;
-                vec4 fragPosLightSpaceFar = u_lightSpaceMatrix[1] * vec4(v_FragPos, 1.0);
-                vec3 projectedCoordsFar = fragPosLightSpaceFar.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
-                projectedCoords = projectedCoordsFar;
+                vec4 fragPosLightSpaceMiddle = u_lightSpaceMatrix[1] * vec4(v_FragPos, 1.0);
+                vec3 projectedCoordsMiddle = fragPosLightSpaceMiddle.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
+                if (projectedCoordsMiddle.x > 0.0  && projectedCoordsMiddle.x < 1.0 &&
+                    projectedCoordsMiddle.y > 0.0  && projectedCoordsMiddle.y < 1.0 &&
+                    projectedCoordsMiddle.z > 0.02 && projectedCoordsMiddle.z < 1.0)
+                {
+                    shadowMapIndex = 1;
+                    projectedCoords = projectedCoordsMiddle;
+                }
+                else
+                {
+                    vec4 fragPosLightSpaceFar = u_lightSpaceMatrix[2] * vec4(v_FragPos, 1.0);
+                    vec3 projectedCoordsFar = fragPosLightSpaceFar.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
+                    shadowMapIndex = 2;
+                    projectedCoords = projectedCoordsFar;
+                }
             }
             float luminosity = ext_calculateLuminosity(shadowMapIndex, projectedCoords);
-            //if we hit the point further than in the farthest shadow map, let it be unshadowed
-            if (projectedCoords.z > 1.0)
-                luminosity = 1.0;
 
             diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
             resultColor = ambientColor + diffuseColor;

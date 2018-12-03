@@ -10,6 +10,7 @@ public:
   void setupCulling();
   void update(glm::vec3& lightDir,
               glm::mat4& lightSpaceMatrixNear,
+              glm::mat4& lightSpaceMatrixMiddle,
               glm::mat4& lightSpaceMatrixFar,
               glm::mat4& projectionView,
               glm::vec3& viewPosition,
