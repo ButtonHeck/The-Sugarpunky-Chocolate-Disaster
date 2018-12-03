@@ -23,6 +23,7 @@ public:
 private:
   GLuint createAndBindTextureObject(GLenum target, GLuint textureUnit);
   void setTexture2DParameters(GLint magFilter, GLint minFilter, GLenum wrapType);
+  void setTexture3DParameters(GLint magFilter, GLint minFilter, GLenum wrapType);
   ScreenResolution& screenResolution;
 };
 

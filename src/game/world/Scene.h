@@ -35,7 +35,7 @@ public:
                  Frustum &viewFrustum,
                  Camera& camera,
                  MouseInputManager& mouseInput);
-  void drawWorldDepthmap(glm::mat4 lightSpaceMatrix);
+  void drawWorldDepthmap(glm::mat4 lightSpaceMatrix, glm::mat4 lightSpaceMatrixFar);
 
   //getters
   WaterFacade &getWaterFacade();

@@ -16,7 +16,6 @@ public:
             glm::mat4& lightSpaceMatrixNear,
             glm::mat4& lightSpaceMatrixFar,
             glm::mat4& projectionView,
-            glm::vec3& viewPosition,
             bool useShadows,
             bool useDebugRender);
   void drawDepthmap();

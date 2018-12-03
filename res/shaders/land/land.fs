@@ -15,7 +15,6 @@ uniform float     u_ambientDay;
 uniform float     u_ambientNight;
 uniform vec3      u_viewPosition;
 uniform mat4      u_lightSpaceMatrix[2];
-uniform float     u_shadowNearDistance;
 
 const vec3  NORMAL = vec3(0.0, 1.0, 0.0);
 const float MAX_DESATURATING_VALUE = 0.5;

@@ -68,8 +68,12 @@ ShaderManager::ShaderManager()
                                     "selected/selectedTile.fs");
   shaders[SHADER_MS_TO_DEFAULT] = Shader("screen/MS_toDefault.vs",
                                          "screen/MS_toDefault_hdr.fs");
-  shaders[SHADER_SHADOW_TERRAIN] = Shader("shadow/terrain_shadow.vs");
-  shaders[SHADER_SHADOW_MODELS] = Shader("shadow/model_shadow.vs");
+  shaders[SHADER_SHADOW_TERRAIN] = Shader("shadow/terrain_shadow.vs",
+                                          "shadow/shadow.gs",
+                                          "_FC.fs");
+  shaders[SHADER_SHADOW_MODELS] = Shader("shadow/model_shadow.vs",
+                                         "shadow/shadow.gs",
+                                         "_FC.fs");
   shaders[SHADER_FRUSTUM] = Shader("frustum/frustum.vs",
                                    "frustum/frustum.fs");
 }
@@ -99,12 +103,10 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_diffuse_mix_map", TEX_DIFFUSE_MIX_MAP);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
-  shader->setInt("u_shadowMap[0]", TEX_DEPTH_MAP_SUN);
-  shader->setInt("u_shadowMap[1]", TEX_DEPTH_MAP_SUN_FAR);
+  shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setFloat("u_bias", 6.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
-  shader->setFloat("u_shadowNearDistance", SHADOW_NEAR_DISTANCE);
 
   bindShaderUnit(shader, SHADER_SHORE);
   shader->setInt("u_land_diffuse[0]", TEX_LAND);
@@ -114,13 +116,11 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_diffuse_mix_map", TEX_DIFFUSE_MIX_MAP);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
-  shader->setInt("u_shadowMap[0]", TEX_DEPTH_MAP_SUN);
-  shader->setInt("u_shadowMap[1]", TEX_DEPTH_MAP_SUN_FAR);
+  shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setFloat("U_UNDERWATER_TILE_YPOS", -UNDERWATER_TILE_YPOS);
   shader->setFloat("u_bias", 1.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
-  shader->setFloat("u_shadowNearDistance", SHADOW_NEAR_DISTANCE);
 
   bindShaderUnit(shader, SHADER_UNDERWATER);
   shader->setInt("u_underwater_diffuse", TEX_UNDERWATER_DIFFUSE);
@@ -136,23 +136,19 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_diffuse_mix_map", TEX_DIFFUSE_MIX_MAP);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
-  shader->setInt("u_shadowMap[0]", TEX_DEPTH_MAP_SUN);
-  shader->setInt("u_shadowMap[1]", TEX_DEPTH_MAP_SUN_FAR);
+  shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setFloat("u_bias", 6.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
-  shader->setFloat("u_shadowNearDistance", SHADOW_NEAR_DISTANCE);
 
   bindShaderUnit(shader, SHADER_WATER);
   shader->setInt("u_skybox", TEX_SKYBOX_SKY);
   shader->setInt("u_normal_map", TEX_WATER_NORMAL);
   shader->setInt("u_specular_map", TEX_WATER_SPECULAR);
-  shader->setInt("u_shadowMap[0]", TEX_DEPTH_MAP_SUN);
-  shader->setInt("u_shadowMap[1]", TEX_DEPTH_MAP_SUN_FAR);
+  shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setFloat("u_bias", 4.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
-  shader->setFloat("u_shadowNearDistance", SHADOW_NEAR_DISTANCE);
 
   bindShaderUnit(shader, SHADER_SKYBOX);
   shader->setInt("u_skybox[1]", TEX_SKYBOX);
@@ -167,24 +163,20 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setInt("u_fontTexture", TEX_FONT);
 
   bindShaderUnit(shader, SHADER_MODELS);
-  shader->setInt("u_shadowMap[0]", TEX_DEPTH_MAP_SUN);
-  shader->setInt("u_shadowMap[1]", TEX_DEPTH_MAP_SUN_FAR);
+  shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setInt("u_texture_diffuse1", TEX_MESH_DIFFUSE);
   shader->setInt("u_texture_specular1", TEX_MESH_SPECULAR);
   shader->setFloat("u_bias", 3.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.12f);
   shader->setFloat("u_ambientNight", 0.03f);
-  shader->setFloat("u_shadowNearDistance", SHADOW_NEAR_DISTANCE);
 
   bindShaderUnit(shader, SHADER_MODELS_PHONG);
-  shader->setInt("u_shadowMap[0]", TEX_DEPTH_MAP_SUN);
-  shader->setInt("u_shadowMap[1]", TEX_DEPTH_MAP_SUN_FAR);
+  shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setInt("u_texture_diffuse1", TEX_MESH_DIFFUSE);
   shader->setInt("u_texture_specular1", TEX_MESH_SPECULAR);
   shader->setFloat("u_bias", 3.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.12f);
   shader->setFloat("u_ambientNight", 0.03f);
-  shader->setFloat("u_shadowNearDistance", SHADOW_NEAR_DISTANCE);
 
   bindShaderUnit(shader, SHADER_MS_TO_DEFAULT);
   shader->setInt("u_frameTexture", HDR_ENABLED ? TEX_FRAME_HDR : TEX_FRAME);

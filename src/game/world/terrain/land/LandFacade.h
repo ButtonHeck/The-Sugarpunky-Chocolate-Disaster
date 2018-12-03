@@ -15,7 +15,6 @@ public:
             glm::mat4 &lightSpaceMatrixNear,
             glm::mat4 &lightSpaceMatrixFar,
             glm::mat4 &projectionView,
-            glm::vec3 &viewPosition,
             Frustum &viewFrustum,
             bool useShadows);
   const map2D_f &getMap() const;

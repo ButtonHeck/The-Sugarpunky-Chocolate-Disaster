@@ -48,7 +48,6 @@ void Game::setup()
   shaderManager.setupConstantUniforms(glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()));
   screenBuffer.setup();
   depthmapBuffer.setup(textureManager.get(TEX_DEPTH_MAP_SUN));
-  depthmapBufferFar.setup(textureManager.get(TEX_DEPTH_MAP_SUN_FAR));
 }
 
 void Game::loop()
@@ -232,12 +231,8 @@ void Game::updateDepthmap()
   }
 
   depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
-  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrixNear());
+  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrixNear(), shadowVolume.getLightSpaceMatrixFar());
   depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
-
-  depthmapBufferFar.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
-  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrixFar());
-  depthmapBufferFar.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
 }
 
 void Game::saveState()

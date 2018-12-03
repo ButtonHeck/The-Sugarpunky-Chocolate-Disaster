@@ -438,7 +438,8 @@ DISTFILES += \
     res/shaders/include/shadingVariables.ifs \
     res/shaders/include/modelGrassAnimationAndBlending.ivs \
     res/shaders/frustum/frustum.vs \
-    res/shaders/frustum/frustum.fs
+    res/shaders/frustum/frustum.fs \
+    res/shaders/shadow/shadow.gs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

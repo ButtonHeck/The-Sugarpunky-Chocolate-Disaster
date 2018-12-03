@@ -22,9 +22,9 @@ void LandFacade::deserialize(std::ifstream &input)
   generator.deserialize(input);
 }
 
-void LandFacade::draw(glm::vec3 &lightDir, glm::mat4 &lightSpaceMatrixNear, glm::mat4 &lightSpaceMatrixFar, glm::mat4& projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum, bool useShadows)
+void LandFacade::draw(glm::vec3 &lightDir, glm::mat4 &lightSpaceMatrixNear, glm::mat4 &lightSpaceMatrixFar, glm::mat4& projectionView, Frustum &viewFrustum, bool useShadows)
 {
-  shader.update(lightDir, lightSpaceMatrixNear, lightSpaceMatrixFar, projectionView, viewPosition, useShadows);
+  shader.update(lightDir, lightSpaceMatrixNear, lightSpaceMatrixFar, projectionView, useShadows);
   renderer.render(viewFrustum);
 }
 
