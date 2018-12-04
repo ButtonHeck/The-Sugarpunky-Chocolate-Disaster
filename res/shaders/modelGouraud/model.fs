@@ -20,7 +20,6 @@ uniform bool      u_useLandBlending;
 uniform float     u_ambientDay;
 uniform float     u_ambientNight;
 uniform vec3      u_viewPosition;
-uniform mat4      u_lightSpaceMatrix[3];
 
 const float MAX_DESATURATING_VALUE = 0.5;
 
@@ -41,34 +40,7 @@ void main()
     {
         int shadowMapIndex;
         vec3 projectedCoords;
-        vec4 fragPosLightSpaceNear = u_lightSpaceMatrix[0] * vec4(v_FragPos, 1.0);
-        vec3 projectedCoordsNear = fragPosLightSpaceNear.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
-        if (projectedCoordsNear.x > 0.0  && projectedCoordsNear.x < 1.0 &&
-            projectedCoordsNear.y > 0.0  && projectedCoordsNear.y < 1.0 &&
-            projectedCoordsNear.z > 0.02 && projectedCoordsNear.z < 1.0)
-        {
-            shadowMapIndex = 0;
-            projectedCoords = projectedCoordsNear;
-        }
-        else
-        {
-            vec4 fragPosLightSpaceMiddle = u_lightSpaceMatrix[1] * vec4(v_FragPos, 1.0);
-            vec3 projectedCoordsMiddle = fragPosLightSpaceMiddle.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
-            if (projectedCoordsMiddle.x > 0.0  && projectedCoordsMiddle.x < 1.0 &&
-                projectedCoordsMiddle.y > 0.0  && projectedCoordsMiddle.y < 1.0 &&
-                projectedCoordsMiddle.z > 0.02 && projectedCoordsMiddle.z < 1.0)
-            {
-                shadowMapIndex = 1;
-                projectedCoords = projectedCoordsMiddle;
-            }
-            else
-            {
-                vec4 fragPosLightSpaceFar = u_lightSpaceMatrix[2] * vec4(v_FragPos, 1.0);
-                vec3 projectedCoordsFar = fragPosLightSpaceFar.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
-                shadowMapIndex = 2;
-                projectedCoords = projectedCoordsFar;
-            }
-        }
+        ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
         float luminosity = ext_calculateLuminosity(shadowMapIndex, projectedCoords);
 
         diffuseColor = luminosity * sampledDiffuse.rgb * v_DiffuseComponent;

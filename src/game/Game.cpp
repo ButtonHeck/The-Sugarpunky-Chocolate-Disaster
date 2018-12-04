@@ -74,19 +74,6 @@ void Game::loop()
       }
   }
 
-  //TEMPORARY FOR VISUAL DEBUGGING
-//  if (options[OPT_USE_MULTISAMPLING])
-//    {
-//      shaderManager.get(SHADER_MS_TO_DEFAULT).use();
-//      shaderManager.get(SHADER_MS_TO_DEFAULT).setInt("u_frameTexture", TEX_DEPTH_MAP_SUN);
-//    }
-//  else
-//    {
-//      shaderManager.get(SHADER_MS_TO_DEFAULT).use();
-//      shaderManager.get(SHADER_MS_TO_DEFAULT).setInt("u_frameTexture", HDR_ENABLED ? TEX_FRAME_HDR : TEX_FRAME);
-//    }
-  //CODE BELOW IS TO DELETE AFTER CSM IS DONE
-
   scene.getSunFacade().move(timerDelta);
 
   glm::vec4 currentColor = glm::mix(NIGHT_SKY_COLOR, DAY_SKY_COLOR, glm::clamp(-shadowVolume.getLightDir().y * 5, 0.0f, 1.0f));

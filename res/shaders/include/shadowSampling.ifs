@@ -1,24 +1,57 @@
 uniform sampler2DArray  u_shadowMap;
 uniform float           u_bias;
+uniform mat4            u_lightSpaceMatrix[3];
 
-const vec2        TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0).xy;
-const float       SHADOW_INFLUENCE = 0.5;
+const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0).xy;
+const float SHADOW_INFLUENCE = 0.5;
 
-float sampleShadowMap(sampler2DArray shadowMap, int index, vec2 coords, vec3 projectedCoords)
+void ext_calculateShadowMapIndexAndProjectedCoords(inout int shadowMapIndex, inout vec3 projectedCoords)
 {
-    return step(texture(shadowMap, vec3(coords.xy, index)).r, projectedCoords.z - u_bias);
+    vec4 fragPosLightSpaceNear = u_lightSpaceMatrix[0] * vec4(v_FragPos, 1.0);
+    vec3 projectedCoordsNear = fragPosLightSpaceNear.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
+    if (projectedCoordsNear.x > 0.0  && projectedCoordsNear.x < 1.0 &&
+        projectedCoordsNear.y > 0.0  && projectedCoordsNear.y < 1.0 &&
+        projectedCoordsNear.z > 0.02 && projectedCoordsNear.z < 1.0)
+    {
+        shadowMapIndex = 0;
+        projectedCoords = projectedCoordsNear;
+    }
+    else
+    {
+        vec4 fragPosLightSpaceMiddle = u_lightSpaceMatrix[1] * vec4(v_FragPos, 1.0);
+        vec3 projectedCoordsMiddle = fragPosLightSpaceMiddle.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
+        if (projectedCoordsMiddle.x > 0.0  && projectedCoordsMiddle.x < 1.0 &&
+            projectedCoordsMiddle.y > 0.0  && projectedCoordsMiddle.y < 1.0 &&
+            projectedCoordsMiddle.z > 0.02 && projectedCoordsMiddle.z < 1.0)
+        {
+            shadowMapIndex = 1;
+            projectedCoords = projectedCoordsMiddle;
+        }
+        else
+        {
+            vec4 fragPosLightSpaceFar = u_lightSpaceMatrix[2] * vec4(v_FragPos, 1.0);
+            vec3 projectedCoordsFar = fragPosLightSpaceFar.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
+            shadowMapIndex = 2;
+            projectedCoords = projectedCoordsFar;
+        }
+    }
 }
 
-float sampleShadowMapLinear(sampler2DArray shadowMap, int index, vec2 coords, vec3 projectedCoords)
+float ext_sampleShadowMap(int index, vec2 coords, vec3 projectedCoords)
+{
+    return step(texture(u_shadowMap, vec3(coords.xy, index)).r, projectedCoords.z - u_bias);
+}
+
+float ext_sampleShadowMapLinear(int index, vec2 coords, vec3 projectedCoords)
 {
     vec2 pixelPos = coords / TEXEL_SIZE + vec2(0.5);
     vec2 fractionalPart = fract(pixelPos);
     vec2 startTexel = (pixelPos - fractionalPart) * TEXEL_SIZE;
 
-    float lowLeftTexel = sampleShadowMap(shadowMap, index, startTexel, projectedCoords);
-    float lowRightTexel = sampleShadowMap(shadowMap, index, startTexel + vec2(TEXEL_SIZE.x, 0.0), projectedCoords);
-    float topRightTexel = sampleShadowMap(shadowMap, index, startTexel + TEXEL_SIZE, projectedCoords);
-    float topLeftTexel = sampleShadowMap(shadowMap, index, startTexel + vec2(0.0, TEXEL_SIZE.y), projectedCoords);
+    float lowLeftTexel = ext_sampleShadowMap(index, startTexel, projectedCoords);
+    float lowRightTexel = ext_sampleShadowMap(index, startTexel + vec2(TEXEL_SIZE.x, 0.0), projectedCoords);
+    float topRightTexel = ext_sampleShadowMap(index, startTexel + TEXEL_SIZE, projectedCoords);
+    float topLeftTexel = ext_sampleShadowMap(index, startTexel + vec2(0.0, TEXEL_SIZE.y), projectedCoords);
 
     float mixLeft = mix(lowLeftTexel, topLeftTexel, fractionalPart.y);
     float mixRight = mix(lowRightTexel, topRightTexel, fractionalPart.y);
@@ -39,7 +72,7 @@ float ext_calculateLuminosity(int index, vec3 projectedCoords)
         for (int y = -SAMPLE_START; y <= SAMPLE_START; ++y)
         {
             vec2 coordsOffset = vec2(x,y) * TEXEL_SIZE;
-            shadow += sampleShadowMapLinear(u_shadowMap, index, projectedCoords.xy + coordsOffset, projectedCoords);
+            shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + coordsOffset, projectedCoords);
         }
     }
     return 1.0 - (shadow / NUM_SAMPLES_SQUARED * SHADOW_INFLUENCE);
