@@ -59,21 +59,41 @@ float ext_sampleShadowMapLinear(int index, vec2 coords, vec3 projectedCoords)
     return mix(mixLeft, mixRight, fractionalPart.x);
 }
 
-float ext_calculateLuminosity(int index, vec3 projectedCoords)
+float ext_calculateLuminosity(int index, vec3 projectedCoords) //PCF Filtering
 {
     float shadow = 0.0f;
-
-    //PCF filtering
     const int NUM_SAMPLES = 3;
     const int SAMPLE_START = (NUM_SAMPLES - 1) / 2;
     const int NUM_SAMPLES_SQUARED = NUM_SAMPLES * NUM_SAMPLES;
-    for (int x = -SAMPLE_START; x <= SAMPLE_START; ++x)
+
+    //perform early bailing
+    vec2 coordsOffset = vec2(-1,-1) * TEXEL_SIZE;
+    shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + coordsOffset, projectedCoords);
+    coordsOffset = vec2(1,-1) * TEXEL_SIZE;
+    shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + coordsOffset, projectedCoords);
+    coordsOffset = vec2(-1,1) * TEXEL_SIZE;
+    shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + coordsOffset, projectedCoords);
+    coordsOffset = vec2(1,1) * TEXEL_SIZE;
+    shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + coordsOffset, projectedCoords);
+
+    //if the shadow value is not almost 0 or almost (1 * earlyBailingNumSamples) we should consider full range
+    if (shadow > 0.5 && shadow < 3.5)
     {
-        for (int y = -SAMPLE_START; y <= SAMPLE_START; ++y)
-        {
-            vec2 coordsOffset = vec2(x,y) * TEXEL_SIZE;
-            shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + coordsOffset, projectedCoords);
-        }
+        coordsOffset = vec2(0,-1) * TEXEL_SIZE;
+        shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + coordsOffset, projectedCoords);
+        coordsOffset = vec2(-1,0) * TEXEL_SIZE;
+        shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + coordsOffset, projectedCoords);
+        coordsOffset = vec2(0,0) * TEXEL_SIZE;
+        shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + coordsOffset, projectedCoords);
+        coordsOffset = vec2(1,0) * TEXEL_SIZE;
+        shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + coordsOffset, projectedCoords);
+        coordsOffset = vec2(0,1) * TEXEL_SIZE;
+        shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + coordsOffset, projectedCoords);
+        return 1.0 - (shadow / NUM_SAMPLES_SQUARED * SHADOW_INFLUENCE);
     }
-    return 1.0 - (shadow / NUM_SAMPLES_SQUARED * SHADOW_INFLUENCE);
+    //otherwise a fragment is probably entirely lit by the sun or entirely occluded (for most of fragments it is)
+    //so we do not need to perform all NUM_SAMPLES_SQUARED texture lookups, as only 4 lookups at the corners are enough
+    //to make a solution whether a fragment is completely shadowed or completely lit.
+    else
+        return 1.0 - (shadow / 4 * SHADOW_INFLUENCE);
 }
