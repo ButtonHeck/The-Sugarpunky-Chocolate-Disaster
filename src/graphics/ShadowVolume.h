@@ -21,7 +21,7 @@ private:
   };
   friend class ShadowVolumeRenderer;
 
-  void updateBox(const Frustum& frustum, int layer, float sunAbsPositionY, float sunAbsPositionX);
+  void updateLightSpaceMatrix(const Frustum& frustum, int layer, float sunAbsPositionY, float sunAbsPositionX);
 
   TheSunFacade& sun;
   glm::vec3 lightDirTo, lightDirRight, lightDirUp;

@@ -51,9 +51,8 @@ private:
   Camera& camera;
   Camera& shadowCamera;
   Frustum viewFrustum;
-  std::array<Frustum, NUM_SHADOW_LAYERS> shadowFrustums;
-  FrustumRenderer shadowNearFrustumRenderer;
-  FrustumRenderer shadowMiddleFrustumRenderer;
+  std::array<Frustum, NUM_SHADOW_LAYERS> shadowCameraFrustums;
+  std::array<FrustumRenderer, NUM_SHADOW_LAYERS-1> shadowFrustumRenderers;
   glm::mat4 projection;
   std::array<glm::mat4, NUM_SHADOW_LAYERS> shadowProjections;
 

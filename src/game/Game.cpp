@@ -6,8 +6,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     window(window),
     camera(camera),
     shadowCamera(shadowCamera),
-    shadowNearFrustumRenderer(shadowFrustums[0]),
-    shadowMiddleFrustumRenderer(shadowFrustums[1]),
+    shadowFrustumRenderers({{shadowCameraFrustums[0], shadowCameraFrustums[1]}}),
     projection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE)),
     options(options),
     shaderManager(),
@@ -116,41 +115,42 @@ void Game::drawFrame(glm::mat4& projectionView)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, options[OPT_POLYGON_LINE] ? GL_LINE : GL_FILL);
 
-  //EXPERIMENTAL
   if (options[OPT_CSM_VISUALIZATION])
     {
       shaderManager.get(SHADER_FRUSTUM).use();
       shaderManager.get(SHADER_FRUSTUM).setMat4("u_projectionView", projectionView);
-      shaderManager.get(SHADER_FRUSTUM).setBool("u_isExpectedVolume", false);
-      shaderManager.get(SHADER_FRUSTUM).setBool("u_isActualVolume", false);
-      shaderManager.get(SHADER_FRUSTUM).setBool("u_isLightSource", false);
       if (options[OPT_FRUSTUM_VISUALIZATION])
         {
-          shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
-          shadowNearFrustumRenderer.render();
-          shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
-          shadowMiddleFrustumRenderer.render();
+          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 3);
+          shadowFrustumRenderers[0].render();
+          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 4);
+          shadowFrustumRenderers[1].render();
         }
       if (options[OPT_EXPECTED_VOLUME_VISUALIZATION])
         {
-          shaderManager.get(SHADER_FRUSTUM).setBool("u_isExpectedVolume", true);
-          shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
-          shadowVolumeRenderer.renderTerrainSquare(true);
-          shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
-          shadowVolumeRenderer.renderTerrainSquare(false);
+          shadowVolumeRenderer.bufferExpectedVolumes();
+          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 6);
+          shadowVolumeRenderer.renderExpectedVolume(0);
+          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 7);
+          shadowVolumeRenderer.renderExpectedVolume(1);
+          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 8);
+          shadowVolumeRenderer.renderExpectedVolume(2);
         }
       if (options[OPT_ACTUAL_VOLUME_VISUALIZATION])
         {
-          shaderManager.get(SHADER_FRUSTUM).setBool("u_isActualVolume", true);
-          shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
-          shadowVolumeRenderer.renderVolume(true, false);
-          shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
-          shadowVolumeRenderer.renderVolume(false, false);
-          shaderManager.get(SHADER_FRUSTUM).setBool("u_isLightSource", true);
-          shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", true);
-          shadowVolumeRenderer.renderVolume(true, true);
-          shaderManager.get(SHADER_FRUSTUM).setBool("u_isNear", false);
-          shadowVolumeRenderer.renderVolume(false, true);
+          shadowVolumeRenderer.bufferActualVolumes();
+          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 9);
+          shadowVolumeRenderer.renderActualVolume(0);
+          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 10);
+          shadowVolumeRenderer.renderActualVolume(1);
+          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 11);
+          shadowVolumeRenderer.renderActualVolume(2);
+          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 0);
+          shadowVolumeRenderer.renderLightSource(0);
+          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 1);
+          shadowVolumeRenderer.renderLightSource(1);
+          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 2);
+          shadowVolumeRenderer.renderLightSource(2);
         }
     }
 
@@ -204,22 +204,15 @@ void Game::recreate()
 void Game::updateDepthmap()
 {
   glm::mat4 shadowView = shadowCamera.getViewMatrix();
-
-  glm::mat4 shadowProjectionView = shadowProjections[0] * shadowView;
-  shadowFrustums[0].updateFrustum(shadowProjectionView);
-  shadowFrustums[0].calculateIntersectionPoints();
-
-  shadowProjectionView = shadowProjections[1] * shadowView;
-  shadowFrustums[1].updateFrustum(shadowProjectionView);
-  shadowFrustums[1].calculateIntersectionPoints();
-
-  shadowProjectionView = shadowProjections[2] * shadowView;
-  shadowFrustums[2].updateFrustum(shadowProjectionView);
-  shadowFrustums[2].calculateIntersectionPoints();
-
+  for (unsigned int layer = 0; layer < NUM_SHADOW_LAYERS; layer++)
+    {
+      glm::mat4 shadowCamProjectionView = shadowProjections[layer] * shadowView;
+      shadowCameraFrustums[layer].updateFrustum(shadowCamProjectionView);
+      shadowCameraFrustums[layer].calculateIntersectionPoints();
+    }
   {
     BENCHMARK("Shadow volume: update", true);
-    shadowVolume.update(shadowFrustums);
+    shadowVolume.update(shadowCameraFrustums);
   }
 
   depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
