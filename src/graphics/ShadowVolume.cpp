@@ -5,7 +5,7 @@ ShadowVolume::ShadowVolume(TheSunFacade& sun)
     sun(sun)
 {}
 
-void ShadowVolume::update(Frustum& nearFrustum, Frustum &middleFrustum, Frustum &farFrustum)
+void ShadowVolume::update(const std::array<Frustum, NUM_SHADOW_LAYERS> &frustums)
 {
   glm::vec3 sunPosition = sun.getCurrentPosition();
   lightDirTo = glm::normalize(glm::vec3(0.0f) - sunPosition);
@@ -14,104 +14,104 @@ void ShadowVolume::update(Frustum& nearFrustum, Frustum &middleFrustum, Frustum 
   bool isPosX = sunPosition.x > 0.0f;
 
   //step 1 - calculate bounding boxes bounds
-  float boxPosX_n = std::max({nearFrustum.nearLL.x,
-                              nearFrustum.nearLR.x,
-                              nearFrustum.nearUR.x,
-                              nearFrustum.nearUL.x,
-                              nearFrustum.farLL.x,
-                              nearFrustum.farLR.x,
-                              nearFrustum.farUR.x,
-                              nearFrustum.farUL.x});
-  float boxNegX_n = std::min({nearFrustum.nearLL.x,
-                              nearFrustum.nearLR.x,
-                              nearFrustum.nearUR.x,
-                              nearFrustum.nearUL.x,
-                              nearFrustum.farLL.x,
-                              nearFrustum.farLR.x,
-                              nearFrustum.farUR.x,
-                              nearFrustum.farUL.x});
-  float boxPosZ_n = std::max({nearFrustum.nearLL.z,
-                              nearFrustum.nearLR.z,
-                              nearFrustum.nearUR.z,
-                              nearFrustum.nearUL.z,
-                              nearFrustum.farLL.z,
-                              nearFrustum.farLR.z,
-                              nearFrustum.farUR.z,
-                              nearFrustum.farUL.z});
-  float boxNegZ_n = std::min({nearFrustum.nearLL.z,
-                              nearFrustum.nearLR.z,
-                              nearFrustum.nearUR.z,
-                              nearFrustum.nearUL.z,
-                              nearFrustum.farLL.z,
-                              nearFrustum.farLR.z,
-                              nearFrustum.farUR.z,
-                              nearFrustum.farUL.z});
+  float boxPosX_n = std::max({frustums[0].nearLL.x,
+                              frustums[0].nearLR.x,
+                              frustums[0].nearUR.x,
+                              frustums[0].nearUL.x,
+                              frustums[0].farLL.x,
+                              frustums[0].farLR.x,
+                              frustums[0].farUR.x,
+                              frustums[0].farUL.x});
+  float boxNegX_n = std::min({frustums[0].nearLL.x,
+                              frustums[0].nearLR.x,
+                              frustums[0].nearUR.x,
+                              frustums[0].nearUL.x,
+                              frustums[0].farLL.x,
+                              frustums[0].farLR.x,
+                              frustums[0].farUR.x,
+                              frustums[0].farUL.x});
+  float boxPosZ_n = std::max({frustums[0].nearLL.z,
+                              frustums[0].nearLR.z,
+                              frustums[0].nearUR.z,
+                              frustums[0].nearUL.z,
+                              frustums[0].farLL.z,
+                              frustums[0].farLR.z,
+                              frustums[0].farUR.z,
+                              frustums[0].farUL.z});
+  float boxNegZ_n = std::min({frustums[0].nearLL.z,
+                              frustums[0].nearLR.z,
+                              frustums[0].nearUR.z,
+                              frustums[0].nearUL.z,
+                              frustums[0].farLL.z,
+                              frustums[0].farLR.z,
+                              frustums[0].farUR.z,
+                              frustums[0].farUL.z});
 
-  float boxPosX_m = std::max({middleFrustum.nearLL.x,
-                              middleFrustum.nearLR.x,
-                              middleFrustum.nearUR.x,
-                              middleFrustum.nearUL.x,
-                              middleFrustum.farLL.x,
-                              middleFrustum.farLR.x,
-                              middleFrustum.farUR.x,
-                              middleFrustum.farUL.x});
-  float boxNegX_m = std::min({middleFrustum.nearLL.x,
-                              middleFrustum.nearLR.x,
-                              middleFrustum.nearUR.x,
-                              middleFrustum.nearUL.x,
-                              middleFrustum.farLL.x,
-                              middleFrustum.farLR.x,
-                              middleFrustum.farUR.x,
-                              middleFrustum.farUL.x});
-  float boxPosZ_m = std::max({middleFrustum.nearLL.z,
-                              middleFrustum.nearLR.z,
-                              middleFrustum.nearUR.z,
-                              middleFrustum.nearUL.z,
-                              middleFrustum.farLL.z,
-                              middleFrustum.farLR.z,
-                              middleFrustum.farUR.z,
-                              middleFrustum.farUL.z});
-  float boxNegZ_m = std::min({middleFrustum.nearLL.z,
-                              middleFrustum.nearLR.z,
-                              middleFrustum.nearUR.z,
-                              middleFrustum.nearUL.z,
-                              middleFrustum.farLL.z,
-                              middleFrustum.farLR.z,
-                              middleFrustum.farUR.z,
-                              middleFrustum.farUL.z});
+  float boxPosX_m = std::max({frustums[1].nearLL.x,
+                              frustums[1].nearLR.x,
+                              frustums[1].nearUR.x,
+                              frustums[1].nearUL.x,
+                              frustums[1].farLL.x,
+                              frustums[1].farLR.x,
+                              frustums[1].farUR.x,
+                              frustums[1].farUL.x});
+  float boxNegX_m = std::min({frustums[1].nearLL.x,
+                              frustums[1].nearLR.x,
+                              frustums[1].nearUR.x,
+                              frustums[1].nearUL.x,
+                              frustums[1].farLL.x,
+                              frustums[1].farLR.x,
+                              frustums[1].farUR.x,
+                              frustums[1].farUL.x});
+  float boxPosZ_m = std::max({frustums[1].nearLL.z,
+                              frustums[1].nearLR.z,
+                              frustums[1].nearUR.z,
+                              frustums[1].nearUL.z,
+                              frustums[1].farLL.z,
+                              frustums[1].farLR.z,
+                              frustums[1].farUR.z,
+                              frustums[1].farUL.z});
+  float boxNegZ_m = std::min({frustums[1].nearLL.z,
+                              frustums[1].nearLR.z,
+                              frustums[1].nearUR.z,
+                              frustums[1].nearUL.z,
+                              frustums[1].farLL.z,
+                              frustums[1].farLR.z,
+                              frustums[1].farUR.z,
+                              frustums[1].farUL.z});
 
-  float boxPosX_f = std::max({farFrustum.nearLL.x,
-                              farFrustum.nearLR.x,
-                              farFrustum.nearUR.x,
-                              farFrustum.nearUL.x,
-                              farFrustum.farLL.x,
-                              farFrustum.farLR.x,
-                              farFrustum.farUR.x,
-                              farFrustum.farUL.x});
-  float boxNegX_f = std::min({farFrustum.nearLL.x,
-                              farFrustum.nearLR.x,
-                              farFrustum.nearUR.x,
-                              farFrustum.nearUL.x,
-                              farFrustum.farLL.x,
-                              farFrustum.farLR.x,
-                              farFrustum.farUR.x,
-                              farFrustum.farUL.x});
-  float boxPosZ_f = std::max({farFrustum.nearLL.z,
-                              farFrustum.nearLR.z,
-                              farFrustum.nearUR.z,
-                              farFrustum.nearUL.z,
-                              farFrustum.farLL.z,
-                              farFrustum.farLR.z,
-                              farFrustum.farUR.z,
-                              farFrustum.farUL.z});
-  float boxNegZ_f = std::min({farFrustum.nearLL.z,
-                              farFrustum.nearLR.z,
-                              farFrustum.nearUR.z,
-                              farFrustum.nearUL.z,
-                              farFrustum.farLL.z,
-                              farFrustum.farLR.z,
-                              farFrustum.farUR.z,
-                              farFrustum.farUL.z});
+  float boxPosX_f = std::max({frustums[2].nearLL.x,
+                              frustums[2].nearLR.x,
+                              frustums[2].nearUR.x,
+                              frustums[2].nearUL.x,
+                              frustums[2].farLL.x,
+                              frustums[2].farLR.x,
+                              frustums[2].farUR.x,
+                              frustums[2].farUL.x});
+  float boxNegX_f = std::min({frustums[2].nearLL.x,
+                              frustums[2].nearLR.x,
+                              frustums[2].nearUR.x,
+                              frustums[2].nearUL.x,
+                              frustums[2].farLL.x,
+                              frustums[2].farLR.x,
+                              frustums[2].farUR.x,
+                              frustums[2].farUL.x});
+  float boxPosZ_f = std::max({frustums[2].nearLL.z,
+                              frustums[2].nearLR.z,
+                              frustums[2].nearUR.z,
+                              frustums[2].nearUL.z,
+                              frustums[2].farLL.z,
+                              frustums[2].farLR.z,
+                              frustums[2].farUR.z,
+                              frustums[2].farUL.z});
+  float boxNegZ_f = std::min({frustums[2].nearLL.z,
+                              frustums[2].nearLR.z,
+                              frustums[2].nearUR.z,
+                              frustums[2].nearUL.z,
+                              frustums[2].farLL.z,
+                              frustums[2].farLR.z,
+                              frustums[2].farUR.z,
+                              frustums[2].farUL.z});
 
   //step 2 - correct bounding box
   float offset;
@@ -193,7 +193,7 @@ void ShadowVolume::update(Frustum& nearFrustum, Frustum &middleFrustum, Frustum 
                                              frustumNear_n,
                                              frustumFar_n);
   glm::mat4 lightViewNear = glm::lookAt(lightSource_n, lightSource_n + lightDirTo, glm::vec3(0.0f, 1.0f, 0.0f));
-  lightSpaceMatrixNear = lightProjectionNear * lightViewNear;
+  lightSpaceMatrices[0] = lightProjectionNear * lightViewNear;
 
   glm::mat4 lightProjectionMiddle = glm::ortho(isPosX ? frustumRight_m : frustumLeft_m,
                                                isPosX ? frustumLeft_m : frustumRight_m,
@@ -202,7 +202,7 @@ void ShadowVolume::update(Frustum& nearFrustum, Frustum &middleFrustum, Frustum 
                                                frustumNear_m,
                                                frustumFar_m);
   glm::mat4 lightViewMiddle = glm::lookAt(lightSource_m, lightSource_m + lightDirTo, glm::vec3(0.0f, 1.0f, 0.0f));
-  lightSpaceMatrixMiddle = lightProjectionMiddle * lightViewMiddle;
+  lightSpaceMatrices[1] = lightProjectionMiddle * lightViewMiddle;
 
   glm::mat4 lightProjectionFar = glm::ortho(isPosX ? frustumRight_f : frustumLeft_f,
                                             isPosX ? frustumLeft_f : frustumRight_f,
@@ -211,7 +211,7 @@ void ShadowVolume::update(Frustum& nearFrustum, Frustum &middleFrustum, Frustum 
                                             frustumNear_f,
                                             frustumFar_f);
   glm::mat4 lightViewFar = glm::lookAt(lightSource_f, lightSource_f + lightDirTo, glm::vec3(0.0f, 1.0f, 0.0f));
-  lightSpaceMatrixFar = lightProjectionFar * lightViewFar;
+  lightSpaceMatrices[2] = lightProjectionFar * lightViewFar;
 
   nearBox.ll = glm::vec2(boxNegX_n, boxPosZ_n);
   nearBox.lr = glm::vec2(boxPosX_n, boxPosZ_n);
@@ -261,17 +261,7 @@ glm::vec3 ShadowVolume::getLightDir() const
   return lightDirTo;
 }
 
-glm::mat4 ShadowVolume::getLightSpaceMatrixNear() const
+const std::array<glm::mat4, NUM_SHADOW_LAYERS> &ShadowVolume::getLightSpaceMatrices() const
 {
-  return lightSpaceMatrixNear;
-}
-
-glm::mat4 ShadowVolume::getLightSpaceMatrixMiddle() const
-{
-  return lightSpaceMatrixMiddle;
-}
-
-glm::mat4 ShadowVolume::getLightSpaceMatrixFar() const
-{
-  return lightSpaceMatrixFar;
+  return lightSpaceMatrices;
 }

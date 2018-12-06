@@ -2,6 +2,7 @@
 #define GAME_H
 #include <thread>
 #include <memory>
+#include <array>
 #include "util/Settings.h"
 #include "graphics/ScreenBuffer.h"
 #include "graphics/DepthmapBuffer.h"
@@ -50,15 +51,11 @@ private:
   Camera& camera;
   Camera& shadowCamera;
   Frustum viewFrustum;
-  Frustum shadowNearFrustum;
+  std::array<Frustum, NUM_SHADOW_LAYERS> shadowFrustums;
   FrustumRenderer shadowNearFrustumRenderer;
-  Frustum shadowMiddleFrustum;
   FrustumRenderer shadowMiddleFrustumRenderer;
-  Frustum shadowFarFrustum;
   glm::mat4 projection;
-  glm::mat4 shadowNearProjection;
-  glm::mat4 shadowMiddleProjection;
-  glm::mat4 shadowFarProjection;
+  std::array<glm::mat4, NUM_SHADOW_LAYERS> shadowProjections;
 
   //options
   Options& options;

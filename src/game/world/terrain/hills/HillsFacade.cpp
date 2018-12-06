@@ -28,9 +28,7 @@ void HillsFacade::deserialize(std::ifstream &input)
 }
 
 void HillsFacade::draw(glm::vec3 &lightDir,
-                       glm::mat4 &lightSpaceMatrixNear,
-                       glm::mat4 &lightSpaceMatrixMiddle,
-                       glm::mat4 &lightSpaceMatrixFar,
+                       const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                        glm::mat4& projectionView,
                        glm::vec3 &viewPosition,
                        Frustum &viewFrustum,
@@ -39,7 +37,7 @@ void HillsFacade::draw(glm::vec3 &lightDir,
                        bool useDebugRender)
 {
   shaders.update(lightDir,
-                 lightSpaceMatrixNear, lightSpaceMatrixMiddle, lightSpaceMatrixFar,
+                 lightSpaceMatrices,
                  projectionView, viewPosition, viewFrustum, generator.maxHeight, useFC, useShadows);
   shaders.debugRenderMode(false);
   renderer.render(useFC);

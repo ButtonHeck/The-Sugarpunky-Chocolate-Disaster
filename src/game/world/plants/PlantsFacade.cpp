@@ -34,9 +34,7 @@ void PlantsFacade::updateIndirectBufferData()
 }
 
 void PlantsFacade::draw(glm::vec3 &lightDir,
-                        glm::mat4 &lightSpaceMatrixNear,
-                        glm::mat4 &lightSpaceMatrixMiddle,
-                        glm::mat4 &lightSpaceMatrixFar,
+                        const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                         glm::mat4 &projectionView,
                         glm::vec3 &viewPosition,
                         bool usePhongShading,
@@ -45,9 +43,7 @@ void PlantsFacade::draw(glm::vec3 &lightDir,
 {
   shaders.switchToGrass(usePhongShading, false);
   shaders.updateAllPlants(lightDir,
-                          lightSpaceMatrixNear,
-                          lightSpaceMatrixMiddle,
-                          lightSpaceMatrixFar,
+                          lightSpaceMatrices,
                           projectionView,
                           viewPosition,
                           usePhongShading,

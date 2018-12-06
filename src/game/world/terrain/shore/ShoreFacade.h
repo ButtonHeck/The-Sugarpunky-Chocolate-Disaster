@@ -13,9 +13,7 @@ public:
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
   void draw(glm::vec3& lightDir,
-            glm::mat4& lightSpaceMatrixNear,
-            glm::mat4& lightSpaceMatrixMiddle,
-            glm::mat4& lightSpaceMatrixFar,
+            const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
             glm::mat4& projectionView,
             bool useShadows,
             bool useDebugRender);

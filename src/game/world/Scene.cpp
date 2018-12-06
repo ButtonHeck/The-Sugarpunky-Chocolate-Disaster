@@ -75,9 +75,7 @@ void Scene::deserialize(std::ifstream &input)
 }
 
 void Scene::drawWorld(glm::vec3 lightDir,
-                      glm::mat4 lightSpaceMatrixNear,
-                      glm::mat4 lightSpaceMatrixMiddle,
-                      glm::mat4 lightSpaceMatrixFar,
+                      const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                       glm::mat4& projectionView,
                       glm::mat4& skyProjectionView,
                       Frustum &viewFrustum,
@@ -88,7 +86,7 @@ void Scene::drawWorld(glm::vec3 lightDir,
   glm::vec3 viewPosition = camera.getPosition();
 
   hillsFacade.draw(lightDir,
-                   lightSpaceMatrixNear, lightSpaceMatrixMiddle, lightSpaceMatrixFar,
+                   lightSpaceMatrices,
                    projectionView, viewPosition, viewFrustum,
                    options[OPT_HILLS_CULLING],
                    options[OPT_USE_SHADOWS],
@@ -96,18 +94,18 @@ void Scene::drawWorld(glm::vec3 lightDir,
 
   if (options[OPT_DRAW_LAND])
     landFacade->draw(lightDir,
-                     lightSpaceMatrixNear, lightSpaceMatrixMiddle, lightSpaceMatrixFar,
+                     lightSpaceMatrices,
                      projectionView, viewFrustum, options[OPT_USE_SHADOWS]);
 
   underwaterFacade.draw(lightDir, projectionView);
 
   shoreFacade.draw(lightDir,
-                   lightSpaceMatrixNear, lightSpaceMatrixMiddle, lightSpaceMatrixFar,
+                   lightSpaceMatrices,
                    projectionView, options[OPT_USE_SHADOWS], options[OPT_DEBUG_RENDER]);
 
   if (options[OPT_DRAW_TREES])
     plantsFacade.draw(lightDir,
-                      lightSpaceMatrixNear, lightSpaceMatrixMiddle, lightSpaceMatrixFar,
+                      lightSpaceMatrices,
                       projectionView, viewPosition,
                       options[OPT_MODELS_PHONG_SHADING],
                       options[OPT_USE_SHADOWS],
@@ -129,12 +127,12 @@ void Scene::drawWorld(glm::vec3 lightDir,
 
   if (options[OPT_DRAW_WATER])
     waterFacade.draw(lightDir,
-                     lightSpaceMatrixNear, lightSpaceMatrixMiddle, lightSpaceMatrixFar,
+                     lightSpaceMatrices,
                      projectionView, viewPosition, viewFrustum,
                      options[OPT_WATER_CULLING], options[OPT_DEBUG_RENDER]);
 }
 
-void Scene::drawWorldDepthmap(glm::mat4 lightSpaceMatrixNear, glm::mat4 lightSpaceMatrixMiddle, glm::mat4 lightSpaceMatrixFar)
+void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices)
 {
   BENCHMARK("Scene: draw depthmap all", true);
   glClear(GL_DEPTH_BUFFER_BIT);
@@ -142,16 +140,16 @@ void Scene::drawWorldDepthmap(glm::mat4 lightSpaceMatrixNear, glm::mat4 lightSpa
   glDisable(GL_CULL_FACE); //or set front face culling
   glDisable(GL_MULTISAMPLE);
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
-  shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrixNear);
-  shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrixMiddle);
-  shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrixFar);
+  shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrices[0]);
+  shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrices[1]);
+  shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrices[2]);
   hillsFacade.drawDepthmap();
   if (options[OPT_DRAW_TREES])
     {
       shaderManager.get(SHADER_SHADOW_MODELS).use();
-      shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrixNear);
-      shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrixMiddle);
-      shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrixFar);
+      shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrices[0]);
+      shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrices[1]);
+      shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrices[2]);
       plantsFacade.drawDepthmap();
     }
   glEnable(GL_MULTISAMPLE);

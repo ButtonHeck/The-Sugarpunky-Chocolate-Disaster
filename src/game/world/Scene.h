@@ -28,17 +28,13 @@ public:
 
   //rendering part
   void drawWorld(glm::vec3 lightDir,
-                 glm::mat4 lightSpaceMatrixNear,
-                 glm::mat4 lightSpaceMatrixMiddle,
-                 glm::mat4 lightSpaceMatrixFar,
+                 const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
                  glm::mat4& projectionView,
                  glm::mat4& skyProjectionView,
                  Frustum &viewFrustum,
                  Camera& camera,
                  MouseInputManager& mouseInput);
-  void drawWorldDepthmap(glm::mat4 lightSpaceMatrixNear,
-                         glm::mat4 lightSpaceMatrixMiddle,
-                         glm::mat4 lightSpaceMatrixFar);
+  void drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices);
 
   //getters
   WaterFacade &getWaterFacade();

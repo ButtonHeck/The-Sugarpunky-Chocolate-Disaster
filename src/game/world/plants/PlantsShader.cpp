@@ -7,9 +7,7 @@ PlantsShader::PlantsShader(Shader &renderPhongShader, Shader &renderGouraudShade
 {}
 
 void PlantsShader::updateAllPlants(glm::vec3 &lightDir,
-                                   glm::mat4 &lightSpaceMatrixNear,
-                                   glm::mat4 &lightSpaceMatrixMiddle,
-                                   glm::mat4 &lightSpaceMatrixFar,
+                                   const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                                    glm::mat4 &projectionView,
                                    glm::vec3 &viewPosition,
                                    bool usePhongShading,
@@ -23,9 +21,9 @@ void PlantsShader::updateAllPlants(glm::vec3 &lightDir,
   shader.setBool("u_shadowEnable", useShadows);
   shader.setBool("u_useLandBlending", useLandBlending);
   shader.setVec3("u_lightDir", -lightDir);
-  shader.setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrixNear);
-  shader.setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrixMiddle);
-  shader.setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrixFar);
+  shader.setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrices[0]);
+  shader.setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrices[1]);
+  shader.setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrices[2]);
 }
 
 void PlantsShader::updateGrass(bool usePhongShading)

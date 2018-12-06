@@ -6,12 +6,9 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     window(window),
     camera(camera),
     shadowCamera(shadowCamera),
-    shadowNearFrustumRenderer(shadowNearFrustum),
-    shadowMiddleFrustumRenderer(shadowMiddleFrustum),
+    shadowNearFrustumRenderer(shadowFrustums[0]),
+    shadowMiddleFrustumRenderer(shadowFrustums[1]),
     projection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE)),
-    shadowNearProjection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, SHADOW_NEAR_DISTANCE)),
-    shadowMiddleProjection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_NEAR_DISTANCE, SHADOW_FAR_DISTANCE)),
-    shadowFarProjection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_FAR_DISTANCE, FAR_PLANE)),
     options(options),
     shaderManager(),
     textureLoader(TextureLoader(screenResolution)),
@@ -29,6 +26,9 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
 {
   srand(time(NULL));
   Model::bindTextureLoader(textureLoader);
+  shadowProjections[0] = glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, SHADOW_DISTANCE_LAYER1);
+  shadowProjections[1] = glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_DISTANCE_LAYER1, SHADOW_DISTANCE_LAYER2);
+  shadowProjections[2] = glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_DISTANCE_LAYER2, FAR_PLANE);
 }
 
 Game::~Game()
@@ -164,9 +164,7 @@ void Game::drawFrame(glm::mat4& projectionView)
   glm::mat4 skyboxProjectionView(projection * glm::mat4(glm::mat3(camera.getViewMatrix())));
 
   scene.drawWorld(shadowVolume.getLightDir(),
-                  shadowVolume.getLightSpaceMatrixNear(),
-                  shadowVolume.getLightSpaceMatrixMiddle(),
-                  shadowVolume.getLightSpaceMatrixFar(),
+                  shadowVolume.getLightSpaceMatrices(),
                   projectionView,
                   skyboxProjectionView,
                   viewFrustum,
@@ -207,27 +205,25 @@ void Game::updateDepthmap()
 {
   glm::mat4 shadowView = shadowCamera.getViewMatrix();
 
-  glm::mat4 shadowNearProjectionView = shadowNearProjection * shadowView;
-  shadowNearFrustum.updateFrustum(shadowNearProjectionView);
-  shadowNearFrustum.calculateIntersectionPoints();
+  glm::mat4 shadowProjectionView = shadowProjections[0] * shadowView;
+  shadowFrustums[0].updateFrustum(shadowProjectionView);
+  shadowFrustums[0].calculateIntersectionPoints();
 
-  glm::mat4 shadowMiddleProjectionView = shadowMiddleProjection * shadowView;
-  shadowMiddleFrustum.updateFrustum(shadowMiddleProjectionView);
-  shadowMiddleFrustum.calculateIntersectionPoints();
+  shadowProjectionView = shadowProjections[1] * shadowView;
+  shadowFrustums[1].updateFrustum(shadowProjectionView);
+  shadowFrustums[1].calculateIntersectionPoints();
 
-  glm::mat4 shadowFarProjectionView = shadowFarProjection * shadowView;
-  shadowFarFrustum.updateFrustum(shadowFarProjectionView);
-  shadowFarFrustum.calculateIntersectionPoints();
+  shadowProjectionView = shadowProjections[2] * shadowView;
+  shadowFrustums[2].updateFrustum(shadowProjectionView);
+  shadowFrustums[2].calculateIntersectionPoints();
 
   {
     BENCHMARK("Shadow volume: update", true);
-    shadowVolume.update(shadowNearFrustum, shadowMiddleFrustum, shadowFarFrustum);
+    shadowVolume.update(shadowFrustums);
   }
 
   depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
-  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrixNear(),
-                          shadowVolume.getLightSpaceMatrixMiddle(),
-                          shadowVolume.getLightSpaceMatrixFar());
+  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrices());
   depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
 }
 
