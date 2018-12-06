@@ -1,6 +1,5 @@
 #ifndef SHADOWVOLUME_H
 #define SHADOWVOLUME_H
-#include <algorithm>
 #include "util/Settings.h"
 #include "game/world/ambience/theSun/TheSunFacade.h"
 #include "graphics/Frustum.h"
@@ -22,12 +21,12 @@ private:
   };
   friend class ShadowVolumeRenderer;
 
+  void updateBox(const Frustum& frustum, int layer, float sunAbsPositionY, float sunAbsPositionX);
+
   TheSunFacade& sun;
-  glm::vec3 lightDirTo;
+  glm::vec3 lightDirTo, lightDirRight, lightDirUp;
   std::array<glm::mat4, NUM_SHADOW_LAYERS> lightSpaceMatrices;
-  Box nearBox;
-  Box middleBox;
-  Box farBox;
+  std::array<Box, NUM_SHADOW_LAYERS> shadowBoxes;
 };
 
 #endif // SHADOWVOLUME_H

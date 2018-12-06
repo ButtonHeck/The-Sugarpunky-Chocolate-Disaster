@@ -21,72 +21,72 @@ void ShadowVolumeRenderer::renderTerrainSquare(bool near)
 {
   terrainSquareGLBuffers.bind(VAO | VBO | EBO);
 
-  vertices[0] = volume.nearBox.ll.x;
+  vertices[0] = volume.shadowBoxes[0].ll.x;
   vertices[1] = 0.001f;
-  vertices[2] = volume.nearBox.ll.y;
+  vertices[2] = volume.shadowBoxes[0].ll.y;
 
-  vertices[3] = volume.nearBox.lr.x;
+  vertices[3] = volume.shadowBoxes[0].lr.x;
   vertices[4] = 0.001f;
-  vertices[5] = volume.nearBox.lr.y;
+  vertices[5] = volume.shadowBoxes[0].lr.y;
 
-  vertices[6] = volume.nearBox.ur.x;
+  vertices[6] = volume.shadowBoxes[0].ur.x;
   vertices[7] = 0.001f;
-  vertices[8] = volume.nearBox.ur.y;
+  vertices[8] = volume.shadowBoxes[0].ur.y;
 
-  vertices[9] = volume.nearBox.ul.x;
+  vertices[9] = volume.shadowBoxes[0].ul.x;
   vertices[10] = 0.001f;
-  vertices[11] = volume.nearBox.ul.y;
+  vertices[11] = volume.shadowBoxes[0].ul.y;
 
 
-  vertices[12] = volume.nearBox.ll.x;
+  vertices[12] = volume.shadowBoxes[0].ll.x;
   vertices[13] = 14.0f;
-  vertices[14] = volume.nearBox.ll.y;
+  vertices[14] = volume.shadowBoxes[0].ll.y;
 
-  vertices[15] = volume.nearBox.lr.x;
+  vertices[15] = volume.shadowBoxes[0].lr.x;
   vertices[16] = 14.0f;
-  vertices[17] = volume.nearBox.lr.y;
+  vertices[17] = volume.shadowBoxes[0].lr.y;
 
-  vertices[18] = volume.nearBox.ur.x;
+  vertices[18] = volume.shadowBoxes[0].ur.x;
   vertices[19] = 14.0f;
-  vertices[20] = volume.nearBox.ur.y;
+  vertices[20] = volume.shadowBoxes[0].ur.y;
 
-  vertices[21] = volume.nearBox.ul.x;
+  vertices[21] = volume.shadowBoxes[0].ul.x;
   vertices[22] = 14.0f;
-  vertices[23] = volume.nearBox.ul.y;
+  vertices[23] = volume.shadowBoxes[0].ul.y;
 
 
-  vertices[24] = volume.middleBox.ll.x;
+  vertices[24] = volume.shadowBoxes[1].ll.x;
   vertices[25] = 0.001f;
-  vertices[26] = volume.middleBox.ll.y;
+  vertices[26] = volume.shadowBoxes[1].ll.y;
 
-  vertices[27] = volume.middleBox.lr.x;
+  vertices[27] = volume.shadowBoxes[1].lr.x;
   vertices[28] = 0.001f;
-  vertices[29] = volume.middleBox.lr.y;
+  vertices[29] = volume.shadowBoxes[1].lr.y;
 
-  vertices[30] = volume.middleBox.ur.x;
+  vertices[30] = volume.shadowBoxes[1].ur.x;
   vertices[31] = 0.001f;
-  vertices[32] = volume.middleBox.ur.y;
+  vertices[32] = volume.shadowBoxes[1].ur.y;
 
-  vertices[33] = volume.middleBox.ul.x;
+  vertices[33] = volume.shadowBoxes[1].ul.x;
   vertices[34] = 0.001f;
-  vertices[35] = volume.middleBox.ul.y;
+  vertices[35] = volume.shadowBoxes[1].ul.y;
 
 
-  vertices[36] = volume.middleBox.ll.x;
+  vertices[36] = volume.shadowBoxes[1].ll.x;
   vertices[37] = 14.0f;
-  vertices[38] = volume.middleBox.ll.y;
+  vertices[38] = volume.shadowBoxes[1].ll.y;
 
-  vertices[39] = volume.middleBox.lr.x;
+  vertices[39] = volume.shadowBoxes[1].lr.x;
   vertices[40] = 14.0f;
-  vertices[41] = volume.middleBox.lr.y;
+  vertices[41] = volume.shadowBoxes[1].lr.y;
 
-  vertices[42] = volume.middleBox.ur.x;
+  vertices[42] = volume.shadowBoxes[1].ur.x;
   vertices[43] = 14.0f;
-  vertices[44] = volume.middleBox.ur.y;
+  vertices[44] = volume.shadowBoxes[1].ur.y;
 
-  vertices[45] = volume.middleBox.ul.x;
+  vertices[45] = volume.shadowBoxes[1].ul.x;
   vertices[46] = 14.0f;
-  vertices[47] = volume.middleBox.ul.y;
+  vertices[47] = volume.shadowBoxes[1].ul.y;
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
   if (near)
@@ -99,78 +99,78 @@ void ShadowVolumeRenderer::renderVolume(bool near, bool drawLightSource)
 {
   volumeGLBuffers.bind(VAO | VBO | EBO);
 
-  volumeVertices[0] = volume.nearBox.nearLL.x;
-  volumeVertices[1] = volume.nearBox.nearLL.y;
-  volumeVertices[2] = volume.nearBox.nearLL.z;
+  volumeVertices[0] = volume.shadowBoxes[0].nearLL.x;
+  volumeVertices[1] = volume.shadowBoxes[0].nearLL.y;
+  volumeVertices[2] = volume.shadowBoxes[0].nearLL.z;
 
-  volumeVertices[3] = volume.nearBox.nearLR.x;
-  volumeVertices[4] = volume.nearBox.nearLR.y;
-  volumeVertices[5] = volume.nearBox.nearLR.z;
+  volumeVertices[3] = volume.shadowBoxes[0].nearLR.x;
+  volumeVertices[4] = volume.shadowBoxes[0].nearLR.y;
+  volumeVertices[5] = volume.shadowBoxes[0].nearLR.z;
 
-  volumeVertices[6] = volume.nearBox.nearUR.x;
-  volumeVertices[7] = volume.nearBox.nearUR.y;
-  volumeVertices[8] = volume.nearBox.nearUR.z;
+  volumeVertices[6] = volume.shadowBoxes[0].nearUR.x;
+  volumeVertices[7] = volume.shadowBoxes[0].nearUR.y;
+  volumeVertices[8] = volume.shadowBoxes[0].nearUR.z;
 
-  volumeVertices[9] = volume.nearBox.nearUL.x;
-  volumeVertices[10] = volume.nearBox.nearUL.y;
-  volumeVertices[11] = volume.nearBox.nearUL.z;
+  volumeVertices[9] = volume.shadowBoxes[0].nearUL.x;
+  volumeVertices[10] = volume.shadowBoxes[0].nearUL.y;
+  volumeVertices[11] = volume.shadowBoxes[0].nearUL.z;
 
-  volumeVertices[12] = volume.nearBox.farLL.x;
-  volumeVertices[13] = volume.nearBox.farLL.y;
-  volumeVertices[14] = volume.nearBox.farLL.z;
+  volumeVertices[12] = volume.shadowBoxes[0].farLL.x;
+  volumeVertices[13] = volume.shadowBoxes[0].farLL.y;
+  volumeVertices[14] = volume.shadowBoxes[0].farLL.z;
 
-  volumeVertices[15] = volume.nearBox.farLR.x;
-  volumeVertices[16] = volume.nearBox.farLR.y;
-  volumeVertices[17] = volume.nearBox.farLR.z;
+  volumeVertices[15] = volume.shadowBoxes[0].farLR.x;
+  volumeVertices[16] = volume.shadowBoxes[0].farLR.y;
+  volumeVertices[17] = volume.shadowBoxes[0].farLR.z;
 
-  volumeVertices[18] = volume.nearBox.farUR.x;
-  volumeVertices[19] = volume.nearBox.farUR.y;
-  volumeVertices[20] = volume.nearBox.farUR.z;
+  volumeVertices[18] = volume.shadowBoxes[0].farUR.x;
+  volumeVertices[19] = volume.shadowBoxes[0].farUR.y;
+  volumeVertices[20] = volume.shadowBoxes[0].farUR.z;
 
-  volumeVertices[21] = volume.nearBox.farUL.x;
-  volumeVertices[22] = volume.nearBox.farUL.y;
-  volumeVertices[23] = volume.nearBox.farUL.z;
+  volumeVertices[21] = volume.shadowBoxes[0].farUL.x;
+  volumeVertices[22] = volume.shadowBoxes[0].farUL.y;
+  volumeVertices[23] = volume.shadowBoxes[0].farUL.z;
 
 
-  volumeVertices[24] = volume.middleBox.nearLL.x;
-  volumeVertices[25] = volume.middleBox.nearLL.y;
-  volumeVertices[26] = volume.middleBox.nearLL.z;
+  volumeVertices[24] = volume.shadowBoxes[1].nearLL.x;
+  volumeVertices[25] = volume.shadowBoxes[1].nearLL.y;
+  volumeVertices[26] = volume.shadowBoxes[1].nearLL.z;
 
-  volumeVertices[27] = volume.middleBox.nearLR.x;
-  volumeVertices[28] = volume.middleBox.nearLR.y;
-  volumeVertices[29] = volume.middleBox.nearLR.z;
+  volumeVertices[27] = volume.shadowBoxes[1].nearLR.x;
+  volumeVertices[28] = volume.shadowBoxes[1].nearLR.y;
+  volumeVertices[29] = volume.shadowBoxes[1].nearLR.z;
 
-  volumeVertices[30] = volume.middleBox.nearUR.x;
-  volumeVertices[31] = volume.middleBox.nearUR.y;
-  volumeVertices[32] = volume.middleBox.nearUR.z;
+  volumeVertices[30] = volume.shadowBoxes[1].nearUR.x;
+  volumeVertices[31] = volume.shadowBoxes[1].nearUR.y;
+  volumeVertices[32] = volume.shadowBoxes[1].nearUR.z;
 
-  volumeVertices[33] = volume.middleBox.nearUL.x;
-  volumeVertices[34] = volume.middleBox.nearUL.y;
-  volumeVertices[35] = volume.middleBox.nearUL.z;
+  volumeVertices[33] = volume.shadowBoxes[1].nearUL.x;
+  volumeVertices[34] = volume.shadowBoxes[1].nearUL.y;
+  volumeVertices[35] = volume.shadowBoxes[1].nearUL.z;
 
-  volumeVertices[36] = volume.middleBox.farLL.x;
-  volumeVertices[37] = volume.middleBox.farLL.y;
-  volumeVertices[38] = volume.middleBox.farLL.z;
+  volumeVertices[36] = volume.shadowBoxes[1].farLL.x;
+  volumeVertices[37] = volume.shadowBoxes[1].farLL.y;
+  volumeVertices[38] = volume.shadowBoxes[1].farLL.z;
 
-  volumeVertices[39] = volume.middleBox.farLR.x;
-  volumeVertices[40] = volume.middleBox.farLR.y;
-  volumeVertices[41] = volume.middleBox.farLR.z;
+  volumeVertices[39] = volume.shadowBoxes[1].farLR.x;
+  volumeVertices[40] = volume.shadowBoxes[1].farLR.y;
+  volumeVertices[41] = volume.shadowBoxes[1].farLR.z;
 
-  volumeVertices[42] = volume.middleBox.farUR.x;
-  volumeVertices[43] = volume.middleBox.farUR.y;
-  volumeVertices[44] = volume.middleBox.farUR.z;
+  volumeVertices[42] = volume.shadowBoxes[1].farUR.x;
+  volumeVertices[43] = volume.shadowBoxes[1].farUR.y;
+  volumeVertices[44] = volume.shadowBoxes[1].farUR.z;
 
-  volumeVertices[45] = volume.middleBox.farUL.x;
-  volumeVertices[46] = volume.middleBox.farUL.y;
-  volumeVertices[47] = volume.middleBox.farUL.z;
+  volumeVertices[45] = volume.shadowBoxes[1].farUL.x;
+  volumeVertices[46] = volume.shadowBoxes[1].farUL.y;
+  volumeVertices[47] = volume.shadowBoxes[1].farUL.z;
 
-  volumeVertices[48] = volume.nearBox.lightSource.x;
-  volumeVertices[49] = volume.nearBox.lightSource.y;
-  volumeVertices[50] = volume.nearBox.lightSource.z;
+  volumeVertices[48] = volume.shadowBoxes[0].lightSource.x;
+  volumeVertices[49] = volume.shadowBoxes[0].lightSource.y;
+  volumeVertices[50] = volume.shadowBoxes[0].lightSource.z;
 
-  volumeVertices[51] = volume.middleBox.lightSource.x;
-  volumeVertices[52] = volume.middleBox.lightSource.y;
-  volumeVertices[53] = volume.middleBox.lightSource.z;
+  volumeVertices[51] = volume.shadowBoxes[1].lightSource.x;
+  volumeVertices[52] = volume.shadowBoxes[1].lightSource.y;
+  volumeVertices[53] = volume.shadowBoxes[1].lightSource.z;
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(volumeVertices), volumeVertices, GL_STATIC_DRAW);
   if (drawLightSource)

@@ -75,6 +75,30 @@ void Frustum::calculateIntersectionPoints()
   farUL = kramerIntersection(back, top, left);
 }
 
+float Frustum::getMaxCoordX() const
+{
+  return std::max({nearLL.x, nearLR.x, nearUR.x, nearUL.x,
+                   farLL.x, farLR.x, farUR.x, farUL.x});
+}
+
+float Frustum::getMinCoordX() const
+{
+  return std::min({nearLL.x, nearLR.x, nearUR.x, nearUL.x,
+                   farLL.x, farLR.x, farUR.x, farUL.x});
+}
+
+float Frustum::getMaxCoordZ() const
+{
+  return std::max({nearLL.z, nearLR.z, nearUR.z, nearUL.z,
+                   farLL.z, farLR.z, farUR.z, farUL.z});
+}
+
+float Frustum::getMinCoordZ() const
+{
+  return std::min({nearLL.z, nearLR.z, nearUR.z, nearUL.z,
+                   farLL.z, farLR.z, farUR.z, farUL.z});
+}
+
 glm::vec3 Frustum::kramerIntersection(glm::vec4 frontOrBack, glm::vec4 topOrBottom, glm::vec4 rightOrLeft)
 {
   glm::mat3 xyz;
