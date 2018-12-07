@@ -2,49 +2,55 @@
 
 bool Shader::cachedUniforms = false;
 
-Shader::Shader(const std::string &vertexFile,
+Shader::Shader(ShaderSource srcFile1,
                ShaderIncludeList includes)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile), includes);
+  const std::string& src = srcFile1.second;
+  GLuint shader = loadShader(srcFile1.first, std::string(SHADER_DIR + src), includes);
   ID = glCreateProgram();
-  shaderName = vertexFile.substr(0, vertexFile.find('/'));
-  glAttachShader(ID, vertex);
+  shaderName = src.substr(0, src.find('/'));
+  glAttachShader(ID, shader);
   link();
-  glDeleteShader(vertex);
+  glDeleteShader(shader);
 }
 
-Shader::Shader(const std::__cxx11::string &vertexFile,
-               const std::__cxx11::string &fragmentFile,
+Shader::Shader(ShaderSource srcFile1,
+               ShaderSource srcFile2,
                ShaderIncludeList includes)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile), includes);
-  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(SHADER_DIR + fragmentFile), includes);
+  const std::string& src1 = srcFile1.second;
+  const std::string& src2 = srcFile2.second;
+  GLuint shader1 = loadShader(srcFile1.first, std::string(SHADER_DIR + src1), includes);
+  GLuint shader2 = loadShader(srcFile2.first, std::string(SHADER_DIR + src2), includes);
   ID = glCreateProgram();
-  shaderName = vertexFile.substr(0, vertexFile.find('/'));
-  glAttachShader(ID, vertex);
-  glAttachShader(ID, fragment);
+  shaderName = src1.substr(0, src1.find('/'));
+  glAttachShader(ID, shader1);
+  glAttachShader(ID, shader2);
   link();
-  glDeleteShader(vertex);
-  glDeleteShader(fragment);
+  glDeleteShader(shader1);
+  glDeleteShader(shader2);
 }
 
-Shader::Shader(const std::string &vertexFile,
-               const std::string &geometryFile,
-               const std::string &fragmentFile,
+Shader::Shader(ShaderSource srcFile1,
+               ShaderSource srcFile2,
+               ShaderSource srcFile3,
                ShaderIncludeList includes)
 {
-  GLuint vertex = loadShader(GL_VERTEX_SHADER, std::string(SHADER_DIR + vertexFile), includes);
-  GLuint geometry = loadShader(GL_GEOMETRY_SHADER, std::string(SHADER_DIR + geometryFile), includes);
-  GLuint fragment = loadShader(GL_FRAGMENT_SHADER, std::string(SHADER_DIR + fragmentFile), includes);
+  const std::string& src1 = srcFile1.second;
+  const std::string& src2 = srcFile2.second;
+  const std::string& src3 = srcFile3.second;
+  GLuint shader1 = loadShader(srcFile1.first, std::string(SHADER_DIR + src1), includes);
+  GLuint shader2 = loadShader(srcFile2.first, std::string(SHADER_DIR + src2), includes);
+  GLuint shader3 = loadShader(srcFile3.first, std::string(SHADER_DIR + src3), includes);
   ID = glCreateProgram();
-  shaderName = vertexFile.substr(0, vertexFile.find('/'));
-  glAttachShader(ID, vertex);
-  glAttachShader(ID, geometry);
-  glAttachShader(ID, fragment);
+  shaderName = src1.substr(0, src1.find('/'));
+  glAttachShader(ID, shader1);
+  glAttachShader(ID, shader2);
+  glAttachShader(ID, shader3);
   link();
-  glDeleteShader(vertex);
-  glDeleteShader(geometry);
-  glDeleteShader(fragment);
+  glDeleteShader(shader1);
+  glDeleteShader(shader2);
+  glDeleteShader(shader3);
 }
 
 void Shader::link()

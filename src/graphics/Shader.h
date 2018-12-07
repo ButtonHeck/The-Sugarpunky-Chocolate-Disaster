@@ -14,15 +14,16 @@ class Shader
 {
 public:
   using ShaderIncludeList = std::initializer_list<std::pair<GLenum, std::string>>;
+  using ShaderSource = std::pair<GLenum, const std::string>;
   Shader() = default;
-  Shader(const std::string& vertexFile,
+  Shader(ShaderSource srcFile1,
          ShaderIncludeList includes = {});
-  Shader(const std::string& vertexFile,
-         const std::string& fragmentFile,
+  Shader(ShaderSource srcFile1,
+         ShaderSource srcFile2,
          ShaderIncludeList includes = {});
-  Shader(const std::string& vertexFile,
-         const std::string& geometryFile,
-         const std::string& fragmentFile,
+  Shader(ShaderSource srcFile1,
+         ShaderSource srcFile2,
+         ShaderSource srcFile3,
          ShaderIncludeList includes = {});
   void link();
   static void cacheUniformsMode(bool cache);

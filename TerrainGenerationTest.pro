@@ -235,7 +235,6 @@ DISTFILES += \
     res/shaders/waterFC/waterFC.vs \
     res/shaders/hillsFC/hillsFC.vs \
     res/shaders/hillsFC/hillsFC.gs \
-    res/shaders/_FC.fs \
     res/fonts/font.png \
     res/fonts/font.fnt \
     res/models/hillTree1/tree.jpg \
