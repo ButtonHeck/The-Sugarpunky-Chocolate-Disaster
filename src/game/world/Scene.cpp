@@ -137,7 +137,6 @@ void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &li
   BENCHMARK("Scene: draw depthmap all", true);
   glClear(GL_DEPTH_BUFFER_BIT);
 
-  glDisable(GL_CULL_FACE); //or set front face culling
   glDisable(GL_MULTISAMPLE);
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
   shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrices[0]);
@@ -153,7 +152,6 @@ void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &li
       plantsFacade.drawDepthmap();
     }
   glEnable(GL_MULTISAMPLE);
-  glEnable(GL_CULL_FACE); //or set back face culling
 }
 
 WaterFacade &Scene::getWaterFacade()

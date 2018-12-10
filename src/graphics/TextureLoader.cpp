@@ -68,9 +68,7 @@ GLuint TextureLoader::createDepthMapTexture(int width, int height, GLuint textur
 {
   GLuint texture = createAndBindTextureObject(GL_TEXTURE_2D_ARRAY, textureUnit);
   glTextureStorage3D(texture, 3, GL_DEPTH_COMPONENT24, width, height, 3);
-  setTexture3DParameters(GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER);
-  float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-  glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, borderColor);
+  setTexture3DParameters(GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE);
   return texture;
 }
 
