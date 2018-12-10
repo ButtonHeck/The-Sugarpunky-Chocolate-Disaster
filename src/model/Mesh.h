@@ -39,7 +39,7 @@ public:
   void cleanup();
   void setup();
   void setupInstances(glm::mat4* models, unsigned int numModels);
-  void draw(bool bindTexture);
+  void draw(bool isShadow);
   void prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2 &cameraPositionXZ,
@@ -56,16 +56,22 @@ private:
     friend class Mesh;
   };
 
-  void addIndirectBufferData(int directionToChunkLength, GLuint indicesSize, GLuint numInstances, GLuint instanceOffset);
+  void addIndirectBufferData(int directionToChunkLength, GLuint indicesSize, GLuint numInstances, GLuint instanceOffset, bool shadow);
   std::vector<Vertex> vertices;
   std::vector<Texture> textures;
   std::vector<GLuint> indices;
   OpenglBuffer basicGLBuffers;
   unsigned int numInstances;
   constexpr static int NUM_CHUNKS = (WORLD_WIDTH / CHUNK_SIZE) * (WORLD_HEIGHT / CHUNK_SIZE);
+  //on screen rendering indirect buffer variables
   GLuint multiDrawIndirectData[NUM_CHUNKS * 5] = {0}; //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
   std::multimap<int, IndirectBufferToken> indirectTokensSorted;
   GLuint drawIndirectCommandPrimCount = 0;
+  //shadow indirect buffer variables
+  OpenglBuffer shadowDIBO;
+  GLuint multiDrawIndirectDataShadow[NUM_CHUNKS * 5] = {0};
+  std::multimap<int, IndirectBufferToken> indirectTokensSortedShadow;
+  GLuint drawIndirectCommandPrimCountShadow = 0;
 };
 
 #endif // MESH_H

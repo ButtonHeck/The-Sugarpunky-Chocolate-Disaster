@@ -51,14 +51,14 @@ void PlantsFacade::draw(glm::vec3 &lightDir,
                           useLandBlending);
   treesRenderer.render(landPlantsGenerator.models,
                        hillTreesGenerator.models,
-                       true,
-                       useLandBlending);
+                       useLandBlending,
+                       false);
 
   shaders.switchToGrass(usePhongShading, true);
   shaders.updateGrass(usePhongShading);
   grassRenderer.render(grassGenerator.models,
-                       true,
-                       useLandBlending);
+                       useLandBlending,
+                       false);
 }
 
 void PlantsFacade::drawDepthmap()
@@ -66,10 +66,10 @@ void PlantsFacade::drawDepthmap()
   treesRenderer.render(landPlantsGenerator.models,
                        hillTreesGenerator.models,
                        false,
-                       false);
+                       true);
   grassRenderer.render(grassGenerator.models,
                        false,
-                       false);
+                       true);
 }
 
 void PlantsFacade::serialize(std::ofstream &output)

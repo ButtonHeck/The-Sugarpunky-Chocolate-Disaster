@@ -16,6 +16,7 @@ enum OPENGL_OBJECT : int
 class OpenglBuffer
 {
 public:
+  OpenglBuffer() = default;
   explicit OpenglBuffer(int flags);
   OpenglBuffer(OpenglBuffer&& old) noexcept;
   OpenglBuffer(const OpenglBuffer& copy);

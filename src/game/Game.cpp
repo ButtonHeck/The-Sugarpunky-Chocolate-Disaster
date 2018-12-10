@@ -88,6 +88,7 @@ void Game::loop()
   if (options[OPT_RECREATE_TERRAIN_REQUEST])
     recreate();
 
+  scene.getPlantsFacade().updateIndirectBufferData();
   if (options[OPT_USE_SHADOWS])
     updateDepthmap();
 
@@ -160,7 +161,6 @@ void Game::drawFrame(glm::mat4& projectionView)
       scene.getWaterFacade().bufferNewData();
       waterNeedNewKeyFrame = true;
     }
-  scene.getPlantsFacade().updateIndirectBufferData();
   glm::mat4 skyboxProjectionView(projection * glm::mat4(glm::mat3(camera.getViewMatrix())));
 
   scene.drawWorld(shadowVolume.getLightDir(),

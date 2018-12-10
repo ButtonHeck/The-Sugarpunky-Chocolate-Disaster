@@ -8,6 +8,7 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<Texture> textures, std::vec
     basicGLBuffers(VAO | VBO | INSTANCE_VBO | EBO)
 {
   basicGLBuffers.reserveNameForFutureStorage(DIBO);
+  shadowDIBO.reserveNameForFutureStorage(DIBO);
 }
 
 Mesh::Mesh(Mesh &&old) noexcept
@@ -18,7 +19,10 @@ Mesh::Mesh(Mesh &&old) noexcept
     basicGLBuffers(std::move(old.basicGLBuffers)),
     numInstances(old.numInstances),
     indirectTokensSorted(old.indirectTokensSorted),
-    drawIndirectCommandPrimCount(old.drawIndirectCommandPrimCount)
+    drawIndirectCommandPrimCount(old.drawIndirectCommandPrimCount),
+    shadowDIBO(old.shadowDIBO),
+    indirectTokensSortedShadow(old.indirectTokensSortedShadow),
+    drawIndirectCommandPrimCountShadow(old.drawIndirectCommandPrimCountShadow)
 {}
 
 Mesh::Mesh(const Mesh &rhs)
@@ -29,12 +33,16 @@ Mesh::Mesh(const Mesh &rhs)
     basicGLBuffers(rhs.basicGLBuffers),
     numInstances(rhs.numInstances),
     indirectTokensSorted(rhs.indirectTokensSorted),
-    drawIndirectCommandPrimCount(rhs.drawIndirectCommandPrimCount)
+    drawIndirectCommandPrimCount(rhs.drawIndirectCommandPrimCount),
+    shadowDIBO(rhs.shadowDIBO),
+    indirectTokensSortedShadow(rhs.indirectTokensSortedShadow),
+    drawIndirectCommandPrimCountShadow(rhs.drawIndirectCommandPrimCountShadow)
 {}
 
 void Mesh::cleanup()
 {
   basicGLBuffers.deleteBuffers();
+  shadowDIBO.deleteBuffers();
 }
 
 void Mesh::setup()
@@ -59,6 +67,12 @@ void Mesh::setup()
       basicGLBuffers.add(DIBO);
       basicGLBuffers.bind(DIBO);
       glNamedBufferStorage(basicGLBuffers.get(DIBO), sizeof(multiDrawIndirectData), 0, GL_DYNAMIC_STORAGE_BIT);
+    }
+  if (shadowDIBO.get(DIBO) == 0)
+    {
+      shadowDIBO.add(DIBO);
+      shadowDIBO.bind(DIBO);
+      glNamedBufferStorage(shadowDIBO.get(DIBO), sizeof(multiDrawIndirectDataShadow), 0, GL_DYNAMIC_STORAGE_BIT);
     }
 
   glBindVertexArray(0);
@@ -89,10 +103,10 @@ void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Mesh::draw(bool bindTexture)
+void Mesh::draw(bool isShadow)
 {  
   BENCHMARK("Mesh: draw (full func)", true);
-  if (bindTexture)
+  if (!isShadow)
     {
       for(unsigned int i = 0; i < textures.size(); i++)
         {
@@ -102,8 +116,17 @@ void Mesh::draw(bool bindTexture)
     }
   {
     BENCHMARK("Mesh: multiDrawIndirect", true);
-    basicGLBuffers.bind(VAO | DIBO);
-    glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCount, 0);
+    basicGLBuffers.bind(VAO);
+    if (!isShadow)
+      {
+        basicGLBuffers.bind(DIBO);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCount, 0);
+      }
+    else
+      {
+        shadowDIBO.bind(DIBO);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCountShadow, 0);
+      }
   }
 }
 
@@ -113,27 +136,35 @@ void Mesh::prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
                                      const Frustum &frustum)
 {
   BENCHMARK("(ST)Mesh: update DIB data", true);
-  drawIndirectCommandPrimCount = 0;
+  drawIndirectCommandPrimCount = drawIndirectCommandPrimCountShadow = 0;
   indirectTokensSorted.clear();
+  indirectTokensSortedShadow.clear();
   GLuint indicesSize = indices.size();
   for (unsigned int i = 0; i < chunks.size(); i++)
     {
       //if a chunk is farther than the load distance - just discard it
       glm::vec2 directionToChunk = chunks[i].getMidPoint() - cameraPositionXZ;
       unsigned int directionToChunkLength = glm::length2(directionToChunk);
-      if (directionToChunkLength > LOADING_DISTANCE_UNITS_SQUARE)
-        continue;
-
-      glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
-      if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
-          frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
-          frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
-          frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS))
+      if (directionToChunkLength < LOADING_DISTANCE_UNITS_SQUARE)
         {
-          addIndirectBufferData(directionToChunkLength,
-                                indicesSize,
-                                chunks[i].getNumInstances(index),
-                                chunks[i].getInstanceOffset(index));
+          glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
+          if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+              frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+              frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+              frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS))
+            {
+              addIndirectBufferData(directionToChunkLength,
+                                    indicesSize,
+                                    chunks[i].getNumInstances(index),
+                                    chunks[i].getInstanceOffset(index),
+                                    false);
+              if (directionToChunkLength < LOADING_DISTANCE_UNITS_SHADOW_SQUARE)
+                addIndirectBufferData(directionToChunkLength,
+                                      indicesSize,
+                                      chunks[i].getNumInstances(index),
+                                      chunks[i].getInstanceOffset(index),
+                                      true);
+            }
         }
     }
   GLuint dataOffset = 0;
@@ -145,6 +176,15 @@ void Mesh::prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
         multiDrawIndirectData[dataOffset++] = token.second.BASE_VERTEX;
         multiDrawIndirectData[dataOffset++] = token.second.instanceOffset;
     }
+  dataOffset = 0;
+  for (auto& token : indirectTokensSortedShadow)
+    {
+        multiDrawIndirectDataShadow[dataOffset++] = token.second.indicesCount;
+        multiDrawIndirectDataShadow[dataOffset++] = token.second.numInstances;
+        multiDrawIndirectDataShadow[dataOffset++] = token.second.FIRST_INDEX;
+        multiDrawIndirectDataShadow[dataOffset++] = token.second.BASE_VERTEX;
+        multiDrawIndirectDataShadow[dataOffset++] = token.second.instanceOffset;
+    }
 }
 
 void Mesh::updateIndirectBufferData()
@@ -153,16 +193,27 @@ void Mesh::updateIndirectBufferData()
     BENCHMARK("Mesh: bind+buffer indirect data", true);
     basicGLBuffers.bind(VAO | DIBO);
     glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * drawIndirectCommandPrimCount, multiDrawIndirectData);
+    shadowDIBO.bind(DIBO);
+    glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * drawIndirectCommandPrimCountShadow, multiDrawIndirectDataShadow);
   }
 }
 
 void Mesh::addIndirectBufferData(int directionToChunkLength,
                                  GLuint indicesSize,
                                  GLuint numInstances,
-                                 GLuint instanceOffset)
+                                 GLuint instanceOffset,
+                                 bool isShadow)
 {
-  indirectTokensSorted.insert(std::pair<int,IndirectBufferToken>(directionToChunkLength, IndirectBufferToken(indicesSize, numInstances, instanceOffset)));
-  ++drawIndirectCommandPrimCount;
+  if (!isShadow)
+    {
+      indirectTokensSorted.insert(std::pair<int,IndirectBufferToken>(directionToChunkLength, IndirectBufferToken(indicesSize, numInstances, instanceOffset)));
+      ++drawIndirectCommandPrimCount;
+    }
+  else
+    {
+      indirectTokensSortedShadow.insert(std::pair<int,IndirectBufferToken>(directionToChunkLength, IndirectBufferToken(indicesSize, numInstances, instanceOffset)));
+      ++drawIndirectCommandPrimCountShadow;
+    }
 }
 
 Mesh::IndirectBufferToken::IndirectBufferToken(GLuint indicesCount, GLuint numInstances, GLuint instanceOffset)

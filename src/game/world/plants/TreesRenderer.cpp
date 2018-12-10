@@ -2,11 +2,11 @@
 
 void TreesRenderer::render(std::vector<Model> &landModels,
                            std::vector<Model> &hillModels,
-                           bool bindTexture,
-                           bool useLandBlending)
+                           bool useLandBlending,
+                           bool isShadow)
 {
   BenchmarkTimer BENCHMARK_;
-  if (bindTexture)
+  if (!isShadow)
     BENCHMARK_("TreesRenderer: render", true);
   else
     BENCHMARK_("TreesRenderer: render depthmap", true);
@@ -19,13 +19,13 @@ void TreesRenderer::render(std::vector<Model> &landModels,
   for (unsigned int i = 0; i < landModels.size(); i++)
     {
       Model& model = landModels[i];
-      model.draw(bindTexture);
+      model.draw(isShadow);
     }
 
   for (unsigned int i = 0; i < hillModels.size(); i++)
     {
       Model& model = hillModels[i];
-      model.draw(bindTexture);
+      model.draw(isShadow);
     }
 
   if (useLandBlending)

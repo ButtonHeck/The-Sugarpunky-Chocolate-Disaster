@@ -42,10 +42,10 @@ void Model::loadModel(const std::string &path)
   processNode(scene->mRootNode, scene);
 }
 
-void Model::draw(bool bindTexture)
+void Model::draw(bool isShadow)
 {
   for (unsigned int i = 0; i < meshes.size(); i++)
-    meshes[i].draw(bindTexture);
+    meshes[i].draw(isShadow);
 }
 
 void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,

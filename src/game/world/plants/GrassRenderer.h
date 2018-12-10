@@ -8,8 +8,7 @@ class GrassRenderer
 public:
   GrassRenderer() = default;
   void render(std::vector<Model>& models,
-              bool bindTexture,
-              bool useLandBlending);
+              bool useLandBlending, bool isShadow);
 };
 
 #endif // GRASSRENDERER_H

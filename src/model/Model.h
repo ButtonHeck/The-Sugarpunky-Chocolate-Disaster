@@ -19,7 +19,7 @@ public:
   void setup();
   void cleanup();
   static void bindTextureLoader(TextureLoader& textureLoader);
-  void draw(bool bindTexture);
+  void draw(bool isShadow);
   void prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2& cameraPositionXZ,

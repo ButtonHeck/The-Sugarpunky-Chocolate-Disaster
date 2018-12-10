@@ -9,8 +9,7 @@ public:
   TreesRenderer() = default;
   void render(std::vector<Model>& landModels,
               std::vector<Model>& hillModels,
-              bool bindTexture,
-              bool useLandBlending);
+              bool useLandBlending, bool isShadow);
 };
 
 #endif // TREESRENDERER_H
