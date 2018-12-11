@@ -17,7 +17,6 @@ Mesh::Mesh(Mesh &&old) noexcept
     textures(old.textures),
     indices(old.indices),
     basicGLBuffers(std::move(old.basicGLBuffers)),
-    numInstances(old.numInstances),
     indirectTokensSorted(old.indirectTokensSorted),
     drawIndirectCommandPrimCount(old.drawIndirectCommandPrimCount),
     shadowDIBO(old.shadowDIBO),
@@ -31,7 +30,6 @@ Mesh::Mesh(const Mesh &rhs)
     textures(rhs.textures),
     indices(rhs.indices),
     basicGLBuffers(rhs.basicGLBuffers),
-    numInstances(rhs.numInstances),
     indirectTokensSorted(rhs.indirectTokensSorted),
     drawIndirectCommandPrimCount(rhs.drawIndirectCommandPrimCount),
     shadowDIBO(rhs.shadowDIBO),
@@ -80,19 +78,10 @@ void Mesh::setup()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Mesh::setupInstances(glm::mat4 *models, unsigned int numModels)
+void Mesh::setupInstanceVBO(GLuint& modelInstanceVBO)
 {
-  numInstances = numModels;
-  basicGLBuffers.bind(VAO);
-  if (basicGLBuffers.get(INSTANCE_VBO) != 0)
-    {
-      basicGLBuffers.bind(INSTANCE_VBO);
-      glInvalidateBufferData(basicGLBuffers.get(INSTANCE_VBO));
-      basicGLBuffers.deleteBuffer(INSTANCE_VBO);
-    }
-  basicGLBuffers.add(INSTANCE_VBO);
-  basicGLBuffers.bind(INSTANCE_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * numModels, &models[0], GL_STATIC_DRAW);
+  basicGLBuffers.get(INSTANCE_VBO) = modelInstanceVBO;
+  basicGLBuffers.bind(VAO | INSTANCE_VBO);
   for (unsigned int i = 0; i < 4; ++i)
     {
       glEnableVertexAttribArray(i+5);

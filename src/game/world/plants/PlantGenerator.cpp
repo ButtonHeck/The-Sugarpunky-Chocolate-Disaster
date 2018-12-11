@@ -110,7 +110,7 @@ void PlantGenerator::updateMatrices(std::vector<glm::mat4 *> &newMatrices, unsig
     }
 
   for (unsigned int i = 0; i < newMatrices.size(); i++)
-    models[i].loadInstances(matrices[i], numPlants[i]);
+    models[i].loadModelInstances(matrices[i], numPlants[i]);
 }
 
 map2D_mat4 PlantGenerator::substituteMatricesStorage()
@@ -137,5 +137,5 @@ void PlantGenerator::loadMatrices(map2D_mat4 &newMatrices)
       numPlants[i] = newMatrices[i].size();
     }
   for (unsigned int i = 0; i < models.size(); i++)
-    models[i].loadInstances(matrices[i], numPlants[i]);
+    models[i].loadModelInstances(matrices[i], numPlants[i]);
 }

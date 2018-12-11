@@ -38,7 +38,7 @@ public:
   Mesh(const Mesh& rhs);
   void cleanup();
   void setup();
-  void setupInstances(glm::mat4* models, unsigned int numModels);
+  void setupInstanceVBO(GLuint &modelInstanceVBO);
   void draw(bool isShadow);
   void prepareIndirectBufferData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
@@ -61,7 +61,6 @@ private:
   std::vector<Texture> textures;
   std::vector<GLuint> indices;
   OpenglBuffer basicGLBuffers;
-  unsigned int numInstances;
   constexpr static int NUM_CHUNKS = (WORLD_WIDTH / CHUNK_SIZE) * (WORLD_HEIGHT / CHUNK_SIZE);
   //on screen rendering indirect buffer variables
   GLuint multiDrawIndirectData[NUM_CHUNKS * 5] = {0}; //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }

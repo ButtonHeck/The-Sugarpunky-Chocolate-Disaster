@@ -2,6 +2,8 @@
 #include <IL/il.h>
 
 Model::Model(const std::string& path)
+  :
+    instanceBufferVBO(INSTANCE_VBO)
 {
   loadModel(std::string(MODELS_DIR + path));
 }
@@ -10,7 +12,8 @@ Model::Model(Model &&old) noexcept
   :
     meshes(old.meshes),
     textures_loaded(old.textures_loaded),
-    directory(old.directory)
+    directory(old.directory),
+    instanceBufferVBO(old.instanceBufferVBO)
 {}
 
 void Model::cleanup()
@@ -67,10 +70,20 @@ void Model::processNode(aiNode *node, const aiScene* scene)
     processNode(node->mChildren[i], scene);
 }
 
-void Model::loadInstances(glm::mat4 *models, unsigned int numModels)
+void Model::loadModelInstances(glm::mat4 *instanceMatrices, unsigned int numInstances)
 {
+  instanceBufferVBO.bind(INSTANCE_VBO);
+  if (instanceBufferVBO.get(INSTANCE_VBO) != 0)
+    {
+      instanceBufferVBO.bind(INSTANCE_VBO);
+      glInvalidateBufferData(instanceBufferVBO.get(INSTANCE_VBO));
+      instanceBufferVBO.deleteBuffer(INSTANCE_VBO);
+    }
+  instanceBufferVBO.add(INSTANCE_VBO);
+  instanceBufferVBO.bind(INSTANCE_VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * numInstances, &instanceMatrices[0], GL_STATIC_DRAW);
   for (Mesh& mesh : meshes)
-    mesh.setupInstances(models, numModels);
+    mesh.setupInstanceVBO(instanceBufferVBO.get(INSTANCE_VBO));
 }
 
 std::vector<Mesh> &Model::getMeshes()

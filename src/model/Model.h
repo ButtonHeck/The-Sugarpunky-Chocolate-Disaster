@@ -24,7 +24,7 @@ public:
                                  const glm::vec2& cameraPositionXZ,
                                  const Frustum& frustum);
   void updateIndirectBufferData();
-  void loadInstances(glm::mat4* models, unsigned int numModels);
+  void loadModelInstances(glm::mat4* models, unsigned int numModels);
   std::vector<Mesh>& getMeshes();
 
 private:
@@ -36,6 +36,7 @@ private:
   std::vector<Texture> textures_loaded;
   std::string directory;
   static TextureLoader* textureLoader;
+  OpenglBuffer instanceBufferVBO;
 };
 
 #endif // MODEL_H
