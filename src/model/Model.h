@@ -16,7 +16,6 @@ class Model
 public:
   Model(const std::string& path);
   Model(Model&& old) noexcept;
-  void setup();
   void cleanup();
   static void bindTextureLoader(TextureLoader& textureLoader);
   void draw(bool isShadow);
@@ -32,7 +31,6 @@ private:
   void loadModel(const std::string& path);
   void processNode(aiNode* node, const aiScene* scene);
   Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-  std::string path;
   std::vector<Texture> loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName);
   std::vector<Mesh> meshes;
   std::vector<Texture> textures_loaded;

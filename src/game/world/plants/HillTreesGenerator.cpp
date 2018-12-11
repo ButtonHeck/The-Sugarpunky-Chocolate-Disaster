@@ -24,7 +24,10 @@ void HillTreesGenerator::setup(const map2D_f &hillMap,
                                const map2D_i &distributionMap)
 {
   for (Model& model : models)
-    model.setup();
+    {
+      for (Mesh& mesh : model.getMeshes())
+        mesh.setup();
+    }
   setupModelChunks();
   setupMatrices(hillMap, distributionMap);
 }
