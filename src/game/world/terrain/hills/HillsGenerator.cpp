@@ -51,13 +51,14 @@ void HillsGenerator::createTilesAndBufferData()
 
 void HillsGenerator::fillBufferData()
 {
-  const size_t VERTEX_DATA_LENGTH = tiles.size() * 48;
+  const size_t VERTEX_DATA_LENGTH = tiles.size() * 32;
+  const size_t INDICES_DATA_LENGTH = tiles.size() * 6;
+  size_t indicesBufferIndex = 0;
   std::unique_ptr<GLfloat[]> vertices(new GLfloat[VERTEX_DATA_LENGTH]);
+  std::unique_ptr<GLuint[]> indices(new GLuint[INDICES_DATA_LENGTH]);
   for (unsigned int c = 0; c < tiles.size(); c++)
     {
       TerrainTile& tile = tiles[c];
-      int offset = c * 48;
-
       bool verticesCrossed = false;
       if (tile.lowRight < tile.upperLeft || tile.upperLeft < tile.lowRight)
         verticesCrossed = true;
@@ -66,35 +67,36 @@ void HillsGenerator::fillBufferData()
       float texCoordYOffset = ((WORLD_HEIGHT - tile.mapY) % 2) * 0.5f;
       int x = tile.mapX, y = tile.mapY;
 
-      HillVertex lowLeft(glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY),
-                glm::vec2(texCoordXOffset, texCoordYOffset), normalMap[y][x-1]);
-      HillVertex lowRight(glm::vec3(tile.mapX, tile.lowRight, tile.mapY),
-                glm::vec2(0.5f + texCoordXOffset, texCoordYOffset), normalMap[y][x]);
-      HillVertex upRight(glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1),
-                glm::vec2(0.5f + texCoordXOffset, 0.5f + texCoordYOffset), normalMap[y-1][x]);
-      HillVertex upLeft(glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1),
-                glm::vec2(texCoordXOffset, 0.5f + texCoordYOffset), normalMap[y-1][x-1]);
-      if (!verticesCrossed)
-        {
-          bufferVertex(vertices.get(), offset, lowLeft); //ll1
-          bufferVertex(vertices.get(), offset+8, lowRight); //lr1
-          bufferVertex(vertices.get(), offset+16, upRight); //ur1
-          bufferVertex(vertices.get(), offset+24, upRight); //ur2
-          bufferVertex(vertices.get(), offset+32, upLeft);//ul2
-          bufferVertex(vertices.get(), offset+40, lowLeft); //ll2
-        }
-      else
-        {
-          bufferVertex(vertices.get(), offset, upLeft); //ul1
-          bufferVertex(vertices.get(), offset+8, lowLeft); //ll1
-          bufferVertex(vertices.get(), offset+16, lowRight); //lr1
-          bufferVertex(vertices.get(), offset+24, lowRight); //lr2
-          bufferVertex(vertices.get(), offset+32, upRight); //ur2
-          bufferVertex(vertices.get(), offset+40, upLeft); //ul2
-        }
+      HillVertex lowLeft(glm::vec3(x - 1, tile.lowLeft, y),
+                         glm::vec2(texCoordXOffset, texCoordYOffset),
+                         normalMap[y][x-1]);
+      HillVertex lowRight(glm::vec3(x, tile.lowRight, y),
+                          glm::vec2(0.5f + texCoordXOffset, texCoordYOffset),
+                          normalMap[y][x]);
+      HillVertex upRight(glm::vec3(x, tile.upperRight, y - 1),
+                         glm::vec2(0.5f + texCoordXOffset, 0.5f + texCoordYOffset),
+                         normalMap[y-1][x]);
+      HillVertex upLeft(glm::vec3(x - 1, tile.upperLeft, y - 1),
+                        glm::vec2(texCoordXOffset, 0.5f + texCoordYOffset),
+                        normalMap[y-1][x-1]);
+
+      int vertexBufferOffset = c * 32;
+      bufferVertex(vertices.get(), vertexBufferOffset,    lowLeft);
+      bufferVertex(vertices.get(), vertexBufferOffset+8,  lowRight);
+      bufferVertex(vertices.get(), vertexBufferOffset+16, upRight);
+      bufferVertex(vertices.get(), vertexBufferOffset+24, upLeft);
+
+      GLuint indicesBufferBaseVertex = c * 4;
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + (verticesCrossed ? 3 : 0);
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + (verticesCrossed ? 0 : 1);
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + (verticesCrossed ? 1 : 2);
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + (verticesCrossed ? 1 : 2);
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + (verticesCrossed ? 2 : 3);
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + (verticesCrossed ? 3 : 0);
     }
-  basicGLBuffers.bind(VAO | VBO);
+  basicGLBuffers.bind(VAO | VBO | EBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTEX_DATA_LENGTH, vertices.get(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * INDICES_DATA_LENGTH, indices.get(), GL_STATIC_DRAW);
   setupGLBufferAttributes();
 
   if (culledBuffers.get(VAO) != 0)
@@ -171,16 +173,16 @@ void HillsGenerator::fattenKernel(int cycles)
     }
 }
 
-void HillsGenerator::bufferVertex(GLfloat* vertices, int offset, HillVertex vertex)
+void HillsGenerator::bufferVertex(GLfloat* buffer, int offset, HillVertex vertex)
 {
-  vertices[offset] =   vertex.posX;
-  vertices[offset+1] = vertex.posY;
-  vertices[offset+2] = vertex.posZ;
-  vertices[offset+3] = vertex.texCoordX;
-  vertices[offset+4] = vertex.texCoordY;
-  vertices[offset+5] = vertex.normalX;
-  vertices[offset+6] = vertex.normalY;
-  vertices[offset+7] = vertex.normalZ;
+  buffer[offset] =   vertex.posX;
+  buffer[offset+1] = vertex.posY;
+  buffer[offset+2] = vertex.posZ;
+  buffer[offset+3] = vertex.texCoordX;
+  buffer[offset+4] = vertex.texCoordY;
+  buffer[offset+5] = vertex.normalX;
+  buffer[offset+6] = vertex.normalY;
+  buffer[offset+7] = vertex.normalZ;
 }
 
 void HillsGenerator::setupGLBufferAttributes()
