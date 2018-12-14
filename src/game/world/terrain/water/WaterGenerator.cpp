@@ -31,28 +31,40 @@ void WaterGenerator::setupConsiderTerrain()
 
 void WaterGenerator::fillBufferData()
 {
-  numVertices = tiles.size() * 36;
+  numVertices = tiles.size() * 24;
   vertices.reset(new GLfloat[numVertices]);
+  const size_t INDICES_DATA_LENGTH = tiles.size() * VERTICES_PER_TILE;
+  std::unique_ptr<GLuint[]> indices(new GLuint[INDICES_DATA_LENGTH]);
+  size_t indicesBufferIndex = 0;
   const static glm::vec3 DEFAULT_Y_NORMAL(0.0f, 1.0f, 0.0f);
 
   for (unsigned int i = 0; i < tiles.size(); i++)
     {
       TerrainTile& tile = tiles[i];
-      int offset = i * 36;
-      WaterVertex lowLeft(glm::vec3(tile.mapX - 1, tile.lowLeft, tile.mapY), DEFAULT_Y_NORMAL);
-      WaterVertex lowRight(glm::vec3(tile.mapX, tile.lowRight, tile.mapY), DEFAULT_Y_NORMAL);
-      WaterVertex upRight(glm::vec3(tile.mapX, tile.upperRight, tile.mapY - 1), DEFAULT_Y_NORMAL);
-      WaterVertex upLeft(glm::vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1), DEFAULT_Y_NORMAL);
+      int x = tile.mapX, y = tile.mapY;
 
-      bufferVertex(vertices.get(), offset+0, lowLeft); //ll1
-      bufferVertex(vertices.get(), offset+6, lowRight); //lr1
-      bufferVertex(vertices.get(), offset+12, upRight); //ur1
-      bufferVertex(vertices.get(), offset+18, upRight); //ur2
-      bufferVertex(vertices.get(), offset+24, upLeft); //ul2
-      bufferVertex(vertices.get(), offset+30, lowLeft); //ll2
+      WaterVertex lowLeft(glm::vec3(x - 1, tile.lowLeft, y), DEFAULT_Y_NORMAL);
+      WaterVertex lowRight(glm::vec3(x, tile.lowRight, y), DEFAULT_Y_NORMAL);
+      WaterVertex upRight(glm::vec3(x, tile.upperRight, y - 1), DEFAULT_Y_NORMAL);
+      WaterVertex upLeft(glm::vec3(x - 1, tile.upperLeft, y - 1), DEFAULT_Y_NORMAL);
+
+      int vertexBufferOffset = i * 24;
+      bufferVertex(vertices.get(), vertexBufferOffset+0, lowLeft); //ll1
+      bufferVertex(vertices.get(), vertexBufferOffset+6, lowRight); //lr1
+      bufferVertex(vertices.get(), vertexBufferOffset+12, upRight); //ur1
+      bufferVertex(vertices.get(), vertexBufferOffset+18, upLeft); //ur2
+
+      GLuint indicesBufferBaseVertex = i * 4;
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + 0;
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + 1;
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + 2;
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + 2;
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + 3;
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + 0;
     }
-  basicGLBuffers.bind(VAO | VBO);
+  basicGLBuffers.bind(VAO | VBO | EBO);
   glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(GLfloat), vertices.get(), GL_STREAM_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * INDICES_DATA_LENGTH, indices.get(), GL_STATIC_DRAW);
   setupGLBufferAttributes();
 
   if (culledBuffers.get(VAO) != 0)
@@ -456,7 +468,7 @@ void WaterGenerator::updateAnimationFrame(double time, Options& options)
       if (options[OPT_RECREATE_TERRAIN_REQUEST])
         return;
       TerrainTile& tile = tiles[i];
-      unsigned int pointerOffsetWithStride = i * 36;
+      unsigned int pointerOffsetWithStride = i * 24;
       unsigned int heightOffsetWithStrideForLow = (tile.mapY+1) * WORLD_WIDTH;
       unsigned int heightOffsetWithStrideForUpper = tile.mapY * WORLD_WIDTH;
 
@@ -469,9 +481,7 @@ void WaterGenerator::updateAnimationFrame(double time, Options& options)
       updateVertexNormal(vertices.get(), pointerOffsetWithStride+3, normalMap[tile.mapY][tile.mapX]);
       updateVertexNormal(vertices.get(), pointerOffsetWithStride+9, normalMap[tile.mapY][tile.mapX+1]);
       updateVertexNormal(vertices.get(), pointerOffsetWithStride+15, normalMap[tile.mapY-1][tile.mapX+1]);
-      updateVertexNormal(vertices.get(), pointerOffsetWithStride+21, normalMap[tile.mapY-1][tile.mapX+1]);
-      updateVertexNormal(vertices.get(), pointerOffsetWithStride+27, normalMap[tile.mapY-1][tile.mapX]);
-      updateVertexNormal(vertices.get(), pointerOffsetWithStride+33, normalMap[tile.mapY][tile.mapX]);
+      updateVertexNormal(vertices.get(), pointerOffsetWithStride+21, normalMap[tile.mapY-1][tile.mapX]);
     }
 }
 
@@ -497,9 +507,7 @@ void WaterGenerator::updateTileY(GLfloat *vertices, int offset, glm::vec4&& heig
   vertices[offset+1] = heights.x;
   vertices[offset+7] = heights.y;
   vertices[offset+13] = heights.z;
-  vertices[offset+19] = heights.z;
-  vertices[offset+25] = heights.w;
-  vertices[offset+31] = heights.x;
+  vertices[offset+19] = heights.w;
 }
 
 void WaterGenerator::setupGLBufferAttributes()
