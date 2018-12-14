@@ -170,29 +170,39 @@ void ShoreGenerator::fillBufferData()
 {
   using glm::vec2;
   using glm::vec3;
-  const size_t VERTEX_DATA_LENGTH = tiles.size() * 48;
-  std::unique_ptr<GLfloat[]> vertices(new GLfloat[NUM_TILES * 48]);
+  const size_t VERTEX_DATA_LENGTH = tiles.size() * 32;
+  const size_t INDICES_DATA_LENGTH = tiles.size() * 6;
+  size_t indicesBufferIndex = 0;
+  std::unique_ptr<GLfloat[]> vertices(new GLfloat[VERTEX_DATA_LENGTH]);
+  std::unique_ptr<GLuint[]> indices(new GLuint[INDICES_DATA_LENGTH]);
   for (unsigned int i = 0; i < tiles.size(); i++)
     {
       TerrainTile& tile = tiles[i];
-      int offset = i * 48;
       int x = tile.mapX, y = tile.mapY;
 
-      ShoreVertex lowLeft(vec3(tile.mapX - 1, tile.lowLeft, tile.mapY), vec2(0.0f), normalMap[y][x-1]);
-      ShoreVertex lowRight(vec3(tile.mapX, tile.lowRight, tile.mapY), vec2(1.0f, 0.0f), normalMap[y][x]);
-      ShoreVertex upRight(vec3(tile.mapX, tile.upperRight, tile.mapY - 1), vec2(1.0f), normalMap[y-1][x]);
-      ShoreVertex upLeft(vec3(tile.mapX - 1, tile.upperLeft, tile.mapY - 1), vec2(0.0f, 1.0f), normalMap[y-1][x-1]);
+      ShoreVertex lowLeft(vec3(x - 1, tile.lowLeft, y), vec2(0.0f), normalMap[y][x-1]);
+      ShoreVertex lowRight(vec3(x, tile.lowRight, y), vec2(1.0f, 0.0f), normalMap[y][x]);
+      ShoreVertex upRight(vec3(x, tile.upperRight, y - 1), vec2(1.0f), normalMap[y-1][x]);
+      ShoreVertex upLeft(vec3(x - 1, tile.upperLeft, y - 1), vec2(0.0f, 1.0f), normalMap[y-1][x-1]);
 
-      bufferVertex(vertices.get(), offset, lowLeft); //ll1
-      bufferVertex(vertices.get(), offset+8, lowRight); //lr1
-      bufferVertex(vertices.get(), offset+16, upRight); //ur1
-      bufferVertex(vertices.get(), offset+24, upRight); //ur2
-      bufferVertex(vertices.get(), offset+32, upLeft);//ul2
-      bufferVertex(vertices.get(), offset+40, lowLeft); //ll2
+      int vertexBufferOffset = i * 32;
+      bufferVertex(vertices.get(), vertexBufferOffset,    lowLeft);
+      bufferVertex(vertices.get(), vertexBufferOffset+8,  lowRight);
+      bufferVertex(vertices.get(), vertexBufferOffset+16, upRight);
+      bufferVertex(vertices.get(), vertexBufferOffset+24, upLeft);
+
+      GLuint indicesBufferBaseVertex = i * 4;
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + 0;
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + 1;
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + 2;
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + 2;
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + 3;
+      indices[indicesBufferIndex++] = indicesBufferBaseVertex + 0;
     }
 
-  basicGLBuffers.bind(VAO | VBO);
+  basicGLBuffers.bind(VAO | VBO | EBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTEX_DATA_LENGTH, vertices.get(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * INDICES_DATA_LENGTH, indices.get(), GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
   glEnableVertexAttribArray(1);

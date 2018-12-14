@@ -52,7 +52,7 @@ void HillsGenerator::createTilesAndBufferData()
 void HillsGenerator::fillBufferData()
 {
   const size_t VERTEX_DATA_LENGTH = tiles.size() * 32;
-  const size_t INDICES_DATA_LENGTH = tiles.size() * 6;
+  const size_t INDICES_DATA_LENGTH = tiles.size() * VERTICES_PER_TILE;
   size_t indicesBufferIndex = 0;
   std::unique_ptr<GLfloat[]> vertices(new GLfloat[VERTEX_DATA_LENGTH]);
   std::unique_ptr<GLuint[]> indices(new GLuint[INDICES_DATA_LENGTH]);
