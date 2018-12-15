@@ -24,11 +24,6 @@ void LandPlantsGenerator::setup(const map2D_f &baseMap,
                                 const map2D_f &hillMap,
                                 const map2D_i &distributionMap)
 {
-  for (Model& model : models)
-    {
-      for (Mesh& mesh : model.getMeshes())
-        mesh.setup();
-    }
   setupModelChunks();
   setupMatrices(baseMap, hillMap, distributionMap);
 }

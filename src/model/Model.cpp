@@ -3,29 +3,12 @@
 
 Model::Model(const std::string& path)
   :
-    instanceBufferVBO(INSTANCE_VBO)
+    basicGLBuffers(VAO | VBO | INSTANCE_VBO | EBO)
 {
   loadModel(std::string(MODELS_DIR + path));
-}
-
-Model::Model(Model &&old) noexcept
-  :
-    meshes(old.meshes),
-    textures_loaded(old.textures_loaded),
-    directory(old.directory),
-    instanceBufferVBO(old.instanceBufferVBO)
-{}
-
-void Model::cleanup()
-{
-  for (Mesh& mesh : meshes)
-    mesh.cleanup();
-}
-
-TextureLoader* Model::textureLoader;
-void Model::bindTextureLoader(TextureLoader &textureLoader)
-{
-  Model::textureLoader = &textureLoader;
+  basicGLBuffers.reserveNameForFutureStorage(DIBO);
+  shadowDIBO.reserveNameForFutureStorage(DIBO);
+  setup();
 }
 
 void Model::loadModel(const std::string &path)
@@ -35,63 +18,25 @@ void Model::loadModel(const std::string &path)
   if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
     Logger::log("Error while loading Assimp: %\n", importer.GetErrorString());
   directory = path.substr(0, path.find_last_of('/'));
-  processNode(scene->mRootNode, scene);
+  GLuint meshIndexOffset = 0;
+  processNode(scene->mRootNode, scene, meshIndexOffset);
 }
 
-void Model::draw(bool isShadow)
-{
-  for (unsigned int i = 0; i < meshes.size(); i++)
-    meshes[i].draw(isShadow);
-}
-
-void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
-                                      unsigned int index,
-                                      const glm::vec2& cameraPositionXZ,
-                                      const Frustum &frustum)
-{
-  for (unsigned int i = 0; i < meshes.size(); i++)
-    meshes[i].prepareIndirectBufferData(chunks, index, cameraPositionXZ, frustum);
-}
-
-void Model::updateIndirectBufferData()
-{
-  for (unsigned int i = 0; i < meshes.size(); ++i)
-    meshes[i].updateIndirectBufferData();
-}
-
-void Model::processNode(aiNode *node, const aiScene* scene)
+void Model::processNode(aiNode *node, const aiScene* scene, GLuint& meshIndexOffset)
 {
   for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
       aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-      meshes.emplace_back(std::move(processMesh(mesh, scene)));
+      Mesh processedMesh = processMesh(mesh, scene, meshIndexOffset);
+      GLuint currentMeshNumVertices = processedMesh.vertices.size();
+      meshes.emplace_back(std::move(processedMesh));
+      meshIndexOffset += currentMeshNumVertices;
     }
   for (unsigned int i = 0; i < node->mNumChildren; i++)
-    processNode(node->mChildren[i], scene);
+    processNode(node->mChildren[i], scene, meshIndexOffset);
 }
 
-void Model::loadModelInstances(glm::mat4 *instanceMatrices, unsigned int numInstances)
-{
-  instanceBufferVBO.bind(INSTANCE_VBO);
-  if (instanceBufferVBO.get(INSTANCE_VBO) != 0)
-    {
-      instanceBufferVBO.bind(INSTANCE_VBO);
-      glInvalidateBufferData(instanceBufferVBO.get(INSTANCE_VBO));
-      instanceBufferVBO.deleteBuffer(INSTANCE_VBO);
-    }
-  instanceBufferVBO.add(INSTANCE_VBO);
-  instanceBufferVBO.bind(INSTANCE_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * numInstances, &instanceMatrices[0], GL_STATIC_DRAW);
-  for (Mesh& mesh : meshes)
-    mesh.setupInstanceVBO(instanceBufferVBO.get(INSTANCE_VBO));
-}
-
-std::vector<Mesh> &Model::getMeshes()
-{
-  return meshes;
-}
-
-Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene)
+Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene, GLuint meshIndexOffset)
 {
   std::vector<Vertex> vertices;
   std::vector<GLuint> indices;
@@ -138,7 +83,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene)
     {
       aiFace face = mesh->mFaces[i];
       for (unsigned int j = 0; j < face.mNumIndices; j++)
-        indices.emplace_back(std::move(face.mIndices[j]));
+        indices.emplace_back(std::move(face.mIndices[j] + meshIndexOffset));
     }
   //process materials
   aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
@@ -186,4 +131,197 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *material, aiTexture
         }
     }
   return textures;
+}
+
+void Model::setup()
+{
+  for (Mesh& mesh : meshes)
+    {
+      vertices.insert(vertices.end(), mesh.vertices.begin(), mesh.vertices.end());
+      indices.insert(indices.end(), mesh.indices.begin(), mesh.indices.end());
+    }
+  basicGLBuffers.bind(VAO | VBO | EBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices[0], GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+  glEnableVertexAttribArray(4);
+  glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+
+  if (basicGLBuffers.get(DIBO) == 0)
+    {
+      basicGLBuffers.add(DIBO);
+      basicGLBuffers.bind(DIBO);
+      glNamedBufferStorage(basicGLBuffers.get(DIBO), sizeof(multiDrawIndirectData), 0, GL_DYNAMIC_STORAGE_BIT);
+    }
+  if (shadowDIBO.get(DIBO) == 0)
+    {
+      shadowDIBO.add(DIBO);
+      shadowDIBO.bind(DIBO);
+      glNamedBufferStorage(shadowDIBO.get(DIBO), sizeof(multiDrawIndirectDataShadow), 0, GL_DYNAMIC_STORAGE_BIT);
+    }
+
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+TextureLoader* Model::textureLoader;
+void Model::bindTextureLoader(TextureLoader &textureLoader)
+{
+  Model::textureLoader = &textureLoader;
+}
+
+void Model::draw(bool isShadow)
+{
+  BENCHMARK("Model: draw (full func)", true);
+//  if (!isShadow)
+//    {
+//      for(unsigned int i = 0; i < textures.size(); i++)
+//        {
+//          glActiveTexture(GL_TEXTURE0 + TEX_MESH_DIFFUSE + i);
+//          glBindTexture(GL_TEXTURE_2D, textures[i].id);
+//        }
+//    }
+  {
+    BENCHMARK("Model: multiDrawIndirect", true);
+    basicGLBuffers.bind(VAO);
+    if (!isShadow)
+      {
+        basicGLBuffers.bind(DIBO);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCount, 0);
+      }
+    else
+      {
+        shadowDIBO.bind(DIBO);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCountShadow, 0);
+      }
+  }
+}
+
+void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
+                                      unsigned int index,
+                                      const glm::vec2& cameraPositionXZ,
+                                      const Frustum &frustum)
+{
+  BENCHMARK("(ST)Model: update DIB data", true);
+  drawIndirectCommandPrimCount = drawIndirectCommandPrimCountShadow = 0;
+  indirectTokensSorted.clear();
+  indirectTokensSortedShadow.clear();
+  GLuint indicesSize = indices.size();
+  for (unsigned int i = 0; i < chunks.size(); i++)
+    {
+      //if a chunk is farther than the load distance - just discard it
+      glm::vec2 directionToChunk = chunks[i].getMidPoint() - cameraPositionXZ;
+      unsigned int directionToChunkLength = glm::length2(directionToChunk);
+      if (directionToChunkLength < LOADING_DISTANCE_UNITS_SQUARE)
+        {
+          glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
+          if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+              frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+              frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+              frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS))
+            {
+              addIndirectBufferData(directionToChunkLength,
+                                    indicesSize,
+                                    chunks[i].getNumInstances(index),
+                                    chunks[i].getInstanceOffset(index),
+                                    false);
+              if (directionToChunkLength < LOADING_DISTANCE_UNITS_SHADOW_SQUARE)
+                addIndirectBufferData(directionToChunkLength,
+                                      indicesSize,
+                                      chunks[i].getNumInstances(index),
+                                      chunks[i].getInstanceOffset(index),
+                                      true);
+            }
+        }
+    }
+  GLuint dataOffset = 0;
+  for (auto& token : indirectTokensSorted)
+    {
+        multiDrawIndirectData[dataOffset++] = token.second.indicesCount;
+        multiDrawIndirectData[dataOffset++] = token.second.numInstances;
+        multiDrawIndirectData[dataOffset++] = token.second.FIRST_INDEX;
+        multiDrawIndirectData[dataOffset++] = token.second.BASE_VERTEX;
+        multiDrawIndirectData[dataOffset++] = token.second.instanceOffset;
+    }
+  dataOffset = 0;
+  for (auto& token : indirectTokensSortedShadow)
+    {
+        multiDrawIndirectDataShadow[dataOffset++] = token.second.indicesCount;
+        multiDrawIndirectDataShadow[dataOffset++] = token.second.numInstances;
+        multiDrawIndirectDataShadow[dataOffset++] = token.second.FIRST_INDEX;
+        multiDrawIndirectDataShadow[dataOffset++] = token.second.BASE_VERTEX;
+        multiDrawIndirectDataShadow[dataOffset++] = token.second.instanceOffset;
+    }
+}
+
+void Model::updateIndirectBufferData()
+{
+  {
+    BENCHMARK("Model: bind+buffer indirect data", true);
+    basicGLBuffers.bind(VAO | DIBO);
+    glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * drawIndirectCommandPrimCount, multiDrawIndirectData);
+    shadowDIBO.bind(DIBO);
+    glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * drawIndirectCommandPrimCountShadow, multiDrawIndirectDataShadow);
+  }
+}
+
+void Model::addIndirectBufferData(int directionToChunkLength,
+                                  GLuint indicesSize,
+                                  GLuint numInstances,
+                                  GLuint instanceOffset,
+                                  bool isShadow)
+{
+  if (!isShadow)
+    {
+      indirectTokensSorted.insert(std::pair<int,IndirectBufferToken>(directionToChunkLength, IndirectBufferToken(indicesSize, numInstances, instanceOffset)));
+      ++drawIndirectCommandPrimCount;
+    }
+  else
+    {
+      indirectTokensSortedShadow.insert(std::pair<int,IndirectBufferToken>(directionToChunkLength, IndirectBufferToken(indicesSize, numInstances, instanceOffset)));
+      ++drawIndirectCommandPrimCountShadow;
+    }
+}
+
+void Model::loadModelInstances(glm::mat4 *instanceMatrices, unsigned int numInstances)
+{
+  basicGLBuffers.bind(VAO);
+  if (basicGLBuffers.get(INSTANCE_VBO) != 0)
+    {
+      basicGLBuffers.bind(INSTANCE_VBO);
+      glInvalidateBufferData(basicGLBuffers.get(INSTANCE_VBO));
+      basicGLBuffers.deleteBuffer(INSTANCE_VBO);
+    }
+  basicGLBuffers.add(INSTANCE_VBO);
+  basicGLBuffers.bind(INSTANCE_VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * numInstances, &instanceMatrices[0], GL_STATIC_DRAW);
+  for (unsigned int i = 0; i < 4; ++i)
+    {
+      glEnableVertexAttribArray(i+5);
+      glVertexAttribPointer(i+5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(i * sizeof(glm::vec4)));
+      glVertexAttribDivisor(i+5, 1);
+    }
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+Model::IndirectBufferToken::IndirectBufferToken(GLuint indicesCount, GLuint numInstances, GLuint instanceOffset)
+  :
+    indicesCount(indicesCount),
+    numInstances(numInstances),
+    instanceOffset(instanceOffset)
+{}
+
+void Model::cleanup()
+{
+  basicGLBuffers.deleteBuffers();
+  shadowDIBO.deleteBuffers();
 }
