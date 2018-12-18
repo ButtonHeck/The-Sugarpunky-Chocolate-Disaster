@@ -20,7 +20,6 @@ const std::string TEXTURES_DIR = RES_DIR + "textures/";
 const std::string MODELS_DIR = RES_DIR + "models/";
 const std::string FONT_DIR = RES_DIR + "fonts/";
 const std::string SAVES_DIR = RES_DIR + "saves/";
-constexpr bool INCLUDE_RES_DIR = true;
 
 //view frustum config
 constexpr float NEAR_PLANE = 0.1f;

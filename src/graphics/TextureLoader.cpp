@@ -9,18 +9,28 @@ TextureLoader::TextureLoader(ScreenResolution &screen)
   ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
 }
 
-GLuint TextureLoader::createAndBindTextureObject(GLenum target, GLuint textureUnit)
+GLuint TextureLoader::createTextureObject(GLenum target, GLuint textureUnit, bool isBindless)
 {
   GLuint texture;
   glCreateTextures(target, 1, &texture);
-  glActiveTexture(GL_TEXTURE0 + textureUnit);
-  glBindTexture(target, texture);
+  if (!isBindless)
+    {
+      glActiveTexture(GL_TEXTURE0 + textureUnit);
+      glBindTexture(target, texture);
+    }
   return texture;
 }
 
-GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, GLenum wrapType, GLint magFilter, GLint minFilter, bool useAnisotropy, bool includeCWD)
+GLuint TextureLoader::loadTexture(const std::string& path,
+                                  GLuint textureUnit,
+                                  GLenum wrapType,
+                                  GLint magFilter,
+                                  GLint minFilter,
+                                  bool useAnisotropy,
+                                  bool includeCWD,
+                                  bool isBindless)
 {
-  GLuint texture = createAndBindTextureObject(GL_TEXTURE_2D, textureUnit);
+  GLuint texture = createTextureObject(GL_TEXTURE_2D, textureUnit, isBindless);
   std::string fullPath = includeCWD ? std::string(TEXTURES_DIR + path) : path;
   if (!ilLoadImage(fullPath.c_str()))
     Logger::log("Error when loading texture: %\n", fullPath.c_str());
@@ -39,40 +49,7 @@ GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, G
       internalFormat = HDR_ENABLED ? GL_SRGB8 : GL_RGB8;
       dataFormat = GL_RGB;
     }
-  GLuint mipLevel = getMaxMip(imageWidth, imageHeight);
-  glTextureStorage2D(texture, mipLevel, internalFormat, imageWidth, imageHeight);
-  glTextureSubImage2D(texture, 0, 0, 0, imageWidth, imageHeight, dataFormat, GL_UNSIGNED_BYTE, data);
-  glGenerateTextureMipmap(texture);
-  setTex2DParameters(magFilter, minFilter, wrapType);
-  if (useAnisotropy)
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, ANISOTROPY);
-  ilDeleteImage(ilGetInteger(IL_ACTIVE_IMAGE));
-  return texture;
-}
-
-GLuint TextureLoader::loadTextureBindless(const std::string &path, GLenum wrapType, GLint magFilter, GLint minFilter, bool useAnisotropy, bool includeCWD)
-{
-  GLuint texture;
-  glCreateTextures(GL_TEXTURE_2D, 1, &texture);
-  std::string fullPath = includeCWD ? std::string(TEXTURES_DIR + path) : path;
-  if (!ilLoadImage(fullPath.c_str()))
-    Logger::log("Error when loading texture: %\n", fullPath.c_str());
-  ILubyte* data = ilGetData();
-  auto imageWidth = ilGetInteger(IL_IMAGE_WIDTH);
-  auto imageHeight = ilGetInteger(IL_IMAGE_HEIGHT);
-  auto imageChannels = ilGetInteger(IL_IMAGE_CHANNELS);
-  GLenum internalFormat, dataFormat;
-  if (imageChannels == 4)
-    {
-      internalFormat = HDR_ENABLED ? GL_SRGB8_ALPHA8 : GL_RGBA8;
-      dataFormat = GL_RGBA;
-    }
-  else if (imageChannels == 3)
-    {
-      internalFormat = HDR_ENABLED ? GL_SRGB8 : GL_RGB8;
-      dataFormat = GL_RGB;
-    }
-  GLuint mipLevel = getMaxMip(imageWidth, imageHeight);
+  GLsizei mipLevel = ((GLsizei)log2(std::max(imageWidth, imageHeight)) + 1);
   glTextureStorage2D(texture, mipLevel, internalFormat, imageWidth, imageHeight);
   glTextureSubImage2D(texture, 0, 0, 0, imageWidth, imageHeight, dataFormat, GL_UNSIGNED_BYTE, data);
   glGenerateTextureMipmap(texture);
@@ -85,21 +62,21 @@ GLuint TextureLoader::loadTextureBindless(const std::string &path, GLenum wrapTy
 
 GLuint TextureLoader::createFrameMSTexture(int samples, GLuint textureUnit)
 {
-  GLuint texture = createAndBindTextureObject(GL_TEXTURE_2D_MULTISAMPLE, textureUnit);
+  GLuint texture = createTextureObject(GL_TEXTURE_2D_MULTISAMPLE, textureUnit, false);
   glTextureStorage2DMultisample(texture, samples, GL_RGB16, screenResolution.getWidth(), screenResolution.getHeight(), GL_TRUE);
   return texture;
 }
 
 GLuint TextureLoader::createFrameTexture(GLuint textureUnit)
 {
-  GLuint texture = createAndBindTextureObject(GL_TEXTURE_2D, textureUnit);
+  GLuint texture = createTextureObject(GL_TEXTURE_2D, textureUnit, false);
   glTextureStorage2D(texture, 1, GL_RGB16, screenResolution.getWidth(), screenResolution.getHeight());
   return texture;
 }
 
 GLuint TextureLoader::createDepthMapTexture(int width, int height, GLuint textureUnit)
 {
-  GLuint texture = createAndBindTextureObject(GL_TEXTURE_2D_ARRAY, textureUnit);
+  GLuint texture = createTextureObject(GL_TEXTURE_2D_ARRAY, textureUnit, false);
   glTextureStorage3D(texture, 3, GL_DEPTH_COMPONENT24, width, height, 3);
   GLfloat borderColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, borderColor);
@@ -120,7 +97,7 @@ GLuint TextureLoader::loadCubemap(const std::string& directory, GLuint textureUn
           TEXTURES_DIR + directory + "front.png"
         });
   ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
-  GLuint texture = createAndBindTextureObject(GL_TEXTURE_CUBE_MAP, textureUnit);
+  GLuint texture = createTextureObject(GL_TEXTURE_CUBE_MAP, textureUnit, false);
   for (unsigned int i = 0; i < faces.size(); i++)
     {
       if (!ilLoadImage(faces[i].c_str()))
@@ -180,28 +157,8 @@ GLuint TextureLoader::createUnderwaterReliefTexture(const map2D_f &waterMap, GLu
   glActiveTexture(GL_TEXTURE0 + textureUnit);
   glBindTexture(GL_TEXTURE_2D, texture);
   glTextureSubImage2D(texture, 0, 0, 0, WORLD_WIDTH, WORLD_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, textureData.get());
-  setTex2DParameters(magFilter, minFilter, GL_REPEAT);
+  setTexture2DParameters(texture, magFilter, minFilter, GL_REPEAT);
   return texture;
-}
-
-unsigned int TextureLoader::getMaxMip(unsigned int width, unsigned int height)
-{
-  unsigned int refDimension = std::max(width, height);
-  unsigned int mip = 1;
-  while (refDimension / 2 != 0)
-    {
-      ++mip;
-      refDimension /= 2;
-    }
-  return mip;
-}
-
-void TextureLoader::setTex2DParameters(GLint magFilter, GLint minFilter, GLenum wrapType)
-{
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapType);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapType);
 }
 
 void TextureLoader::setTexture2DParameters(GLuint texture, GLint magFilter, GLint minFilter, GLenum wrapType)

@@ -106,7 +106,14 @@ void Model::loadMaterialTextures(aiMaterial *material,
       material->GetTexture(type, i, &texturePath);
 
       std::string path = this->directory + '/' + std::string(texturePath.C_Str());
-      GLuint texture = textureLoader->loadTextureBindless(path, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, !INCLUDE_RES_DIR);
+      GLuint texture = textureLoader->loadTexture(path,
+                                                  0,
+                                                  GL_REPEAT,
+                                                  GL_LINEAR,
+                                                  GL_LINEAR_MIPMAP_LINEAR,
+                                                  true,
+                                                  false,
+                                                  true);
       GLuint64 textureHandle = glGetTextureHandleARB(texture);
       std::string uniformSamplerString = typeName + "[" + std::to_string(samplerIndex) + "]";
       BindlessTextureManager::emplace_back(uniformSamplerString, texture, textureHandle);

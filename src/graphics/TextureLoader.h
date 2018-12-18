@@ -25,22 +25,15 @@ public:
                      GLint magFilter,
                      GLint minFilter,
                      bool useAnisotropy,
-                     bool includeCWD = true);
-  GLuint loadTextureBindless(const std::string& path,
-                             GLenum wrapType,
-                             GLint magFilter,
-                             GLint minFilter,
-                             bool useAnisotropy,
-                             bool includeCWD = true);
+                     bool includeCWD = true,
+                     bool isBindless = false);
   GLuint createFrameMSTexture(int multisample, GLuint textureUnit);
   GLuint createFrameTexture(GLuint textureUnit);
   GLuint createDepthMapTexture(int width, int height, GLuint textureUnit);
   GLuint loadCubemap(const std::string& directory, GLuint textureUnit);
   GLuint createUnderwaterReliefTexture(const map2D_f& waterMap, GLuint textureUnit, GLint magFilter, GLint minFilter);
-  unsigned int getMaxMip(unsigned int width, unsigned int height);
 private:
-  GLuint createAndBindTextureObject(GLenum target, GLuint textureUnit);
-  void setTex2DParameters(GLint magFilter, GLint minFilter, GLenum wrapType);
+  GLuint createTextureObject(GLenum target, GLuint textureUnit, bool isBindless);
   void setTexture2DParameters(GLuint texture, GLint magFilter, GLint minFilter, GLenum wrapType);
   void setTex2DArrayParameters(GLint magFilter, GLint minFilter, GLenum wrapType);
   ScreenResolution& screenResolution;

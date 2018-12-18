@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <vector>
 #include <string>
-//#include "graphics/Shader.h"
+#include "graphics/Shader.h"
 
 struct BindlessTexture
 {
@@ -12,8 +12,6 @@ struct BindlessTexture
   GLuint id;
   GLuint64 handle;
 };
-
-class Shader;
 
 class BindlessTextureManager
 {
