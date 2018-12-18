@@ -12,6 +12,7 @@
 #include "util/Settings.h"
 #include "graphics/Frustum.h"
 #include "graphics/OpenglBuffer.h"
+#include "graphics/BindlessTextureManager.h"
 
 class Model
 {
@@ -31,7 +32,7 @@ private:
   void loadModel(const std::string& path);
   void processNode(aiNode* node, const aiScene* scene, GLuint &meshIndexOffset);
   Mesh processMesh(aiMesh* mesh, const aiScene* scene, GLuint meshIndexOffset);
-  std::vector<Texture> loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName);
+  void loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName, unsigned int &textureIndex);
   void setup();
   constexpr static int NUM_CHUNKS = (WORLD_WIDTH / CHUNK_SIZE) * (WORLD_HEIGHT / CHUNK_SIZE);
 
@@ -45,12 +46,10 @@ private:
   void addIndirectBufferData(int directionToChunkLength, GLuint indicesSize, GLuint numInstances, GLuint instanceOffset, bool shadow);
 
   std::vector<Mesh> meshes;
-  std::vector<Texture> textures_loaded;
   std::string directory;
   static TextureLoader* textureLoader;
 
   std::vector<Vertex> vertices;
-  std::vector<Texture> textures;
   std::vector<GLuint> indices;
 
   //screen rendering related variables

@@ -1,18 +1,20 @@
 #version 450
-layout (early_fragment_tests) in;
+#extension GL_ARB_bindless_texture : enable
 
 out vec4 o_FragColor;
 
-in vec2  v_TexCoords;
-in float v_DiffuseComponent;
-in float v_SpecularComponent;
-in float v_AlphaValue;
-in float v_SunPositionAttenuation;
-in float v_NormalY;
-in vec3  v_FragPos;
+in vec2         v_TexCoords;
+in float        v_DiffuseComponent;
+in float        v_SpecularComponent;
+in float        v_AlphaValue;
+in float        v_SunPositionAttenuation;
+in float        v_NormalY;
+in vec3         v_FragPos;
+flat in uvec2   v_TexIndices;
 
-uniform sampler2D u_texture_diffuse1;
-uniform sampler2D u_texture_specular1;
+layout (bindless_sampler) uniform;
+uniform sampler2D u_texture_diffuse[100];
+uniform sampler2D u_texture_specular[100];
 uniform bool      u_shadow;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
@@ -28,8 +30,8 @@ const float MAX_DESATURATING_VALUE = 0.5;
 
 void main()
 {
-    vec4 sampledDiffuse = texture(u_texture_diffuse1, v_TexCoords);
-    vec4 sampledSpecular = sampledDiffuse * texture(u_texture_specular1, v_TexCoords).r;
+    vec4 sampledDiffuse = texture(u_texture_diffuse[v_TexIndices.x], v_TexCoords);
+    vec4 sampledSpecular = sampledDiffuse * texture(u_texture_specular[v_TexIndices.y], v_TexCoords).r;
 
     @include shadingVariables.ifs
 

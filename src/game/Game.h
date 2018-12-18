@@ -21,6 +21,7 @@
 #include "graphics/ShadowVolume.h"
 #include "graphics/FrustumRenderer.h"
 #include "graphics/ShadowVolumeRenderer.h"
+#include "graphics/BindlessTextureManager.h"
 
 class Camera;
 class Options;

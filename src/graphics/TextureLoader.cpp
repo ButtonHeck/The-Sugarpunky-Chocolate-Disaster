@@ -43,9 +43,42 @@ GLuint TextureLoader::loadTexture(const std::string& path, GLuint textureUnit, G
   glTextureStorage2D(texture, mipLevel, internalFormat, imageWidth, imageHeight);
   glTextureSubImage2D(texture, 0, 0, 0, imageWidth, imageHeight, dataFormat, GL_UNSIGNED_BYTE, data);
   glGenerateTextureMipmap(texture);
-  setTexture2DParameters(magFilter, minFilter, wrapType);
+  setTex2DParameters(magFilter, minFilter, wrapType);
   if (useAnisotropy)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, ANISOTROPY);
+  ilDeleteImage(ilGetInteger(IL_ACTIVE_IMAGE));
+  return texture;
+}
+
+GLuint TextureLoader::loadTextureBindless(const std::string &path, GLenum wrapType, GLint magFilter, GLint minFilter, bool useAnisotropy, bool includeCWD)
+{
+  GLuint texture;
+  glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+  std::string fullPath = includeCWD ? std::string(TEXTURES_DIR + path) : path;
+  if (!ilLoadImage(fullPath.c_str()))
+    Logger::log("Error when loading texture: %\n", fullPath.c_str());
+  ILubyte* data = ilGetData();
+  auto imageWidth = ilGetInteger(IL_IMAGE_WIDTH);
+  auto imageHeight = ilGetInteger(IL_IMAGE_HEIGHT);
+  auto imageChannels = ilGetInteger(IL_IMAGE_CHANNELS);
+  GLenum internalFormat, dataFormat;
+  if (imageChannels == 4)
+    {
+      internalFormat = HDR_ENABLED ? GL_SRGB8_ALPHA8 : GL_RGBA8;
+      dataFormat = GL_RGBA;
+    }
+  else if (imageChannels == 3)
+    {
+      internalFormat = HDR_ENABLED ? GL_SRGB8 : GL_RGB8;
+      dataFormat = GL_RGB;
+    }
+  GLuint mipLevel = getMaxMip(imageWidth, imageHeight);
+  glTextureStorage2D(texture, mipLevel, internalFormat, imageWidth, imageHeight);
+  glTextureSubImage2D(texture, 0, 0, 0, imageWidth, imageHeight, dataFormat, GL_UNSIGNED_BYTE, data);
+  glGenerateTextureMipmap(texture);
+  setTexture2DParameters(texture, magFilter, minFilter, wrapType);
+  if (useAnisotropy)
+    glTextureParameterf(texture, GL_TEXTURE_MAX_ANISOTROPY, ANISOTROPY);
   ilDeleteImage(ilGetInteger(IL_ACTIVE_IMAGE));
   return texture;
 }
@@ -70,7 +103,7 @@ GLuint TextureLoader::createDepthMapTexture(int width, int height, GLuint textur
   glTextureStorage3D(texture, 3, GL_DEPTH_COMPONENT24, width, height, 3);
   GLfloat borderColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, borderColor);
-  setTexture3DParameters(GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER);
+  setTex2DArrayParameters(GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER);
   return texture;
 }
 
@@ -147,7 +180,7 @@ GLuint TextureLoader::createUnderwaterReliefTexture(const map2D_f &waterMap, GLu
   glActiveTexture(GL_TEXTURE0 + textureUnit);
   glBindTexture(GL_TEXTURE_2D, texture);
   glTextureSubImage2D(texture, 0, 0, 0, WORLD_WIDTH, WORLD_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, textureData.get());
-  setTexture2DParameters(magFilter, minFilter, GL_REPEAT);
+  setTex2DParameters(magFilter, minFilter, GL_REPEAT);
   return texture;
 }
 
@@ -163,7 +196,7 @@ unsigned int TextureLoader::getMaxMip(unsigned int width, unsigned int height)
   return mip;
 }
 
-void TextureLoader::setTexture2DParameters(GLint magFilter, GLint minFilter, GLenum wrapType)
+void TextureLoader::setTex2DParameters(GLint magFilter, GLint minFilter, GLenum wrapType)
 {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
@@ -171,7 +204,15 @@ void TextureLoader::setTexture2DParameters(GLint magFilter, GLint minFilter, GLe
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapType);
 }
 
-void TextureLoader::setTexture3DParameters(GLint magFilter, GLint minFilter, GLenum wrapType)
+void TextureLoader::setTexture2DParameters(GLuint texture, GLint magFilter, GLint minFilter, GLenum wrapType)
+{
+  glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, magFilter);
+  glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, minFilter);
+  glTextureParameteri(texture, GL_TEXTURE_WRAP_S, wrapType);
+  glTextureParameteri(texture, GL_TEXTURE_WRAP_T, wrapType);
+}
+
+void TextureLoader::setTex2DArrayParameters(GLint magFilter, GLint minFilter, GLenum wrapType)
 {
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, magFilter);
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, minFilter);

@@ -29,6 +29,7 @@ public:
   static void cacheUniformsMode(bool cache);
   GLuint getUniformLocation(const std::string& uniformName);
   void setInt(const std::string& uniformName, int value);
+  void setUInt64(const std::string& uniformName, GLuint64 value);
   void setFloat(const std::string& uniformName, float value);
   void setBool(const std::string& uniformName, bool value);
   void setVec3(const std::string& uniformName, glm::vec3 vec);

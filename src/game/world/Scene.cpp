@@ -18,7 +18,7 @@ Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &tex
     buildableFacade(shaderManager.get(SHADER_BUILDABLE),
                     shaderManager.get(SHADER_SELECTED)),
     plantsFacade(shaderManager.get(SHADER_MODELS_PHONG),
-                 shaderManager.get(SHADER_MODELS)),
+                 shaderManager.get(SHADER_MODELS_GOURAUD)),
     skyboxFacade(shaderManager.get(SHADER_SKYBOX)),
     theSunFacade(shaderManager.get(SHADER_SUN)),
     underwaterFacade(shaderManager.get(SHADER_UNDERWATER)),

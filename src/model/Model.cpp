@@ -38,9 +38,9 @@ void Model::processNode(aiNode *node, const aiScene* scene, GLuint& meshIndexOff
 
 Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene, GLuint meshIndexOffset)
 {
+  static unsigned int diffuseSamplerIndex = 0, specularSamplerIndex = 0;
   std::vector<Vertex> vertices;
   std::vector<GLuint> indices;
-  std::vector<Texture> textures;
 
   for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
@@ -76,6 +76,8 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene, GLuint meshIndexOffs
       vector.y = mesh->mBitangents[i].y;
       vector.z = mesh->mBitangents[i].z;
       vertex.Bitangent = vector;
+      //texture type indices
+      vertex.TexIndices = glm::uvec2(diffuseSamplerIndex, specularSamplerIndex);
       vertices.emplace_back(std::move(vertex));
     }
   //process indices
@@ -87,50 +89,29 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene, GLuint meshIndexOffs
     }
   //process materials
   aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+  loadMaterialTextures(material, aiTextureType_DIFFUSE, "u_texture_diffuse", diffuseSamplerIndex);
+  loadMaterialTextures(material, aiTextureType_SPECULAR, "u_texture_specular", specularSamplerIndex);
 
-  std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "u_texture_diffuse");
-  textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-
-  std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "u_texture_specular");
-  textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-
-  std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "u_texture_normal");
-  textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-
-  std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "u_texture_height");
-  textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-
-  return Mesh(vertices, textures, indices);
+  return Mesh(vertices, indices);
 }
 
-std::vector<Texture> Model::loadMaterialTextures(aiMaterial *material, aiTextureType type, std::__cxx11::string typeName)
+void Model::loadMaterialTextures(aiMaterial *material,
+                                 aiTextureType type,
+                                 std::string typeName,
+                                 unsigned int& samplerIndex)
 {
-  std::vector<Texture> textures;
   for (unsigned int i = 0; i < material->GetTextureCount(type); i++)
     {
-      bool skip = false;
       aiString texturePath;
       material->GetTexture(type, i, &texturePath);
-      for (unsigned int j = 0; j < textures_loaded.size(); j++)
-        {
-          if (strcmp(texturePath.C_Str(), textures_loaded[j].path.data()) == 0)
-            {
-              skip = true;
-              break;
-            }
-        }
-      if (!skip)
-        {
-          Texture texture;
-          texture.type = typeName;
-          std::string path = this->directory + '/' + std::string(texturePath.C_Str());
-          texture.id = textureLoader->loadTexture(path, TEX_MESH_DIFFUSE + i, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, !INCLUDE_RES_DIR);
-          texture.path = texturePath.C_Str();
-          textures.emplace_back(texture);
-          textures_loaded.emplace_back(texture);
-        }
+
+      std::string path = this->directory + '/' + std::string(texturePath.C_Str());
+      GLuint texture = textureLoader->loadTextureBindless(path, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, !INCLUDE_RES_DIR);
+      GLuint64 textureHandle = glGetTextureHandleARB(texture);
+      std::string uniformSamplerString = typeName + "[" + std::to_string(samplerIndex) + "]";
+      BindlessTextureManager::emplace_back(uniformSamplerString, texture, textureHandle);
+      samplerIndex++;
     }
-  return textures;
 }
 
 void Model::setup()
@@ -153,6 +134,9 @@ void Model::setup()
   glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
   glEnableVertexAttribArray(4);
   glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+  glEnableVertexAttribArray(9);
+  //intentionally set GL_FLOAT
+  glVertexAttribPointer(9, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexIndices));
 
   if (basicGLBuffers.get(DIBO) == 0)
     {
@@ -180,29 +164,19 @@ void Model::bindTextureLoader(TextureLoader &textureLoader)
 
 void Model::draw(bool isShadow)
 {
-  BENCHMARK("Model: draw (full func)", true);
-//  if (!isShadow)
-//    {
-//      for(unsigned int i = 0; i < textures.size(); i++)
-//        {
-//          glActiveTexture(GL_TEXTURE0 + TEX_MESH_DIFFUSE + i);
-//          glBindTexture(GL_TEXTURE_2D, textures[i].id);
-//        }
-//    }
-  {
-    BENCHMARK("Model: multiDrawIndirect", true);
-    basicGLBuffers.bind(VAO);
-    if (!isShadow)
-      {
-        basicGLBuffers.bind(DIBO);
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCount, 0);
-      }
-    else
-      {
-        shadowDIBO.bind(DIBO);
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCountShadow, 0);
-      }
-  }
+  basicGLBuffers.bind(VAO);
+  if (!isShadow)
+    {
+      BENCHMARK("Model: draw", true);
+      basicGLBuffers.bind(DIBO);
+      glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCount, 0);
+    }
+  else
+    {
+      BENCHMARK("Model: draw shadows", true);
+      shadowDIBO.bind(DIBO);
+      glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCountShadow, 0);
+    }
 }
 
 void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,

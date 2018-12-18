@@ -35,6 +35,7 @@ Game::~Game()
   waterAnimator->join();
   meshIndirectBufferUpdater->join();
   BenchmarkTimer::finish(updateCount);
+  BindlessTextureManager::makeAllNonResident();
 }
 
 void Game::setup()
@@ -44,6 +45,7 @@ void Game::setup()
   RendererStateManager::setInitialRenderingState(options[OPT_USE_MULTISAMPLING]);
   MouseInputManager::setCallbacks(window);
   scene.setup();
+  BindlessTextureManager::loadToShaders(shaderManager.get(SHADER_MODELS_PHONG), shaderManager.get(SHADER_MODELS_GOURAUD));
   setupThreads();
   shaderManager.setupConstantUniforms(glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()));
   screenBuffer.setup();

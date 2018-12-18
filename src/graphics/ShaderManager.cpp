@@ -43,7 +43,7 @@ ShaderManager::ShaderManager()
                                   {GL_FRAGMENT_SHADER, "skybox/skybox.fs"});
   shaders[SHADER_SUN] = Shader({GL_VERTEX_SHADER, "theSun/theSun.vs"},
                                {GL_FRAGMENT_SHADER, "theSun/theSun.fs"});
-  shaders[SHADER_MODELS] = Shader({GL_VERTEX_SHADER, "modelGouraud/model.vs"},
+  shaders[SHADER_MODELS_GOURAUD] = Shader({GL_VERTEX_SHADER, "modelGouraud/model.vs"},
                                   {GL_FRAGMENT_SHADER, "modelGouraud/model.fs"},
                                   {{GL_VERTEX_SHADER, "modelGrassAnimationAndBlending.ivs"},
                                   {GL_FRAGMENT_SHADER, "shadowSampling.ifs"},
@@ -158,18 +158,14 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setMat4("u_projection", fontProjection);
   shader->setInt("u_fontTexture", TEX_FONT);
 
-  bindShaderUnit(shader, SHADER_MODELS);
+  bindShaderUnit(shader, SHADER_MODELS_GOURAUD);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
-  shader->setInt("u_texture_diffuse1", TEX_MESH_DIFFUSE);
-  shader->setInt("u_texture_specular1", TEX_MESH_SPECULAR);
   shader->setFloat("u_bias", 3.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.12f);
   shader->setFloat("u_ambientNight", 0.03f);
 
   bindShaderUnit(shader, SHADER_MODELS_PHONG);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
-  shader->setInt("u_texture_diffuse1", TEX_MESH_DIFFUSE);
-  shader->setInt("u_texture_specular1", TEX_MESH_SPECULAR);
   shader->setFloat("u_bias", 3.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.12f);
   shader->setFloat("u_ambientNight", 0.03f);

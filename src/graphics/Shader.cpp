@@ -89,6 +89,18 @@ void Shader::setInt(const std::__cxx11::string &uniformName, int value)
     glUniform1i(getUniformLocation(uniformName), value);
 }
 
+void Shader::setUInt64(const std::string &uniformName, GLuint64 value)
+{
+  if (Shader::cachedUniforms)
+    {
+      if (uniformCache.find(uniformName) == uniformCache.end())
+        uniformCache[uniformName.c_str()] = getUniformLocation(uniformName);
+      glUniform1ui64ARB(uniformCache[uniformName.c_str()], value);
+    }
+  else
+    glUniform1ui64ARB(getUniformLocation(uniformName), value);
+}
+
 void Shader::setFloat(const std::__cxx11::string &uniformName, float value)
 {
   if (Shader::cachedUniforms)

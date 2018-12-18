@@ -9,11 +9,29 @@
 #include "util/Logger.h"
 #include "util/typeAliases.h"
 
+enum class TEXTURE_TYPE
+{
+  TEXTURE_TYPE_DIFFUSE,
+  TEXTURE_TYPE_SPECULAR
+};
+
 class TextureLoader
 {
 public:
   TextureLoader(ScreenResolution& screenResolution);
-  GLuint loadTexture(const std::string& path, GLuint textureUnit, GLenum wrapType, GLint magFilter, GLint minFilter, bool useAnisotropy, bool includeCWD = true);
+  GLuint loadTexture(const std::string& path,
+                     GLuint textureUnit,
+                     GLenum wrapType,
+                     GLint magFilter,
+                     GLint minFilter,
+                     bool useAnisotropy,
+                     bool includeCWD = true);
+  GLuint loadTextureBindless(const std::string& path,
+                             GLenum wrapType,
+                             GLint magFilter,
+                             GLint minFilter,
+                             bool useAnisotropy,
+                             bool includeCWD = true);
   GLuint createFrameMSTexture(int multisample, GLuint textureUnit);
   GLuint createFrameTexture(GLuint textureUnit);
   GLuint createDepthMapTexture(int width, int height, GLuint textureUnit);
@@ -22,8 +40,9 @@ public:
   unsigned int getMaxMip(unsigned int width, unsigned int height);
 private:
   GLuint createAndBindTextureObject(GLenum target, GLuint textureUnit);
-  void setTexture2DParameters(GLint magFilter, GLint minFilter, GLenum wrapType);
-  void setTexture3DParameters(GLint magFilter, GLint minFilter, GLenum wrapType);
+  void setTex2DParameters(GLint magFilter, GLint minFilter, GLenum wrapType);
+  void setTexture2DParameters(GLuint texture, GLint magFilter, GLint minFilter, GLenum wrapType);
+  void setTex2DArrayParameters(GLint magFilter, GLint minFilter, GLenum wrapType);
   ScreenResolution& screenResolution;
 };
 
