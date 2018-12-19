@@ -5,34 +5,36 @@ HillTreesGenerator::HillTreesGenerator()
     PlantGenerator()
 {
   models.reserve(16);
-  models.emplace_back("hillTree1/hillTree1.obj");
-  models.emplace_back("hillTree2/hillTree2.obj");
-  models.emplace_back("hillTree3/hillTree3.obj");
-  models.emplace_back("hillTree4/hillTree4.obj");
-  models.emplace_back("hillTree5/hillTree5.obj");
-  models.emplace_back("hillTree6/hillTree6.obj");
-  models.emplace_back("hillTree7/hillTree7.obj");
-  models.emplace_back("hillTree1/hillTree1.obj");
-  models.emplace_back("hillTree3/hillTree3.obj");
-  models.emplace_back("hillTree7/hillTree7.obj");
-  models.emplace_back("hillTree1/hillTree1.obj");
-  models.emplace_back("hillTree3/hillTree3.obj");
-  models.emplace_back("hillTree7/hillTree7.obj");
+  models.emplace_back("hillTree1/hillTree1.obj", false);
+  models.emplace_back("hillTree2/hillTree2.obj", false);
+  models.emplace_back("hillTree3/hillTree3.obj", false);
+  models.emplace_back("hillTree4/hillTree4.obj", false);
+  models.emplace_back("hillTree5/hillTree5.obj", false);
+  models.emplace_back("hillTree6/hillTree6.obj", false);
+  models.emplace_back("hillTree7/hillTree7.obj", false);
+  models.emplace_back("hillTree1/hillTree1.obj", false);
+  models.emplace_back("hillTree3/hillTree3.obj", false);
+  models.emplace_back("hillTree7/hillTree7.obj", false);
+  models.emplace_back("hillTree1/hillTree1.obj", false);
+  models.emplace_back("hillTree3/hillTree3.obj", false);
+  models.emplace_back("hillTree7/hillTree7.obj", false);
 
   lowPolyModels.reserve(16);
-  lowPolyModels.emplace_back("hillTree1/hillTree1.obj");
-  lowPolyModels.emplace_back("hillTree2/hillTree2.obj");
-  lowPolyModels.emplace_back("hillTree3/hillTree3.obj");
-  lowPolyModels.emplace_back("hillTree4/hillTree4.obj");
-  lowPolyModels.emplace_back("hillTree5/hillTree5.obj");
-  lowPolyModels.emplace_back("hillTree6/hillTree6.obj");
-  lowPolyModels.emplace_back("hillTree7/hillTree7.obj");
-  lowPolyModels.emplace_back("hillTree1/hillTree1.obj");
-  lowPolyModels.emplace_back("hillTree3/hillTree3.obj");
-  lowPolyModels.emplace_back("hillTree7/hillTree7.obj");
-  lowPolyModels.emplace_back("hillTree1/hillTree1.obj");
-  lowPolyModels.emplace_back("hillTree3/hillTree3.obj");
-  lowPolyModels.emplace_back("hillTree7/hillTree7.obj");
+  lowPolyModels.emplace_back("hillTree1/hillTree1.obj", true);
+  lowPolyModels.emplace_back("hillTree2/hillTree2.obj", true);
+  lowPolyModels.emplace_back("hillTree3/hillTree3.obj", true);
+  lowPolyModels.emplace_back("hillTree4/hillTree4.obj", true);
+  lowPolyModels.emplace_back("hillTree5/hillTree5.obj", true);
+  lowPolyModels.emplace_back("hillTree6/hillTree6.obj", true);
+  lowPolyModels.emplace_back("hillTree7/hillTree7.obj", true);
+  lowPolyModels.emplace_back("hillTree1/hillTree1.obj", true);
+  lowPolyModels.emplace_back("hillTree3/hillTree3.obj", true);
+  lowPolyModels.emplace_back("hillTree7/hillTree7.obj", true);
+  lowPolyModels.emplace_back("hillTree1/hillTree1.obj", true);
+  lowPolyModels.emplace_back("hillTree3/hillTree3.obj", true);
+  lowPolyModels.emplace_back("hillTree7/hillTree7.obj", true);
+
+  assert(lowPolyModels.size() == models.size());
 }
 
 void HillTreesGenerator::setup(const map2D_f &hillMap,

@@ -5,34 +5,36 @@ LandPlantsGenerator::LandPlantsGenerator()
     PlantGenerator()
 {
   models.reserve(16);
-  models.emplace_back("tree1/tree1.obj");
-  models.emplace_back("tree1_2/tree1_2.obj");
-  models.emplace_back("tree2/tree2.obj");
-  models.emplace_back("tree2_2/tree2_2.obj");
-  models.emplace_back("tree3/tree3.obj");
-  models.emplace_back("tree3_2/tree3_2.obj");
-  models.emplace_back("tree4/tree4.obj");
-  models.emplace_back("tree5/tree5.obj");
-  models.emplace_back("tree5_2/tree5_2.obj");
-  models.emplace_back("tree6/tree6.obj");
-  models.emplace_back("tree6_2/tree6_2.obj");
-  models.emplace_back("tree7/tree7.obj");
-  models.emplace_back("tree8/tree8.obj");
+  models.emplace_back("tree1/tree1.obj", false);
+  models.emplace_back("tree1_2/tree1_2.obj", false);
+  models.emplace_back("tree2/tree2.obj", false);
+  models.emplace_back("tree2_2/tree2_2.obj", false);
+  models.emplace_back("tree3/tree3.obj", false);
+  models.emplace_back("tree3_2/tree3_2.obj", false);
+  models.emplace_back("tree4/tree4.obj", false);
+  models.emplace_back("tree5/tree5.obj", false);
+  models.emplace_back("tree5_2/tree5_2.obj", false);
+  models.emplace_back("tree6/tree6.obj", false);
+  models.emplace_back("tree6_2/tree6_2.obj", false);
+  models.emplace_back("tree7/tree7.obj", false);
+  models.emplace_back("tree8/tree8.obj", false);
 
   lowPolyModels.reserve(16);
-  lowPolyModels.emplace_back("tree1/tree1.obj");
-  lowPolyModels.emplace_back("tree1_2/tree1_2.obj");
-  lowPolyModels.emplace_back("tree2/tree2.obj");
-  lowPolyModels.emplace_back("tree2_2/tree2_2.obj");
-  lowPolyModels.emplace_back("tree3/tree3.obj");
-  lowPolyModels.emplace_back("tree3_2/tree3_2.obj");
-  lowPolyModels.emplace_back("tree4/tree4.obj");
-  lowPolyModels.emplace_back("tree5/tree5.obj");
-  lowPolyModels.emplace_back("tree5_2/tree5_2.obj");
-  lowPolyModels.emplace_back("tree6/tree6.obj");
-  lowPolyModels.emplace_back("tree6_2/tree6_2.obj");
-  lowPolyModels.emplace_back("tree7/tree7.obj");
-  lowPolyModels.emplace_back("tree8/tree8.obj");
+  lowPolyModels.emplace_back("tree1/tree1.obj", true);
+  lowPolyModels.emplace_back("tree1_2/tree1_2.obj", true);
+  lowPolyModels.emplace_back("tree2/tree2.obj", true);
+  lowPolyModels.emplace_back("tree2_2/tree2_2.obj", true);
+  lowPolyModels.emplace_back("tree3/tree3.obj", true);
+  lowPolyModels.emplace_back("tree3_2/tree3_2.obj", true);
+  lowPolyModels.emplace_back("tree4/tree4.obj", true);
+  lowPolyModels.emplace_back("tree5/tree5.obj", true);
+  lowPolyModels.emplace_back("tree5_2/tree5_2.obj", true);
+  lowPolyModels.emplace_back("tree6/tree6.obj", true);
+  lowPolyModels.emplace_back("tree6_2/tree6_2.obj", true);
+  lowPolyModels.emplace_back("tree7/tree7.obj", true);
+  lowPolyModels.emplace_back("tree8/tree8.obj", true);
+
+  assert(lowPolyModels.size() == models.size());
 }
 
 void LandPlantsGenerator::setup(const map2D_f &baseMap,

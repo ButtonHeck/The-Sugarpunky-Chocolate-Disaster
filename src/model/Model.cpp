@@ -1,8 +1,9 @@
 #include "model/Model.h"
 #include <IL/il.h>
 
-Model::Model(const std::string& path)
+Model::Model(const std::string& path, bool isLowPoly)
   :
+    isLowPoly(isLowPoly),
     basicGLBuffers(VAO | VBO | INSTANCE_VBO | EBO)
 {
   loadModel(std::string(MODELS_DIR + path));
@@ -192,8 +193,7 @@ void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                       const Frustum &frustum,
                                       float loadingDistance,
                                       float loadingDistanceShadow,
-                                      float loadingDistanceLowPoly,
-                                      bool isLowPoly)
+                                      float loadingDistanceLowPoly)
 {
   BENCHMARK("(ST)Model: update DIB data", true);
   drawIndirectCommandPrimCount = drawIndirectCommandPrimCountShadow = 0;

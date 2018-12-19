@@ -55,7 +55,7 @@ void PlantsFacade::draw(glm::vec3 &lightDir,
                        false);
   treesRenderer.render(landPlantsGenerator.lowPolyModels,
                        hillTreesGenerator.lowPolyModels,
-                       useLandBlending,
+                       false,
                        false);
 
   shaders.switchToGrass(usePhongShading, true);
@@ -64,7 +64,7 @@ void PlantsFacade::draw(glm::vec3 &lightDir,
                        useLandBlending,
                        false);
   grassRenderer.render(grassGenerator.lowPolyModels,
-                       useLandBlending,
+                       false,
                        false);
 }
 
@@ -127,6 +127,7 @@ void PlantsFacade::prepareDistributionMap(int cycles)
 void PlantsFacade::prepareMeshesIndirectData(PlantGenerator &generator, const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum)
 {
   auto& models = generator.models;
+  auto& lowPolyModels = generator.lowPolyModels;
   auto& chunks = generator.chunks;
   for (unsigned int i = 0; i < models.size(); i++)
     {
@@ -134,33 +135,24 @@ void PlantsFacade::prepareMeshesIndirectData(PlantGenerator &generator, const gl
       model.prepareMeshesIndirectData(chunks, i, cameraPositionXZ, viewFrustum,
                                       LOADING_DISTANCE_UNITS_SHADOW_SQUARE,
                                       LOADING_DISTANCE_UNITS_SHADOW_SQUARE,
-                                      LOADING_DISTANCE_UNITS_SQUARE + 25,
-                                      false);
-    }
-  auto& lowPolyModels = generator.lowPolyModels;
-  for (unsigned int i = 0; i < lowPolyModels.size(); i++)
-    {
-      Model& model = lowPolyModels[i];
-      model.prepareMeshesIndirectData(chunks, i, cameraPositionXZ, viewFrustum,
-                                      LOADING_DISTANCE_UNITS_SHADOW_SQUARE,
-                                      LOADING_DISTANCE_UNITS_SHADOW_SQUARE,
-                                      LOADING_DISTANCE_UNITS_SQUARE + 25,
-                                      true);
+                                      LOADING_DISTANCE_UNITS_SQUARE);
+      Model& lowPolyModel = lowPolyModels[i];
+      lowPolyModel.prepareMeshesIndirectData(chunks, i, cameraPositionXZ, viewFrustum,
+                                             LOADING_DISTANCE_UNITS_SHADOW_SQUARE,
+                                             LOADING_DISTANCE_UNITS_SHADOW_SQUARE,
+                                             LOADING_DISTANCE_UNITS_SQUARE);
     }
 }
 
 void PlantsFacade::updateIndirectBufferData(PlantGenerator &generator)
 {
   auto& models = generator.models;
+  auto& lowPolyModels = generator.lowPolyModels;
   for (unsigned int i = 0; i < models.size(); i++)
     {
       Model& model = models[i];
       model.updateIndirectBufferData();
-    }
-  auto& lowPolyModels = generator.lowPolyModels;
-  for (unsigned int i = 0; i < lowPolyModels.size(); i++)
-    {
-      Model& model = lowPolyModels[i];
-      model.updateIndirectBufferData();
+      Model& lowPolyModel = lowPolyModels[i];
+      lowPolyModel.updateIndirectBufferData();
     }
 }

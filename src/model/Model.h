@@ -17,13 +17,16 @@
 class Model
 {
 public:
-  Model(const std::string& path);
+  Model(const std::string& path, bool isLowPoly);
   static void bindTextureLoader(TextureLoader& textureLoader);
   void draw(bool isShadow);
   void prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2& cameraPositionXZ,
-                                 const Frustum& frustum, float loadingDistance, float loadingDistanceShadow, float loadingDistanceLowPoly, bool isLowPoly);
+                                 const Frustum& frustum,
+                                 float loadingDistance,
+                                 float loadingDistanceShadow,
+                                 float loadingDistanceLowPoly);
   void updateIndirectBufferData();
   void loadModelInstances(glm::mat4* models, unsigned int numModels);
   void cleanup();
@@ -51,6 +54,7 @@ private:
 
   std::vector<Vertex> vertices;
   std::vector<GLuint> indices;
+  bool isLowPoly;
 
   //screen rendering related variables
   OpenglBuffer basicGLBuffers;

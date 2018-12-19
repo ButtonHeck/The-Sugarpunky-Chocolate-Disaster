@@ -5,20 +5,22 @@ GrassGenerator::GrassGenerator()
     PlantGenerator()
 {
   models.reserve(8);
-  models.emplace_back("grass1/grass1.obj");
-  models.emplace_back("grass2/grass2.obj");
-  models.emplace_back("grass3/grass3.obj");
-  models.emplace_back("grass4/grass4.obj");
-  models.emplace_back("grass5/grass5.obj");
-  models.emplace_back("grass6/grass6.obj");
+  models.emplace_back("grass1/grass1.obj", false);
+  models.emplace_back("grass2/grass2.obj", false);
+  models.emplace_back("grass3/grass3.obj", false);
+  models.emplace_back("grass4/grass4.obj", false);
+  models.emplace_back("grass5/grass5.obj", false);
+  models.emplace_back("grass6/grass6.obj", false);
 
   lowPolyModels.reserve(8);
-  lowPolyModels.emplace_back("grass1/grass1.obj");
-  lowPolyModels.emplace_back("grass2/grass2.obj");
-  lowPolyModels.emplace_back("grass3/grass3.obj");
-  lowPolyModels.emplace_back("grass4/grass4.obj");
-  lowPolyModels.emplace_back("grass5/grass5.obj");
-  lowPolyModels.emplace_back("grass6/grass6.obj");
+  lowPolyModels.emplace_back("grass1/grass1.obj", true);
+  lowPolyModels.emplace_back("grass2/grass2.obj", true);
+  lowPolyModels.emplace_back("grass3/grass3.obj", true);
+  lowPolyModels.emplace_back("grass4/grass4.obj", true);
+  lowPolyModels.emplace_back("grass5/grass5.obj", true);
+  lowPolyModels.emplace_back("grass6/grass6.obj", true);
+
+  assert(lowPolyModels.size() == models.size());
 }
 
 void GrassGenerator::setup(const map2D_f &baseMap,
