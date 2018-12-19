@@ -10,8 +10,8 @@ in vec3         v_FragPos;
 flat in uvec2   v_TexIndices;
 
 layout (bindless_sampler) uniform;
-uniform sampler2D u_texture_diffuse[100];
-uniform sampler2D u_texture_specular[100];
+uniform sampler2D u_texture_diffuse[200];
+uniform sampler2D u_texture_specular[200];
 uniform bool      u_shadow;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;

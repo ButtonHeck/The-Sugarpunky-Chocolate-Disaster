@@ -189,7 +189,11 @@ void Model::draw(bool isShadow)
 void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                       unsigned int index,
                                       const glm::vec2& cameraPositionXZ,
-                                      const Frustum &frustum)
+                                      const Frustum &frustum,
+                                      float loadingDistance,
+                                      float loadingDistanceShadow,
+                                      float loadingDistanceLowPoly,
+                                      bool isLowPoly)
 {
   BENCHMARK("(ST)Model: update DIB data", true);
   drawIndirectCommandPrimCount = drawIndirectCommandPrimCountShadow = 0;
@@ -201,25 +205,46 @@ void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
       //if a chunk is farther than the load distance - just discard it
       glm::vec2 directionToChunk = chunks[i].getMidPoint() - cameraPositionXZ;
       unsigned int directionToChunkLength = glm::length2(directionToChunk);
-      if (directionToChunkLength < LOADING_DISTANCE_UNITS_SQUARE)
+      if (!isLowPoly)
         {
-          glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
-          if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
-              frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
-              frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
-              frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS))
+          if (directionToChunkLength < loadingDistance)
             {
-              addIndirectBufferData(directionToChunkLength,
-                                    indicesSize,
-                                    chunks[i].getNumInstances(index),
-                                    chunks[i].getInstanceOffset(index),
-                                    false);
-              if (directionToChunkLength < LOADING_DISTANCE_UNITS_SHADOW_SQUARE)
-                addIndirectBufferData(directionToChunkLength,
-                                      indicesSize,
-                                      chunks[i].getNumInstances(index),
-                                      chunks[i].getInstanceOffset(index),
-                                      true);
+              glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
+              if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+                  frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS))
+                {
+                  addIndirectBufferData(directionToChunkLength,
+                                        indicesSize,
+                                        chunks[i].getNumInstances(index),
+                                        chunks[i].getInstanceOffset(index),
+                                        false);
+                  if (directionToChunkLength < loadingDistanceShadow)
+                    addIndirectBufferData(directionToChunkLength,
+                                          indicesSize,
+                                          chunks[i].getNumInstances(index),
+                                          chunks[i].getInstanceOffset(index),
+                                          true);
+                }
+            }
+        }
+      else
+        {
+          if (directionToChunkLength < loadingDistanceLowPoly && directionToChunkLength >= loadingDistance)
+            {
+              glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
+              if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
+                  frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS))
+                {
+                  addIndirectBufferData(directionToChunkLength,
+                                        indicesSize,
+                                        chunks[i].getNumInstances(index),
+                                        chunks[i].getInstanceOffset(index),
+                                        false);
+                }
             }
         }
     }

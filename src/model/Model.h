@@ -23,7 +23,7 @@ public:
   void prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                  unsigned int index,
                                  const glm::vec2& cameraPositionXZ,
-                                 const Frustum& frustum);
+                                 const Frustum& frustum, float loadingDistance, float loadingDistanceShadow, float loadingDistanceLowPoly, bool isLowPoly);
   void updateIndirectBufferData();
   void loadModelInstances(glm::mat4* models, unsigned int numModels);
   void cleanup();

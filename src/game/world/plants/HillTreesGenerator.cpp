@@ -18,6 +18,21 @@ HillTreesGenerator::HillTreesGenerator()
   models.emplace_back("hillTree1/hillTree1.obj");
   models.emplace_back("hillTree3/hillTree3.obj");
   models.emplace_back("hillTree7/hillTree7.obj");
+
+  lowPolyModels.reserve(16);
+  lowPolyModels.emplace_back("hillTree1/hillTree1.obj");
+  lowPolyModels.emplace_back("hillTree2/hillTree2.obj");
+  lowPolyModels.emplace_back("hillTree3/hillTree3.obj");
+  lowPolyModels.emplace_back("hillTree4/hillTree4.obj");
+  lowPolyModels.emplace_back("hillTree5/hillTree5.obj");
+  lowPolyModels.emplace_back("hillTree6/hillTree6.obj");
+  lowPolyModels.emplace_back("hillTree7/hillTree7.obj");
+  lowPolyModels.emplace_back("hillTree1/hillTree1.obj");
+  lowPolyModels.emplace_back("hillTree3/hillTree3.obj");
+  lowPolyModels.emplace_back("hillTree7/hillTree7.obj");
+  lowPolyModels.emplace_back("hillTree1/hillTree1.obj");
+  lowPolyModels.emplace_back("hillTree3/hillTree3.obj");
+  lowPolyModels.emplace_back("hillTree7/hillTree7.obj");
 }
 
 void HillTreesGenerator::setup(const map2D_f &hillMap,

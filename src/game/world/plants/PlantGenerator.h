@@ -24,6 +24,7 @@ protected:
   void loadMatrices(map2D_mat4& newMatrices);
 
   std::vector<Model> models;
+  std::vector<Model> lowPolyModels;
   std::vector<glm::mat4*> matrices;
   std::unique_ptr<unsigned int[]> numPlants;
   std::vector<ModelChunk> chunks;

@@ -16,6 +16,8 @@ PlantGenerator::~PlantGenerator()
     delete[] matrices[i];
   for (Model& model : models)
     model.cleanup();
+  for (Model& model : lowPolyModels)
+    model.cleanup();
 }
 
 void PlantGenerator::setupModelChunks()
@@ -111,6 +113,8 @@ void PlantGenerator::updateMatrices(std::vector<glm::mat4 *> &newMatrices, unsig
 
   for (unsigned int i = 0; i < newMatrices.size(); i++)
     models[i].loadModelInstances(matrices[i], numPlants[i]);
+  for (unsigned int i = 0; i < newMatrices.size(); i++)
+    lowPolyModels[i].loadModelInstances(matrices[i], numPlants[i]);
 }
 
 map2D_mat4 PlantGenerator::substituteMatricesStorage()
@@ -138,4 +142,6 @@ void PlantGenerator::loadMatrices(map2D_mat4 &newMatrices)
     }
   for (unsigned int i = 0; i < models.size(); i++)
     models[i].loadModelInstances(matrices[i], numPlants[i]);
+  for (unsigned int i = 0; i < lowPolyModels.size(); i++)
+    lowPolyModels[i].loadModelInstances(matrices[i], numPlants[i]);
 }
