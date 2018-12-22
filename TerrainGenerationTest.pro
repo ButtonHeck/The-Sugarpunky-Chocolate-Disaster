@@ -575,7 +575,35 @@ DISTFILES += \
     res/models/hillTree4LP/hillTree4LP.mtl \
     res/models/hillTree5LP/hillTree5LP.mtl \
     res/models/hillTree6LP/hillTree6LP.mtl \
-    res/models/hillTree7LP/hillTree7LP.mtl
+    res/models/hillTree7LP/hillTree7LP.mtl \
+    res/models/grass1LP/grass1LP.obj \
+    res/models/grass2LP/grass2LP.obj \
+    res/models/grass3LP/grass3LP.obj \
+    res/models/grass4LP/grass4LP.obj \
+    res/models/grass5LP/grass5LP.obj \
+    res/models/grass6LP/grass6LP.obj \
+    res/models/grass1LP/grass.png \
+    res/models/grass1LP/grass2.png \
+    res/models/grass2LP/grass.png \
+    res/models/grass2LP/grass2.png \
+    res/models/grass3LP/grass.png \
+    res/models/grass3LP/grass2.png \
+    res/models/grass4LP/grass.png \
+    res/models/grass4LP/grass2.png \
+    res/models/grass5LP/grass.png \
+    res/models/grass5LP/grass2.png \
+    res/models/grass5LP/rock.png \
+    res/models/grass5LP/rock_spec.png \
+    res/models/grass6LP/grass.png \
+    res/models/grass6LP/grass2.png \
+    res/models/grass6LP/rock.png \
+    res/models/grass6LP/rock_spec.png \
+    res/models/grass1LP/grass1LP.mtl \
+    res/models/grass2LP/grass2LP.mtl \
+    res/models/grass3LP/grass3LP.mtl \
+    res/models/grass4LP/grass4LP.mtl \
+    res/models/grass5LP/grass5LP.mtl \
+    res/models/grass6LP/grass6LP.mtl
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

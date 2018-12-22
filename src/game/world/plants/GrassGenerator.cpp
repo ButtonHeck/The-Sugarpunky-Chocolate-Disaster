@@ -13,12 +13,12 @@ GrassGenerator::GrassGenerator()
   models.emplace_back("grass6/grass6.obj", false);
 
   lowPolyModels.reserve(8);
-  lowPolyModels.emplace_back("grass1/grass1.obj", true);
-  lowPolyModels.emplace_back("grass2/grass2.obj", true);
-  lowPolyModels.emplace_back("grass3/grass3.obj", true);
-  lowPolyModels.emplace_back("grass4/grass4.obj", true);
-  lowPolyModels.emplace_back("grass5/grass5.obj", true);
-  lowPolyModels.emplace_back("grass6/grass6.obj", true);
+  lowPolyModels.emplace_back("grass1LP/grass1LP.obj", true);
+  lowPolyModels.emplace_back("grass2LP/grass2LP.obj", true);
+  lowPolyModels.emplace_back("grass3LP/grass3LP.obj", true);
+  lowPolyModels.emplace_back("grass4LP/grass4LP.obj", true);
+  lowPolyModels.emplace_back("grass5LP/grass5LP.obj", true);
+  lowPolyModels.emplace_back("grass6LP/grass6LP.obj", true);
 
   assert(lowPolyModels.size() == models.size());
 }
