@@ -107,12 +107,13 @@ void Model::loadMaterialTextures(aiMaterial *material,
       material->GetTexture(type, i, &texturePath);
 
       std::string path = this->directory + '/' + std::string(texturePath.C_Str());
+      bool useAnisotropy = !isLowPoly;
       GLuint texture = textureLoader->loadTexture(path,
                                                   0,
                                                   GL_REPEAT,
                                                   GL_LINEAR,
                                                   GL_LINEAR_MIPMAP_LINEAR,
-                                                  true,
+                                                  useAnisotropy,
                                                   false,
                                                   true);
       GLuint64 textureHandle = glGetTextureHandleARB(texture);

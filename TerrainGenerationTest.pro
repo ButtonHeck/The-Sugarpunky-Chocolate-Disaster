@@ -440,7 +440,90 @@ DISTFILES += \
     res/shaders/include/modelGrassAnimationAndBlending.ivs \
     res/shaders/frustum/frustum.vs \
     res/shaders/frustum/frustum.fs \
-    res/shaders/shadow/shadow.gs
+    res/shaders/shadow/shadow.gs \
+    res/models/tree1LP/tree.jpg \
+    res/models/tree1LP/tree_spec.jpg \
+    res/models/tree1LP/foliage5.png \
+    res/models/tree1LP/foliage5_spec.png \
+    res/models/tree1LP/tree1LP.mtl \
+    res/models/tree1_2LP/tree1_2LP.obj \
+    res/models/tree1_2LP/tree.jpg \
+    res/models/tree1_2LP/tree_spec.jpg \
+    res/models/tree1_2LP/foliage5.png \
+    res/models/tree1_2LP/foliage5_spec.png \
+    res/models/tree1_2LP/tree1_2LP.mtl \
+    res/models/tree1LP/tree1LP.obj \
+    res/models/tree2LP/tree2LP.obj \
+    res/models/tree2LP/tree.jpg \
+    res/models/tree2LP/tree_spec.jpg \
+    res/models/tree2LP/foliage1.png \
+    res/models/tree2LP/foliage1_spec.png \
+    res/models/tree2LP/tree2LP.mtl \
+    res/models/tree2_2LP/tree2_2LP.obj \
+    res/models/tree2_2LP/tree.jpg \
+    res/models/tree2_2LP/tree_spec.jpg \
+    res/models/tree2_2LP/foliage1.png \
+    res/models/tree2_2LP/foliage1_spec.png \
+    res/models/tree2_2LP/tree2_2LP.mtl \
+    res/models/tree3LP/tree3LP.obj \
+    res/models/tree3LP/foliage-red.png \
+    res/models/tree3LP/foliage1.png \
+    res/models/tree3LP/foliage1_spec.png \
+    res/models/tree3LP/nut.png \
+    res/models/tree3LP/stem.png \
+    res/models/tree3LP/tree3LP.mtl \
+    res/models/tree3_2LP/tree3_2LP.obj \
+    res/models/tree3_2LP/foliage-red.png \
+    res/models/tree3_2LP/foliage1.png \
+    res/models/tree3_2LP/foliage1_spec.png \
+    res/models/tree3_2LP/nut.png \
+    res/models/tree3_2LP/tree3_2LP.mtl \
+    res/models/tree4LP/tree4LP.obj \
+    res/models/tree4LP/tree.jpg \
+    res/models/tree4LP/tree_spec.jpg \
+    res/models/tree4LP/cream.png \
+    res/models/tree4LP/cream_spec.png \
+    res/models/tree4LP/dough.png \
+    res/models/tree4LP/dough_spec.png \
+    res/models/tree4LP/tree4LP.mtl \
+    res/models/tree5LP/tree5LP.obj \
+    res/models/tree5LP/tree.jpg \
+    res/models/tree5LP/tree_spec.jpg \
+    res/models/tree5LP/foliage5.png \
+    res/models/tree5LP/foliage5_spec.png \
+    res/models/tree5LP/tree5LP.mtl \
+    res/models/tree5_2LP/tree5_2LP.obj \
+    res/models/tree5_2LP/tree.jpg \
+    res/models/tree5_2LP/tree_spec.jpg \
+    res/models/tree5_2LP/foliage5.png \
+    res/models/tree5_2LP/foliage5_spec.png \
+    res/models/tree5_2LP/tree5_2LP.mtl \
+    res/models/tree6_2LP/tree6_2LP.obj \
+    res/models/tree6LP/tree6LP.obj \
+    res/models/tree7LP/tree7LP.obj \
+    res/models/tree8LP/tree8LP.obj \
+    res/models/tree6_2LP/tree.jpg \
+    res/models/tree6_2LP/tree_spec.jpg \
+    res/models/tree6LP/tree.jpg \
+    res/models/tree6LP/tree_spec.jpg \
+    res/models/tree7LP/tree.jpg \
+    res/models/tree7LP/tree_spec.jpg \
+    res/models/tree8LP/tree.jpg \
+    res/models/tree8LP/tree_spec.jpg \
+    res/models/tree6_2LP/foliage.png \
+    res/models/tree6_2LP/foliage_spec.png \
+    res/models/tree6LP/foliage.png \
+    res/models/tree6LP/foliage_spec.png \
+    res/models/tree7LP/foliage.png \
+    res/models/tree7LP/foliage_spec.png \
+    res/models/tree8LP/foliage.png \
+    res/models/tree8LP/foliage2.png \
+    res/models/tree8LP/foliage2_spec.png \
+    res/models/tree8LP/foliage_spec.png \
+    res/models/tree6_2LP/tree6_2LP.mtl \
+    res/models/tree6LP/tree6LP.mtl \
+    res/models/tree7LP/tree7LP.mtl \
+    res/models/tree8LP/tree8LP.mtl
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
