@@ -523,7 +523,59 @@ DISTFILES += \
     res/models/tree6_2LP/tree6_2LP.mtl \
     res/models/tree6LP/tree6LP.mtl \
     res/models/tree7LP/tree7LP.mtl \
-    res/models/tree8LP/tree8LP.mtl
+    res/models/tree8LP/tree8LP.mtl \
+    res/models/hillTree1LP/hillTree1LP.obj \
+    res/models/hillTree2LP/hillTree2LP.obj \
+    res/models/hillTree3LP/hillTree3LP.obj \
+    res/models/hillTree4LP/hillTree4LP.obj \
+    res/models/hillTree5LP/hillTree5LP.obj \
+    res/models/hillTree6LP/hillTree6LP.obj \
+    res/models/hillTree7LP/hillTree7LP.obj \
+    res/models/hillTree1LP/tree.jpg \
+    res/models/hillTree1LP/tree_spec.jpg \
+    res/models/hillTree2LP/tree.jpg \
+    res/models/hillTree2LP/tree_spec.jpg \
+    res/models/hillTree3LP/tree.jpg \
+    res/models/hillTree3LP/tree_spec.jpg \
+    res/models/hillTree4LP/tree.jpg \
+    res/models/hillTree4LP/tree_spec.jpg \
+    res/models/hillTree5LP/tree.jpg \
+    res/models/hillTree5LP/tree_spec.jpg \
+    res/models/hillTree6LP/tree.jpg \
+    res/models/hillTree6LP/tree_spec.jpg \
+    res/models/hillTree7LP/tree.jpg \
+    res/models/hillTree7LP/tree_spec.jpg \
+    res/models/hillTree1LP/foliage.png \
+    res/models/hillTree1LP/foliage_spec.png \
+    res/models/hillTree2LP/foliage1.png \
+    res/models/hillTree2LP/foliage2.png \
+    res/models/hillTree2LP/foliage3.png \
+    res/models/hillTree2LP/foliage4.png \
+    res/models/hillTree2LP/foliage_spec.png \
+    res/models/hillTree3LP/foliage.png \
+    res/models/hillTree3LP/foliage_spec.png \
+    res/models/hillTree4LP/foliage1.png \
+    res/models/hillTree4LP/foliage2.png \
+    res/models/hillTree4LP/foliage3.png \
+    res/models/hillTree4LP/foliage4.png \
+    res/models/hillTree4LP/foliage_spec.png \
+    res/models/hillTree5LP/cookie-foliage.png \
+    res/models/hillTree5LP/cookie-foliage_spec.png \
+    res/models/hillTree5LP/foliage.png \
+    res/models/hillTree5LP/foliage_spec.png \
+    res/models/hillTree6LP/cookie-foliage.png \
+    res/models/hillTree6LP/cookie-foliage_spec.png \
+    res/models/hillTree6LP/foliage.png \
+    res/models/hillTree6LP/foliage_spec.png \
+    res/models/hillTree7LP/foliage.png \
+    res/models/hillTree7LP/foliage_spec.png \
+    res/models/hillTree1LP/hillTree1LP.mtl \
+    res/models/hillTree2LP/hillTree2LP.mtl \
+    res/models/hillTree3LP/hillTree3LP.mtl \
+    res/models/hillTree4LP/hillTree4LP.mtl \
+    res/models/hillTree5LP/hillTree5LP.mtl \
+    res/models/hillTree6LP/hillTree6LP.mtl \
+    res/models/hillTree7LP/hillTree7LP.mtl
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
