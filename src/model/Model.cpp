@@ -245,6 +245,12 @@ void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                         chunks[i].getNumInstances(index),
                                         chunks[i].getInstanceOffset(index),
                                         false);
+                  if (directionToChunkLength < loadingDistanceShadow)
+                    addIndirectBufferData(directionToChunkLength,
+                                          indicesSize,
+                                          chunks[i].getNumInstances(index),
+                                          chunks[i].getInstanceOffset(index),
+                                          true);
                 }
             }
         }
