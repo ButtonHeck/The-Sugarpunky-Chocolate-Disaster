@@ -42,7 +42,7 @@ void main()
 
     vec3 Reflect = reflect(-u_lightDir, shadingNormal);
     vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
-    float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 4.0) * 0.75 * sunPositionAttenuation;
+    float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 4.0) * sunPositionAttenuation;
 
     ambientColor = mix(ambientColorNightSelf, ambientColorDaySelf, sunPositionAttenuation);
     ambientColor += nightAmbientColor * (1.0 - sunPositionAttenuation);

@@ -53,5 +53,5 @@ void main()
     //specular
     vec3 Reflect = reflect(-u_lightDir, normal);
     vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
-    v_SpecularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 4.0) * 0.75 * v_SunPositionAttenuation;
+    v_SpecularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 4.0) * v_SunPositionAttenuation;
 }
