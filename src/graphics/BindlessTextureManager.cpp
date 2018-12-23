@@ -3,6 +3,12 @@
 std::vector<BindlessTexture> BindlessTextureManager::textures;
 void BindlessTextureManager::emplace_back(const std::string &textureSamplerUniformName, GLuint textureID, GLuint64 textureHandle)
 {
+  static bool capacityReserved = false;
+  if (!capacityReserved)
+    {
+      textures.reserve(200);
+      capacityReserved = true;
+    }
   textures.emplace_back(textureSamplerUniformName, textureID, textureHandle);
 }
 
