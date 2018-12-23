@@ -10,8 +10,9 @@ in vec3         v_FragPos;
 flat in uvec2   v_TexIndices;
 
 layout (bindless_sampler) uniform;
-uniform sampler2D u_texture_diffuse[200];
-uniform sampler2D u_texture_specular[200];
+//TODO: Now all the samplers are limited to 255 units, better keep these as uvec2 and pass through SSBO
+uniform sampler2D u_texture_diffuse[150];
+uniform sampler2D u_texture_specular[100];
 uniform bool      u_shadow;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
