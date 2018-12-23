@@ -43,9 +43,9 @@ void main()
         int shadowMapIndex;
         vec3 projectedCoords;
         ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
-        float luminosity = ext_calculateLuminosity(shadowMapIndex, projectedCoords);
+        float luminosity = ext_calculateLuminosity5(shadowMapIndex, projectedCoords);
 
-        diffuseColor = luminosity * sampledDiffuse.rgb * v_DiffuseComponent;
+        diffuseColor = luminosity * sampledDiffuse.rgb * v_DiffuseComponent * (1.0 - u_ambientDay);
         specularColor = luminosity * sampledSpecular.rgb * v_SpecularComponent;
         resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);

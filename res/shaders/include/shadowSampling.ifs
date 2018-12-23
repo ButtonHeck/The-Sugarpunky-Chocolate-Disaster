@@ -13,6 +13,31 @@ const vec2  PCF3_COORDS[5] = {vec2(0,-1) * TEXEL_SIZE,
                               vec2(0,0)  * TEXEL_SIZE,
                               vec2(1,0)  * TEXEL_SIZE,
                               vec2(0,1)  * TEXEL_SIZE};
+const vec2  EARLY_BAILING_PCF5_CORNER_COORDS[4] = {vec2(-2,-2) * TEXEL_SIZE,
+                                                   vec2(2,-2)  * TEXEL_SIZE,
+                                                   vec2(-2,2)  * TEXEL_SIZE,
+                                                   vec2(2,2)   * TEXEL_SIZE};
+const vec2  PCF5_COORDS[21] = {vec2(-2,-1) * TEXEL_SIZE,
+                               vec2(-2,0) * TEXEL_SIZE,
+                               vec2(-2,1) * TEXEL_SIZE,
+                               vec2(-1,-2) * TEXEL_SIZE,
+                               vec2(-1,-1) * TEXEL_SIZE,
+                               vec2(-1,0) * TEXEL_SIZE,
+                               vec2(-1,1) * TEXEL_SIZE,
+                               vec2(-1,2) * TEXEL_SIZE,
+                               vec2(0,-2) * TEXEL_SIZE,
+                               vec2(0,-1) * TEXEL_SIZE,
+                               vec2(0,0) * TEXEL_SIZE,
+                               vec2(0,1) * TEXEL_SIZE,
+                               vec2(0,2) * TEXEL_SIZE,
+                               vec2(1,-2) * TEXEL_SIZE,
+                               vec2(1,-1) * TEXEL_SIZE,
+                               vec2(1,0) * TEXEL_SIZE,
+                               vec2(1,1) * TEXEL_SIZE,
+                               vec2(1,2) * TEXEL_SIZE,
+                               vec2(2,-1) * TEXEL_SIZE,
+                               vec2(2,0) * TEXEL_SIZE,
+                               vec2(2,1) * TEXEL_SIZE};
 
 void ext_calculateShadowMapIndexAndProjectedCoords(inout int shadowMapIndex, inout vec3 projectedCoords)
 {
@@ -66,7 +91,7 @@ float ext_sampleShadowMapLinear(int index, vec2 coords, vec3 projectedCoords)
 
 float ext_calculateLuminosity(int index, vec3 projectedCoords) //PCF 3x3 Filtering
 {
-    float shadow = 0.0f;
+    float shadow = 0.0;
     const int NUM_SAMPLES = 9;
 
     //perform early bailing
@@ -78,6 +103,29 @@ float ext_calculateLuminosity(int index, vec3 projectedCoords) //PCF 3x3 Filteri
     {
         for (int i = 0; i < NUM_SAMPLES - 4; i++)
             shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + PCF3_COORDS[i], projectedCoords);
+        return 1.0 - (shadow / NUM_SAMPLES * SHADOW_INFLUENCE);
+    }
+    //otherwise a fragment is probably entirely lit by the sun or entirely occluded (for most of fragments it is)
+    //so we do not need to perform all NUM_SAMPLES texture lookups, as only 4 lookups at the corners are enough
+    //to make a solution whether a fragment is completely shadowed or completely lit.
+    else
+        return 1.0 - (shadow / 4 * SHADOW_INFLUENCE);
+}
+
+float ext_calculateLuminosity5(int index, vec3 projectedCoords) //PCF 5x5 Filtering
+{
+    float shadow = 0.0;
+    const int NUM_SAMPLES = 25;
+
+    //perform early bailing
+    for (int i = 0; i < 4; i++)
+        shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + EARLY_BAILING_PCF5_CORNER_COORDS[i], projectedCoords);
+
+    //if the shadow value is not almost 0 or almost (1 * earlyBailingNumSamples) we should consider full range
+    if (shadow > 0.5 && shadow < 3.5)
+    {
+        for (int i = 0; i < NUM_SAMPLES - 4; i++)
+            shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + PCF5_COORDS[i], projectedCoords);
         return 1.0 - (shadow / NUM_SAMPLES * SHADOW_INFLUENCE);
     }
     //otherwise a fragment is probably entirely lit by the sun or entirely occluded (for most of fragments it is)

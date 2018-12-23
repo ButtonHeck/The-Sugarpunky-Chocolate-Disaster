@@ -160,14 +160,14 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
 
   bindShaderUnit(shader, SHADER_MODELS_GOURAUD);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
-  shader->setFloat("u_bias", 3.0f / DEPTH_MAP_TEXTURE_WIDTH);
-  shader->setFloat("u_ambientDay", 0.12f);
+  shader->setFloat("u_bias", 8.0f / DEPTH_MAP_TEXTURE_WIDTH);
+  shader->setFloat("u_ambientDay", 0.16f);
   shader->setFloat("u_ambientNight", 0.03f);
 
   bindShaderUnit(shader, SHADER_MODELS_PHONG);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
-  shader->setFloat("u_bias", 3.0f / DEPTH_MAP_TEXTURE_WIDTH);
-  shader->setFloat("u_ambientDay", 0.12f);
+  shader->setFloat("u_bias", 8.0f / DEPTH_MAP_TEXTURE_WIDTH);
+  shader->setFloat("u_ambientDay", 0.16f);
   shader->setFloat("u_ambientNight", 0.03f);
 
   bindShaderUnit(shader, SHADER_MS_TO_DEFAULT);

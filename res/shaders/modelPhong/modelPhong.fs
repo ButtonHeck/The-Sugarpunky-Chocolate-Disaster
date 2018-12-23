@@ -38,7 +38,7 @@ void main()
     if (u_isGrass)
         shadingNormal.y *= sign(shadingNormal.y) * mix(1.0, u_lightDir.y, sunPositionAttenuation); //intentionally left unnormalized
 
-    float diffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0) * sunPositionAttenuation;
+    float diffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0) * sunPositionAttenuation * (1.0 - u_ambientDay);
 
     vec3 Reflect = reflect(-u_lightDir, shadingNormal);
     vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
@@ -52,7 +52,7 @@ void main()
         int shadowMapIndex;
         vec3 projectedCoords;
         ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
-        float luminosity = ext_calculateLuminosity(shadowMapIndex, projectedCoords);
+        float luminosity = ext_calculateLuminosity5(shadowMapIndex, projectedCoords);
 
         diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
         specularColor = luminosity * specularComponent * sampledSpecular.rgb;
