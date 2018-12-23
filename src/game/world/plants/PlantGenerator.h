@@ -16,6 +16,16 @@ public:
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
 
+  constexpr static unsigned int LOADING_DISTANCE_CHUNKS = 2;
+  constexpr static unsigned int LOADING_DISTANCE_UNITS = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS;
+  constexpr static unsigned int LOADING_DISTANCE_UNITS_SQUARE = LOADING_DISTANCE_UNITS * LOADING_DISTANCE_UNITS;
+  constexpr static unsigned int LOADING_DISTANCE_CHUNKS_LOWPOLY = 8;
+  constexpr static unsigned int LOADING_DISTANCE_UNITS_LOWPOLY = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS_LOWPOLY;
+  constexpr static unsigned int LOADING_DISTANCE_UNITS_LOWPOLY_SQUARE = LOADING_DISTANCE_UNITS_LOWPOLY * LOADING_DISTANCE_UNITS_LOWPOLY;
+  constexpr static unsigned int LOADING_DISTANCE_CHUNKS_SHADOW = 4;
+  constexpr static unsigned int LOADING_DISTANCE_UNITS_SHADOW = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS_SHADOW;
+  constexpr static unsigned int LOADING_DISTANCE_UNITS_SHADOW_SQUARE = LOADING_DISTANCE_UNITS_SHADOW * LOADING_DISTANCE_UNITS_SHADOW;
+
 protected:
   friend class PlantsFacade;
   void setupModelChunks();

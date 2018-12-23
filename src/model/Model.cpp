@@ -1,9 +1,10 @@
 #include "model/Model.h"
 #include <IL/il.h>
 
-Model::Model(const std::string& path, bool isLowPoly)
+Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions)
   :
     isLowPoly(isLowPoly),
+    numRepetitions(numRepetitions),
     basicGLBuffers(VAO | VBO | INSTANCE_VBO | EBO)
 {
   loadModel(std::string(MODELS_DIR + path));
@@ -324,6 +325,11 @@ void Model::loadModelInstances(glm::mat4 *instanceMatrices, unsigned int numInst
     }
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+unsigned int Model::getRepeatCount() const
+{
+  return numRepetitions;
 }
 
 Model::IndirectBufferToken::IndirectBufferToken(GLuint indicesCount, GLuint numInstances, GLuint instanceOffset)

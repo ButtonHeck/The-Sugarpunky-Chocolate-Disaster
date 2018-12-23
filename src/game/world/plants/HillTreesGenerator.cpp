@@ -5,34 +5,22 @@ HillTreesGenerator::HillTreesGenerator()
     PlantGenerator()
 {
   models.reserve(16);
-  models.emplace_back("hillTree1/hillTree1.obj", false);
+  models.emplace_back("hillTree1/hillTree1.obj", false, 3);
   models.emplace_back("hillTree2/hillTree2.obj", false);
-  models.emplace_back("hillTree3/hillTree3.obj", false);
+  models.emplace_back("hillTree3/hillTree3.obj", false, 3);
   models.emplace_back("hillTree4/hillTree4.obj", false);
   models.emplace_back("hillTree5/hillTree5.obj", false);
   models.emplace_back("hillTree6/hillTree6.obj", false);
-  models.emplace_back("hillTree7/hillTree7.obj", false);
-  models.emplace_back("hillTree1/hillTree1.obj", false);
-  models.emplace_back("hillTree3/hillTree3.obj", false);
-  models.emplace_back("hillTree7/hillTree7.obj", false);
-  models.emplace_back("hillTree1/hillTree1.obj", false);
-  models.emplace_back("hillTree3/hillTree3.obj", false);
-  models.emplace_back("hillTree7/hillTree7.obj", false);
+  models.emplace_back("hillTree7/hillTree7.obj", false, 3);
 
   lowPolyModels.reserve(16);
-  lowPolyModels.emplace_back("hillTree1LP/hillTree1LP.obj", true);
+  lowPolyModels.emplace_back("hillTree1LP/hillTree1LP.obj", true, 3);
   lowPolyModels.emplace_back("hillTree2LP/hillTree2LP.obj", true);
-  lowPolyModels.emplace_back("hillTree3LP/hillTree3LP.obj", true);
+  lowPolyModels.emplace_back("hillTree3LP/hillTree3LP.obj", true, 3);
   lowPolyModels.emplace_back("hillTree4LP/hillTree4LP.obj", true);
   lowPolyModels.emplace_back("hillTree5LP/hillTree5LP.obj", true);
   lowPolyModels.emplace_back("hillTree6LP/hillTree6LP.obj", true);
-  lowPolyModels.emplace_back("hillTree7LP/hillTree7LP.obj", true);
-  lowPolyModels.emplace_back("hillTree1LP/hillTree1LP.obj", true);
-  lowPolyModels.emplace_back("hillTree3LP/hillTree3LP.obj", true);
-  lowPolyModels.emplace_back("hillTree7LP/hillTree7LP.obj", true);
-  lowPolyModels.emplace_back("hillTree1LP/hillTree1LP.obj", true);
-  lowPolyModels.emplace_back("hillTree3LP/hillTree3LP.obj", true);
-  lowPolyModels.emplace_back("hillTree7LP/hillTree7LP.obj", true);
+  lowPolyModels.emplace_back("hillTree7LP/hillTree7LP.obj", true, 3);
 
   assert(lowPolyModels.size() == models.size());
 }
@@ -60,7 +48,7 @@ void HillTreesGenerator::setupMatrices(const map2D_f &hillMap,
       numInstancesVector.emplace_back(0);
     }
 
-  unsigned int matrixCounter = 0, chunkCounter = 0;
+  unsigned int matrixCounter = 0, chunkCounter = 0, repeatCounter = 0;
   for (unsigned int y = 0; y < WORLD_HEIGHT; y += CHUNK_SIZE)
     {
       for (unsigned int x = 0; x < WORLD_WIDTH; x += CHUNK_SIZE)
@@ -99,10 +87,17 @@ void HillTreesGenerator::setupMatrices(const map2D_f &hillMap,
                       model = glm::rotate(model, glm::radians((float)(y1 * WORLD_WIDTH + x1 * 5)),
                                           glm::vec3(modelAxisRotationDistribution(randomizer), 1.0f, modelAxisRotationDistribution(randomizer)));
                       model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer)));
-                      matricesVecs[matrixCounter % matricesVecs.size()].emplace_back(std::move(model));
-                      ++numInstancesVector[matrixCounter % matricesVecs.size()];
-                      ++instanceOffsetsVector[matrixCounter % matricesVecs.size()];
-                      ++matrixCounter;
+
+                      size_t modelIndex = matrixCounter % matricesVecs.size();
+                      matricesVecs[modelIndex].emplace_back(std::move(model));
+                      ++numInstancesVector[modelIndex];
+                      ++instanceOffsetsVector[modelIndex];
+                      ++repeatCounter;
+                      if (repeatCounter == models[modelIndex].getRepeatCount())
+                        {
+                          ++matrixCounter;
+                          repeatCounter = 0;
+                        }
                     }
                 }
             }

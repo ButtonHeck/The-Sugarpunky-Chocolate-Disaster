@@ -17,7 +17,7 @@
 class Model
 {
 public:
-  Model(const std::string& path, bool isLowPoly);
+  Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions = 1);
   static void bindTextureLoader(TextureLoader& textureLoader);
   void draw(bool isShadow);
   void prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
@@ -29,6 +29,7 @@ public:
                                  float loadingDistanceLowPoly);
   void updateIndirectBufferData();
   void loadModelInstances(glm::mat4* models, unsigned int numModels);
+  unsigned int getRepeatCount() const;
   void cleanup();
 
 private:
@@ -55,6 +56,7 @@ private:
   std::vector<Vertex> vertices;
   std::vector<GLuint> indices;
   bool isLowPoly;
+  unsigned int numRepetitions;
 
   //screen rendering related variables
   OpenglBuffer basicGLBuffers;
