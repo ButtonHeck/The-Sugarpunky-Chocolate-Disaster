@@ -1,9 +1,12 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 #include <fstream>
-#include "util/Settings.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include "util/SceneSettings.h"
 #include "util/typeAliases.h"
 #include "util/BenchmarkTimer.h"
+
+constexpr float FOV = 60.0f;
 
 enum MOVE_DIRECTION
 {

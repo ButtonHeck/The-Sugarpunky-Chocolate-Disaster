@@ -3,8 +3,9 @@
 #include <vector>
 #include <fstream>
 #include <GL/glew.h>
+#include <glm/gtc/matrix_transform.hpp>
 #include "game/world/terrain/TerrainTile.h"
-#include "util/Settings.h"
+#include "util/SceneSettings.h"
 #include "util/typeAliases.h"
 #include "graphics/OpenglBuffer.h"
 

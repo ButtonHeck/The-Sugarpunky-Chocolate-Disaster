@@ -1,4 +1,4 @@
-#include "util/Settings.h"
+#include "util/DirectoriesSettings.h"
 
 const std::string getResourcesDirectory()
 {

@@ -41,7 +41,7 @@ Game::~Game()
 void Game::setup()
 {
   BENCHMARK("Game: setup", false);
-  Shader::cacheUniformsMode(UNIFORMS_NO_CACHE);
+  Shader::cacheUniformsMode(false);
   RendererStateManager::setInitialRenderingState(options[OPT_USE_MULTISAMPLING]);
   MouseInputManager::setCallbacks(window);
   scene.setup();

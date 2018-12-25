@@ -18,7 +18,7 @@ void HillsRenderer::render(bool useFC)
         glEnable(GL_RASTERIZER_DISCARD);
         glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, tfb);
         glBeginTransformFeedback(GL_TRIANGLES);
-        glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_TILE, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
         glEndTransformFeedback();
         glDisable(GL_RASTERIZER_DISCARD);
       }
@@ -34,7 +34,7 @@ void HillsRenderer::render(bool useFC)
       BENCHMARK("HillsRenderer: draw", true);
       shaders.renderShader.use();
       generator.basicGLBuffers.bind(VAO);
-      glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_TILE, GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
     }
 }
 
@@ -42,7 +42,7 @@ void HillsRenderer::renderDepthmap()
 {
   BENCHMARK("HillsRenderer: render depthmap", true);
   generator.basicGLBuffers.bind(VAO);
-  glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_TILE, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
 }
 
 void HillsRenderer::debugRender(GLenum primitiveType)
@@ -51,7 +51,7 @@ void HillsRenderer::debugRender(GLenum primitiveType)
   glLineWidth(2.0f);
   glDisable(GL_CULL_FACE);
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  glDrawElements(primitiveType, generator.tiles.size() * VERTICES_PER_TILE, GL_UNSIGNED_INT, 0);
+  glDrawElements(primitiveType, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glEnable(GL_CULL_FACE);
   glLineWidth(1.0f);

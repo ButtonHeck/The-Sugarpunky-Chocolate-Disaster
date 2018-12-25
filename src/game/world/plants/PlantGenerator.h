@@ -4,7 +4,6 @@
 #include <fstream>
 #include <memory>
 #include <random>
-#include "util/Settings.h"
 #include "model/Model.h"
 #include "game/world/plants/ModelChunk.h"
 

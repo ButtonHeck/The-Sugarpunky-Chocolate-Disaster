@@ -27,7 +27,6 @@ SOURCES += \
     src/game/world/plants/PlantGenerator.cpp \
     src/game/world/terrain/Generator.cpp \
     src/util/BenchmarkTimer.cpp \
-    src/util/Settings.cpp \
     src/game/world/plants/ModelChunk.cpp \
     src/game/world/terrain/TerrainTile.cpp \
     src/graphics/DepthmapBuffer.cpp \
@@ -81,7 +80,8 @@ SOURCES += \
     src/graphics/ShadowVolume.cpp \
     src/graphics/FrustumRenderer.cpp \
     src/graphics/ShadowVolumeRenderer.cpp \
-    src/graphics/BindlessTextureManager.cpp
+    src/graphics/BindlessTextureManager.cpp \
+    src/util/DirectoriesSettings.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -106,7 +106,6 @@ HEADERS += \
     src/game/world/plants/PlantGenerator.h \
     src/game/world/terrain/Generator.h \
     src/util/BenchmarkTimer.h \
-    src/util/Settings.h \
     src/util/Timer.h \
     src/game/world/plants/ModelChunk.h \
     src/game/world/terrain/TerrainTile.h \
@@ -164,7 +163,10 @@ HEADERS += \
     src/graphics/ShadowVolume.h \
     src/graphics/FrustumRenderer.h \
     src/graphics/ShadowVolumeRenderer.h \
-    src/graphics/BindlessTextureManager.h
+    src/graphics/BindlessTextureManager.h \
+    src/util/GraphicsSettings.h \
+    src/util/SceneSettings.h \
+    src/util/DirectoriesSettings.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

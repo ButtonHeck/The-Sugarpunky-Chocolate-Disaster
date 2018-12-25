@@ -18,7 +18,7 @@ void WaterRenderer::render(bool useCulling)
           glEnable(GL_RASTERIZER_DISCARD);
           glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, generator.culledBuffers.get(TFBO));
           glBeginTransformFeedback(GL_TRIANGLES);
-          glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_TILE, GL_UNSIGNED_INT, 0);
+          glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
           glEndTransformFeedback();
           glDisable(GL_RASTERIZER_DISCARD);
         }
@@ -38,7 +38,7 @@ void WaterRenderer::render(bool useCulling)
       shaders.renderShader.use();
       generator.basicGLBuffers.bind(VAO);
       glEnable(GL_BLEND);
-      glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_TILE, GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
       glDisable(GL_BLEND);
     }
 }
@@ -50,7 +50,7 @@ void WaterRenderer::debugRender(GLenum primitiveType)
   glLineWidth(2.0f);
   glDisable(GL_CULL_FACE);
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  glDrawElements(primitiveType, generator.tiles.size() * VERTICES_PER_TILE, GL_UNSIGNED_INT, 0);
+  glDrawElements(primitiveType, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glEnable(GL_CULL_FACE);
   glLineWidth(1.0f);

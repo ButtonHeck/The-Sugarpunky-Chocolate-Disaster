@@ -181,7 +181,7 @@ void TextManager::drawText()
 
   glEnable(GL_BLEND);
   glDisable(GL_CULL_FACE);
-  glDrawArrays(GL_TRIANGLES, 0, glyphsCount * VERTICES_PER_TILE);
+  glDrawArrays(GL_TRIANGLES, 0, glyphsCount * VERTICES_PER_QUAD);
   glDisable(GL_BLEND);
   glEnable(GL_CULL_FACE);
 

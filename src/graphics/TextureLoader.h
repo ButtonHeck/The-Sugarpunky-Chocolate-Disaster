@@ -4,8 +4,11 @@
 #include <memory>
 #include <GL/glew.h>
 #include <IL/il.h>
+#include <glm/gtc/matrix_transform.hpp>
 #include "graphics/ScreenResolution.h"
-#include "util/Settings.h"
+#include "util/DirectoriesSettings.h"
+#include "util/GraphicsSettings.h"
+#include "util/SceneSettings.h"
 #include "util/Logger.h"
 #include "util/typeAliases.h"
 

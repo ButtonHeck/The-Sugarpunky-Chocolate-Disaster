@@ -90,7 +90,7 @@ void ScreenBuffer::draw(bool enableMultisampling)
   shaderManager.get(SHADER_MS_TO_DEFAULT).use();
   screenBuffers.bind(VAO);
   glDisable(GL_DEPTH_TEST);
-  glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_TILE);
+  glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_QUAD);
   glEnable(GL_DEPTH_TEST);
 }
 

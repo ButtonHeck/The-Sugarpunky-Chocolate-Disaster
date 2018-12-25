@@ -9,7 +9,7 @@
 #include "graphics/TextureLoader.h"
 #include "graphics/TextureUnits.h"
 #include "game/world/plants/ModelChunk.h"
-#include "util/Settings.h"
+#include "util/DirectoriesSettings.h"
 #include "graphics/Frustum.h"
 #include "graphics/OpenglBuffer.h"
 #include "graphics/BindlessTextureManager.h"

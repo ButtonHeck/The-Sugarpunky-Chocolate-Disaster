@@ -33,7 +33,7 @@ void WaterGenerator::fillBufferData()
 {
   numVertices = tiles.size() * 24;
   vertices.reset(new GLfloat[numVertices]);
-  const size_t INDICES_DATA_LENGTH = tiles.size() * VERTICES_PER_TILE;
+  const size_t INDICES_DATA_LENGTH = tiles.size() * VERTICES_PER_QUAD;
   std::unique_ptr<GLuint[]> indices(new GLuint[INDICES_DATA_LENGTH]);
   size_t indicesBufferIndex = 0;
   const static glm::vec3 DEFAULT_Y_NORMAL(0.0f, 1.0f, 0.0f);

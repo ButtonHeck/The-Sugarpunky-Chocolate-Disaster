@@ -4,7 +4,6 @@
 #include <GLFW/glfw3.h>
 #include <functional>
 #include "game/Camera.h"
-#include "util/Settings.h"
 #include "game/Options.h"
 #include "util/BenchmarkTimer.h"
 #include "game/world/ambience/theSun/TheSunFacade.h"

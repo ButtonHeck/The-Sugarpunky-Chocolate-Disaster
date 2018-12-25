@@ -5,6 +5,7 @@
 #include "graphics/TextureUnits.h"
 #include "graphics/ShaderUnits.h"
 #include "util/BenchmarkTimer.h"
+#include "util/SceneSettings.h"
 
 class ShaderManager
 {

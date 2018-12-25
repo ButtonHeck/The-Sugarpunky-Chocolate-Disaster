@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include "graphics/OpenglBuffer.h"
-#include "util/Settings.h"
+#include "util/SceneSettings.h"
 
 class TheSun
 {

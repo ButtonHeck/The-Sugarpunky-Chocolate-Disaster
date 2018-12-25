@@ -1,6 +1,5 @@
 #ifndef SHADOWVOLUME_H
 #define SHADOWVOLUME_H
-#include "util/Settings.h"
 #include "game/world/ambience/theSun/TheSunFacade.h"
 #include "graphics/Frustum.h"
 

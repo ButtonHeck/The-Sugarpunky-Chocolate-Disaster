@@ -3,7 +3,6 @@
 #include "game/world/terrain/Generator.h"
 #include <memory>
 #include "game/Options.h"
-#include "util/Settings.h"
 #include "util/BenchmarkTimer.h"
 #include "game/world/terrain/water/WaterShader.h"
 

@@ -3,6 +3,9 @@
 #include <GL/glew.h>
 #include <unordered_map>
 
+constexpr unsigned char QUAD_INDICES[6] = {0,1,2,2,3,0};
+constexpr unsigned int VERTICES_PER_QUAD = 6;
+
 enum OPENGL_OBJECT : int
 {
   VAO =           0x000001,

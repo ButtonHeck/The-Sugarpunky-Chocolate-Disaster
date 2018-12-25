@@ -3,7 +3,7 @@
 #include <thread>
 #include <memory>
 #include <array>
-#include "util/Settings.h"
+#include "util/DirectoriesSettings.h"
 #include "graphics/ScreenBuffer.h"
 #include "graphics/DepthmapBuffer.h"
 #include "input/KeyboardManager.h"

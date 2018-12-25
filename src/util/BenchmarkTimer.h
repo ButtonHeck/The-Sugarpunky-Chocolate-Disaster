@@ -5,9 +5,16 @@
 #include <string.h>
 #include <algorithm>
 #include <iomanip>
-#include "util/Settings.h"
+#include "util/DirectoriesSettings.h"
 #include "util/Logger.h"
 #include "util/typeAliases.h"
+
+//benchmarking
+#ifdef _DEBUG
+#define BENCHMARK(benchmarkName, perFrame) BenchmarkTimer b(benchmarkName, perFrame);
+#else
+#define BENCHMARK(dont, care) //noop
+#endif
 
 class BenchmarkTimer
 {

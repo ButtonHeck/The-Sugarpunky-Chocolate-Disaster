@@ -11,7 +11,7 @@ void LandRenderer::render(Frustum &frustum)
   {
     BENCHMARK("LandRenderer: draw chunks", true);
     generator.basicGLBuffers.bind(VAO);
-    glDrawElementsInstanced(GL_TRIANGLES, VERTICES_PER_TILE, GL_UNSIGNED_BYTE, 0, generator.tiles.size());
+    glDrawElementsInstanced(GL_TRIANGLES, VERTICES_PER_QUAD, GL_UNSIGNED_BYTE, 0, generator.tiles.size());
   }
 
   //these ones should probably be FC-ed with multiDrawIndirect
@@ -48,7 +48,7 @@ void LandRenderer::addIndirectBufferData(GLuint &primCount,
                                          GLuint instanceOffset)
 {
   ++primCount;
-  buffer[dataOffset++] = VERTICES_PER_TILE;
+  buffer[dataOffset++] = VERTICES_PER_QUAD;
   buffer[dataOffset++] = numInstances;
   buffer[dataOffset++] = 0;
   buffer[dataOffset++] = 0;
