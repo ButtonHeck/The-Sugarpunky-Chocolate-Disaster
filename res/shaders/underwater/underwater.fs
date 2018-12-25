@@ -14,7 +14,7 @@ uniform float     u_ambientDay;
 uniform float     u_ambientNight;
 
 const vec3  NORMAL = vec3(0.0, 1.0, 0.0);
-const float MAX_DESATURATING_VALUE = 0.7;
+const float MAX_DESATURATING_VALUE = 0.3;
 
 @include desaturationFunc.ifs
 
@@ -24,7 +24,7 @@ void main()
 
     @include shadingVariables.ifs
 
-    vec3 ShadingNormal = clamp((texture(u_normal_map, v_FragPosXZ * 0.125).xzy) * 2.2, vec3(0.0), vec3(1.0));
+    vec3 ShadingNormal = texture(u_normal_map, v_FragPosXZ * 0.125).xzy;
     ShadingNormal.xyz -= vec3(0.5);
     ShadingNormal = normalize(NORMAL + ShadingNormal);
 

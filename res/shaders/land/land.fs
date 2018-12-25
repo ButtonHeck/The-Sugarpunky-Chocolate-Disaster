@@ -30,9 +30,9 @@ void main()
 
     @include shadingVariables.ifs
 
-    vec3 ShadingNormal = clamp((texture(u_normal_map, v_FragPos.xz * 0.125).xzy) * 2.2, vec3(0.0), vec3(1.0));
+    vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.125).xzy;
     ShadingNormal.xyz -= vec3(0.5);
-    ShadingNormal = normalize(NORMAL + 1.5 * ShadingNormal);
+    ShadingNormal = normalize(NORMAL + 5.0 * ShadingNormal);
 
     float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
     float diffuseComponent = max(dot(ShadingNormal, u_lightDir), 0.0) * sunPositionAttenuation;

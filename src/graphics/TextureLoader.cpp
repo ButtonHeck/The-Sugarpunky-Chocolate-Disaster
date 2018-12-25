@@ -28,7 +28,8 @@ GLuint TextureLoader::loadTexture(const std::string& path,
                                   GLint minFilter,
                                   bool useAnisotropy,
                                   bool includeCWD,
-                                  bool isBindless)
+                                  bool isBindless,
+                                  bool explicitNoSRGB)
 {
   GLuint texture = createTextureObject(GL_TEXTURE_2D, textureUnit, isBindless);
   std::string fullPath = includeCWD ? std::string(TEXTURES_DIR + path) : path;
@@ -41,12 +42,12 @@ GLuint TextureLoader::loadTexture(const std::string& path,
   GLenum internalFormat, dataFormat;
   if (imageChannels == 4)
     {
-      internalFormat = HDR_ENABLED ? GL_SRGB8_ALPHA8 : GL_RGBA8;
+      internalFormat = explicitNoSRGB ? GL_RGBA8 : (HDR_ENABLED ? GL_SRGB8_ALPHA8 : GL_RGBA8);
       dataFormat = GL_RGBA;
     }
   else if (imageChannels == 3)
     {
-      internalFormat = HDR_ENABLED ? GL_SRGB8 : GL_RGB8;
+      internalFormat = explicitNoSRGB ? GL_RGB8 : (HDR_ENABLED ? GL_SRGB8 : GL_RGB8);
       dataFormat = GL_RGB;
     }
   GLsizei mipLevel = ((GLsizei)log2(std::max(imageWidth, imageHeight)) + 1);

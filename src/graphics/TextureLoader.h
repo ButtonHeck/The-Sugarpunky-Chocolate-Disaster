@@ -29,7 +29,8 @@ public:
                      GLint minFilter,
                      bool useAnisotropy,
                      bool includeCWD = true,
-                     bool isBindless = false);
+                     bool isBindless = false,
+                     bool explicitNoSRGB = false);
   GLuint createFrameMSTexture(int multisample, GLuint textureUnit);
   GLuint createFrameTexture(GLuint textureUnit);
   GLuint createDepthMapTexture(int width, int height, GLuint textureUnit);
