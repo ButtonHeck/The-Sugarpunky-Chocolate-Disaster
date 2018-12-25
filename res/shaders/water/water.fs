@@ -33,7 +33,7 @@ void main()
 
         @include shadingVariables.ifs
 
-        vec3 ShadingNormal = clamp((texture(u_normal_map, v_FragPos.xz * 0.125).xzy) * 2.2, vec3(0.0), vec3(1.0));
+        vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.125).xzy;
         ShadingNormal.xyz -= vec3(0.5);
         ShadingNormal = normalize(v_Normal + ShadingNormal);
 

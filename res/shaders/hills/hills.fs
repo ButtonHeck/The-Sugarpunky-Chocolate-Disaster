@@ -69,11 +69,11 @@ void main()
 
         @include shadingVariables.ifs
 
-        vec3 ShadingNormal = clamp((texture(u_normal_map, v_FragPos.xz * 0.125).xzy) * 2.2, vec3(0.0), vec3(1.0));
+        vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.125).xzy;
         ShadingNormal.xyz -= vec3(0.5);
 
-        vec3 ShadingNormalLand = normalize(NORMAL + 1.5 * ShadingNormal);
-        vec3 ShadingNormalHill = normalize(v_Normal + 1.2 * ShadingNormal);
+        vec3 ShadingNormalLand = normalize(NORMAL + 5.0 * ShadingNormal);
+        vec3 ShadingNormalHill = normalize(v_Normal + ShadingNormal);
 
         float DiffuseComponentHill = max(dot(ShadingNormalHill, u_lightDir), 0.0);
         float DiffuseComponentLand = max(dot(ShadingNormalLand, u_lightDir), 0.0);

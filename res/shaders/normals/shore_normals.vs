@@ -11,7 +11,7 @@ out vec3 v_Normal;
 void main()
 {
     gl_Position = u_projectionView * i_pos;
-    vec3 ShadingNormal = clamp((texture(u_normal_map, i_pos.xz * 0.125).xzy) * 2.2, vec3(0.0), vec3(1.0));
+    vec3 ShadingNormal = texture(u_normal_map, i_pos.xz * 0.125).xzy;
     ShadingNormal.xyz -= vec3(0.5);
-    v_Normal = normalize(i_normal + 1.2 * ShadingNormal);
+    v_Normal = normalize(i_normal + 0.5 * ShadingNormal);
 }
