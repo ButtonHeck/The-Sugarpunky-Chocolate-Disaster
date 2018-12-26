@@ -59,11 +59,11 @@ void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, flo
   float boxMidZ = (boxMaxZ + boxMinZ) * 0.5f;
 
   //step 4 - calculate light source position
-  const float EXPECTED_MAX_HEIGHT = 14.0f;
+  const float EXPECTED_MAX_HEIGHT[3] = {14.0f, 28.0f, 56.0f};
   float x = boxWidth * 0.5f;
-  float angleRad = glm::atan(EXPECTED_MAX_HEIGHT / x);
+  float angleRad = glm::atan(EXPECTED_MAX_HEIGHT[layer] / x);
   float ellipseA = x / glm::cos(angleRad);
-  float ellipseB = EXPECTED_MAX_HEIGHT / glm::sin(angleRad);
+  float ellipseB = EXPECTED_MAX_HEIGHT[layer] / glm::sin(angleRad);
 
   glm::vec3 lightSource(boxMidX + sunAbsPositionX * ellipseA,
                         sunAbsPositionY * ellipseB,
@@ -81,14 +81,14 @@ void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, flo
   const float FAR_SIDE = fromLStoFarPointLength * cosAlpha
                           + 4.0f * sunAbsPositionY; //+some offset when the sun is at its zenith
 
-  glm::vec2 nearPoint(lightDirTo.x > 0.0f ? boxMinX : boxMaxX, EXPECTED_MAX_HEIGHT);
+  glm::vec2 nearPoint(lightDirTo.x > 0.0f ? boxMinX : boxMaxX, EXPECTED_MAX_HEIGHT[layer]);
   glm::vec2 fromLStoNearPoint = nearPoint - glm::vec2(lightSource);
   float fromLStoNearPointLength = glm::length(fromLStoNearPoint);
   glm::vec2 fromLStoNearPointNorm = glm::normalize(fromLStoNearPoint);
   cosAlpha = glm::dot(fromLStoNearPointNorm, glm::vec2(lightDirTo));
   const float NEAR_SIDE = fromLStoNearPointLength * cosAlpha;
 
-  glm::vec2 upPoint(lightDirTo.x > 0.0f ? boxMaxX : boxMinX, EXPECTED_MAX_HEIGHT);
+  glm::vec2 upPoint(lightDirTo.x > 0.0f ? boxMaxX : boxMinX, EXPECTED_MAX_HEIGHT[layer]);
   glm::vec2 fromLStoUpPoint = upPoint - glm::vec2(lightSource);
   float fromLStoUpPointLength = glm::length(fromLStoUpPoint);
   glm::vec2 fromLStoUpPointNorm = glm::normalize(fromLStoUpPoint);
