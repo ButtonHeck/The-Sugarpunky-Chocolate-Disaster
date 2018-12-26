@@ -605,7 +605,19 @@ DISTFILES += \
     res/models/grass3LP/grass3LP.mtl \
     res/models/grass4LP/grass4LP.mtl \
     res/models/grass5LP/grass5LP.mtl \
-    res/models/grass6LP/grass6LP.mtl
+    res/models/grass6LP/grass6LP.mtl \
+    res/textures/cubemapFarNormal/back.png \
+    res/textures/cubemapFarNormal/down.png \
+    res/textures/cubemapFarNormal/front.png \
+    res/textures/cubemapFarNormal/left.png \
+    res/textures/cubemapFarNormal/right.png \
+    res/textures/cubemapFarNormal/up.png \
+    res/textures/cubemapNormal/back.png \
+    res/textures/cubemapNormal/down.png \
+    res/textures/cubemapNormal/front.png \
+    res/textures/cubemapNormal/left.png \
+    res/textures/cubemapNormal/right.png \
+    res/textures/cubemapNormal/up.png
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

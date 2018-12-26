@@ -34,7 +34,7 @@ public:
   GLuint createFrameMSTexture(int multisample, GLuint textureUnit);
   GLuint createFrameTexture(GLuint textureUnit);
   GLuint createDepthMapTexture(int width, int height, GLuint textureUnit);
-  GLuint loadCubemap(const std::string& directory, GLuint textureUnit);
+  GLuint loadCubemap(const std::string& directory, GLuint textureUnit, bool explicitNoSRGB);
   GLuint createUnderwaterReliefTexture(const map2D_f& waterMap, GLuint textureUnit, GLint magFilter, GLint minFilter);
 private:
   GLuint createTextureObject(GLenum target, GLuint textureUnit, bool isBindless);

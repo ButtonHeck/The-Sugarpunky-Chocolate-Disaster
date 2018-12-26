@@ -16,9 +16,11 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_SHORE] = loader.loadTexture("shore.jpg", TEX_SHORE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[TEX_UNDERWATER_DIFFUSE] = loader.loadTexture("underwater.jpg", TEX_UNDERWATER_DIFFUSE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
   textures[TEX_SHORE_2] = loader.loadTexture("shore2.jpg", TEX_SHORE_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
-  textures[TEX_SKYBOX] = loader.loadCubemap("cubemap/", TEX_SKYBOX);
-  textures[TEX_SKYBOX_FAR] = loader.loadCubemap("cubemapFar/", TEX_SKYBOX_FAR);
-  textures[TEX_SKYBOX_SKY] = loader.loadCubemap("cubemapSky/", TEX_SKYBOX_SKY);
+  textures[TEX_SKYBOX] = loader.loadCubemap("cubemap/", TEX_SKYBOX, false);
+  textures[TEX_SKYBOX_NORMAL] = loader.loadCubemap("cubemapNormal/", TEX_SKYBOX_NORMAL, true);
+  textures[TEX_SKYBOX_FAR] = loader.loadCubemap("cubemapFar/", TEX_SKYBOX_FAR, false);
+  textures[TEX_SKYBOX_FAR_NORMAL] = loader.loadCubemap("cubemapFarNormal/", TEX_SKYBOX_FAR_NORMAL, true);
+  textures[TEX_SKYBOX_SKY] = loader.loadCubemap("cubemapSky/", TEX_SKYBOX_SKY, false);
   textures[TEX_THE_SUN] = loader.loadTexture("theSun.png", TEX_THE_SUN, GL_REPEAT, GL_LINEAR, GL_LINEAR, true);
   textures[TEX_FRAME_MULTISAMPLED] = loader.createFrameMSTexture(MULTISAMPLES, TEX_FRAME_MULTISAMPLED);
   textures[TEX_FRAME] = loader.createFrameTexture(TEX_FRAME);

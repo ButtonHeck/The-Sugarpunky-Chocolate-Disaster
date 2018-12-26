@@ -122,7 +122,7 @@ void Scene::drawWorld(glm::vec3 lightDir,
 
   glDisable(GL_MULTISAMPLE);
   theSunFacade.draw(skyProjectionView);
-  skyboxFacade.draw(skyProjectionView, viewPosition);
+  skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
   glEnable(GL_MULTISAMPLE);
 
   if (options[OPT_DRAW_WATER])

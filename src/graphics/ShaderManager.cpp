@@ -40,7 +40,8 @@ ShaderManager::ShaderManager()
                                          {GL_GEOMETRY_SHADER, "normals/_normals.gs"},
                                          {GL_FRAGMENT_SHADER, "normals/_normals.fs"});
   shaders[SHADER_SKYBOX] = Shader({GL_VERTEX_SHADER, "skybox/skybox.vs"},
-                                  {GL_FRAGMENT_SHADER, "skybox/skybox.fs"});
+                                  {GL_FRAGMENT_SHADER, "skybox/skybox.fs"},
+                                  {{GL_FRAGMENT_SHADER, "shadingVariables.ifs"}});
   shaders[SHADER_SUN] = Shader({GL_VERTEX_SHADER, "theSun/theSun.vs"},
                                {GL_FRAGMENT_SHADER, "theSun/theSun.fs"});
   shaders[SHADER_MODELS_GOURAUD] = Shader({GL_VERTEX_SHADER, "modelGouraud/model.vs"},
@@ -148,8 +149,12 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
 
   bindShaderUnit(shader, SHADER_SKYBOX);
   shader->setInt("u_skybox[1]", TEX_SKYBOX);
+  shader->setInt("u_skyboxNormals[1]", TEX_SKYBOX_NORMAL);
   shader->setInt("u_skybox[0]", TEX_SKYBOX_FAR);
+  shader->setInt("u_skyboxNormals[0]", TEX_SKYBOX_FAR_NORMAL);
   shader->setInt("u_skybox[2]", TEX_SKYBOX_SKY);
+  shader->setFloat("u_ambientDay", 0.08f);
+  shader->setFloat("u_ambientNight", 0.03f);
 
   bindShaderUnit(shader, SHADER_SUN);
   shader->setInt("u_texture", TEX_THE_SUN);

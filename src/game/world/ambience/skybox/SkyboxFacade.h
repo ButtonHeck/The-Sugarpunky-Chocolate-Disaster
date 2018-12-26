@@ -9,7 +9,7 @@ class SkyboxFacade
 {
 public:
   SkyboxFacade(Shader& renderShader);
-  void draw(glm::mat4& skyProjectionView, glm::vec3 &viewPosition);
+  void draw(glm::mat4& skyProjectionView, glm::vec3 &viewPosition, glm::vec3 &lightDir);
 private:
   SkyboxShader shader;
   Skybox skybox;
