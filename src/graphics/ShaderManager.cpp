@@ -41,7 +41,8 @@ ShaderManager::ShaderManager()
                                          {GL_FRAGMENT_SHADER, "normals/_normals.fs"});
   shaders[SHADER_SKYBOX] = Shader({GL_VERTEX_SHADER, "skybox/skybox.vs"},
                                   {GL_FRAGMENT_SHADER, "skybox/skybox.fs"},
-                                  {{GL_FRAGMENT_SHADER, "shadingVariables.ifs"}});
+                                  {{GL_FRAGMENT_SHADER, "shadingVariables.ifs"},
+                                  {GL_FRAGMENT_SHADER, "desaturationFunc.ifs"}});
   shaders[SHADER_SUN] = Shader({GL_VERTEX_SHADER, "theSun/theSun.vs"},
                                {GL_FRAGMENT_SHADER, "theSun/theSun.fs"});
   shaders[SHADER_MODELS_GOURAUD] = Shader({GL_VERTEX_SHADER, "modelGouraud/model.vs"},

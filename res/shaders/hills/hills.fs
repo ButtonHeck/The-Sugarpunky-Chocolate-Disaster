@@ -23,7 +23,7 @@ uniform float     u_ambientNight;
 uniform vec3      u_viewPosition;
 
 const vec3  NORMAL = vec3(0.0, 1.0, 0.0);
-const float MAX_DESATURATING_VALUE_HILL = 0.4;
+const float MAX_DESATURATING_VALUE_HILL = 0.5;
 const float MAX_DESATURATING_VALUE_LAND = 0.5;
 const float MIN_CANYON_CIRCLE_HEIGHT = 2.5;
 const int   NUM_CANYON_CIRCLES = 12;

@@ -12,6 +12,10 @@ uniform bool        u_static;
 uniform float       u_ambientDay;
 uniform float       u_ambientNight;
 
+const float MAX_DESATURATING_VALUE = 0.5;
+
+@include desaturationFunc.ifs
+
 void main()
 {
     if (u_static)
@@ -35,5 +39,9 @@ void main()
         diffuseColor = sampledDiffuse.rgb * diffuseComponent;
         resultColor = ambientColor + diffuseColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
+        float desaturatingValue = mix(0.0,
+                                      MAX_DESATURATING_VALUE,
+                                      min(1.0 * sunPositionAttenuation, diffuseComponent + 0.5));
+        ext_desaturate(o_FragColor, desaturatingValue);
     }
 }
