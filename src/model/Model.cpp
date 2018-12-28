@@ -111,6 +111,7 @@ void Model::loadMaterialTextures(aiMaterial *material,
       bool useAnisotropy = !isLowPoly && (type == aiTextureType_DIFFUSE);
       GLenum magFilter = type == aiTextureType_DIFFUSE ? GL_LINEAR : GL_NEAREST;
       GLenum minFilter = type == aiTextureType_DIFFUSE ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
+      bool useNoSRGB = type == aiTextureType_SPECULAR;
       GLuint texture = textureLoader->loadTexture(path,
                                                   0,
                                                   GL_REPEAT,
@@ -118,7 +119,8 @@ void Model::loadMaterialTextures(aiMaterial *material,
                                                   minFilter,
                                                   useAnisotropy,
                                                   false,
-                                                  true);
+                                                  true,
+                                                  useNoSRGB);
       GLuint64 textureHandle = glGetTextureHandleARB(texture);
       std::string uniformSamplerString = typeName + "[" + std::to_string(samplerIndex) + "]";
       BindlessTextureManager::emplace_back(uniformSamplerString, texture, textureHandle);
