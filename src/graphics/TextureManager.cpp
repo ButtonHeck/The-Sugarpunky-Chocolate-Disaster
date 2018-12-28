@@ -6,15 +6,15 @@ TextureManager::TextureManager(TextureLoader& loader)
 {
   textures[TEX_LAND] = loader.loadTexture("land.jpg", TEX_LAND, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[TEX_LAND_2] = loader.loadTexture("land2.jpg", TEX_LAND_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
-  textures[TEX_DIFFUSE_MIX_MAP] = loader.loadTexture("diffuseMixMap.jpg", TEX_DIFFUSE_MIX_MAP, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true, false, true);
+  textures[TEX_DIFFUSE_MIX_MAP] = loader.loadTexture("diffuseMixMap.jpg", TEX_DIFFUSE_MIX_MAP, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, true, false, true);
   textures[TEX_TERRAIN_NORMAL] = loader.loadTexture("terrainNormal.jpg", TEX_TERRAIN_NORMAL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, true, false, true);
-  textures[TEX_WATER_NORMAL] = loader.loadTexture("waterNormal.jpg", TEX_WATER_NORMAL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, true, false, true);
-  textures[TEX_WATER_SPECULAR] = loader.loadTexture("waterSpecular.jpg", TEX_WATER_SPECULAR, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[TEX_WATER_NORMAL] = loader.loadTexture("waterNormal.jpg", TEX_WATER_NORMAL, GL_REPEAT, GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, true, true, false, true);
+  textures[TEX_WATER_SPECULAR] = loader.loadTexture("waterSpecular.jpg", TEX_WATER_SPECULAR, GL_REPEAT, GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, true, true, false, true);
   textures[TEX_HILL] = loader.loadTexture("hill2.jpg", TEX_HILL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[TEX_HILL_2] = loader.loadTexture("hill.jpg", TEX_HILL_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
-  textures[TEX_HILL_SPECULAR] = loader.loadTexture("hill_specular.jpg", TEX_HILL_SPECULAR, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
+  textures[TEX_HILL_SPECULAR] = loader.loadTexture("hill_specular.jpg", TEX_HILL_SPECULAR, GL_REPEAT, GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, false, true, false, true);
   textures[TEX_SHORE] = loader.loadTexture("shore.jpg", TEX_SHORE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
-  textures[TEX_UNDERWATER_DIFFUSE] = loader.loadTexture("underwater.jpg", TEX_UNDERWATER_DIFFUSE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
+  textures[TEX_UNDERWATER_DIFFUSE] = loader.loadTexture("underwater.jpg", TEX_UNDERWATER_DIFFUSE, GL_REPEAT, GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, false);
   textures[TEX_SHORE_2] = loader.loadTexture("shore2.jpg", TEX_SHORE_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[TEX_SKYBOX] = loader.loadCubemap("cubemap/", TEX_SKYBOX, false);
   textures[TEX_SKYBOX_NORMAL] = loader.loadCubemap("cubemapNormal/", TEX_SKYBOX_NORMAL, true);
