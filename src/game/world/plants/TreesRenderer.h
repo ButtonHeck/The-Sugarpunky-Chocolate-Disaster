@@ -7,9 +7,7 @@ class TreesRenderer
 {
 public:
   TreesRenderer() = default;
-  void render(std::vector<Model>& landModels,
-              std::vector<Model>& hillModels,
-              bool useLandBlending, bool isShadow);
+  void render(std::vector<Model>& landModels, std::vector<Model>& hillModels, bool isShadow);
 };
 
 #endif // TREESRENDERER_H

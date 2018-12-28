@@ -41,49 +41,37 @@ void PlantsFacade::draw(glm::vec3 &lightDir,
                         bool useShadows,
                         bool useLandBlending)
 {
-  shaders.switchToGrass(usePhongShading, false);
+  if (useLandBlending)
+    glEnable(GL_BLEND);
+  else
+    glDisable(GL_BLEND);
+  shaders.activateShader(usePhongShading);
+
+  shaders.switchToGrass(false);
   shaders.updateAllPlants(lightDir,
                           lightSpaceMatrices,
                           projectionView,
                           viewPosition,
-                          usePhongShading,
                           useShadows,
                           useLandBlending);
-  treesRenderer.render(landPlantsGenerator.models,
-                       hillTreesGenerator.models,
-                       useLandBlending,
-                       false);
-  treesRenderer.render(landPlantsGenerator.lowPolyModels,
-                       hillTreesGenerator.lowPolyModels,
-                       false,
-                       false);
+  treesRenderer.render(landPlantsGenerator.models, hillTreesGenerator.models, false);
+  treesRenderer.render(landPlantsGenerator.lowPolyModels, hillTreesGenerator.lowPolyModels, false);
 
-  shaders.switchToGrass(usePhongShading, true);
-  shaders.updateGrass(usePhongShading);
-  grassRenderer.render(grassGenerator.models,
-                       useLandBlending,
-                       false);
-  grassRenderer.render(grassGenerator.lowPolyModels,
-                       false,
-                       false);
+  shaders.switchToGrass(true);
+  shaders.updateGrass();
+  grassRenderer.render(grassGenerator.models, false);
+  grassRenderer.render(grassGenerator.lowPolyModels, false);
+
+  if (useLandBlending)
+    glDisable(GL_BLEND);
 }
 
 void PlantsFacade::drawDepthmap()
 {
-  treesRenderer.render(landPlantsGenerator.models,
-                       hillTreesGenerator.models,
-                       false,
-                       true);
-  treesRenderer.render(landPlantsGenerator.lowPolyModels,
-                       hillTreesGenerator.lowPolyModels,
-                       false,
-                       true);
-  grassRenderer.render(grassGenerator.models,
-                       false,
-                       true);
-  grassRenderer.render(grassGenerator.lowPolyModels,
-                       false,
-                       true);
+  treesRenderer.render(landPlantsGenerator.models, hillTreesGenerator.models, true);
+  treesRenderer.render(landPlantsGenerator.lowPolyModels, hillTreesGenerator.lowPolyModels, true);
+  grassRenderer.render(grassGenerator.models, true);
+  grassRenderer.render(grassGenerator.lowPolyModels, true);
 }
 
 void PlantsFacade::serialize(std::ofstream &output)
