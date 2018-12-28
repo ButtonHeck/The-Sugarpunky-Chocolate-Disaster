@@ -20,6 +20,7 @@ uniform bool      u_isGrass;
 uniform float     u_ambientDay;
 uniform float     u_ambientNight;
 uniform vec3      u_viewPosition;
+uniform bool      u_isLowPoly;
 
 const float MAX_DESATURATING_VALUE = 0.5;
 
@@ -51,8 +52,12 @@ void main()
     {
         int shadowMapIndex;
         vec3 projectedCoords;
+        float luminosity;
         ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
-        float luminosity = ext_calculateLuminosity5(shadowMapIndex, projectedCoords, u_bias);
+        if (!u_isLowPoly)
+            luminosity = ext_calculateLuminosity5(shadowMapIndex, projectedCoords, u_bias);
+        else
+            luminosity = ext_calculateLuminosity3(shadowMapIndex, projectedCoords, u_bias);
 
         diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
         specularColor = luminosity * specularComponent * sampledSpecular.rgb;

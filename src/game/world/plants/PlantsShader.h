@@ -15,6 +15,7 @@ public:
                        bool useLandBlending);
   void updateGrass();
   void switchToGrass(bool isGrass);
+  void switchToLowPoly(bool isLowPoly);
 private:
   friend class PlantsFacade;
   Shader& renderPhongShader;

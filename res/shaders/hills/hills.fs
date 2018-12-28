@@ -87,9 +87,13 @@ void main()
         {
             int shadowMapIndex;
             vec3 projectedCoords;
+            float luminosity;
             ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
             float bias = u_bias * (2.0 - 1.0 * dot(u_lightDir, v_Normal));
-            float luminosity = ext_calculateLuminosity5(shadowMapIndex, projectedCoords, bias);
+            if (shadowMapIndex == 0)
+                luminosity = ext_calculateLuminosity5(shadowMapIndex, projectedCoords, bias);
+            else
+                luminosity = ext_calculateLuminosity3(shadowMapIndex, projectedCoords, bias);
 
             diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
             specularColor = v_SpecularComponent * sampledSpecular.rgb * sunPositionAttenuation;
