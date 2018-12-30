@@ -75,7 +75,6 @@ void PlantsFacade::drawDepthmap()
   treesRenderer.render(landPlantsGenerator.models, hillTreesGenerator.models, true);
   treesRenderer.render(landPlantsGenerator.lowPolyModels, hillTreesGenerator.lowPolyModels, true);
   grassRenderer.render(grassGenerator.models, true);
-  grassRenderer.render(grassGenerator.lowPolyModels, true);
 }
 
 void PlantsFacade::serialize(std::ofstream &output)
