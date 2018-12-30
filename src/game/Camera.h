@@ -42,6 +42,7 @@ public:
   glm::vec3 getUp() const;
   int getMapCoordX() const;
   int getMapCoordZ() const;
+  glm::vec2 getViewAcceleration() const;
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
 

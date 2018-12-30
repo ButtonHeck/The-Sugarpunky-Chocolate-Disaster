@@ -31,6 +31,7 @@ void HillsFacade::draw(glm::vec3 &lightDir,
                        const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                        glm::mat4& projectionView,
                        glm::vec3 &viewPosition,
+                       glm::vec2 &viewAcceleration,
                        Frustum &viewFrustum,
                        bool useFC,
                        bool useShadows,
@@ -40,7 +41,7 @@ void HillsFacade::draw(glm::vec3 &lightDir,
                  lightSpaceMatrices,
                  projectionView, viewPosition, viewFrustum, generator.maxHeight, useFC, useShadows);
   shaders.debugRenderMode(false);
-  renderer.render(useFC);
+  renderer.render(useFC, viewAcceleration);
 
   if (useDebugRender)
     {

@@ -51,10 +51,10 @@ private:
   //camera and related stuff
   Camera& camera;
   Camera& shadowCamera;
-  Frustum viewFrustum;
+  Frustum viewFrustum, cullingViewFrustum;
   std::array<Frustum, NUM_SHADOW_LAYERS> shadowCameraFrustums;
   std::array<FrustumRenderer, NUM_SHADOW_LAYERS-1> shadowFrustumRenderers;
-  glm::mat4 projection;
+  glm::mat4 projection, cullingProjection;
   std::array<glm::mat4, NUM_SHADOW_LAYERS> shadowProjections;
 
   //options

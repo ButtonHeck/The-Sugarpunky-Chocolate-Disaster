@@ -8,6 +8,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     shadowCamera(shadowCamera),
     shadowFrustumRenderers({{shadowCameraFrustums[0], shadowCameraFrustums[1]}}),
     projection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE)),
+    cullingProjection(glm::perspective(glm::radians(camera.getZoom() + 10.0f), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE)),
     options(options),
     shaderManager(),
     textureLoader(TextureLoader(screenResolution)),
@@ -54,7 +55,7 @@ void Game::setup()
 
 void Game::loop()
 {
-  glm::mat4 view, projectionView;
+  glm::mat4 view, projectionView, cullingProjectionView;
   float timerDelta = CPU_timer.tick();
   {
     BENCHMARK("Game loop: process input and camera", true);
@@ -66,7 +67,9 @@ void Game::loop()
     else
       view = shadowCamera.getViewMatrix();
     projectionView = projection * view;
+    cullingProjectionView = cullingProjection * view;
     viewFrustum.updateFrustum(projectionView);
+    cullingViewFrustum.updateFrustum(cullingProjectionView);
 
     if (!options[OPT_SHADOW_CAMERA_FIXED])
       {
@@ -170,6 +173,7 @@ void Game::drawFrame(glm::mat4& projectionView)
                   projectionView,
                   skyboxProjectionView,
                   viewFrustum,
+                  cullingViewFrustum,
                   camera,
                   mouseInput);
 

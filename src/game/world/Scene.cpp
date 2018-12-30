@@ -79,15 +79,17 @@ void Scene::drawWorld(glm::vec3 lightDir,
                       glm::mat4& projectionView,
                       glm::mat4& skyProjectionView,
                       Frustum &viewFrustum,
+                      Frustum &cullingViewFrustum,
                       Camera& camera,
                       MouseInputManager& mouseInput)
 {
   BENCHMARK("Scene: draw all", true);
   glm::vec3 viewPosition = camera.getPosition();
+  glm::vec2 viewAcceleration = camera.getViewAcceleration();
 
   hillsFacade.draw(lightDir,
                    lightSpaceMatrices,
-                   projectionView, viewPosition, viewFrustum,
+                   projectionView, viewPosition, viewAcceleration, cullingViewFrustum,
                    options[OPT_HILLS_CULLING],
                    options[OPT_USE_SHADOWS],
                    options[OPT_DEBUG_RENDER]);

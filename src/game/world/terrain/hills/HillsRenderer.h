@@ -8,7 +8,7 @@ class HillsRenderer
 {
 public:
   HillsRenderer(HillsShader& shaders, HillsGenerator& generator);
-  void render(bool useFC);
+  void render(bool useFC, glm::vec2 &viewAcceleration);
   void renderDepthmap();
   void debugRender(GLenum primitiveType);
 private:

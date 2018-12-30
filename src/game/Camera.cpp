@@ -296,6 +296,11 @@ int Camera::getMapCoordZ() const
   return glm::clamp((int)(WORLD_HEIGHT + glm::clamp(position.z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F)) - HALF_WORLD_HEIGHT, 0, WORLD_HEIGHT - 1);
 }
 
+glm::vec2 Camera::getViewAcceleration() const
+{
+  return glm::vec2(viewAccelerationX, viewAccelerationY);
+}
+
 void Camera::serialize(std::ofstream &output)
 {
   output << position.x << " ";

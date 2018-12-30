@@ -32,6 +32,7 @@ public:
                  glm::mat4& projectionView,
                  glm::mat4& skyProjectionView,
                  Frustum &viewFrustum,
+                 Frustum &cullingViewFrustum,
                  Camera& camera,
                  MouseInputManager& mouseInput);
   void drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices);
