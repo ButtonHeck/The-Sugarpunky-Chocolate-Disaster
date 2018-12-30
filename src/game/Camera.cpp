@@ -298,7 +298,10 @@ int Camera::getMapCoordZ() const
 
 glm::vec2 Camera::getViewAcceleration() const
 {
-  return glm::vec2(viewAccelerationX, viewAccelerationY);
+  if (useAcceleration)
+    return glm::vec2(viewAccelerationX, viewAccelerationY);
+  else
+    return glm::vec2(20.0f);
 }
 
 void Camera::serialize(std::ofstream &output)
