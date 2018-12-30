@@ -53,11 +53,16 @@ void main()
         int shadowMapIndex;
         vec3 projectedCoords;
         float luminosity;
-        ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
         if (!u_isLowPoly)
+        {
+            ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
             luminosity = ext_calculateLuminosity5(shadowMapIndex, projectedCoords, u_bias);
+        }
         else
-            luminosity = ext_calculateLuminosity3(shadowMapIndex, projectedCoords, u_bias);
+        {
+            ext_calculateShadowMapIndexAndProjectedCoordsLowp(shadowMapIndex, projectedCoords);
+            luminosity = ext_calculateLuminosity3Lowp(shadowMapIndex, projectedCoords, u_bias);
+        }
 
         diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
         specularColor = luminosity * specularComponent * sampledSpecular.rgb;

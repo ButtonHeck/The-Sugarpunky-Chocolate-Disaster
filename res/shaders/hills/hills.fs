@@ -93,7 +93,7 @@ void main()
             if (shadowMapIndex == 0)
                 luminosity = ext_calculateLuminosity5(shadowMapIndex, projectedCoords, bias);
             else
-                luminosity = ext_calculateLuminosity3(shadowMapIndex, projectedCoords, bias);
+                luminosity = ext_calculateLuminosity3Lowp(shadowMapIndex, projectedCoords, bias);
 
             diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
             specularColor = v_SpecularComponent * sampledSpecular.rgb * sunPositionAttenuation;
