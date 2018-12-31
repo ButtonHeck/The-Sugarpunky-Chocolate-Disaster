@@ -26,6 +26,7 @@ Options::Options()
   options[OPT_FRUSTUM_VISUALIZATION] = true;
   options[OPT_EXPECTED_VOLUME_VISUALIZATION] = true;
   options[OPT_ACTUAL_VOLUME_VISUALIZATION] = true;
+  options[OPT_USE_DOF] = true;
 }
 
 std::bitset<OPTIONS_COUNT>::reference Options::operator[](OPTION value)

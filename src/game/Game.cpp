@@ -48,7 +48,7 @@ void Game::setup()
   scene.setup();
   BindlessTextureManager::loadToShaders(shaderManager.get(SHADER_MODELS_PHONG), shaderManager.get(SHADER_MODELS_GOURAUD));
   setupThreads();
-  shaderManager.setupConstantUniforms(glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()));
+  shaderManager.setupConstantUniforms(glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()), screenResolution.getAspectRatio());
   screenBuffer.setup();
   depthmapBuffer.setup(textureManager.get(TEX_DEPTH_MAP_SUN));
 }
@@ -101,7 +101,7 @@ void Game::loop()
   bool multisamplingEnabled = options[OPT_USE_MULTISAMPLING];
   screenBuffer.bindAppropriateFBO(multisamplingEnabled);
   drawFrame(projectionView);
-  screenBuffer.draw(multisamplingEnabled);
+  screenBuffer.draw(multisamplingEnabled, options[OPT_USE_DOF]);
 
   if (options[OPT_SAVE_REQUEST])
     saveState();

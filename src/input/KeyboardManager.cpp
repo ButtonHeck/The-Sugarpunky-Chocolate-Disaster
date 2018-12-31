@@ -57,6 +57,7 @@ void KeyboardManager::processInput()
   processKey(GLFW_KEY_F, OPT_FRUSTUM_VISUALIZATION);
   processKey(GLFW_KEY_V, OPT_EXPECTED_VOLUME_VISUALIZATION);
   processKey(GLFW_KEY_B, OPT_ACTUAL_VOLUME_VISUALIZATION);
+  processKey(GLFW_KEY_J, OPT_USE_DOF);
   processKey(GLFW_KEY_X, [&]()
   {
       options.toggle(OPT_SHADOW_CAMERA_FIXED);

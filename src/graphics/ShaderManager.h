@@ -12,7 +12,7 @@ class ShaderManager
 public:
   ShaderManager();
   virtual ~ShaderManager();
-  void setupConstantUniforms(glm::mat4 fontProjection);
+  void setupConstantUniforms(glm::mat4 fontProjection, float aspectRatio);
   Shader& get(SHADER type);
 private:
   std::unordered_map<int, Shader> shaders;

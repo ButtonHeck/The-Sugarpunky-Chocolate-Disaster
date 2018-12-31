@@ -67,7 +67,7 @@ void ScreenBuffer::setupScreenQuadBuffer()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void ScreenBuffer::draw(bool enableMultisampling)
+void ScreenBuffer::draw(bool enableMultisampling, bool useDOF)
 {
   BENCHMARK("ScreenBuffer: draw", true);
   if (enableMultisampling)
@@ -85,6 +85,7 @@ void ScreenBuffer::draw(bool enableMultisampling)
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     }
   shaderManager.get(SHADER_MS_TO_DEFAULT).use();
+  shaderManager.get(SHADER_MS_TO_DEFAULT).setBool("u_useDOF", useDOF);
   screenBuffers.bind(VAO);
   glDisable(GL_DEPTH_TEST);
   glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_QUAD);

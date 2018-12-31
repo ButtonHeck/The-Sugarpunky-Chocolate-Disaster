@@ -12,7 +12,7 @@ public:
   ScreenBuffer(ScreenResolution& screenResolution, TextureManager& textureManager, ShaderManager& shaderManager);
   virtual ~ScreenBuffer();
   void setup();
-  void draw(bool enableMultisampling);
+  void draw(bool enableMultisampling, bool useDOF);
   void bindAppropriateFBO(bool enableMultisampling);
 private:
   void setupFramebuffers();

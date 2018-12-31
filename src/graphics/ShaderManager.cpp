@@ -87,7 +87,7 @@ ShaderManager::~ShaderManager()
   shader = &shaders[type]; \
   shader->use();
 
-void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
+void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection, float aspectRatio)
 {
   BENCHMARK("Shader Manager: setup", false);
 
@@ -182,6 +182,7 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
   shader->setFloat("u_exposure", 2.2f);
   shader->setFloat("u_near", NEAR_PLANE);
   shader->setFloat("u_far", FAR_PLANE);
+  shader->setFloat("u_aspectRatio", aspectRatio);
 
   bindShaderUnit(shader, SHADER_WATER_NORMALS);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
