@@ -10,7 +10,7 @@ Options::Options()
   options[OPT_LOAD_REQUEST] = false;
   options[OPT_SHOW_CURSOR] = false;
   options[OPT_DRAW_BUILDABLE] = false;
-  options[OPT_HILLS_CULLING] = true;
+  options[OPT_HILLS_CULLING] = false;
   options[OPT_WATER_CULLING] = false;
   options[OPT_USE_MULTISAMPLING] = true;
   options[OPT_USE_SHADOWS] = true;

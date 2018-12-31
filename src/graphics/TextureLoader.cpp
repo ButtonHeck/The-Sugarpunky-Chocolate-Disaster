@@ -73,6 +73,8 @@ GLuint TextureLoader::createFrameTexture(GLuint textureUnit, bool isDepthTexture
   GLuint texture = createTextureObject(GL_TEXTURE_2D, textureUnit, false);
   GLenum format = isDepthTexture ? GL_DEPTH24_STENCIL8 : GL_RGB16;
   glTextureStorage2D(texture, 1, format, screenResolution.getWidth(), screenResolution.getHeight());
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   return texture;
 }
 
@@ -82,6 +84,9 @@ GLuint TextureLoader::createDepthMapTexture(int width, int height, GLuint textur
   glTextureStorage3D(texture, 3, GL_DEPTH_COMPONENT24, width, height, 3);
   GLfloat borderColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, borderColor);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
   setTex2DArrayParameters(GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER);
   return texture;
 }
