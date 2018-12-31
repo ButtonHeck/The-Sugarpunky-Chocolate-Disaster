@@ -26,6 +26,7 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_FRAME] = loader.createFrameTexture(TEX_FRAME, false);
   textures[TEX_FRAME_HDR] = loader.createFrameTexture(TEX_FRAME_HDR, false);
   textures[TEX_FRAME_DEPTH] = loader.createFrameTexture(TEX_FRAME_DEPTH, true);
+  textures[TEX_FRAME_VIGNETTE] = loader.loadTexture("vignette.png", TEX_FRAME_VIGNETTE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true, false, true);
   textures[TEX_DEPTH_MAP_SUN] = loader.createDepthMapTexture(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT, TEX_DEPTH_MAP_SUN);
 }
 

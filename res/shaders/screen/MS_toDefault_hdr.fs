@@ -5,6 +5,7 @@ out vec4 o_FragColor;
 
 uniform sampler2D u_frameTexture;
 uniform sampler2D u_frameDepthTexture;
+uniform sampler2D u_vignetteTexture;
 uniform float     u_exposure;
 uniform float     u_near;
 uniform float     u_far;
@@ -61,7 +62,7 @@ void sobel(inout vec3 fragColor)
     vec4 bottomLeft  = texture(u_frameTexture, vec2(v_TexCoords.x - SOBEL_SIZE_H, v_TexCoords.y - SOBEL_SIZE_V));
     vec4 bottomRight = texture(u_frameTexture, vec2(v_TexCoords.x + SOBEL_SIZE_H, v_TexCoords.y - SOBEL_SIZE_V));
     vec4 sx = -topLeft - 2 * left - bottomLeft + topRight   + 2 * right  + bottomRight;
-    vec4 sy = -(-topLeft - 2 * top  - topRight   + bottomLeft + 2 * bottom + bottomRight);
+    vec4 sy = -topLeft - 2 * top  - topRight   + bottomLeft + 2 * bottom + bottomRight;
     vec4 sobel = sqrt(sx * sx + sy * sy);
     fragColor = sobel.rgb;
 }
@@ -86,6 +87,7 @@ void main()
         vec3 mapped = vec3(1.0) - exp(-color * u_exposure);
         mapped = pow(mapped, vec3(GAMMA_INVERSED));
         o_FragColor = vec4(mapped, 1.0);
+        o_FragColor *= 1.0 - pow(texture(u_vignetteTexture, v_TexCoords).a, 3.0);
     }
     #else
         o_FragColor = vec4(color, 1.0);

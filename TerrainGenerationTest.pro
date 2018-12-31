@@ -617,7 +617,8 @@ DISTFILES += \
     res/textures/cubemapNormal/front.png \
     res/textures/cubemapNormal/left.png \
     res/textures/cubemapNormal/right.png \
-    res/textures/cubemapNormal/up.png
+    res/textures/cubemapNormal/up.png \
+    res/textures/vignette.png
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
