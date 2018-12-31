@@ -47,6 +47,25 @@ void blur(inout vec3 fragColor, int coordOffset, float depthClip)
     fragColor = sum;
 }
 
+const float SOBEL_SIZE_H = 1.0 / 4000.0;
+const float SOBEL_SIZE_V = SOBEL_SIZE_H / u_aspectRatio;
+
+void sobel(inout vec3 fragColor)
+{
+    vec4 top         = texture(u_frameTexture, vec2(v_TexCoords.x, v_TexCoords.y + SOBEL_SIZE_V));
+    vec4 bottom      = texture(u_frameTexture, vec2(v_TexCoords.x, v_TexCoords.y - SOBEL_SIZE_V));
+    vec4 left        = texture(u_frameTexture, vec2(v_TexCoords.x - SOBEL_SIZE_H, v_TexCoords.y));
+    vec4 right       = texture(u_frameTexture, vec2(v_TexCoords.x + SOBEL_SIZE_H, v_TexCoords.y));
+    vec4 topLeft     = texture(u_frameTexture, vec2(v_TexCoords.x - SOBEL_SIZE_H, v_TexCoords.y + SOBEL_SIZE_V));
+    vec4 topRight    = texture(u_frameTexture, vec2(v_TexCoords.x + SOBEL_SIZE_H, v_TexCoords.y + SOBEL_SIZE_V));
+    vec4 bottomLeft  = texture(u_frameTexture, vec2(v_TexCoords.x - SOBEL_SIZE_H, v_TexCoords.y - SOBEL_SIZE_V));
+    vec4 bottomRight = texture(u_frameTexture, vec2(v_TexCoords.x + SOBEL_SIZE_H, v_TexCoords.y - SOBEL_SIZE_V));
+    vec4 sx = -topLeft - 2 * left - bottomLeft + topRight   + 2 * right  + bottomRight;
+    vec4 sy = -(-topLeft - 2 * top  - topRight   + bottomLeft + 2 * bottom + bottomRight);
+    vec4 sobel = sqrt(sx * sx + sy * sy);
+    fragColor = sobel.rgb;
+}
+
 void main()
 {
     vec3 color = texture(u_frameTexture, v_TexCoords).rgb;
