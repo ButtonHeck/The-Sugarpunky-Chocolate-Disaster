@@ -21,7 +21,7 @@ private:
   TextureManager& textureManager;
   ShaderManager& shaderManager;
   OpenglBuffer screenBuffers;
-  GLuint screenDepthRBO, screenFBO;
+  GLuint screenFBO;
   GLuint multisampleDepthRBO, multisampleFBO;
 };
 

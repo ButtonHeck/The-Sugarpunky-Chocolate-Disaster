@@ -3,7 +3,10 @@
 out vec4 o_FragColor;
 
 uniform sampler2D u_frameTexture;
+uniform sampler2D u_frameDepthTexture;
 uniform float     u_exposure;
+uniform float     u_near;
+uniform float     u_far;
 
 in vec2 v_TexCoords;
 
@@ -11,6 +14,12 @@ in vec2 v_TexCoords;
 const float GAMMA = 1.4;
 const float GAMMA_INVERSED = 1.0 / GAMMA;
 #endif
+
+float linearizeDepth(float depth)
+{
+    float z = depth * 2.0 - 1.0; // back to NDC
+    return (2.0 * u_near * u_far) / (u_far + u_near - z * (u_far - u_near));
+}
 
 void main()
 {

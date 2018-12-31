@@ -12,7 +12,6 @@ ScreenBuffer::~ScreenBuffer()
 {
   glDeleteFramebuffers(1, &multisampleFBO);
   glDeleteFramebuffers(1, &screenFBO);
-  glDeleteRenderbuffers(1, &screenDepthRBO);
   glDeleteRenderbuffers(1, &multisampleDepthRBO);
 }
 
@@ -33,7 +32,7 @@ void ScreenBuffer::setupFramebuffers()
   glBindRenderbuffer(GL_RENDERBUFFER, multisampleDepthRBO);
   glRenderbufferStorageMultisample(GL_RENDERBUFFER, MULTISAMPLES, GL_DEPTH24_STENCIL8, screenResolution.getWidth(), screenResolution.getHeight());
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, multisampleDepthRBO);
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE)
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     Logger::log("MS Framebuffer is not complete\n");
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -42,11 +41,7 @@ void ScreenBuffer::setupFramebuffers()
   glBindFramebuffer(GL_FRAMEBUFFER, screenFBO);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          HDR_ENABLED ? textureManager.get(TEX_FRAME_HDR) : textureManager.get(TEX_FRAME), 0);
-  //we don't need depth data if we use this FBO as intermediate, but we DO need it if theres no multisampling
-  glGenRenderbuffers(1, &screenDepthRBO);
-  glBindRenderbuffer(GL_RENDERBUFFER, screenDepthRBO);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenResolution.getWidth(), screenResolution.getHeight());
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, screenDepthRBO);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureManager.get(TEX_FRAME_DEPTH), 0);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     Logger::log("Intermediate Framebuffer is not complete\n");
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -79,7 +74,9 @@ void ScreenBuffer::draw(bool enableMultisampling)
     {
       glBindFramebuffer(GL_READ_FRAMEBUFFER, multisampleFBO);
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, screenFBO);
-      glBlitFramebuffer(0, 0, screenResolution.getWidth(), screenResolution.getHeight(), 0, 0, screenResolution.getWidth(), screenResolution.getHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
+      glBlitFramebuffer(0, 0, screenResolution.getWidth(), screenResolution.getHeight(),
+                        0, 0, screenResolution.getWidth(), screenResolution.getHeight(),
+                        GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
   else

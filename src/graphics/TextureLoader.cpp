@@ -68,10 +68,11 @@ GLuint TextureLoader::createFrameMSTexture(int samples, GLuint textureUnit)
   return texture;
 }
 
-GLuint TextureLoader::createFrameTexture(GLuint textureUnit)
+GLuint TextureLoader::createFrameTexture(GLuint textureUnit, bool isDepthTexture)
 {
   GLuint texture = createTextureObject(GL_TEXTURE_2D, textureUnit, false);
-  glTextureStorage2D(texture, 1, GL_RGB16, screenResolution.getWidth(), screenResolution.getHeight());
+  GLenum format = isDepthTexture ? GL_DEPTH24_STENCIL8 : GL_RGB16;
+  glTextureStorage2D(texture, 1, format, screenResolution.getWidth(), screenResolution.getHeight());
   return texture;
 }
 

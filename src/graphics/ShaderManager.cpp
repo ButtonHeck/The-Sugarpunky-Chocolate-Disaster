@@ -178,7 +178,10 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection)
 
   bindShaderUnit(shader, SHADER_MS_TO_DEFAULT);
   shader->setInt("u_frameTexture", HDR_ENABLED ? TEX_FRAME_HDR : TEX_FRAME);
+  shader->setInt("u_frameDepthTexture", TEX_FRAME_DEPTH);
   shader->setFloat("u_exposure", 2.2f);
+  shader->setFloat("u_near", NEAR_PLANE);
+  shader->setFloat("u_far", FAR_PLANE);
 
   bindShaderUnit(shader, SHADER_WATER_NORMALS);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);

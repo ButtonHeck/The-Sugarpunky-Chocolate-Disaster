@@ -23,8 +23,9 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_SKYBOX_SKY] = loader.loadCubemap("cubemapSky/", TEX_SKYBOX_SKY, false);
   textures[TEX_THE_SUN] = loader.loadTexture("theSun.png", TEX_THE_SUN, GL_REPEAT, GL_LINEAR, GL_LINEAR, true);
   textures[TEX_FRAME_MULTISAMPLED] = loader.createFrameMSTexture(MULTISAMPLES, TEX_FRAME_MULTISAMPLED);
-  textures[TEX_FRAME] = loader.createFrameTexture(TEX_FRAME);
-  textures[TEX_FRAME_HDR] = loader.createFrameTexture(TEX_FRAME_HDR);
+  textures[TEX_FRAME] = loader.createFrameTexture(TEX_FRAME, false);
+  textures[TEX_FRAME_HDR] = loader.createFrameTexture(TEX_FRAME_HDR, false);
+  textures[TEX_FRAME_DEPTH] = loader.createFrameTexture(TEX_FRAME_DEPTH, true);
   textures[TEX_DEPTH_MAP_SUN] = loader.createDepthMapTexture(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT, TEX_DEPTH_MAP_SUN);
 }
 
