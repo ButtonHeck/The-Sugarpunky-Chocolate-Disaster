@@ -74,10 +74,6 @@ void main()
     {
         float depthValue = texture(u_frameDepthTexture, v_TexCoords).r;
         depthValue = linearizeDepth(depthValue) / u_far;
-        if (depthValue > 0.4)
-            blur(color, 2, 0.4);
-        if (depthValue > 0.3)
-            blur(color, 1, 0.3);
         if (depthValue > 0.2)
             blur(color, 1, 0.2);
     }
