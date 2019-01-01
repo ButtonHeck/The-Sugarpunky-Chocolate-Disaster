@@ -29,3 +29,8 @@ glm::vec3 TheSunFacade::getCurrentPosition() const
 {
   return theSun.getPosition();
 }
+
+GLuint TheSunFacade::getSamplesPassedQueryResult()
+{
+  return renderer.getSamplesPassedQueryResult();
+}

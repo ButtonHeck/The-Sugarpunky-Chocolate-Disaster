@@ -123,8 +123,8 @@ void Scene::drawWorld(glm::vec3 lightDir,
     }
 
   glDisable(GL_MULTISAMPLE);
-  theSunFacade.draw(skyProjectionView);
   skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
+  theSunFacade.draw(skyProjectionView);
   glEnable(GL_MULTISAMPLE);
 
   if (options[OPT_DRAW_WATER])
@@ -132,6 +132,8 @@ void Scene::drawWorld(glm::vec3 lightDir,
                      lightSpaceMatrices,
                      projectionView, viewPosition, viewFrustum,
                      options[OPT_WATER_CULLING], options[OPT_DEBUG_RENDER]);
+
+  theSunFacade.getSamplesPassedQueryResult();
 }
 
 void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices)

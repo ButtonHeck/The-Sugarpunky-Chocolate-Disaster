@@ -4,6 +4,8 @@
 #include "game/world/ambience/theSun/TheSunShader.h"
 #include "game/world/ambience/theSun/TheSunRenderer.h"
 
+constexpr float MAX_SUN_SAMPLES_PASSED = SUN_POINT_SIZE * SUN_POINT_SIZE * MULTISAMPLES;
+
 class TheSunFacade
 {
 public:
@@ -12,6 +14,7 @@ public:
   void setPos(float posDegrees);
   void draw(glm::mat4& skyProjectionView);
   glm::vec3 getCurrentPosition() const;
+  GLuint getSamplesPassedQueryResult();
 private:
   TheSunShader shader;
   TheSun theSun;
