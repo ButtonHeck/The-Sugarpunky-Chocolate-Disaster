@@ -108,7 +108,7 @@ void Model::loadMaterialTextures(aiMaterial *material,
       material->GetTexture(type, i, &texturePath);
 
       std::string path = this->directory + '/' + std::string(texturePath.C_Str());
-      bool useAnisotropy = !isLowPoly && (type == aiTextureType_DIFFUSE);
+      bool useAnisotropy = type == aiTextureType_DIFFUSE;
       GLenum magFilter = type == aiTextureType_DIFFUSE ? GL_LINEAR : GL_NEAREST;
       GLenum minFilter = type == aiTextureType_DIFFUSE ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
       bool useNoSRGB = type == aiTextureType_SPECULAR;
