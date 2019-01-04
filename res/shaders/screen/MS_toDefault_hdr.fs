@@ -36,7 +36,7 @@ void blur(inout vec3 fragColor, int coordOffset, float depthClip)
         {
             vec2 texOffset = vec2(v_TexCoords.x + x * BLUR_SIZE_H, v_TexCoords.y + y * BLUR_SIZE_V);
             float currentDepth = texture(u_frameDepthTexture, texOffset).r;
-            currentDepth = linearizeDepth(currentDepth) / u_far;
+            //currentDepth = linearizeDepth(currentDepth) / u_far;
             if (currentDepth > depthClip)
             {
                 sum += texture(u_frameTexture, texOffset).rgb;
@@ -73,9 +73,9 @@ void main()
     if (u_useDOF)
     {
         float depthValue = texture(u_frameDepthTexture, v_TexCoords).r;
-        depthValue = linearizeDepth(depthValue) / u_far;
-        if (depthValue > 0.2)
-            blur(color, 1, 0.2);
+        //depthValue = linearizeDepth(depthValue) / u_far;
+        if (depthValue > 0.997)
+            blur(color, 1, 0.997);
     }
 
     #ifdef HDR_ENABLED
@@ -83,9 +83,9 @@ void main()
         vec3 mapped = vec3(1.0) - exp(-color * u_exposure);
         mapped = pow(mapped, vec3(GAMMA_INVERSED));
         o_FragColor = vec4(mapped, 1.0);
-        o_FragColor *= 1.0 - pow(texture(u_vignetteTexture, v_TexCoords).a, 3.0);
     }
     #else
         o_FragColor = vec4(color, 1.0);
     #endif
+    o_FragColor *= 1.0 - pow(texture(u_vignetteTexture, v_TexCoords).a, 3.0);
 }

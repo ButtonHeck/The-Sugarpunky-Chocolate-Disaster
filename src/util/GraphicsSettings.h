@@ -2,7 +2,7 @@
 #define GRAPHICSSETTINGS_H
 #include <glm/vec4.hpp>
 
-constexpr float NEAR_PLANE = 0.1f;
+constexpr float NEAR_PLANE = 0.3f;
 constexpr float FAR_PLANE = 500.0f;
 constexpr bool HDR_ENABLED = true;
 constexpr unsigned int MULTISAMPLES = 4;
