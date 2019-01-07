@@ -22,7 +22,8 @@ Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &tex
     skyboxFacade(shaderManager.get(SHADER_SKYBOX)),
     theSunFacade(shaderManager.get(SHADER_SUN)),
     underwaterFacade(shaderManager.get(SHADER_UNDERWATER)),
-    landFacade(std::make_unique<LandFacade>(shaderManager.get(SHADER_LAND)))
+    landFacade(std::make_unique<LandFacade>(shaderManager.get(SHADER_LAND))),
+    lensFlareFacade(shaderManager.get(SHADER_LENS_FLARE), 0.38f)
 {}
 
 void Scene::setup()
@@ -123,8 +124,8 @@ void Scene::drawWorld(glm::vec3 lightDir,
     }
 
   glDisable(GL_MULTISAMPLE);
-  skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
   theSunFacade.draw(skyProjectionView);
+  skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
   glEnable(GL_MULTISAMPLE);
 
   if (options[OPT_DRAW_WATER])
@@ -133,7 +134,9 @@ void Scene::drawWorld(glm::vec3 lightDir,
                      projectionView, viewPosition, viewFrustum,
                      options[OPT_WATER_CULLING], options[OPT_DEBUG_RENDER]);
 
-  theSunFacade.getSamplesPassedQueryResult();
+  float theSunVisibility = theSunFacade.getSamplesPassedQueryResult() / MAX_SUN_SAMPLES_PASSED;
+  if (theSunVisibility > 0)
+    lensFlareFacade.draw(theSunFacade.getCurrentPosition(), skyProjectionView, theSunVisibility);
 }
 
 void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices)

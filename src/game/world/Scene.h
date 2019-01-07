@@ -10,6 +10,7 @@
 #include "game/world/terrain/underwater/UnderwaterFacade.h"
 #include "game/world/ambience/skybox/SkyboxFacade.h"
 #include "game/world/ambience/theSun/TheSunFacade.h"
+#include "game/world/ambience/lensFlare/LensFlareFacade.h"
 #include "graphics/ShaderManager.h"
 #include "graphics/TextureManager.h"
 #include "input/MouseInputManager.h"
@@ -57,6 +58,7 @@ private:
   TheSunFacade theSunFacade;
   UnderwaterFacade underwaterFacade;
   std::unique_ptr<LandFacade> landFacade;
+  LensFlareFacade lensFlareFacade;
 };
 
 #endif // SCENE_H

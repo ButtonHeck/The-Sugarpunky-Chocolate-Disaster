@@ -74,6 +74,8 @@ ShaderManager::ShaderManager()
                                          {GL_GEOMETRY_SHADER, "shadow/shadow.gs"});
   shaders[SHADER_FRUSTUM] = Shader({GL_VERTEX_SHADER, "frustum/frustum.vs"},
                                    {GL_FRAGMENT_SHADER, "frustum/frustum.fs"});
+  shaders[SHADER_LENS_FLARE] = Shader({GL_VERTEX_SHADER, "lensFlare/lensFlare.vs"},
+                                      {GL_FRAGMENT_SHADER, "lensFlare/lensFlare.fs"});
 }
 
 ShaderManager::~ShaderManager()
@@ -193,6 +195,15 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection, float aspect
 
   bindShaderUnit(shader, SHADER_SHORE_NORMALS);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
+
+  bindShaderUnit(shader, SHADER_LENS_FLARE);
+  shader->setInt("u_flares[0]", TEX_LENS_FLARE1);
+  shader->setInt("u_flares[1]", TEX_LENS_FLARE2);
+  shader->setInt("u_flares[2]", TEX_LENS_FLARE3);
+  shader->setInt("u_flares[3]", TEX_LENS_FLARE4);
+  shader->setInt("u_flares[4]", TEX_LENS_FLARE5);
+  shader->setInt("u_flares[5]", TEX_LENS_FLARE6);
+  shader->setInt("u_flares[6]", TEX_LENS_FLARE7);
 }
 
 Shader &ShaderManager::get(SHADER type)

@@ -81,7 +81,10 @@ SOURCES += \
     src/graphics/FrustumRenderer.cpp \
     src/graphics/ShadowVolumeRenderer.cpp \
     src/graphics/BindlessTextureManager.cpp \
-    src/util/DirectoriesSettings.cpp
+    src/util/DirectoriesSettings.cpp \
+    src/game/world/ambience/lensFlare/LensFlareElement.cpp \
+    src/game/world/ambience/lensFlare/LensFlareFacade.cpp \
+    src/game/world/ambience/lensFlare/LensFlareRenderer.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -166,7 +169,10 @@ HEADERS += \
     src/graphics/BindlessTextureManager.h \
     src/util/GraphicsSettings.h \
     src/util/SceneSettings.h \
-    src/util/DirectoriesSettings.h
+    src/util/DirectoriesSettings.h \
+    src/game/world/ambience/lensFlare/LensFlareElement.h \
+    src/game/world/ambience/lensFlare/LensFlareFacade.h \
+    src/game/world/ambience/lensFlare/LensFlareRenderer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 
@@ -618,7 +624,22 @@ DISTFILES += \
     res/textures/cubemapNormal/left.png \
     res/textures/cubemapNormal/right.png \
     res/textures/cubemapNormal/up.png \
-    res/textures/vignette.png
+    res/textures/vignette.png \
+    res/shaders/lensFlare/lensFlare.vs \
+    res/shaders/lensFlare/lensFlare.fs \
+    res/textures/lensFlares/flare1.png \
+    res/textures/lensFlares/flare10.png \
+    res/textures/lensFlares/flare11.png \
+    res/textures/lensFlares/flare12.png \
+    res/textures/lensFlares/flare13.png \
+    res/textures/lensFlares/flare2.png \
+    res/textures/lensFlares/flare3.png \
+    res/textures/lensFlares/flare4.png \
+    res/textures/lensFlares/flare5.png \
+    res/textures/lensFlares/flare6.png \
+    res/textures/lensFlares/flare7.png \
+    res/textures/lensFlares/flare8.png \
+    res/textures/lensFlares/flare9.png
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
