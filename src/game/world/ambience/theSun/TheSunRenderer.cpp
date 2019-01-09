@@ -16,12 +16,10 @@ void TheSunRenderer::render()
 {
   BENCHMARK("SunRenderer: draw", true);
   glPointSize(SUN_POINT_SIZE);
-  RendererStateManager::setAmbienceRenderingState(true);
   theSun.basicGLBuffers.bind(VAO);
   glBeginQuery(GL_SAMPLES_PASSED, samplesPassedQuery);
   glDrawArrays(GL_POINTS, 0, 1);
   glEndQuery(GL_SAMPLES_PASSED);
-  RendererStateManager::setAmbienceRenderingState(false);
   glPointSize(1.0f);
 }
 

@@ -18,6 +18,7 @@ namespace RendererStateManager
   {
     if (isOn)
       {
+        glDisable(GL_MULTISAMPLE);
         glDisable(GL_CULL_FACE);
         glDepthFunc(GL_LEQUAL);
         glEnable(GL_BLEND);
@@ -29,6 +30,7 @@ namespace RendererStateManager
         glDisable(GL_BLEND);
         glDepthFunc(GL_LESS);
         glEnable(GL_CULL_FACE);
+        glEnable(GL_MULTISAMPLE);
       }
   }
 }

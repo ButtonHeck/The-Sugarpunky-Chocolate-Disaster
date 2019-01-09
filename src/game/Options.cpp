@@ -22,7 +22,7 @@ Options::Options()
   options[OPT_DEBUG_RENDER] = false;
   options[OPT_SHADOW_CAMERA_FIXED] = false;
   options[OPT_USE_SHADOW_CAMERA_MATRIX] = false;
-  options[OPT_CSM_VISUALIZATION] = true;
+  options[OPT_CSM_VISUALIZATION] = false;
   options[OPT_FRUSTUM_VISUALIZATION] = true;
   options[OPT_EXPECTED_VOLUME_VISUALIZATION] = true;
   options[OPT_ACTUAL_VOLUME_VISUALIZATION] = true;

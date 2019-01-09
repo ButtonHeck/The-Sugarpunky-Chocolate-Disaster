@@ -123,10 +123,10 @@ void Scene::drawWorld(glm::vec3 lightDir,
       buildableFacade.drawSelected(projectionView, mouseInput);
     }
 
-  glDisable(GL_MULTISAMPLE);
+  RendererStateManager::setAmbienceRenderingState(true);
   theSunFacade.draw(skyProjectionView);
   skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
-  glEnable(GL_MULTISAMPLE);
+  RendererStateManager::setAmbienceRenderingState(false);
 
   if (options[OPT_DRAW_WATER])
     waterFacade.draw(lightDir,
@@ -135,6 +135,7 @@ void Scene::drawWorld(glm::vec3 lightDir,
                      options[OPT_WATER_CULLING], options[OPT_DEBUG_RENDER]);
 
   float theSunVisibility = theSunFacade.getSamplesPassedQueryResult() / MAX_SUN_SAMPLES_PASSED;
+  theSunVisibility *= glm::clamp(-(lightDir.y + 0.02f - camera.getPosition().y / 1500.0f) * 8.0f, 0.0f, 1.0f);
   if (theSunVisibility > 0)
     lensFlareFacade.draw(theSunFacade.getCurrentPosition(), skyProjectionView, theSunVisibility);
 }
