@@ -639,7 +639,9 @@ DISTFILES += \
     res/textures/lensFlares/flare6.png \
     res/textures/lensFlares/flare7.png \
     res/textures/lensFlares/flare8.png \
-    res/textures/lensFlares/flare9.png
+    res/textures/lensFlares/flare9.png \
+    res/textures/vignetteHoneycomb.png \
+    res/textures/vignetteInterlacing.png
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
