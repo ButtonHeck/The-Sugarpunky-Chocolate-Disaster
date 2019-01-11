@@ -8,12 +8,12 @@ LensFlareFacade::LensFlareFacade(Shader& shader, float spacing)
     renderer(basicGLBuffers)
 {
   flares.reserve(NUM_LENS_FLARES);
-  flares.emplace_back(1000.0f);
+  flares.emplace_back(1300.0f);
   flares.emplace_back(220.0f);
   flares.emplace_back(150.0f);
-  flares.emplace_back(110.0f);
+  flares.emplace_back(75.0f);
   flares.emplace_back(160.0f);
-  flares.emplace_back(210.0f);
+  flares.emplace_back(180.0f);
   flares.emplace_back(340.0f);
 
   basicGLBuffers.bind(VAO | VBO);
