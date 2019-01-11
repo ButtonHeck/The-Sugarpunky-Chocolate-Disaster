@@ -22,6 +22,8 @@ const float KISSEL_ALPHA_MIN = 0.7;
 const float REFLECTION_MIX_DAY = 0.25;
 const float REFLECTION_MIX_NIGHT = 0.025;
 const float DUDV_INFLUENCE = 0.008;
+const float TEXTURE_TILING = 1.0 / 8.0;
+const int   SPECULAR_SHININESS = 8;
 
 @include shadowSampling.ifs
 @include desaturationFunc.ifs
@@ -36,7 +38,7 @@ void main()
 
         @include shadingVariables.ifs
 
-        vec2 texCoords = v_FragPos.xz * 0.125;
+        vec2 texCoords = v_FragPos.xz * TEXTURE_TILING;
         vec2 dudvTextureOffset = (texture(u_dudv_map, texCoords + vec2(u_dudvMoveOffset)).rg * 2.0 - 1.0)
                                   * DUDV_INFLUENCE;
 
@@ -60,7 +62,7 @@ void main()
 
         //specular
         vec3 Reflect = reflect(-u_lightDir, ShadingNormal);
-        float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 32.0) * 8 * fresnelEffect;
+        float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 32.0) * SPECULAR_SHININESS * fresnelEffect;
         vec3 sampledSpecular = texture(u_specular_map, texCoords.yx + dudvTextureOffset).rgb * sunPositionAttenuation;
 
         //reflect skybox component
