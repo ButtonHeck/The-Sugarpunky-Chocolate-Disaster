@@ -16,6 +16,7 @@ void WaterShader::setupCulling()
 
 void WaterShader::update(glm::vec3 &lightDir, const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices, bool useFC, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
 {
+  static float dudvMoveOffset = 0.0f;
   if (useFC)
     {
       cullingShader.use();
@@ -32,6 +33,11 @@ void WaterShader::update(glm::vec3 &lightDir, const std::array<glm::mat4, NUM_SH
   renderShader.setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrices[0]);
   renderShader.setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrices[1]);
   renderShader.setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrices[2]);
+  renderShader.setFloat("u_dudvMoveOffset", dudvMoveOffset);
+
+  dudvMoveOffset += 0.0004f;
+  if (dudvMoveOffset >= 1.0f)
+    dudvMoveOffset = 0.0f;
 }
 
 void WaterShader::updateNormals(glm::mat4 &projectionView)

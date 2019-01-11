@@ -8,17 +8,20 @@ in vec3  v_Normal;
 uniform samplerCube u_skybox;
 uniform sampler2D   u_specular_map;
 uniform sampler2D   u_normal_map;
+uniform sampler2D   u_dudv_map;
 uniform vec3        u_lightDir;
 uniform vec3        u_viewPosition;
 uniform bool        u_debugRenderMode;
 uniform float       u_ambientDay;
 uniform float       u_ambientNight;
+uniform float       u_dudvMoveOffset;
 
 const float MAX_DESATURATING_VALUE = 0.5;
 const vec3  KISSEL_COLOR = vec3(107.0, 30.0, 15.0) / 255.0;
 const float KISSEL_ALPHA_MIN = 0.7;
 const float REFLECTION_MIX_DAY = 0.25;
 const float REFLECTION_MIX_NIGHT = 0.025;
+const float DUDV_INFLUENCE = 0.008;
 
 @include shadowSampling.ifs
 @include desaturationFunc.ifs
@@ -33,8 +36,12 @@ void main()
 
         @include shadingVariables.ifs
 
-        vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.125).xzy;
-        ShadingNormal.xyz -= vec3(0.5);
+        vec2 texCoords = v_FragPos.xz * 0.125;
+        vec2 dudvTextureOffset = (texture(u_dudv_map, texCoords + vec2(u_dudvMoveOffset)).rg * 2.0 - 1.0)
+                                  * DUDV_INFLUENCE;
+
+        vec3 ShadingNormal = texture(u_normal_map, texCoords).xzy;
+        ShadingNormal -= vec3(0.5);
         ShadingNormal = normalize(v_Normal + ShadingNormal);
 
         vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
@@ -53,10 +60,11 @@ void main()
         //specular
         vec3 Reflect = reflect(-u_lightDir, ShadingNormal);
         float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 32.0) * 8 * fresnelEffect;
-        vec3 sampledSpecular = texture(u_specular_map, v_FragPos.zx * 0.125).rgb * sunPositionAttenuation;
+        vec3 sampledSpecular = texture(u_specular_map, texCoords.yx + dudvTextureOffset).rgb * sunPositionAttenuation;
 
         //reflect skybox component
         vec3 skyboxCoords = reflect(-ViewDir, ShadingNormal);
+        skyboxCoords.xy += dudvTextureOffset;
         vec4 sampledDiffuseSkybox = vec4(texture(u_skybox, skyboxCoords).rgb, 1.0);
 
         //shadowing
