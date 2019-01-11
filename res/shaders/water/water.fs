@@ -40,8 +40,9 @@ void main()
         vec2 dudvTextureOffset = (texture(u_dudv_map, texCoords + vec2(u_dudvMoveOffset)).rg * 2.0 - 1.0)
                                   * DUDV_INFLUENCE;
 
-        vec3 ShadingNormal = texture(u_normal_map, texCoords).xzy;
-        ShadingNormal -= vec3(0.5);
+        vec3 ShadingNormal = texture(u_normal_map, texCoords + dudvTextureOffset).xzy;
+        ShadingNormal.xz *= 2.0;
+        ShadingNormal.xz -= 1.0;
         ShadingNormal = normalize(v_Normal + ShadingNormal);
 
         vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
