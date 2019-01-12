@@ -22,11 +22,16 @@ void ShoreFacade::deserialize(std::ifstream &input)
   generator.deserialize(input);
 }
 
-void ShoreFacade::draw(glm::vec3 &lightDir, const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices, glm::mat4 &projectionView, bool useShadows, bool useDebugRender)
+void ShoreFacade::draw(glm::vec3 &lightDir,
+                       const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
+                       glm::mat4 &projectionView,
+                       bool useShadows,
+                       bool useDebugRender,
+                       bool useClipDistance)
 {
   shader.update(lightDir,
                 lightSpaceMatrices,
-                projectionView, useShadows);
+                projectionView, useShadows, useClipDistance);
   {
     BENCHMARK("ShoreRenderer: draw", true);
     shader.debugRenderMode(false);

@@ -45,6 +45,14 @@ glm::mat4 Camera::getViewMatrix() const
   return glm::lookAt(position, position + front, worldUp);
 }
 
+glm::mat4 Camera::getReflectionViewMatrix() const
+{
+  glm::vec3 positionReflected(position.x, -position.y, position.z);
+  glm::vec3 lookDirectionReflected(position + front);
+  lookDirectionReflected.y *= -1;
+  return glm::lookAt(positionReflected, lookDirectionReflected, worldUp);
+}
+
 void Camera::updateViewAcceleration(float xOffset, float yOffset)
 {
   viewAccelerationX += xOffset * mouseSensitivity;

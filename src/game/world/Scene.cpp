@@ -104,7 +104,7 @@ void Scene::drawWorld(glm::vec3 lightDir,
 
   shoreFacade.draw(lightDir,
                    lightSpaceMatrices,
-                   projectionView, options[OPT_USE_SHADOWS], options[OPT_DEBUG_RENDER]);
+                   projectionView, options[OPT_USE_SHADOWS], options[OPT_DEBUG_RENDER], false);
 
   if (options[OPT_DRAW_TREES])
     plantsFacade.draw(lightDir,
@@ -160,6 +160,44 @@ void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &li
       plantsFacade.drawDepthmap();
     }
   glEnable(GL_MULTISAMPLE);
+}
+
+void Scene::drawWorldReflection(glm::vec3 lightDir,
+                                const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
+                                glm::mat4 &projectionView,
+                                glm::mat4 &skyProjectionView,
+                                Frustum &cullingViewFrustum,
+                                Camera &camera)
+{
+  glm::vec3 viewPosition = camera.getPosition();
+  viewPosition.y *= -1;
+  glm::vec2 viewAcceleration = camera.getViewAcceleration();
+
+  hillsFacade.draw(lightDir,
+                   lightSpaceMatrices,
+                   projectionView, viewPosition, viewAcceleration, cullingViewFrustum,
+                   options[OPT_HILLS_CULLING],
+                   options[OPT_USE_SHADOWS],
+                   false);
+
+  glEnable(GL_CLIP_DISTANCE0);
+  shoreFacade.draw(lightDir,
+                   lightSpaceMatrices,
+                   projectionView, options[OPT_USE_SHADOWS], false, true);
+  glDisable(GL_CLIP_DISTANCE0);
+
+  if (options[OPT_DRAW_TREES])
+    plantsFacade.draw(lightDir,
+                      lightSpaceMatrices,
+                      projectionView, viewPosition,
+                      options[OPT_MODELS_PHONG_SHADING],
+                      options[OPT_USE_SHADOWS],
+                      options[OPT_MODELS_LAND_BLENDING]);
+
+  RendererStateManager::setAmbienceRenderingState(true);
+  theSunFacade.draw(skyProjectionView);
+  skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
+  RendererStateManager::setAmbienceRenderingState(false);
 }
 
 WaterFacade &Scene::getWaterFacade()

@@ -89,7 +89,7 @@ ShaderManager::~ShaderManager()
   shader = &shaders[type]; \
   shader->use();
 
-void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection, float aspectRatio)
+void ShaderManager::setupConstantUniforms(ScreenResolution& screenResolution)
 {
   BENCHMARK("Shader Manager: setup", false);
 
@@ -118,6 +118,7 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection, float aspect
   shader->setFloat("u_mapDimension", 1.0f / (float)WORLD_WIDTH);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setFloat("U_UNDERWATER_TILE_YPOS", -UNDERWATER_TILE_YPOS);
+  shader->setFloat("U_WATER_LEVEL", WATER_LEVEL);
   shader->setFloat("u_bias", 1.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
@@ -147,9 +148,12 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection, float aspect
   shader->setInt("u_specular_map", TEX_WATER_SPECULAR);
   shader->setInt("u_dudv_map", TEX_WATER_DUDV);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
+  shader->setInt("u_reflectionMap", TEX_FRAME_WATER_REFLECTION);
   shader->setFloat("u_bias", 4.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
+  shader->setFloat("U_SCREEN_WIDTH", screenResolution.getWidth());
+  shader->setFloat("U_SCREEN_HEIGHT", screenResolution.getHeight());
 
   bindShaderUnit(shader, SHADER_SKYBOX);
   shader->setInt("u_skybox[1]", TEX_SKYBOX);
@@ -164,7 +168,7 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection, float aspect
   shader->setInt("u_texture", TEX_THE_SUN);
 
   bindShaderUnit(shader, SHADER_FONT);
-  shader->setMat4("u_projection", fontProjection);
+  shader->setMat4("u_projection", glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()));
   shader->setInt("u_fontTexture", TEX_FONT);
 
   bindShaderUnit(shader, SHADER_MODELS_GOURAUD);
@@ -186,7 +190,7 @@ void ShaderManager::setupConstantUniforms(glm::mat4 fontProjection, float aspect
   shader->setFloat("u_exposure", 2.2f);
   shader->setFloat("u_near", NEAR_PLANE);
   shader->setFloat("u_far", FAR_PLANE);
-  shader->setFloat("u_aspectRatio", aspectRatio);
+  shader->setFloat("u_aspectRatio", screenResolution.getAspectRatio());
 
   bindShaderUnit(shader, SHADER_WATER_NORMALS);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);

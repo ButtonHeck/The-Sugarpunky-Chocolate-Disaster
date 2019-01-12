@@ -39,7 +39,12 @@ void HillsFacade::draw(glm::vec3 &lightDir,
 {
   shaders.update(lightDir,
                  lightSpaceMatrices,
-                 projectionView, viewPosition, viewFrustum, generator.maxHeight, useFC, useShadows);
+                 projectionView,
+                 viewPosition,
+                 viewFrustum,
+                 generator.maxHeight,
+                 useFC,
+                 useShadows);
   shaders.debugRenderMode(false);
   renderer.render(useFC, viewAcceleration);
 

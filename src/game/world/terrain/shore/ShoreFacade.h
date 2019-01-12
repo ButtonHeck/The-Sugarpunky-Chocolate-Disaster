@@ -16,7 +16,8 @@ public:
             const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
             glm::mat4& projectionView,
             bool useShadows,
-            bool useDebugRender);
+            bool useDebugRender,
+            bool useClipDistance);
   void drawDepthmap();
   const map2D_f& getMap() const;
 

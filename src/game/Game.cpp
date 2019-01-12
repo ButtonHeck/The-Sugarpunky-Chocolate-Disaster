@@ -49,7 +49,7 @@ void Game::setup()
   scene.setup();
   BindlessTextureManager::loadToShaders(shaderManager.get(SHADER_MODELS_PHONG), shaderManager.get(SHADER_MODELS_GOURAUD));
   setupThreads();
-  shaderManager.setupConstantUniforms(glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()), screenResolution.getAspectRatio());
+  shaderManager.setupConstantUniforms(screenResolution);
   screenBuffer.setup();
   depthmapBuffer.setup(textureManager.get(TEX_DEPTH_MAP_SUN));
   reflectionFramebuffer.setup();
@@ -100,7 +100,7 @@ void Game::loop()
     updateDepthmap();
 
   reflectionFramebuffer.bind();
-  //draw reflection stuff here
+  drawFrameReflection();
   reflectionFramebuffer.unbind();
   glViewport(0, 0, screenResolution.getWidth(), screenResolution.getHeight());
 
@@ -201,6 +201,26 @@ void Game::drawFrame(glm::mat4& projectionView)
     }
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void Game::drawFrameReflection()
+{
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  if (options[OPT_USE_MULTISAMPLING])
+    glDisable(GL_MULTISAMPLE);
+
+  glm::mat4 viewReflected = camera.getReflectionViewMatrix();
+  glm::mat4 projectionViewReflected = projection * viewReflected;
+  glm::mat4 skyboxProjectionViewReflected(projection * glm::mat4(glm::mat3(camera.getReflectionViewMatrix())));
+  scene.drawWorldReflection(shadowVolume.getLightDir(),
+                            shadowVolume.getLightSpaceMatrices(),
+                            projectionViewReflected,
+                            skyboxProjectionViewReflected,
+                            cullingViewFrustum,
+                            camera);
+
+  if (options[OPT_USE_MULTISAMPLING])
+    glEnable(GL_MULTISAMPLE);
 }
 
 void Game::recreate()

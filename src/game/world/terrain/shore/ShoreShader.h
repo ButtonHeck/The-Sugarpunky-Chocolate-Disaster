@@ -9,7 +9,8 @@ public:
   void update(glm::vec3& lightDir,
               const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
               glm::mat4 &projectionView,
-              bool useShadows);
+              bool useShadows,
+              bool useClipDistance);
   void updateNormals(glm::mat4& projectionView);
   void debugRenderMode(bool enable);
 private:

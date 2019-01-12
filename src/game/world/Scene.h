@@ -37,6 +37,12 @@ public:
                  Camera& camera,
                  MouseInputManager& mouseInput);
   void drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices);
+  void drawWorldReflection(glm::vec3 lightDir,
+                           const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
+                           glm::mat4 &projectionView,
+                           glm::mat4& skyProjectionView,
+                           Frustum &cullingViewFrustum,
+                           Camera& camera);
 
   //getters
   WaterFacade &getWaterFacade();
