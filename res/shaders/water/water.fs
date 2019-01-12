@@ -5,7 +5,6 @@ out vec4 o_FragColor;
 in vec3  v_FragPos;
 in vec3  v_Normal;
 
-uniform samplerCube u_skybox;
 uniform sampler2D   u_specular_map;
 uniform sampler2D   u_normal_map;
 uniform sampler2D   u_dudv_map;
@@ -22,8 +21,8 @@ uniform float       U_SCREEN_HEIGHT;
 const float MAX_DESATURATING_VALUE = 0.5;
 const vec3  KISSEL_COLOR = vec3(107.0, 30.0, 15.0) / 255.0;
 const float KISSEL_ALPHA_MIN = 0.7;
-const float REFLECTION_MIX_DAY = 0.25;
-const float REFLECTION_MIX_NIGHT = 0.025;
+const float REFLECTION_MIX_DAY = 0.3;
+const float REFLECTION_MIX_NIGHT = 0.5;
 const float DUDV_INFLUENCE = 0.008;
 const float TEXTURE_TILING = 1.0 / 8.0;
 const int   SPECULAR_SHININESS = 8;
@@ -42,13 +41,13 @@ void main()
 
         @include shadingVariables.ifs
 
-        vec2 texCoords = v_FragPos.xz * TEXTURE_TILING;
-        vec2 dudvTextureOffset = (texture(u_dudv_map, texCoords + vec2(u_dudvMoveOffset)).rg * 2.0 - 1.0)
+        vec2 fragPosTexCoords = v_FragPos.xz * TEXTURE_TILING;
+        vec2 dudvTextureOffset = (texture(u_dudv_map, fragPosTexCoords + vec2(u_dudvMoveOffset)).rg * 2.0 - 1.0)
                                   * DUDV_INFLUENCE;
         vec2 screenSpaceTexCoords = gl_FragCoord.xy / SCREEN_SPACE_DIVISOR;
         screenSpaceTexCoords.y = 1.0 - screenSpaceTexCoords.y;
 
-        vec3 ShadingNormal = texture(u_normal_map, texCoords + dudvTextureOffset).xzy;
+        vec3 ShadingNormal = texture(u_normal_map, fragPosTexCoords + dudvTextureOffset).xzy;
         ShadingNormal.xz *= 2.0;
         ShadingNormal.xz -= 1.0;
         ShadingNormal = normalize(v_Normal + ShadingNormal);
@@ -69,24 +68,23 @@ void main()
         //specular
         vec3 Reflect = reflect(-u_lightDir, ShadingNormal);
         float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 32.0) * SPECULAR_SHININESS * fresnelEffect;
-        vec3 sampledSpecular = texture(u_specular_map, texCoords.yx + dudvTextureOffset).rgb * sunPositionAttenuation;
+        vec3 sampledSpecular = texture(u_specular_map, fragPosTexCoords.yx + dudvTextureOffset).rgb * sunPositionAttenuation;
 
-        //reflect skybox component
-        vec3 skyboxCoords = reflect(-ViewDir, ShadingNormal);
-        skyboxCoords.xy += dudvTextureOffset;
-        vec4 sampledDiffuseSkybox = vec4(texture(u_skybox, skyboxCoords).rgb, 1.0);
+        //world reflection
+        vec4 sampledWorldReflection = vec4(texture(u_reflectionMap, screenSpaceTexCoords + dudvTextureOffset + vec2(ShadingNormal.xz) * 0.125).rgb, 1.0);
 
         //shadowing
         int shadowMapIndex;
         vec3 projectedCoords;
         ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
+        projectedCoords.xy += dudvTextureOffset;
         float luminosity = ext_calculateLuminosity3(shadowMapIndex, projectedCoords, u_bias);
 
         diffuseColor = luminosity * sampledDiffuse * diffuseComponent;
         specularColor = specularComponent * sampledSpecular;
         resultColor = ambientColor + diffuseColor + specularColor;
 
-        o_FragColor = vec4(mix(resultColor, sampledDiffuseSkybox.rgb, fresnelEffect), fresnelEffect + KISSEL_ALPHA_MIN);
+        o_FragColor = vec4(mix(resultColor, sampledWorldReflection.rgb, fresnelEffect), fresnelEffect + KISSEL_ALPHA_MIN);
 
         float desaturatingValue = mix(0.0,
                                       MAX_DESATURATING_VALUE,

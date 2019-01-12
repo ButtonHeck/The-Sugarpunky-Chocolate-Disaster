@@ -143,7 +143,6 @@ void ShaderManager::setupConstantUniforms(ScreenResolution& screenResolution)
   shader->setFloat("u_ambientNight", 0.03f);
 
   bindShaderUnit(shader, SHADER_WATER);
-  shader->setInt("u_skybox", TEX_SKYBOX_SKY);
   shader->setInt("u_normal_map", TEX_WATER_NORMAL);
   shader->setInt("u_specular_map", TEX_WATER_SPECULAR);
   shader->setInt("u_dudv_map", TEX_WATER_DUDV);
