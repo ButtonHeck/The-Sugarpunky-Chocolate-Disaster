@@ -106,7 +106,7 @@ void Game::loop()
   reflectionFramebuffer.unbind();
 
   refractionFramebuffer.bind();
-  //draw refraction underwater and shore
+  drawFrameRefraction(projectionView);
   refractionFramebuffer.unbind();
   glViewport(0, 0, screenResolution.getWidth(), screenResolution.getHeight());
 
@@ -224,6 +224,20 @@ void Game::drawFrameReflection()
                             skyboxProjectionViewReflected,
                             cullingViewFrustum,
                             camera);
+
+  if (options[OPT_USE_MULTISAMPLING])
+    glEnable(GL_MULTISAMPLE);
+}
+
+void Game::drawFrameRefraction(glm::mat4& projectionView)
+{
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  if (options[OPT_USE_MULTISAMPLING])
+    glDisable(GL_MULTISAMPLE);
+
+  scene.drawWorldRefraction(shadowVolume.getLightDir(),
+                            shadowVolume.getLightSpaceMatrices(),
+                            projectionView);
 
   if (options[OPT_USE_MULTISAMPLING])
     glEnable(GL_MULTISAMPLE);

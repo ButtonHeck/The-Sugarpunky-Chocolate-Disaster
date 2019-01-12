@@ -17,7 +17,8 @@ public:
             glm::mat4& projectionView,
             bool useShadows,
             bool useDebugRender,
-            bool useClipDistance);
+            bool useClipDistanceReflection,
+            bool useClipDistanceRefraction);
   void drawDepthmap();
   const map2D_f& getMap() const;
 

@@ -10,7 +10,8 @@ void ShoreShader::update(glm::vec3 &lightDir,
                          const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                          glm::mat4 &projectionView,
                          bool useShadows,
-                         bool useClipDistance)
+                         bool useClipDistanceReflection,
+                         bool useClipDistanceRefraction)
 {
   renderShader.use();
   renderShader.setMat4("u_projectionView", projectionView);
@@ -19,7 +20,8 @@ void ShoreShader::update(glm::vec3 &lightDir,
   renderShader.setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrices[0]);
   renderShader.setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrices[1]);
   renderShader.setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrices[2]);
-  renderShader.setBool("u_useClipDistance", useClipDistance);
+  renderShader.setBool("u_useClipDistanceReflection", useClipDistanceReflection);
+  renderShader.setBool("u_useClipDistanceRefraction", useClipDistanceRefraction);
 }
 
 void ShoreShader::updateNormals(glm::mat4 &projectionView)

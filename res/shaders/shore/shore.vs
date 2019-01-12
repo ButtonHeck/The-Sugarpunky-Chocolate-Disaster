@@ -9,9 +9,11 @@ uniform float     u_mapDimension;
 uniform sampler2D u_diffuse_mix_map;
 uniform float     U_UNDERWATER_TILE_YPOS;
 uniform float     U_WATER_LEVEL;
-uniform bool      u_useClipDistance;
+uniform bool      u_useClipDistanceReflection;
+uniform bool      u_useClipDistanceRefraction;
 
-const vec4 CLIP_PLANE = vec4(0.0, 1.0, 0.0, U_WATER_LEVEL);
+const vec4  CLIP_PLANE_REFLECTION = vec4(0.0, 1.0, 0.0, U_WATER_LEVEL);
+const vec4  CLIP_PLANE_REFRACTION = vec4(0.0, -1.0, 0.0, -U_WATER_LEVEL);
 
 out vec3  v_FragPos;
 out vec2  v_TexCoords;
@@ -24,8 +26,10 @@ const float TERRAIN_TYPE_TRANSITION_RATIO = 1.75;
 void main()
 {
     gl_Position = u_projectionView * i_pos;
-    if (u_useClipDistance)
-        gl_ClipDistance[0] = dot(CLIP_PLANE, i_pos);
+    if (u_useClipDistanceReflection)
+        gl_ClipDistance[0] = dot(CLIP_PLANE_REFLECTION, i_pos);
+    if (u_useClipDistanceRefraction)
+        gl_ClipDistance[0] = dot(CLIP_PLANE_REFRACTION, i_pos);
 
     v_FragPos = i_pos.xyz;
     v_TexCoords = i_texCoords;

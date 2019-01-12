@@ -43,6 +43,9 @@ public:
                            glm::mat4& skyProjectionView,
                            Frustum &cullingViewFrustum,
                            Camera& camera);
+  void drawWorldRefraction(glm::vec3 lightDir,
+                           const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
+                           glm::mat4 &projectionView);
 
   //getters
   WaterFacade &getWaterFacade();

@@ -104,7 +104,8 @@ void Scene::drawWorld(glm::vec3 lightDir,
 
   shoreFacade.draw(lightDir,
                    lightSpaceMatrices,
-                   projectionView, options[OPT_USE_SHADOWS], options[OPT_DEBUG_RENDER], false);
+                   projectionView, options[OPT_USE_SHADOWS], options[OPT_DEBUG_RENDER],
+                   false, false);
 
   if (options[OPT_DRAW_TREES])
     plantsFacade.draw(lightDir,
@@ -183,7 +184,8 @@ void Scene::drawWorldReflection(glm::vec3 lightDir,
   glEnable(GL_CLIP_DISTANCE0);
   shoreFacade.draw(lightDir,
                    lightSpaceMatrices,
-                   projectionView, options[OPT_USE_SHADOWS], false, true);
+                   projectionView, options[OPT_USE_SHADOWS], false,
+                   true, false);
   glDisable(GL_CLIP_DISTANCE0);
 
   if (options[OPT_DRAW_TREES])
@@ -198,6 +200,20 @@ void Scene::drawWorldReflection(glm::vec3 lightDir,
   theSunFacade.draw(skyProjectionView);
   skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
   RendererStateManager::setAmbienceRenderingState(false);
+}
+
+void Scene::drawWorldRefraction(glm::vec3 lightDir,
+                                const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
+                                glm::mat4 &projectionView)
+{
+  underwaterFacade.draw(lightDir, projectionView);
+
+  glEnable(GL_CLIP_DISTANCE0);
+  shoreFacade.draw(lightDir,
+                   lightSpaceMatrices,
+                   projectionView, options[OPT_USE_SHADOWS], false,
+                   false, true);
+  glDisable(GL_CLIP_DISTANCE0);
 }
 
 WaterFacade &Scene::getWaterFacade()

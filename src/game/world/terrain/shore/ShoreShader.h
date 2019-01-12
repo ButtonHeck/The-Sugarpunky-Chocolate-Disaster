@@ -10,7 +10,8 @@ public:
               const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
               glm::mat4 &projectionView,
               bool useShadows,
-              bool useClipDistance);
+              bool useClipDistanceReflection,
+              bool useClipDistanceRefraction);
   void updateNormals(glm::mat4& projectionView);
   void debugRenderMode(bool enable);
 private:

@@ -27,11 +27,13 @@ void ShoreFacade::draw(glm::vec3 &lightDir,
                        glm::mat4 &projectionView,
                        bool useShadows,
                        bool useDebugRender,
-                       bool useClipDistance)
+                       bool useClipDistanceReflection,
+                       bool useClipDistanceRefraction)
 {
   shader.update(lightDir,
                 lightSpaceMatrices,
-                projectionView, useShadows, useClipDistance);
+                projectionView, useShadows,
+                useClipDistanceReflection, useClipDistanceRefraction);
   {
     BENCHMARK("ShoreRenderer: draw", true);
     shader.debugRenderMode(false);

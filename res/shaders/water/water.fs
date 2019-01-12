@@ -9,6 +9,7 @@ uniform sampler2D   u_specular_map;
 uniform sampler2D   u_normal_map;
 uniform sampler2D   u_dudv_map;
 uniform sampler2D   u_reflectionMap;
+uniform sampler2D   u_refractionMap;
 uniform vec3        u_lightDir;
 uniform vec3        u_viewPosition;
 uniform bool        u_debugRenderMode;
@@ -44,8 +45,9 @@ void main()
         vec2 fragPosTexCoords = v_FragPos.xz * TEXTURE_TILING;
         vec2 dudvTextureOffset = (texture(u_dudv_map, fragPosTexCoords + vec2(u_dudvMoveOffset)).rg * 2.0 - 1.0)
                                   * DUDV_INFLUENCE;
-        vec2 screenSpaceTexCoords = gl_FragCoord.xy / SCREEN_SPACE_DIVISOR;
-        screenSpaceTexCoords.y = 1.0 - screenSpaceTexCoords.y;
+        vec2 screenSpaceTexCoordsReflection = gl_FragCoord.xy / SCREEN_SPACE_DIVISOR;
+        vec2 screenSpaceTexCoordsRefraction = screenSpaceTexCoordsReflection;
+        screenSpaceTexCoordsReflection.y = 1.0 - screenSpaceTexCoordsReflection.y;
 
         vec3 ShadingNormal = texture(u_normal_map, fragPosTexCoords + dudvTextureOffset).xzy;
         ShadingNormal.xz *= 2.0;
@@ -71,7 +73,7 @@ void main()
         vec3 sampledSpecular = texture(u_specular_map, fragPosTexCoords.yx + dudvTextureOffset).rgb * sunPositionAttenuation;
 
         //world reflection
-        vec4 sampledWorldReflection = vec4(texture(u_reflectionMap, screenSpaceTexCoords + dudvTextureOffset + vec2(ShadingNormal.xz) * 0.125).rgb, 1.0);
+        vec4 sampledWorldReflection = vec4(texture(u_reflectionMap, screenSpaceTexCoordsReflection + dudvTextureOffset + vec2(ShadingNormal.xz) * 0.125).rgb, 1.0);
 
         //shadowing
         int shadowMapIndex;

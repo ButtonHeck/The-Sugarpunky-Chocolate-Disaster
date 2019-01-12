@@ -148,6 +148,7 @@ void ShaderManager::setupConstantUniforms(ScreenResolution& screenResolution)
   shader->setInt("u_dudv_map", TEX_WATER_DUDV);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setInt("u_reflectionMap", TEX_FRAME_WATER_REFLECTION);
+  shader->setInt("u_refractionMap", TEX_FRAME_WATER_REFRACTION);
   shader->setFloat("u_bias", 4.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
