@@ -75,6 +75,9 @@ void main()
         //world reflection
         vec4 sampledWorldReflection = vec4(texture(u_reflectionMap, screenSpaceTexCoordsReflection + dudvTextureOffset + vec2(ShadingNormal.xz) * 0.125).rgb, 1.0);
 
+        //world refraction
+        vec4 sampledWorldRefraction = vec4(texture(u_refractionMap, screenSpaceTexCoordsRefraction + dudvTextureOffset + vec2(ShadingNormal.xz) * 0.125).rgb, 1.0);
+
         //shadowing
         int shadowMapIndex;
         vec3 projectedCoords;
@@ -86,7 +89,7 @@ void main()
         specularColor = specularComponent * sampledSpecular;
         resultColor = ambientColor + diffuseColor + specularColor;
 
-        o_FragColor = vec4(mix(resultColor, sampledWorldReflection.rgb, fresnelEffect), fresnelEffect + KISSEL_ALPHA_MIN);
+        o_FragColor = vec4(mix(resultColor + sampledWorldRefraction.rgb, sampledWorldReflection.rgb, fresnelEffect), fresnelEffect + KISSEL_ALPHA_MIN);
 
         float desaturatingValue = mix(0.0,
                                       MAX_DESATURATING_VALUE,
