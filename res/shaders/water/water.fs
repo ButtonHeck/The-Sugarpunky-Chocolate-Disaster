@@ -10,6 +10,7 @@ uniform sampler2D   u_normal_map;
 uniform sampler2D   u_dudv_map;
 uniform sampler2D   u_reflectionMap;
 uniform sampler2D   u_refractionMap;
+uniform sampler2D   u_refractionDepthMap;
 uniform vec3        u_lightDir;
 uniform vec3        u_viewPosition;
 uniform bool        u_debugRenderMode;
@@ -18,19 +19,26 @@ uniform float       u_ambientNight;
 uniform float       u_dudvMoveOffset;
 uniform float       U_SCREEN_WIDTH;
 uniform float       U_SCREEN_HEIGHT;
+uniform float       u_near;
+uniform float       u_far;
 
 const float MAX_DESATURATING_VALUE = 0.5;
-const vec3  KISSEL_COLOR = vec3(107.0, 30.0, 15.0) / 255.0;
-const float KISSEL_ALPHA_MIN = 0.7;
-const float REFLECTION_MIX_DAY = 0.3;
+const vec3  KISSEL_COLOR = vec3(107.0, 15.0, 5.0) / 255.0;
+const float KISSEL_ALPHA_MIN = 0.9;
+const float REFLECTION_MIX_DAY = 0.2;
 const float REFLECTION_MIX_NIGHT = 0.5;
 const float DUDV_INFLUENCE = 0.008;
 const float TEXTURE_TILING = 1.0 / 8.0;
-const int   SPECULAR_SHININESS = 8;
 const vec2  SCREEN_SPACE_DIVISOR = vec2(U_SCREEN_WIDTH, U_SCREEN_HEIGHT);
 
 @include shadowSampling.ifs
 @include desaturationFunc.ifs
+
+float linearizeDepth(float depth)
+{
+    float z = depth * 2.0 - 1.0; // back to NDC
+    return (2.0 * u_near) / (u_far + u_near - z * (u_far - u_near));
+}
 
 void main()
 {
@@ -55,11 +63,12 @@ void main()
         ShadingNormal = normalize(v_Normal + ShadingNormal);
 
         vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
-        float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+        float sunPositionAttenuation = clamp(u_lightDir.y * 10, 0.0, 1.0);
 
         //fresnel
-        float fresnelEffect = (1.0 - clamp(dot(ViewDir, ShadingNormal) + 0.2, 0.0, 1.0))
-                               * mix(REFLECTION_MIX_NIGHT, REFLECTION_MIX_DAY, clamp(u_lightDir.y * 10, 0.0, 1.0));
+        float refractionInfluence = max(dot(ViewDir, ShadingNormal), 0.0);
+        float reflectionInfluenceAlpha = (1.0 - refractionInfluence);
+        float reflectionInfluenceColor = reflectionInfluenceAlpha * mix(REFLECTION_MIX_NIGHT, REFLECTION_MIX_DAY, sunPositionAttenuation);
 
         //diffuse
         float diffuseComponent = max(dot(ShadingNormal, u_lightDir), 0.0) * sunPositionAttenuation;
@@ -69,7 +78,7 @@ void main()
 
         //specular
         vec3 Reflect = reflect(-u_lightDir, ShadingNormal);
-        float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 32.0) * SPECULAR_SHININESS * fresnelEffect;
+        float specularComponent = pow(max(dot(Reflect, ViewDir), 0.0), 32.0);
         vec3 sampledSpecular = texture(u_specular_map, fragPosTexCoords.yx + dudvTextureOffset).rgb * sunPositionAttenuation;
 
         //world reflection
@@ -83,13 +92,18 @@ void main()
         vec3 projectedCoords;
         ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
         projectedCoords.xy += dudvTextureOffset;
-        float luminosity = ext_calculateLuminosity3(shadowMapIndex, projectedCoords, u_bias);
+        float luminosity = ext_calculateLuminosity3Lowp(shadowMapIndex, projectedCoords, u_bias);
 
         diffuseColor = luminosity * sampledDiffuse * diffuseComponent;
         specularColor = specularComponent * sampledSpecular;
         resultColor = ambientColor + diffuseColor + specularColor;
 
-        o_FragColor = vec4(mix(resultColor + sampledWorldRefraction.rgb, sampledWorldReflection.rgb, fresnelEffect), fresnelEffect + KISSEL_ALPHA_MIN);
+        float refractionDepth = linearizeDepth(texture(u_refractionDepthMap, screenSpaceTexCoordsRefraction).r);
+        float currentFragDepth = linearizeDepth(gl_FragCoord.z);
+        float kisselDepth = min((refractionDepth - currentFragDepth) * 96, 1.0);
+
+        o_FragColor = vec4(resultColor + mix(sampledWorldRefraction.rgb, sampledWorldReflection.rgb, reflectionInfluenceColor) * 0.5,
+                           mix(kisselDepth, max(reflectionInfluenceAlpha, KISSEL_ALPHA_MIN), kisselDepth));
 
         float desaturatingValue = mix(0.0,
                                       MAX_DESATURATING_VALUE,
