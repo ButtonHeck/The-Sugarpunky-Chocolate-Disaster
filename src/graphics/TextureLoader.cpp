@@ -78,6 +78,16 @@ GLuint TextureLoader::createFrameTexture(GLuint textureUnit, bool isDepthTexture
   return texture;
 }
 
+GLuint TextureLoader::createFrameTextureSized(GLuint textureUnit, bool isDepthTexture, int width, int height)
+{
+  GLuint texture = createTextureObject(GL_TEXTURE_2D, textureUnit, false);
+  GLenum format = isDepthTexture ? GL_DEPTH24_STENCIL8 : GL_RGB16;
+  glTextureStorage2D(texture, 1, format, width, height);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  return texture;
+}
+
 GLuint TextureLoader::createDepthMapTexture(int width, int height, GLuint textureUnit)
 {
   GLuint texture = createTextureObject(GL_TEXTURE_2D_ARRAY, textureUnit, false);

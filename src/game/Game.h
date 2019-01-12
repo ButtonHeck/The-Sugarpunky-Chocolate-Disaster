@@ -22,6 +22,7 @@
 #include "graphics/FrustumRenderer.h"
 #include "graphics/ShadowVolumeRenderer.h"
 #include "graphics/BindlessTextureManager.h"
+#include "graphics/WaterReflectionFramebuffer.h"
 
 class Camera;
 class Options;
@@ -67,6 +68,7 @@ private:
   CoordinateSystemRenderer csRenderer;
   ScreenBuffer screenBuffer;
   DepthmapBuffer depthmapBuffer;
+  WaterReflectionFramebuffer reflectionFramebuffer;
 
   //world
   Scene scene;

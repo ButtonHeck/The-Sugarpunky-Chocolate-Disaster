@@ -16,6 +16,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     csRenderer(CoordinateSystemRenderer(&shaderManager.get(SHADER_COORDINATE_SYSTEM))),
     screenBuffer(screenResolution, textureManager, shaderManager),
     depthmapBuffer(),
+    reflectionFramebuffer(FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT, textureManager),
     scene(shaderManager, options, textureManager),
     shadowVolume(scene.getSunFacade()),
     shadowVolumeRenderer(shadowVolume),
@@ -51,6 +52,7 @@ void Game::setup()
   shaderManager.setupConstantUniforms(glm::ortho(0.0f, (float)screenResolution.getWidth(), 0.0f, (float)screenResolution.getHeight()), screenResolution.getAspectRatio());
   screenBuffer.setup();
   depthmapBuffer.setup(textureManager.get(TEX_DEPTH_MAP_SUN));
+  reflectionFramebuffer.setup();
 }
 
 void Game::loop()
@@ -96,6 +98,11 @@ void Game::loop()
   scene.getPlantsFacade().updateIndirectBufferData();
   if (options[OPT_USE_SHADOWS])
     updateDepthmap();
+
+  reflectionFramebuffer.bind();
+  //draw reflection stuff here
+  reflectionFramebuffer.unbind();
+  glViewport(0, 0, screenResolution.getWidth(), screenResolution.getHeight());
 
   //render our world onto separate FBO as usual
   bool multisamplingEnabled = options[OPT_USE_MULTISAMPLING];
