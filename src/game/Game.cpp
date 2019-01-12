@@ -17,6 +17,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     screenBuffer(screenResolution, textureManager, shaderManager),
     depthmapBuffer(),
     reflectionFramebuffer(FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT, textureManager),
+    refractionFramebuffer(FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT, textureManager),
     scene(shaderManager, options, textureManager),
     shadowVolume(scene.getSunFacade()),
     shadowVolumeRenderer(shadowVolume),
@@ -53,6 +54,7 @@ void Game::setup()
   screenBuffer.setup();
   depthmapBuffer.setup(textureManager.get(TEX_DEPTH_MAP_SUN));
   reflectionFramebuffer.setup();
+  refractionFramebuffer.setup();
 }
 
 void Game::loop()
@@ -102,6 +104,10 @@ void Game::loop()
   reflectionFramebuffer.bind();
   drawFrameReflection();
   reflectionFramebuffer.unbind();
+
+  refractionFramebuffer.bind();
+  //draw refraction underwater and shore
+  refractionFramebuffer.unbind();
   glViewport(0, 0, screenResolution.getWidth(), screenResolution.getHeight());
 
   //render our world onto separate FBO as usual

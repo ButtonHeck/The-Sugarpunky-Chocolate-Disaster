@@ -23,6 +23,7 @@
 #include "graphics/ShadowVolumeRenderer.h"
 #include "graphics/BindlessTextureManager.h"
 #include "graphics/WaterReflectionFramebuffer.h"
+#include "graphics/WaterRefractionFramebuffer.h"
 
 class Camera;
 class Options;
@@ -70,6 +71,7 @@ private:
   ScreenBuffer screenBuffer;
   DepthmapBuffer depthmapBuffer;
   WaterReflectionFramebuffer reflectionFramebuffer;
+  WaterRefractionFramebuffer refractionFramebuffer;
 
   //world
   Scene scene;

@@ -29,6 +29,8 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_FRAME_DEPTH] = loader.createFrameTexture(TEX_FRAME_DEPTH, true);
   textures[TEX_FRAME_VIGNETTE] = loader.loadTexture("vignetteHoneycomb.png", TEX_FRAME_VIGNETTE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true, false, true);
   textures[TEX_FRAME_WATER_REFLECTION] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFLECTION, false, FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT);
+  textures[TEX_FRAME_WATER_REFRACTION] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFRACTION, false, FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT);
+  textures[TEX_FRAME_WATER_REFRACTION_DEPTH] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFRACTION_DEPTH, true, FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT);
   textures[TEX_DEPTH_MAP_SUN] = loader.createDepthMapTexture(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT, TEX_DEPTH_MAP_SUN);
   textures[TEX_LENS_FLARE1] = loader.loadTexture("lensFlares/flare11.png", TEX_LENS_FLARE1, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
   textures[TEX_LENS_FLARE2] = loader.loadTexture("lensFlares/flare2.png",  TEX_LENS_FLARE2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
