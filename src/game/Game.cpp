@@ -98,13 +98,11 @@ void Game::loop()
     recreate();
 
   scene.getPlantsFacade().updateIndirectBufferData();
-  if (options[OPT_USE_SHADOWS])
+  if (options[OPT_USE_SHADOWS] && updateCount % 2)
     updateDepthmap();
 
   reflectionFramebuffer.bind();
   drawFrameReflection();
-  reflectionFramebuffer.unbind();
-
   refractionFramebuffer.bind();
   drawFrameRefraction(projectionView);
   refractionFramebuffer.unbind();
