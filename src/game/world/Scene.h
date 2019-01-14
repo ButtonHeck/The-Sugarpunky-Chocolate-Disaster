@@ -36,7 +36,8 @@ public:
                  Frustum &cullingViewFrustum,
                  Camera& camera,
                  MouseInputManager& mouseInput);
-  void drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices);
+  void drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
+                         bool grassCastShadow);
   void drawWorldReflection(glm::vec3 lightDir,
                            const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
                            glm::mat4 &projectionView,

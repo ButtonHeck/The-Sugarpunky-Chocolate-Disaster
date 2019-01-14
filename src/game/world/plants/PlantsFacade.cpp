@@ -70,11 +70,12 @@ void PlantsFacade::draw(glm::vec3 &lightDir,
     glDisable(GL_BLEND);
 }
 
-void PlantsFacade::drawDepthmap()
+void PlantsFacade::drawDepthmap(bool grassCastShadow)
 {
   treesRenderer.render(landPlantsGenerator.models, hillTreesGenerator.models, true);
   treesRenderer.render(landPlantsGenerator.lowPolyModels, hillTreesGenerator.lowPolyModels, true);
-  grassRenderer.render(grassGenerator.models, true);
+  if (grassCastShadow)
+    grassRenderer.render(grassGenerator.models, true);
 }
 
 void PlantsFacade::serialize(std::ofstream &output)

@@ -141,7 +141,8 @@ void Scene::drawWorld(glm::vec3 lightDir,
     lensFlareFacade.draw(theSunFacade.getCurrentPosition(), skyProjectionView, theSunVisibility);
 }
 
-void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices)
+void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
+                              bool grassCastShadow)
 {
   BENCHMARK("Scene: draw depthmap all", true);
   glClear(GL_DEPTH_BUFFER_BIT);
@@ -158,7 +159,7 @@ void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &li
       shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrices[0]);
       shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrices[1]);
       shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrices[2]);
-      plantsFacade.drawDepthmap();
+      plantsFacade.drawDepthmap(grassCastShadow);
     }
   glEnable(GL_MULTISAMPLE);
 }

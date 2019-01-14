@@ -47,7 +47,7 @@ void KeyboardManager::processInput()
         glDisable(GL_MULTISAMPLE);
     });
   processKey(GLFW_KEY_Q, OPT_USE_SHADOWS);
-//  processKey(GLFW_KEY_F, OPT_DRAW_LAND);
+  processKey(GLFW_KEY_H, OPT_DRAW_LAND);
   processKey(GLFW_KEY_G, OPT_DRAW_WATER);
   processKey(GLFW_KEY_U, OPT_MODELS_LAND_BLENDING);
   processKey(GLFW_KEY_L, OPT_POLYGON_LINE);
@@ -58,6 +58,7 @@ void KeyboardManager::processInput()
   processKey(GLFW_KEY_V, OPT_EXPECTED_VOLUME_VISUALIZATION);
   processKey(GLFW_KEY_B, OPT_ACTUAL_VOLUME_VISUALIZATION);
   processKey(GLFW_KEY_J, OPT_USE_DOF);
+  processKey(GLFW_KEY_K, OPT_GRASS_SHADOW);
   processKey(GLFW_KEY_X, [&]()
   {
       options.toggle(OPT_SHADOW_CAMERA_FIXED);
@@ -222,7 +223,7 @@ void KeyboardManager::processKey(int keyCode, OPTION option)
           keysPressed[keyCode] = true;
         }
     }
-  if (glfwGetKey(window, keyCode) == GLFW_RELEASE)
+  else if (glfwGetKey(window, keyCode) == GLFW_RELEASE)
     keysPressed[keyCode] = false;
 }
 
@@ -236,6 +237,6 @@ void KeyboardManager::processKey(int keyCode, std::function<void ()> function)
           keysPressed[keyCode] = true;
         }
     }
-  if (glfwGetKey(window, keyCode) == GLFW_RELEASE)
+  else if (glfwGetKey(window, keyCode) == GLFW_RELEASE)
     keysPressed[keyCode] = false;
 }

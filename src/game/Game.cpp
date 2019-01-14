@@ -267,7 +267,7 @@ void Game::updateDepthmap()
   }
 
   depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
-  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrices());
+  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrices(), options[OPT_GRASS_SHADOW]);
   depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
 }
 

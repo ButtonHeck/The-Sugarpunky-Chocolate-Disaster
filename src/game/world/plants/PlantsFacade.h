@@ -27,7 +27,7 @@ public:
             bool usePhongShading,
             bool useShadows,
             bool useLandBlending);
-  void drawDepthmap();
+  void drawDepthmap(bool grassCastShadow);
 
   //save/load routine
   void serialize(std::ofstream& output);
