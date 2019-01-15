@@ -2,29 +2,30 @@
 
 TheSunRenderer::TheSunRenderer(TheSun &theSun)
   :
-    theSun(theSun)
-{
-  glCreateQueries(GL_SAMPLES_PASSED, 1, &samplesPassedQuery);
-}
+    theSun(theSun),
+    samplesPassedQuery(GL_SAMPLES_PASSED)
+{}
 
-TheSunRenderer::~TheSunRenderer()
-{
-  glDeleteQueries(1, &samplesPassedQuery);
-}
-
-void TheSunRenderer::render()
+void TheSunRenderer::render(bool doOcclusionTest)
 {
   BENCHMARK("SunRenderer: draw", true);
   glPointSize(SUN_POINT_SIZE);
   theSun.basicGLBuffers.bind(VAO);
-  glBeginQuery(GL_SAMPLES_PASSED, samplesPassedQuery);
-  glDrawArrays(GL_POINTS, 0, 1);
-  glEndQuery(GL_SAMPLES_PASSED);
+  if (doOcclusionTest && !samplesPassedQuery.isInUse())
+    {
+      samplesPassedQuery.start();
+      glDrawArrays(GL_POINTS, 0, 1);
+      samplesPassedQuery.end();
+    }
+  else
+    glDrawArrays(GL_POINTS, 0, 1);
+
+  if (samplesPassedQuery.isResultAvailable())
+    samplesPassedResult = samplesPassedQuery.getResult();
   glPointSize(1.0f);
 }
 
 GLuint TheSunRenderer::getSamplesPassedQueryResult()
 {
-  glGetQueryObjectuiv(samplesPassedQuery, GL_QUERY_RESULT, &samplesPassedResult);
   return samplesPassedResult;
 }

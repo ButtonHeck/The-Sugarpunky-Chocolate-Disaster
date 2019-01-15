@@ -12,7 +12,7 @@ public:
   TheSunFacade(Shader& renderShader);
   void move(float delta);
   void setPos(float posDegrees);
-  void draw(glm::mat4& skyProjectionView);
+  void draw(glm::mat4& skyProjectionView, bool doOcclusionTest);
   glm::vec3 getCurrentPosition() const;
   GLuint getSamplesPassedQueryResult();
 private:

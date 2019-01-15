@@ -19,10 +19,10 @@ void TheSunFacade::setPos(float posDegrees)
   model = theSun.setPos(posDegrees);
 }
 
-void TheSunFacade::draw(glm::mat4 &skyProjectionView)
+void TheSunFacade::draw(glm::mat4 &skyProjectionView, bool doOcclusionTest)
 {
   shader.update(skyProjectionView, model);
-  renderer.render();
+  renderer.render(doOcclusionTest);
 }
 
 glm::vec3 TheSunFacade::getCurrentPosition() const

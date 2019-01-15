@@ -125,7 +125,7 @@ void Scene::drawWorld(glm::vec3 lightDir,
     }
 
   RendererStateManager::setAmbienceRenderingState(true);
-  theSunFacade.draw(skyProjectionView);
+  theSunFacade.draw(skyProjectionView, true);
   skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
   RendererStateManager::setAmbienceRenderingState(false);
 
@@ -198,7 +198,7 @@ void Scene::drawWorldReflection(glm::vec3 lightDir,
                       options[OPT_MODELS_LAND_BLENDING]);
 
   RendererStateManager::setAmbienceRenderingState(true);
-  theSunFacade.draw(skyProjectionView);
+  theSunFacade.draw(skyProjectionView, false);
   skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
   RendererStateManager::setAmbienceRenderingState(false);
 }

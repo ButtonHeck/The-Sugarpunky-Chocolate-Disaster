@@ -86,7 +86,8 @@ SOURCES += \
     src/game/world/ambience/lensFlare/LensFlareFacade.cpp \
     src/game/world/ambience/lensFlare/LensFlareRenderer.cpp \
     src/graphics/WaterReflectionFramebuffer.cpp \
-    src/graphics/WaterRefractionFramebuffer.cpp
+    src/graphics/WaterRefractionFramebuffer.cpp \
+    src/graphics/Query.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -176,7 +177,8 @@ HEADERS += \
     src/game/world/ambience/lensFlare/LensFlareFacade.h \
     src/game/world/ambience/lensFlare/LensFlareRenderer.h \
     src/graphics/WaterReflectionFramebuffer.h \
-    src/graphics/WaterRefractionFramebuffer.h
+    src/graphics/WaterRefractionFramebuffer.h \
+    src/graphics/Query.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 
