@@ -185,7 +185,7 @@ void Scene::drawWorldReflection(glm::vec3 lightDir,
   glEnable(GL_CLIP_DISTANCE0);
   shoreFacade.draw(lightDir,
                    lightSpaceMatrices,
-                   projectionView, options[OPT_USE_SHADOWS], false,
+                   projectionView, false, false,
                    true, false);
   glDisable(GL_CLIP_DISTANCE0);
 
@@ -193,9 +193,9 @@ void Scene::drawWorldReflection(glm::vec3 lightDir,
     plantsFacade.draw(lightDir,
                       lightSpaceMatrices,
                       projectionView, viewPosition,
-                      options[OPT_MODELS_PHONG_SHADING],
-                      options[OPT_USE_SHADOWS],
-                      options[OPT_MODELS_LAND_BLENDING]);
+                      false,
+                      false,
+                      false);
 
   RendererStateManager::setAmbienceRenderingState(true);
   theSunFacade.draw(skyProjectionView, false);
@@ -212,7 +212,7 @@ void Scene::drawWorldRefraction(glm::vec3 lightDir,
   glEnable(GL_CLIP_DISTANCE0);
   shoreFacade.draw(lightDir,
                    lightSpaceMatrices,
-                   projectionView, options[OPT_USE_SHADOWS], false,
+                   projectionView, false, false,
                    false, true);
   glDisable(GL_CLIP_DISTANCE0);
 }
