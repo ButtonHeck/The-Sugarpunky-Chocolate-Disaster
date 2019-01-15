@@ -17,11 +17,14 @@ class BindlessTextureManager
 {
 public:
   BindlessTextureManager() = delete;
-  static void emplace_back(const std::string& textureSamplerUniformName, GLuint textureID, GLuint64 textureHandle);
-  static void loadToShaders(Shader& phongShader, Shader& gouraudShader);
+  static void emplaceBackModelTexture(const std::string& textureSamplerUniformName, GLuint textureID, GLuint64 textureHandle);
+  static void emplaceBackLensFlareTexture(const std::string& textureSamplerUniformName, GLuint textureID, GLuint64 textureHandle);
+  static void loadToModelShaders(Shader& phongShader, Shader& gouraudShader);
+  static void loadToLensFlareShader(Shader& shader);
   static void makeAllNonResident();
 private:
-  static std::vector<BindlessTexture> textures;
+  static std::vector<BindlessTexture> modelTextures;
+  static std::vector<BindlessTexture> lensFlareTextures;
 };
 
 #endif // BINDLESSTEXTUREMANAGER_H

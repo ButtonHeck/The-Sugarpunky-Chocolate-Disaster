@@ -1,8 +1,9 @@
 #include "game/world/ambience/lensFlare/LensFlareElement.h"
 
-LensFlareElement::LensFlareElement(float pointSize)
+LensFlareElement::LensFlareElement(float pointSize, GLuint textureID)
   :
-    pointSize(pointSize)
+    pointSize(pointSize),
+    textureID(textureID)
 {}
 
 void LensFlareElement::setPosition(const glm::vec2 &position)
@@ -18,4 +19,9 @@ const glm::vec2 &LensFlareElement::getPosition() const
 float LensFlareElement::getPointSize() const
 {
   return pointSize;
+}
+
+GLuint LensFlareElement::getTextureID() const
+{
+  return textureID;
 }

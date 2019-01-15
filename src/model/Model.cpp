@@ -123,7 +123,7 @@ void Model::loadMaterialTextures(aiMaterial *material,
                                                   useNoSRGB);
       GLuint64 textureHandle = glGetTextureHandleARB(texture);
       std::string uniformSamplerString = typeName + "[" + std::to_string(samplerIndex) + "]";
-      BindlessTextureManager::emplace_back(uniformSamplerString, texture, textureHandle);
+      BindlessTextureManager::emplaceBackModelTexture(uniformSamplerString, texture, textureHandle);
       samplerIndex++;
     }
 }

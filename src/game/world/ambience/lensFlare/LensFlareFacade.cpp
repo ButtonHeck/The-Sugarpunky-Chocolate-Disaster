@@ -1,20 +1,28 @@
 #include "game/world/ambience/lensFlare/LensFlareFacade.h"
 
-LensFlareFacade::LensFlareFacade(Shader& shader, float spacing)
+LensFlareFacade::LensFlareFacade(Shader& shader, TextureLoader &textureLoader)
   :
     shader(shader),
-    spacing(spacing),
     basicGLBuffers(VAO | VBO),
     renderer(basicGLBuffers)
 {
   flares.reserve(NUM_LENS_FLARES);
-  flares.emplace_back(1300.0f);
-  flares.emplace_back(220.0f);
-  flares.emplace_back(150.0f);
-  flares.emplace_back(75.0f);
-  flares.emplace_back(160.0f);
-  flares.emplace_back(180.0f);
-  flares.emplace_back(340.0f);
+  flares.emplace_back(1300.0f, textureLoader.loadTexture("lensFlares/flare11.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true, true));
+  flares.emplace_back(220.0f, textureLoader.loadTexture("lensFlares/flare2.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true, true));
+  flares.emplace_back(150.0f, textureLoader.loadTexture("lensFlares/flare5.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true, true));
+  flares.emplace_back(75.0f, textureLoader.loadTexture("lensFlares/flare6.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true, true));
+  flares.emplace_back(160.0f, textureLoader.loadTexture("lensFlares/flare1.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true, true));
+  flares.emplace_back(180.0f, textureLoader.loadTexture("lensFlares/flare9.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true, true));
+  flares.emplace_back(340.0f, textureLoader.loadTexture("lensFlares/flare3.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true, true));
+
+  for (unsigned int i = 0; i < NUM_LENS_FLARES; i++)
+    {
+      std::string uniformName("u_flares[" + std::to_string(i) + "]");
+      GLuint textureID = flares[i].getTextureID();
+      GLuint64 textureHandle = glGetTextureHandleARB(textureID);
+      BindlessTextureManager::emplaceBackLensFlareTexture(uniformName, textureID, textureHandle);
+    }
+  BindlessTextureManager::loadToLensFlareShader(shader);
 
   basicGLBuffers.bind(VAO | VBO);
   glEnableVertexAttribArray(0);
@@ -49,7 +57,7 @@ void LensFlareFacade::updatePositions(glm::vec2 &sunScreenPosition, glm::vec2 &s
 {
   for (unsigned int i = 0; i < flares.size(); i++)
     {
-      flares[i].setPosition(sunScreenPosition + spacing * i * sunToCenter);
+      flares[i].setPosition(sunScreenPosition + FLARES_SPACING * i * sunToCenter);
       vertices[i*3 + 0] = flares[i].getPosition().x;
       vertices[i*3 + 1] = flares[i].getPosition().y;
       vertices[i*3 + 2] = flares[i].getPointSize();

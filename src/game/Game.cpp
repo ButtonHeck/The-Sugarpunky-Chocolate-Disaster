@@ -48,7 +48,7 @@ void Game::setup()
   RendererStateManager::setInitialRenderingState(options[OPT_USE_MULTISAMPLING]);
   MouseInputManager::setCallbacks(window);
   scene.setup();
-  BindlessTextureManager::loadToShaders(shaderManager.get(SHADER_MODELS_PHONG), shaderManager.get(SHADER_MODELS_GOURAUD));
+  BindlessTextureManager::loadToModelShaders(shaderManager.get(SHADER_MODELS_PHONG), shaderManager.get(SHADER_MODELS_GOURAUD));
   setupThreads();
   shaderManager.setupConstantUniforms(screenResolution);
   screenBuffer.setup();
@@ -215,7 +215,7 @@ void Game::drawFrameReflection()
 
   glm::mat4 viewReflected = camera.getReflectionViewMatrix();
   glm::mat4 projectionViewReflected = projection * viewReflected;
-  glm::mat4 skyboxProjectionViewReflected(projection * glm::mat4(glm::mat3(camera.getReflectionViewMatrix())));
+  glm::mat4 skyboxProjectionViewReflected(projection * glm::mat4(glm::mat3(viewReflected)));
   scene.drawWorldReflection(shadowVolume.getLightDir(),
                             shadowVolume.getLightSpaceMatrices(),
                             projectionViewReflected,

@@ -1,20 +1,32 @@
 #include "BindlessTextureManager.h"
 
-std::vector<BindlessTexture> BindlessTextureManager::textures;
-void BindlessTextureManager::emplace_back(const std::string &textureSamplerUniformName, GLuint textureID, GLuint64 textureHandle)
+std::vector<BindlessTexture> BindlessTextureManager::modelTextures;
+void BindlessTextureManager::emplaceBackModelTexture(const std::string &textureSamplerUniformName, GLuint textureID, GLuint64 textureHandle)
 {
   static bool capacityReserved = false;
   if (!capacityReserved)
     {
-      textures.reserve(200);
+      modelTextures.reserve(200);
       capacityReserved = true;
     }
-  textures.emplace_back(textureSamplerUniformName, textureID, textureHandle);
+  modelTextures.emplace_back(textureSamplerUniformName, textureID, textureHandle);
 }
 
-void BindlessTextureManager::loadToShaders(Shader &phongShader, Shader &gouraudShader)
+std::vector<BindlessTexture> BindlessTextureManager::lensFlareTextures;
+void BindlessTextureManager::emplaceBackLensFlareTexture(const std::string &textureSamplerUniformName, GLuint textureID, GLuint64 textureHandle)
 {
-  for (BindlessTexture& texture : textures)
+  static bool capacityReserved = false;
+  if (!capacityReserved)
+    {
+      lensFlareTextures.reserve(10);
+      capacityReserved = true;
+    }
+  lensFlareTextures.emplace_back(textureSamplerUniformName, textureID, textureHandle);
+}
+
+void BindlessTextureManager::loadToModelShaders(Shader &phongShader, Shader &gouraudShader)
+{
+  for (BindlessTexture& texture : modelTextures)
     {
       glMakeTextureHandleResidentARB(texture.handle);
       phongShader.use();
@@ -24,9 +36,21 @@ void BindlessTextureManager::loadToShaders(Shader &phongShader, Shader &gouraudS
     }
 }
 
+void BindlessTextureManager::loadToLensFlareShader(Shader &shader)
+{
+  shader.use();
+  for (BindlessTexture& texture : lensFlareTextures)
+    {
+      glMakeTextureHandleResidentARB(texture.handle);
+      shader.setUInt64(texture.samplerUniformName, texture.handle);
+    }
+}
+
 void BindlessTextureManager::makeAllNonResident()
 {
-  for (BindlessTexture& texture : textures)
+  for (BindlessTexture& texture : modelTextures)
+    glMakeTextureHandleNonResidentARB(texture.handle);
+  for (BindlessTexture& texture : lensFlareTextures)
     glMakeTextureHandleNonResidentARB(texture.handle);
 }
 

@@ -6,13 +6,15 @@
 class LensFlareElement
 {
 public:
-  LensFlareElement(float pointSize);
+  LensFlareElement(float pointSize, GLuint textureID);
   void setPosition(const glm::vec2 &position);
   const glm::vec2& getPosition() const;
   float getPointSize() const;
+  GLuint getTextureID() const;
 private:
   glm::vec2 position;
   float pointSize;
+  GLuint textureID;
 };
 
 #endif // LENSFLAREELEMENT_H

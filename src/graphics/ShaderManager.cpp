@@ -203,15 +203,6 @@ void ShaderManager::setupConstantUniforms(ScreenResolution& screenResolution)
 
   bindShaderUnit(shader, SHADER_SHORE_NORMALS);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
-
-  bindShaderUnit(shader, SHADER_LENS_FLARE);
-  shader->setInt("u_flares[0]", TEX_LENS_FLARE1);
-  shader->setInt("u_flares[1]", TEX_LENS_FLARE2);
-  shader->setInt("u_flares[2]", TEX_LENS_FLARE3);
-  shader->setInt("u_flares[3]", TEX_LENS_FLARE4);
-  shader->setInt("u_flares[4]", TEX_LENS_FLARE5);
-  shader->setInt("u_flares[5]", TEX_LENS_FLARE6);
-  shader->setInt("u_flares[6]", TEX_LENS_FLARE7);
 }
 
 Shader &ShaderManager::get(SHADER type)

@@ -12,6 +12,7 @@ public:
   virtual ~TextureManager();
   void createUnderwaterReliefTexture(const map2D_f &waterMap);
   GLuint& get(int unit);
+  TextureLoader& getLoader();
 private:
   TextureLoader& loader;
   std::unordered_map<int, GLuint> textures;

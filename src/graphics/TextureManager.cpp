@@ -32,13 +32,6 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_FRAME_WATER_REFRACTION] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFRACTION, false, FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT);
   textures[TEX_FRAME_WATER_REFRACTION_DEPTH] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFRACTION_DEPTH, true, FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT);
   textures[TEX_DEPTH_MAP_SUN] = loader.createDepthMapTexture(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT, TEX_DEPTH_MAP_SUN);
-  textures[TEX_LENS_FLARE1] = loader.loadTexture("lensFlares/flare11.png", TEX_LENS_FLARE1, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
-  textures[TEX_LENS_FLARE2] = loader.loadTexture("lensFlares/flare2.png",  TEX_LENS_FLARE2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
-  textures[TEX_LENS_FLARE3] = loader.loadTexture("lensFlares/flare5.png",  TEX_LENS_FLARE3, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
-  textures[TEX_LENS_FLARE4] = loader.loadTexture("lensFlares/flare6.png",  TEX_LENS_FLARE4, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
-  textures[TEX_LENS_FLARE5] = loader.loadTexture("lensFlares/flare1.png",  TEX_LENS_FLARE5, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
-  textures[TEX_LENS_FLARE6] = loader.loadTexture("lensFlares/flare9.png",  TEX_LENS_FLARE6, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
-  textures[TEX_LENS_FLARE7] = loader.loadTexture("lensFlares/flare3.png",  TEX_LENS_FLARE7, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
 }
 
 TextureManager::~TextureManager()
@@ -55,4 +48,9 @@ void TextureManager::createUnderwaterReliefTexture(const map2D_f &waterMap)
 GLuint &TextureManager::get(int unit)
 {
   return textures[unit];
+}
+
+TextureLoader &TextureManager::getLoader()
+{
+  return loader;
 }

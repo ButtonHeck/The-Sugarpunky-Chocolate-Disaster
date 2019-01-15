@@ -23,7 +23,7 @@ Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &tex
     theSunFacade(shaderManager.get(SHADER_SUN)),
     underwaterFacade(shaderManager.get(SHADER_UNDERWATER)),
     landFacade(std::make_unique<LandFacade>(shaderManager.get(SHADER_LAND))),
-    lensFlareFacade(shaderManager.get(SHADER_LENS_FLARE), 0.38f)
+    lensFlareFacade(shaderManager.get(SHADER_LENS_FLARE), textureManager.getLoader())
 {}
 
 void Scene::setup()
