@@ -48,7 +48,10 @@ void Game::setup()
   RendererStateManager::setInitialRenderingState(options[OPT_USE_MULTISAMPLING]);
   MouseInputManager::setCallbacks(window);
   scene.setup();
-  BindlessTextureManager::loadToModelShaders(shaderManager.get(SHADER_MODELS_PHONG), shaderManager.get(SHADER_MODELS_GOURAUD));
+  BindlessTextureManager::makeAllResident();
+  BindlessTextureManager::loadToShader(shaderManager.get(SHADER_MODELS_GOURAUD), BINDLESS_TEXTURE_MODEL);
+  BindlessTextureManager::loadToShader(shaderManager.get(SHADER_MODELS_PHONG), BINDLESS_TEXTURE_MODEL);
+  BindlessTextureManager::loadToShader(shaderManager.get(SHADER_LENS_FLARE), BINDLESS_TEXTURE_LENS_FLARE);
   setupThreads();
   shaderManager.setupConstantUniforms(screenResolution);
   screenBuffer.setup();

@@ -1,57 +1,50 @@
 #include "BindlessTextureManager.h"
 
-std::vector<BindlessTexture> BindlessTextureManager::modelTextures;
-void BindlessTextureManager::emplaceBackModelTexture(const std::string &textureSamplerUniformName, GLuint textureID, GLuint64 textureHandle)
+std::vector<std::vector<BindlessTexture>> BindlessTextureManager::textures;
+void BindlessTextureManager::emplaceBack(const std::string &textureSamplerUniformName, GLuint textureID, BINDLESS_TEXTURE_TYPE textureType)
 {
   static bool capacityReserved = false;
   if (!capacityReserved)
     {
-      modelTextures.reserve(200);
+      textures.reserve(BINDLESS_TEXTURE_NUM_TYPES);
+      for (unsigned int i = 0; i < BINDLESS_TEXTURE_NUM_TYPES; i++)
+        {
+          std::vector<BindlessTexture> emptyVec;
+          textures.push_back(emptyVec);
+          textures[i].reserve(256);
+        }
       capacityReserved = true;
     }
-  modelTextures.emplace_back(textureSamplerUniformName, textureID, textureHandle);
+  GLuint64 textureHandle = glGetTextureHandleARB(textureID);
+  if (textureType == BINDLESS_TEXTURE_MODEL)
+    textures[BINDLESS_TEXTURE_MODEL].emplace_back(textureSamplerUniformName, textureID, textureHandle);
+  else if (textureType == BINDLESS_TEXTURE_LENS_FLARE)
+    textures[BINDLESS_TEXTURE_LENS_FLARE].emplace_back(textureSamplerUniformName, textureID, textureHandle);
 }
 
-std::vector<BindlessTexture> BindlessTextureManager::lensFlareTextures;
-void BindlessTextureManager::emplaceBackLensFlareTexture(const std::string &textureSamplerUniformName, GLuint textureID, GLuint64 textureHandle)
+void BindlessTextureManager::makeAllResident()
 {
-  static bool capacityReserved = false;
-  if (!capacityReserved)
+  for (unsigned int i = 0; i < textures.size(); i++)
     {
-      lensFlareTextures.reserve(10);
-      capacityReserved = true;
-    }
-  lensFlareTextures.emplace_back(textureSamplerUniformName, textureID, textureHandle);
-}
-
-void BindlessTextureManager::loadToModelShaders(Shader &phongShader, Shader &gouraudShader)
-{
-  for (BindlessTexture& texture : modelTextures)
-    {
-      glMakeTextureHandleResidentARB(texture.handle);
-      phongShader.use();
-      phongShader.setUInt64(texture.samplerUniformName, texture.handle);
-      gouraudShader.use();
-      gouraudShader.setUInt64(texture.samplerUniformName, texture.handle);
+      for (BindlessTexture& texture : textures[i])
+        glMakeTextureHandleResidentARB(texture.handle);
     }
 }
 
-void BindlessTextureManager::loadToLensFlareShader(Shader &shader)
+void BindlessTextureManager::loadToShader(Shader &shader, BINDLESS_TEXTURE_TYPE textureType)
 {
   shader.use();
-  for (BindlessTexture& texture : lensFlareTextures)
-    {
-      glMakeTextureHandleResidentARB(texture.handle);
-      shader.setUInt64(texture.samplerUniformName, texture.handle);
-    }
+  for (BindlessTexture& texture : textures.at(textureType))
+    shader.setUInt64(texture.samplerUniformName, texture.handle);
 }
 
 void BindlessTextureManager::makeAllNonResident()
 {
-  for (BindlessTexture& texture : modelTextures)
-    glMakeTextureHandleNonResidentARB(texture.handle);
-  for (BindlessTexture& texture : lensFlareTextures)
-    glMakeTextureHandleNonResidentARB(texture.handle);
+  for (unsigned int i = 0; i < textures.size(); i++)
+    {
+      for (BindlessTexture& texture : textures[i])
+        glMakeTextureHandleNonResidentARB(texture.handle);
+    }
 }
 
 BindlessTexture::BindlessTexture(const std::string &textureSamplerUniformName, GLuint textureID, GLuint64 handle)

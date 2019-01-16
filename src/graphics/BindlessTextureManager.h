@@ -5,6 +5,13 @@
 #include <string>
 #include "graphics/Shader.h"
 
+enum BINDLESS_TEXTURE_TYPE
+{
+  BINDLESS_TEXTURE_MODEL,
+  BINDLESS_TEXTURE_LENS_FLARE,
+  BINDLESS_TEXTURE_NUM_TYPES
+};
+
 struct BindlessTexture
 {
   BindlessTexture(const std::string& samplerUniformName, GLuint id, GLuint64 handle);
@@ -17,14 +24,12 @@ class BindlessTextureManager
 {
 public:
   BindlessTextureManager() = delete;
-  static void emplaceBackModelTexture(const std::string& textureSamplerUniformName, GLuint textureID, GLuint64 textureHandle);
-  static void emplaceBackLensFlareTexture(const std::string& textureSamplerUniformName, GLuint textureID, GLuint64 textureHandle);
-  static void loadToModelShaders(Shader& phongShader, Shader& gouraudShader);
-  static void loadToLensFlareShader(Shader& shader);
+  static void emplaceBack(const std::string& textureSamplerUniformName, GLuint textureID, BINDLESS_TEXTURE_TYPE textureType);
+  static void makeAllResident();
+  static void loadToShader(Shader& shader, BINDLESS_TEXTURE_TYPE textureType);
   static void makeAllNonResident();
 private:
-  static std::vector<BindlessTexture> modelTextures;
-  static std::vector<BindlessTexture> lensFlareTextures;
+  static std::vector<std::vector<BindlessTexture>> textures;
 };
 
 #endif // BINDLESSTEXTUREMANAGER_H

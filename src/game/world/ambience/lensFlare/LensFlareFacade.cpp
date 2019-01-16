@@ -18,11 +18,8 @@ LensFlareFacade::LensFlareFacade(Shader& shader, TextureLoader &textureLoader)
   for (unsigned int i = 0; i < NUM_LENS_FLARES; i++)
     {
       std::string uniformName("u_flares[" + std::to_string(i) + "]");
-      GLuint textureID = flares[i].getTextureID();
-      GLuint64 textureHandle = glGetTextureHandleARB(textureID);
-      BindlessTextureManager::emplaceBackLensFlareTexture(uniformName, textureID, textureHandle);
+      BindlessTextureManager::emplaceBack(uniformName, flares[i].getTextureID(), BINDLESS_TEXTURE_LENS_FLARE);
     }
-  BindlessTextureManager::loadToLensFlareShader(shader);
 
   basicGLBuffers.bind(VAO | VBO);
   glEnableVertexAttribArray(0);
