@@ -24,7 +24,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     saveLoadManager(scene, camera),
     keyboard(KeyboardManager(window, camera, shadowCamera, options, scene.getSunFacade())),
     mouseInput(MouseInputManager::getInstance()),
-    textManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", shaderManager.get(SHADER_FONT))
+    textManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", shaderManager.get(SHADER_FONT), screenResolution)
 {
   srand(time(NULL));
   Model::bindTextureLoader(textureLoader);
@@ -197,10 +197,7 @@ void Game::drawFrame(glm::mat4& projectionView)
 
   if (options[OPT_DRAW_DEBUG_TEXT])
     {
-      textManager.addText(screenResolution,
-                          camera,
-                          options,
-                          mouseInput,
+      textManager.addText(camera, options, mouseInput,
                           scene.getSunFacade().getCurrentPosition(),
                           CPU_timer.getFPS());
       textManager.drawText();

@@ -1,9 +1,13 @@
 #include "graphics/TextManager.h"
 
-TextManager::TextManager(const std::string &fontFile, const std::string &fontTexture, Shader &shader)
+TextManager::TextManager(const std::string &fontFile, const std::string &fontTexture, Shader &shader, ScreenResolution &screenResolution)
   :
     fontLoader(fontFile, fontTexture),
     shader(shader),
+    screenResolution(screenResolution),
+    lineOffset(screenResolution.getWidth() / ScreenResolution::REFERENCE_WIDTH,
+               screenResolution.getHeight() / ScreenResolution::REFERENCE_HEIGHT),
+    scale(DEFAULT_SCALE.x * lineOffset.x, DEFAULT_SCALE.y * lineOffset.y),
     basicGLBuffers(VAO | VBO),
     vertexData(new GLfloat[MAX_BUFFER_SIZE])
 {
@@ -13,8 +17,7 @@ TextManager::TextManager(const std::string &fontFile, const std::string &fontTex
   glBindVertexArray(0);
 }
 
-void TextManager::addText(ScreenResolution& screenResolution,
-                          Camera& camera, Options& options,
+void TextManager::addText(Camera& camera, Options& options,
                           MouseInputManager& mouseInput,
                           glm::vec3 sunPosition,
                           const unsigned int fps)
@@ -24,8 +27,9 @@ void TextManager::addText(ScreenResolution& screenResolution,
   glm::vec3 viewPosition = camera.getPosition();
   std::stringstream ss;
 
-  ss << "CPU UPS: " << fps;
-  addString(ss.str(), 10.0f, scrHeight - 15.0f, 0.18f);
+  ss << "FPS: " << fps << std::setprecision(5) << std::setw(5)
+     << ", Frame time: " << 1.0f / fps << "ms";
+  addString(ss.str(), 10.0f * lineOffset.x, scrHeight - 15.0f * lineOffset.y, scale);
 
   ss.str("");
   ss << "Camera pos: " << std::setprecision(4) << std::setw(4)
@@ -34,14 +38,14 @@ void TextManager::addText(ScreenResolution& screenResolution,
      << viewPosition.y
      << ": "
      << viewPosition.z;
-  addString(ss.str(), 10.0f, scrHeight - 35.0f, 0.18f);
+  addString(ss.str(), 10.0f * lineOffset.x, scrHeight - 36.0f * lineOffset.y, scale);
 
   ss.str("");
   ss << "Camera on map: "
      << camera.getMapCoordX()
      << ": "
      << camera.getMapCoordZ();
-  addString(ss.str(), 10.0f, scrHeight - 55.0f, 0.18f);
+  addString(ss.str(), 10.0f * lineOffset.x, scrHeight - 57.0f * lineOffset.y, scale);
 
   ss.str("");
   ss << "View dir: " << std::setprecision(3) << std::setw(3)
@@ -50,7 +54,7 @@ void TextManager::addText(ScreenResolution& screenResolution,
      << camera.getDirection().y
      << ": "
      << camera.getDirection().z;
-  addString(ss.str(), 10.0f, scrHeight - 75.0f, 0.18f);
+  addString(ss.str(), 10.0f * lineOffset.x, scrHeight - 78.0f * lineOffset.y, scale);
 
   const glm::vec3& cursorToViewportDirection = mouseInput.getCursorToViewportDirection();
   ss.str("");
@@ -66,7 +70,7 @@ void TextManager::addText(ScreenResolution& screenResolution,
          << ": "
          << cursorToViewportDirection.z;
     }
-  addString(ss.str(), 10.0f, scrHeight - 95.0f, 0.18f);
+  addString(ss.str(), 10.0f * lineOffset.x, scrHeight - 99.0f * lineOffset.y, scale);
 
   ss.str("");
   ss << "Cursor on map: ";
@@ -81,23 +85,23 @@ void TextManager::addText(ScreenResolution& screenResolution,
          << ", "
          << mouseInput.getCursorTileName();
     }
-  addString(ss.str(), 10.0f, scrHeight - 115.0f, 0.18f);
+  addString(ss.str(), 10.0f * lineOffset.x, scrHeight - 120.0f * lineOffset.y, scale);
 
   ss.str("");
   ss << "Water culling: " << std::boolalpha << options[OPT_WATER_CULLING];
-  addString(ss.str(), 10.0f, 20.0f, 0.18f);
+  addString(ss.str(), 10.0f * lineOffset.x, 20.0f * lineOffset.y, scale);
 
   ss.str("");
   ss << "Hills culling: " << std::boolalpha << options[OPT_HILLS_CULLING];
-  addString(ss.str(), 10.0f, 40.0f, 0.18f);
+  addString(ss.str(), 10.0f * lineOffset.x, 41.0f * lineOffset.y, scale);
 
   ss.str("");
   ss << "Models Phong: " << std::boolalpha << options[OPT_MODELS_PHONG_SHADING];
-  addString(ss.str(), 10.0f, 60.0f, 0.18f);
+  addString(ss.str(), 10.0f * lineOffset.x, 62.0f * lineOffset.y, scale);
 
   ss.str("");
   ss << "Shadow cam fixed: " << std::boolalpha << options[OPT_SHADOW_CAMERA_FIXED];
-  addString(ss.str(), 10.0f, 80.0f, 0.18f);
+  addString(ss.str(), 10.0f * lineOffset.x, 83.0f * lineOffset.y, scale);
 
   VRAM_Monitor& vram = VRAM_Monitor::getInstance();
   vram.updateAvailable();
@@ -107,7 +111,7 @@ void TextManager::addText(ScreenResolution& screenResolution,
      << ", "
      << vram.getAvailableMemoryPercent()
      << "%";
-  addString(ss.str(), 10.0f, 100.0f, 0.18f);
+  addString(ss.str(), 10.0f * lineOffset.x, 104.0f * lineOffset.y, scale);
 
   ss.str("");
   ss << "Sun position: " << std::setprecision(3) << std::setw(3)
@@ -116,10 +120,10 @@ void TextManager::addText(ScreenResolution& screenResolution,
      << sunPosition.y
      << ": "
      << sunPosition.z;
-  addString(ss.str(), 10.0f, 120.0f, 0.18f);
+  addString(ss.str(), 10.0f * lineOffset.x, 125.0f * lineOffset.y, scale);
 }
 
-void TextManager::addString(const std::string& text, GLfloat x, GLfloat y, GLfloat scale)
+void TextManager::addString(const std::string& text, GLfloat x, GLfloat y, glm::vec2& scale)
 {
   std::string::const_iterator c;
   std::unordered_map<char, Character>& alphabet = fontLoader.getAlphabet();
@@ -128,13 +132,13 @@ void TextManager::addString(const std::string& text, GLfloat x, GLfloat y, GLflo
   for (c = text.begin(); c != text.end(); ++c)
     {
       Character& ch = alphabet[*c];
-      GlyphVertex lowLeft(glm::vec2(x + ch.xoffset * scale, y - ch.yoffset * scale),
+      GlyphVertex lowLeft(glm::vec2(x + ch.xoffset * scale.x, y - ch.yoffset * scale.y),
                           glm::vec2((float)ch.x / textureWidth, (float)ch.y / textureHeight));
-      GlyphVertex lowRight(glm::vec2(x + (ch.width + ch.xoffset) * scale, y - ch.yoffset * scale),
+      GlyphVertex lowRight(glm::vec2(x + (ch.width + ch.xoffset) * scale.x, y - ch.yoffset * scale.y),
                            glm::vec2((float)(ch.x + ch.width) / textureWidth, (float)ch.y / textureHeight));
-      GlyphVertex upRight(glm::vec2(x + (ch.width + ch.xoffset) * scale, y - (ch.height + ch.yoffset) * scale),
+      GlyphVertex upRight(glm::vec2(x + (ch.width + ch.xoffset) * scale.x, y - (ch.height + ch.yoffset) * scale.y),
                           glm::vec2((float)(ch.x + ch.width) / textureWidth, (float)(ch.y + ch.height) / textureHeight));
-      GlyphVertex upLeft(glm::vec2(x + ch.xoffset * scale, y - (ch.height + ch.yoffset) * scale),
+      GlyphVertex upLeft(glm::vec2(x + ch.xoffset * scale.x, y - (ch.height + ch.yoffset) * scale.y),
                          glm::vec2((float)ch.x / textureWidth, (float)(ch.y + ch.height) / textureHeight));
 
       vertexData[bufferOffset++] = lowLeft.posX;
@@ -167,7 +171,7 @@ void TextManager::addString(const std::string& text, GLfloat x, GLfloat y, GLflo
       vertexData[bufferOffset++] = lowLeft.texCoordX;
       vertexData[bufferOffset++] = lowLeft.texCoordY;
 
-      x += ch.xadvance * scale;
+      x += ch.xadvance * scale.x;
     }
   glyphsCount += text.size();
 }

@@ -10,6 +10,8 @@ public:
   int getWidth() const;
   int getHeight() const;
   float getAspectRatio() const;
+  constexpr static float REFERENCE_WIDTH = 1440.0f;
+  constexpr static float REFERENCE_HEIGHT = 900.0f;
 private:
   void updateAspectRatio(float newAspect);
   int width = 0, height = 0;
