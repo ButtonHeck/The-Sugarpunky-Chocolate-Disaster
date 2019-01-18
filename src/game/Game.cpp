@@ -18,7 +18,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     depthmapBuffer(),
     reflectionFramebuffer(FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT, textureManager),
     refractionFramebuffer(FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT, textureManager),
-    scene(shaderManager, options, textureManager),
+    scene(shaderManager, options, textureManager, screenResolution),
     shadowVolume(scene.getSunFacade()),
     shadowVolumeRenderer(shadowVolume),
     saveLoadManager(scene, camera),

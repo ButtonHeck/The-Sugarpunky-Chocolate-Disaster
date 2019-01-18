@@ -5,8 +5,6 @@
 #include "util/BenchmarkTimer.h"
 #include "graphics/Query.h"
 
-constexpr float SUN_POINT_SIZE = 64.0f;
-
 class TheSunRenderer
 {
 public:
@@ -14,10 +12,13 @@ public:
   virtual ~TheSunRenderer() = default;
   void render(bool doOcclusionTest);
   GLuint getSamplesPassedQueryResult();
+  void setPointSize(float pointSize);
+  float getPointSize() const;
 private:
   TheSun& theSun;
   Query samplesPassedQuery;
   GLuint samplesPassedResult;
+  float pointSize;
 };
 
 #endif // THESUNRENDERER_H

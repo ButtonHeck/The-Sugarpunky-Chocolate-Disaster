@@ -5,8 +5,7 @@ TextManager::TextManager(const std::string &fontFile, const std::string &fontTex
     fontLoader(fontFile, fontTexture),
     shader(shader),
     screenResolution(screenResolution),
-    lineOffset(screenResolution.getWidth() / ScreenResolution::REFERENCE_WIDTH,
-               screenResolution.getHeight() / ScreenResolution::REFERENCE_HEIGHT),
+    lineOffset(screenResolution.getWidthRatioToReference(), screenResolution.getHeightRatioToReference()),
     scale(DEFAULT_SCALE.x * lineOffset.x, DEFAULT_SCALE.y * lineOffset.y),
     basicGLBuffers(VAO | VBO),
     vertexData(new GLfloat[MAX_BUFFER_SIZE])

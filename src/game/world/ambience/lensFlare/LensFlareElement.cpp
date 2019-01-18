@@ -25,3 +25,8 @@ GLuint LensFlareElement::getTextureID() const
 {
   return textureID;
 }
+
+void LensFlareElement::adjustPointSize(float pointSizeDivisor)
+{
+  pointSize *= pointSizeDivisor;
+}

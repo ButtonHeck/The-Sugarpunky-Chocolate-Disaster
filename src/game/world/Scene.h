@@ -14,11 +14,12 @@
 #include "graphics/ShaderManager.h"
 #include "graphics/TextureManager.h"
 #include "input/MouseInputManager.h"
+#include "graphics/ScreenResolution.h"
 
 class Scene
 {
 public:
-  Scene(ShaderManager& shaderManager, Options& options, TextureManager& textureManager);
+  Scene(ShaderManager& shaderManager, Options& options, TextureManager& textureManager, ScreenResolution& screenResolution);
 
   //internal generators functions
   void setup();

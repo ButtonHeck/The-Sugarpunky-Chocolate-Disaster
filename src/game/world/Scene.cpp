@@ -1,6 +1,6 @@
 #include "game/world/Scene.h"
 
-Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &textureManager)
+Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &textureManager, ScreenResolution &screenResolution)
   :
     shaderManager(shaderManager),
     options(options),
@@ -24,7 +24,13 @@ Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &tex
     underwaterFacade(shaderManager.get(SHADER_UNDERWATER)),
     landFacade(std::make_unique<LandFacade>(shaderManager.get(SHADER_LAND))),
     lensFlareFacade(shaderManager.get(SHADER_LENS_FLARE), textureManager.getLoader())
-{}
+{
+  float sunPointSizeDivisorX = screenResolution.getWidthRatioToReference();
+  float sunPointSizeDivisorY = screenResolution.getHeightRatioToReference();
+  float sunPointSizeDivisor = (sunPointSizeDivisorX + sunPointSizeDivisorY) / 2;
+  theSunFacade.adjustSunPointSize(sunPointSizeDivisor);
+  lensFlareFacade.adjustFlaresPointSize(sunPointSizeDivisor);
+}
 
 void Scene::setup()
 {
@@ -135,7 +141,7 @@ void Scene::drawWorld(glm::vec3 lightDir,
                      projectionView, viewPosition, viewFrustum,
                      options[OPT_WATER_CULLING], options[OPT_DEBUG_RENDER]);
 
-  float theSunVisibility = theSunFacade.getSamplesPassedQueryResult() / MAX_SUN_SAMPLES_PASSED;
+  float theSunVisibility = theSunFacade.getSunVisibilityPercentage();
   theSunVisibility *= glm::clamp(-(lightDir.y + 0.02f - camera.getPosition().y / 1500.0f) * 8.0f, 0.0f, 1.0f);
   if (theSunVisibility > 0)
     lensFlareFacade.draw(theSunFacade.getCurrentPosition(), skyProjectionView, theSunVisibility);

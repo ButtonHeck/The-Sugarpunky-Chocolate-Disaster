@@ -50,6 +50,12 @@ void LensFlareFacade::draw(const glm::vec3& sunWorldPosition,
     }
 }
 
+void LensFlareFacade::adjustFlaresPointSize(float pointSizeDivisor)
+{
+  for (LensFlareElement& flare : flares)
+    flare.adjustPointSize(pointSizeDivisor);
+}
+
 void LensFlareFacade::updatePositions(glm::vec2 &sunScreenPosition, glm::vec2 &sunToCenter)
 {
   for (unsigned int i = 0; i < flares.size(); i++)

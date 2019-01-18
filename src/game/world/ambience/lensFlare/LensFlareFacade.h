@@ -16,6 +16,7 @@ class LensFlareFacade
 public:
   LensFlareFacade(Shader &shader, TextureLoader& textureLoader);
   void draw(const glm::vec3 &sunWorldPosition, const glm::mat4 &projectionView, float brightnessAbs);
+  void adjustFlaresPointSize(float pointSizeDivisor);
 private:
   void updatePositions(glm::vec2 &sunScreenPosition, glm::vec2 &sunToCenter);
   Shader& shader;

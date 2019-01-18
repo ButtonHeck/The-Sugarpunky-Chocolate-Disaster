@@ -29,6 +29,16 @@ float ScreenResolution::getAspectRatio() const
   return aspectRatio;
 }
 
+float ScreenResolution::getWidthRatioToReference() const
+{
+  return width / REFERENCE_WIDTH;
+}
+
+float ScreenResolution::getHeightRatioToReference() const
+{
+  return height / REFERENCE_HEIGHT;
+}
+
 void ScreenResolution::updateAspectRatio(float newAspect)
 {
   aspectRatio = newAspect;

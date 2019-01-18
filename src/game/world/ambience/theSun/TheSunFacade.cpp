@@ -30,7 +30,14 @@ glm::vec3 TheSunFacade::getCurrentPosition() const
   return theSun.getPosition();
 }
 
-GLuint TheSunFacade::getSamplesPassedQueryResult()
+GLfloat TheSunFacade::getSunVisibilityPercentage()
 {
-  return renderer.getSamplesPassedQueryResult();
+  return renderer.getSamplesPassedQueryResult() / maxSamplesPassed;
+}
+
+void TheSunFacade::adjustSunPointSize(float pointSizeDivisor)
+{
+  renderer.setPointSize(DEFAULT_SUN_POINT_SIZE * pointSizeDivisor);
+  float pointSize = renderer.getPointSize();
+  maxSamplesPassed = pointSize * pointSize * MULTISAMPLES;
 }
