@@ -103,7 +103,7 @@ void HillsGenerator::fillBufferData()
     culledBuffers.deleteBuffers();
   culledBuffers.create(VAO | VBO | TFBO);
   culledBuffers.bind(VAO | VBO | TFBO);
-  glNamedBufferStorage(culledBuffers.get(VBO), VERTEX_DATA_LENGTH * sizeof(GLfloat), 0, GL_NONE);
+  glNamedBufferStorage(culledBuffers.get(VBO), VERTEX_DATA_LENGTH * sizeof(GLfloat) * 2, 0, GL_NONE);
   setupGLBufferAttributes();
   shaders.setupCulling();
   glTransformFeedbackBufferBase(culledBuffers.get(TFBO), 0, culledBuffers.get(VBO));
