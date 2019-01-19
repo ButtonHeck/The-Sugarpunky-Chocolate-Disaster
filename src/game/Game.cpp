@@ -21,7 +21,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     scene(shaderManager, options, textureManager, screenResolution),
     shadowVolume(scene.getSunFacade()),
     shadowVolumeRenderer(shadowVolume),
-    saveLoadManager(scene, camera),
+    saveLoadManager(scene, camera, shadowCamera),
     keyboard(KeyboardManager(window, camera, shadowCamera, options, scene.getSunFacade())),
     mouseInput(MouseInputManager::getInstance()),
     textManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", shaderManager.get(SHADER_FONT), screenResolution)

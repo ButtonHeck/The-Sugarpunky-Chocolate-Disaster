@@ -1,9 +1,10 @@
 #include "game/SaveLoadManager.h"
 
-SaveLoadManager::SaveLoadManager(Scene &scene, Camera& camera)
+SaveLoadManager::SaveLoadManager(Scene &scene, Camera& camera, Camera &shadowCamera)
   :
     scene(scene),
-    camera(camera)
+    camera(camera),
+    shadowCamera(shadowCamera)
 {}
 
 bool SaveLoadManager::saveToFile(const std::string &filename)
@@ -30,6 +31,7 @@ bool SaveLoadManager::loadFromFile(const std::string &filename)
     }
   scene.deserialize(input);
   camera.deserialize(input);
+  shadowCamera = camera;
   input.close();
   return true;
 }
