@@ -87,6 +87,6 @@ void main()
     #else
         o_FragColor = vec4(color, 1.0);
     #endif
-    o_FragColor.b *= 1.0 - pow(texture(u_vignetteTexture, v_TexCoords).a, 4.0);
-    o_FragColor.g *= 1.0 - pow(texture(u_vignetteTexture, v_TexCoords).a, 5.0);
+    float vignetteSampledAlpha = texture(u_vignetteTexture, v_TexCoords).a;
+    o_FragColor.gb *= 1.0 - vec2(pow(vignetteSampledAlpha, 5.0), pow(vignetteSampledAlpha, 4.0));
 }
