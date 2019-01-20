@@ -32,8 +32,8 @@ public:
                      bool isBindless = false,
                      bool explicitNoSRGB = false);
   GLuint createFrameMSTexture(int multisample, GLuint textureUnit);
-  GLuint createFrameTexture(GLuint textureUnit, bool isDepthTexture);
-  GLuint createFrameTextureSized(GLuint textureUnit, bool isDepthTexture, int width, int height);
+  GLuint createFrameTexture(GLuint textureUnit, bool isDepthTexture, bool useAnisotropy);
+  GLuint createFrameTextureSized(GLuint textureUnit, bool isDepthTexture, int width, int height, bool useAnisotropy);
   GLuint createDepthMapTexture(int width, int height, GLuint textureUnit);
   GLuint loadCubemap(const std::string& directory, GLuint textureUnit, bool explicitNoSRGB);
   GLuint createUnderwaterReliefTexture(const map2D_f& waterMap, GLuint textureUnit, GLint magFilter, GLint minFilter);

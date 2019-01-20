@@ -50,6 +50,8 @@ GLuint TextureLoader::loadTexture(const std::string& path,
       internalFormat = explicitNoSRGB ? GL_RGB8 : (HDR_ENABLED ? GL_SRGB8 : GL_RGB8);
       dataFormat = GL_RGB;
     }
+  else
+    throw std::invalid_argument("Could not handle image with: " + std::to_string(imageChannels) + " channels");
   GLsizei mipLevel = ((GLsizei)log2(std::max(imageWidth, imageHeight)) + 1);
   glTextureStorage2D(texture, mipLevel, internalFormat, imageWidth, imageHeight);
   glTextureSubImage2D(texture, 0, 0, 0, imageWidth, imageHeight, dataFormat, GL_UNSIGNED_BYTE, data);
@@ -68,23 +70,27 @@ GLuint TextureLoader::createFrameMSTexture(int samples, GLuint textureUnit)
   return texture;
 }
 
-GLuint TextureLoader::createFrameTexture(GLuint textureUnit, bool isDepthTexture)
+GLuint TextureLoader::createFrameTexture(GLuint textureUnit, bool isDepthTexture, bool useAnisotropy)
 {
   GLuint texture = createTextureObject(GL_TEXTURE_2D, textureUnit, false);
-  GLenum format = isDepthTexture ? GL_DEPTH24_STENCIL8 : GL_RGB16;
+  GLenum format = isDepthTexture ? GL_DEPTH_COMPONENT24 : GL_RGB16;
   glTextureStorage2D(texture, 1, format, screenResolution.getWidth(), screenResolution.getHeight());
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  if (useAnisotropy)
+    glTextureParameterf(texture, GL_TEXTURE_MAX_ANISOTROPY, ANISOTROPY);
   return texture;
 }
 
-GLuint TextureLoader::createFrameTextureSized(GLuint textureUnit, bool isDepthTexture, int width, int height)
+GLuint TextureLoader::createFrameTextureSized(GLuint textureUnit, bool isDepthTexture, int width, int height, bool useAnisotropy)
 {
   GLuint texture = createTextureObject(GL_TEXTURE_2D, textureUnit, false);
-  GLenum format = isDepthTexture ? GL_DEPTH24_STENCIL8 : GL_RGB16;
+  GLenum format = isDepthTexture ? GL_DEPTH_COMPONENT24 : GL_RGB16;
   glTextureStorage2D(texture, 1, format, width, height);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  if (useAnisotropy)
+    glTextureParameterf(texture, GL_TEXTURE_MAX_ANISOTROPY, ANISOTROPY);
   return texture;
 }
 

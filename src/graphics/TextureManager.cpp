@@ -24,13 +24,13 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_SKYBOX_SKY] = loader.loadCubemap("cubemapSky/", TEX_SKYBOX_SKY, false);
   textures[TEX_THE_SUN] = loader.loadTexture("theSun.png", TEX_THE_SUN, GL_REPEAT, GL_LINEAR, GL_LINEAR, true);
   textures[TEX_FRAME_MULTISAMPLED] = loader.createFrameMSTexture(MULTISAMPLES, TEX_FRAME_MULTISAMPLED);
-  textures[TEX_FRAME] = loader.createFrameTexture(TEX_FRAME, false);
-  textures[TEX_FRAME_HDR] = loader.createFrameTexture(TEX_FRAME_HDR, false);
-  textures[TEX_FRAME_DEPTH] = loader.createFrameTexture(TEX_FRAME_DEPTH, true);
+  textures[TEX_FRAME] = loader.createFrameTexture(TEX_FRAME, false, false);
+  textures[TEX_FRAME_HDR] = loader.createFrameTexture(TEX_FRAME_HDR, false, false);
+  textures[TEX_FRAME_DEPTH] = loader.createFrameTexture(TEX_FRAME_DEPTH, true, false);
   textures[TEX_FRAME_VIGNETTE] = loader.loadTexture("vignetteHoneycomb.png", TEX_FRAME_VIGNETTE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true, false, true);
-  textures[TEX_FRAME_WATER_REFLECTION] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFLECTION, false, FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT);
-  textures[TEX_FRAME_WATER_REFRACTION] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFRACTION, false, FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT);
-  textures[TEX_FRAME_WATER_REFRACTION_DEPTH] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFRACTION_DEPTH, true, FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT);
+  textures[TEX_FRAME_WATER_REFLECTION] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFLECTION, false, FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT, true);
+  textures[TEX_FRAME_WATER_REFRACTION] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFRACTION, false, FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT, true);
+  textures[TEX_FRAME_WATER_REFRACTION_DEPTH] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFRACTION_DEPTH, true, FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT, true);
   textures[TEX_DEPTH_MAP_SUN] = loader.createDepthMapTexture(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT, TEX_DEPTH_MAP_SUN);
 }
 
