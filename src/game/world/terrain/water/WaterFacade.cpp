@@ -60,3 +60,8 @@ const map2D_f &WaterFacade::getMap() const
 {
   return generator.getMap();
 }
+
+bool WaterFacade::hasWaterInFrame() const
+{
+  return renderer.anySamplesPassed();
+}

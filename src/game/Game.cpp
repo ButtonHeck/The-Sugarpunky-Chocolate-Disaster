@@ -16,8 +16,8 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     csRenderer(CoordinateSystemRenderer(&shaderManager.get(SHADER_COORDINATE_SYSTEM))),
     screenBuffer(screenResolution, textureManager, shaderManager),
     depthmapBuffer(),
-    reflectionFramebuffer(FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT, textureManager),
-    refractionFramebuffer(FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT, textureManager),
+    reflectionFramebuffer(textureManager),
+    refractionFramebuffer(textureManager),
     scene(shaderManager, options, textureManager, screenResolution),
     shadowVolume(scene.getSunFacade()),
     shadowVolumeRenderer(shadowVolume),
@@ -104,12 +104,14 @@ void Game::loop()
   if (options[OPT_USE_SHADOWS] && updateCount % 2)
     updateDepthmap();
 
-  reflectionFramebuffer.bind();
-  drawFrameReflection();
-  refractionFramebuffer.bind();
-  drawFrameRefraction(projectionView);
-  refractionFramebuffer.unbind();
-  glViewport(0, 0, screenResolution.getWidth(), screenResolution.getHeight());
+  if(scene.getWaterFacade().hasWaterInFrame())
+    {
+      reflectionFramebuffer.bindToViewport(FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT);
+      drawFrameReflection();
+      refractionFramebuffer.bindToViewport(FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT);
+      drawFrameRefraction(projectionView);
+      refractionFramebuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
+    }
 
   //render our world onto separate FBO as usual
   bool multisamplingEnabled = options[OPT_USE_MULTISAMPLING];

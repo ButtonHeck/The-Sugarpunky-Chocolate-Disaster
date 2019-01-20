@@ -7,13 +7,12 @@
 class WaterRefractionFramebuffer
 {
 public:
-  WaterRefractionFramebuffer(int width, int height, TextureManager& textureManager);
-  void bind();
-  void unbind();
+  WaterRefractionFramebuffer(TextureManager& textureManager);
+  void bindToViewport(int viewportWidth, int viewportHeight);
+  void unbindToViewport(int viewportWidth, int viewportHeight);
   virtual ~WaterRefractionFramebuffer();
   void setup();
 private:
-  int width, height;
   TextureManager& textureManager;
   GLuint fbo;
 };

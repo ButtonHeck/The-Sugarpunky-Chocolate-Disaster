@@ -23,6 +23,7 @@ public:
   void bufferNewData();
   void updateAnimationFrame(double time, Options& options);
   const map2D_f& getMap() const;
+  bool hasWaterInFrame() const;
 
 private:
   WaterShader shaders;

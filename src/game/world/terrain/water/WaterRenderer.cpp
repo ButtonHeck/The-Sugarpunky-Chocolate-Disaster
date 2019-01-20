@@ -3,7 +3,8 @@
 WaterRenderer::WaterRenderer(WaterShader &shaders, WaterGenerator &generator)
   :
     shaders(shaders),
-    generator(generator)
+    generator(generator),
+    anySamplesPassedQuery(GL_ANY_SAMPLES_PASSED)
 {}
 
 void WaterRenderer::render(bool useCulling)
@@ -28,7 +29,14 @@ void WaterRenderer::render(bool useCulling)
         shaders.renderShader.use();
         generator.culledBuffers.bind(VAO);
         glEnable(GL_BLEND);
-        glDrawTransformFeedback(GL_TRIANGLES, generator.culledBuffers.get(TFBO));
+        if (!anySamplesPassedQuery.isInUse())
+          {
+            anySamplesPassedQuery.start();
+            glDrawTransformFeedback(GL_TRIANGLES, generator.culledBuffers.get(TFBO));
+            anySamplesPassedQuery.end();
+          }
+        else
+          glDrawTransformFeedback(GL_TRIANGLES, generator.culledBuffers.get(TFBO));
         glDisable(GL_BLEND);
       }
     }
@@ -38,9 +46,19 @@ void WaterRenderer::render(bool useCulling)
       shaders.renderShader.use();
       generator.basicGLBuffers.bind(VAO);
       glEnable(GL_BLEND);
-      glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
+      if (!anySamplesPassedQuery.isInUse())
+        {
+          anySamplesPassedQuery.start();
+          glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
+          anySamplesPassedQuery.end();
+        }
+      else
+        glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
       glDisable(GL_BLEND);
     }
+
+  if (anySamplesPassedQuery.isResultAvailable())
+    anySamplesPassedResult = anySamplesPassedQuery.getResult();
 }
 
 void WaterRenderer::debugRender(GLenum primitiveType)
@@ -54,4 +72,9 @@ void WaterRenderer::debugRender(GLenum primitiveType)
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glEnable(GL_CULL_FACE);
   glLineWidth(1.0f);
+}
+
+bool WaterRenderer::anySamplesPassed() const
+{
+  return anySamplesPassedResult == GL_TRUE;
 }

@@ -1,21 +1,20 @@
 #include "WaterRefractionFramebuffer.h"
 
-WaterRefractionFramebuffer::WaterRefractionFramebuffer(int width, int height, TextureManager &textureManager)
+WaterRefractionFramebuffer::WaterRefractionFramebuffer(TextureManager &textureManager)
   :
-    width(width),
-    height(height),
     textureManager(textureManager)
 {}
 
-void WaterRefractionFramebuffer::bind()
+void WaterRefractionFramebuffer::bindToViewport(int viewportWidth, int viewportHeight)
 {
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  glViewport(0, 0, width, height);
+  glViewport(0, 0, viewportWidth, viewportHeight);
 }
 
-void WaterRefractionFramebuffer::unbind()
+void WaterRefractionFramebuffer::unbindToViewport(int viewportWidth, int viewportHeight)
 {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glViewport(0, 0, viewportWidth, viewportHeight);
 }
 
 WaterRefractionFramebuffer::~WaterRefractionFramebuffer()

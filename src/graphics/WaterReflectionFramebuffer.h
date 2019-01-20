@@ -7,15 +7,14 @@
 class WaterReflectionFramebuffer
 {
 public:
-  WaterReflectionFramebuffer(int width, int height, TextureManager& textureManager);
-  void bind();
-  void unbind();
+  WaterReflectionFramebuffer(TextureManager& textureManager);
+  void bindToViewport(int viewportWidth, int viewportHeight);
+  void unbindToViewport(int viewportWidth, int viewportHeight);
   virtual ~WaterReflectionFramebuffer();
   void setup();
 private:
-  int width, height;
   TextureManager& textureManager;
-  GLuint fbo, rbo;
+  GLuint fbo;
 };
 
 #endif // WATERREFLECTIONFRAMEBUFFER_H
