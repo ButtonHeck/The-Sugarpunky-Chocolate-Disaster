@@ -34,9 +34,7 @@ void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, flo
   float boxMaxX = frustum.getMaxCoordX();
   float boxMinX = frustum.getMinCoordX();
   float boxMaxZ = frustum.getMaxCoordZ();
-  boxMaxZ = glm::min(HALF_WORLD_HEIGHT_F, boxMaxZ);
   float boxMinZ = frustum.getMinCoordZ();
-  boxMinZ = glm::max(-HALF_WORLD_HEIGHT_F, boxMinZ);
 
   //step 2 - correct bounding box
   float offset;
@@ -50,8 +48,11 @@ void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, flo
       offset = glm::mix(-30.0f, 0.0f, sunAbsPositionY);
       boxMinX += offset;
     }
-  boxMaxX = glm::min(HALF_WORLD_WIDTH_F, boxMaxX);
-  boxMinX = glm::max(-HALF_WORLD_WIDTH_F, boxMinX);
+  const float SHADOW_BOX_BORDER_OFFSET = 0.5f; //use it to remove shadow artefacts at map edges
+  boxMaxZ = glm::min(HALF_WORLD_HEIGHT_F + SHADOW_BOX_BORDER_OFFSET, boxMaxZ);
+  boxMinZ = glm::max(-HALF_WORLD_HEIGHT_F - SHADOW_BOX_BORDER_OFFSET, boxMinZ);
+  boxMaxX = glm::min(HALF_WORLD_WIDTH_F + SHADOW_BOX_BORDER_OFFSET, boxMaxX);
+  boxMinX = glm::max(-HALF_WORLD_WIDTH_F - SHADOW_BOX_BORDER_OFFSET, boxMinX);
 
   //step 3 - calculate box center
   float boxWidth = boxMaxX - boxMinX;
