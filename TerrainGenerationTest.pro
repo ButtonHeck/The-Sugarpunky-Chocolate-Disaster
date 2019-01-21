@@ -29,8 +29,6 @@ SOURCES += \
     src/util/BenchmarkTimer.cpp \
     src/game/world/plants/ModelChunk.cpp \
     src/game/world/terrain/TerrainTile.cpp \
-    src/graphics/DepthmapBuffer.cpp \
-    src/graphics/ScreenBuffer.cpp \
     src/graphics/ScreenResolution.cpp \
     src/game/Camera.cpp \
     src/graphics/TextManager.cpp \
@@ -87,7 +85,10 @@ SOURCES += \
     src/game/world/ambience/lensFlare/LensFlareRenderer.cpp \
     src/graphics/WaterReflectionFramebuffer.cpp \
     src/graphics/WaterRefractionFramebuffer.cpp \
-    src/graphics/Query.cpp
+    src/graphics/Query.cpp \
+    src/graphics/Framebuffer.cpp \
+    src/graphics/DepthmapFramebuffer.cpp \
+    src/graphics/ScreenFramebuffer.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -115,8 +116,6 @@ HEADERS += \
     src/util/Timer.h \
     src/game/world/plants/ModelChunk.h \
     src/game/world/terrain/TerrainTile.h \
-    src/graphics/DepthmapBuffer.h \
-    src/graphics/ScreenBuffer.h \
     src/graphics/ScreenResolution.h \
     src/game/Camera.h \
     src/graphics/TextManager.h \
@@ -178,7 +177,10 @@ HEADERS += \
     src/game/world/ambience/lensFlare/LensFlareRenderer.h \
     src/graphics/WaterReflectionFramebuffer.h \
     src/graphics/WaterRefractionFramebuffer.h \
-    src/graphics/Query.h
+    src/graphics/Query.h \
+    src/graphics/Framebuffer.h \
+    src/graphics/DepthmapFramebuffer.h \
+    src/graphics/ScreenFramebuffer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

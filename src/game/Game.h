@@ -4,8 +4,8 @@
 #include <memory>
 #include <array>
 #include "util/DirectoriesSettings.h"
-#include "graphics/ScreenBuffer.h"
-#include "graphics/DepthmapBuffer.h"
+#include "graphics/ScreenFramebuffer.h"
+#include "graphics/DepthmapFramebuffer.h"
 #include "input/KeyboardManager.h"
 #include "input/MouseInputManager.h"
 #include "game/SaveLoadManager.h"
@@ -69,8 +69,8 @@ private:
   TextureLoader textureLoader;
   TextureManager textureManager;
   CoordinateSystemRenderer csRenderer;
-  ScreenBuffer screenBuffer;
-  DepthmapBuffer depthmapBuffer;
+  ScreenFramebuffer screenFramebuffer;
+  DepthmapFramebuffer depthmapFramebuffer;
   WaterReflectionFramebuffer reflectionFramebuffer;
   WaterRefractionFramebuffer refractionFramebuffer;
 

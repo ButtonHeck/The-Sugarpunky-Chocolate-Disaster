@@ -1,20 +1,13 @@
 #ifndef WATERREFRACTIONFRAMEBUFFER_H
 #define WATERREFRACTIONFRAMEBUFFER_H
-#include <GL/glew.h>
-#include "util/Logger.h"
-#include "graphics/TextureManager.h"
+#include "graphics/Framebuffer.h"
 
-class WaterRefractionFramebuffer
+class WaterRefractionFramebuffer : public Framebuffer
 {
 public:
   WaterRefractionFramebuffer(TextureManager& textureManager);
-  void bindToViewport(int viewportWidth, int viewportHeight);
-  void unbindToViewport(int viewportWidth, int viewportHeight);
-  virtual ~WaterRefractionFramebuffer();
-  void setup();
-private:
-  TextureManager& textureManager;
-  GLuint fbo;
+  virtual ~WaterRefractionFramebuffer() = default;
+  virtual void setup() override;
 };
 
 #endif // WATERREFRACTIONFRAMEBUFFER_H

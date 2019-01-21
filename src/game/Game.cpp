@@ -14,8 +14,8 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     textureLoader(TextureLoader(screenResolution)),
     textureManager(TextureManager(textureLoader)),
     csRenderer(CoordinateSystemRenderer(&shaderManager.get(SHADER_COORDINATE_SYSTEM))),
-    screenBuffer(screenResolution, textureManager, shaderManager),
-    depthmapBuffer(),
+    screenFramebuffer(textureManager, screenResolution, shaderManager),
+    depthmapFramebuffer(textureManager),
     reflectionFramebuffer(textureManager),
     refractionFramebuffer(textureManager),
     scene(shaderManager, options, textureManager, screenResolution),
@@ -54,8 +54,8 @@ void Game::setup()
   BindlessTextureManager::loadToShader(shaderManager.get(SHADER_LENS_FLARE), BINDLESS_TEXTURE_LENS_FLARE);
   setupThreads();
   shaderManager.setupConstantUniforms(screenResolution);
-  screenBuffer.setup();
-  depthmapBuffer.setup(textureManager.get(TEX_DEPTH_MAP_SUN));
+  screenFramebuffer.setup();
+  depthmapFramebuffer.setup();
   reflectionFramebuffer.setup();
   refractionFramebuffer.setup();
 }
@@ -115,9 +115,9 @@ void Game::loop()
 
   //render our world onto separate FBO as usual
   bool multisamplingEnabled = options[OPT_USE_MULTISAMPLING];
-  screenBuffer.bindAppropriateFBO(multisamplingEnabled);
+  screenFramebuffer.bindAppropriateFBO(multisamplingEnabled);
   drawFrame(projectionView);
-  screenBuffer.draw(multisamplingEnabled, options[OPT_USE_DOF]);
+  screenFramebuffer.draw(multisamplingEnabled, options[OPT_USE_DOF]);
 
   if (options[OPT_SAVE_REQUEST])
     saveState();
@@ -268,9 +268,9 @@ void Game::updateDepthmap()
     shadowVolume.update(shadowCameraFrustums);
   }
 
-  depthmapBuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
+  depthmapFramebuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
   scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrices(), options[OPT_GRASS_SHADOW]);
-  depthmapBuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
+  depthmapFramebuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
 }
 
 void Game::saveState()
