@@ -1,4 +1,4 @@
-#include "TheSunFacade.h"
+#include "game/world/ambience/theSun/TheSunFacade.h"
 
 TheSunFacade::TheSunFacade(Shader &renderShader)
   :

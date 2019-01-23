@@ -1,15 +1,15 @@
 #ifndef LENSFLARERENDERER_H
 #define LENSFLARERENDERER_H
 #include <GL/glew.h>
-#include "graphics/OpenglBuffer.h"
+#include "graphics/openglObjects/BufferCollection.h"
 
 class LensFlareRenderer
 {
 public:
-  LensFlareRenderer(OpenglBuffer& basicGLBuffer);
+  LensFlareRenderer(BufferCollection& basicGLBuffer);
   void draw(unsigned int numFlares);
 private:
-  OpenglBuffer& basicGLBuffer;
+  BufferCollection& basicGLBuffer;
 };
 
 #endif // LENSFLARERENDERER_H

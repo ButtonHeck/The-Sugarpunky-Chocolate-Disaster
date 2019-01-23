@@ -1,6 +1,6 @@
 #ifndef LANDSHADER_H
 #define LANDSHADER_H
-#include "graphics/Shader.h"
+#include "graphics/shaders/Shader.h"
 
 class LandShader
 {

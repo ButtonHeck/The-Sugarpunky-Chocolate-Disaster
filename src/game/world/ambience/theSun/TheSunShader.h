@@ -1,6 +1,6 @@
 #ifndef THESUNSHADER_H
 #define THESUNSHADER_H
-#include "graphics/Shader.h"
+#include "graphics/shaders/Shader.h"
 
 class TheSunShader
 {

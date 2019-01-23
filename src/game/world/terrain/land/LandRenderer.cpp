@@ -1,4 +1,4 @@
-#include "LandRenderer.h"
+#include "game/world/terrain/land/LandRenderer.h"
 
 LandRenderer::LandRenderer(LandGenerator &generator)
   :

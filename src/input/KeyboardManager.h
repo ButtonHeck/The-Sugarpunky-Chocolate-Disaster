@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <functional>
-#include "game/Camera.h"
+#include "graphics/Camera.h"
 #include "game/Options.h"
 #include "util/BenchmarkTimer.h"
 #include "game/world/ambience/theSun/TheSunFacade.h"

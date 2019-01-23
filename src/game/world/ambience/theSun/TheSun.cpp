@@ -1,4 +1,4 @@
-#include "TheSun.h"
+#include "game/world/ambience/theSun/TheSun.h"
 
 TheSun::TheSun()
   :

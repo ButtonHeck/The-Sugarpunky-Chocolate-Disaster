@@ -12,10 +12,10 @@ public:
 private:
   friend class BuildableRenderer;
 
-  void setupAndBindBuffers(OpenglBuffer& buffers);
+  void setupAndBindBuffers(BufferCollection& buffers);
   void fillBufferData();
 
-  OpenglBuffer selectedBuffers;
+  BufferCollection selectedBuffers;
 };
 
 #endif // BUILDABLEGENERATOR_H

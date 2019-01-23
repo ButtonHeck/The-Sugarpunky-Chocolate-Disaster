@@ -25,7 +25,7 @@ private:
   void setupGLBufferAttributes();
   void setupGLBufferInstancedAttributes();
 
-  OpenglBuffer cellBuffers;
+  BufferCollection cellBuffers;
   map2D_f chunkMap;
   std::vector<TerrainTile> cellTiles;
   std::default_random_engine randomizer;

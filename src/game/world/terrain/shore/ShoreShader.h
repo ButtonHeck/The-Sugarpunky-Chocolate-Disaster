@@ -1,6 +1,6 @@
 #ifndef SHORESHADER_H
 #define SHORESHADER_H
-#include "graphics/Shader.h"
+#include "graphics/shaders/Shader.h"
 
 class ShoreShader
 {

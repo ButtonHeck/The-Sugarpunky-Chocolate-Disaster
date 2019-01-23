@@ -1,4 +1,4 @@
-#include "TheSunRenderer.h"
+#include "game/world/ambience/theSun/TheSunRenderer.h"
 
 TheSunRenderer::TheSunRenderer(TheSun &theSun)
   :

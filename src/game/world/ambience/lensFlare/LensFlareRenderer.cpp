@@ -1,6 +1,6 @@
-#include "LensFlareRenderer.h"
+#include "game/world/ambience/lensFlare/LensFlareRenderer.h"
 
-LensFlareRenderer::LensFlareRenderer(OpenglBuffer &basicGLBuffer)
+LensFlareRenderer::LensFlareRenderer(BufferCollection &basicGLBuffer)
   :
     basicGLBuffer(basicGLBuffer)
 {}

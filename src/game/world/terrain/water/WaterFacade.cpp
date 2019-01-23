@@ -1,4 +1,4 @@
-#include "WaterFacade.h"
+#include "game/world/terrain/water/WaterFacade.h"
 
 WaterFacade::WaterFacade(Shader &renderShader, Shader &cullingShader, Shader &normalsShader)
   :

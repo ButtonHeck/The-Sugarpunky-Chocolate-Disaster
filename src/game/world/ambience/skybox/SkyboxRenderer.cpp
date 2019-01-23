@@ -1,4 +1,4 @@
-#include "SkyboxRenderer.h"
+#include "game/world/ambience/skybox/SkyboxRenderer.h"
 
 SkyboxRenderer::SkyboxRenderer(Skybox &skybox)
   :

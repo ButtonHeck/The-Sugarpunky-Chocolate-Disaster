@@ -1,4 +1,4 @@
-#include "BuildableShader.h"
+#include "game/world/terrain/buildable/BuildableShader.h"
 
 BuildableShader::BuildableShader(Shader &buildableRenderShader, Shader &selectedRenderShader)
   :

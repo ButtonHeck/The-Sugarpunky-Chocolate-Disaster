@@ -44,7 +44,7 @@ private:
   void removeOrphanHills();
   void smoothMapSinks();
 
-  OpenglBuffer culledBuffers;
+  BufferCollection culledBuffers;
   HillsShader& shaders;
   float maxHeight = 0.0f;
   const map2D_f& waterMap;

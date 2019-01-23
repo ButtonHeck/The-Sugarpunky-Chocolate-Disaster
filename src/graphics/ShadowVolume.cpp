@@ -1,4 +1,4 @@
-#include "ShadowVolume.h"
+#include "graphics/ShadowVolume.h"
 
 ShadowVolume::ShadowVolume(TheSunFacade& sun)
   :

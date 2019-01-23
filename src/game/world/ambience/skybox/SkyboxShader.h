@@ -1,6 +1,6 @@
 #ifndef SKYBOXSHADER_H
 #define SKYBOXSHADER_H
-#include "graphics/Shader.h"
+#include "graphics/shaders/Shader.h"
 
 class SkyboxShader
 {

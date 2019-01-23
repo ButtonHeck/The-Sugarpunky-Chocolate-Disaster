@@ -5,9 +5,9 @@
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "game/world/terrain/TerrainTile.h"
-#include "util/SceneSettings.h"
+#include "game/world/SceneSettings.h"
 #include "util/typeAliases.h"
-#include "graphics/OpenglBuffer.h"
+#include "graphics/openglObjects/BufferCollection.h"
 
 class Generator
 {
@@ -35,7 +35,7 @@ protected:
   void resetAllGLBuffers();
   map2D_f map;
   std::vector<TerrainTile> tiles;
-  OpenglBuffer basicGLBuffers;
+  BufferCollection basicGLBuffers;
 };
 
 #endif // GENERATOR_H

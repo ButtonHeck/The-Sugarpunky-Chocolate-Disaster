@@ -3,8 +3,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
-#include "graphics/OpenglBuffer.h"
-#include "util/SceneSettings.h"
+#include "graphics/openglObjects/BufferCollection.h"
+#include "game/world/SceneSettings.h"
 
 class TheSun
 {
@@ -16,7 +16,7 @@ public:
 private:
   friend class TheSunRenderer;
   void bufferData();
-  OpenglBuffer basicGLBuffers;
+  BufferCollection basicGLBuffers;
   glm::vec3 rotateAxis;
   glm::mat4 transform;
   glm::vec3 currentPosition = glm::vec3(HALF_WORLD_WIDTH_F, 0.0f, 0.0f);

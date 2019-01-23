@@ -10,31 +10,23 @@ SOURCES += \
     src/game/Game.cpp \
     src/game/SaveLoadManager.cpp \
     src/game/Options.cpp \
-    src/graphics/Shader.cpp \
-    src/graphics/TextureLoader.cpp \
-    src/graphics/CoordinateSystemRenderer.cpp \
     src/graphics/Frustum.cpp \
-    src/graphics/TextureManager.cpp \
-    src/graphics/ShaderManager.cpp \
-    src/model/Mesh.cpp \
-    src/model/Model.cpp \
+    src/game/world/models/Mesh.cpp \
+    src/game/world/models/Model.cpp \
     src/input/KeyboardManager.cpp \
     src/input/MouseInputManager.cpp \
-    src/graphics/FontLoader.cpp \
-    src/game/world/plants/GrassGenerator.cpp \
-    src/game/world/plants/HillTreesGenerator.cpp \
-    src/game/world/plants/LandPlantsGenerator.cpp \
-    src/game/world/plants/PlantGenerator.cpp \
+    src/game/world/models/plants/GrassGenerator.cpp \
+    src/game/world/models/plants/HillTreesGenerator.cpp \
+    src/game/world/models/plants/LandPlantsGenerator.cpp \
+    src/game/world/models/plants/PlantGenerator.cpp \
     src/game/world/terrain/Generator.cpp \
     src/util/BenchmarkTimer.cpp \
-    src/game/world/plants/ModelChunk.cpp \
+    src/game/world/models/ModelChunk.cpp \
     src/game/world/terrain/TerrainTile.cpp \
     src/graphics/ScreenResolution.cpp \
-    src/game/Camera.cpp \
-    src/graphics/TextManager.cpp \
+    src/graphics/Camera.cpp \
     src/game/world/Chunk.cpp \
     src/util/VRAM_Monitor.cpp \
-    src/graphics/OpenglBuffer.cpp \
     src/game/world/ambience/theSun/TheSun.cpp \
     src/util/Logger.cpp \
     src/game/world/terrain/hills/HillsGenerator.cpp \
@@ -69,66 +61,64 @@ SOURCES += \
     src/game/world/ambience/theSun/TheSunFacade.cpp \
     src/game/world/ambience/theSun/TheSunShader.cpp \
     src/game/world/ambience/theSun/TheSunRenderer.cpp \
-    src/game/world/plants/PlantsFacade.cpp \
-    src/game/world/plants/PlantsShader.cpp \
+    src/game/world/models/plants/PlantsFacade.cpp \
+    src/game/world/models/plants/PlantsShader.cpp \
     src/graphics/RendererStateManager.cpp \
     src/game/world/Scene.cpp \
-    src/game/world/plants/GrassRenderer.cpp \
-    src/game/world/plants/TreesRenderer.cpp \
+    src/game/world/models/plants/GrassRenderer.cpp \
+    src/game/world/models/plants/TreesRenderer.cpp \
     src/graphics/ShadowVolume.cpp \
-    src/graphics/FrustumRenderer.cpp \
-    src/graphics/ShadowVolumeRenderer.cpp \
-    src/graphics/BindlessTextureManager.cpp \
     src/util/DirectoriesSettings.cpp \
     src/game/world/ambience/lensFlare/LensFlareElement.cpp \
     src/game/world/ambience/lensFlare/LensFlareFacade.cpp \
     src/game/world/ambience/lensFlare/LensFlareRenderer.cpp \
-    src/graphics/WaterReflectionFramebuffer.cpp \
-    src/graphics/WaterRefractionFramebuffer.cpp \
-    src/graphics/Query.cpp \
-    src/graphics/Framebuffer.cpp \
-    src/graphics/DepthmapFramebuffer.cpp \
-    src/graphics/ScreenFramebuffer.cpp
+    src/graphics/openglObjects/Framebuffer.cpp \
+    src/graphics/openglObjects/Query.cpp \
+    src/graphics/openglObjects/BufferCollection.cpp \
+    src/graphics/textures/BindlessTextureManager.cpp \
+    src/graphics/textures/TextureLoader.cpp \
+    src/graphics/textures/TextureManager.cpp \
+    src/graphics/shaders/Shader.cpp \
+    src/graphics/shaders/ShaderManager.cpp \
+    src/graphics/framebuffers/DepthmapFramebuffer.cpp \
+    src/graphics/framebuffers/ScreenFramebuffer.cpp \
+    src/graphics/framebuffers/WaterReflectionFramebuffer.cpp \
+    src/graphics/framebuffers/WaterRefractionFramebuffer.cpp \
+    src/graphics/gui/FontLoader.cpp \
+    src/graphics/gui/TextManager.cpp \
+    src/graphics/gui/CoordinateSystemRenderer.cpp \
+    src/graphics/gui/FrustumRenderer.cpp \
+    src/graphics/gui/ShadowVolumeRenderer.cpp
 
 HEADERS += \
     src/game/Game.h \
     src/game/SaveLoadManager.h \
     src/game/Options.h \
-    src/graphics/TextureUnits.h \
-    src/graphics/Shader.h \
-    src/graphics/ShaderManager.h \
-    src/graphics/TextureLoader.h \
-    src/graphics/CoordinateSystemRenderer.h \
     src/graphics/Frustum.h \
-    src/graphics/TextureManager.h \
-    src/model/Mesh.h \
-    src/model/Model.h \
+    src/game/world/models/Mesh.h \
+    src/game/world/models/Model.h \
     src/input/KeyboardManager.h \
     src/input/MouseInputManager.h \
     src/generator/PlantGenerator.h \
-    src/graphics/FontLoader.h \
-    src/game/world/plants/GrassGenerator.h \
-    src/game/world/plants/HillTreesGenerator.h \
-    src/game/world/plants/LandPlantsGenerator.h \
-    src/game/world/plants/PlantGenerator.h \
+    src/game/world/models/plants/GrassGenerator.h \
+    src/game/world/models/plants/HillTreesGenerator.h \
+    src/game/world/models/plants/LandPlantsGenerator.h \
+    src/game/world/models/plants/PlantGenerator.h \
     src/game/world/terrain/Generator.h \
     src/util/BenchmarkTimer.h \
     src/util/Timer.h \
-    src/game/world/plants/ModelChunk.h \
+    src/game/world/models/ModelChunk.h \
     src/game/world/terrain/TerrainTile.h \
     src/graphics/ScreenResolution.h \
-    src/game/Camera.h \
-    src/graphics/TextManager.h \
+    src/graphics/Camera.h \
     src/game/world/Chunk.h \
     src/util/VRAM_Monitor.h \
-    src/graphics/OpenglBuffer.h \
     src/game/world/ambience/theSun/TheSun.h \
     src/util/Logger.h \
     src/game/world/terrain/hills/HillsGenerator.h \
     src/game/world/terrain/hills/HillsFacade.h \
     src/game/world/terrain/hills/HillsShader.h \
     src/game/world/terrain/hills/HillsRenderer.h \
-    src/graphics/ShaderUnits.h \
     src/game/world/terrain/shore/ShoreGenerator.h \
     src/game/world/terrain/shore/ShoreFacade.h \
     src/game/world/terrain/shore/ShoreShader.h \
@@ -157,30 +147,40 @@ HEADERS += \
     src/game/world/ambience/theSun/TheSunFacade.h \
     src/game/world/ambience/theSun/TheSunShader.h \
     src/game/world/ambience/theSun/TheSunRenderer.h \
-    src/game/world/plants/PlantsFacade.h \
-    src/game/world/plants/PlantsShader.h \
+    src/game/world/models/plants/PlantsFacade.h \
+    src/game/world/models/plants/PlantsShader.h \
     src/graphics/RendererStateManager.h \
     src/util/typeAliases.h \
     src/game/world/Scene.h \
-    src/game/world/plants/GrassRenderer.h \
-    src/game/world/plants/TreesRenderer.h \
+    src/game/world/models/plants/GrassRenderer.h \
+    src/game/world/models/plants/TreesRenderer.h \
     src/game/OptionsUnits.h \
     src/graphics/ShadowVolume.h \
-    src/graphics/FrustumRenderer.h \
-    src/graphics/ShadowVolumeRenderer.h \
-    src/graphics/BindlessTextureManager.h \
-    src/util/GraphicsSettings.h \
-    src/util/SceneSettings.h \
+    src/graphics/GraphicsSettings.h \
+    src/game/world/SceneSettings.h \
     src/util/DirectoriesSettings.h \
     src/game/world/ambience/lensFlare/LensFlareElement.h \
     src/game/world/ambience/lensFlare/LensFlareFacade.h \
     src/game/world/ambience/lensFlare/LensFlareRenderer.h \
-    src/graphics/WaterReflectionFramebuffer.h \
-    src/graphics/WaterRefractionFramebuffer.h \
-    src/graphics/Query.h \
-    src/graphics/Framebuffer.h \
-    src/graphics/DepthmapFramebuffer.h \
-    src/graphics/ScreenFramebuffer.h
+    src/graphics/openglObjects/Framebuffer.h \
+    src/graphics/openglObjects/Query.h \
+    src/graphics/openglObjects/BufferCollection.h \
+    src/graphics/textures/BindlessTextureManager.h \
+    src/graphics/textures/TextureLoader.h \
+    src/graphics/textures/TextureManager.h \
+    src/graphics/textures/TextureUnits.h \
+    src/graphics/shaders/Shader.h \
+    src/graphics/shaders/ShaderManager.h \
+    src/graphics/shaders/ShaderUnits.h \
+    src/graphics/framebuffers/DepthmapFramebuffer.h \
+    src/graphics/framebuffers/ScreenFramebuffer.h \
+    src/graphics/framebuffers/WaterReflectionFramebuffer.h \
+    src/graphics/framebuffers/WaterRefractionFramebuffer.h \
+    src/graphics/gui/FontLoader.h \
+    src/graphics/gui/TextManager.h \
+    src/graphics/gui/CoordinateSystemRenderer.h \
+    src/graphics/gui/FrustumRenderer.h \
+    src/graphics/gui/ShadowVolumeRenderer.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 
@@ -447,7 +447,6 @@ DISTFILES += \
     res/shaders/normals/water_normals.vs \
     res/shaders/normals/_normals.gs \
     res/shaders/normals/_normals.fs \
-    .gitignore \
     res/textures/land.jpg \
     res/textures/land2.jpg \
     res/shaders/include/shadowSampling.ifs \

@@ -1,4 +1,4 @@
-#include "HillsShader.h"
+#include "game/world/terrain/hills/HillsShader.h"
 
 HillsShader::HillsShader(Shader &renderShader, Shader &cullingShader, Shader &normalsShader)
   :

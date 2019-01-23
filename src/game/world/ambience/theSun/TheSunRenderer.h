@@ -3,7 +3,7 @@
 #include "game/world/ambience/theSun/TheSun.h"
 #include "graphics/RendererStateManager.h"
 #include "util/BenchmarkTimer.h"
-#include "graphics/Query.h"
+#include "graphics/openglObjects/Query.h"
 
 class TheSunRenderer
 {

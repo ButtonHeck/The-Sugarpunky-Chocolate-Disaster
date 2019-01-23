@@ -1,4 +1,4 @@
-#include "LandFacade.h"
+#include "game/world/terrain/land/LandFacade.h"
 
 LandFacade::LandFacade(Shader &renderShader)
   :

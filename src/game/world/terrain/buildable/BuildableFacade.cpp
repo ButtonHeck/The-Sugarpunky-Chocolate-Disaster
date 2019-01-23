@@ -1,4 +1,4 @@
-#include "BuildableFacade.h"
+#include "game/world/terrain/buildable/BuildableFacade.h"
 
 BuildableFacade::BuildableFacade(Shader &buildableRenderShader, Shader &selectedRenderShader)
   :

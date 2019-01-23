@@ -1,4 +1,4 @@
-#include "WaterShader.h"
+#include "game/world/terrain/water/WaterShader.h"
 
 WaterShader::WaterShader(Shader &renderShader, Shader &cullingShader, Shader &normalsShader)
   :

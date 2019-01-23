@@ -3,7 +3,7 @@
 #include <memory>
 #include "game/world/terrain/land/LandFacade.h"
 #include "game/world/terrain/hills/HillsFacade.h"
-#include "game/world/plants/PlantsFacade.h"
+#include "game/world/models/plants/PlantsFacade.h"
 #include "game/world/terrain/water/WaterFacade.h"
 #include "game/world/terrain/buildable/BuildableFacade.h"
 #include "game/world/terrain/shore/ShoreFacade.h"
@@ -11,8 +11,8 @@
 #include "game/world/ambience/skybox/SkyboxFacade.h"
 #include "game/world/ambience/theSun/TheSunFacade.h"
 #include "game/world/ambience/lensFlare/LensFlareFacade.h"
-#include "graphics/ShaderManager.h"
-#include "graphics/TextureManager.h"
+#include "graphics/shaders/ShaderManager.h"
+#include "graphics/textures/TextureManager.h"
 #include "input/MouseInputManager.h"
 #include "graphics/ScreenResolution.h"
 

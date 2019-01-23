@@ -58,7 +58,7 @@ void BuildableGenerator::fillBufferData()
   resetAllGLBuffers();
 }
 
-void BuildableGenerator::setupAndBindBuffers(OpenglBuffer &buffers)
+void BuildableGenerator::setupAndBindBuffers(BufferCollection &buffers)
 {
   constexpr static GLfloat CELL_VERTICES[12] = {
        0.05f, 0.01f,  -0.05f,

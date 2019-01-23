@@ -4,7 +4,7 @@
 #include "game/Options.h"
 #include "graphics/ScreenResolution.h"
 #include "util/Logger.h"
-#include "game/Camera.h"
+#include "graphics/Camera.h"
 
 GLFWwindow* window;
 ScreenResolution screenResolution;

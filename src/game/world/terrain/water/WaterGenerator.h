@@ -44,7 +44,7 @@ private:
   void setupGLBufferAttributes();
   void fillBufferData();
 
-  OpenglBuffer culledBuffers;
+  BufferCollection culledBuffers;
   WaterShader& shaders;
   size_t numVertices;
   unsigned int numTiles;

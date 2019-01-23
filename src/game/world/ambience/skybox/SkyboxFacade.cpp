@@ -1,4 +1,4 @@
-#include "SkyboxFacade.h"
+#include "game/world/ambience/skybox/SkyboxFacade.h"
 
 SkyboxFacade::SkyboxFacade(Shader &renderShader)
   :

@@ -3,7 +3,7 @@
 #include "game/world/terrain/water/WaterGenerator.h"
 #include "game/world/terrain/water/WaterShader.h"
 #include "util/BenchmarkTimer.h"
-#include "graphics/Query.h"
+#include "graphics/openglObjects/Query.h"
 
 class WaterRenderer
 {
