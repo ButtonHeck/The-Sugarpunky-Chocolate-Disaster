@@ -196,6 +196,7 @@ void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                       unsigned int index,
                                       const glm::vec2& cameraPositionXZ,
                                       const Frustum &frustum,
+                                      bool use3DcullingPoints,
                                       float loadingDistance,
                                       float loadingDistanceShadow,
                                       float loadingDistanceLowPoly)
@@ -215,10 +216,16 @@ void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
           if (directionToChunkLength < loadingDistance)
             {
               glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
-              if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
-                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
-                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
-                  frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS))
+              const float CULLING_Y_APPROX = 10.0f;
+              if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
+                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
+                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
+                  frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET)
+                   || (use3DcullingPoints &&
+                 (frustum.isInside(chunkMidPoint.x - HALF_CHUNK_SIZE, CULLING_Y_APPROX, chunkMidPoint.y + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
+                  frustum.isInside(chunkMidPoint.x + HALF_CHUNK_SIZE, CULLING_Y_APPROX, chunkMidPoint.y + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
+                  frustum.isInside(chunkMidPoint.x + HALF_CHUNK_SIZE, CULLING_Y_APPROX, chunkMidPoint.y - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
+                  frustum.isInside(chunkMidPoint.x - HALF_CHUNK_SIZE, CULLING_Y_APPROX, chunkMidPoint.y - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET))))
                 {
                   addIndirectBufferData(directionToChunkLength,
                                         indicesSize,
@@ -239,10 +246,11 @@ void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
           if (directionToChunkLength < loadingDistanceLowPoly && directionToChunkLength >= loadingDistance)
             {
               glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
-              if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
-                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
-                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS) ||
-                  frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, MODELS_FC_RADIUS))
+              //for this part we don't get any visual difference of using 3D points
+              if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
+                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
+                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
+                  frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET))
                 {
                   addIndirectBufferData(directionToChunkLength,
                                         indicesSize,

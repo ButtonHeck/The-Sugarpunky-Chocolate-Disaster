@@ -17,9 +17,9 @@ constexpr float UNDERWATER_TILE_YPOS = -4.0f;
 constexpr int SHORE_SIZE_BASE = 5;
 
 //scene update & rendering config
-constexpr int CHUNK_SIZE = 16;
+constexpr int CHUNK_SIZE = 4;
 constexpr float HALF_CHUNK_SIZE = CHUNK_SIZE / 2.0f;
-constexpr float MODELS_FC_RADIUS = HALF_CHUNK_SIZE;
+constexpr float FRUSTUM_CULLING_DISTANCE_OFFSET = CHUNK_SIZE;
 constexpr int MODELS_DISTRIBUTION_FREQ = 8;
 
 #endif // SCENESETTINGS_H

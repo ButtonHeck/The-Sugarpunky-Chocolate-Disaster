@@ -24,6 +24,7 @@ public:
                                  unsigned int index,
                                  const glm::vec2& cameraPositionXZ,
                                  const Frustum& frustum,
+                                 bool use3DcullingPoints,
                                  float loadingDistance,
                                  float loadingDistanceShadow,
                                  float loadingDistanceLowPoly);

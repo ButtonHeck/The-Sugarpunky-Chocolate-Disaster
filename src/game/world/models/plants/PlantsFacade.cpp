@@ -131,12 +131,12 @@ void PlantsFacade::prepareMeshesIndirectData(PlantGenerator &generator, const gl
   for (unsigned int i = 0; i < models.size(); i++)
     {
       Model& model = models[i];
-      model.prepareMeshesIndirectData(chunks, i, cameraPositionXZ, viewFrustum,
+      model.prepareMeshesIndirectData(chunks, i, cameraPositionXZ, viewFrustum, true,
                                       PlantGenerator::LOADING_DISTANCE_UNITS_SQUARE,
                                       PlantGenerator::LOADING_DISTANCE_UNITS_SHADOW_SQUARE,
                                       PlantGenerator::LOADING_DISTANCE_UNITS_LOWPOLY_SQUARE);
       Model& lowPolyModel = lowPolyModels[i];
-      lowPolyModel.prepareMeshesIndirectData(chunks, i, cameraPositionXZ, viewFrustum,
+      lowPolyModel.prepareMeshesIndirectData(chunks, i, cameraPositionXZ, viewFrustum, false,
                                              PlantGenerator::LOADING_DISTANCE_UNITS_SQUARE,
                                              PlantGenerator::LOADING_DISTANCE_UNITS_SHADOW_SQUARE,
                                              PlantGenerator::LOADING_DISTANCE_UNITS_LOWPOLY_SQUARE);
