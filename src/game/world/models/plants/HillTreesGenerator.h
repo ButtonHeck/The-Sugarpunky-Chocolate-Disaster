@@ -7,10 +7,12 @@ class HillTreesGenerator : public PlantGenerator
 public:
   HillTreesGenerator();
   void setup(const map2D_f &hillMap,
-             const map2D_i &distributionMap);
+             const map2D_i &distributionMap,
+             const map2D_vec3 &hillsNormalMap);
 private:
   void setupMatrices(const map2D_f &hillMap,
-                     const map2D_i &distributionMap);
+                     const map2D_i &distributionMap,
+                     const map2D_vec3 &hillsNormalMap);
 };
 
 #endif // HILLTREESGENERATOR_H

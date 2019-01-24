@@ -26,19 +26,21 @@ HillTreesGenerator::HillTreesGenerator()
 }
 
 void HillTreesGenerator::setup(const map2D_f &hillMap,
-                               const map2D_i &distributionMap)
+                               const map2D_i &distributionMap,
+                               const map2D_vec3 &hillsNormalMap)
 {
   setupModelChunks();
-  setupMatrices(hillMap, distributionMap);
+  setupMatrices(hillMap, distributionMap, hillsNormalMap);
 }
 
 void HillTreesGenerator::setupMatrices(const map2D_f &hillMap,
-                                       const map2D_i &distributionMap)
+                                       const map2D_i &distributionMap,
+                                       const map2D_vec3 &hillsNormalMap)
 {
   auto matricesVecs = substituteMatricesStorage();
-  std::uniform_real_distribution<float> modelSizeDistribution(0.36f, 0.51f);
-  std::uniform_real_distribution<float> modelPositionDistribution(-0.6f, 0.6f);
-  std::uniform_real_distribution<float> modelAxisRotationDistribution(-0.05f, 0.05f);
+  std::uniform_real_distribution<float> sizeDistribution(0.36f, 0.51f);
+  std::uniform_real_distribution<float> positionDistribution(-0.6f, 0.6f);
+  std::uniform_real_distribution<float> rotationDistribution(-0.05f, 0.05f);
 
   std::vector<unsigned int> instanceOffsetsVector(models.size());
   std::vector<unsigned int> numInstancesVector(models.size());
@@ -71,8 +73,8 @@ void HillTreesGenerator::setupMatrices(const map2D_f &hillMap,
                           || (hillMap[y1+1][x1] > 0 && hillMap[y1][x1] == 0 && hillMap[y1+1][x1+1] == 0 && hillMap[y1][x1+1] == 0))
                         indicesCrossed = true;
                       glm::mat4 model;
-                      float offsetX = modelPositionDistribution(randomizer) * (1.0f - slope);
-                      float offsetZ = modelPositionDistribution(randomizer) * (1.0f - slope);
+                      float offsetX = positionDistribution(randomizer) * (1.0f - slope);
+                      float offsetZ = positionDistribution(randomizer) * (1.0f - slope);
                       float baseY = hillMap[y1][x1] + (!indicesCrossed ?
                              (hillMap[y1+1][x1+1] - hillMap[y1][x1]) / 2 :
                               std::abs(hillMap[y1][x1+1] - hillMap[y1+1][x1]) / 2)
@@ -83,12 +85,30 @@ void HillTreesGenerator::setupMatrices(const map2D_f &hillMap,
                             -HALF_WORLD_HEIGHT_F + y1 + 0.5f + offsetZ);
                       if (translation.y < 0)
                         continue;
-                      model = glm::translate(model, translation);
-                      model = glm::rotate(model, glm::radians((float)(y1 * WORLD_WIDTH + x1 * 5)),
-                                          glm::vec3(modelAxisRotationDistribution(randomizer), 1.0f, modelAxisRotationDistribution(randomizer)));
-                      model = glm::scale(model, glm::vec3(modelSizeDistribution(randomizer)));
 
                       size_t modelIndex = matrixCounter % matricesVecs.size();
+                      bool applyChangeOfBasisMatrix = models[modelIndex].isUsingChangeOfBasis();
+
+                      model = glm::translate(model, translation);
+                      if (applyChangeOfBasisMatrix)
+                        {
+                          glm::vec3 hillTileNormalApprox = hillsNormalMap[y1][x1];
+                          hillTileNormalApprox += hillsNormalMap[y1+1][x1];
+                          hillTileNormalApprox += hillsNormalMap[y1+1][x1+1];
+                          hillTileNormalApprox += hillsNormalMap[y1][x1+1];
+                          glm::vec3 newY = glm::normalize(hillTileNormalApprox);
+                          glm::vec3 newZ = glm::normalize(glm::cross(newY, glm::vec3(0.0f, 1.0f, 0.0f)));
+                          glm::vec3 newX = glm::normalize(glm::cross(newY, newZ));
+                          glm::mat4 transform = glm::mat4(glm::mat3(newX, newY, newZ));
+                          model *= transform;
+                        }
+                      else
+                        {
+                          model = glm::rotate(model, glm::radians((float)(y1 * WORLD_WIDTH + x1 * 5)),
+                                              glm::vec3(rotationDistribution(randomizer), 1.0f, rotationDistribution(randomizer)));
+                        }
+                      model = glm::scale(model, glm::vec3(sizeDistribution(randomizer)));
+
                       matricesVecs[modelIndex].emplace_back(std::move(model));
                       ++numInstancesVector[modelIndex];
                       ++instanceOffsetsVector[modelIndex];

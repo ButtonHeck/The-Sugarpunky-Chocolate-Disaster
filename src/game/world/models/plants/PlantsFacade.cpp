@@ -10,12 +10,12 @@ PlantsFacade::PlantsFacade(Shader &renderPhongShader, Shader &renderGouraudShade
     grassRenderer()
 {}
 
-void PlantsFacade::setup(const map2D_f &baseMap, const map2D_f &hillMap)
+void PlantsFacade::setup(const map2D_f &baseMap, const map2D_f &hillMap, const map2D_vec3 &hillsNormalMap)
 {
   prepareDistributionMap(MODELS_DISTRIBUTION_FREQ);
   landPlantsGenerator.setup(baseMap, hillMap, distributionMap);
   grassGenerator.setup(baseMap, hillMap, distributionMap);
-  hillTreesGenerator.setup(hillMap, distributionMap);
+  hillTreesGenerator.setup(hillMap, distributionMap, hillsNormalMap);
 }
 
 void PlantsFacade::prepareMeshesIndirectData(const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum)

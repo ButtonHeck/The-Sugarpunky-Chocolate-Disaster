@@ -1,10 +1,11 @@
 #include "game/world/models/Model.h"
 #include <IL/il.h>
 
-Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions)
+Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions, bool useChangeOfBasisMatrix)
   :
     isLowPoly(isLowPoly),
     numRepetitions(numRepetitions),
+    useChangeOfBasisMatrix(useChangeOfBasisMatrix),
     basicGLBuffers(VAO | VBO | INSTANCE_VBO | EBO)
 {
   loadModel(std::string(MODELS_DIR + path));
@@ -341,6 +342,11 @@ void Model::loadModelInstances(glm::mat4 *instanceMatrices, unsigned int numInst
 unsigned int Model::getRepeatCount() const
 {
   return numRepetitions;
+}
+
+bool Model::isUsingChangeOfBasis() const
+{
+  return useChangeOfBasisMatrix;
 }
 
 Model::IndirectBufferToken::IndirectBufferToken(GLuint indicesCount, GLuint numInstances, GLuint instanceOffset)

@@ -41,7 +41,7 @@ void Scene::setup()
   landFacade->setup(shoreFacade.getMap());
   waterFacade.setupConsiderTerrain();
   buildableFacade.setup(landFacade->getMap(), hillsFacade.getMap());
-  plantsFacade.setup(landFacade->getMap(), hillsFacade.getMap());
+  plantsFacade.setup(landFacade->getMap(), hillsFacade.getMap(), hillsFacade.getNormalMap());
   textureManager.createUnderwaterReliefTexture(waterFacade.getMap());
 }
 

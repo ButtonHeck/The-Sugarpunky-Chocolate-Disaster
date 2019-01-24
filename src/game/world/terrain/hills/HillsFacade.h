@@ -25,6 +25,7 @@ public:
             bool useDebugRender);
   void drawDepthmap();
   const map2D_f& getMap() const;
+  const map2D_vec3& getNormalMap() const;
 
 private:
   HillsShader shaders;
