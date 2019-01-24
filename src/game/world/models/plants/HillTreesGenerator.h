@@ -13,6 +13,7 @@ private:
   void setupMatrices(const map2D_f &hillMap,
                      const map2D_i &distributionMap,
                      const map2D_vec3 &hillsNormalMap);
+  size_t numSurfaceModels;
 };
 
 #endif // HILLTREESGENERATOR_H

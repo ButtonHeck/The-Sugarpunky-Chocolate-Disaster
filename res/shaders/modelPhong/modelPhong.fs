@@ -10,8 +10,8 @@ in float        v_AlphaValue;
 in vec3         v_FragPos;
 flat in uvec2   v_TexIndices;
 
-uniform uint64_t  u_texture_diffuse[150];
-uniform uint64_t  u_texture_specular[100];
+uniform uint64_t  u_texture_diffuse[200];
+uniform uint64_t  u_texture_specular[150];
 uniform bool      u_shadow;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;

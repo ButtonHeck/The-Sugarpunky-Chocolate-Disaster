@@ -649,7 +649,21 @@ DISTFILES += \
     res/textures/lensFlares/flare9.png \
     res/textures/vignetteHoneycomb.png \
     res/textures/vignetteInterlacing.png \
-    res/textures/waterDUDV.png
+    res/textures/waterDUDV.png \
+    res/models/hillTree10cob/hillTree10cob.obj \
+    res/models/hillTree8cob/hillTree8cob.obj \
+    res/models/hillTree9cob/hillTree9cob.obj \
+    res/models/hillTree10cob/foliage-red-spec.png \
+    res/models/hillTree10cob/nut.png \
+    res/models/hillTree8cob/foliage-red-spec.png \
+    res/models/hillTree8cob/foliage-red.png \
+    res/models/hillTree8cob/foliage-red2.png \
+    res/models/hillTree9cob/foliage-red-spec.png \
+    res/models/hillTree9cob/foliage-red.png \
+    res/models/hillTree9cob/foliage-red2.png \
+    res/models/hillTree10cob/hillTree10cob.mtl \
+    res/models/hillTree8cob/hillTree8cob.mtl \
+    res/models/hillTree9cob/hillTree9cob.mtl
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
