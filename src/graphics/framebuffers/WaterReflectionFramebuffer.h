@@ -6,8 +6,10 @@ class WaterReflectionFramebuffer : public Framebuffer
 {
 public:
   WaterReflectionFramebuffer(TextureManager& textureManager);
-  virtual ~WaterReflectionFramebuffer() = default;
+  virtual ~WaterReflectionFramebuffer();
   virtual void setup() override;
+private:
+  GLuint rbo;
 };
 
 #endif // WATERREFLECTIONFRAMEBUFFER_H
