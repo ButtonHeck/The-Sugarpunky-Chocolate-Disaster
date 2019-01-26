@@ -1,11 +1,13 @@
 #version 450
 
 layout (points) in;
-layout (line_strip, max_vertices = 2) out;
+layout (line_strip, max_vertices = 6) out;
 
 uniform mat4 u_projectionView;
 
 in vec3 v_Normal[];
+in vec3 v_Tangent[];
+in vec3 v_Bitangent[];
 
 out vec3 g_Color;
 
@@ -16,5 +18,16 @@ void main()
     EmitVertex();
     gl_Position = gl_in[0].gl_Position + u_projectionView * vec4(v_Normal[0], 0.0);
     EmitVertex();
+
+    gl_Position = gl_in[0].gl_Position;
+    EmitVertex();
+    gl_Position = gl_in[0].gl_Position + u_projectionView * vec4(v_Tangent[0], 0.0);
+    EmitVertex();
+
+    gl_Position = gl_in[0].gl_Position;
+    EmitVertex();
+    gl_Position = gl_in[0].gl_Position + u_projectionView * vec4(v_Bitangent[0], 0.0);
+    EmitVertex();
+
     EndPrimitive();
 }

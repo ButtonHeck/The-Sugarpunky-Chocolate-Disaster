@@ -4,6 +4,7 @@ out vec4 o_FragColor;
 
 in vec3  v_FragPos;
 in vec3  v_Normal;
+in mat3  v_TNB;
 in vec2  v_TexCoords;
 in float v_TerrainTypeMix;
 in float v_SpecularComponent;
@@ -69,11 +70,11 @@ void main()
 
         @include shadingVariables.ifs
 
+        //we need this to be swizzled for color-smooth land blending
         vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.125).xzy;
-        ShadingNormal.xyz -= vec3(0.5);
-
+        ShadingNormal -= vec3(0.5);
         vec3 ShadingNormalLand = normalize(NORMAL + 5.0 * ShadingNormal);
-        vec3 ShadingNormalHill = normalize(v_Normal + ShadingNormal);
+        vec3 ShadingNormalHill = normalize(v_Normal + 3.0 * (v_TNB * ShadingNormal));
 
         float DiffuseComponentHill = max(dot(ShadingNormalHill, u_lightDir), 0.0);
         float DiffuseComponentLand = max(dot(ShadingNormalLand, u_lightDir), 0.0);

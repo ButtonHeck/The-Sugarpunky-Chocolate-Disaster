@@ -111,8 +111,8 @@ void Generator::smoothNormals(map2D_f &map, map2D_vec3 &normalMap)
   normalMap.reserve(WORLD_HEIGHT + 1);
   for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
     {
-      vec3 emptyNormal(0.0f);
-      std::vector<vec3> emptyVec(WORLD_WIDTH + 1, emptyNormal);
+      vec3 defaultNormal(0.0f, 1.0f, 0.0f);
+      std::vector<vec3> emptyVec(WORLD_WIDTH + 1, defaultNormal);
       normalMap.emplace_back(emptyVec);
     }
   for (unsigned int y = 1; y < map.size() - 1; y++)

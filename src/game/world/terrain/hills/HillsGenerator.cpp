@@ -45,13 +45,15 @@ void HillsGenerator::createTilesAndBufferData()
         }
     }
   smoothNormals(map, normalMap);
+  generateTangentMap();
+  generateBitangentMap();
   tiles.shrink_to_fit();
   fillBufferData();
 }
 
 void HillsGenerator::fillBufferData()
 {
-  const size_t VERTEX_DATA_LENGTH = tiles.size() * 32;
+  const size_t VERTEX_DATA_LENGTH = tiles.size() * sizeof(HillVertex);
   const size_t INDICES_DATA_LENGTH = tiles.size() * VERTICES_PER_QUAD;
   size_t indicesBufferIndex = 0;
   std::unique_ptr<GLfloat[]> vertices(new GLfloat[VERTEX_DATA_LENGTH]);
@@ -69,22 +71,30 @@ void HillsGenerator::fillBufferData()
 
       HillVertex lowLeft(glm::vec3(x - 1, tile.lowLeft, y),
                          glm::vec2(texCoordXOffset, texCoordYOffset),
-                         normalMap[y][x-1]);
+                         normalMap[y][x-1],
+                         tangentMap[y][x-1],
+                         bitangentMap[y][x-1]);
       HillVertex lowRight(glm::vec3(x, tile.lowRight, y),
                           glm::vec2(0.5f + texCoordXOffset, texCoordYOffset),
-                          normalMap[y][x]);
+                          normalMap[y][x],
+                          tangentMap[y][x],
+                          bitangentMap[y][x]);
       HillVertex upRight(glm::vec3(x, tile.upperRight, y - 1),
                          glm::vec2(0.5f + texCoordXOffset, 0.5f + texCoordYOffset),
-                         normalMap[y-1][x]);
+                         normalMap[y-1][x],
+                         tangentMap[y-1][x],
+                         bitangentMap[y-1][x]);
       HillVertex upLeft(glm::vec3(x - 1, tile.upperLeft, y - 1),
                         glm::vec2(texCoordXOffset, 0.5f + texCoordYOffset),
-                        normalMap[y-1][x-1]);
+                        normalMap[y-1][x-1],
+                        tangentMap[y-1][x-1],
+                        bitangentMap[y-1][x-1]);
 
-      int vertexBufferOffset = c * 32;
+      int vertexBufferOffset = c * sizeof(HillVertex);
       bufferVertex(vertices.get(), vertexBufferOffset,    lowLeft);
-      bufferVertex(vertices.get(), vertexBufferOffset+8,  lowRight);
-      bufferVertex(vertices.get(), vertexBufferOffset+16, upRight);
-      bufferVertex(vertices.get(), vertexBufferOffset+24, upLeft);
+      bufferVertex(vertices.get(), vertexBufferOffset+14, lowRight);
+      bufferVertex(vertices.get(), vertexBufferOffset+28, upRight);
+      bufferVertex(vertices.get(), vertexBufferOffset+42, upLeft);
 
       GLuint indicesBufferBaseVertex = c * 4;
       indices[indicesBufferIndex++] = indicesBufferBaseVertex + (verticesCrossed ? 3 : 0);
@@ -183,16 +193,26 @@ void HillsGenerator::bufferVertex(GLfloat* buffer, int offset, HillVertex vertex
   buffer[offset+5] = vertex.normalX;
   buffer[offset+6] = vertex.normalY;
   buffer[offset+7] = vertex.normalZ;
+  buffer[offset+8] = vertex.tangentX;
+  buffer[offset+9] = vertex.tangentY;
+  buffer[offset+10] = vertex.tangentZ;
+  buffer[offset+11] = vertex.bitangentX;
+  buffer[offset+12] = vertex.bitangentY;
+  buffer[offset+13] = vertex.bitangentZ;
 }
 
 void HillsGenerator::setupGLBufferAttributes()
 {
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), 0);
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
   glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), (void*)(8 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(4);
+  glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), (void*)(11 * sizeof(GLfloat)));
 }
 
 bool HillsGenerator::hasWaterNearby(int x, int y, int radius)
@@ -321,9 +341,51 @@ void HillsGenerator::smoothMapSinks()
     }
 }
 
-HillsGenerator::HillVertex::HillVertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal)
+void HillsGenerator::generateTangentMap()
+{
+  using glm::vec3;
+  tangentMap.clear();
+  tangentMap.reserve(WORLD_HEIGHT + 1);
+  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
+    {
+      vec3 defaultTangent(1.0f, 0.0f, 0.0f);
+      std::vector<vec3> emptyVec(WORLD_WIDTH + 1, defaultTangent);
+      tangentMap.emplace_back(emptyVec);
+    }
+  for (unsigned int y = 1; y < map.size() - 1; y++)
+    {
+      for (unsigned int x = 1; x < map[0].size() - 1; x++)
+        {
+          tangentMap[y][x] = glm::normalize(glm::cross(normalMap[y][x], vec3(0.0f, 1.0f, 0.0f)));
+        }
+    }
+}
+
+void HillsGenerator::generateBitangentMap()
+{
+  using glm::vec3;
+  bitangentMap.clear();
+  bitangentMap.reserve(WORLD_HEIGHT + 1);
+  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
+    {
+      vec3 defaultBitangent(0.0f, 0.0f, 1.0f);
+      std::vector<vec3> emptyVec(WORLD_WIDTH + 1, defaultBitangent);
+      bitangentMap.emplace_back(emptyVec);
+    }
+  for (unsigned int y = 1; y < map.size() - 1; y++)
+    {
+      for (unsigned int x = 1; x < map[0].size() - 1; x++)
+        {
+          bitangentMap[y][x] = glm::normalize(glm::cross(normalMap[y][x], tangentMap[y][x]));
+        }
+    }
+}
+
+HillsGenerator::HillVertex::HillVertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal, glm::vec3 tangent, glm::vec3 bitangent)
   :
     posX(pos.x - HALF_WORLD_WIDTH), posY(pos.y), posZ(pos.z - HALF_WORLD_HEIGHT),
     texCoordX(texCoords.x), texCoordY(texCoords.y),
-    normalX(normal.x), normalY(normal.y), normalZ(normal.z)
+    normalX(normal.x), normalY(normal.y), normalZ(normal.z),
+    tangentX(tangent.x), tangentY(tangent.y), tangentZ(tangent.z),
+    bitangentX(bitangent.x), bitangentY(bitangent.y), bitangentZ(bitangent.z)
 {}

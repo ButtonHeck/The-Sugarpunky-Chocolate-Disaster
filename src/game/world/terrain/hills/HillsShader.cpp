@@ -9,8 +9,8 @@ HillsShader::HillsShader(Shader &renderShader, Shader &cullingShader, Shader &no
 
 void HillsShader::setupCulling()
 {
-  const GLchar* varyings[3] = {"o_pos", "o_texCoords", "o_normal"};
-  glTransformFeedbackVaryings(cullingShader.getID(), 3, varyings, GL_INTERLEAVED_ATTRIBS);
+  const GLchar* varyings[5] = {"o_pos", "o_texCoords", "o_normal", "o_tangent", "o_bitangent"};
+  glTransformFeedbackVaryings(cullingShader.getID(), 5, varyings, GL_INTERLEAVED_ATTRIBS);
   cullingShader.link();
 }
 

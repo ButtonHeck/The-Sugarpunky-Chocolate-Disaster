@@ -25,10 +25,12 @@ private:
   friend class HillsFacade;
   struct HillVertex
   {
-    HillVertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal);
-    float posX, posY, posZ;
-    float texCoordX, texCoordY;
-    float normalX, normalY, normalZ;
+    HillVertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal, glm::vec3 tangent, glm::vec3 bitangent);
+    GLfloat posX, posY, posZ;
+    GLfloat texCoordX, texCoordY;
+    GLfloat normalX, normalY, normalZ;
+    GLfloat tangentX, tangentY, tangentZ;
+    GLfloat bitangentX, bitangentY, bitangentZ;
   };
 
   void generateMap(int cycles, float density);
@@ -43,12 +45,16 @@ private:
   void removeMapPlateaus(float plateauHeight);
   void removeOrphanHills();
   void smoothMapSinks();
+  void generateTangentMap();
+  void generateBitangentMap();
 
   BufferCollection culledBuffers;
   HillsShader& shaders;
   float maxHeight = 0.0f;
   const map2D_f& waterMap;
   map2D_vec3 normalMap;
+  map2D_vec3 tangentMap;
+  map2D_vec3 bitangentMap;
   std::default_random_engine randomizer;
 };
 
