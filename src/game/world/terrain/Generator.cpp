@@ -126,6 +126,12 @@ void Generator::smoothNormals(map2D_f &map, map2D_vec3 &normalMap)
           vec3 n4 = glm::normalize(vec3(map[y][x] - map[y][x+1], 1, map[y][x] - map[y+1][x]));
           vec3 n9 = glm::normalize(vec3(map[y][x-1] - map[y][x], 1, map[y][x-1] - map[y+1][x-1]));
           vec3 avgNormal = glm::normalize(n0 + n1 + n3 + n4 + n6 + n9);
+
+          //make sure that we do not have a default normal where it should not be (0,1,0)
+          //in this case just assign an approximation of three already calculated nearby normals
+          if (avgNormal.y == 1.0f)
+            avgNormal = glm::normalize(normalMap[y][x-1] + normalMap[y-1][x-1] + normalMap[y-1][x]);
+
           normalMap[y][x] = avgNormal;
         }
     }

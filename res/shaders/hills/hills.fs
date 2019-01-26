@@ -32,12 +32,18 @@ const int   NUM_CANYON_CIRCLES = 12;
 @include shadowSampling.ifs
 @include desaturationFunc.ifs
 
-void createCanyonRings(inout vec4 fragColor, vec3 circleColor, float minHeight, float maxHeight, int numCircles, int circlesRandomMultiplier)
+void createCanyonRings(inout vec4 fragColor,
+                       vec3 circleColor,
+                       float minHeight,
+                       float maxHeight,
+                       int numCircles,
+                       int circlesRandomMultiplier,
+                       float normalY)
 {
     vec2 canyonDistrubution = texture(u_diffuse_mix_map, v_FragPos.xz * u_mapDimension + 0.5).rg;
     float[2] canyonCircleOffset = {canyonDistrubution.r, canyonDistrubution.g};
     float canyonCircleStep = (maxHeight - minHeight) / (numCircles);
-    vec3 canyonColor = circleColor * (1.0 - v_Normal.y);
+    vec3 canyonColor = circleColor * (1.0 - normalY);
     float influenceStep = 0.1 / (numCircles - 1);
     for (int i = 0; i < numCircles; i++)
     {
@@ -90,7 +96,7 @@ void main()
             vec3 projectedCoords;
             float luminosity;
             ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
-            float bias = u_bias * (2.0 - 1.0 * dot(u_lightDir, v_Normal));
+            float bias = u_bias * (2.0 - 1.0 * dot(u_lightDir, ShadingNormalHill));
             if (shadowMapIndex == 0)
                 luminosity = ext_calculateLuminosity5(shadowMapIndex, projectedCoords, bias);
             else
@@ -113,6 +119,12 @@ void main()
             o_FragColor = vec4(resultColor, sampledDiffuse.a);
         }
 
-        createCanyonRings(o_FragColor, ambientColor + diffuseColor, MIN_CANYON_CIRCLE_HEIGHT, u_maxHillHeight, NUM_CANYON_CIRCLES, 4);
+        createCanyonRings(o_FragColor,
+                          ambientColor + diffuseColor,
+                          MIN_CANYON_CIRCLE_HEIGHT,
+                          u_maxHillHeight,
+                          NUM_CANYON_CIRCLES,
+                          4,
+                          ShadingNormalHill.y);
     }
 }
