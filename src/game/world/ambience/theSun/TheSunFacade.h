@@ -12,10 +12,10 @@ public:
   TheSunFacade(Shader& renderShader);
   void move(float delta);
   void setPos(float posDegrees);
-  void draw(glm::mat4& skyProjectionView, bool doOcclusionTest);
+  void draw(glm::mat4& skyProjectionView, bool doOcclusionTest, bool useReflectionPointSize);
   glm::vec3 getCurrentPosition() const;
   GLfloat getSunVisibilityPercentage();
-  void adjustSunPointSize(float pointSizeDivisor);
+  void adjustSunPointSize(float pointSizeDivisor, float relfectionPointSizeDivisor);
 private:
   TheSunShader shader;
   TheSun theSun;

@@ -7,10 +7,10 @@ TheSunRenderer::TheSunRenderer(TheSun &theSun)
     pointSize(0.0f)
 {}
 
-void TheSunRenderer::render(bool doOcclusionTest)
+void TheSunRenderer::render(bool doOcclusionTest, bool useReflectionPointSize)
 {
   BENCHMARK("SunRenderer: draw", true);
-  glPointSize(pointSize);
+  glPointSize(useReflectionPointSize ? reflectionPointSize : pointSize);
   theSun.basicGLBuffers.bind(VAO);
   if (doOcclusionTest && !samplesPassedQuery.isInUse())
     {
@@ -34,6 +34,11 @@ GLuint TheSunRenderer::getSamplesPassedQueryResult()
 void TheSunRenderer::setPointSize(float pointSize)
 {
   this->pointSize = pointSize;
+}
+
+void TheSunRenderer::setReflectionPointSize(float pointSize)
+{
+  this->reflectionPointSize = pointSize;
 }
 
 float TheSunRenderer::getPointSize() const

@@ -10,15 +10,17 @@ class TheSunRenderer
 public:
   TheSunRenderer(TheSun& theSun);
   virtual ~TheSunRenderer() = default;
-  void render(bool doOcclusionTest);
+  void render(bool doOcclusionTest, bool useReflectionPointSize);
   GLuint getSamplesPassedQueryResult();
   void setPointSize(float pointSize);
+  void setReflectionPointSize(float pointSize);
   float getPointSize() const;
 private:
   TheSun& theSun;
   Query samplesPassedQuery;
   GLuint samplesPassedResult;
   float pointSize;
+  float reflectionPointSize;
 };
 
 #endif // THESUNRENDERER_H

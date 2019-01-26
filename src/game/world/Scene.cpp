@@ -28,7 +28,10 @@ Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &tex
   float sunPointSizeDivisorX = screenResolution.getWidthRatioToReference();
   float sunPointSizeDivisorY = screenResolution.getHeightRatioToReference();
   float sunPointSizeDivisor = (sunPointSizeDivisorX + sunPointSizeDivisorY) / 2;
-  theSunFacade.adjustSunPointSize(sunPointSizeDivisor);
+  float sunReflectionPointSizeDivisorX = FRAME_WATER_REFLECTION_WIDTH / ScreenResolution::REFERENCE_WIDTH;
+  float sunReflectionPointSizeDivisorY = FRAME_WATER_REFLECTION_HEIGHT / ScreenResolution::REFERENCE_HEIGHT;
+  float sunReflectionPointSizeDivisor = (sunReflectionPointSizeDivisorX + sunReflectionPointSizeDivisorY) / 2;
+  theSunFacade.adjustSunPointSize(sunPointSizeDivisor, sunReflectionPointSizeDivisor);
   lensFlareFacade.adjustFlaresPointSize(sunPointSizeDivisor);
 }
 
@@ -131,7 +134,7 @@ void Scene::drawWorld(glm::vec3 lightDir,
     }
 
   RendererStateManager::setAmbienceRenderingState(true);
-  theSunFacade.draw(skyProjectionView, true);
+  theSunFacade.draw(skyProjectionView, true, false);
   skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
   RendererStateManager::setAmbienceRenderingState(false);
 
@@ -204,7 +207,7 @@ void Scene::drawWorldReflection(glm::vec3 lightDir,
                       false);
 
   RendererStateManager::setAmbienceRenderingState(true);
-  theSunFacade.draw(skyProjectionView, false);
+  theSunFacade.draw(skyProjectionView, false, true);
   skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
   RendererStateManager::setAmbienceRenderingState(false);
 }
