@@ -92,10 +92,11 @@ void main()
         vec3 projectedCoords;
         ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
         projectedCoords.xy += dudvTextureOffset;
-        float luminosity = ext_calculateLuminosity3Lowp(shadowMapIndex, projectedCoords, u_bias);
+        float luminosity = ext_calculateLuminosity3(shadowMapIndex, projectedCoords, u_bias);
 
         diffuseColor = luminosity * sampledDiffuse * diffuseComponent;
-        specularColor = specularComponent * sampledSpecular;
+        float specularOn = step(0.9, luminosity);
+        specularColor = specularOn * specularComponent * sampledSpecular * sunPositionAttenuation;
         resultColor = ambientColor + diffuseColor + specularColor;
 
         float refractionDepth = linearizeDepth(texture(u_refractionDepthMap, screenSpaceTexCoordsRefraction).r);

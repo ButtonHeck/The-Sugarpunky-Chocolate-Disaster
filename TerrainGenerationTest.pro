@@ -207,7 +207,6 @@ unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../../usr/lib/x86_64-linux-gnu/libI
 DISTFILES += \
     res/textures/hill.jpg \
     res/textures/hill2.jpg \
-    res/textures/hill_specular.jpg \
     res/textures/cubemap/back.png \
     res/textures/cubemap/down.png \
     res/textures/cubemap/front.png \
@@ -663,7 +662,8 @@ DISTFILES += \
     res/models/hillTree9cob/foliage-red2.png \
     res/models/hillTree10cob/hillTree10cob.mtl \
     res/models/hillTree8cob/hillTree8cob.mtl \
-    res/models/hillTree9cob/hillTree9cob.mtl
+    res/models/hillTree9cob/hillTree9cob.mtl \
+    res/textures/hill_specular.png
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

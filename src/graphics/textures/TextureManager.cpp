@@ -13,7 +13,7 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_WATER_DUDV] = loader.loadTexture("waterDUDV.png", TEX_WATER_DUDV, GL_MIRRORED_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, true, false, true);
   textures[TEX_HILL] = loader.loadTexture("hill2.jpg", TEX_HILL, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[TEX_HILL_2] = loader.loadTexture("hill.jpg", TEX_HILL_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
-  textures[TEX_HILL_SPECULAR] = loader.loadTexture("hill_specular.jpg", TEX_HILL_SPECULAR, GL_REPEAT, GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, false, true, false, true);
+  textures[TEX_HILL_SPECULAR] = loader.loadTexture("hill_specular.png", TEX_HILL_SPECULAR, GL_REPEAT, GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, false, true, false, true);
   textures[TEX_SHORE] = loader.loadTexture("shore.jpg", TEX_SHORE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[TEX_UNDERWATER_DIFFUSE] = loader.loadTexture("underwater.jpg", TEX_UNDERWATER_DIFFUSE, GL_REPEAT, GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, false);
   textures[TEX_SHORE_2] = loader.loadTexture("shore2.jpg", TEX_SHORE_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);

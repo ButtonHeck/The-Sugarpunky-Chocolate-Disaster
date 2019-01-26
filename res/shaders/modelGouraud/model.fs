@@ -56,7 +56,8 @@ void main()
         }
 
         diffuseColor = luminosity * sampledDiffuse.rgb * v_DiffuseComponent * (1.0 - u_ambientDay);
-        specularColor = luminosity * sampledSpecular.rgb * v_SpecularComponent;
+        float specularOn = step(0.9, luminosity);
+        specularColor = specularOn * luminosity * sampledSpecular.rgb * v_SpecularComponent;
         resultColor = ambientColor + diffuseColor + specularColor;
         o_FragColor = vec4(resultColor, sampledDiffuse.a);
         float desaturatingValue = mix(0.0,
