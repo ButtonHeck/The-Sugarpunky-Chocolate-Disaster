@@ -103,8 +103,8 @@ void main()
                 luminosity = ext_calculateLuminosity3Lowp(shadowMapIndex, projectedCoords, bias);
 
             diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
-            float specularOn = step(0.9, luminosity);
-            specularColor = specularOn * v_SpecularComponent * sampledSpecular.rgb * sunPositionAttenuation;
+            float specularLuminosityInfluence = 1.0 - ((1.0 - luminosity) * SHADOW_INFLUENCE_RECIPROCAL);
+            specularColor = specularLuminosityInfluence * v_SpecularComponent * sampledSpecular.rgb * sunPositionAttenuation;
             resultColor = ambientColor + diffuseColor + specularColor;
             o_FragColor = vec4(resultColor, sampledDiffuse.a);
             float desaturatingValue = mix(0.0,

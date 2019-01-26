@@ -95,8 +95,8 @@ void main()
         float luminosity = ext_calculateLuminosity3(shadowMapIndex, projectedCoords, u_bias);
 
         diffuseColor = luminosity * sampledDiffuse * diffuseComponent;
-        float specularOn = step(0.9, luminosity);
-        specularColor = specularOn * specularComponent * sampledSpecular * sunPositionAttenuation;
+        float specularLuminosityInfluence = 1.0 - ((1.0 - luminosity) * SHADOW_INFLUENCE_RECIPROCAL);
+        specularColor = specularLuminosityInfluence * specularComponent * sampledSpecular * sunPositionAttenuation;
         resultColor = ambientColor + diffuseColor + specularColor;
 
         float refractionDepth = linearizeDepth(texture(u_refractionDepthMap, screenSpaceTexCoordsRefraction).r);

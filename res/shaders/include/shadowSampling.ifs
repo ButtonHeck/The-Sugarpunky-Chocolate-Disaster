@@ -4,6 +4,7 @@ uniform mat4            u_lightSpaceMatrix[3];
 
 const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0).xy;
 const float SHADOW_INFLUENCE = 0.5;
+const float SHADOW_INFLUENCE_RECIPROCAL = 1.0 / SHADOW_INFLUENCE;
 const vec2  EARLY_BAILING_PCF3_CORNER_COORDS[4] = {vec2(-1,-1) * TEXEL_SIZE,
                                                    vec2(1,-1)  * TEXEL_SIZE,
                                                    vec2(-1,1)  * TEXEL_SIZE,
