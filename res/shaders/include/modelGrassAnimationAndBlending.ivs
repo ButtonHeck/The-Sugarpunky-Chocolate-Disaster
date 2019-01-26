@@ -5,8 +5,7 @@ const vec3 GRASS_WAVE_XYZ = vec3(0.007, 0.0023, 0.0035);
 const vec3 GRASS_WAVE_XYZ_NORMALIZED = normalize(GRASS_WAVE_XYZ);
 out float v_AlphaValue;
 
-void ext_animateAndBlend(inout vec4 ModelWorldPosition,
-                         inout float normalDistributionImitation)
+void ext_animateAndBlend(inout vec4 ModelWorldPosition)
 {
     if (u_isGrass)
     {
@@ -18,7 +17,6 @@ void ext_animateAndBlend(inout vec4 ModelWorldPosition,
                                            GRASS_WAVE_XYZ + i_normal * 0.005,
                                            dot(GRASS_WAVE_XYZ_NORMALIZED, i_normal)))
                                      * influence;
-            normalDistributionImitation = 0.66 * influence + 0.66;
         }
         v_AlphaValue = ModelWorldPosition.y * 32;
     }

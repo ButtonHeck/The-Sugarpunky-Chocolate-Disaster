@@ -24,15 +24,13 @@ void main()
     v_FragPos = vec3(ModelWorldPosition);
 
     float distanceToObject = distance(u_viewPosition, v_FragPos);
-    float normalDistributionImitation = 1.0;
     v_AlphaValue = 4.0;
 
     if (distanceToObject < 30.0)
-        ext_animateAndBlend(ModelWorldPosition, normalDistributionImitation);
+        ext_animateAndBlend(ModelWorldPosition);
 
     gl_Position = u_projectionView * ModelWorldPosition;
     v_TexCoords = i_texCoords;
     v_TexIndices = i_texIndices;
     v_Normal = vec3(i_model * vec4(i_normal, 0));
-    v_Normal.y *= normalDistributionImitation; //as far as we render no grass this stays 1.0
 }

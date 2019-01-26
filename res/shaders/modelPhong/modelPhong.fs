@@ -34,12 +34,16 @@ void main()
 
     @include shadingVariables.ifs
 
-    float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 5, 0.0, 1.0));
+    float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 3, 0.0, 1.0));
     vec3 shadingNormal = normalize(v_Normal);
-    if (u_isGrass)
-        shadingNormal.y *= sign(shadingNormal.y) * mix(1.0, u_lightDir.y, sunPositionAttenuation); //intentionally left unnormalized
 
     float diffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0) * sunPositionAttenuation * (1.0 - u_ambientDay);
+    if (u_isGrass)
+    {
+        float diffuseComponentNegative = max(dot(-shadingNormal, u_lightDir), 0.0) * sunPositionAttenuation * (1.0 - u_ambientDay);
+        diffuseComponent = max(diffuseComponent, diffuseComponentNegative);
+        diffuseComponent = mix(diffuseComponent, max(diffuseComponent, 0.25), sunPositionAttenuation);
+    }
 
     vec3 Reflect = reflect(-u_lightDir, shadingNormal);
     vec3 ViewDir = normalize(u_viewPosition - v_FragPos);

@@ -11,6 +11,7 @@ layout (location = 9) in uvec2 i_texIndices;
 uniform mat4  u_projectionView;
 uniform vec3  u_lightDir;
 uniform vec3  u_viewPosition;
+uniform float u_ambientDay;
 
 out vec2        v_TexCoords;
 out float       v_DiffuseComponent;
@@ -28,11 +29,10 @@ void main()
     v_FragPos = vec3(ModelWorldPosition);
 
     float distanceToObject = distance(u_viewPosition, v_FragPos);
-    float normalDistributionImitation = 1.0;
     v_AlphaValue = 4.0;
 
     if (distanceToObject < 30.0)
-        ext_animateAndBlend(ModelWorldPosition, normalDistributionImitation);
+        ext_animateAndBlend(ModelWorldPosition);
 
     gl_Position = u_projectionView * ModelWorldPosition;
     v_TexCoords = i_texCoords;
@@ -40,15 +40,18 @@ void main()
 
     vec3 normal = normalize(vec3(i_model * vec4(i_normal, 0)));
     v_NormalY = normal.y;
-    v_NormalY *= normalDistributionImitation; //as far as we render no grass this stays 1.0
 
-    v_SunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 5, 0.0, 1.0));
+    v_SunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 3, 0.0, 1.0));
     vec3 shadingNormal = normal;
-    if (u_isGrass)
-        shadingNormal.y *= sign(shadingNormal.y) * mix(1.0, u_lightDir.y, v_SunPositionAttenuation); //intentionally left unnormalized
 
     //diffuse
     v_DiffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0) * v_SunPositionAttenuation;
+    if (u_isGrass)
+    {
+        float diffuseComponentNegative = max(dot(-shadingNormal, u_lightDir), 0.0) * v_SunPositionAttenuation * (1.0 - u_ambientDay);
+        v_DiffuseComponent = max(v_DiffuseComponent, diffuseComponentNegative);
+        v_DiffuseComponent = mix(v_DiffuseComponent, max(v_DiffuseComponent, 0.25), v_SunPositionAttenuation);
+    }
 
     //specular
     vec3 Reflect = reflect(-u_lightDir, normal);
