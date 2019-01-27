@@ -1,4 +1,4 @@
-#include "HemisphereShader.h"
+#include "game/world/models/hemisphere/HemisphereShader.h"
 
 HemisphereShader::HemisphereShader(Shader &renderShader)
   :

@@ -19,9 +19,14 @@ const float MAX_DESATURATING_VALUE = 0.5;
 void main()
 {
     if (u_static)
-        o_FragColor = texture(u_skybox[u_index], v_TexCoords);
+    {
+        float sunPositionAttenuation = mix(0.0, 1.0, clamp((u_lightDir.y + 0.3) * 4, 0.0, 1.0));
+        vec4 sampledSky = texture(u_skybox[u_index], v_TexCoords);
+        o_FragColor = mix(vec4(0.0, 0.0, 0.0, sampledSky.a * 2), sampledSky, 1.0 - sunPositionAttenuation);
+    }
     else
     {
+        float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
         vec4 sampledDiffuse = texture(u_skybox[u_index], v_TexCoords);
         vec4 sampledNormal = texture(u_skyboxNormals[u_index], v_TexCoords);
         vec3 normal = sampledNormal.rgb;
@@ -30,7 +35,6 @@ void main()
 
         @include shadingVariables.ifs
 
-        float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
         float diffuseComponent = max(dot(normal, u_lightDir), 0.0) * sunPositionAttenuation;
 
         ambientColor = mix(ambientColorNightSelf, ambientColorDaySelf, sunPositionAttenuation);

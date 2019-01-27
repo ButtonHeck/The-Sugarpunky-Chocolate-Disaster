@@ -63,7 +63,7 @@ void main()
         ShadingNormal = normalize(v_Normal + ShadingNormal);
 
         vec3 ViewDir = normalize(u_viewPosition - v_FragPos);
-        float sunPositionAttenuation = clamp(u_lightDir.y * 10, 0.0, 1.0);
+        float sunPositionAttenuation = clamp((u_lightDir.y - 0.02) * 10, 0.0, 1.0);
 
         //fresnel
         float refractionInfluence = max(dot(ViewDir, ShadingNormal), 0.0);

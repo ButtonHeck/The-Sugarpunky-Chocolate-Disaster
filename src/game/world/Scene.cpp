@@ -209,6 +209,7 @@ void Scene::drawWorldReflection(glm::vec3 lightDir,
                       false);
 
   RendererStateManager::setAmbienceRenderingState(true);
+  hemisphereFacade.draw(theSunFacade.getTransform(), projectionView, viewPosition, lightDir);
   theSunFacade.draw(skyProjectionView, false, true);
   skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
   RendererStateManager::setAmbienceRenderingState(false);

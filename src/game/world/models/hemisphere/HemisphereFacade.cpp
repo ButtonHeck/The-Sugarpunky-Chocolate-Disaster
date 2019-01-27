@@ -1,4 +1,4 @@
-#include "HemisphereFacade.h"
+#include "game/world/models/hemisphere/HemisphereFacade.h"
 
 HemisphereFacade::HemisphereFacade(Shader& renderShader)
   :

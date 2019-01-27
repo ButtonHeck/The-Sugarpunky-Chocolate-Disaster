@@ -1,4 +1,4 @@
-#include "Hemisphere.h"
+#include "game/world/models/hemisphere/Hemisphere.h"
 
 Hemisphere::Hemisphere(const std::string &path)
   :
