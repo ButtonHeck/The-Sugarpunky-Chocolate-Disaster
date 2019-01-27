@@ -4,6 +4,7 @@
 #include "game/world/terrain/land/LandFacade.h"
 #include "game/world/terrain/hills/HillsFacade.h"
 #include "game/world/models/plants/PlantsFacade.h"
+#include "game/world/models/hemisphere/HemisphereFacade.h"
 #include "game/world/terrain/water/WaterFacade.h"
 #include "game/world/terrain/buildable/BuildableFacade.h"
 #include "game/world/terrain/shore/ShoreFacade.h"
@@ -70,6 +71,7 @@ private:
   UnderwaterFacade underwaterFacade;
   std::unique_ptr<LandFacade> landFacade;
   LensFlareFacade lensFlareFacade;
+  HemisphereFacade hemisphereFacade;
 };
 
 #endif // SCENE_H

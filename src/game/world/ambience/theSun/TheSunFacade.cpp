@@ -30,6 +30,11 @@ glm::vec3 TheSunFacade::getCurrentPosition() const
   return theSun.getPosition();
 }
 
+const glm::mat4 TheSunFacade::getTransform() const
+{
+  return model;
+}
+
 GLfloat TheSunFacade::getSunVisibilityPercentage()
 {
   return renderer.getSamplesPassedQueryResult() / maxSamplesPassed;

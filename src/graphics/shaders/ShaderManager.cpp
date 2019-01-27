@@ -76,6 +76,8 @@ ShaderManager::ShaderManager()
                                    {GL_FRAGMENT_SHADER, "frustum/frustum.fs"});
   shaders[SHADER_LENS_FLARE] = Shader({GL_VERTEX_SHADER, "lensFlare/lensFlare.vs"},
                                       {GL_FRAGMENT_SHADER, "lensFlare/lensFlare.fs"});
+  shaders[SHADER_HEMISPHERE] = Shader({GL_VERTEX_SHADER, "hemisphere/hemisphere.vs"},
+                                      {GL_FRAGMENT_SHADER, "hemisphere/hemisphere.fs"});
 }
 
 ShaderManager::~ShaderManager()
@@ -203,6 +205,9 @@ void ShaderManager::setupConstantUniforms(ScreenResolution& screenResolution)
 
   bindShaderUnit(shader, SHADER_SHORE_NORMALS);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
+
+  bindShaderUnit(shader, SHADER_HEMISPHERE);
+  shader->setInt("u_hemisphereDiffuse", TEX_HEMISPHERE_DIFFUSE);
 }
 
 Shader &ShaderManager::get(SHADER type)

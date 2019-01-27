@@ -193,6 +193,12 @@ void Model::draw(bool isShadow)
     }
 }
 
+void Model::drawDirect()
+{
+  basicGLBuffers.bind(VAO);
+  glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+}
+
 void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
                                       unsigned int index,
                                       const glm::vec2& cameraPositionXZ,

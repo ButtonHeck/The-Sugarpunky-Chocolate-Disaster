@@ -23,7 +23,8 @@ Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &tex
     theSunFacade(shaderManager.get(SHADER_SUN)),
     underwaterFacade(shaderManager.get(SHADER_UNDERWATER)),
     landFacade(std::make_unique<LandFacade>(shaderManager.get(SHADER_LAND))),
-    lensFlareFacade(shaderManager.get(SHADER_LENS_FLARE), textureManager.getLoader())
+    lensFlareFacade(shaderManager.get(SHADER_LENS_FLARE), textureManager.getLoader()),
+    hemisphereFacade(shaderManager.get(SHADER_HEMISPHERE))
 {
   float sunPointSizeDivisorX = screenResolution.getWidthRatioToReference();
   float sunPointSizeDivisorY = screenResolution.getHeightRatioToReference();
@@ -134,6 +135,7 @@ void Scene::drawWorld(glm::vec3 lightDir,
     }
 
   RendererStateManager::setAmbienceRenderingState(true);
+  hemisphereFacade.draw(theSunFacade.getTransform(), projectionView, viewPosition, lightDir);
   theSunFacade.draw(skyProjectionView, true, false);
   skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
   RendererStateManager::setAmbienceRenderingState(false);

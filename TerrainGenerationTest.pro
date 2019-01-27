@@ -88,7 +88,10 @@ SOURCES += \
     src/graphics/gui/TextManager.cpp \
     src/graphics/gui/CoordinateSystemRenderer.cpp \
     src/graphics/gui/FrustumRenderer.cpp \
-    src/graphics/gui/ShadowVolumeRenderer.cpp
+    src/graphics/gui/ShadowVolumeRenderer.cpp \
+    src/game/world/models/hemisphere/HemisphereFacade.cpp \
+    src/game/world/models/hemisphere/HemisphereShader.cpp \
+    src/game/world/models/hemisphere/Hemisphere.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -180,7 +183,10 @@ HEADERS += \
     src/graphics/gui/TextManager.h \
     src/graphics/gui/CoordinateSystemRenderer.h \
     src/graphics/gui/FrustumRenderer.h \
-    src/graphics/gui/ShadowVolumeRenderer.h
+    src/graphics/gui/ShadowVolumeRenderer.h \
+    src/game/world/models/hemisphere/HemisphereFacade.h \
+    src/game/world/models/hemisphere/HemisphereShader.h \
+    src/game/world/models/hemisphere/Hemisphere.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 
@@ -663,7 +669,12 @@ DISTFILES += \
     res/models/hillTree10cob/hillTree10cob.mtl \
     res/models/hillTree8cob/hillTree8cob.mtl \
     res/models/hillTree9cob/hillTree9cob.mtl \
-    res/textures/hill_specular.png
+    res/textures/hill_specular.png \
+    res/textures/hemisphereDiffuse.png \
+    res/models/hemisphere/hemisphere.mtl \
+    res/models/hemisphere/hemisphere.obj \
+    res/shaders/hemisphere/hemisphere.vs \
+    res/shaders/hemisphere/hemisphere.fs
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

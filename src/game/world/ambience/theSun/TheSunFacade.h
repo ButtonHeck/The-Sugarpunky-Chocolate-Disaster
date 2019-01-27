@@ -14,6 +14,7 @@ public:
   void setPos(float posDegrees);
   void draw(glm::mat4& skyProjectionView, bool doOcclusionTest, bool useReflectionPointSize);
   glm::vec3 getCurrentPosition() const;
+  const glm::mat4 getTransform() const;
   GLfloat getSunVisibilityPercentage();
   void adjustSunPointSize(float pointSizeDivisor, float relfectionPointSizeDivisor);
 private:
