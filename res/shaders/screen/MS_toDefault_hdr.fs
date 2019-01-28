@@ -37,7 +37,7 @@ void blur(inout vec3 fragColor, int coordOffset, float depthClip)
             vec2 texOffset = vec2(v_TexCoords.x + x * BLUR_SIZE_H, v_TexCoords.y + y * BLUR_SIZE_V);
             float currentDepth = texture(u_frameDepthTexture, texOffset).r;
             //currentDepth = linearizeDepth(currentDepth) / u_far;
-            if (currentDepth > depthClip)
+            if (currentDepth > depthClip && currentDepth < 0.999999)
             {
                 sum += texture(u_frameTexture, texOffset).rgb;
                 ++divisor;
@@ -74,7 +74,7 @@ void main()
     {
         float depthValue = texture(u_frameDepthTexture, v_TexCoords).r;
         //depthValue = linearizeDepth(depthValue) / u_far;
-        if (depthValue > 0.997)
+        if (depthValue > 0.997 && depthValue < 0.999999)
             blur(color, 1, 0.997);
     }
 

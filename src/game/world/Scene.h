@@ -55,6 +55,7 @@ public:
   HillsFacade &getHillsFacade();
   PlantsFacade &getPlantsFacade();
   TheSunFacade &getSunFacade();
+  HemisphereFacade &getHemisphereFacade();
 
 private:
   ShaderManager& shaderManager;

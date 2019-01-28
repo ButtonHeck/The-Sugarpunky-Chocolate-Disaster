@@ -674,7 +674,10 @@ DISTFILES += \
     res/models/hemisphere/hemisphere.mtl \
     res/models/hemisphere/hemisphere.obj \
     res/shaders/hemisphere/hemisphere.vs \
-    res/shaders/hemisphere/hemisphere.fs
+    res/shaders/hemisphere/hemisphere.fs \
+    res/models/sphere/sphere.obj \
+    res/models/sphere/sphere.mtl \
+    res/textures/sky.png
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 

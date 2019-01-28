@@ -86,6 +86,7 @@ void Game::loop()
   }
 
   scene.getSunFacade().move(timerDelta);
+  scene.getHemisphereFacade().move(timerDelta * PLANET_MOVE_SPEED);
 
   glm::vec4 currentColor = glm::mix(NIGHT_SKY_COLOR, DAY_SKY_COLOR, glm::clamp(-shadowVolume.getLightDir().y * 5, 0.0f, 1.0f));
   glClearColor(currentColor.r, currentColor.g, currentColor.b, currentColor.a);

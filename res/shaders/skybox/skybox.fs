@@ -20,7 +20,7 @@ void main()
 {
     if (u_static)
     {
-        float sunPositionAttenuation = mix(0.0, 1.0, clamp((u_lightDir.y + 0.3) * 4, 0.0, 1.0));
+        float sunPositionAttenuation = mix(0.0, 1.0, clamp((u_lightDir.y + 0.2) * 4, 0.0, 1.0));
         vec4 sampledSky = texture(u_skybox[u_index], v_TexCoords);
         o_FragColor = mix(vec4(0.0, 0.0, 0.0, sampledSky.a * 2), sampledSky, 1.0 - sunPositionAttenuation);
     }

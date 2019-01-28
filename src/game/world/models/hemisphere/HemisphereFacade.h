@@ -11,9 +11,13 @@ public:
             const glm::mat4 &projectionView,
             const glm::vec3 &viewPosition,
             const glm::vec3 &lightDir);
+  void move(float timerDelta);
 private:
+  const glm::vec3 ROTATION = glm::normalize(glm::vec3(-0.5f, 1.0f, -0.2f));
   Hemisphere hemisphere;
+  Hemisphere theSkySphere;
   HemisphereShader shader;
+  glm::mat4 theSkyTransform;
 };
 
 #endif // HEMISPHEREFACADE_H

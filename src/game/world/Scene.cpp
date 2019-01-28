@@ -248,3 +248,8 @@ TheSunFacade &Scene::getSunFacade()
 {
   return theSunFacade;
 }
+
+HemisphereFacade &Scene::getHemisphereFacade()
+{
+  return hemisphereFacade;
+}

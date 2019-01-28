@@ -208,6 +208,7 @@ void ShaderManager::setupConstantUniforms(ScreenResolution& screenResolution)
 
   bindShaderUnit(shader, SHADER_HEMISPHERE);
   shader->setInt("u_hemisphereDiffuse", TEX_HEMISPHERE_DIFFUSE);
+  shader->setInt("u_theSkyDiffuse", TEX_THE_SKY);
 }
 
 Shader &ShaderManager::get(SHADER type)
