@@ -23,8 +23,8 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_SKYBOX_HILLS_FAR_NORMAL] = loader.loadCubemap("cubemapHillsFarNormal/", TEX_SKYBOX_HILLS_FAR_NORMAL, true);
   textures[TEX_SKYBOX_CLOUDS] = loader.loadCubemap("cubemapClouds/", TEX_SKYBOX_CLOUDS, false);
   textures[TEX_THE_SUN] = loader.loadTexture("theSun.png", TEX_THE_SUN, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
-  textures[TEX_THE_SUN_ENVIRONMENT_LIGHT] = loader.loadTexture("theSunEnvironmentLight.png", TEX_THE_SUN_ENVIRONMENT_LIGHT, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
-  textures[TEX_THE_SKY] = loader.loadTexture("theSky.png", TEX_THE_SKY, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
+  textures[TEX_SKYSPHERE_THE_SUN_AMBIENT_LIGHTING] = loader.loadTexture("theSunEnvironmentLight.png", TEX_SKYSPHERE_THE_SUN_AMBIENT_LIGHTING, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
+  textures[TEX_SKYSPHERE_STARS] = loader.loadTexture("theSky.png", TEX_SKYSPHERE_STARS, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[TEX_FRAME_MULTISAMPLED] = loader.createFrameMSTexture(MULTISAMPLES, TEX_FRAME_MULTISAMPLED);
   textures[TEX_FRAME] = loader.createFrameTexture(TEX_FRAME, false, false);
   textures[TEX_FRAME_HDR] = loader.createFrameTexture(TEX_FRAME_HDR, false, false);

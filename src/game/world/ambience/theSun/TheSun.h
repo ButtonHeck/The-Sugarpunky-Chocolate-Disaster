@@ -11,14 +11,14 @@ class TheSun
 public:
   TheSun();
   glm::mat4 move(float delta);
-  glm::mat4 setPos(float posDegrees);
+  glm::mat4 moveAbsolutePosition(float posDegrees);
   glm::vec3 getPosition() const;
 private:
   friend class TheSunRenderer;
   void bufferData();
   BufferCollection basicGLBuffers;
   glm::vec3 rotateAxis;
-  glm::mat4 transform;
+  glm::mat4 rotationTransform;
   glm::vec3 currentPosition = glm::vec3(HALF_WORLD_WIDTH_F, 0.0f, 0.0f);
 
   //constants for absolute positioning

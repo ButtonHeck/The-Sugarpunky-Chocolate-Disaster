@@ -89,9 +89,9 @@ SOURCES += \
     src/graphics/gui/CoordinateSystemRenderer.cpp \
     src/graphics/gui/FrustumRenderer.cpp \
     src/graphics/gui/ShadowVolumeRenderer.cpp \
-    src/game/world/models/hemisphere/HemisphereFacade.cpp \
-    src/game/world/models/hemisphere/HemisphereShader.cpp \
-    src/game/world/models/hemisphere/Hemisphere.cpp
+    src/game/world/ambience/skysphere/Skysphere.cpp \
+    src/game/world/ambience/skysphere/SkysphereFacade.cpp \
+    src/game/world/ambience/skysphere/SkysphereShader.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -184,9 +184,9 @@ HEADERS += \
     src/graphics/gui/CoordinateSystemRenderer.h \
     src/graphics/gui/FrustumRenderer.h \
     src/graphics/gui/ShadowVolumeRenderer.h \
-    src/game/world/models/hemisphere/HemisphereFacade.h \
-    src/game/world/models/hemisphere/HemisphereShader.h \
-    src/game/world/models/hemisphere/Hemisphere.h
+    src/game/world/ambience/skysphere/Skysphere.h \
+    src/game/world/ambience/skysphere/SkysphereFacade.h \
+    src/game/world/ambience/skysphere/SkysphereShader.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 
@@ -325,8 +325,8 @@ DISTFILES += \
     res/shaders/shadow/shadow.gs \
     res/shaders/lensFlare/lensFlare.vs \
     res/shaders/lensFlare/lensFlare.fs \
-    res/shaders/hemisphere/hemisphere.vs \
-    res/shaders/hemisphere/hemisphere.fs \
+    res/shaders/skysphere/skysphere.fs \
+    res/shaders/skysphere/skysphere.vs \
 \
     res/fonts/font.png \
     res/fonts/font.fnt \

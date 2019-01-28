@@ -76,8 +76,8 @@ ShaderManager::ShaderManager()
                                    {GL_FRAGMENT_SHADER, "frustum/frustum.fs"});
   shaders[SHADER_LENS_FLARE] = Shader({GL_VERTEX_SHADER, "lensFlare/lensFlare.vs"},
                                       {GL_FRAGMENT_SHADER, "lensFlare/lensFlare.fs"});
-  shaders[SHADER_HEMISPHERE] = Shader({GL_VERTEX_SHADER, "hemisphere/hemisphere.vs"},
-                                      {GL_FRAGMENT_SHADER, "hemisphere/hemisphere.fs"});
+  shaders[SHADER_SKYSPHERE] = Shader({GL_VERTEX_SHADER, "skysphere/skysphere.vs"},
+                                      {GL_FRAGMENT_SHADER, "skysphere/skysphere.fs"});
 }
 
 ShaderManager::~ShaderManager()
@@ -206,9 +206,9 @@ void ShaderManager::setupConstantUniforms(ScreenResolution& screenResolution)
   bindShaderUnit(shader, SHADER_SHORE_NORMALS);
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
 
-  bindShaderUnit(shader, SHADER_HEMISPHERE);
-  shader->setInt("u_hemisphereDiffuse", TEX_THE_SUN_ENVIRONMENT_LIGHT);
-  shader->setInt("u_theSkyDiffuse", TEX_THE_SKY);
+  bindShaderUnit(shader, SHADER_SKYSPHERE);
+  shader->setInt("u_theSunAmbientLightingDiffuse", TEX_SKYSPHERE_THE_SUN_AMBIENT_LIGHTING);
+  shader->setInt("u_starsDiffuse", TEX_SKYSPHERE_STARS);
 }
 
 Shader &ShaderManager::get(SHADER type)

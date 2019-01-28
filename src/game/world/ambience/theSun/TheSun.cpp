@@ -8,18 +8,18 @@ TheSun::TheSun()
   bufferData();
 }
 
-glm::mat4 TheSun::move(float delta)
+glm::mat4 TheSun::move(float angleDegrees)
 {
-  currentPosition = glm::rotateZ(currentPosition, glm::radians(delta));
-  transform = glm::rotate(transform, glm::radians(delta), rotateAxis);
-  return transform;
+  currentPosition = glm::rotateZ(currentPosition, glm::radians(angleDegrees));
+  rotationTransform = glm::rotate(rotationTransform, glm::radians(angleDegrees), rotateAxis);
+  return rotationTransform;
 }
 
-glm::mat4 TheSun::setPos(float posDegrees)
+glm::mat4 TheSun::moveAbsolutePosition(float angleDegrees)
 {
-  currentPosition = glm::rotateZ(START_POSITION, glm::radians(posDegrees));
-  transform = glm::rotate(START_MODEL, glm::radians(posDegrees), rotateAxis);
-  return transform;
+  currentPosition = glm::rotateZ(START_POSITION, glm::radians(angleDegrees));
+  rotationTransform = glm::rotate(START_MODEL, glm::radians(angleDegrees), rotateAxis);
+  return rotationTransform;
 }
 
 glm::vec3 TheSun::getPosition() const

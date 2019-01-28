@@ -24,7 +24,7 @@ Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &tex
     underwaterFacade(shaderManager.get(SHADER_UNDERWATER)),
     landFacade(std::make_unique<LandFacade>(shaderManager.get(SHADER_LAND))),
     lensFlareFacade(shaderManager.get(SHADER_LENS_FLARE), textureManager.getLoader()),
-    hemisphereFacade(shaderManager.get(SHADER_HEMISPHERE))
+    skysphereFacade(shaderManager.get(SHADER_SKYSPHERE))
 {
   float sunPointSizeDivisorX = screenResolution.getWidthRatioToReference();
   float sunPointSizeDivisorY = screenResolution.getHeightRatioToReference();
@@ -135,7 +135,7 @@ void Scene::drawWorld(glm::vec3 lightDir,
     }
 
   RendererStateManager::setAmbienceRenderingState(true);
-  hemisphereFacade.draw(theSunFacade.getTransform(), projectionView, viewPosition, lightDir);
+  skysphereFacade.draw(theSunFacade.getRotationTransform(), skyboxProjectionView, lightDir);
   theSunFacade.draw(skyboxProjectionView, true, false);
   skyboxFacade.draw(skyboxProjectionView, viewPosition, lightDir);
   RendererStateManager::setAmbienceRenderingState(false);
@@ -178,7 +178,7 @@ void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &li
 void Scene::drawWorldReflection(glm::vec3 lightDir,
                                 const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                                 glm::mat4 &projectionView,
-                                glm::mat4 &skyProjectionView,
+                                glm::mat4 &skyboxProjectionView,
                                 Frustum &cullingViewFrustum,
                                 Camera &camera)
 {
@@ -209,9 +209,9 @@ void Scene::drawWorldReflection(glm::vec3 lightDir,
                       false);
 
   RendererStateManager::setAmbienceRenderingState(true);
-  hemisphereFacade.draw(theSunFacade.getTransform(), projectionView, viewPosition, lightDir);
-  theSunFacade.draw(skyProjectionView, false, true);
-  skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
+  skysphereFacade.draw(theSunFacade.getRotationTransform(), skyboxProjectionView, lightDir);
+  theSunFacade.draw(skyboxProjectionView, false, true);
+  skyboxFacade.draw(skyboxProjectionView, viewPosition, lightDir);
   RendererStateManager::setAmbienceRenderingState(false);
 }
 
@@ -249,7 +249,7 @@ TheSunFacade &Scene::getSunFacade()
   return theSunFacade;
 }
 
-HemisphereFacade &Scene::getHemisphereFacade()
+SkysphereFacade &Scene::getSkysphereFacade()
 {
-  return hemisphereFacade;
+  return skysphereFacade;
 }

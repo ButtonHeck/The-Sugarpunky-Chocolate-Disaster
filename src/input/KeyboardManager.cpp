@@ -114,62 +114,62 @@ void KeyboardManager::processInput()
   processKey(GLFW_KEY_EQUAL, [&]()
   {
       debug_sunSpeed = 0.0f;
-      sun.setPos(0.0f);
+      sun.moveAbsolutePosition(0.0f);
     });
   processKey(GLFW_KEY_1, [&]()
   {
       debug_sunSpeed = 0.0f;
-      sun.setPos(360.0f / 12 * 1);
+      sun.moveAbsolutePosition(360.0f / 12 * 1);
     });
   processKey(GLFW_KEY_2, [&]()
   {
       debug_sunSpeed = 0.0f;
-      sun.setPos(360.0f / 12 * 2);
+      sun.moveAbsolutePosition(360.0f / 12 * 2);
     });
   processKey(GLFW_KEY_3, [&]()
   {
       debug_sunSpeed = 0.0f;
-      sun.setPos(360.0f / 12 * 3);
+      sun.moveAbsolutePosition(360.0f / 12 * 3);
     });
   processKey(GLFW_KEY_4, [&]()
   {
       debug_sunSpeed = 0.0f;
-      sun.setPos(360.0f / 12 * 4);
+      sun.moveAbsolutePosition(360.0f / 12 * 4);
     });
   processKey(GLFW_KEY_5, [&]()
   {
       debug_sunSpeed = 0.0f;
-      sun.setPos(360.0f / 12 * 5);
+      sun.moveAbsolutePosition(360.0f / 12 * 5);
     });
   processKey(GLFW_KEY_6, [&]()
   {
       debug_sunSpeed = 0.0f;
-      sun.setPos(360.0f / 12 * 6);
+      sun.moveAbsolutePosition(360.0f / 12 * 6);
     });
   processKey(GLFW_KEY_7, [&]()
   {
       debug_sunSpeed = 0.0f;
-      sun.setPos(360.0f / 12 * 7);
+      sun.moveAbsolutePosition(360.0f / 12 * 7);
     });
   processKey(GLFW_KEY_8, [&]()
   {
       debug_sunSpeed = 0.0f;
-      sun.setPos(360.0f / 12 * 8);
+      sun.moveAbsolutePosition(360.0f / 12 * 8);
     });
   processKey(GLFW_KEY_9, [&]()
   {
       debug_sunSpeed = 0.0f;
-      sun.setPos(360.0f / 12 * 9);
+      sun.moveAbsolutePosition(360.0f / 12 * 9);
     });
   processKey(GLFW_KEY_0, [&]()
   {
       debug_sunSpeed = 0.0f;
-      sun.setPos(360.0f / 12 * 10);
+      sun.moveAbsolutePosition(360.0f / 12 * 10);
     });
   processKey(GLFW_KEY_MINUS, [&]()
   {
       debug_sunSpeed = 0.0f;
-      sun.setPos(360.0f / 12 * 11);
+      sun.moveAbsolutePosition(360.0f / 12 * 11);
     });
 
   //process camera
