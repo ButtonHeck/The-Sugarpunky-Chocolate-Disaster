@@ -161,11 +161,11 @@ void ShaderManager::setupConstantUniforms(ScreenResolution& screenResolution)
   shader->setFloat("u_far", FAR_PLANE);
 
   bindShaderUnit(shader, SHADER_SKYBOX);
-  shader->setInt("u_skybox[1]", TEX_SKYBOX_HILLS_NEAR);
+  shader->setInt("u_skyboxColor[1]", TEX_SKYBOX_HILLS_NEAR);
   shader->setInt("u_skyboxNormals[1]", TEX_SKYBOX_HILLS_NEAR_NORMAL);
-  shader->setInt("u_skybox[0]", TEX_SKYBOX_HILLS_FAR);
+  shader->setInt("u_skyboxColor[0]", TEX_SKYBOX_HILLS_FAR);
   shader->setInt("u_skyboxNormals[0]", TEX_SKYBOX_HILLS_FAR_NORMAL);
-  shader->setInt("u_skybox[2]", TEX_SKYBOX_CLOUDS);
+  shader->setInt("u_skyboxColor[2]", TEX_SKYBOX_CLOUDS);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
 

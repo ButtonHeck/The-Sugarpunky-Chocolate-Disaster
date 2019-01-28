@@ -88,7 +88,7 @@ void Scene::deserialize(std::ifstream &input)
 void Scene::drawWorld(glm::vec3 lightDir,
                       const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                       glm::mat4& projectionView,
-                      glm::mat4& skyProjectionView,
+                      glm::mat4& skyboxProjectionView,
                       Frustum &viewFrustum,
                       Frustum &cullingViewFrustum,
                       Camera& camera,
@@ -136,8 +136,8 @@ void Scene::drawWorld(glm::vec3 lightDir,
 
   RendererStateManager::setAmbienceRenderingState(true);
   hemisphereFacade.draw(theSunFacade.getTransform(), projectionView, viewPosition, lightDir);
-  theSunFacade.draw(skyProjectionView, true, false);
-  skyboxFacade.draw(skyProjectionView, viewPosition, lightDir);
+  theSunFacade.draw(skyboxProjectionView, true, false);
+  skyboxFacade.draw(skyboxProjectionView, viewPosition, lightDir);
   RendererStateManager::setAmbienceRenderingState(false);
 
   if (options[OPT_DRAW_WATER])
@@ -149,7 +149,7 @@ void Scene::drawWorld(glm::vec3 lightDir,
   float theSunVisibility = theSunFacade.getSunVisibilityPercentage();
   theSunVisibility *= glm::clamp(-(lightDir.y + 0.02f - camera.getPosition().y / 1500.0f) * 8.0f, 0.0f, 1.0f);
   if (theSunVisibility > 0)
-    lensFlareFacade.draw(theSunFacade.getCurrentPosition(), skyProjectionView, theSunVisibility);
+    lensFlareFacade.draw(theSunFacade.getCurrentPosition(), skyboxProjectionView, theSunVisibility);
 }
 
 void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,

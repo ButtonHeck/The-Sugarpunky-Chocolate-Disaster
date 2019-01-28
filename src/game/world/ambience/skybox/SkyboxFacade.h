@@ -9,8 +9,16 @@ class SkyboxFacade
 {
 public:
   SkyboxFacade(Shader& renderShader);
-  void draw(glm::mat4& skyProjectionView, glm::vec3 &viewPosition, glm::vec3 &lightDir);
+  void draw(const glm::mat4 &skyboxProjectionView,
+            const glm::vec3 &viewPosition,
+            const glm::vec3 &lightDir);
 private:
+  enum SKYBOX_TYPE : int
+  {
+    SKYBOX_HILLS_NEAR = 0,
+    SKYBOX_HIILS_FAR = 1,
+    SKYBOX_CLOUDS = 2
+  };
   SkyboxShader shader;
   Skybox skybox;
   SkyboxRenderer renderer;

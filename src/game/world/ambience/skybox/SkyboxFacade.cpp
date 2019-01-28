@@ -7,13 +7,16 @@ SkyboxFacade::SkyboxFacade(Shader &renderShader)
     renderer(skybox)
 {}
 
-void SkyboxFacade::draw(glm::mat4 &skyProjectionView, glm::vec3 &viewPosition, glm::vec3 &lightDir)
+void SkyboxFacade::draw(const glm::mat4 &skyboxProjectionView,
+                        const glm::vec3 &viewPosition,
+                        const glm::vec3 &lightDir)
 {
   BENCHMARK("SkyboxFacade: draw all boxes", true);
-  shader.update(skyProjectionView, viewPosition, 2, true, lightDir);
+  shader.update(skyboxProjectionView, viewPosition, lightDir);
+  shader.selectSkyboxType(SKYBOX_CLOUDS);
   renderer.render();
-  shader.update(skyProjectionView, viewPosition, 0, false, lightDir);
+  shader.selectSkyboxType(SKYBOX_HILLS_NEAR);
   renderer.render();
-  shader.update(skyProjectionView, viewPosition, 1, false, lightDir);
+  shader.selectSkyboxType(SKYBOX_HIILS_FAR);
   renderer.render();
 }

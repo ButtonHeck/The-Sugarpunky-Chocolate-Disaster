@@ -6,11 +6,10 @@ class SkyboxShader
 {
 public:
   SkyboxShader(Shader& renderShader);
-  void update(glm::mat4 &projectionView,
-              glm::vec3 &viewPosition,
-              int backgroundIndex,
-              bool isStatic,
-              glm::vec3 &lightDir);
+  void update(const glm::mat4 &projectionView,
+              const glm::vec3 &viewPosition,
+              const glm::vec3 &lightDir);
+  void selectSkyboxType(int type);
 private:
   Shader& renderShader;
 };

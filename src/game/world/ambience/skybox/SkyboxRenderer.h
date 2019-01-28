@@ -10,6 +10,7 @@ public:
   SkyboxRenderer(Skybox& skybox);
   void render();
 private:
+  constexpr static unsigned int VERTICES_PER_SKYBOX = VERTICES_PER_QUAD * VERTICES_PER_QUAD;
   Skybox& skybox;
 };
 
