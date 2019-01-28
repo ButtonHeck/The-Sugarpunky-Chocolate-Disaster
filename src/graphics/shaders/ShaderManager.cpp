@@ -161,11 +161,11 @@ void ShaderManager::setupConstantUniforms(ScreenResolution& screenResolution)
   shader->setFloat("u_far", FAR_PLANE);
 
   bindShaderUnit(shader, SHADER_SKYBOX);
-  shader->setInt("u_skybox[1]", TEX_SKYBOX);
-  shader->setInt("u_skyboxNormals[1]", TEX_SKYBOX_NORMAL);
-  shader->setInt("u_skybox[0]", TEX_SKYBOX_FAR);
-  shader->setInt("u_skyboxNormals[0]", TEX_SKYBOX_FAR_NORMAL);
-  shader->setInt("u_skybox[2]", TEX_SKYBOX_SKY);
+  shader->setInt("u_skybox[1]", TEX_SKYBOX_HILLS_NEAR);
+  shader->setInt("u_skyboxNormals[1]", TEX_SKYBOX_HILLS_NEAR_NORMAL);
+  shader->setInt("u_skybox[0]", TEX_SKYBOX_HILLS_FAR);
+  shader->setInt("u_skyboxNormals[0]", TEX_SKYBOX_HILLS_FAR_NORMAL);
+  shader->setInt("u_skybox[2]", TEX_SKYBOX_CLOUDS);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
 
@@ -207,7 +207,7 @@ void ShaderManager::setupConstantUniforms(ScreenResolution& screenResolution)
   shader->setInt("u_normal_map", TEX_TERRAIN_NORMAL);
 
   bindShaderUnit(shader, SHADER_HEMISPHERE);
-  shader->setInt("u_hemisphereDiffuse", TEX_HEMISPHERE_DIFFUSE);
+  shader->setInt("u_hemisphereDiffuse", TEX_THE_SUN_ENVIRONMENT_LIGHT);
   shader->setInt("u_theSkyDiffuse", TEX_THE_SKY);
 }
 

@@ -211,108 +211,24 @@ DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../../usr/lib/x86_64-linux-gnu/libIL.a
 
 DISTFILES += \
+    res/textures/land.jpg \
+    res/textures/land2.jpg \
     res/textures/hill.jpg \
     res/textures/hill2.jpg \
-    res/textures/cubemap/back.png \
-    res/textures/cubemap/down.png \
-    res/textures/cubemap/front.png \
-    res/textures/cubemap/left.png \
-    res/textures/cubemap/right.png \
-    res/textures/cubemap/up.png \
     res/textures/shore.jpg \
     res/textures/shore2.jpg \
     res/textures/flat2_x2.jpg \
     res/textures/flat_x2.jpg \
-    res/shaders/skybox/skybox.vs \
-    res/shaders/skybox/skybox.fs \
-    res/shaders/modelGouraud/model.vs \
-    res/shaders/modelGouraud/model.fs \
-    res/shaders/font/font.vs \
-    res/shaders/font/font.fs \
-    res/shaders/coordinateSystem/coordinateSystem.vs \
-    res/shaders/coordinateSystem/coordinateSystem.gs \
-    res/shaders/coordinateSystem/coordinateSystem.fs \
-    res/shaders/buildable/buildableTiles.fs \
-    res/shaders/buildable/buildableTiles.vs \
-    res/shaders/selected/selectedTile.vs \
-    res/shaders/selected/selectedTile.fs \
-    res/fonts/GentiumPlus-R.ttf \
-    res/fonts/OCTAPOST_1.ttf \
-    res/fonts/Laconic_Bold.otf \
-    res/shaders/hills/hills.vs \
-    res/shaders/hills/hills.fs \
-    res/shaders/water/water.vs \
-    res/shaders/water/water.fs \
-    res/shaders/underwater/underwater.vs \
-    res/shaders/underwater/underwater.fs \
-    res/shaders/shore/shore.vs \
-    res/shaders/shore/shore.fs \
-    res/saves/testSave.txt \
-    res/shaders/screen/MS_toDefault.vs \
-    res/shaders/screen/MS_toDefault_hdr.fs \
-    res/shaders/shadow/model_shadow.vs \
-    res/shaders/shadow/terrain_shadow.vs \
-    res/perAppLog.txt \
-    res/perFrameLog.txt \
-    res/shaders/waterFC/waterFC.gs \
-    res/shaders/waterFC/waterFC.vs \
-    res/shaders/hillsFC/hillsFC.vs \
-    res/shaders/hillsFC/hillsFC.gs \
-    res/shaders/modelPhong/modelPhong.fs \
-    res/shaders/modelPhong/modelPhong.vs \
-    res/fonts/font.png \
-    res/fonts/font.fnt \
+    res/textures/theSun.png \
+    res/textures/theSunEnvironmentLight.png \
+    res/textures/theSky.png \
     res/textures/terrainNormal.jpg \
     res/textures/diffuseMixMap.jpg \
     res/textures/waterNormal.jpg \
     res/textures/waterSpecular.jpg \
+    res/textures/waterDUDV.png \
+    res/textures/hill_specular.png \
     res/textures/underwater.jpg \
-    res/shaders/land/land.vs \
-    res/shaders/land/land.fs \
-    res/textures/cubemapFar/back.png \
-    res/textures/cubemapFar/down.png \
-    res/textures/cubemapFar/front.png \
-    res/textures/cubemapFar/left.png \
-    res/textures/cubemapFar/right.png \
-    res/textures/cubemapFar/up.png \
-    res/textures/cubemapSky/back.png \
-    res/textures/cubemapSky/down.png \
-    res/textures/cubemapSky/front.png \
-    res/textures/cubemapSky/left.png \
-    res/textures/cubemapSky/right.png \
-    res/textures/cubemapSky/up.png \
-    res/textures/theSun.png \
-    res/shaders/theSun/theSun.vs \
-    res/shaders/theSun/theSun.fs \
-    res/shaders/normals/shore_normals.vs \
-    res/shaders/normals/hills_normals.vs \
-    res/shaders/normals/water_normals.vs \
-    res/shaders/normals/_normals.gs \
-    res/shaders/normals/_normals.fs \
-    res/textures/land.jpg \
-    res/textures/land2.jpg \
-    res/shaders/include/shadowSampling.ifs \
-    res/shaders/include/desaturationFunc.ifs \
-    res/shaders/include/shadingVariables.ifs \
-    res/shaders/include/modelGrassAnimationAndBlending.ivs \
-    res/shaders/frustum/frustum.vs \
-    res/shaders/frustum/frustum.fs \
-    res/shaders/shadow/shadow.gs \
-    res/textures/cubemapFarNormal/back.png \
-    res/textures/cubemapFarNormal/down.png \
-    res/textures/cubemapFarNormal/front.png \
-    res/textures/cubemapFarNormal/left.png \
-    res/textures/cubemapFarNormal/right.png \
-    res/textures/cubemapFarNormal/up.png \
-    res/textures/cubemapNormal/back.png \
-    res/textures/cubemapNormal/down.png \
-    res/textures/cubemapNormal/front.png \
-    res/textures/cubemapNormal/left.png \
-    res/textures/cubemapNormal/right.png \
-    res/textures/cubemapNormal/up.png \
-    res/textures/vignette.png \
-    res/shaders/lensFlare/lensFlare.vs \
-    res/shaders/lensFlare/lensFlare.fs \
     res/textures/lensFlares/flare1.png \
     res/textures/lensFlares/flare10.png \
     res/textures/lensFlares/flare11.png \
@@ -326,14 +242,98 @@ DISTFILES += \
     res/textures/lensFlares/flare7.png \
     res/textures/lensFlares/flare8.png \
     res/textures/lensFlares/flare9.png \
+    res/textures/vignette.png \
     res/textures/vignetteHoneycomb.png \
     res/textures/vignetteInterlacing.png \
-    res/textures/waterDUDV.png \
-    res/textures/hill_specular.png \
-    res/textures/hemisphereDiffuse.png \
+    res/textures/cubemapClouds/back.png \
+    res/textures/cubemapClouds/down.png \
+    res/textures/cubemapClouds/front.png \
+    res/textures/cubemapClouds/left.png \
+    res/textures/cubemapClouds/right.png \
+    res/textures/cubemapClouds/up.png \
+    res/textures/cubemapHillsNear/back.png \
+    res/textures/cubemapHillsNear/down.png \
+    res/textures/cubemapHillsNear/front.png \
+    res/textures/cubemapHillsNear/left.png \
+    res/textures/cubemapHillsNear/right.png \
+    res/textures/cubemapHillsNear/up.png \
+    res/textures/cubemapHillsNearNormal/back.png \
+    res/textures/cubemapHillsNearNormal/down.png \
+    res/textures/cubemapHillsNearNormal/front.png \
+    res/textures/cubemapHillsNearNormal/left.png \
+    res/textures/cubemapHillsNearNormal/right.png \
+    res/textures/cubemapHillsNearNormal/up.png \
+    res/textures/cubemapHillsFar/back.png \
+    res/textures/cubemapHillsFar/down.png \
+    res/textures/cubemapHillsFar/front.png \
+    res/textures/cubemapHillsFar/left.png \
+    res/textures/cubemapHillsFar/right.png \
+    res/textures/cubemapHillsFar/up.png \
+    res/textures/cubemapHillsFarNormal/back.png \
+    res/textures/cubemapHillsFarNormal/down.png \
+    res/textures/cubemapHillsFarNormal/front.png \
+    res/textures/cubemapHillsFarNormal/left.png \
+    res/textures/cubemapHillsFarNormal/right.png \
+    res/textures/cubemapHillsFarNormal/up.png \
+\
+    res/shaders/skybox/skybox.vs \
+    res/shaders/skybox/skybox.fs \
+    res/shaders/modelGouraud/model.vs \
+    res/shaders/modelGouraud/model.fs \
+    res/shaders/font/font.vs \
+    res/shaders/font/font.fs \
+    res/shaders/coordinateSystem/coordinateSystem.vs \
+    res/shaders/coordinateSystem/coordinateSystem.gs \
+    res/shaders/coordinateSystem/coordinateSystem.fs \
+    res/shaders/buildable/buildableTiles.fs \
+    res/shaders/buildable/buildableTiles.vs \
+    res/shaders/selected/selectedTile.vs \
+    res/shaders/selected/selectedTile.fs \
+    res/shaders/hills/hills.vs \
+    res/shaders/hills/hills.fs \
+    res/shaders/water/water.vs \
+    res/shaders/water/water.fs \
+    res/shaders/underwater/underwater.vs \
+    res/shaders/underwater/underwater.fs \
+    res/shaders/shore/shore.vs \
+    res/shaders/shore/shore.fs \
+    res/shaders/screen/MS_toDefault.vs \
+    res/shaders/screen/MS_toDefault_hdr.fs \
+    res/shaders/shadow/model_shadow.vs \
+    res/shaders/shadow/terrain_shadow.vs \
+    res/shaders/waterFC/waterFC.gs \
+    res/shaders/waterFC/waterFC.vs \
+    res/shaders/hillsFC/hillsFC.vs \
+    res/shaders/hillsFC/hillsFC.gs \
+    res/shaders/modelPhong/modelPhong.fs \
+    res/shaders/modelPhong/modelPhong.vs \
+    res/shaders/land/land.vs \
+    res/shaders/land/land.fs \
+    res/shaders/theSun/theSun.vs \
+    res/shaders/theSun/theSun.fs \
+    res/shaders/normals/shore_normals.vs \
+    res/shaders/normals/hills_normals.vs \
+    res/shaders/normals/water_normals.vs \
+    res/shaders/normals/_normals.gs \
+    res/shaders/normals/_normals.fs \
+    res/shaders/include/shadowSampling.ifs \
+    res/shaders/include/desaturationFunc.ifs \
+    res/shaders/include/shadingVariables.ifs \
+    res/shaders/include/modelGrassAnimationAndBlending.ivs \
+    res/shaders/frustum/frustum.vs \
+    res/shaders/frustum/frustum.fs \
+    res/shaders/shadow/shadow.gs \
+    res/shaders/lensFlare/lensFlare.vs \
+    res/shaders/lensFlare/lensFlare.fs \
     res/shaders/hemisphere/hemisphere.vs \
     res/shaders/hemisphere/hemisphere.fs \
-    res/textures/sky.png \
+\
+    res/fonts/font.png \
+    res/fonts/font.fnt \
+    res/perAppLog.txt \
+    res/perFrameLog.txt \
+    res/saves/testSave.txt \
+\
     res/models/grass/grass1/grass1.obj \
     res/models/grass/grass1LP/grass1LP.obj \
     res/models/grass/grass2/grass2.obj \
