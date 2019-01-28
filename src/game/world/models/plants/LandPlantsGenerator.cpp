@@ -5,34 +5,34 @@ LandPlantsGenerator::LandPlantsGenerator()
     PlantGenerator()
 {
   models.reserve(16);
-  models.emplace_back("tree1/tree1.obj", false);
-  models.emplace_back("tree1_2/tree1_2.obj", false);
-  models.emplace_back("tree2/tree2.obj", false);
-  models.emplace_back("tree2_2/tree2_2.obj", false);
-  models.emplace_back("tree3/tree3.obj", false);
-  models.emplace_back("tree3_2/tree3_2.obj", false);
-  models.emplace_back("tree4/tree4.obj", false);
-  models.emplace_back("tree5/tree5.obj", false);
-  models.emplace_back("tree5_2/tree5_2.obj", false);
-  models.emplace_back("tree6/tree6.obj", false);
-  models.emplace_back("tree6_2/tree6_2.obj", false);
-  models.emplace_back("tree7/tree7.obj", false);
-  models.emplace_back("tree8/tree8.obj", false);
+  models.emplace_back("landTrees/tree1/tree1.obj", false);
+  models.emplace_back("landTrees/tree1_2/tree1_2.obj", false);
+  models.emplace_back("landTrees/tree2/tree2.obj", false);
+  models.emplace_back("landTrees/tree2_2/tree2_2.obj", false);
+  models.emplace_back("landTrees/tree3/tree3.obj", false);
+  models.emplace_back("landTrees/tree3_2/tree3_2.obj", false);
+  models.emplace_back("landTrees/tree4/tree4.obj", false);
+  models.emplace_back("landTrees/tree5/tree5.obj", false);
+  models.emplace_back("landTrees/tree5_2/tree5_2.obj", false);
+  models.emplace_back("landTrees/tree6/tree6.obj", false);
+  models.emplace_back("landTrees/tree6_2/tree6_2.obj", false);
+  models.emplace_back("landTrees/tree7/tree7.obj", false);
+  models.emplace_back("landTrees/tree8/tree8.obj", false);
 
   lowPolyModels.reserve(16);
-  lowPolyModels.emplace_back("tree1LP/tree1LP.obj", true);
-  lowPolyModels.emplace_back("tree1_2LP/tree1_2LP.obj", true);
-  lowPolyModels.emplace_back("tree2LP/tree2LP.obj", true);
-  lowPolyModels.emplace_back("tree2_2LP/tree2_2LP.obj", true);
-  lowPolyModels.emplace_back("tree3LP/tree3LP.obj", true);
-  lowPolyModels.emplace_back("tree3_2LP/tree3_2LP.obj", true);
-  lowPolyModels.emplace_back("tree4LP/tree4LP.obj", true);
-  lowPolyModels.emplace_back("tree5LP/tree5LP.obj", true);
-  lowPolyModels.emplace_back("tree5_2LP/tree5_2LP.obj", true);
-  lowPolyModels.emplace_back("tree6LP/tree6LP.obj", true);
-  lowPolyModels.emplace_back("tree6_2LP/tree6_2LP.obj", true);
-  lowPolyModels.emplace_back("tree7LP/tree7LP.obj", true);
-  lowPolyModels.emplace_back("tree8LP/tree8LP.obj", true);
+  lowPolyModels.emplace_back("landTrees/tree1LP/tree1LP.obj", true);
+  lowPolyModels.emplace_back("landTrees/tree1_2LP/tree1_2LP.obj", true);
+  lowPolyModels.emplace_back("landTrees/tree2LP/tree2LP.obj", true);
+  lowPolyModels.emplace_back("landTrees/tree2_2LP/tree2_2LP.obj", true);
+  lowPolyModels.emplace_back("landTrees/tree3LP/tree3LP.obj", true);
+  lowPolyModels.emplace_back("landTrees/tree3_2LP/tree3_2LP.obj", true);
+  lowPolyModels.emplace_back("landTrees/tree4LP/tree4LP.obj", true);
+  lowPolyModels.emplace_back("landTrees/tree5LP/tree5LP.obj", true);
+  lowPolyModels.emplace_back("landTrees/tree5_2LP/tree5_2LP.obj", true);
+  lowPolyModels.emplace_back("landTrees/tree6LP/tree6LP.obj", true);
+  lowPolyModels.emplace_back("landTrees/tree6_2LP/tree6_2LP.obj", true);
+  lowPolyModels.emplace_back("landTrees/tree7LP/tree7LP.obj", true);
+  lowPolyModels.emplace_back("landTrees/tree8LP/tree8LP.obj", true);
 
   assert(lowPolyModels.size() == models.size());
 }

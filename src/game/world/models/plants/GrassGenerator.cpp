@@ -5,20 +5,20 @@ GrassGenerator::GrassGenerator()
     PlantGenerator()
 {
   models.reserve(8);
-  models.emplace_back("grass1/grass1.obj", false);
-  models.emplace_back("grass2/grass2.obj", false);
-  models.emplace_back("grass3/grass3.obj", false);
-  models.emplace_back("grass4/grass4.obj", false);
-  models.emplace_back("grass5/grass5.obj", false);
-  models.emplace_back("grass6/grass6.obj", false);
+  models.emplace_back("grass/grass1/grass1.obj", false);
+  models.emplace_back("grass/grass2/grass2.obj", false);
+  models.emplace_back("grass/grass3/grass3.obj", false);
+  models.emplace_back("grass/grass4/grass4.obj", false);
+  models.emplace_back("grass/grass5/grass5.obj", false);
+  models.emplace_back("grass/grass6/grass6.obj", false);
 
   lowPolyModels.reserve(8);
-  lowPolyModels.emplace_back("grass1LP/grass1LP.obj", true);
-  lowPolyModels.emplace_back("grass2LP/grass2LP.obj", true);
-  lowPolyModels.emplace_back("grass3LP/grass3LP.obj", true);
-  lowPolyModels.emplace_back("grass4LP/grass4LP.obj", true);
-  lowPolyModels.emplace_back("grass5LP/grass5LP.obj", true);
-  lowPolyModels.emplace_back("grass6LP/grass6LP.obj", true);
+  lowPolyModels.emplace_back("grass/grass1LP/grass1LP.obj", true);
+  lowPolyModels.emplace_back("grass/grass2LP/grass2LP.obj", true);
+  lowPolyModels.emplace_back("grass/grass3LP/grass3LP.obj", true);
+  lowPolyModels.emplace_back("grass/grass4LP/grass4LP.obj", true);
+  lowPolyModels.emplace_back("grass/grass5LP/grass5LP.obj", true);
+  lowPolyModels.emplace_back("grass/grass6LP/grass6LP.obj", true);
 
   assert(lowPolyModels.size() == models.size());
 }

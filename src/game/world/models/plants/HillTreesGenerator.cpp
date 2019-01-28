@@ -5,28 +5,28 @@ HillTreesGenerator::HillTreesGenerator()
     PlantGenerator()
 {
   models.reserve(16);
-  models.emplace_back("hillTree1/hillTree1.obj", false, 3);
-  models.emplace_back("hillTree2/hillTree2.obj", false);
-  models.emplace_back("hillTree3/hillTree3.obj", false, 3);
-  models.emplace_back("hillTree4/hillTree4.obj", false);
-  models.emplace_back("hillTree5/hillTree5.obj", false);
-  models.emplace_back("hillTree6/hillTree6.obj", false);
-  models.emplace_back("hillTree7/hillTree7.obj", false, 3);
-  models.emplace_back("hillTree8cob/hillTree8cob.obj", false, 1, true);
-  models.emplace_back("hillTree9cob/hillTree9cob.obj", false, 1, true);
-  models.emplace_back("hillTree10cob/hillTree10cob.obj", false, 4, true);
+  models.emplace_back("hillTrees/hillTree1/hillTree1.obj", false, 3);
+  models.emplace_back("hillTrees/hillTree2/hillTree2.obj", false);
+  models.emplace_back("hillTrees/hillTree3/hillTree3.obj", false, 3);
+  models.emplace_back("hillTrees/hillTree4/hillTree4.obj", false);
+  models.emplace_back("hillTrees/hillTree5/hillTree5.obj", false);
+  models.emplace_back("hillTrees/hillTree6/hillTree6.obj", false);
+  models.emplace_back("hillTrees/hillTree7/hillTree7.obj", false, 3);
+  models.emplace_back("hillTrees/hillTree8cob/hillTree8cob.obj", false, 1, true);
+  models.emplace_back("hillTrees/hillTree9cob/hillTree9cob.obj", false, 1, true);
+  models.emplace_back("hillTrees/hillTree10cob/hillTree10cob.obj", false, 4, true);
 
   lowPolyModels.reserve(16);
-  lowPolyModels.emplace_back("hillTree1LP/hillTree1LP.obj", true, 3);
-  lowPolyModels.emplace_back("hillTree2LP/hillTree2LP.obj", true);
-  lowPolyModels.emplace_back("hillTree3LP/hillTree3LP.obj", true, 3);
-  lowPolyModels.emplace_back("hillTree4LP/hillTree4LP.obj", true);
-  lowPolyModels.emplace_back("hillTree5LP/hillTree5LP.obj", true);
-  lowPolyModels.emplace_back("hillTree6LP/hillTree6LP.obj", true);
-  lowPolyModels.emplace_back("hillTree7LP/hillTree7LP.obj", true, 3);
-  lowPolyModels.emplace_back("hillTree8cob/hillTree8cob.obj", true, 1, true);
-  lowPolyModels.emplace_back("hillTree9cob/hillTree9cob.obj", true, 1, true);
-  lowPolyModels.emplace_back("hillTree10cob/hillTree10cob.obj", true, 4, true);
+  lowPolyModels.emplace_back("hillTrees/hillTree1LP/hillTree1LP.obj", true, 3);
+  lowPolyModels.emplace_back("hillTrees/hillTree2LP/hillTree2LP.obj", true);
+  lowPolyModels.emplace_back("hillTrees/hillTree3LP/hillTree3LP.obj", true, 3);
+  lowPolyModels.emplace_back("hillTrees/hillTree4LP/hillTree4LP.obj", true);
+  lowPolyModels.emplace_back("hillTrees/hillTree5LP/hillTree5LP.obj", true);
+  lowPolyModels.emplace_back("hillTrees/hillTree6LP/hillTree6LP.obj", true);
+  lowPolyModels.emplace_back("hillTrees/hillTree7LP/hillTree7LP.obj", true, 3);
+  lowPolyModels.emplace_back("hillTrees/hillTree8cob/hillTree8cob.obj", true, 1, true);
+  lowPolyModels.emplace_back("hillTrees/hillTree9cob/hillTree9cob.obj", true, 1, true);
+  lowPolyModels.emplace_back("hillTrees/hillTree10cob/hillTree10cob.obj", true, 4, true);
 
   assert(lowPolyModels.size() == models.size());
   numSurfaceModels = 3;

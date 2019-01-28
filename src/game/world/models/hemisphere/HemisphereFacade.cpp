@@ -2,8 +2,8 @@
 
 HemisphereFacade::HemisphereFacade(Shader& renderShader)
   :
-    hemisphere("hemisphere/hemisphere.obj"),
-    theSkySphere("sphere/sphere.obj"),
+    hemisphere("environment/hemisphere/hemisphere.obj"),
+    theSkySphere("environment/sphere/sphere.obj"),
     shader(renderShader)
 {
   theSkyTransform = glm::rotate(theSkyTransform, glm::radians(94.0f), glm::vec3(1.0f, 0.0f, -0.5f));
