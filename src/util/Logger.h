@@ -20,22 +20,21 @@ namespace Logger
         messages.emplace(message);
         for ( ; *pattern != '\0'; pattern++ ) {
             if (*pattern == '%') {
-              std::cout << token;
-              log(pattern+1, rest...);
-              return;
+                std::cout << token;
+                log(pattern+1, rest...);
+                return;
             }
             std::cout << *pattern;
         }
       }
   }
-  void setupWindowLibraryErrorCallback();
   void APIENTRY glDebugCallback(GLenum source,
-                              GLenum type,
-                              GLuint id,
-                              GLenum severity,
-                              GLsizei,
-                              const GLchar* glMessage,
-                              const void*);
+                                GLenum type,
+                                GLuint id,
+                                GLenum severity,
+                                GLsizei,
+                                const GLchar* glMessage,
+                                const void*);
 };
 
 #endif // LOGGER_H

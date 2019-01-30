@@ -17,7 +17,10 @@ float debug_sunSpeed = 2.0f;
 
 int main()
 {
-  Logger::setupWindowLibraryErrorCallback();
+  glfwSetErrorCallback([](int, const char* msg)
+  {
+      Logger::log("Error with GLFW library: %\n", msg);
+    });
   if (!glfwInit())
     throw std::runtime_error("Error while loading GLFW\n");
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

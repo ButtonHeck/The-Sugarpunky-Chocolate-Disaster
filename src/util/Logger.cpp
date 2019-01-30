@@ -2,14 +2,6 @@
 
 namespace Logger
 {
-  void setupWindowLibraryErrorCallback()
-  {
-    glfwSetErrorCallback([](int, const char* msg)
-    {
-        std::cout << "Error with window library: " << msg << std::endl;
-      });
-  }
-
   void glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar *glMessage, const void *)
   {
     static std::unordered_set<GLuint> debugMessages;
@@ -51,7 +43,6 @@ namespace Logger
   {
     std::cout << msg;
   }
-
 }
 
 

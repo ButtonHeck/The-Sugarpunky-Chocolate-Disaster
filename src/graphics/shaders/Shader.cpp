@@ -215,9 +215,10 @@ GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &filenam
   {
     parseIncludes(shaderType, stringSrc, includes);
   }
-  catch(std::runtime_error e)
+  catch(std::invalid_argument& e)
   {
-    std::cerr << e.what() << " in file: " << filename << std::endl;
+    Logger::log("% in file: %\n", e.what(), filename);
+    throw;
   }
   if (filename.find_first_of("_hdr") != std::string::npos && HDR_ENABLED)
     stringSrc = std::regex_replace(stringSrc, std::regex("#version 450\n"), "#version 450\n#define HDR_ENABLED\n");
