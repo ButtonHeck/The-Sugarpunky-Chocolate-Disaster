@@ -2,6 +2,7 @@
 #define GENERATOR_H
 #include <vector>
 #include <fstream>
+#include <iomanip>
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "game/world/terrain/TerrainTile.h"
@@ -17,7 +18,7 @@ public:
   void createTiles(bool flat, bool createOnZeroTiles, map2D_f& map, float offsetY);
   const map2D_f& getMap() const;
   std::vector<TerrainTile>& getTiles();
-  virtual void serialize(std::ofstream& output);
+  virtual void serialize(std::ofstream& output, bool usePrecision = false, unsigned int precision = 6);
   virtual void deserialize(std::ifstream& input);
 
   template <typename T>
@@ -36,6 +37,18 @@ protected:
   map2D_f map;
   std::vector<TerrainTile> tiles;
   BufferCollection basicGLBuffers;
+
+private:
+  template <typename T>
+  void serializeRepeatValues(std::ofstream &output,
+                             T value,
+                             unsigned int& row,
+                             unsigned int& column);
+  template <typename T>
+  void deserializeRepeatValues(std::ifstream &input,
+                               T value,
+                               unsigned int& row,
+                               unsigned int& column);
 };
 
 #endif // GENERATOR_H

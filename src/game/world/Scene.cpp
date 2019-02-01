@@ -70,7 +70,6 @@ void Scene::load()
 void Scene::serialize(std::ofstream &output)
 {
   landFacade->serialize(output);
-  shoreFacade.serialize(output);
   hillsFacade.serialize(output);
   waterFacade.serialize(output);
   plantsFacade.serialize(output);
@@ -79,7 +78,6 @@ void Scene::serialize(std::ofstream &output)
 void Scene::deserialize(std::ifstream &input)
 {
   landFacade->deserialize(input);
-  shoreFacade.deserialize(input);
   hillsFacade.deserialize(input);
   waterFacade.deserialize(input);
   plantsFacade.deserialize(input);

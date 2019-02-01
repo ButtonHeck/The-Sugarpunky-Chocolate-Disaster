@@ -34,8 +34,24 @@ void PlantGenerator::serialize(std::ofstream &output)
 {
   for (unsigned int chunk = 0; chunk < chunks.size(); chunk++)
     {
-      for (unsigned int i = 0; i < chunks[chunk].getNumInstancesVector().size(); i++)
-        output << chunks[chunk].getNumInstances(i) << " ";
+      for (unsigned int i = 0; i < chunks[chunk].getNumInstancesVector().size(); )
+        {
+          if (chunks[chunk].getNumInstances(i) == 0)
+            {
+              unsigned int zeroesInRow = 0;
+              while (i < chunks[chunk].getNumInstancesVector().size() && chunks[chunk].getNumInstances(i) == 0)
+                {
+                  zeroesInRow++;
+                  i++;
+                }
+              output << 0 << " " << zeroesInRow << " ";
+            }
+          else
+            {
+              output << chunks[chunk].getNumInstances(i) << " ";
+              i++;
+            }
+        }
       for (unsigned int i = 0; i < chunks[chunk].getInstanceOffsetVector().size(); i++)
         output << chunks[chunk].getInstanceOffset(i) << " ";
     }
@@ -56,12 +72,26 @@ void PlantGenerator::deserialize(std::ifstream &input)
 {
   for (unsigned int chunk = 0; chunk < chunks.size(); chunk++)
     {
-      for (unsigned int i = 0; i < chunks[chunk].getNumInstancesVector().size(); i++)
+      for (unsigned int i = 0; i < chunks[chunk].getNumInstancesVector().size(); )
         {
           unsigned int numInstances;
           input >> numInstances;
-          chunks[chunk].setNumInstances(i, numInstances);
+          if (numInstances == 0)
+            {
+              unsigned int zeroesInRow;
+              input >> zeroesInRow;
+              for (unsigned int z = i; z < i + zeroesInRow; z++)
+                chunks[chunk].setNumInstances(z, 0);
+
+              i += zeroesInRow;
+            }
+          else
+            {
+              chunks[chunk].setNumInstances(i, numInstances);
+              i++;
+            }
         }
+
       for (unsigned int i = 0; i < chunks[chunk].getInstanceOffsetVector().size(); i++)
         {
           unsigned int offset;

@@ -60,24 +60,22 @@ std::vector<TerrainTile> &Generator::getTiles()
   return tiles;
 }
 
-void Generator::serialize(std::ofstream &output)
+void Generator::serialize(std::ofstream &output, bool setPrecision, unsigned int precision)
 {
   for (unsigned int row = 0; row < map.size(); row++)
     {
       for (unsigned int column = 0; column < map[row].size(); )
         {
           if (map[row][column] == 0.0f)
-            {
-              unsigned int zeroesInRow = 0;
-              while (column < map[row].size() && map[row][column] == 0.0f)
-                {
-                  zeroesInRow++;
-                  column++;
-                }
-              output << 0.0f << " " << zeroesInRow << " ";
-            }
+            serializeRepeatValues(output, 0.0f, row, column);
+          else if(map[row][column] == TILE_NO_RENDER_VALUE)
+            serializeRepeatValues(output, TILE_NO_RENDER_VALUE, row, column);
+          else if (map[row][column] == WATER_LEVEL)
+            serializeRepeatValues(output, WATER_LEVEL, row, column);
           else
             {
+              if (setPrecision)
+                output << std::setprecision(precision);
               output << map[row][column] << " ";
               column++;
             }
@@ -94,14 +92,11 @@ void Generator::deserialize(std::ifstream &input)
           float value;
           input >> value;
           if (value == 0.0f)
-            {
-              unsigned int zeroesInRow;
-              input >> zeroesInRow;
-              for (unsigned int i = column; i < column + zeroesInRow; i++)
-                map[row][i] = 0.0f;
-
-              column += zeroesInRow;
-            }
+            deserializeRepeatValues(input, 0.0f, row, column);
+          else if (value == TILE_NO_RENDER_VALUE)
+            deserializeRepeatValues(input, TILE_NO_RENDER_VALUE, row, column);
+          else if (value == WATER_LEVEL)
+            deserializeRepeatValues(input, WATER_LEVEL, row, column);
           else
             {
               map[row][column] = value;
@@ -168,4 +163,32 @@ void Generator::smoothNormals(map2D_f &map, map2D_vec3 &normalMap)
           normalMap[y][x] = avgNormal;
         }
     }
+}
+
+template<typename T>
+void Generator::serializeRepeatValues(std::ofstream &output,
+                                      T value,
+                                      unsigned int& row,
+                                      unsigned int& column)
+{
+  unsigned int repeatValuesInRow = 0;
+  while (column < map[row].size() && map[row][column] == value)
+    {
+      repeatValuesInRow++;
+      column++;
+    }
+  output << value << " " << repeatValuesInRow << " ";
+}
+
+template<typename T>
+void Generator::deserializeRepeatValues(std::ifstream &input,
+                                        T value,
+                                        unsigned int &row,
+                                        unsigned int &column)
+{
+  unsigned int repeatValuesInRow;
+  input >> repeatValuesInRow;
+  for (unsigned int i = column; i < column + repeatValuesInRow; i++)
+    map[row][i] = value;
+  column += repeatValuesInRow;
 }

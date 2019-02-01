@@ -19,7 +19,7 @@ void HillsFacade::createTilesAndBufferData()
 
 void HillsFacade::serialize(std::ofstream &output)
 {
-  generator.serialize(output);
+  generator.serialize(output, true, 4);
 }
 
 void HillsFacade::deserialize(std::ifstream &input)
