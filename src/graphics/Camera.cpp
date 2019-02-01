@@ -314,6 +314,7 @@ glm::vec2 Camera::getViewAcceleration() const
 
 void Camera::serialize(std::ofstream &output)
 {
+  output << std::setprecision(5);
   output << position.x << " ";
   output << position.y << " ";
   output << position.z << " ";

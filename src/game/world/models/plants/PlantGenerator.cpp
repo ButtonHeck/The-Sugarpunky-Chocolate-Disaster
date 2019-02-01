@@ -47,7 +47,7 @@ void PlantGenerator::serialize(std::ofstream &output)
         {
           float* matrixValues = (float*)glm::value_ptr(matrices[i][m]);
           for (unsigned int e = 0; e < 16; ++e)
-            output << matrixValues[e] << " ";
+            output << std::setprecision(4) << matrixValues[e] << " ";
         }
     }
 }

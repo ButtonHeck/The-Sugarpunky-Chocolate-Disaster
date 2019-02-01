@@ -62,19 +62,52 @@ std::vector<TerrainTile> &Generator::getTiles()
 
 void Generator::serialize(std::ofstream &output)
 {
-  for (std::vector<float>& row : map)
+  for (unsigned int row = 0; row < map.size(); row++)
     {
-      for (float& value : row)
-        output << value << " ";
+      for (unsigned int column = 0; column < map[row].size(); )
+        {
+          if (map[row][column] == 0.0f)
+            {
+              unsigned int zeroesInRow = 0;
+              while (column < map[row].size() && map[row][column] == 0.0f)
+                {
+                  zeroesInRow++;
+                  column++;
+                }
+              output << 0.0f << " " << zeroesInRow << " ";
+            }
+          else
+            {
+              output << map[row][column] << " ";
+              column++;
+            }
+        }
     }
 }
 
 void Generator::deserialize(std::ifstream &input)
 {
-  for (std::vector<float>& row : map)
+  for (unsigned int row = 0; row < map.size(); row++)
     {
-      for (float& value : row)
-        input >> value;
+      for (unsigned int column = 0; column < map[row].size(); )
+        {
+          float value;
+          input >> value;
+          if (value == 0.0f)
+            {
+              unsigned int zeroesInRow;
+              input >> zeroesInRow;
+              for (unsigned int i = column; i < column + zeroesInRow; i++)
+                map[row][i] = 0.0f;
+
+              column += zeroesInRow;
+            }
+          else
+            {
+              map[row][column] = value;
+              column++;
+            }
+        }
     }
 }
 
