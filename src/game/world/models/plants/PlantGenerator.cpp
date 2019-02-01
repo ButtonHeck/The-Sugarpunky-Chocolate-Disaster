@@ -52,8 +52,25 @@ void PlantGenerator::serialize(std::ofstream &output)
               i++;
             }
         }
-      for (unsigned int i = 0; i < chunks[chunk].getInstanceOffsetVector().size(); i++)
-        output << chunks[chunk].getInstanceOffset(i) << " ";
+
+      for (unsigned int i = 0; i < chunks[chunk].getInstanceOffsetVector().size(); )
+        {
+          if (chunks[chunk].getInstanceOffset(i) == 0)
+            {
+              unsigned int zeroesInRow = 0;
+              while(i < chunks[chunk].getInstanceOffsetVector().size() && chunks[chunk].getInstanceOffset(i) == 0)
+                {
+                  zeroesInRow++;
+                  i++;
+                }
+              output << 0 << " " << zeroesInRow << " ";
+            }
+          else
+            {
+              output << chunks[chunk].getInstanceOffset(i) << " ";
+              i++;
+            }
+        }
     }
 
   for (unsigned int i = 0; i < matrices.size(); i++)
@@ -82,7 +99,6 @@ void PlantGenerator::deserialize(std::ifstream &input)
               input >> zeroesInRow;
               for (unsigned int z = i; z < i + zeroesInRow; z++)
                 chunks[chunk].setNumInstances(z, 0);
-
               i += zeroesInRow;
             }
           else
@@ -92,11 +108,23 @@ void PlantGenerator::deserialize(std::ifstream &input)
             }
         }
 
-      for (unsigned int i = 0; i < chunks[chunk].getInstanceOffsetVector().size(); i++)
+      for (unsigned int i = 0; i < chunks[chunk].getInstanceOffsetVector().size(); )
         {
           unsigned int offset;
           input >> offset;
-          chunks[chunk].setInstanceOffset(i, offset);
+          if (offset == 0)
+            {
+              unsigned int zeroesInRow;
+              input >> zeroesInRow;
+              for (unsigned int z = i; z < i + zeroesInRow; z++)
+                chunks[chunk].setInstanceOffset(z, 0);
+              i += zeroesInRow;
+            }
+          else
+            {
+              chunks[chunk].setInstanceOffset(i, offset);
+              i++;
+            }
         }
     }
 
