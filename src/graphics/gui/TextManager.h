@@ -9,7 +9,6 @@
 #include "graphics/ScreenResolution.h"
 #include "graphics/openglObjects/BufferCollection.h"
 #include "graphics/Camera.h"
-#include "game/Options.h"
 #include "input/MouseInputManager.h"
 #include "util/VRAM_Monitor.h"
 #include "util/BenchmarkTimer.h"
@@ -19,10 +18,13 @@ class TextManager
 public:
   TextManager(const std::string& fontFile, const std::string& fontTexture, Shader& shader, ScreenResolution& screenResolution);
   virtual ~TextManager() = default;
-  void addText(Camera& camera, Options& options,
-               MouseInputManager& mouseInput, glm::vec3 sunPosition,
-               const unsigned int fps);
+  void addText(const Camera &camera,
+               Options &options,
+               MouseInputManager& mouseInput,
+               const glm::vec3 &sunPosition,
+               unsigned int fps);
   void drawText();
+
 private:
   const int MAX_BUFFER_SIZE = 1024 * 24;
   const glm::vec2 DEFAULT_SCALE = glm::vec2(0.2f, 0.2f);

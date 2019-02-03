@@ -2,8 +2,8 @@
 
 TheSunFacade::TheSunFacade(Shader &renderShader)
   :
-    shader(renderShader),
     theSun(),
+    shader(renderShader),
     renderer(theSun)
 {}
 
@@ -11,31 +11,33 @@ extern float debug_sunSpeed;
 
 void TheSunFacade::move(float angleRadians)
 {
-  rotationTransform = theSun.move(angleRadians * debug_sunSpeed);
+  theSun.move(angleRadians * debug_sunSpeed);
 }
 
 void TheSunFacade::moveAbsolutePosition(float angleRadians)
 {
-  rotationTransform = theSun.moveAbsolutePosition(angleRadians);
+  theSun.moveAbsolutePosition(angleRadians);
 }
 
-void TheSunFacade::draw(glm::mat4 &skyProjectionView, bool doOcclusionTest, bool useReflectionPointSize)
+void TheSunFacade::draw(const glm::mat4 &skyProjectionView,
+                        bool doOcclusionTest,
+                        bool useReflectionPointSize)
 {
-  shader.update(skyProjectionView, rotationTransform);
+  shader.update(skyProjectionView, theSun.getRotationTransform());
   renderer.render(doOcclusionTest, useReflectionPointSize);
 }
 
-glm::vec3 TheSunFacade::getCurrentPosition() const
+const glm::vec3& TheSunFacade::getPosition() const
 {
   return theSun.getPosition();
 }
 
-const glm::mat4 TheSunFacade::getRotationTransform() const
+const glm::mat4& TheSunFacade::getRotationTransform() const
 {
-  return rotationTransform;
+  return theSun.getRotationTransform();
 }
 
-GLfloat TheSunFacade::getSunVisibilityPercentage()
+GLfloat TheSunFacade::getSunVisibilityPercentage() const
 {
   return renderer.getSamplesPassedQueryResult() / maxSamplesPassed;
 }

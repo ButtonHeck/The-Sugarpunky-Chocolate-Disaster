@@ -6,7 +6,8 @@ class TheSunShader
 {
 public:
   TheSunShader(Shader& renderShader);
-  void update(glm::mat4 &projectionView, glm::mat4 &model);
+  void update(const glm::mat4 &projectionView, const glm::mat4 &model);
+
 private:
   Shader& renderShader;
 };

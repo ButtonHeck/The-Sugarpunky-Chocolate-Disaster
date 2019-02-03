@@ -6,9 +6,9 @@ HillsRenderer::HillsRenderer(HillsShader &shaders, HillsGenerator &generator)
     generator(generator)
 {}
 
-void HillsRenderer::render(bool useFC, glm::vec2& viewAcceleration)
+void HillsRenderer::render(bool useFrustumCulling, const glm::vec2& viewAcceleration)
 {
-  if (useFC)
+  if (useFrustumCulling)
     {
       float accelerationAbsX = glm::abs(viewAcceleration.x);
       float accelerationAbsY = glm::abs(viewAcceleration.y);

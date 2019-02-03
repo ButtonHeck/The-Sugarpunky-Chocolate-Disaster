@@ -1,11 +1,16 @@
-#ifndef TERRAINCHUNK_H
-#define TERRAINCHUNK_H
+#ifndef LANDCHUNK_H
+#define LANDCHUNK_H
 #include "game/world/Chunk.h"
 
 class LandChunk : public Chunk
 {
 public:
-  LandChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom, unsigned int offset, unsigned int instances);
+  LandChunk(unsigned int left,
+            unsigned int right,
+            unsigned int top,
+            unsigned int bottom,
+            unsigned int offset,
+            unsigned int instances);
 
   //instance offset
   void setInstanceOffset(unsigned int offset);
@@ -40,4 +45,4 @@ inline unsigned int LandChunk::getNumInstances() const
   return numInstances;
 }
 
-#endif // TERRAINCHUNK_H
+#endif // LANDCHUNK_H

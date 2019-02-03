@@ -7,9 +7,9 @@ WaterRenderer::WaterRenderer(WaterShader &shaders, WaterGenerator &generator)
     anySamplesPassedQuery(GL_ANY_SAMPLES_PASSED)
 {}
 
-void WaterRenderer::render(bool useCulling)
+void WaterRenderer::render(bool useFrustumCulling)
 {
-  if (useCulling)
+  if (useFrustumCulling)
     {
       {
         shaders.cullingShader.use();
@@ -58,7 +58,7 @@ void WaterRenderer::render(bool useCulling)
     }
 
   if (anySamplesPassedQuery.isResultAvailable())
-    anySamplesPassedResult = anySamplesPassedQuery.getResult();
+    anySamplesPassedQuery.requestResult();
 }
 
 void WaterRenderer::debugRender(GLenum primitiveType)
@@ -76,5 +76,5 @@ void WaterRenderer::debugRender(GLenum primitiveType)
 
 bool WaterRenderer::anySamplesPassed() const
 {
-  return anySamplesPassedResult == GL_TRUE;
+  return anySamplesPassedQuery.getResult() == GL_TRUE;
 }

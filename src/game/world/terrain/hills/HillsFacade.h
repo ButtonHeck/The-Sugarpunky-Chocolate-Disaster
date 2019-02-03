@@ -1,6 +1,5 @@
 #ifndef HILLSFACADE_H
 #define HILLSFACADE_H
-#include <memory>
 #include "game/world/terrain/hills/HillsGenerator.h"
 #include "game/world/terrain/hills/HillsShader.h"
 #include "game/world/terrain/hills/HillsRenderer.h"
@@ -9,18 +8,21 @@
 class HillsFacade
 {
 public:
-  HillsFacade(Shader &renderShader, Shader& cullingShader, Shader &normalsShader, const map2D_f &waterMap);
+  HillsFacade(Shader &renderShader,
+              Shader& cullingShader,
+              Shader &normalsShader,
+              const map2D_f &waterMap);
   void setup();
   void createTilesAndBufferData();
   void serialize(std::ofstream &output);
   void deserialize(std::ifstream& input);
-  void draw(glm::vec3& lightDir,
+  void draw(const glm::vec3 &lightDir,
             const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-            glm::mat4& projectionView,
-            glm::vec3 &viewPosition,
-            glm::vec2 &viewAcceleration,
-            Frustum &viewFrustum,
-            bool useFC,
+            const glm::mat4 &projectionView,
+            const glm::vec3 &viewPosition,
+            const glm::vec2 &viewAcceleration,
+            const Frustum &viewFrustum,
+            bool useFrustumCulling,
             bool useShadows,
             bool useDebugRender);
   void drawDepthmap();

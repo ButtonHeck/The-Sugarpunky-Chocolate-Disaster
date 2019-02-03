@@ -1,6 +1,9 @@
 #include "game/world/terrain/hills/HillsFacade.h"
 
-HillsFacade::HillsFacade(Shader &renderShader, Shader &cullingShader, Shader &normalsShader, const map2D_f &waterMap)
+HillsFacade::HillsFacade(Shader &renderShader,
+                         Shader &cullingShader,
+                         Shader &normalsShader,
+                         const map2D_f &waterMap)
   :
     shaders(renderShader, cullingShader, normalsShader),
     generator(shaders, waterMap),
@@ -27,13 +30,13 @@ void HillsFacade::deserialize(std::ifstream &input)
   generator.deserialize(input);
 }
 
-void HillsFacade::draw(glm::vec3 &lightDir,
+void HillsFacade::draw(const glm::vec3 &lightDir,
                        const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                       glm::mat4& projectionView,
-                       glm::vec3 &viewPosition,
-                       glm::vec2 &viewAcceleration,
-                       Frustum &viewFrustum,
-                       bool useFC,
+                       const glm::mat4& projectionView,
+                       const glm::vec3 &viewPosition,
+                       const glm::vec2 &viewAcceleration,
+                       const Frustum &viewFrustum,
+                       bool useFrustumCulling,
                        bool useShadows,
                        bool useDebugRender)
 {
@@ -43,10 +46,10 @@ void HillsFacade::draw(glm::vec3 &lightDir,
                  viewPosition,
                  viewFrustum,
                  generator.maxHeight,
-                 useFC,
+                 useFrustumCulling,
                  useShadows);
   shaders.debugRenderMode(false);
-  renderer.render(useFC, viewAcceleration);
+  renderer.render(useFrustumCulling, viewAcceleration);
 
   if (useDebugRender)
     {

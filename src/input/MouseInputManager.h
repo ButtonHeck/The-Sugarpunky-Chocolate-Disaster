@@ -1,6 +1,5 @@
 #ifndef MOUSEINPUTMANAGER_H
 #define MOUSEINPUTMANAGER_H
-#include <memory>
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/Camera.h"
 #include "game/Options.h"
@@ -13,10 +12,10 @@ class MouseInputManager
 public:
   static MouseInputManager& getInstance();
   static void setCallbacks(GLFWwindow* window);
-  void updateCursorMappingCoordinates(Camera& camera,
-                         const map2D_f &baseMap,
-                         const map2D_f &hillMap,
-                         const map2D_f &buildableMap);
+  void updateCursorMappingCoordinates(const Camera& camera,
+                                      const map2D_f &baseMap,
+                                      const map2D_f &hillMap,
+                                      const map2D_f &buildableMap);
   int getCursorMapX() const;
   int getCursorMapZ() const;
   const glm::vec3& getCursorToViewportDirection() const;

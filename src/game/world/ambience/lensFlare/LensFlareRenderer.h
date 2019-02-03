@@ -8,6 +8,7 @@ class LensFlareRenderer
 public:
   LensFlareRenderer(BufferCollection& basicGLBuffer);
   void draw(unsigned int numFlares);
+
 private:
   BufferCollection& basicGLBuffer;
 };

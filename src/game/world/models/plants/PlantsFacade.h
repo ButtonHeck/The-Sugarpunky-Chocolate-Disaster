@@ -1,6 +1,5 @@
 #ifndef PLANTSFACADE_H
 #define PLANTSFACADE_H
-#include <memory>
 #include "util/typeAliases.h"
 #include "game/world/models/plants/LandPlantsGenerator.h"
 #include "game/world/models/plants/GrassGenerator.h"
@@ -20,10 +19,10 @@ public:
   void setup(const map2D_f &baseMap, const map2D_f &hillMap, const map2D_vec3 &hillsNormalMap);
   void prepareMeshesIndirectData(const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);
   void updateIndirectBufferData();
-  void draw(glm::vec3 &lightDir,
+  void draw(const glm::vec3 &lightDir,
             const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-            glm::mat4 &projectionView,
-            glm::vec3 &viewPosition,
+            const glm::mat4 &projectionView,
+            const glm::vec3 &viewPosition,
             bool usePhongShading,
             bool useShadows,
             bool useLandBlending);

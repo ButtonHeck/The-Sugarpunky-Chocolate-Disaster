@@ -10,6 +10,7 @@ public:
               const glm::vec3 &viewPosition,
               const glm::vec3 &lightDir);
   void selectSkyboxType(int type);
+
 private:
   Shader& renderShader;
 };

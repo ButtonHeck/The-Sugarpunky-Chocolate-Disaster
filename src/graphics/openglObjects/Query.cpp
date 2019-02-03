@@ -29,10 +29,15 @@ bool Query::isResultAvailable()
   return resultAvailable;
 }
 
-GLuint Query::getResult()
+GLuint Query::requestResult()
 {
   inUse = false;
   glGetQueryObjectuiv(id, GL_QUERY_RESULT, &result);
+  return result;
+}
+
+GLuint Query::getResult() const
+{
   return result;
 }
 

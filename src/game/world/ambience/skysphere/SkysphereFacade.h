@@ -10,7 +10,7 @@ public:
   void draw(const glm::mat4 &transform,
             const glm::mat4 &projectionView,
             const glm::vec3 &lightDir);
-  void move(float angleDegrees);
+  void moveStarsSkysphere(float angleDegrees);
 
 private:
   enum SKYSPHERE_TYPE : int
@@ -18,12 +18,10 @@ private:
     SKYSPHERE_AMBIENT_LIGHTING = 0,
     SKYSPHERE_STARS = 1
   };
-  const glm::vec3 ROTATION = glm::normalize(glm::vec3(-0.5f, 1.0f, -0.2f));
+  const glm::vec3 SKYSPHERE_STARS_ROTATION = glm::normalize(glm::vec3(-0.5f, 1.0f, -0.2f));
 
-  Skysphere theSunAmbientLightingHemisphere;
-  Skysphere starsSkysphere;
+  Skysphere theSunAmbientLightingHemisphere, starsSkysphere;
   SkysphereShader shader;
-  glm::mat4 starsSkysphereTransform;
 };
 
 #endif // SKYSPHEREFACADE_H

@@ -10,8 +10,10 @@ public:
   void start();
   void end();
   bool isResultAvailable();
-  GLuint getResult();
+  GLuint requestResult();
+  GLuint getResult() const;
   bool isInUse() const;
+
 private:
   GLuint id;
   GLuint type;

@@ -145,7 +145,7 @@ GLuint TextureLoader::createUnderwaterReliefTexture(const map2D_f &waterMap, GLu
 {
   static bool needStorage = true;
   static GLuint texture;
-  std::unique_ptr<GLubyte[]> textureData(new GLubyte[WORLD_WIDTH * WORLD_HEIGHT]);
+  GLubyte textureData[WORLD_WIDTH * WORLD_HEIGHT] = {0};
   int left, right, top, bottom;
   float waterCount;
   for (int y = 1; y < WORLD_HEIGHT; y++)
@@ -179,7 +179,7 @@ GLuint TextureLoader::createUnderwaterReliefTexture(const map2D_f &waterMap, GLu
     }
   glActiveTexture(GL_TEXTURE0 + textureUnit);
   glBindTexture(GL_TEXTURE_2D, texture);
-  glTextureSubImage2D(texture, 0, 0, 0, WORLD_WIDTH, WORLD_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, textureData.get());
+  glTextureSubImage2D(texture, 0, 0, 0, WORLD_WIDTH, WORLD_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, textureData);
   setTexture2DParameters(texture, magFilter, minFilter, GL_REPEAT);
   return texture;
 }

@@ -8,13 +8,13 @@ class WaterShader
 public:
   WaterShader(Shader& renderShader, Shader& cullingShader, Shader& normalsShader);
   void setupCulling();
-  void update(glm::vec3 &lightDir,
+  void update(const glm::vec3 &lightDir,
               const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-              bool useFC,
-              glm::mat4& projectionView,
-              glm::vec3& viewPosition,
-              Frustum& viewFrustum);
-  void updateNormals(glm::mat4& projectionView);
+              const glm::mat4 &projectionView,
+              const glm::vec3 &viewPosition,
+              const Frustum &viewFrustum,
+              bool useFrustumCulling);
+  void updateNormals(const glm::mat4 &projectionView);
   void debugRenderMode(bool enable);
 private:
   friend class WaterRenderer;

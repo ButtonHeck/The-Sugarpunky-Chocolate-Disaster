@@ -11,10 +11,10 @@ public:
   void setup(const map2D_f& shoreMap);
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
-  void draw(glm::vec3 &lightDir,
+  void draw(const glm::vec3 &lightDir,
             const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-            glm::mat4 &projectionView,
-            Frustum &viewFrustum,
+            const glm::mat4 &projectionView,
+            const Frustum &viewFrustum,
             bool useShadows);
   const map2D_f &getMap() const;
 

@@ -14,10 +14,15 @@ void WaterShader::setupCulling()
   cullingShader.link();
 }
 
-void WaterShader::update(glm::vec3 &lightDir, const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices, bool useFC, glm::mat4 &projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum)
+void WaterShader::update(const glm::vec3 &lightDir,
+                         const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
+                         const glm::mat4 &projectionView,
+                         const glm::vec3 &viewPosition,
+                         const Frustum &viewFrustum,
+                         bool useFrustumCulling)
 {
   static float dudvMoveOffset = 0.0f;
-  if (useFC)
+  if (useFrustumCulling)
     {
       cullingShader.use();
       cullingShader.setVec4("u_frustumPlanes[0]", viewFrustum.getPlane(FRUSTUM_LEFT));
@@ -40,7 +45,7 @@ void WaterShader::update(glm::vec3 &lightDir, const std::array<glm::mat4, NUM_SH
     dudvMoveOffset = 0.0f;
 }
 
-void WaterShader::updateNormals(glm::mat4 &projectionView)
+void WaterShader::updateNormals(const glm::mat4 &projectionView)
 {
   normalsShader.use();
   normalsShader.setMat4("u_projectionView", projectionView);

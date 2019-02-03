@@ -5,7 +5,7 @@ TheSunShader::TheSunShader(Shader &renderShader)
     renderShader(renderShader)
 {}
 
-void TheSunShader::update(glm::mat4 &projectionView, glm::mat4& model)
+void TheSunShader::update(const glm::mat4 &projectionView, const glm::mat4& model)
 {
   renderShader.use();
   renderShader.setMat4("u_projectionView", projectionView);

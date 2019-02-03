@@ -45,6 +45,11 @@ glm::mat4 Camera::getViewMatrix() const
   return glm::lookAt(position, position + front, worldUp);
 }
 
+glm::mat3 Camera::getViewMatrixMat3() const
+{
+  return glm::mat3(getViewMatrix());
+}
+
 glm::mat4 Camera::getReflectionViewMatrix() const
 {
   glm::vec3 positionReflected(position.x, -position.y, position.z);

@@ -1,7 +1,6 @@
 #ifndef TEXTURELOADER_H
 #define TEXTURELOADER_H
 #include <string>
-#include <memory>
 #include <GL/glew.h>
 #include <IL/il.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -11,12 +10,6 @@
 #include "game/world/SceneSettings.h"
 #include "util/Logger.h"
 #include "util/typeAliases.h"
-
-enum class TEXTURE_TYPE
-{
-  TEXTURE_TYPE_DIFFUSE,
-  TEXTURE_TYPE_SPECULAR
-};
 
 class TextureLoader
 {

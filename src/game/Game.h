@@ -39,9 +39,10 @@ public:
   void loop();
 
 private:
-  void drawFrame(glm::mat4& projectionView);
+  void drawFrame(const glm::mat4& projectionView);
+  void drawFrustumVisualizations(const glm::mat4 &projectionView);
   void drawFrameReflection();
-  void drawFrameRefraction(glm::mat4& projectionView);
+  void drawFrameRefraction(const glm::mat4& projectionView);
   void recreate();
   void updateDepthmap();
   void saveState();

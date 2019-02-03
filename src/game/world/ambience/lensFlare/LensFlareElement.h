@@ -12,6 +12,7 @@ public:
   float getPointSize() const;
   GLuint getTextureID() const;
   void adjustPointSize(float pointSizeDivisor);
+
 private:
   glm::vec2 position;
   float pointSize;

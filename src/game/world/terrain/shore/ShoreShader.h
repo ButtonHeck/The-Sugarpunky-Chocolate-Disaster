@@ -6,13 +6,13 @@ class ShoreShader
 {
 public:
   ShoreShader(Shader& renderShader, Shader &normalsShader);
-  void update(glm::vec3& lightDir,
+  void update(const glm::vec3 &lightDir,
               const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-              glm::mat4 &projectionView,
+              const glm::mat4 &projectionView,
               bool useShadows,
               bool useClipDistanceReflection,
               bool useClipDistanceRefraction);
-  void updateNormals(glm::mat4& projectionView);
+  void updateNormals(const glm::mat4 &projectionView);
   void debugRenderMode(bool enable);
 private:
   Shader& renderShader;

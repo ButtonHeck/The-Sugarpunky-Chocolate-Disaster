@@ -14,16 +14,16 @@ void HillsShader::setupCulling()
   cullingShader.link();
 }
 
-void HillsShader::update(glm::vec3 &lightDir,
+void HillsShader::update(const glm::vec3 &lightDir,
                          const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                         glm::mat4 &projectionView,
-                         glm::vec3 &viewPosition,
-                         Frustum &viewFrustum,
+                         const glm::mat4 &projectionView,
+                         const glm::vec3 &viewPosition,
+                         const Frustum &viewFrustum,
                          float maxHillHeight,
-                         bool useFC,
+                         bool useFrustumCulling,
                          bool useShadows)
 {
-  if (useFC)
+  if (useFrustumCulling)
     {
       cullingShader.use();
       cullingShader.setVec4("u_frustumPlanes[0]", viewFrustum.getPlane(FRUSTUM_LEFT));
@@ -43,7 +43,7 @@ void HillsShader::update(glm::vec3 &lightDir,
   renderShader.setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrices[2]);
 }
 
-void HillsShader::updateNormals(glm::mat4 &projectionView)
+void HillsShader::updateNormals(const glm::mat4 &projectionView)
 {
   normalsShader.use();
   normalsShader.setMat4("u_projectionView", projectionView);

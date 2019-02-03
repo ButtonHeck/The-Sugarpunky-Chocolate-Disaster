@@ -8,7 +8,7 @@ class ShadowVolume
 public:
   ShadowVolume(TheSunFacade &sun);
   void update(const std::array<Frustum, NUM_SHADOW_LAYERS>& frustums);
-  glm::vec3 getLightDir() const;
+  const glm::vec3 &getLightDir() const;
   const std::array<glm::mat4, NUM_SHADOW_LAYERS> &getLightSpaceMatrices() const;
 private:
   struct Box

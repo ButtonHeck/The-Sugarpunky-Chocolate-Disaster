@@ -33,10 +33,10 @@ void PlantsFacade::updateIndirectBufferData()
   updateIndirectBufferData(grassGenerator);
 }
 
-void PlantsFacade::draw(glm::vec3 &lightDir,
+void PlantsFacade::draw(const glm::vec3 &lightDir,
                         const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                        glm::mat4 &projectionView,
-                        glm::vec3 &viewPosition,
+                        const glm::mat4 &projectionView,
+                        const glm::vec3 &viewPosition,
                         bool usePhongShading,
                         bool useShadows,
                         bool useLandBlending)

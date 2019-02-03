@@ -1,6 +1,6 @@
 #include "game/world/ambience/theSun/TheSunRenderer.h"
 
-TheSunRenderer::TheSunRenderer(TheSun &theSun)
+TheSunRenderer::TheSunRenderer(TheSun& theSun)
   :
     theSun(theSun),
     samplesPassedQuery(GL_SAMPLES_PASSED),
@@ -22,13 +22,13 @@ void TheSunRenderer::render(bool doOcclusionTest, bool useReflectionPointSize)
     glDrawArrays(GL_POINTS, 0, 1);
 
   if (samplesPassedQuery.isResultAvailable())
-    samplesPassedResult = samplesPassedQuery.getResult();
+    samplesPassedQuery.requestResult();
   glPointSize(1.0f);
 }
 
-GLuint TheSunRenderer::getSamplesPassedQueryResult()
+GLuint TheSunRenderer::getSamplesPassedQueryResult() const
 {
-  return samplesPassedResult;
+  return samplesPassedQuery.getResult();
 }
 
 void TheSunRenderer::setPointSize(float pointSize)

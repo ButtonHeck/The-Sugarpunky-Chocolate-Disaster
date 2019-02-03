@@ -1,6 +1,5 @@
 #ifndef BUIDABLERENDERER_H
 #define BUIDABLERENDERER_H
-#include <memory>
 #include "game/world/terrain/buildable/BuildableGenerator.h"
 
 class BuildableRenderer

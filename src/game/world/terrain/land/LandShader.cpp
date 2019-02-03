@@ -5,7 +5,10 @@ LandShader::LandShader(Shader &renderShader)
     renderShader(renderShader)
 {}
 
-void LandShader::update(glm::vec3 &lightDir, const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices, glm::mat4 &projectionView, bool useShadows)
+void LandShader::update(const glm::vec3 &lightDir,
+                        const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
+                        const glm::mat4 &projectionView,
+                        bool useShadows)
 {
   renderShader.use();
   renderShader.setMat4("u_projectionView", projectionView);

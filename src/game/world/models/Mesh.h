@@ -3,7 +3,6 @@
 #include <vector>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
-#include <string>
 
 struct Vertex
 {
@@ -21,6 +20,7 @@ public:
   Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
   Mesh(Mesh&& old) noexcept;
   Mesh(const Mesh& rhs);
+
 private:
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;

@@ -62,7 +62,7 @@ void Game::setup()
 
 void Game::loop()
 {
-  glm::mat4 view, projectionView, cullingProjectionView;
+  glm::mat4 view, projectionView;
   float timerDelta = CPU_timer.tick();
   {
     BENCHMARK("Game loop: process input and camera", true);
@@ -74,9 +74,8 @@ void Game::loop()
     else
       view = shadowCamera.getViewMatrix();
     projectionView = projection * view;
-    cullingProjectionView = cullingProjection * view;
     viewFrustum.updateFrustum(projectionView);
-    cullingViewFrustum.updateFrustum(cullingProjectionView);
+    cullingViewFrustum.updateFrustum(cullingProjection * view);
 
     if (!options[OPT_SHADOW_CAMERA_FIXED])
       {
@@ -86,7 +85,7 @@ void Game::loop()
   }
 
   scene.getSunFacade().move(timerDelta);
-  scene.getSkysphereFacade().move(timerDelta * PLANET_MOVE_SPEED);
+  scene.getSkysphereFacade().moveStarsSkysphere(timerDelta * PLANET_MOVE_SPEED);
 
   glm::vec4 currentColor = glm::mix(NIGHT_SKY_COLOR, DAY_SKY_COLOR, glm::clamp(-shadowVolume.getLightDir().y * 5, 0.0f, 1.0f));
   glClearColor(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
@@ -132,50 +131,14 @@ void Game::loop()
   ++updateCount;
 }
 
-void Game::drawFrame(glm::mat4& projectionView)
+void Game::drawFrame(const glm::mat4 &projectionView)
 {
   BENCHMARK("Game loop: draw frame", true);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, options[OPT_POLYGON_LINE] ? GL_LINE : GL_FILL);
 
   if (options[OPT_CSM_VISUALIZATION])
-    {
-      shaderManager.get(SHADER_FRUSTUM).use();
-      shaderManager.get(SHADER_FRUSTUM).setMat4("u_projectionView", projectionView);
-      if (options[OPT_FRUSTUM_VISUALIZATION])
-        {
-          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 3);
-          shadowFrustumRenderers[0].render();
-          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 4);
-          shadowFrustumRenderers[1].render();
-        }
-      if (options[OPT_EXPECTED_VOLUME_VISUALIZATION])
-        {
-          shadowVolumeRenderer.bufferExpectedVolumes();
-          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 6);
-          shadowVolumeRenderer.renderExpectedVolume(0);
-          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 7);
-          shadowVolumeRenderer.renderExpectedVolume(1);
-          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 8);
-          shadowVolumeRenderer.renderExpectedVolume(2);
-        }
-      if (options[OPT_ACTUAL_VOLUME_VISUALIZATION])
-        {
-          shadowVolumeRenderer.bufferActualVolumes();
-          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 9);
-          shadowVolumeRenderer.renderActualVolume(0);
-          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 10);
-          shadowVolumeRenderer.renderActualVolume(1);
-          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 11);
-          shadowVolumeRenderer.renderActualVolume(2);
-          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 0);
-          shadowVolumeRenderer.renderLightSource(0);
-          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 1);
-          shadowVolumeRenderer.renderLightSource(1);
-          shaderManager.get(SHADER_FRUSTUM).setInt("u_colorIndex", 2);
-          shadowVolumeRenderer.renderLightSource(2);
-        }
-    }
+    drawFrustumVisualizations(projectionView);
 
   if (options[OPT_ANIMATE_WATER])
     {
@@ -183,12 +146,11 @@ void Game::drawFrame(glm::mat4& projectionView)
       scene.getWaterFacade().bufferNewData();
       waterNeedNewKeyFrame = true;
     }
-  glm::mat4 skyboxProjectionView(projection * glm::mat4(glm::mat3(camera.getViewMatrix())));
 
   scene.drawWorld(shadowVolume.getLightDir(),
                   shadowVolume.getLightSpaceMatrices(),
                   projectionView,
-                  skyboxProjectionView,
+                  projection * glm::mat4(camera.getViewMatrixMat3()),
                   viewFrustum,
                   cullingViewFrustum,
                   camera,
@@ -200,14 +162,52 @@ void Game::drawFrame(glm::mat4& projectionView)
 
   if (options[OPT_DRAW_DEBUG_TEXT])
     {
-      textManager.addText(camera, options, mouseInput,
-                          scene.getSunFacade().getCurrentPosition(),
-                          CPU_timer.getFPS());
+      textManager.addText(camera, options, mouseInput, scene.getSunFacade().getPosition(), CPU_timer.getFPS());
       textManager.drawText();
-      csRenderer.draw(glm::mat3(camera.getViewMatrix()), screenResolution.getAspectRatio());
+      csRenderer.draw(camera.getViewMatrixMat3(), screenResolution.getAspectRatio());
     }
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void Game::drawFrustumVisualizations(const glm::mat4& projectionView)
+{
+  Shader& frustumShader = shaderManager.get(SHADER_FRUSTUM);
+  frustumShader.use();
+  frustumShader.setMat4("u_projectionView", projectionView);
+  if (options[OPT_FRUSTUM_VISUALIZATION])
+    {
+      frustumShader.setInt("u_colorIndex", 3);
+      shadowFrustumRenderers[0].render();
+      frustumShader.setInt("u_colorIndex", 4);
+      shadowFrustumRenderers[1].render();
+    }
+  if (options[OPT_EXPECTED_VOLUME_VISUALIZATION])
+    {
+      shadowVolumeRenderer.bufferExpectedVolumes();
+      frustumShader.setInt("u_colorIndex", 6);
+      shadowVolumeRenderer.renderExpectedVolume(0);
+      frustumShader.setInt("u_colorIndex", 7);
+      shadowVolumeRenderer.renderExpectedVolume(1);
+      frustumShader.setInt("u_colorIndex", 8);
+      shadowVolumeRenderer.renderExpectedVolume(2);
+    }
+  if (options[OPT_ACTUAL_VOLUME_VISUALIZATION])
+    {
+      shadowVolumeRenderer.bufferActualVolumes();
+      frustumShader.setInt("u_colorIndex", 9);
+      shadowVolumeRenderer.renderActualVolume(0);
+      frustumShader.setInt("u_colorIndex", 10);
+      shadowVolumeRenderer.renderActualVolume(1);
+      frustumShader.setInt("u_colorIndex", 11);
+      shadowVolumeRenderer.renderActualVolume(2);
+      frustumShader.setInt("u_colorIndex", 0);
+      shadowVolumeRenderer.renderLightSource(0);
+      frustumShader.setInt("u_colorIndex", 1);
+      shadowVolumeRenderer.renderLightSource(1);
+      frustumShader.setInt("u_colorIndex", 2);
+      shadowVolumeRenderer.renderLightSource(2);
+    }
 }
 
 void Game::drawFrameReflection()
@@ -217,12 +217,10 @@ void Game::drawFrameReflection()
     glDisable(GL_MULTISAMPLE);
 
   glm::mat4 viewReflected = camera.getReflectionViewMatrix();
-  glm::mat4 projectionViewReflected = projection * viewReflected;
-  glm::mat4 skyboxProjectionViewReflected(projection * glm::mat4(glm::mat3(viewReflected)));
   scene.drawWorldReflection(shadowVolume.getLightDir(),
                             shadowVolume.getLightSpaceMatrices(),
-                            projectionViewReflected,
-                            skyboxProjectionViewReflected,
+                            projection * viewReflected,
+                            projection * glm::mat4(glm::mat3(viewReflected)),
                             cullingViewFrustum,
                             camera);
 
@@ -230,7 +228,7 @@ void Game::drawFrameReflection()
     glEnable(GL_MULTISAMPLE);
 }
 
-void Game::drawFrameRefraction(glm::mat4& projectionView)
+void Game::drawFrameRefraction(const glm::mat4 &projectionView)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   if (options[OPT_USE_MULTISAMPLING])
@@ -260,8 +258,7 @@ void Game::updateDepthmap()
   glm::mat4 shadowView = shadowCamera.getViewMatrix();
   for (unsigned int layer = 0; layer < NUM_SHADOW_LAYERS; layer++)
     {
-      glm::mat4 shadowCamProjectionView = shadowProjections[layer] * shadowView;
-      shadowCameraFrustums[layer].updateFrustum(shadowCamProjectionView);
+      shadowCameraFrustums[layer].updateFrustum(shadowProjections[layer] * shadowView);
       shadowCameraFrustums[layer].calculateIntersectionPoints();
     }
   {

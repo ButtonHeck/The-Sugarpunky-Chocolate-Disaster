@@ -5,7 +5,7 @@ LandRenderer::LandRenderer(LandGenerator &generator)
     generator(generator)
 {}
 
-void LandRenderer::render(Frustum &frustum)
+void LandRenderer::render(const Frustum &frustum)
 {
   //square chunks are better to render without FC
   {
@@ -32,7 +32,9 @@ void LandRenderer::render(Frustum &frustum)
           {
             addIndirectBufferData(drawIndirectCommandPrimCount,
                                   multiDrawIndirectData,
-                                  dataOffset, cellChunks[i].getNumInstances(), cellChunks[i].getInstanceOffset());
+                                  dataOffset,
+                                  cellChunks[i].getNumInstances(),
+                                  cellChunks[i].getInstanceOffset());
           }
       }
     generator.cellBuffers.bind(DIBO);

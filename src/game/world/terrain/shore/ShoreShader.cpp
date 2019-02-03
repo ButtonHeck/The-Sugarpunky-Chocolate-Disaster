@@ -6,9 +6,9 @@ ShoreShader::ShoreShader(Shader &renderShader, Shader &normalsShader)
     normalsShader(normalsShader)
 {}
 
-void ShoreShader::update(glm::vec3 &lightDir,
+void ShoreShader::update(const glm::vec3 &lightDir,
                          const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                         glm::mat4 &projectionView,
+                         const glm::mat4 &projectionView,
                          bool useShadows,
                          bool useClipDistanceReflection,
                          bool useClipDistanceRefraction)
@@ -24,7 +24,7 @@ void ShoreShader::update(glm::vec3 &lightDir,
   renderShader.setBool("u_useClipDistanceRefraction", useClipDistanceRefraction);
 }
 
-void ShoreShader::updateNormals(glm::mat4 &projectionView)
+void ShoreShader::updateNormals(const glm::mat4 &projectionView)
 {
   normalsShader.use();
   normalsShader.setMat4("u_projectionView", projectionView);

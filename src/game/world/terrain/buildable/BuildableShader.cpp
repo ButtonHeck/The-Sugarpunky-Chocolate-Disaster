@@ -6,13 +6,13 @@ BuildableShader::BuildableShader(Shader &buildableRenderShader, Shader &selected
     selectedRenderShader(selectedRenderShader)
 {}
 
-void BuildableShader::updateBuildable(glm::mat4 &projectionView)
+void BuildableShader::updateBuildable(const glm::mat4 &projectionView)
 {
   buildableRenderShader.use();
   buildableRenderShader.setMat4("u_projectionView", projectionView);
 }
 
-void BuildableShader::updateSelected(glm::mat4 &projectionView, glm::mat4 &selectedModel)
+void BuildableShader::updateSelected(const glm::mat4 &projectionView, const glm::mat4 &selectedModel)
 {
   selectedRenderShader.use();
   selectedRenderShader.setMat4("u_projectionView", projectionView);

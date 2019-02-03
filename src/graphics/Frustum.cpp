@@ -16,10 +16,10 @@ void Frustum::normalizePlane(FRUSTUM_SIDE side)
   frustumPlanes[side] /= magnitude;
 }
 
-void Frustum::updateFrustum(glm::mat4 &projectionView)
+void Frustum::updateFrustum(const glm::mat4 &projectionView)
 {
   BENCHMARK("Frustum: update", true);
-  float* clip = glm::value_ptr(projectionView);
+  const float* clip = glm::value_ptr(projectionView);
   frustumPlanes[FRUSTUM_RIGHT].x = clip[3] - clip[0];
   frustumPlanes[FRUSTUM_RIGHT].y = clip[7] - clip[4];
   frustumPlanes[FRUSTUM_RIGHT].z = clip[11] - clip[8];
@@ -150,7 +150,7 @@ bool Frustum::isInside(float x, float y, float z, float radius) const
   return true;
 }
 
-glm::vec4 Frustum::getPlane(FRUSTUM_SIDE side)
+const glm::vec4& Frustum::getPlane(FRUSTUM_SIDE side) const
 {
   return frustumPlanes[side];
 }

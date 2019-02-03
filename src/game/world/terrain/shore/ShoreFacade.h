@@ -12,9 +12,9 @@ public:
   void setup();
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
-  void draw(glm::vec3& lightDir,
+  void draw(const glm::vec3 &lightDir,
             const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-            glm::mat4& projectionView,
+            const glm::mat4 &projectionView,
             bool useShadows,
             bool useDebugRender,
             bool useClipDistanceReflection,

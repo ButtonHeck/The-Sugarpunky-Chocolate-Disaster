@@ -6,8 +6,8 @@ class BuildableShader
 {
 public:
   BuildableShader(Shader& buildableRenderShader, Shader& selectedRenderShader);
-  void updateBuildable(glm::mat4& projectionView);
-  void updateSelected(glm::mat4 &projectionView, glm::mat4 &selectedModel);
+  void updateBuildable(const glm::mat4 &projectionView);
+  void updateSelected(const glm::mat4 &projectionView, const glm::mat4 &selectedModel);
 private:
   Shader& buildableRenderShader;
   Shader& selectedRenderShader;

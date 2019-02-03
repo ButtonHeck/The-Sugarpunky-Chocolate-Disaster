@@ -9,14 +9,13 @@ class WaterRenderer
 {
 public:
   WaterRenderer(WaterShader& shaders, WaterGenerator& generator);
-  void render(bool useCulling);
+  void render(bool useFrustumCulling);
   void debugRender(GLenum primitiveType);
   bool anySamplesPassed() const;
 private:
   WaterShader& shaders;
   WaterGenerator& generator;
   Query anySamplesPassedQuery;
-  GLuint anySamplesPassedResult;
 };
 
 #endif // WATERRENDERER_H

@@ -3,8 +3,8 @@
 #include <vector>
 #include "game/world/ambience/lensFlare/LensFlareElement.h"
 #include "game/world/ambience/lensFlare/LensFlareRenderer.h"
+#include "game/world/ambience/lensFlare/LensFlareShader.h"
 #include "graphics/openglObjects/BufferCollection.h"
-#include "graphics/shaders/Shader.h"
 #include "graphics/textures/TextureLoader.h"
 #include "graphics/textures/BindlessTextureManager.h"
 
@@ -17,12 +17,14 @@ public:
   LensFlareFacade(Shader &shader, TextureLoader& textureLoader);
   void draw(const glm::vec3 &sunWorldPosition, const glm::mat4 &projectionView, float brightnessAbs);
   void adjustFlaresPointSize(float pointSizeDivisor);
+
 private:
-  void updatePositions(glm::vec2 &sunScreenPosition, glm::vec2 &sunToCenter);
-  Shader& shader;
+  const float BRIGHTNESS_HALO, BRIGHTNESS_FLARES;
+  void updateFlaresPositions(const glm::vec2 &sunScreenPosition, const glm::vec2 &sunToCenter);
   std::vector<LensFlareElement> flares;
   GLfloat vertices[NUM_LENS_FLARES * 3];
   BufferCollection basicGLBuffers;
+  LensFlareShader shader;
   LensFlareRenderer renderer;
 };
 

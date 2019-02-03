@@ -57,7 +57,6 @@ SOURCES += \
     src/game/world/ambience/skybox/Skybox.cpp \
     src/game/world/ambience/skybox/SkyboxFacade.cpp \
     src/game/world/ambience/skybox/SkyboxShader.cpp \
-    src/game/world/ambience/skybox/SkyboxRenderer.cpp \
     src/game/world/ambience/theSun/TheSunFacade.cpp \
     src/game/world/ambience/theSun/TheSunShader.cpp \
     src/game/world/ambience/theSun/TheSunRenderer.cpp \
@@ -91,7 +90,8 @@ SOURCES += \
     src/graphics/gui/ShadowVolumeRenderer.cpp \
     src/game/world/ambience/skysphere/Skysphere.cpp \
     src/game/world/ambience/skysphere/SkysphereFacade.cpp \
-    src/game/world/ambience/skysphere/SkysphereShader.cpp
+    src/game/world/ambience/skysphere/SkysphereShader.cpp \
+    src/game/world/ambience/lensFlare/LensFlareShader.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -146,7 +146,6 @@ HEADERS += \
     src/game/world/ambience/skybox/Skybox.h \
     src/game/world/ambience/skybox/SkyboxFacade.h \
     src/game/world/ambience/skybox/SkyboxShader.h \
-    src/game/world/ambience/skybox/SkyboxRenderer.h \
     src/game/world/ambience/theSun/TheSunFacade.h \
     src/game/world/ambience/theSun/TheSunShader.h \
     src/game/world/ambience/theSun/TheSunRenderer.h \
@@ -186,7 +185,8 @@ HEADERS += \
     src/graphics/gui/ShadowVolumeRenderer.h \
     src/game/world/ambience/skysphere/Skysphere.h \
     src/game/world/ambience/skysphere/SkysphereFacade.h \
-    src/game/world/ambience/skysphere/SkysphereShader.h
+    src/game/world/ambience/skysphere/SkysphereShader.h \
+    src/game/world/ambience/lensFlare/LensFlareShader.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

@@ -13,12 +13,12 @@ public:
   void setupConsiderTerrain();
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
-  void draw(glm::vec3 &lightDir,
+  void draw(const glm::vec3 &lightDir,
             const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-            glm::mat4 &projectionView,
-            glm::vec3 &viewPosition,
-            Frustum &viewFrustum,
-            bool useCulling,
+            const glm::mat4 &projectionView,
+            const glm::vec3 &viewPosition,
+            const Frustum &viewFrustum,
+            bool useFrustumCulling,
             bool useDebugRender);
   void bufferNewData();
   void updateAnimationFrame(double time, Options& options);

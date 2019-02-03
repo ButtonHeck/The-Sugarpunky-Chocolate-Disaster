@@ -25,7 +25,11 @@ private:
   friend class HillsFacade;
   struct HillVertex
   {
-    HillVertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal, glm::vec3 tangent, glm::vec3 bitangent);
+    HillVertex(glm::vec3 pos,
+               glm::vec2 texCoords,
+               glm::vec3 normal,
+               glm::vec3 tangent,
+               glm::vec3 bitangent);
     GLfloat posX, posY, posZ;
     GLfloat texCoordX, texCoordY;
     GLfloat normalX, normalY, normalZ;

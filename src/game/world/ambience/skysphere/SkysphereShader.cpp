@@ -12,12 +12,8 @@ void SkysphereShader::update(const glm::mat4 &projectionView, const glm::vec3 &l
   renderShader.setVec3("u_lightDir", -lightDir);
 }
 
-void SkysphereShader::setTransformMatrix(const glm::mat4 &transform)
-{
-  renderShader.setMat4("u_model", transform);
-}
-
-void SkysphereShader::setSkysphereType(int type)
+void SkysphereShader::setSkysphereType(int type, const glm::mat4 &transform)
 {
   renderShader.setBool("u_type", type);
+  renderShader.setMat4("u_model", transform);
 }

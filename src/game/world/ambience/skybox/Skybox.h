@@ -8,9 +8,11 @@ class Skybox
 public:
   Skybox();
   virtual ~Skybox() = default;
-  static constexpr int BUFFER_SIZE_FLOATS = 3 * 6 * 6;
+  constexpr static unsigned int BUFFER_SIZE_FLOATS = 3 * 6 * 6;
+  constexpr static unsigned int VERTICES_PER_SKYBOX = VERTICES_PER_QUAD * VERTICES_PER_QUAD;
+  void draw();
+
 private:
-  friend class SkyboxRenderer;
   BufferCollection basicGLBuffers;
   GLfloat vertices[BUFFER_SIZE_FLOATS] = {
     -4.0f,  1.2f, -4.0f,

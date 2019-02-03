@@ -12,7 +12,7 @@ void BuildableFacade::setup(const map2D_f &landMap, const map2D_f &hillsMap)
   generator.setup(landMap, hillsMap);
 }
 
-void BuildableFacade::drawBuildable(glm::mat4& projectionView)
+void BuildableFacade::drawBuildable(const glm::mat4& projectionView)
 {
   shader.updateBuildable(projectionView);
   {
@@ -21,7 +21,7 @@ void BuildableFacade::drawBuildable(glm::mat4& projectionView)
   }
 }
 
-void BuildableFacade::drawSelected(glm::mat4& projectionView, MouseInputManager& mouseInput)
+void BuildableFacade::drawSelected(const glm::mat4& projectionView, MouseInputManager& mouseInput)
 {
   if (generator.getMap()[mouseInput.getCursorMapZ()][mouseInput.getCursorMapX()] != 0)
     {

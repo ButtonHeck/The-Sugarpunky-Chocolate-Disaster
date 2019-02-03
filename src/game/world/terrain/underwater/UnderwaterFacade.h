@@ -9,7 +9,7 @@ class UnderwaterFacade
 {
 public:
   UnderwaterFacade(Shader& renderShader);
-  void draw(glm::vec3& lightDir, glm::mat4 &projectionView);
+  void draw(const glm::vec3 &lightDir, const glm::mat4 &projectionView);
 private:
   UnderwaterShader shader;
   UnderwaterGenerator generator;

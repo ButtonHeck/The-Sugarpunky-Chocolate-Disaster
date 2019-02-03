@@ -94,7 +94,7 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
     mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT] = false;
 }
 
-void MouseInputManager::updateCursorMappingCoordinates(Camera &camera,
+void MouseInputManager::updateCursorMappingCoordinates(const Camera &camera,
                                                        const map2D_f &baseMap,
                                                        const map2D_f& hillMap,
                                                        const map2D_f& buildableMap)

@@ -7,7 +7,7 @@ UnderwaterFacade::UnderwaterFacade(Shader &renderShader)
     renderer(generator)
 {}
 
-void UnderwaterFacade::draw(glm::vec3 &lightDir, glm::mat4& projectionView)
+void UnderwaterFacade::draw(const glm::vec3 &lightDir, const glm::mat4& projectionView)
 {
   BENCHMARK("UnderwaterRenderer: draw", true);
   shader.update(lightDir, projectionView);

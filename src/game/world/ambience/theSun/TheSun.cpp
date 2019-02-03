@@ -2,32 +2,9 @@
 
 TheSun::TheSun()
   :
-    basicGLBuffers(VAO | VBO | TFBO),
-    rotateAxis(0.0f, 0.0f, 1.0f)
-{
-  bufferData();
-}
-
-glm::mat4 TheSun::move(float angleDegrees)
-{
-  currentPosition = glm::rotateZ(currentPosition, glm::radians(angleDegrees));
-  rotationTransform = glm::rotate(rotationTransform, glm::radians(angleDegrees), rotateAxis);
-  return rotationTransform;
-}
-
-glm::mat4 TheSun::moveAbsolutePosition(float angleDegrees)
-{
-  currentPosition = glm::rotateZ(START_POSITION, glm::radians(angleDegrees));
-  rotationTransform = glm::rotate(START_MODEL, glm::radians(angleDegrees), rotateAxis);
-  return rotationTransform;
-}
-
-glm::vec3 TheSun::getPosition() const
-{
-  return currentPosition;
-}
-
-void TheSun::bufferData()
+    ROTATION_VECTOR(0.0f, 0.0f, 1.0f),
+    basicGLBuffers(VAO | VBO),
+    currentPosition(HALF_WORLD_WIDTH_F, 0.0f, 0.0f)
 {
   basicGLBuffers.bind(VAO | VBO);
   GLfloat vertices[4] = {1.0f, 0.0f, 0.0f, 1.0f};
@@ -36,4 +13,26 @@ void TheSun::bufferData()
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void TheSun::move(float angleDegrees)
+{
+  currentPosition = glm::rotate(currentPosition, glm::radians(angleDegrees), ROTATION_VECTOR);
+  rotationTransform = glm::rotate(rotationTransform, glm::radians(angleDegrees), ROTATION_VECTOR);
+}
+
+void TheSun::moveAbsolutePosition(float angleDegrees)
+{
+  currentPosition = glm::rotate(START_POSITION, glm::radians(angleDegrees), ROTATION_VECTOR);
+  rotationTransform = glm::rotate(START_MODEL, glm::radians(angleDegrees), ROTATION_VECTOR);
+}
+
+const glm::vec3& TheSun::getPosition() const
+{
+  return currentPosition;
+}
+
+const glm::mat4 &TheSun::getRotationTransform() const
+{
+  return rotationTransform;
 }

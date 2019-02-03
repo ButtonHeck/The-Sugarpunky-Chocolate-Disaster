@@ -2,7 +2,6 @@
 #define SKYBOXFACADE_H
 #include "game/world/ambience/skybox/Skybox.h"
 #include "game/world/ambience/skybox/SkyboxShader.h"
-#include "game/world/ambience/skybox/SkyboxRenderer.h"
 #include "util/BenchmarkTimer.h"
 
 class SkyboxFacade
@@ -12,6 +11,7 @@ public:
   void draw(const glm::mat4 &skyboxProjectionView,
             const glm::vec3 &viewPosition,
             const glm::vec3 &lightDir);
+
 private:
   enum SKYBOX_TYPE : int
   {
@@ -21,7 +21,6 @@ private:
   };
   SkyboxShader shader;
   Skybox skybox;
-  SkyboxRenderer renderer;
 };
 
 #endif // SKYBOXFACADE_H

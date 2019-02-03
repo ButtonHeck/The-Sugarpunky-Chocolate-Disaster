@@ -8,15 +8,15 @@ class HillsShader
 public:
   HillsShader(Shader& renderShader, Shader& cullingShader, Shader& normalsShader);
   void setupCulling();
-  void update(glm::vec3& lightDir,
+  void update(const glm::vec3 &lightDir,
               const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-              glm::mat4& projectionView,
-              glm::vec3& viewPosition,
-              Frustum& viewFrustum,
+              const glm::mat4 &projectionView,
+              const glm::vec3 &viewPosition,
+              const Frustum &viewFrustum,
               float maxHillHeight,
-              bool useFC,
+              bool useFrustumCulling,
               bool useShadows);
-  void updateNormals(glm::mat4& projectionView);
+  void updateNormals(const glm::mat4 &projectionView);
   void debugRenderMode(bool enable);
 private:
   friend class HillsRenderer;

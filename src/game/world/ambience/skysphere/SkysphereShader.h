@@ -7,8 +7,8 @@ class SkysphereShader
 public:
   SkysphereShader(Shader& renderShader);
   void update(const glm::mat4 &projectionView, const glm::vec3 &lightDir);
-  void setTransformMatrix(const glm::mat4 &transform);
-  void setSkysphereType(int type);
+  void setSkysphereType(int type, const glm::mat4 &transform);
+
 private:
   Shader& renderShader;
 };

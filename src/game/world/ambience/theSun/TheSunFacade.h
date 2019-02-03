@@ -10,18 +10,18 @@ class TheSunFacade
 {
 public:
   TheSunFacade(Shader& renderShader);
-  void move(float delta);
-  void moveAbsolutePosition(float posDegrees);
-  void draw(glm::mat4& skyProjectionView, bool doOcclusionTest, bool useReflectionPointSize);
-  glm::vec3 getCurrentPosition() const;
-  const glm::mat4 getRotationTransform() const;
-  GLfloat getSunVisibilityPercentage();
+  void move(float angleDegrees);
+  void moveAbsolutePosition(float angleDegrees);
+  void draw(const glm::mat4 &skyProjectionView, bool doOcclusionTest, bool useReflectionPointSize);
+  const glm::vec3 &getPosition() const;
+  const glm::mat4 &getRotationTransform() const;
+  GLfloat getSunVisibilityPercentage() const;
   void adjustSunPointSize(float pointSizeDivisor, float relfectionPointSizeDivisor);
+
 private:
-  TheSunShader shader;
   TheSun theSun;
+  TheSunShader shader;
   TheSunRenderer renderer;
-  glm::mat4 rotationTransform;
   GLfloat maxSamplesPassed;
 };
 

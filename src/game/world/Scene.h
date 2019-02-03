@@ -30,25 +30,25 @@ public:
   void deserialize(std::ifstream& input);
 
   //rendering part
-  void drawWorld(glm::vec3 lightDir,
+  void drawWorld(const glm::vec3 &lightDir,
                  const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
-                 glm::mat4& projectionView,
-                 glm::mat4& skyProjectionView,
-                 Frustum &viewFrustum,
-                 Frustum &cullingViewFrustum,
-                 Camera& camera,
+                 const glm::mat4 &projectionView,
+                 const glm::mat4 &skyProjectionView,
+                 const Frustum &viewFrustum,
+                 const Frustum &cullingViewFrustum,
+                 const Camera &camera,
                  MouseInputManager& mouseInput);
   void drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
                          bool grassCastShadow);
-  void drawWorldReflection(glm::vec3 lightDir,
+  void drawWorldReflection(const glm::vec3 &lightDir,
                            const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
-                           glm::mat4 &projectionView,
-                           glm::mat4& skyProjectionView,
-                           Frustum &cullingViewFrustum,
-                           Camera& camera);
-  void drawWorldRefraction(glm::vec3 lightDir,
+                           const glm::mat4 &projectionView,
+                           const glm::mat4 &skyProjectionView,
+                           const Frustum &cullingViewFrustum,
+                           const Camera &camera);
+  void drawWorldRefraction(const glm::vec3 &lightDir,
                            const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                           glm::mat4 &projectionView);
+                           const glm::mat4 &projectionView);
 
   //getters
   WaterFacade &getWaterFacade();

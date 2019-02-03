@@ -16,10 +16,11 @@ TextManager::TextManager(const std::string &fontFile, const std::string &fontTex
   glBindVertexArray(0);
 }
 
-void TextManager::addText(Camera& camera, Options& options,
+void TextManager::addText(const Camera& camera,
+                          Options& options,
                           MouseInputManager& mouseInput,
-                          glm::vec3 sunPosition,
-                          const unsigned int fps)
+                          const glm::vec3& sunPosition,
+                          unsigned int fps)
 {
   BENCHMARK("TextManager: add text", true);
   float scrHeight = (float)screenResolution.getHeight();

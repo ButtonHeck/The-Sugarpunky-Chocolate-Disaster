@@ -19,7 +19,7 @@ class Frustum
 {
 public:
   Frustum();
-  void updateFrustum(glm::mat4& projectionView);
+  void updateFrustum(const glm::mat4 &projectionView);
   void calculateIntersectionPoints();
   float getMaxCoordX() const;
   float getMinCoordX() const;
@@ -27,7 +27,7 @@ public:
   float getMinCoordZ() const;
   bool isInsideXZ(float x, float z, float radius) const;
   bool isInside(float x, float y, float z, float radius) const;
-  glm::vec4 getPlane(FRUSTUM_SIDE side);
+  const glm::vec4 &getPlane(FRUSTUM_SIDE side) const;
 private:
   friend class ShadowVolume;
   friend class FrustumRenderer;

@@ -27,15 +27,22 @@ void WaterFacade::deserialize(std::ifstream &input)
   generator.deserialize(input);
 }
 
-void WaterFacade::draw(glm::vec3 &lightDir,
+void WaterFacade::draw(const glm::vec3 &lightDir,
                        const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                       glm::mat4& projectionView, glm::vec3 &viewPosition, Frustum &viewFrustum, bool useCulling, bool useDebugRender)
+                       const glm::mat4& projectionView,
+                       const glm::vec3 &viewPosition,
+                       const Frustum &viewFrustum,
+                       bool useFrustumCulling,
+                       bool useDebugRender)
 {
   shaders.update(lightDir,
                  lightSpaceMatrices,
-                 useCulling, projectionView, viewPosition, viewFrustum);
+                 projectionView,
+                 viewPosition,
+                 viewFrustum,
+                 useFrustumCulling);
   shaders.debugRenderMode(false);
-  renderer.render(useCulling);
+  renderer.render(useFrustumCulling);
 
   if (useDebugRender)
     {

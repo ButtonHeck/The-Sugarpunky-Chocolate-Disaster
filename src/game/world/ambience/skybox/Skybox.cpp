@@ -11,3 +11,9 @@ Skybox::Skybox()
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+
+void Skybox::draw()
+{
+  basicGLBuffers.bind(VAO);
+  glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_SKYBOX);
+}

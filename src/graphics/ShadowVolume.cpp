@@ -7,7 +7,7 @@ ShadowVolume::ShadowVolume(TheSunFacade& sun)
 
 void ShadowVolume::update(const std::array<Frustum, NUM_SHADOW_LAYERS> &frustums)
 {
-  glm::vec3 sunPosition = sun.getCurrentPosition();
+  glm::vec3 sunPosition = sun.getPosition();
   float sunAbsPositionY = sunPosition.y / HALF_WORLD_WIDTH_F;
   float sunAbsPositionX = sunPosition.x / HALF_WORLD_WIDTH_F;
   lightDirTo = glm::normalize(glm::vec3(0.0f) - sunPosition);
@@ -18,7 +18,7 @@ void ShadowVolume::update(const std::array<Frustum, NUM_SHADOW_LAYERS> &frustums
     updateLightSpaceMatrix(frustums[layer], layer, sunAbsPositionY, sunAbsPositionX);
 }
 
-glm::vec3 ShadowVolume::getLightDir() const
+const glm::vec3& ShadowVolume::getLightDir() const
 {
   return lightDirTo;
 }
