@@ -37,9 +37,9 @@ const glm::mat4& TheSunFacade::getRotationTransform() const
   return theSun.getRotationTransform();
 }
 
-GLfloat TheSunFacade::getSunVisibilityPercentage() const
+GLfloat TheSunFacade::getSunVisibilityPercentage(bool multisampled) const
 {
-  return renderer.getSamplesPassedQueryResult() / maxSamplesPassed;
+  return renderer.getSamplesPassedQueryResult() / (multisampled ? maxSamplesPassedMultisampling : maxSamplesPassed);
 }
 
 void TheSunFacade::adjustSunPointSize(float pointSizeDivisor, float relfectionPointSizeDivisor)
@@ -47,5 +47,6 @@ void TheSunFacade::adjustSunPointSize(float pointSizeDivisor, float relfectionPo
   renderer.setPointSize(DEFAULT_SUN_POINT_SIZE * pointSizeDivisor);
   renderer.setReflectionPointSize(DEFAULT_SUN_POINT_SIZE * relfectionPointSizeDivisor);
   float pointSize = renderer.getPointSize();
-  maxSamplesPassed = pointSize * pointSize * MULTISAMPLES;
+  maxSamplesPassed = pointSize * pointSize;
+  maxSamplesPassedMultisampling = maxSamplesPassed * MULTISAMPLES;
 }

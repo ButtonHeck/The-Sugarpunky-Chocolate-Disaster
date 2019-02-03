@@ -159,7 +159,7 @@ void Scene::drawWorld(const glm::vec3& lightDir,
                      options[OPT_WATER_CULLING],
                      options[OPT_DEBUG_RENDER]);
 
-  float theSunVisibility = theSunFacade.getSunVisibilityPercentage();
+  float theSunVisibility = theSunFacade.getSunVisibilityPercentage(options[OPT_USE_MULTISAMPLING]);
   theSunVisibility *= glm::clamp(-(lightDir.y + 0.02f - viewPosition.y / 1500.0f) * 8.0f, 0.0f, 1.0f);
   if (theSunVisibility > 0)
     lensFlareFacade.draw(theSunFacade.getPosition(), skyboxProjectionView, theSunVisibility);

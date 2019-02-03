@@ -15,14 +15,14 @@ public:
   void draw(const glm::mat4 &skyProjectionView, bool doOcclusionTest, bool useReflectionPointSize);
   const glm::vec3 &getPosition() const;
   const glm::mat4 &getRotationTransform() const;
-  GLfloat getSunVisibilityPercentage() const;
+  GLfloat getSunVisibilityPercentage(bool multisampled) const;
   void adjustSunPointSize(float pointSizeDivisor, float relfectionPointSizeDivisor);
 
 private:
   TheSun theSun;
   TheSunShader shader;
   TheSunRenderer renderer;
-  GLfloat maxSamplesPassed;
+  GLfloat maxSamplesPassedMultisampling, maxSamplesPassed;
 };
 
 #endif // THESUNFACADE_H
