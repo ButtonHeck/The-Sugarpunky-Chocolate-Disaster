@@ -17,5 +17,5 @@ UnderwaterGenerator::UnderwaterGenerator()
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-  resetAllGLBuffers();
+  BufferCollection::bindZero(VAO | VBO | EBO);
 }

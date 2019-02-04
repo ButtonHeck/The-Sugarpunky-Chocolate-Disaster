@@ -1,16 +1,19 @@
 #include "game/world/models/Model.h"
-#include <IL/il.h>
 
-Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions, bool useChangeOfBasisMatrix)
+TextureLoader* Model::textureLoader;
+void Model::bindTextureLoader(TextureLoader &textureLoader)
+{
+  Model::textureLoader = &textureLoader;
+}
+
+Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions)
   :
     isLowPoly(isLowPoly),
     numRepetitions(numRepetitions),
-    useChangeOfBasisMatrix(useChangeOfBasisMatrix),
-    basicGLBuffers(VAO | VBO | INSTANCE_VBO | EBO)
+    GPUDataManager(isLowPoly),
+    renderer(GPUDataManager.getBasicGLBuffers(), GPUDataManager.getShadowDIBO())
 {
-  loadModel(std::string(MODELS_DIR + path));
-  basicGLBuffers.reserveNameForFutureStorage(DIBO);
-  shadowDIBO.reserveNameForFutureStorage(DIBO);
+  loadModel(MODELS_DIR + path);
   setup();
 }
 
@@ -21,75 +24,84 @@ void Model::loadModel(const std::string &path)
   if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
     Logger::log("Error while loading Assimp: %\n", importer.GetErrorString());
   directory = path.substr(0, path.find_last_of('/'));
-  GLuint meshIndexOffset = 0;
-  processNode(scene->mRootNode, scene, meshIndexOffset);
+  GLuint meshVertexIndexOffset = 0;
+  processNode(scene->mRootNode, scene, meshVertexIndexOffset);
 }
 
-void Model::processNode(aiNode *node, const aiScene* scene, GLuint& meshIndexOffset)
+void Model::processNode(aiNode *node, const aiScene* scene, GLuint& meshVertexIndexOffset)
 {
-  for (unsigned int i = 0; i < node->mNumMeshes; i++)
+  for (unsigned int meshIndex = 0; meshIndex < node->mNumMeshes; meshIndex++)
     {
-      aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-      Mesh processedMesh = processMesh(mesh, scene, meshIndexOffset);
+      aiMesh* mesh = scene->mMeshes[node->mMeshes[meshIndex]];
+      Mesh processedMesh = processMesh(mesh, scene, meshVertexIndexOffset);
       GLuint currentMeshNumVertices = processedMesh.vertices.size();
       meshes.emplace_back(std::move(processedMesh));
-      meshIndexOffset += currentMeshNumVertices;
+      meshVertexIndexOffset += currentMeshNumVertices;
     }
-  for (unsigned int i = 0; i < node->mNumChildren; i++)
-    processNode(node->mChildren[i], scene, meshIndexOffset);
+  for (unsigned int childNodeIndex = 0; childNodeIndex < node->mNumChildren; childNodeIndex++)
+    processNode(node->mChildren[childNodeIndex], scene, meshVertexIndexOffset);
 }
 
-Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene, GLuint meshIndexOffset)
+Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene, GLuint meshVertexIndexOffset)
 {
   static unsigned int diffuseSamplerIndex = 0, specularSamplerIndex = 0;
   std::vector<Vertex> vertices;
   std::vector<GLuint> indices;
 
-  for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+  for (unsigned int vertexIndex = 0; vertexIndex < mesh->mNumVertices; vertexIndex++)
     {
       Vertex vertex;
-      glm::vec3 vector;
+      glm::vec3 attributeVector;
+
       //position
-      vector.x = mesh->mVertices[i].x;
-      vector.y = mesh->mVertices[i].y;
-      vector.z = mesh->mVertices[i].z;
-      vertex.Position = vector;
+      attributeVector.x = mesh->mVertices[vertexIndex].x;
+      attributeVector.y = mesh->mVertices[vertexIndex].y;
+      attributeVector.z = mesh->mVertices[vertexIndex].z;
+      vertex.Position = attributeVector;
+
       //normals
-      vector.x = mesh->mNormals[i].x;
-      vector.y = mesh->mNormals[i].y;
-      vector.z = mesh->mNormals[i].z;
-      vertex.Normal = vector;
-      //TexCoords (if any)
+      attributeVector.x = mesh->mNormals[vertexIndex].x;
+      attributeVector.y = mesh->mNormals[vertexIndex].y;
+      attributeVector.z = mesh->mNormals[vertexIndex].z;
+      vertex.Normal = attributeVector;
+
+      //Texture coordinates (if any)
       if (mesh->mTextureCoords[0])
         {
-          glm::vec2 texVec;
-          texVec.x = mesh->mTextureCoords[0][i].x;
-          texVec.y = mesh->mTextureCoords[0][i].y;
-          vertex.TexCoords = texVec;
+          glm::vec2 textureCoordinates;
+          textureCoordinates.x = mesh->mTextureCoords[0][vertexIndex].x;
+          textureCoordinates.y = mesh->mTextureCoords[0][vertexIndex].y;
+          vertex.TexCoords = textureCoordinates;
         }
       else
-        vertex.TexCoords = glm::vec2(0.0, 0.0);
-      //tangent
-      vector.x = mesh->mTangents[i].x;
-      vector.y = mesh->mTangents[i].y;
-      vector.z = mesh->mTangents[i].z;
-      vertex.Tangent = vector;
-      //bitangent
-      vector.x = mesh->mBitangents[i].x;
-      vector.y = mesh->mBitangents[i].y;
-      vector.z = mesh->mBitangents[i].z;
-      vertex.Bitangent = vector;
-      //texture type indices
+        vertex.TexCoords = glm::vec2(0.0f);
+
+      //tangent (not used yet)
+      attributeVector.x = mesh->mTangents[vertexIndex].x;
+      attributeVector.y = mesh->mTangents[vertexIndex].y;
+      attributeVector.z = mesh->mTangents[vertexIndex].z;
+      vertex.Tangent = attributeVector;
+
+      //bitangent (not used yet)
+      attributeVector.x = mesh->mBitangents[vertexIndex].x;
+      attributeVector.y = mesh->mBitangents[vertexIndex].y;
+      attributeVector.z = mesh->mBitangents[vertexIndex].z;
+      vertex.Bitangent = attributeVector;
+
+      //texture type indices (used as indices in arrays of bindless texture handlers in a shader)
       vertex.TexIndices = glm::uvec2(diffuseSamplerIndex, specularSamplerIndex);
+
       vertices.emplace_back(std::move(vertex));
     }
+
   //process indices
-  for (unsigned int i=0; i < mesh->mNumFaces; i++)
+  for (unsigned int faceIndex = 0; faceIndex < mesh->mNumFaces; faceIndex++)
     {
-      aiFace face = mesh->mFaces[i];
-      for (unsigned int j = 0; j < face.mNumIndices; j++)
-        indices.emplace_back(std::move(face.mIndices[j] + meshIndexOffset));
+      aiFace face = mesh->mFaces[faceIndex];
+      for (unsigned int eboIndex = 0; eboIndex < face.mNumIndices; eboIndex++)
+        indices.emplace_back(std::move(face.mIndices[eboIndex] + meshVertexIndexOffset));
     }
+
   //process materials
   aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
   loadMaterialTextures(material, aiTextureType_DIFFUSE, "u_texture_diffuse", diffuseSamplerIndex);
@@ -100,30 +112,19 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene, GLuint meshIndexOffs
 
 void Model::loadMaterialTextures(aiMaterial *material,
                                  aiTextureType type,
-                                 std::string typeName,
+                                 const std::string& uniformName,
                                  unsigned int& samplerIndex)
 {
-  for (unsigned int i = 0; i < material->GetTextureCount(type); i++)
+  for (unsigned int textureIndex = 0; textureIndex < material->GetTextureCount(type); textureIndex++)
     {
       aiString texturePath;
-      material->GetTexture(type, i, &texturePath);
-
-      std::string path = this->directory + '/' + std::string(texturePath.C_Str());
-      bool useAnisotropy = type == aiTextureType_DIFFUSE;
+      material->GetTexture(type, textureIndex, &texturePath);
+      std::string path = this->directory + '/' + texturePath.C_Str();
       GLenum magFilter = type == aiTextureType_DIFFUSE ? GL_LINEAR : GL_NEAREST;
       GLenum minFilter = type == aiTextureType_DIFFUSE ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
       bool useNoSRGB = type == aiTextureType_SPECULAR;
-      GLuint texture = textureLoader->loadTexture(path,
-                                                  0,
-                                                  GL_REPEAT,
-                                                  magFilter,
-                                                  minFilter,
-                                                  useAnisotropy,
-                                                  false,
-                                                  true,
-                                                  useNoSRGB);
-      std::string uniformSamplerString = typeName + "[" + std::to_string(samplerIndex) + "]";
-      BindlessTextureManager::emplaceBack(uniformSamplerString, texture, BINDLESS_TEXTURE_MODEL);
+      GLuint texture = textureLoader->loadTexture(path, 0, GL_REPEAT, magFilter, minFilter, true, false, true, useNoSRGB);
+      BindlessTextureManager::emplaceBack(uniformName + "[" + std::to_string(samplerIndex) + "]", texture, BINDLESS_TEXTURE_MODEL);
       samplerIndex++;
     }
 }
@@ -135,214 +136,45 @@ void Model::setup()
       vertices.insert(vertices.end(), mesh.vertices.begin(), mesh.vertices.end());
       indices.insert(indices.end(), mesh.indices.begin(), mesh.indices.end());
     }
-  basicGLBuffers.bind(VAO | VBO | EBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices[0], GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
-  glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
-  glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
-  glEnableVertexAttribArray(9);
-  //intentionally set GL_FLOAT
-  glVertexAttribPointer(9, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexIndices));
-
-  if (basicGLBuffers.get(DIBO) == 0)
-    {
-      basicGLBuffers.add(DIBO);
-      basicGLBuffers.bind(DIBO);
-      glNamedBufferStorage(basicGLBuffers.get(DIBO), sizeof(multiDrawIndirectData), 0, GL_DYNAMIC_STORAGE_BIT);
-    }
-  if (shadowDIBO.get(DIBO) == 0)
-    {
-      shadowDIBO.add(DIBO);
-      shadowDIBO.bind(DIBO);
-      glNamedBufferStorage(shadowDIBO.get(DIBO), sizeof(multiDrawIndirectDataShadow), 0, GL_DYNAMIC_STORAGE_BIT);
-    }
-
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
-TextureLoader* Model::textureLoader;
-void Model::bindTextureLoader(TextureLoader &textureLoader)
-{
-  Model::textureLoader = &textureLoader;
+  GPUDataManager.setupBuffers(vertices, indices);
 }
 
 void Model::draw(bool isShadow)
 {
-  basicGLBuffers.bind(VAO);
-  if (!isShadow)
-    {
-      BENCHMARK("Model: draw", true);
-      basicGLBuffers.bind(DIBO);
-      glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCount, 0);
-    }
-  else
-    {
-      BENCHMARK("Model: draw shadows", true);
-      shadowDIBO.bind(DIBO);
-      glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, drawIndirectCommandPrimCountShadow, 0);
-    }
+  GLsizei primitiveCount = GPUDataManager.getPrimitiveCount(isShadow);
+  renderer.render(isShadow, primitiveCount);
 }
 
-void Model::drawDirect()
+void Model::drawOneInstance()
 {
-  basicGLBuffers.bind(VAO);
-  glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+  renderer.renderOneInstance(indices.size());
 }
 
-void Model::prepareMeshesIndirectData(std::vector<ModelChunk>& chunks,
-                                      unsigned int index,
+void Model::prepareIndirectBufferData(const std::vector<ModelChunk>& chunks,
+                                      unsigned int modelIndex,
                                       const glm::vec2& cameraPositionXZ,
                                       const Frustum &frustum,
-                                      bool use3DcullingPoints,
                                       float loadingDistance,
                                       float loadingDistanceShadow,
                                       float loadingDistanceLowPoly)
 {
-  BENCHMARK("(ST)Model: update DIB data", true);
-  drawIndirectCommandPrimCount = drawIndirectCommandPrimCountShadow = 0;
-  indirectTokensSorted.clear();
-  indirectTokensSortedShadow.clear();
-  GLuint indicesSize = indices.size();
-  for (unsigned int i = 0; i < chunks.size(); i++)
-    {
-      //if a chunk is farther than the load distance - just discard it
-      glm::vec2 directionToChunk = chunks[i].getMidPoint() - cameraPositionXZ;
-      unsigned int directionToChunkLength = glm::length2(directionToChunk);
-      if (!isLowPoly)
-        {
-          if (directionToChunkLength < loadingDistance)
-            {
-              glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
-              const float CULLING_Y_APPROX = 10.0f;
-              if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-                  frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET)
-                   || (use3DcullingPoints &&
-                 (frustum.isInside(chunkMidPoint.x - HALF_CHUNK_SIZE, CULLING_Y_APPROX, chunkMidPoint.y + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-                  frustum.isInside(chunkMidPoint.x + HALF_CHUNK_SIZE, CULLING_Y_APPROX, chunkMidPoint.y + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-                  frustum.isInside(chunkMidPoint.x + HALF_CHUNK_SIZE, CULLING_Y_APPROX, chunkMidPoint.y - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-                  frustum.isInside(chunkMidPoint.x - HALF_CHUNK_SIZE, CULLING_Y_APPROX, chunkMidPoint.y - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET))))
-                {
-                  addIndirectBufferData(directionToChunkLength,
-                                        indicesSize,
-                                        chunks[i].getNumInstances(index),
-                                        chunks[i].getInstanceOffset(index),
-                                        false);
-                  if (directionToChunkLength < loadingDistanceShadow)
-                    addIndirectBufferData(directionToChunkLength,
-                                          indicesSize,
-                                          chunks[i].getNumInstances(index),
-                                          chunks[i].getInstanceOffset(index),
-                                          true);
-                }
-            }
-        }
-      else
-        {
-          if (directionToChunkLength < loadingDistanceLowPoly && directionToChunkLength >= loadingDistance)
-            {
-              glm::vec2 chunkMidPoint = chunks[i].getMidPoint();
-              //for this part we don't get any visual difference of using 3D points
-              if (frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-                  frustum.isInsideXZ(chunkMidPoint.x + HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-                  frustum.isInsideXZ(chunkMidPoint.x - HALF_CHUNK_SIZE, chunkMidPoint.y - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET))
-                {
-                  addIndirectBufferData(directionToChunkLength,
-                                        indicesSize,
-                                        chunks[i].getNumInstances(index),
-                                        chunks[i].getInstanceOffset(index),
-                                        false);
-                  if (directionToChunkLength < loadingDistanceShadow)
-                    addIndirectBufferData(directionToChunkLength,
-                                          indicesSize,
-                                          chunks[i].getNumInstances(index),
-                                          chunks[i].getInstanceOffset(index),
-                                          true);
-                }
-            }
-        }
-    }
-  GLuint dataOffset = 0;
-  for (auto& token : indirectTokensSorted)
-    {
-        multiDrawIndirectData[dataOffset++] = token.second.indicesCount;
-        multiDrawIndirectData[dataOffset++] = token.second.numInstances;
-        multiDrawIndirectData[dataOffset++] = token.second.FIRST_INDEX;
-        multiDrawIndirectData[dataOffset++] = token.second.BASE_VERTEX;
-        multiDrawIndirectData[dataOffset++] = token.second.instanceOffset;
-    }
-  dataOffset = 0;
-  for (auto& token : indirectTokensSortedShadow)
-    {
-        multiDrawIndirectDataShadow[dataOffset++] = token.second.indicesCount;
-        multiDrawIndirectDataShadow[dataOffset++] = token.second.numInstances;
-        multiDrawIndirectDataShadow[dataOffset++] = token.second.FIRST_INDEX;
-        multiDrawIndirectDataShadow[dataOffset++] = token.second.BASE_VERTEX;
-        multiDrawIndirectDataShadow[dataOffset++] = token.second.instanceOffset;
-    }
+  GPUDataManager.prepareIndirectBufferData(chunks,
+                                           modelIndex,
+                                           cameraPositionXZ,
+                                           frustum,
+                                           loadingDistance,
+                                           loadingDistanceShadow,
+                                           loadingDistanceLowPoly);
 }
 
 void Model::updateIndirectBufferData()
 {
-  {
-    BENCHMARK("Model: bind+buffer indirect data", true);
-    basicGLBuffers.bind(VAO | DIBO);
-    glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * drawIndirectCommandPrimCount, multiDrawIndirectData);
-    shadowDIBO.bind(DIBO);
-    glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * 5 * drawIndirectCommandPrimCountShadow, multiDrawIndirectDataShadow);
-  }
+  GPUDataManager.updateIndirectBufferData();
 }
 
-void Model::addIndirectBufferData(int directionToChunkLength,
-                                  GLuint indicesSize,
-                                  GLuint numInstances,
-                                  GLuint instanceOffset,
-                                  bool isShadow)
+void Model::loadModelInstances(const glm::mat4 *instanceMatrices, unsigned int numInstances)
 {
-  if (!isShadow)
-    {
-      indirectTokensSorted.insert(std::pair<int,IndirectBufferToken>(directionToChunkLength, IndirectBufferToken(indicesSize, numInstances, instanceOffset)));
-      ++drawIndirectCommandPrimCount;
-    }
-  else
-    {
-      indirectTokensSortedShadow.insert(std::pair<int,IndirectBufferToken>(directionToChunkLength, IndirectBufferToken(indicesSize, numInstances, instanceOffset)));
-      ++drawIndirectCommandPrimCountShadow;
-    }
-}
-
-void Model::loadModelInstances(glm::mat4 *instanceMatrices, unsigned int numInstances)
-{
-  basicGLBuffers.bind(VAO);
-  if (basicGLBuffers.get(INSTANCE_VBO) != 0)
-    {
-      basicGLBuffers.bind(INSTANCE_VBO);
-      glInvalidateBufferData(basicGLBuffers.get(INSTANCE_VBO));
-      basicGLBuffers.deleteBuffer(INSTANCE_VBO);
-    }
-  basicGLBuffers.add(INSTANCE_VBO);
-  basicGLBuffers.bind(INSTANCE_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * numInstances, &instanceMatrices[0], GL_STATIC_DRAW);
-  for (unsigned int i = 0; i < 4; ++i)
-    {
-      glEnableVertexAttribArray(i+5);
-      glVertexAttribPointer(i+5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(i * sizeof(glm::vec4)));
-      glVertexAttribDivisor(i+5, 1);
-    }
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  GPUDataManager.loadModelInstances(instanceMatrices, numInstances);
 }
 
 unsigned int Model::getRepeatCount() const
@@ -350,20 +182,7 @@ unsigned int Model::getRepeatCount() const
   return numRepetitions;
 }
 
-bool Model::isUsingChangeOfBasis() const
-{
-  return useChangeOfBasisMatrix;
-}
-
-Model::IndirectBufferToken::IndirectBufferToken(GLuint indicesCount, GLuint numInstances, GLuint instanceOffset)
-  :
-    indicesCount(indicesCount),
-    numInstances(numInstances),
-    instanceOffset(instanceOffset)
-{}
-
 void Model::cleanup()
 {
-  basicGLBuffers.deleteBuffers();
-  shadowDIBO.deleteBuffers();
+  GPUDataManager.cleanup();
 }

@@ -12,9 +12,10 @@ HillTreesGenerator::HillTreesGenerator()
   models.emplace_back("hillTrees/hillTree5/hillTree5.obj", false);
   models.emplace_back("hillTrees/hillTree6/hillTree6.obj", false);
   models.emplace_back("hillTrees/hillTree7/hillTree7.obj", false, 3);
-  models.emplace_back("hillTrees/hillTree8cob/hillTree8cob.obj", false, 1, true);
-  models.emplace_back("hillTrees/hillTree9cob/hillTree9cob.obj", false, 1, true);
-  models.emplace_back("hillTrees/hillTree10cob/hillTree10cob.obj", false, 4, true);
+  //models below are expected to has the same orientation as the surface the land on
+  models.emplace_back("hillTrees/hillTree8cob/hillTree8cob.obj", false, 1);
+  models.emplace_back("hillTrees/hillTree9cob/hillTree9cob.obj", false, 1);
+  models.emplace_back("hillTrees/hillTree10cob/hillTree10cob.obj", false, 4);
 
   lowPolyModels.reserve(16);
   lowPolyModels.emplace_back("hillTrees/hillTree1LP/hillTree1LP.obj", true, 3);
@@ -24,9 +25,10 @@ HillTreesGenerator::HillTreesGenerator()
   lowPolyModels.emplace_back("hillTrees/hillTree5LP/hillTree5LP.obj", true);
   lowPolyModels.emplace_back("hillTrees/hillTree6LP/hillTree6LP.obj", true);
   lowPolyModels.emplace_back("hillTrees/hillTree7LP/hillTree7LP.obj", true, 3);
-  lowPolyModels.emplace_back("hillTrees/hillTree8cob/hillTree8cob.obj", true, 1, true);
-  lowPolyModels.emplace_back("hillTrees/hillTree9cob/hillTree9cob.obj", true, 1, true);
-  lowPolyModels.emplace_back("hillTrees/hillTree10cob/hillTree10cob.obj", true, 4, true);
+  //models below are expected to has the same orientation as the surface the land on
+  lowPolyModels.emplace_back("hillTrees/hillTree8cob/hillTree8cob.obj", true, 1);
+  lowPolyModels.emplace_back("hillTrees/hillTree9cob/hillTree9cob.obj", true, 1);
+  lowPolyModels.emplace_back("hillTrees/hillTree10cob/hillTree10cob.obj", true, 4);
 
   assert(lowPolyModels.size() == models.size());
   numSurfaceModels = 3;

@@ -91,7 +91,9 @@ SOURCES += \
     src/game/world/ambience/skysphere/Skysphere.cpp \
     src/game/world/ambience/skysphere/SkysphereFacade.cpp \
     src/game/world/ambience/skysphere/SkysphereShader.cpp \
-    src/game/world/ambience/lensFlare/LensFlareShader.cpp
+    src/game/world/ambience/lensFlare/LensFlareShader.cpp \
+    src/game/world/models/ModelRenderer.cpp \
+    src/game/world/models/ModelGPUDataManager.cpp
 
 HEADERS += \
     src/game/Game.h \
@@ -186,7 +188,9 @@ HEADERS += \
     src/game/world/ambience/skysphere/Skysphere.h \
     src/game/world/ambience/skysphere/SkysphereFacade.h \
     src/game/world/ambience/skysphere/SkysphereShader.h \
-    src/game/world/ambience/lensFlare/LensFlareShader.h
+    src/game/world/ambience/lensFlare/LensFlareShader.h \
+    src/game/world/models/ModelRenderer.h \
+    src/game/world/models/ModelGPUDataManager.h
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 

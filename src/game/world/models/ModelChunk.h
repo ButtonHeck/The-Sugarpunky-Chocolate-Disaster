@@ -2,11 +2,13 @@
 #define MODELCHUNK_H
 #include <vector>
 #include "game/world/Chunk.h"
+#include "graphics/Frustum.h"
 
 class ModelChunk : public Chunk
 {
 public:
   ModelChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom);
+  bool isInsideFrustum(const Frustum& frustum) const;
 
   //instance offsets (one unsigned int per model)
   void setInstanceOffsetsVector(std::vector<unsigned int>& instanceOffsets);

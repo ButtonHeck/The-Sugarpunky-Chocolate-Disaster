@@ -129,7 +129,7 @@ void LandGenerator::fillBufferData()
   basicGLBuffers.bind(INSTANCE_VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * tiles.size(), &baseInstanceChunkModels[0], GL_STATIC_DRAW);
   setupGLBufferInstancedAttributes();
-  resetAllGLBuffers();
+  BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
 void LandGenerator::fillCellBufferData()
@@ -155,7 +155,7 @@ void LandGenerator::fillCellBufferData()
   cellBuffers.bind(INSTANCE_VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * cellTiles.size(), &cellInstanceModels[0], GL_STATIC_DRAW);
   setupGLBufferInstancedAttributes();
-  resetAllGLBuffers();
+  BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
 void LandGenerator::bufferData(GLuint &ebo, GLuint &vbo, GLfloat* buffer, size_t size)

@@ -300,7 +300,7 @@ void Game::setupThreads()
               float cameraOnMapX = glm::clamp(camera.getPosition().x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F);
               float cameraOnMapZ = glm::clamp(camera.getPosition().z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F);
               glm::vec2 cameraPositionXZ = glm::vec2(cameraOnMapX, cameraOnMapZ);
-              scene.getPlantsFacade().prepareMeshesIndirectData(cameraPositionXZ, viewFrustum);
+              scene.getPlantsFacade().prepareIndirectBufferData(cameraPositionXZ, viewFrustum);
               meshBufferReady = true;
               meshBufferNeedUpdate = false;
             }

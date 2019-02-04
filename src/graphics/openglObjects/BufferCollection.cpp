@@ -44,6 +44,20 @@ BufferCollection::~BufferCollection()
   deleteBuffers();
 }
 
+void BufferCollection::bindZero(int flag)
+{
+  if (flag & VAO)
+    glBindVertexArray(0);
+  if (flag & VBO || flag & INSTANCE_VBO)
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  if (flag & EBO)
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  if (flag & DIBO)
+    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+  if (flag & TFBO)
+    glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+}
+
 void BufferCollection::create(int flags)
 {
   if (flags & VAO)

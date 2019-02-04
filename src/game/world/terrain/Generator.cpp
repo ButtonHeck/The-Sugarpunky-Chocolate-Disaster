@@ -8,13 +8,6 @@ Generator::Generator()
  tiles.reserve(NUM_TILES);
 }
 
-void Generator::resetAllGLBuffers()
-{
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
 void Generator::createTiles(bool flat, bool createOnZeroTiles, map2D_f& map, float offsetY)
 {
   tiles.clear();

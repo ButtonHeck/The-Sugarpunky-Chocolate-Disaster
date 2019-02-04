@@ -60,8 +60,7 @@ void ScreenFramebuffer::setupScreenQuadBuffer()
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  BufferCollection::bindZero(VAO | VBO);
 }
 
 void ScreenFramebuffer::draw(bool enableMultisampling, bool useDOF)

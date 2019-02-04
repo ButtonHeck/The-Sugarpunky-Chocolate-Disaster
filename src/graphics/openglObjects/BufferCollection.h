@@ -24,6 +24,7 @@ public:
   BufferCollection(BufferCollection&& old) noexcept;
   BufferCollection(const BufferCollection& copy);
   virtual ~BufferCollection();
+  static void bindZero(int flags);
   void create(int flags);
   void reserveNameForFutureStorage(int flags);
   void deleteBuffers();

@@ -13,7 +13,7 @@ TextManager::TextManager(const std::string &fontFile, const std::string &fontTex
   basicGLBuffers.bind(VAO | VBO);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
-  glBindVertexArray(0);
+  BufferCollection::bindZero(VAO | VBO);
 }
 
 void TextManager::addText(const Camera& camera,

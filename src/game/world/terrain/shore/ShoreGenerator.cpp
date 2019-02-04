@@ -209,7 +209,7 @@ void ShoreGenerator::fillBufferData()
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
-  resetAllGLBuffers();
+  BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
 void ShoreGenerator::bufferVertex(GLfloat *vertices, int offset, ShoreGenerator::ShoreVertex vertex)

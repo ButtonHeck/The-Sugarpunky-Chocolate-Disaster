@@ -75,7 +75,7 @@ void WaterGenerator::fillBufferData()
   setupGLBufferAttributes();
   shaders.setupCulling();
   glTransformFeedbackBufferBase(culledBuffers.get(TFBO), 0, culledBuffers.get(VBO));
-  resetAllGLBuffers();
+  BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
 void WaterGenerator::bufferNewData()

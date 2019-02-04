@@ -36,7 +36,7 @@ void BuildableGenerator::setup(const map2D_f &landMap, const map2D_f &hillsMap)
 void BuildableGenerator::fillBufferData()
 {
   setupAndBindBuffers(selectedBuffers);
-  resetAllGLBuffers();
+  BufferCollection::bindZero(VAO | VBO | EBO);
 
   setupAndBindBuffers(basicGLBuffers);
   glm::mat4 instanceModels[tiles.size()];
@@ -55,7 +55,7 @@ void BuildableGenerator::fillBufferData()
       glVertexAttribPointer(i+3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(i * sizeof(glm::vec4)));
       glVertexAttribDivisor(i+3, 1);
     }
-  resetAllGLBuffers();
+  BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
 void BuildableGenerator::setupAndBindBuffers(BufferCollection &buffers)

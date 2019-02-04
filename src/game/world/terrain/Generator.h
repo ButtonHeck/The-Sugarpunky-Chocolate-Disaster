@@ -33,7 +33,6 @@ public:
   static void smoothNormals(map2D_f& map, map2D_vec3& normalMap);
 
 protected:
-  void resetAllGLBuffers();
   map2D_f map;
   std::vector<TerrainTile> tiles;
   BufferCollection basicGLBuffers;

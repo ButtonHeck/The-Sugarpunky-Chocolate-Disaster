@@ -18,11 +18,11 @@ void PlantsFacade::setup(const map2D_f &baseMap, const map2D_f &hillMap, const m
   hillTreesGenerator.setup(hillMap, distributionMap, hillsNormalMap);
 }
 
-void PlantsFacade::prepareMeshesIndirectData(const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum)
+void PlantsFacade::prepareIndirectBufferData(const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum)
 {
-  prepareMeshesIndirectData(landPlantsGenerator, cameraPositionXZ, viewFrustum);
-  prepareMeshesIndirectData(hillTreesGenerator, cameraPositionXZ, viewFrustum);
-  prepareMeshesIndirectData(grassGenerator, cameraPositionXZ, viewFrustum);
+  prepareIndirectBufferData(landPlantsGenerator, cameraPositionXZ, viewFrustum);
+  prepareIndirectBufferData(hillTreesGenerator, cameraPositionXZ, viewFrustum);
+  prepareIndirectBufferData(grassGenerator, cameraPositionXZ, viewFrustum);
 }
 
 void PlantsFacade::updateIndirectBufferData()
@@ -123,20 +123,20 @@ void PlantsFacade::prepareDistributionMap(int cycles)
     }
 }
 
-void PlantsFacade::prepareMeshesIndirectData(PlantGenerator &generator, const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum)
+void PlantsFacade::prepareIndirectBufferData(PlantGenerator &generator, const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum)
 {
   auto& models = generator.models;
   auto& lowPolyModels = generator.lowPolyModels;
   auto& chunks = generator.chunks;
-  for (unsigned int i = 0; i < models.size(); i++)
+  for (unsigned int modelIndex = 0; modelIndex < models.size(); modelIndex++)
     {
-      Model& model = models[i];
-      model.prepareMeshesIndirectData(chunks, i, cameraPositionXZ, viewFrustum, true,
+      Model& model = models[modelIndex];
+      model.prepareIndirectBufferData(chunks, modelIndex, cameraPositionXZ, viewFrustum,
                                       PlantGenerator::LOADING_DISTANCE_UNITS_SQUARE,
                                       PlantGenerator::LOADING_DISTANCE_UNITS_SHADOW_SQUARE,
                                       PlantGenerator::LOADING_DISTANCE_UNITS_LOWPOLY_SQUARE);
-      Model& lowPolyModel = lowPolyModels[i];
-      lowPolyModel.prepareMeshesIndirectData(chunks, i, cameraPositionXZ, viewFrustum, false,
+      Model& lowPolyModel = lowPolyModels[modelIndex];
+      lowPolyModel.prepareIndirectBufferData(chunks, modelIndex, cameraPositionXZ, viewFrustum,
                                              PlantGenerator::LOADING_DISTANCE_UNITS_SQUARE,
                                              PlantGenerator::LOADING_DISTANCE_UNITS_SHADOW_SQUARE,
                                              PlantGenerator::LOADING_DISTANCE_UNITS_LOWPOLY_SQUARE);
@@ -147,11 +147,11 @@ void PlantsFacade::updateIndirectBufferData(PlantGenerator &generator)
 {
   auto& models = generator.models;
   auto& lowPolyModels = generator.lowPolyModels;
-  for (unsigned int i = 0; i < models.size(); i++)
+  for (unsigned int modelIndex = 0; modelIndex < models.size(); modelIndex++)
     {
-      Model& model = models[i];
+      Model& model = models[modelIndex];
       model.updateIndirectBufferData();
-      Model& lowPolyModel = lowPolyModels[i];
+      Model& lowPolyModel = lowPolyModels[modelIndex];
       lowPolyModel.updateIndirectBufferData();
     }
 }

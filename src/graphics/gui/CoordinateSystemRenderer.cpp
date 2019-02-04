@@ -18,8 +18,7 @@ CoordinateSystemRenderer::CoordinateSystemRenderer(Shader *shader)
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  BufferCollection::bindZero(VAO | VBO);
 }
 
 void CoordinateSystemRenderer::draw(const glm::mat3 &view, float aspect_ratio)

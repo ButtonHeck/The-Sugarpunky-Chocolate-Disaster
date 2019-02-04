@@ -13,7 +13,7 @@ void Skysphere::rotate(float angleDegrees, const glm::vec3 &rotationVector)
 
 void Skysphere::draw()
 {
-  model.drawDirect();
+  model.drawOneInstance();
 }
 
 const glm::mat4 &Skysphere::getRotationTransform() const

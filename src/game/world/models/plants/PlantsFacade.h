@@ -17,7 +17,7 @@ public:
   PlantsFacade(Shader& renderPhongShader, Shader& renderGouraudShader);
   virtual ~PlantsFacade() = default;
   void setup(const map2D_f &baseMap, const map2D_f &hillMap, const map2D_vec3 &hillsNormalMap);
-  void prepareMeshesIndirectData(const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);
+  void prepareIndirectBufferData(const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);
   void updateIndirectBufferData();
   void draw(const glm::vec3 &lightDir,
             const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
@@ -34,7 +34,7 @@ public:
 
 private:
   void prepareDistributionMap(int cycles);
-  void prepareMeshesIndirectData(PlantGenerator& generator, const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);
+  void prepareIndirectBufferData(PlantGenerator &generator, const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);
   void updateIndirectBufferData(PlantGenerator& generator);
 
   map2D_i distributionMap;
