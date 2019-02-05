@@ -91,6 +91,9 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene, GLuint meshVertexInd
       //texture type indices (used as indices in arrays of bindless texture handlers in a shader)
       vertex.TexIndices = glm::uvec2(diffuseSamplerIndex, specularSamplerIndex);
 
+      //set lowPoly flag as an attribute for each model
+      vertex.IsLowPoly = (float)isLowPoly;
+
       vertices.emplace_back(std::move(vertex));
     }
 

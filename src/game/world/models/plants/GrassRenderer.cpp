@@ -9,9 +9,9 @@ void GrassRenderer::render(std::vector<Model> &models, bool isShadow)
     BENCHMARK_("GrassRenderer: render depthmap", true);
 
   glDisable(GL_CULL_FACE);
-  for (unsigned int i = 0; i < models.size(); i++)
+  for (unsigned int modelIndex = 0; modelIndex < models.size(); modelIndex++)
     {
-      Model& model = models[i];
+      Model& model = models[modelIndex];
       model.draw(isShadow);
     }
   glEnable(GL_CULL_FACE);

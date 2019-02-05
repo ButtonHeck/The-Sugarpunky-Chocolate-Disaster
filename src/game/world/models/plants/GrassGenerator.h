@@ -6,11 +6,12 @@ class GrassGenerator : public PlantGenerator
 {
 public:
   GrassGenerator();
-  void setup(const map2D_f &baseMap,
-             const map2D_f &hillMap,
-             const map2D_i &distributionMap);
+  void setup(const map2D_f &landMap, const map2D_f &hillMap, const map2D_i &distributionMap);
+
 private:
-  void setupMatrices(const map2D_f &baseMap, const map2D_f &hillMap, const map2D_i &distributionMap);
+  const float MIN_SCALE = 0.189f;
+  const float MAX_SCALE = 0.224f;
+  void setupMatrices(const map2D_f &landMap, const map2D_f &hillMap, const map2D_i &distributionMap);
 };
 
 #endif // GRASSGENERATOR_H

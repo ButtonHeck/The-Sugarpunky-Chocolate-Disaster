@@ -6,8 +6,8 @@ class PlantsShader
 {
 public:
   PlantsShader(Shader& renderPhongShader, Shader& renderGouraudShader);
-  void activateShader(bool usePhongShading);
-  void updateAllPlants(const glm::vec3 &lightDir,
+  void updateAllPlants(bool usePhongShading,
+                       const glm::vec3 &lightDir,
                        const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                        const glm::mat4 &projectionView,
                        const glm::vec3 &viewPosition,
@@ -15,7 +15,7 @@ public:
                        bool useLandBlending);
   void updateGrass();
   void switchToGrass(bool isGrass);
-  void switchToLowPoly(bool isLowPoly);
+
 private:
   friend class PlantsFacade;
   Shader& renderPhongShader;

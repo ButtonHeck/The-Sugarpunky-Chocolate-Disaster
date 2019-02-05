@@ -28,9 +28,8 @@ public:
 protected:
   friend class PlantsFacade;
   void setupModelChunks();
-  void updateMatrices(std::vector<glm::mat4*>& newModels, unsigned int* numAllTrees);
+  void loadMatrices(const map2D_mat4& newMatrices);
   map2D_mat4 substituteMatricesStorage();
-  void loadMatrices(map2D_mat4& newMatrices);
 
   std::vector<Model> models;
   std::vector<Model> lowPolyModels;

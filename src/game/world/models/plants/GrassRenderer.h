@@ -1,6 +1,5 @@
 #ifndef GRASSRENDERER_H
 #define GRASSRENDERER_H
-#include "graphics/shaders/Shader.h"
 #include "game/world/models/Model.h"
 
 class GrassRenderer

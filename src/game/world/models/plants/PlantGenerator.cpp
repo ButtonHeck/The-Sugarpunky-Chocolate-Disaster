@@ -12,8 +12,8 @@ PlantGenerator::PlantGenerator()
 
 PlantGenerator::~PlantGenerator()
 {
-  for (size_t i = 0; i < matrices.size(); ++i)
-    delete[] matrices[i];
+  for (size_t modelIndex = 0; modelIndex < matrices.size(); ++modelIndex)
+    delete[] matrices[modelIndex];
   for (Model& model : models)
     model.cleanup();
   for (Model& model : lowPolyModels)
@@ -34,51 +34,51 @@ void PlantGenerator::serialize(std::ofstream &output)
 {
   for (unsigned int chunk = 0; chunk < chunks.size(); chunk++)
     {
-      for (unsigned int i = 0; i < chunks[chunk].getNumInstancesVector().size(); )
+      for (unsigned int modelIndex = 0; modelIndex < chunks[chunk].getNumInstancesVector().size(); )
         {
-          if (chunks[chunk].getNumInstances(i) == 0)
+          if (chunks[chunk].getNumInstances(modelIndex) == 0)
             {
               unsigned int zeroesInRow = 0;
-              while (i < chunks[chunk].getNumInstancesVector().size() && chunks[chunk].getNumInstances(i) == 0)
+              while (modelIndex < chunks[chunk].getNumInstancesVector().size() && chunks[chunk].getNumInstances(modelIndex) == 0)
                 {
                   zeroesInRow++;
-                  i++;
+                  modelIndex++;
                 }
               output << 0 << " " << zeroesInRow << " ";
             }
           else
             {
-              output << chunks[chunk].getNumInstances(i) << " ";
-              i++;
+              output << chunks[chunk].getNumInstances(modelIndex) << " ";
+              modelIndex++;
             }
         }
 
-      for (unsigned int i = 0; i < chunks[chunk].getInstanceOffsetVector().size(); )
+      for (unsigned int modelIndex = 0; modelIndex < chunks[chunk].getInstanceOffsetVector().size(); )
         {
-          if (chunks[chunk].getInstanceOffset(i) == 0)
+          if (chunks[chunk].getInstanceOffset(modelIndex) == 0)
             {
               unsigned int zeroesInRow = 0;
-              while(i < chunks[chunk].getInstanceOffsetVector().size() && chunks[chunk].getInstanceOffset(i) == 0)
+              while(modelIndex < chunks[chunk].getInstanceOffsetVector().size() && chunks[chunk].getInstanceOffset(modelIndex) == 0)
                 {
                   zeroesInRow++;
-                  i++;
+                  modelIndex++;
                 }
               output << 0 << " " << zeroesInRow << " ";
             }
           else
             {
-              output << chunks[chunk].getInstanceOffset(i) << " ";
-              i++;
+              output << chunks[chunk].getInstanceOffset(modelIndex) << " ";
+              modelIndex++;
             }
         }
     }
 
-  for (unsigned int i = 0; i < matrices.size(); i++)
+  for (unsigned int modelIndex = 0; modelIndex < matrices.size(); modelIndex++)
     {
-      output << numPlants[i] << " ";
-      for (unsigned int m = 0; m < numPlants[i]; m++)
+      output << numPlants[modelIndex] << " ";
+      for (unsigned int instanceIndex = 0; instanceIndex < numPlants[modelIndex]; instanceIndex++)
         {
-          float* matrixValues = (float*)glm::value_ptr(matrices[i][m]);
+          float* matrixValues = (float*)glm::value_ptr(matrices[modelIndex][instanceIndex]);
           for (unsigned int e = 0; e < 16; ++e)
             output << std::setprecision(4) << matrixValues[e] << " ";
         }
@@ -89,7 +89,7 @@ void PlantGenerator::deserialize(std::ifstream &input)
 {
   for (unsigned int chunk = 0; chunk < chunks.size(); chunk++)
     {
-      for (unsigned int i = 0; i < chunks[chunk].getNumInstancesVector().size(); )
+      for (unsigned int modelIndex = 0; modelIndex < chunks[chunk].getNumInstancesVector().size(); )
         {
           unsigned int numInstances;
           input >> numInstances;
@@ -97,18 +97,18 @@ void PlantGenerator::deserialize(std::ifstream &input)
             {
               unsigned int zeroesInRow;
               input >> zeroesInRow;
-              for (unsigned int z = i; z < i + zeroesInRow; z++)
-                chunks[chunk].setNumInstances(z, 0);
-              i += zeroesInRow;
+              for (unsigned int neighbourModelIndex = modelIndex; neighbourModelIndex < modelIndex + zeroesInRow; neighbourModelIndex++)
+                chunks[chunk].setNumInstances(neighbourModelIndex, 0);
+              modelIndex += zeroesInRow;
             }
           else
             {
-              chunks[chunk].setNumInstances(i, numInstances);
-              i++;
+              chunks[chunk].setNumInstances(modelIndex, numInstances);
+              modelIndex++;
             }
         }
 
-      for (unsigned int i = 0; i < chunks[chunk].getInstanceOffsetVector().size(); )
+      for (unsigned int modelIndex = 0; modelIndex < chunks[chunk].getInstanceOffsetVector().size(); )
         {
           unsigned int offset;
           input >> offset;
@@ -116,90 +116,66 @@ void PlantGenerator::deserialize(std::ifstream &input)
             {
               unsigned int zeroesInRow;
               input >> zeroesInRow;
-              for (unsigned int z = i; z < i + zeroesInRow; z++)
-                chunks[chunk].setInstanceOffset(z, 0);
-              i += zeroesInRow;
+              for (unsigned int neighbourModelIndex = modelIndex; neighbourModelIndex < modelIndex + zeroesInRow; neighbourModelIndex++)
+                chunks[chunk].setInstanceOffset(neighbourModelIndex, 0);
+              modelIndex += zeroesInRow;
             }
           else
             {
-              chunks[chunk].setInstanceOffset(i, offset);
-              i++;
+              chunks[chunk].setInstanceOffset(modelIndex, offset);
+              modelIndex++;
             }
         }
     }
 
-  std::vector<glm::mat4*> newMatrices;
-  unsigned int numAllTrees[matrices.size()];
-  for (unsigned int i = 0; i < matrices.size(); i++)
+  map2D_mat4 newMatrices;
+  for (unsigned int modelIndex = 0; modelIndex < matrices.size(); modelIndex++)
     {
-      unsigned int numTrees = 0;
-      input >> numTrees;
-      numAllTrees[i] = numTrees;
-      newMatrices.emplace_back(new glm::mat4[numTrees]);
-      for (unsigned int t = 0; t < numTrees; t++)
+      unsigned int numPlantsForCurrentModel = 0;
+      input >> numPlantsForCurrentModel;
+      newMatrices.emplace_back(std::vector<glm::mat4>(numPlantsForCurrentModel));
+      for (unsigned int instanceIndex = 0; instanceIndex < numPlantsForCurrentModel; instanceIndex++)
         {
           glm::mat4 model;
           float* modelData = (float*)glm::value_ptr(model);
           for (unsigned int e = 0; e < 16; e++)
             input >> modelData[e];
-          newMatrices[i][t] = std::move(model);
+          newMatrices[modelIndex][instanceIndex] = std::move(model);
         }
     }
-
-  updateMatrices(newMatrices, numAllTrees);
-  for (unsigned int i = 0; i < matrices.size(); i++)
-    delete[] newMatrices[i];
+  loadMatrices(newMatrices);
 }
 
-void PlantGenerator::updateMatrices(std::vector<glm::mat4 *> &newMatrices, unsigned int *numAllTrees)
+void PlantGenerator::loadMatrices(const map2D_mat4 &newMatrices)
 {
   numPlants.reset(new unsigned int[newMatrices.size()]);
-  for (unsigned int i = 0; i < matrices.size(); i++)
-    delete[] matrices[i];
+  for (unsigned int modelIndex = 0; modelIndex < matrices.size(); modelIndex++)
+    delete[] matrices[modelIndex];
   matrices.clear();
 
-  for (unsigned int i = 0; i < newMatrices.size(); i++)
+  for (unsigned int modelIndex = 0; modelIndex < newMatrices.size(); modelIndex++)
     {
-      matrices.emplace_back(new glm::mat4[numAllTrees[i]]);
-      numPlants[i] = numAllTrees[i];
-    }
-  for (unsigned int i = 0; i < matrices.size(); i++)
-    {
-      for (unsigned int m = 0; m < numAllTrees[i]; m++)
-        matrices[i][m] = newMatrices[i][m];
+      matrices.emplace_back(new glm::mat4[newMatrices[modelIndex].size()]);
+      for (unsigned int instanceIndex = 0; instanceIndex < newMatrices[modelIndex].size(); instanceIndex++)
+        matrices[modelIndex][instanceIndex] = newMatrices[modelIndex][instanceIndex];
+      numPlants[modelIndex] = newMatrices[modelIndex].size();
     }
 
-  for (unsigned int i = 0; i < newMatrices.size(); i++)
-    models[i].loadModelInstances(matrices[i], numPlants[i]);
-  for (unsigned int i = 0; i < newMatrices.size(); i++)
-    lowPolyModels[i].loadModelInstances(matrices[i], numPlants[i]);
+  for (unsigned int modelIndex = 0; modelIndex < models.size(); modelIndex++)
+    models[modelIndex].loadModelInstances(matrices[modelIndex], numPlants[modelIndex]);
+  for (unsigned int modelIndex = 0; modelIndex < lowPolyModels.size(); modelIndex++)
+    lowPolyModels[modelIndex].loadModelInstances(matrices[modelIndex], numPlants[modelIndex]);
 }
 
 map2D_mat4 PlantGenerator::substituteMatricesStorage()
 {
   map2D_mat4 newMatrices;
-  for (unsigned int i = 0; i < models.size(); i++)
+  for (unsigned int modelIndex = 0; modelIndex < models.size(); modelIndex++)
     {
       newMatrices.emplace_back(std::vector<glm::mat4>());
       if (!matrices.empty())
-        delete[] matrices[i];
+        delete[] matrices[modelIndex];
     }
   matrices.clear();
   return newMatrices;
-}
-
-void PlantGenerator::loadMatrices(map2D_mat4 &newMatrices)
-{
-  numPlants.reset(new unsigned int[newMatrices.size()]);
-  for (unsigned int i = 0; i < newMatrices.size(); i++)
-    {
-      matrices.emplace_back(new glm::mat4[newMatrices[i].size()]);
-      for (unsigned int m = 0; m < newMatrices[i].size(); m++)
-        matrices[i][m] = newMatrices[i][m];
-      numPlants[i] = newMatrices[i].size();
-    }
-  for (unsigned int i = 0; i < models.size(); i++)
-    models[i].loadModelInstances(matrices[i], numPlants[i]);
-  for (unsigned int i = 0; i < lowPolyModels.size(); i++)
-    lowPolyModels[i].loadModelInstances(matrices[i], numPlants[i]);
 }

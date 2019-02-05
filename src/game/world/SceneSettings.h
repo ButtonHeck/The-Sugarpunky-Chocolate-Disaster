@@ -20,7 +20,7 @@ constexpr int SHORE_SIZE_BASE = 5;
 constexpr int CHUNK_SIZE = 4;
 constexpr float HALF_CHUNK_SIZE = CHUNK_SIZE / 2.0f;
 constexpr float FRUSTUM_CULLING_DISTANCE_OFFSET = CHUNK_SIZE;
-constexpr int MODELS_DISTRIBUTION_FREQ = 8;
+constexpr int MODELS_DISTRIBUTION_FREQUENCY = 8;
 constexpr float PLANET_MOVE_SPEED = 0.045f;
 
 #endif // SCENESETTINGS_H

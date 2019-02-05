@@ -12,6 +12,7 @@ struct Vertex
   glm::vec3  Tangent;
   glm::vec3  Bitangent;
   glm::uvec2 TexIndices;
+  float      IsLowPoly;
 };
 
 class Mesh

@@ -31,80 +31,76 @@ HillTreesGenerator::HillTreesGenerator()
   lowPolyModels.emplace_back("hillTrees/hillTree10cob/hillTree10cob.obj", true, 4);
 
   assert(lowPolyModels.size() == models.size());
-  numSurfaceModels = 3;
+  numSurfaceOrientedModels = 3;
 }
 
-void HillTreesGenerator::setup(const map2D_f &hillMap,
-                               const map2D_i &distributionMap,
-                               const map2D_vec3 &hillsNormalMap)
+void HillTreesGenerator::setup(const map2D_f &hillMap, const map2D_i &distributionMap, const map2D_vec3 &hillsNormalMap)
 {
   setupModelChunks();
   setupMatrices(hillMap, distributionMap, hillsNormalMap);
 }
 
-void HillTreesGenerator::setupMatrices(const map2D_f &hillMap,
-                                       const map2D_i &distributionMap,
-                                       const map2D_vec3 &hillsNormalMap)
+void HillTreesGenerator::setupMatrices(const map2D_f &hillMap, const map2D_i &distributionMap, const map2D_vec3 &hillsNormalMap)
 {
-  auto matricesVecs = substituteMatricesStorage();
-  std::uniform_real_distribution<float> sizeDistribution(0.36f, 0.51f);
-  std::uniform_real_distribution<float> positionDistribution(-0.6f, 0.6f);
-  std::uniform_real_distribution<float> rotationDistribution(-0.05f, 0.05f);
+  map2D_mat4 matricesStorage = substituteMatricesStorage();
+  std::uniform_real_distribution<float> sizeDistribution(MIN_SCALE_TREES, MAX_SCALE_TREES);
+  std::uniform_real_distribution<float> sizeDistributionRocks(MIN_SCALE_ROCKS, MAX_SCALE_ROCKS);
+  std::uniform_real_distribution<float> positionDistribution(MIN_POSITION_OFFSET, MAX_POSITION_OFFSET);
+  std::uniform_real_distribution<float> rotationDistribution(MIN_ROTATION_OFFSET, MAX_ROTATION_OFFSET);
 
-  std::vector<unsigned int> instanceOffsetsVector(models.size());
-  std::vector<unsigned int> numInstancesVector(models.size());
-  for (unsigned int i = 0; i < models.size(); i++)
+  size_t numberOfModels = models.size();
+  std::vector<unsigned int> instanceOffsetsVector(numberOfModels);
+  std::vector<unsigned int> numInstancesVector(numberOfModels);
+  for (unsigned int i = 0; i < numberOfModels; i++)
     {
       instanceOffsetsVector.emplace_back(0);
       numInstancesVector.emplace_back(0);
     }
 
   unsigned int matrixCounter = 0, chunkCounter = 0, repeatCounter = 0, surfaceMatrixCounter = 0, surfaceRepeatCounter = 0;
-  for (unsigned int y = 0; y < WORLD_HEIGHT; y += CHUNK_SIZE)
+  for (unsigned int startY = 0; startY < WORLD_HEIGHT; startY += CHUNK_SIZE)
     {
-      for (unsigned int x = 0; x < WORLD_WIDTH; x += CHUNK_SIZE)
+      for (unsigned int startX = 0; startX < WORLD_WIDTH; startX += CHUNK_SIZE)
         {
           chunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
-          for (unsigned int y1 = y; y1 < y + CHUNK_SIZE; y1++)
+          for (unsigned int y = startY; y < startY + CHUNK_SIZE; y++)
             {
-              for (unsigned int x1 = x; x1 < x + CHUNK_SIZE; x1++)
+              for (unsigned int x = startX; x < startX + CHUNK_SIZE; x++)
                 {
-                  auto maxHeight = std::max(hillMap[y1][x1], std::max(hillMap[y1][x1+1], std::max(hillMap[y1+1][x1], hillMap[y1+1][x1+1])));
-                  auto minHeight = std::min(hillMap[y1][x1], std::min(hillMap[y1][x1+1], std::min(hillMap[y1+1][x1], hillMap[y1+1][x1+1])));
-                  auto slope = maxHeight - minHeight;
+                  float maxHeight = std::max(hillMap[y][x], std::max(hillMap[y][x+1], std::max(hillMap[y+1][x], hillMap[y+1][x+1])));
+                  float minHeight = std::min(hillMap[y][x], std::min(hillMap[y][x+1], std::min(hillMap[y+1][x], hillMap[y+1][x+1])));
+                  float slope = maxHeight - minHeight;
                   bool indicesCrossed = false;
-                  if ((hillMap[y1][x1+1] > 0 && hillMap[y1][x1] == 0 && hillMap[y1+1][x1] == 0 && hillMap[y1+1][x1+1] == 0)
-                      || (hillMap[y1+1][x1] > 0 && hillMap[y1][x1] == 0 && hillMap[y1+1][x1+1] == 0 && hillMap[y1][x1+1] == 0))
+                  if ((hillMap[y][x+1] > 0 && hillMap[y][x] == 0 && hillMap[y+1][x] == 0 && hillMap[y+1][x+1] == 0) ||
+                      (hillMap[y+1][x] > 0 && hillMap[y][x] == 0 && hillMap[y][x+1] == 0 && hillMap[y+1][x+1] == 0))
                     indicesCrossed = true;
-                  float translationX = -HALF_WORLD_WIDTH_F + x1 + 0.5f;
-                  float translationZ = -HALF_WORLD_HEIGHT_F + y1 + 0.5f;
-                  float translationY = hillMap[y1][x1] + (!indicesCrossed ?
-                         (hillMap[y1+1][x1+1] - hillMap[y1][x1]) / 2 :
-                          std::abs(hillMap[y1][x1+1] - hillMap[y1+1][x1]) / 2)
-                        + HILLS_OFFSET_Y;
+                  float translationX = -HALF_WORLD_WIDTH_F + x + 0.5f;
+                  float translationZ = -HALF_WORLD_HEIGHT_F + y + 0.5f;
+                  float translationY = hillMap[y][x] + HILLS_OFFSET_Y +
+                                      (!indicesCrossed ? (hillMap[y+1][x+1] - hillMap[y][x]) / 2 : std::abs(hillMap[y][x+1] - hillMap[y+1][x]) / 2);
 
-                  if (slope < 1.0f
-                      && (hillMap[y1][x1] != 0 || hillMap[y1+1][x1+1] != 0 || hillMap[y1+1][x1] != 0 || hillMap[y1][x1+1] != 0)
-                      && rand() % (MODELS_DISTRIBUTION_FREQ / 2 - 1) == 0
-                      && distributionMap[y1][x1] > (MODELS_DISTRIBUTION_FREQ / 2 - 1))
+                  if (slope < MAX_SURFACE_SLOPE_FOR_TREES &&
+                      (hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0) &&
+                      (rand() % (MODELS_DISTRIBUTION_FREQUENCY / 2 - 1)) == 0 &&
+                      distributionMap[y][x] > (MODELS_DISTRIBUTION_FREQUENCY / 2 - 1) &&
+                      translationY > 0)
                     {
                       glm::mat4 model;
                       float offsetX = positionDistribution(randomizer) * (1.0f - slope);
                       float offsetZ = positionDistribution(randomizer) * (1.0f - slope);
-                      glm::vec3 translation(translationX + offsetX, translationY, translationZ + offsetZ);
-                      if (translation.y < 0)
-                        continue;
-                      model = glm::translate(model, translation);
-                      model = glm::rotate(model, glm::radians((float)(y1 * WORLD_WIDTH + x1 * 5)),
-                                          glm::vec3(rotationDistribution(randomizer), 1.0f, rotationDistribution(randomizer)));
-                      model = glm::scale(model, glm::vec3(sizeDistribution(randomizer)));
+                      glm::vec3 translationVector(translationX + offsetX, translationY, translationZ + offsetZ);
+                      model = glm::translate(model, translationVector);
+                      glm::vec3 rotateVector(rotationDistribution(randomizer), 1.0f, rotationDistribution(randomizer));
+                      model = glm::rotate(model, glm::radians((float)(y * WORLD_WIDTH + x * 5)), rotateVector);
+                      glm::vec3 scaleVector(sizeDistribution(randomizer), sizeDistribution(randomizer), sizeDistribution(randomizer));
+                      model = glm::scale(model, scaleVector);
 
-                      size_t modelIndex = matrixCounter % (matricesVecs.size() - numSurfaceModels);
-                      matricesVecs[modelIndex].emplace_back(std::move(model));
-                      ++numInstancesVector[modelIndex];
-                      ++instanceOffsetsVector[modelIndex];
+                      size_t currentModelIndex = matrixCounter % (matricesStorage.size() - numSurfaceOrientedModels);
+                      matricesStorage[currentModelIndex].emplace_back(std::move(model));
+                      ++numInstancesVector[currentModelIndex];
+                      ++instanceOffsetsVector[currentModelIndex];
                       ++repeatCounter;
-                      if (repeatCounter == models[modelIndex].getRepeatCount())
+                      if (repeatCounter == models[currentModelIndex].getRepeatCount())
                         {
                           ++matrixCounter;
                           repeatCounter = 0;
@@ -112,29 +108,32 @@ void HillTreesGenerator::setupMatrices(const map2D_f &hillMap,
                       continue;
                     }
 
-                    if (slope < 2.6f
-                        && (hillMap[y1][x1] != 0 || hillMap[y1+1][x1+1] != 0 || hillMap[y1+1][x1] != 0 || hillMap[y1][x1+1] != 0)
-                        && rand() % (MODELS_DISTRIBUTION_FREQ / 2 + 1) == 0)
+                    if (slope < MAX_SURFACE_SLOPE_FOR_ROCKS &&
+                        (hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0) &&
+                        (rand() % (MODELS_DISTRIBUTION_FREQUENCY / 2 + 1)) == 0 &&
+                        translationY > 1.0f)
                       {
-                        glm::mat4 surfaceModel;
-                        glm::vec3 translation(translationX, translationY, translationZ);
-                        if (translation.y < 1.0f)
-                          continue;
-                        surfaceModel = glm::translate(surfaceModel, translation);
-                        glm::vec3 hillTileNormalApprox = hillsNormalMap[y1][x1];
-                        hillTileNormalApprox += hillsNormalMap[y1+1][x1];
-                        hillTileNormalApprox += hillsNormalMap[y1+1][x1+1];
-                        hillTileNormalApprox += hillsNormalMap[y1][x1+1];
+                        glm::mat4 model;
+                        glm::vec3 translationVector(translationX, translationY, translationZ);
+                        model = glm::translate(model, translationVector);
+
+                        //create change of basis matrix to get same orientation as the surface on these coordinates
+                        glm::vec3 hillTileNormalApprox = hillsNormalMap[y][x] +
+                                                         hillsNormalMap[y+1][x] +
+                                                         hillsNormalMap[y+1][x+1] +
+                                                         hillsNormalMap[y][x+1];
                         glm::vec3 newY = glm::normalize(hillTileNormalApprox);
                         glm::vec3 newZ = glm::normalize(glm::cross(newY, glm::vec3(0.0f, 1.0f, 0.0f)));
                         glm::vec3 newX = glm::normalize(glm::cross(newY, newZ));
                         glm::mat4 changeOfBasisTransform = glm::mat4(glm::mat3(newX, newY, newZ));
-                        surfaceModel *= changeOfBasisTransform;
-                        surfaceModel = glm::rotate(surfaceModel, glm::radians((float)(y1 * WORLD_WIDTH + x1 * 29)), glm::vec3(0.0f, 1.0f, 0.0f));
-                        surfaceModel = glm::scale(surfaceModel, glm::vec3(sizeDistribution(randomizer)) * 0.8f);
+                        model *= changeOfBasisTransform;
 
-                        size_t surfaceModelIndex = matricesVecs.size() - numSurfaceModels + (surfaceMatrixCounter % numSurfaceModels);
-                        matricesVecs[surfaceModelIndex].emplace_back(std::move(surfaceModel));
+                        model = glm::rotate(model, glm::radians((float)(y * WORLD_WIDTH + x * 29)), glm::vec3(0.0f, 1.0f, 0.0f));
+                        glm::vec3 scaleVector(sizeDistributionRocks(randomizer)); //uniform scaling
+                        model = glm::scale(model, scaleVector);
+
+                        size_t surfaceModelIndex = matricesStorage.size() - numSurfaceOrientedModels + (surfaceMatrixCounter % numSurfaceOrientedModels);
+                        matricesStorage[surfaceModelIndex].emplace_back(std::move(model));
                         ++numInstancesVector[surfaceModelIndex];
                         ++instanceOffsetsVector[surfaceModelIndex];
                         ++surfaceRepeatCounter;
@@ -152,5 +151,5 @@ void HillTreesGenerator::setupMatrices(const map2D_f &hillMap,
           ++chunkCounter;
         }
     }
-  loadMatrices(matricesVecs);
+  loadMatrices(matricesStorage);
 }

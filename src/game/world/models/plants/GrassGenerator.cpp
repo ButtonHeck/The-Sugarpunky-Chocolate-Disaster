@@ -23,67 +23,61 @@ GrassGenerator::GrassGenerator()
   assert(lowPolyModels.size() == models.size());
 }
 
-void GrassGenerator::setup(const map2D_f &baseMap,
-                           const map2D_f &hillMap,
-                           const map2D_i &distributionMap)
+void GrassGenerator::setup(const map2D_f &landMap, const map2D_f &hillMap, const map2D_i &distributionMap)
 {
   setupModelChunks();
-  setupMatrices(baseMap, hillMap, distributionMap);
+  setupMatrices(landMap, hillMap, distributionMap);
 }
 
-void GrassGenerator::setupMatrices(const map2D_f &baseMap,
-                                   const map2D_f &hillMap,
-                                   const map2D_i &distributionMap)
+void GrassGenerator::setupMatrices(const map2D_f &landMap, const map2D_f &hillMap, const map2D_i &distributionMap)
 {
-  auto matricesVecs = substituteMatricesStorage();
-  std::uniform_real_distribution<float> modelSizeDistribution(0.27f, 0.32f);
-  std::uniform_real_distribution<float> modelPositionDistribution(-0.25f, 0.25f);
+  map2D_mat4 matricesStorage = substituteMatricesStorage();
+  std::uniform_real_distribution<float> modelSizeDistribution(MIN_SCALE, MAX_SCALE);
 
-  std::vector<unsigned int> instanceOffsetsVector(models.size());
-  std::vector<unsigned int> numInstanceVector(models.size());
-  for (unsigned int i = 0; i < models.size(); i++)
+  size_t numberOfModels = models.size();
+  std::vector<unsigned int> instanceOffsetsVector(numberOfModels);
+  std::vector<unsigned int> numInstancesVector(numberOfModels);
+  for (unsigned int i = 0; i < numberOfModels; i++)
     {
       instanceOffsetsVector.emplace_back(0);
-      numInstanceVector.emplace_back(0);
+      numInstancesVector.emplace_back(0);
     }
 
   unsigned int matrixCounter = 0, chunkCounter = 0;
-  for (unsigned int y = 0; y < WORLD_HEIGHT; y += CHUNK_SIZE)
+  for (unsigned int startY = 0; startY < WORLD_HEIGHT; startY += CHUNK_SIZE)
     {
-      for (unsigned int x = 0; x < WORLD_WIDTH; x += CHUNK_SIZE)
+      for (unsigned int startX = 0; startX < WORLD_WIDTH; startX += CHUNK_SIZE)
         {
           chunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
-          for (unsigned int y1 = y; y1 < y + CHUNK_SIZE; y1++)
+          for (unsigned int y = startY; y < startY + CHUNK_SIZE; y++)
             {
-              for (unsigned int x1 = x; x1 < x + CHUNK_SIZE; x1++)
+              for (unsigned int x = startX; x < startX + CHUNK_SIZE; x++)
                 {
-                  if ((baseMap[y1][x1] == 0 && baseMap[y1+1][x1+1] == 0 && baseMap[y1+1][x1] == 0 && baseMap[y1][x1+1] == 0)
-                      && !(hillMap[y1][x1] != 0 || hillMap[y1+1][x1+1] != 0 || hillMap[y1+1][x1] != 0 || hillMap[y1][x1+1] != 0)
-                      && rand() % (MODELS_DISTRIBUTION_FREQ / 2 - 1) == 0
-                      && distributionMap[y1][x1] > MODELS_DISTRIBUTION_FREQ / 2)
+                  if ( (landMap[y][x] == 0 && landMap[y+1][x+1] == 0 && landMap[y+1][x] == 0 && landMap[y][x+1] == 0) &&
+                      !(hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0) &&
+                       rand() % (MODELS_DISTRIBUTION_FREQUENCY / 2 - 1) == 0 &&
+                       distributionMap[y][x] > MODELS_DISTRIBUTION_FREQUENCY / 2)
                     {
                       glm::mat4 model;
-                      model = glm::translate(model,
-                                             glm::vec3(-HALF_WORLD_WIDTH_F + x1 + 0.5f,
-                                                       0.0f,
-                                                       -HALF_WORLD_HEIGHT_F + y1 + 0.5f));
-                      model = glm::rotate(model, glm::radians((float)(rand() * WORLD_WIDTH + x1 * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
-                      glm::vec3 scale(modelSizeDistribution(randomizer) * 0.75f,
-                                      modelSizeDistribution(randomizer) * 0.66f,
-                                      modelSizeDistribution(randomizer) * 0.75f);
-                      model = glm::scale(model, scale);
-                      matricesVecs[matrixCounter % matricesVecs.size()].emplace_back(std::move(model));
-                      ++numInstanceVector[matrixCounter % matricesVecs.size()];
-                      ++instanceOffsetsVector[matrixCounter % matricesVecs.size()];
+                      glm::vec3 translateVector(-HALF_WORLD_WIDTH_F + x + 0.5f, 0.0f, -HALF_WORLD_HEIGHT_F + y + 0.5f);
+                      model = glm::translate(model, translateVector);
+                      model = glm::rotate(model, glm::radians((float)(rand() * WORLD_WIDTH + x * 5)), glm::vec3(0.0f, 1.0f, 0.0f));
+                      glm::vec3 scaleVector(modelSizeDistribution(randomizer), modelSizeDistribution(randomizer), modelSizeDistribution(randomizer));
+                      model = glm::scale(model, scaleVector);
+
+                      size_t currentModelIndex = matrixCounter % matricesStorage.size();
+                      matricesStorage[currentModelIndex].emplace_back(std::move(model));
+                      ++numInstancesVector[currentModelIndex];
+                      ++instanceOffsetsVector[currentModelIndex];
                       ++matrixCounter;
                     }
                 }
             }
-          chunks.at(chunkCounter).setNumInstancesVector(numInstanceVector);
-          for (unsigned int i = 0; i < numInstanceVector.size(); i++)
-            numInstanceVector[i] = 0;
+          chunks.at(chunkCounter).setNumInstancesVector(numInstancesVector);
+          for (unsigned int i = 0; i < numInstancesVector.size(); i++)
+            numInstancesVector[i] = 0;
           ++chunkCounter;
         }
     }
-  loadMatrices(matricesVecs);
+  loadMatrices(matricesStorage);
 }

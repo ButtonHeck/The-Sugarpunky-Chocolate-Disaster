@@ -6,19 +6,16 @@ PlantsShader::PlantsShader(Shader &renderPhongShader, Shader &renderGouraudShade
     renderGouraudShader(renderGouraudShader)
 {}
 
-void PlantsShader::activateShader(bool usePhongShading)
-{
-  currentShader = usePhongShading ? &renderPhongShader : &renderGouraudShader;
-  currentShader->use();
-}
-
-void PlantsShader::updateAllPlants(const glm::vec3 &lightDir,
+void PlantsShader::updateAllPlants(bool usePhongShading,
+                                   const glm::vec3 &lightDir,
                                    const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                                    const glm::mat4 &projectionView,
                                    const glm::vec3 &viewPosition,
                                    bool useShadows,
                                    bool useLandBlending)
 {
+  currentShader = usePhongShading ? &renderPhongShader : &renderGouraudShader;
+  currentShader->use();
   currentShader->setMat4("u_projectionView", projectionView);
   currentShader->setVec3("u_viewPosition", viewPosition);
   currentShader->setBool("u_shadowEnable", useShadows);
@@ -37,9 +34,4 @@ void PlantsShader::updateGrass()
 void PlantsShader::switchToGrass(bool isGrass)
 {
   currentShader->setBool("u_isGrass", isGrass);
-}
-
-void PlantsShader::switchToLowPoly(bool isLowPoly)
-{
-  currentShader->setBool("u_isLowPoly", isLowPoly);
 }
