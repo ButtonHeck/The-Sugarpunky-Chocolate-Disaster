@@ -175,7 +175,7 @@ void Model::updateIndirectBufferData()
   GPUDataManager.updateIndirectBufferData();
 }
 
-void Model::loadModelInstances(const glm::mat4 *instanceMatrices, unsigned int numInstances)
+void Model::loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances)
 {
   GPUDataManager.loadModelInstances(instanceMatrices, numInstances);
 }

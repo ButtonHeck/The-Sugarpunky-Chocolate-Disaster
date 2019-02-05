@@ -19,7 +19,7 @@ public:
                                  float loadingDistanceShadow,
                                  float loadingDistanceLowPoly);
   void updateIndirectBufferData();
-  void loadModelInstances(const glm::mat4 *instanceMatrices, unsigned int numInstances);
+  void loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances);
   void cleanup();
   GLsizei getPrimitiveCount(bool isShadow) const;
   BufferCollection &getBasicGLBuffers();

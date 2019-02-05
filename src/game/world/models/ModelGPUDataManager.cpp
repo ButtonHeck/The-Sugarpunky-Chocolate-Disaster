@@ -109,7 +109,7 @@ void ModelGPUDataManager::updateIndirectBufferData()
   glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * drawIndirectCommandPrimCountShadow, multiDrawIndirectDataShadow);
 }
 
-void ModelGPUDataManager::loadModelInstances(const glm::mat4 *instanceMatrices, unsigned int numInstances)
+void ModelGPUDataManager::loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances)
 {
   basicGLBuffers.bind(VAO);
   if (basicGLBuffers.get(INSTANCE_VBO) != 0)

@@ -26,7 +26,7 @@ public:
                                  float loadingDistanceShadow,
                                  float loadingDistanceLowPoly);
   void updateIndirectBufferData();
-  void loadModelInstances(const glm::mat4 *models, unsigned int numModels);
+  void loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances);
   unsigned int getRepeatCount() const;
   void cleanup();
 

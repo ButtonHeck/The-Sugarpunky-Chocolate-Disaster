@@ -33,7 +33,7 @@ protected:
 
   std::vector<Model> models;
   std::vector<Model> lowPolyModels;
-  std::vector<glm::mat4*> matrices;
+  map2D_mat4 matrices;
   std::unique_ptr<unsigned int[]> numPlants;
   std::vector<ModelChunk> chunks;
   std::default_random_engine randomizer;

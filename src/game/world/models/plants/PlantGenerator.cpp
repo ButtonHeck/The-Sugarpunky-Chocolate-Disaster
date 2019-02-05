@@ -12,8 +12,6 @@ PlantGenerator::PlantGenerator()
 
 PlantGenerator::~PlantGenerator()
 {
-  for (size_t modelIndex = 0; modelIndex < matrices.size(); ++modelIndex)
-    delete[] matrices[modelIndex];
   for (Model& model : models)
     model.cleanup();
   for (Model& model : lowPolyModels)
@@ -149,13 +147,11 @@ void PlantGenerator::deserialize(std::ifstream &input)
 void PlantGenerator::loadMatrices(const map2D_mat4 &newMatrices)
 {
   numPlants.reset(new unsigned int[newMatrices.size()]);
-  for (unsigned int modelIndex = 0; modelIndex < matrices.size(); modelIndex++)
-    delete[] matrices[modelIndex];
   matrices.clear();
 
   for (unsigned int modelIndex = 0; modelIndex < newMatrices.size(); modelIndex++)
     {
-      matrices.emplace_back(new glm::mat4[newMatrices[modelIndex].size()]);
+      matrices.emplace_back(std::vector<glm::mat4>(newMatrices[modelIndex].size()));
       for (unsigned int instanceIndex = 0; instanceIndex < newMatrices[modelIndex].size(); instanceIndex++)
         matrices[modelIndex][instanceIndex] = newMatrices[modelIndex][instanceIndex];
       numPlants[modelIndex] = newMatrices[modelIndex].size();
@@ -171,11 +167,7 @@ map2D_mat4 PlantGenerator::substituteMatricesStorage()
 {
   map2D_mat4 newMatrices;
   for (unsigned int modelIndex = 0; modelIndex < models.size(); modelIndex++)
-    {
-      newMatrices.emplace_back(std::vector<glm::mat4>());
-      if (!matrices.empty())
-        delete[] matrices[modelIndex];
-    }
+    newMatrices.emplace_back(std::vector<glm::mat4>());
   matrices.clear();
   return newMatrices;
 }
