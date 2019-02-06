@@ -11,18 +11,17 @@ void WaterRenderer::render(bool useFrustumCulling)
 {
   if (useFrustumCulling)
     {
+      shaders.cullingShader.use();
+      generator.basicGLBuffers.bind(VAO);
+      GLuint transformFeedback = generator.culledBuffers.get(TFBO);
       {
-        shaders.cullingShader.use();
-        generator.basicGLBuffers.bind(VAO);
-        {
-          BENCHMARK("WaterRenderer: draw to TFB", true);
-          glEnable(GL_RASTERIZER_DISCARD);
-          glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, generator.culledBuffers.get(TFBO));
-          glBeginTransformFeedback(GL_TRIANGLES);
-          glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
-          glEndTransformFeedback();
-          glDisable(GL_RASTERIZER_DISCARD);
-        }
+        BENCHMARK("WaterRenderer: draw to TFB", true);
+        glEnable(GL_RASTERIZER_DISCARD);
+        glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transformFeedback);
+        glBeginTransformFeedback(GL_TRIANGLES);
+        glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
+        glEndTransformFeedback();
+        glDisable(GL_RASTERIZER_DISCARD);
       }
       {
         BENCHMARK("WaterRenderer: draw from TFB", true);
@@ -32,11 +31,11 @@ void WaterRenderer::render(bool useFrustumCulling)
         if (!anySamplesPassedQuery.isInUse())
           {
             anySamplesPassedQuery.start();
-            glDrawTransformFeedback(GL_TRIANGLES, generator.culledBuffers.get(TFBO));
+            glDrawTransformFeedback(GL_TRIANGLES, transformFeedback);
             anySamplesPassedQuery.end();
           }
         else
-          glDrawTransformFeedback(GL_TRIANGLES, generator.culledBuffers.get(TFBO));
+          glDrawTransformFeedback(GL_TRIANGLES, transformFeedback);
         glDisable(GL_BLEND);
       }
     }

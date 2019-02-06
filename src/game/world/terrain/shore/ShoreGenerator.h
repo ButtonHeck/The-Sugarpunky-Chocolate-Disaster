@@ -15,10 +15,17 @@ public:
   void setup();
 
 private:
+  const float MIN_HEIGHT_KERNEL_OFFSET = 0.9f;
+  const float MAX_HEIGHT_KERNEL_OFFSET = 1.1f;
+  const float MIN_HEIGHT_RANDOMIZE_OFFSET = -0.24f;
+  const float MAX_HEIGHT_RANDOMIZE_OFFSET = 0.24f;
+  const float HEIGHT_SMOOTH_OFFSET = 0.25f;
+
   friend class ShoreRenderer;
   friend class ShoreFacade;
   struct ShoreVertex
   {
+    constexpr static unsigned int NUMBER_OF_ELEMENTS = 8;
     ShoreVertex(glm::vec3 position, glm::vec2 texCoords, glm::vec3 normal);
     float posX, posY, posZ;
     float texCoordX, texCoordY;

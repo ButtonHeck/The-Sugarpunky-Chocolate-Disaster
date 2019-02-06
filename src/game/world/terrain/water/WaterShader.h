@@ -16,8 +16,11 @@ public:
               bool useFrustumCulling);
   void updateNormals(const glm::mat4 &projectionView);
   void debugRenderMode(bool enable);
+
 private:
+  constexpr static float DUDV_SPEED = 0.0004f;
   friend class WaterRenderer;
+
   Shader& renderShader;
   Shader& cullingShader;
   Shader& normalsShader;

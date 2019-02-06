@@ -10,9 +10,7 @@ void HillsRenderer::render(bool useFrustumCulling, const glm::vec2& viewAccelera
 {
   if (useFrustumCulling)
     {
-      float accelerationAbsX = glm::abs(viewAcceleration.x);
-      float accelerationAbsY = glm::abs(viewAcceleration.y);
-      float accelerationAbs = glm::max(accelerationAbsX, accelerationAbsY);
+      float accelerationAbs = glm::max(glm::abs(viewAcceleration.x), glm::abs(viewAcceleration.y));
       int updateOffset = 1;
       if (accelerationAbs > 0.5f && accelerationAbs <= 5.0f)
         updateOffset = 4;
@@ -20,30 +18,28 @@ void HillsRenderer::render(bool useFrustumCulling, const glm::vec2& viewAccelera
         updateOffset = 5;
       else if (accelerationAbs > 10.0f)
         updateOffset = 6;
-      static int updateTFB = 0;
-      GLuint tfb = generator.culledBuffers.get(TFBO);
-      {
-        if (updateTFB == 0)
-          {
-            BENCHMARK("HillsRenderer: draw to TFB", true);
-            shaders.cullingShader.use();
-            generator.basicGLBuffers.bind(VAO);
-            glEnable(GL_RASTERIZER_DISCARD);
-            glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, tfb);
-            glBeginTransformFeedback(GL_TRIANGLES);
-            glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
-            glEndTransformFeedback();
-            glDisable(GL_RASTERIZER_DISCARD);
-          }
-        updateTFB += updateOffset;
-        if (updateTFB >= 15)
-          updateTFB = 0;
-      }
+      static unsigned int updateTransformFeedbackCounter = 0;
+      GLuint transformFeedback = generator.culledBuffers.get(TFBO);
+      if (updateTransformFeedbackCounter == 0)
+        {
+          BENCHMARK("HillsRenderer: draw to TFB", true);
+          shaders.cullingShader.use();
+          generator.basicGLBuffers.bind(VAO);
+          glEnable(GL_RASTERIZER_DISCARD);
+          glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transformFeedback);
+          glBeginTransformFeedback(GL_TRIANGLES);
+          glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
+          glEndTransformFeedback();
+          glDisable(GL_RASTERIZER_DISCARD);
+        }
+      updateTransformFeedbackCounter += updateOffset;
+      if (updateTransformFeedbackCounter >= FEEDBACK_UPDATE_DELAY)
+        updateTransformFeedbackCounter = 0;
       {
         BENCHMARK("HillsRenderer: draw from TFB", true);
         shaders.renderShader.use();
         generator.culledBuffers.bind(VAO);
-        glDrawTransformFeedback(GL_TRIANGLES, tfb);
+        glDrawTransformFeedback(GL_TRIANGLES, transformFeedback);
       }
     }
   else

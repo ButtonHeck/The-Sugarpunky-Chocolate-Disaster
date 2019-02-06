@@ -13,6 +13,7 @@ public:
   unsigned int getTop() const;
   unsigned int getBottom() const;
   glm::vec2 getMidPoint() const;
+
 protected:
   unsigned int left, right, top, bottom;
   float midPointX, midPointZ;

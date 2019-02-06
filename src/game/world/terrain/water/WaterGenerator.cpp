@@ -5,14 +5,14 @@ WaterGenerator::WaterGenerator(WaterShader &shaders)
     Generator(),
     culledBuffers(VAO | VBO | TFBO),
     shaders(shaders),
-    heightOffsets(new GLfloat[WATER_HEIGHT_OFFSETS_SIZE])
+    heightOffsets(new GLfloat[HEIGHT_OFFSETS_BUFFER_SIZE])
 {}
 
 void WaterGenerator::setup()
 {
   generateMap();
-  while (numTiles < WORLD_WIDTH * (SHORE_SIZE_BASE + 2) * (SHORE_SIZE_BASE + 2) * 9
-         || numTiles > WORLD_WIDTH * (SHORE_SIZE_BASE + 3) * (SHORE_SIZE_BASE + 3) * 9)
+  while (numTiles < WORLD_WIDTH * (RIVER_WIDTH_DEFAULT + 2) * (RIVER_WIDTH_DEFAULT + 2) * 9 ||
+         numTiles > WORLD_WIDTH * (RIVER_WIDTH_DEFAULT + 3) * (RIVER_WIDTH_DEFAULT + 3) * 9)
     {
       initializeMap(map);
       generateMap();
@@ -22,7 +22,8 @@ void WaterGenerator::setup()
 void WaterGenerator::setupConsiderTerrain()
 {
   initializeMap(postProcessMap);
-  for (unsigned int i = 0; i < 4; i++)
+  //by this moment we have smoothed shore, so make sure that water still covers it
+  for (unsigned int i = 0; i < SHORE_SMOOTH_CYCLES - 1; i++)
     addWaterNearbyTerrain();
   createTiles(true, false, postProcessMap, 0);
   tiles.shrink_to_fit();
@@ -31,16 +32,16 @@ void WaterGenerator::setupConsiderTerrain()
 
 void WaterGenerator::fillBufferData()
 {
-  numVertices = tiles.size() * 24;
+  numVertices = tiles.size() * UNIQUE_VERTICES_PER_TILE * WaterVertex::NUMBER_OF_ELEMENTS;
   vertices.reset(new GLfloat[numVertices]);
   const size_t INDICES_DATA_LENGTH = tiles.size() * VERTICES_PER_QUAD;
   std::unique_ptr<GLuint[]> indices(new GLuint[INDICES_DATA_LENGTH]);
   size_t indicesBufferIndex = 0;
   const static glm::vec3 DEFAULT_Y_NORMAL(0.0f, 1.0f, 0.0f);
 
-  for (unsigned int i = 0; i < tiles.size(); i++)
+  for (unsigned int tileIndex = 0; tileIndex < tiles.size(); tileIndex++)
     {
-      TerrainTile& tile = tiles[i];
+      TerrainTile& tile = tiles[tileIndex];
       int x = tile.mapX, y = tile.mapY;
 
       WaterVertex lowLeft(glm::vec3(x - 1, tile.lowLeft, y), DEFAULT_Y_NORMAL);
@@ -48,13 +49,13 @@ void WaterGenerator::fillBufferData()
       WaterVertex upRight(glm::vec3(x, tile.upperRight, y - 1), DEFAULT_Y_NORMAL);
       WaterVertex upLeft(glm::vec3(x - 1, tile.upperLeft, y - 1), DEFAULT_Y_NORMAL);
 
-      int vertexBufferOffset = i * 24;
+      int vertexBufferOffset = tileIndex * UNIQUE_VERTICES_PER_TILE * WaterVertex::NUMBER_OF_ELEMENTS;
       bufferVertex(vertices.get(), vertexBufferOffset+0, lowLeft); //ll1
       bufferVertex(vertices.get(), vertexBufferOffset+6, lowRight); //lr1
       bufferVertex(vertices.get(), vertexBufferOffset+12, upRight); //ur1
       bufferVertex(vertices.get(), vertexBufferOffset+18, upLeft); //ur2
 
-      GLuint indicesBufferBaseVertex = i * 4;
+      GLuint indicesBufferBaseVertex = tileIndex * UNIQUE_VERTICES_PER_TILE;
       indices[indicesBufferIndex++] = indicesBufferBaseVertex + 0;
       indices[indicesBufferIndex++] = indicesBufferBaseVertex + 1;
       indices[indicesBufferIndex++] = indicesBufferBaseVertex + 2;
@@ -167,20 +168,19 @@ void WaterGenerator::generateMap()
   numTiles = 0;
   bool startAxisFromX = rand() % 2 == 0;
   bool riverEnd = false;
-  unsigned int curveMaxDistance = rand() % 48 + 48;
+  unsigned int curveMaxDistance = rand() % RIVER_DIRECTION_CHANGE_DELAY + RIVER_DIRECTION_CHANGE_DELAY;
   unsigned int curveDistanceStep = 0;
-  int numCurveChanges = 0;
   int y, x;
   unsigned int startCoord = rand() % WORLD_HEIGHT;
   x = startAxisFromX ? startCoord : 0;
   y = startAxisFromX ? 0 : startCoord;
-  DIRECTION dir = startAxisFromX ? DOWN : RIGHT;
-  int shoreSizeOffset = 0, riverTileCounter = 0;
-  bool shoreSizeIncrease = true;
+  DIRECTION riverDirection = startAxisFromX ? DOWN : RIGHT;
+  int riverWidthOffset = 0, riverTileCounter = 0;
+  bool riverWidthIncrease = true;
 
   while (!riverEnd)
     {
-      switch (dir) {
+      switch (riverDirection) {
         case UP:
           {
             ++curveDistanceStep;
@@ -202,7 +202,10 @@ void WaterGenerator::generateMap()
                 x = WORLD_WIDTH;
                 riverEnd = true;
               }
-            setNewDirection(x, y, numCurveChanges, curveDistanceStep, curveMaxDistance, dir, UP_LEFT, UP_RIGHT);
+            map[y][x] = WATER_LEVEL;
+            ++numTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              setNewDirection(curveDistanceStep, curveMaxDistance, riverDirection, UP_LEFT, UP_RIGHT);
             break;
           }
         case UP_RIGHT:
@@ -220,7 +223,10 @@ void WaterGenerator::generateMap()
                 x = WORLD_WIDTH;
                 riverEnd = true;
               }
-            setNewDirection(x, y, numCurveChanges, curveDistanceStep, curveMaxDistance, dir, UP, RIGHT);
+            map[y][x] = WATER_LEVEL;
+            ++numTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              setNewDirection(curveDistanceStep, curveMaxDistance, riverDirection, UP, RIGHT);
             break;
           }
         case RIGHT:
@@ -244,7 +250,10 @@ void WaterGenerator::generateMap()
                 y = WORLD_HEIGHT;
                 riverEnd = true;
               }
-            setNewDirection(x, y, numCurveChanges, curveDistanceStep, curveMaxDistance, dir, UP_RIGHT, DOWN_RIGHT);
+            map[y][x] = WATER_LEVEL;
+            ++numTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              setNewDirection(curveDistanceStep, curveMaxDistance, riverDirection, UP_RIGHT, DOWN_RIGHT);
             break;
           }
         case DOWN_RIGHT:
@@ -262,7 +271,10 @@ void WaterGenerator::generateMap()
                 x = WORLD_WIDTH;
                 riverEnd = true;
               }
-            setNewDirection(x, y, numCurveChanges, curveDistanceStep, curveMaxDistance, dir, DOWN, RIGHT);
+            map[y][x] = WATER_LEVEL;
+            ++numTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              setNewDirection(curveDistanceStep, curveMaxDistance, riverDirection, DOWN, RIGHT);
             break;
           }
         case DOWN:
@@ -286,7 +298,10 @@ void WaterGenerator::generateMap()
                 x = WORLD_WIDTH;
                 riverEnd = true;
               }
-            setNewDirection(x, y, numCurveChanges, curveDistanceStep, curveMaxDistance, dir, DOWN_RIGHT, DOWN_LEFT);
+            map[y][x] = WATER_LEVEL;
+            ++numTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              setNewDirection(curveDistanceStep, curveMaxDistance, riverDirection, DOWN_RIGHT, DOWN_LEFT);
             break;
           }
         case DOWN_LEFT:
@@ -304,7 +319,10 @@ void WaterGenerator::generateMap()
                 x = 0;
                 riverEnd = true;
               }
-            setNewDirection(x, y, numCurveChanges, curveDistanceStep, curveMaxDistance, dir, DOWN, LEFT);
+            map[y][x] = WATER_LEVEL;
+            ++numTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              setNewDirection(curveDistanceStep, curveMaxDistance, riverDirection, DOWN, LEFT);
             break;
           }
         case LEFT:
@@ -328,7 +346,10 @@ void WaterGenerator::generateMap()
                 y = WORLD_HEIGHT;
                 riverEnd = true;
               }
-            setNewDirection(x, y, numCurveChanges, curveDistanceStep, curveMaxDistance, dir, UP_LEFT, DOWN_LEFT);
+            map[y][x] = WATER_LEVEL;
+            ++numTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              setNewDirection(curveDistanceStep, curveMaxDistance, riverDirection, UP_LEFT, DOWN_LEFT);
             break;
           }
         case UP_LEFT:
@@ -346,64 +367,60 @@ void WaterGenerator::generateMap()
                 y = 0;
                 riverEnd = true;
               }
-            setNewDirection(x, y, numCurveChanges, curveDistanceStep, curveMaxDistance, dir, UP, LEFT);
+            map[y][x] = WATER_LEVEL;
+            ++numTiles;
+            if (curveDistanceStep == curveMaxDistance)
+              setNewDirection(curveDistanceStep, curveMaxDistance, riverDirection, UP, LEFT);
             break;
           }
         default:
           break;
       }
-      fattenKernel(x, y, riverTileCounter, shoreSizeOffset, shoreSizeIncrease);
+      fattenKernel(x, y, riverTileCounter, riverWidthOffset, riverWidthIncrease);
     }
 }
 
-void WaterGenerator::setNewDirection(int x, int y,
-                                 int &numCurveChanges,
-                                 unsigned int &curveDistanceStep,
-                                 unsigned int &curveMaxDistance,
-                                 DIRECTION &dir, DIRECTION limit1, DIRECTION limit2)
+void WaterGenerator::setNewDirection(unsigned int &curveDistanceStep,
+                                     unsigned int &curveMaxDistance,
+                                     DIRECTION &currentDirection,
+                                     DIRECTION validDirectionLeft,
+                                     DIRECTION validDirectionRight)
 {
-  map[y][x] = WATER_LEVEL;
-  ++numTiles;
-  if (curveDistanceStep == curveMaxDistance)
-    {
-      ++numCurveChanges;
-      curveDistanceStep = 0;
-      curveMaxDistance = rand() % 48 + 48;
-      dir = (DIRECTION)(rand() % 8);
-      while(dir != limit1 && dir != limit2)
-        dir = (DIRECTION)(rand() % 8);
-    }
+  curveDistanceStep = 0;
+  curveMaxDistance = rand() % RIVER_DIRECTION_CHANGE_DELAY + RIVER_DIRECTION_CHANGE_DELAY;
+  currentDirection = (DIRECTION)(rand() % DIRECTION::NUM_DIRECTIONS);
+  while(currentDirection != validDirectionLeft && currentDirection != validDirectionRight)
+    currentDirection = (DIRECTION)(rand() % DIRECTION::NUM_DIRECTIONS);
 }
 
-void WaterGenerator::fattenKernel(int x, int y,
-                                     int& riverTileCounter, int& shoreSizeOffset, bool& shoreSizeIncrease)
+void WaterGenerator::fattenKernel(int x, int y, int& riverTileCounter, int& riverWidthOffset, bool& riverWidthIncrease)
 {
-  int shoreSizeYT = rand() % 2 + SHORE_SIZE_BASE;
-  int shoreSizeYB = rand() % 2 + SHORE_SIZE_BASE;
-  int shoreSizeXL = rand() % 2 + SHORE_SIZE_BASE;
-  int shoreSizeXR = rand() % 2 + SHORE_SIZE_BASE;
+  int shoreSizeYT = rand() % 2 + RIVER_WIDTH_DEFAULT;
+  int shoreSizeYB = rand() % 2 + RIVER_WIDTH_DEFAULT;
+  int shoreSizeXL = rand() % 2 + RIVER_WIDTH_DEFAULT;
+  int shoreSizeXR = rand() % 2 + RIVER_WIDTH_DEFAULT;
   ++riverTileCounter;
-  if (riverTileCounter % 19 == 0)
+  if (riverTileCounter % RIVER_SIZE_TO_INCREASE_COUNTER == 0)
     {
       riverTileCounter = 0;
-      shoreSizeOffset += shoreSizeIncrease ? 1 : -1;
-      if (shoreSizeOffset > SHORE_SIZE_BASE)
-        shoreSizeIncrease = !shoreSizeIncrease;
-      else if (shoreSizeOffset < 0)
+      riverWidthOffset += riverWidthIncrease ? 1 : -1;
+      if (riverWidthOffset > RIVER_WIDTH_DEFAULT)
+        riverWidthIncrease = !riverWidthIncrease;
+      else if (riverWidthOffset < 0)
         {
-          shoreSizeOffset = 0;
-          shoreSizeIncrease = !shoreSizeIncrease;
+          riverWidthOffset = 0;
+          riverWidthIncrease = !riverWidthIncrease;
         }
     }
-  int xLeft = ((int)(x-shoreSizeXL-shoreSizeOffset) <= 0 ? 0 : x-shoreSizeXL-shoreSizeOffset);
-  int xRight = ((int)(x+shoreSizeXR+shoreSizeOffset) >= WORLD_WIDTH ? WORLD_WIDTH : x+shoreSizeXR+shoreSizeOffset);
-  int yTop = ((int)(y-shoreSizeYT-shoreSizeOffset) <= 0 ? 0 : y-shoreSizeYT-shoreSizeOffset);
-  int yBottom = ((int)(y+shoreSizeYB+shoreSizeOffset) >= WORLD_HEIGHT ? WORLD_HEIGHT : y+shoreSizeYB+shoreSizeOffset);
-  for (int y1 = yTop; y1 <= yBottom; y1++)
+  int xLeft = ((int)(x-shoreSizeXL-riverWidthOffset) <= 0 ? 0 : x-shoreSizeXL-riverWidthOffset);
+  int xRight = ((int)(x+shoreSizeXR+riverWidthOffset) >= WORLD_WIDTH ? WORLD_WIDTH : x+shoreSizeXR+riverWidthOffset);
+  int yTop = ((int)(y-shoreSizeYT-riverWidthOffset) <= 0 ? 0 : y-shoreSizeYT-riverWidthOffset);
+  int yBottom = ((int)(y+shoreSizeYB+riverWidthOffset) >= WORLD_HEIGHT ? WORLD_HEIGHT : y+shoreSizeYB+riverWidthOffset);
+  for (int y = yTop; y <= yBottom; y++)
     {
-      for (int x1 = xLeft; x1 <= xRight; x1++)
+      for (int x = xLeft; x <= xRight; x++)
         {
-          map[y1][x1] = WATER_LEVEL;
+          map[y][x] = WATER_LEVEL;
           ++numTiles;
         }
     }
@@ -414,11 +431,11 @@ void WaterGenerator::updateAnimationFrame(double time, Options& options)
   BENCHMARK("(ST)Water: Update animation frame", true);
   using glm::vec3;
   using glm::vec4;
-  double offsetMultiplier = time * 0.12;
-  for (size_t i = 0; i < WATER_HEIGHT_OFFSETS_SIZE; i+=2)
+  double offsetMultiplier = time * ANIMATION_SPEED;
+  for (size_t i = 0; i < HEIGHT_OFFSETS_BUFFER_SIZE; i+=2)
     {
-      heightOffsets[i] = std::cos(offsetMultiplier * ((i * i) % 19)) * 0.0825f + WATER_LEVEL;
-      heightOffsets[i+1] = std::sin(offsetMultiplier * ((i * i) % 29)) * 0.0889f + WATER_LEVEL;
+      heightOffsets[i] = std::cos(offsetMultiplier * ((i * i) % 19)) * HEIGHT_OFFSET_1 + WATER_LEVEL;
+      heightOffsets[i+1] = std::sin(offsetMultiplier * ((i * i) % 29)) * HEIGHT_OFFSET_2 + WATER_LEVEL;
     }
 
   static bool mapCreated = false;
@@ -457,18 +474,17 @@ void WaterGenerator::updateAnimationFrame(double time, Options& options)
           vec3 n9 = glm::normalize(vec3(heightOffsets[y * WORLD_WIDTH + x-1] - heightOffsets[y * WORLD_WIDTH + x],
                                         NORMAL_Y_APPROX,
                                         heightOffsets[y * WORLD_WIDTH + x-1] - heightOffsets[(y+1) * WORLD_WIDTH + x-1]));
-          vec3 avgNormal = n0 + n1 + n3 + n4 + n6 + n9; //intentionally left unnormalized
-          normalMap[y][x] = avgNormal;
+          vec3 averagedNormal = n0 + n1 + n3 + n4 + n6 + n9; //intentionally left unnormalized
+          normalMap[y][x] = averagedNormal;
         }
     }
 
-  unsigned int numWaterTiles = tiles.size();
-  for (unsigned int i = 0; i < numWaterTiles; ++i)
+  for (unsigned int tileIndex = 0; tileIndex < tiles.size(); ++tileIndex)
     {
       if (options[OPT_RECREATE_TERRAIN_REQUEST])
         return;
-      TerrainTile& tile = tiles[i];
-      unsigned int pointerOffsetWithStride = i * 24;
+      TerrainTile& tile = tiles[tileIndex];
+      unsigned int pointerOffsetWithStride = tileIndex * UNIQUE_VERTICES_PER_TILE * WaterVertex::NUMBER_OF_ELEMENTS;
       unsigned int heightOffsetWithStrideForLow = (tile.mapY+1) * WORLD_WIDTH;
       unsigned int heightOffsetWithStrideForUpper = tile.mapY * WORLD_WIDTH;
 
@@ -485,7 +501,7 @@ void WaterGenerator::updateAnimationFrame(double time, Options& options)
     }
 }
 
-void WaterGenerator::bufferVertex(GLfloat *vertices, int offset, WaterGenerator::WaterVertex vertex)
+void WaterGenerator::bufferVertex(GLfloat *vertices, int offset, WaterVertex vertex)
 {
   vertices[offset+0] = vertex.posX;
   vertices[offset+1] = vertex.posY;
@@ -495,7 +511,7 @@ void WaterGenerator::bufferVertex(GLfloat *vertices, int offset, WaterGenerator:
   vertices[offset+5] = vertex.normalZ;
 }
 
-void WaterGenerator::updateVertexNormal(GLfloat *vertices, int offset, glm::vec3& normal)
+void WaterGenerator::updateVertexNormal(GLfloat *vertices, int offset, const glm::vec3& normal)
 {
   vertices[offset+0] = normal.x;
   vertices[offset+1] = normal.y;
@@ -512,10 +528,11 @@ void WaterGenerator::updateTileY(GLfloat *vertices, int offset, glm::vec4&& heig
 
 void WaterGenerator::setupGLBufferAttributes()
 {
+  const size_t SIZE_OF_WATER_VERTEX = WaterVertex::NUMBER_OF_ELEMENTS * sizeof(GLfloat);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, SIZE_OF_WATER_VERTEX, 0);
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, SIZE_OF_WATER_VERTEX, (void*)(3 * sizeof(GLfloat)));
 }
 
 WaterGenerator::WaterVertex::WaterVertex(glm::vec3 position, glm::vec3 normal)

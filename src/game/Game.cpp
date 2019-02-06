@@ -90,12 +90,23 @@ void Game::loop()
   glm::vec4 currentColor = glm::mix(NIGHT_SKY_COLOR, DAY_SKY_COLOR, glm::clamp(-shadowVolume.getLightDir().y * 5, 0.0f, 1.0f));
   glClearColor(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
 
+  landIndirectBufferHasUpdated = false;
   {
-    BENCHMARK("Game loop: wait mesh buffer ready", true);
-    while(!meshBufferReady && !updateCount == 0)
-      std::this_thread::yield();
-    meshBufferReady = false;
+    BENCHMARK("Game loop: wait models DIBs ready", true);
+    while(!modelsIndirectBufferPrepared && updateCount != 0)
+      {
+        if (!landIndirectBufferHasUpdated)
+          {
+            scene.getLandFacade()->updateCellsIndirectBuffer(viewFrustum);
+            landIndirectBufferHasUpdated = true;
+          }
+        else
+          std::this_thread::yield();
+      }
+    modelsIndirectBufferPrepared = false;
   }
+  if (!landIndirectBufferHasUpdated)
+    scene.getLandFacade()->updateCellsIndirectBuffer(viewFrustum);
 
   if (options[OPT_RECREATE_TERRAIN_REQUEST])
     recreate();
@@ -158,7 +169,7 @@ void Game::drawFrame(const glm::mat4 &projectionView)
 
   //after all mesh related draw calls we could start updating meshes indirect data buffers
   //start updating right after we've used it and before we need that data to be updated and buffered again
-  meshBufferNeedUpdate = true;
+  modelsIndirectBufferNeedUpdate = true;
 
   if (options[OPT_DRAW_DEBUG_TEXT])
     {
@@ -294,15 +305,15 @@ void Game::setupThreads()
   {
       while(!glfwWindowShouldClose(window))
         {
-          if (meshBufferNeedUpdate)
+          if (modelsIndirectBufferNeedUpdate)
             {
               BENCHMARK("(ST)Model: update meshes DIBs data", true);
               float cameraOnMapX = glm::clamp(camera.getPosition().x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F);
               float cameraOnMapZ = glm::clamp(camera.getPosition().z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F);
               glm::vec2 cameraPositionXZ = glm::vec2(cameraOnMapX, cameraOnMapZ);
               scene.getPlantsFacade().prepareIndirectBufferData(cameraPositionXZ, viewFrustum);
-              meshBufferReady = true;
-              meshBufferNeedUpdate = false;
+              modelsIndirectBufferPrepared = true;
+              modelsIndirectBufferNeedUpdate = false;
             }
           std::this_thread::yield();
         }

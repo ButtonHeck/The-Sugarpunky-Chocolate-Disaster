@@ -27,7 +27,6 @@ public:
 
 private:
   constexpr static int NUM_CHUNKS = (WORLD_WIDTH / CHUNK_SIZE) * (WORLD_HEIGHT / CHUNK_SIZE);
-  constexpr static size_t INDIRECT_DRAW_COMMAND_ARGUMENTS = 5;
   struct IndirectBufferToken
   {
     //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }

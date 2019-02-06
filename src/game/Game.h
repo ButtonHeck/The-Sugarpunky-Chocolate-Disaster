@@ -93,8 +93,9 @@ private:
   void setupThreads();
   std::unique_ptr<std::thread> waterAnimator;
   std::unique_ptr<std::thread> meshIndirectBufferUpdater;
-  volatile bool meshBufferReady = false, meshBufferNeedUpdate = false;
+  volatile bool modelsIndirectBufferPrepared = false, modelsIndirectBufferNeedUpdate = false;
   volatile bool waterKeyFrameReady = false, waterNeedNewKeyFrame = true;
+  bool landIndirectBufferHasUpdated = false;
 };
 
 #endif // GAME_H

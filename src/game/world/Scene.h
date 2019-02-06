@@ -56,6 +56,7 @@ public:
   PlantsFacade &getPlantsFacade();
   TheSunFacade &getSunFacade();
   SkysphereFacade &getSkysphereFacade();
+  std::unique_ptr<LandFacade> &getLandFacade();
 
 private:
   ShaderManager& shaderManager;

@@ -81,8 +81,8 @@ void HillTreesGenerator::setupMatrices(const map2D_f &hillMap, const map2D_i &di
 
                   if (slope < MAX_SURFACE_SLOPE_FOR_TREES &&
                       (hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0) &&
-                      (rand() % (MODELS_DISTRIBUTION_FREQUENCY / 2 - 1)) == 0 &&
-                      distributionMap[y][x] > (MODELS_DISTRIBUTION_FREQUENCY / 2 - 1) &&
+                      (rand() % (PLANTS_DISTRIBUTION_FREQUENCY / 2 - 1)) == 0 &&
+                      distributionMap[y][x] > (PLANTS_DISTRIBUTION_FREQUENCY / 2 - 1) &&
                       translationY > 0)
                     {
                       glm::mat4 model;
@@ -110,7 +110,7 @@ void HillTreesGenerator::setupMatrices(const map2D_f &hillMap, const map2D_i &di
 
                     if (slope < MAX_SURFACE_SLOPE_FOR_ROCKS &&
                         (hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0) &&
-                        (rand() % (MODELS_DISTRIBUTION_FREQUENCY / 2 + 1)) == 0 &&
+                        (rand() % (PLANTS_DISTRIBUTION_FREQUENCY / 2 + 1)) == 0 &&
                         translationY > 1.0f)
                       {
                         glm::mat4 model;

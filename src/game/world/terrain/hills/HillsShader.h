@@ -18,6 +18,7 @@ public:
               bool useShadows);
   void updateNormals(const glm::mat4 &projectionView);
   void debugRenderMode(bool enable);
+
 private:
   friend class HillsRenderer;
   Shader& renderShader;

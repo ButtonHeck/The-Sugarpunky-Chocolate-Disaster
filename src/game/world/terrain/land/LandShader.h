@@ -10,6 +10,7 @@ public:
               const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
               const glm::mat4 &projectionView,
               bool useShadows);
+
 private:
   Shader& renderShader;
 };

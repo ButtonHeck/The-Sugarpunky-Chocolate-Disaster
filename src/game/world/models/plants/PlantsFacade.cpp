@@ -12,7 +12,7 @@ PlantsFacade::PlantsFacade(Shader &renderPhongShader, Shader &renderGouraudShade
 
 void PlantsFacade::setup(const map2D_f &landMap, const map2D_f &hillMap, const map2D_vec3 &hillsNormalMap)
 {
-  prepareDistributionMap(MODELS_DISTRIBUTION_FREQUENCY);
+  prepareDistributionMap(PLANTS_DISTRIBUTION_FREQUENCY);
   landPlantsGenerator.setup(landMap, hillMap, distributionMap);
   grassGenerator.setup(landMap, hillMap, distributionMap);
   hillTreesGenerator.setup(hillMap, distributionMap, hillsNormalMap);

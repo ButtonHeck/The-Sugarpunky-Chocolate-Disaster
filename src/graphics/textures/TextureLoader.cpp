@@ -152,10 +152,10 @@ GLuint TextureLoader::createUnderwaterReliefTexture(const map2D_f &waterMap, GLu
     {
       for (int x = 0; x < WORLD_WIDTH - 1; x++)
         {
-          left = glm::clamp(x - SHORE_SIZE_BASE - 3, 0, WORLD_WIDTH - 1);
-          right = glm::clamp(x + SHORE_SIZE_BASE + 3, 0, WORLD_WIDTH - 1);
-          top = glm::clamp(y - SHORE_SIZE_BASE - 3, 1, WORLD_HEIGHT);
-          bottom = glm::clamp(y + SHORE_SIZE_BASE + 3, 0, WORLD_HEIGHT);
+          left = glm::clamp(x - RIVER_WIDTH_DEFAULT - 3, 0, WORLD_WIDTH - 1);
+          right = glm::clamp(x + RIVER_WIDTH_DEFAULT + 3, 0, WORLD_WIDTH - 1);
+          top = glm::clamp(y - RIVER_WIDTH_DEFAULT - 3, 1, WORLD_HEIGHT);
+          bottom = glm::clamp(y + RIVER_WIDTH_DEFAULT + 3, 0, WORLD_HEIGHT);
           waterCount = 0;
           for (int y1 = top; y1 < bottom; y1++)
             {
@@ -165,7 +165,7 @@ GLuint TextureLoader::createUnderwaterReliefTexture(const map2D_f &waterMap, GLu
                       waterMap[y1-1][x1] != 0 &&
                       waterMap[y1-1][x1+1] != 0 &&
                       waterMap[y1][x1+1] != 0)
-                    waterCount += 1.0 - ((SHORE_SIZE_BASE - 4) * 0.25);
+                    waterCount += 1.0 - ((RIVER_WIDTH_DEFAULT - 4) * 0.25);
                 }
             }
           textureData[y * WORLD_WIDTH + x] = (GLubyte)waterCount;

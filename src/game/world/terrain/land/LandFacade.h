@@ -14,9 +14,9 @@ public:
   void draw(const glm::vec3 &lightDir,
             const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
             const glm::mat4 &projectionView,
-            const Frustum &viewFrustum,
             bool useShadows);
   const map2D_f &getMap() const;
+  void updateCellsIndirectBuffer(const Frustum& frustum);
 
 private:
   LandShader shader;

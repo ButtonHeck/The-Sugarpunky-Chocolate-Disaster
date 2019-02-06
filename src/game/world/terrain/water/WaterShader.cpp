@@ -9,8 +9,9 @@ WaterShader::WaterShader(Shader &renderShader, Shader &cullingShader, Shader &no
 
 void WaterShader::setupCulling()
 {
-  const GLchar* varyings[2] = {"o_pos", "o_normal"};
-  glTransformFeedbackVaryings(cullingShader.getID(), 2, varyings, GL_INTERLEAVED_ATTRIBS);
+  const unsigned int TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT = 2;
+  const GLchar* varyings[TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT] = {"o_pos", "o_normal"};
+  glTransformFeedbackVaryings(cullingShader.getID(), TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT, varyings, GL_INTERLEAVED_ATTRIBS);
   cullingShader.link();
 }
 
@@ -40,7 +41,7 @@ void WaterShader::update(const glm::vec3 &lightDir,
   renderShader.setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrices[2]);
   renderShader.setFloat("u_dudvMoveOffset", dudvMoveOffset);
 
-  dudvMoveOffset += 0.0004f;
+  dudvMoveOffset += DUDV_SPEED;
   if (dudvMoveOffset >= 1.0f)
     dudvMoveOffset = 0.0f;
 }

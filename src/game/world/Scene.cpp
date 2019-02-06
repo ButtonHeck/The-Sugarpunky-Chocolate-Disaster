@@ -110,7 +110,6 @@ void Scene::drawWorld(const glm::vec3& lightDir,
     landFacade->draw(lightDir,
                      lightSpaceMatrices,
                      projectionView,
-                     viewFrustum,
                      options[OPT_USE_SHADOWS]);
 
   underwaterFacade.draw(lightDir, projectionView);
@@ -275,4 +274,9 @@ TheSunFacade &Scene::getSunFacade()
 SkysphereFacade &Scene::getSkysphereFacade()
 {
   return skysphereFacade;
+}
+
+std::unique_ptr<LandFacade> &Scene::getLandFacade()
+{
+  return landFacade;
 }

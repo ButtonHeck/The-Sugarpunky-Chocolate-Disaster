@@ -70,8 +70,8 @@ void LandPlantsGenerator::setupMatrices(const map2D_f &landMap, const map2D_f &h
                 {
                   if ( (landMap[y][x] == 0 && landMap[y+1][x+1] == 0 && landMap[y+1][x] == 0 && landMap[y][x+1] == 0) &&
                       !(hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0) &&
-                      (rand() % (MODELS_DISTRIBUTION_FREQUENCY / 2)) == 0 &&
-                      distributionMap[y][x] > MODELS_DISTRIBUTION_FREQUENCY / 2)
+                      (rand() % (PLANTS_DISTRIBUTION_FREQUENCY / 2)) == 0 &&
+                      distributionMap[y][x] > PLANTS_DISTRIBUTION_FREQUENCY / 2)
                     {
                       glm::mat4 model;
                       glm::vec3 translationVector(-HALF_WORLD_WIDTH_F + x + positionDistribution(randomizer) + 0.5f,

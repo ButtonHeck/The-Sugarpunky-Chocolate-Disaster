@@ -11,10 +11,10 @@ ShoreGenerator::ShoreGenerator(const map2D_f &waterMap)
 void ShoreGenerator::setup()
 {
   generateMap();
-  for (unsigned int i = 0; i < 5; i++)
+  for (unsigned int cycleCount = 0; cycleCount < SHORE_SMOOTH_CYCLES; cycleCount++)
     {
       smoothMap();
-      float selfWeight = 0.5f - 0.02f * i;
+      float selfWeight = 0.5f - 0.02f * cycleCount;
       float evenWeight = (1.0f - selfWeight) / 8.0f;
       float diagonalWeight = evenWeight;
       smoothMapHeightChunks(map, selfWeight, evenWeight, diagonalWeight);
@@ -31,17 +31,17 @@ void ShoreGenerator::setup()
 
 void ShoreGenerator::generateMap()
 {
-  std::uniform_real_distribution<float> distribution(0.9f, 1.1f);
+  std::uniform_real_distribution<float> positionDistribution(MIN_HEIGHT_KERNEL_OFFSET, MAX_HEIGHT_KERNEL_OFFSET);
   for (unsigned int y = 0; y <= WORLD_HEIGHT; y++)
     {
       for (unsigned int x = 0; x <= WORLD_WIDTH; x++)
-        map[y][x] = waterMap[y][x] * 1.1f * distribution(randomizer);
+        map[y][x] = waterMap[y][x] * 1.1f * positionDistribution(randomizer);
     }
 }
 
 void ShoreGenerator::smoothMap()
 {
-  float waterLevel = WATER_LEVEL + 0.25f;
+  float waterLevel = WATER_LEVEL + HEIGHT_SMOOTH_OFFSET;
   //smooth tile below on map
   for (unsigned int y = 1; y < WORLD_HEIGHT + 1; y++)
     {
@@ -82,7 +82,7 @@ void ShoreGenerator::smoothMap()
 
 void ShoreGenerator::randomizeShore()
 {
-  std::uniform_real_distribution<float> distribution(-0.24f, 0.24f);
+  std::uniform_real_distribution<float> distribution(MIN_HEIGHT_RANDOMIZE_OFFSET, MAX_HEIGHT_RANDOMIZE_OFFSET);
   for (unsigned int y = 0; y < WORLD_HEIGHT; y++)
     {
       for (unsigned int x = 0; x < WORLD_WIDTH; x++)
@@ -131,15 +131,15 @@ void ShoreGenerator::removeUnderwaterTiles(float thresholdValue)
     {
       for (unsigned int x = 1; x < WORLD_WIDTH; x++)
         {
-          if (map[y-1][x-1] < thresholdValue
-              && map[y-1][x] < thresholdValue
-              && map[y-1][x+1] < thresholdValue
-              && map[y][x-1] < thresholdValue
-              && map[y][x] < thresholdValue
-              && map[y][x+1] < thresholdValue
-              && map[y+1][x-1] < thresholdValue
-              && map[y+1][x] < thresholdValue
-              && map[y+1][x+1] < thresholdValue)
+          if (map[y-1][x-1] < thresholdValue &&
+              map[y-1][x] < thresholdValue &&
+              map[y-1][x+1] < thresholdValue &&
+              map[y][x-1] < thresholdValue &&
+              map[y][x] < thresholdValue &&
+              map[y][x+1] < thresholdValue &&
+              map[y+1][x-1] < thresholdValue &&
+              map[y+1][x] < thresholdValue &&
+              map[y+1][x+1] < thresholdValue)
             map[y][x] = TILE_NO_RENDER_VALUE;
         }
     }
@@ -170,14 +170,14 @@ void ShoreGenerator::fillBufferData()
 {
   using glm::vec2;
   using glm::vec3;
-  const size_t VERTEX_DATA_LENGTH = tiles.size() * 32;
+  const size_t VERTEX_DATA_LENGTH = tiles.size() * UNIQUE_VERTICES_PER_TILE * ShoreVertex::NUMBER_OF_ELEMENTS;
   const size_t INDICES_DATA_LENGTH = tiles.size() * VERTICES_PER_QUAD;
   size_t indicesBufferIndex = 0;
   std::unique_ptr<GLfloat[]> vertices(new GLfloat[VERTEX_DATA_LENGTH]);
   std::unique_ptr<GLuint[]> indices(new GLuint[INDICES_DATA_LENGTH]);
-  for (unsigned int i = 0; i < tiles.size(); i++)
+  for (unsigned int tileIndex = 0; tileIndex < tiles.size(); tileIndex++)
     {
-      TerrainTile& tile = tiles[i];
+      TerrainTile& tile = tiles[tileIndex];
       int x = tile.mapX, y = tile.mapY;
 
       ShoreVertex lowLeft(vec3(x - 1, tile.lowLeft, y), vec2(0.0f), normalMap[y][x-1]);
@@ -185,13 +185,13 @@ void ShoreGenerator::fillBufferData()
       ShoreVertex upRight(vec3(x, tile.upperRight, y - 1), vec2(1.0f), normalMap[y-1][x]);
       ShoreVertex upLeft(vec3(x - 1, tile.upperLeft, y - 1), vec2(0.0f, 1.0f), normalMap[y-1][x-1]);
 
-      int vertexBufferOffset = i * 32;
+      int vertexBufferOffset = tileIndex * UNIQUE_VERTICES_PER_TILE * ShoreVertex::NUMBER_OF_ELEMENTS;
       bufferVertex(vertices.get(), vertexBufferOffset,    lowLeft);
       bufferVertex(vertices.get(), vertexBufferOffset+8,  lowRight);
       bufferVertex(vertices.get(), vertexBufferOffset+16, upRight);
       bufferVertex(vertices.get(), vertexBufferOffset+24, upLeft);
 
-      GLuint indicesBufferBaseVertex = i * 4;
+      GLuint indicesBufferBaseVertex = tileIndex * UNIQUE_VERTICES_PER_TILE;
       indices[indicesBufferIndex++] = indicesBufferBaseVertex + 0;
       indices[indicesBufferIndex++] = indicesBufferBaseVertex + 1;
       indices[indicesBufferIndex++] = indicesBufferBaseVertex + 2;
@@ -203,16 +203,18 @@ void ShoreGenerator::fillBufferData()
   basicGLBuffers.bind(VAO | VBO | EBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTEX_DATA_LENGTH, vertices.get(), GL_STATIC_DRAW);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * INDICES_DATA_LENGTH, indices.get(), GL_STATIC_DRAW);
+
+  const size_t SIZE_OF_SHORE_VERTEX = ShoreVertex::NUMBER_OF_ELEMENTS * sizeof(GLfloat);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, SIZE_OF_SHORE_VERTEX, 0);
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, SIZE_OF_SHORE_VERTEX, (void*)(3 * sizeof(GLfloat)));
   glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, SIZE_OF_SHORE_VERTEX, (void*)(5 * sizeof(GLfloat)));
   BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
-void ShoreGenerator::bufferVertex(GLfloat *vertices, int offset, ShoreGenerator::ShoreVertex vertex)
+void ShoreGenerator::bufferVertex(GLfloat *vertices, int offset, ShoreVertex vertex)
 {
   vertices[offset+0] = vertex.posX;
   vertices[offset+1] = vertex.posY;

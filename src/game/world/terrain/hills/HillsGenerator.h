@@ -21,10 +21,16 @@ public:
   void createTilesAndBufferData();
 
 private:
+  const float CYCLE_FATTENING_DAMPING_FACTOR = 0.05f;
+  const float MIN_FATTENING_HEIGHT = 0.3f;
+  const float MAX_FATTENING_HEIGHT = 0.8f;
+
   friend class HillsRenderer;
   friend class HillsFacade;
+
   struct HillVertex
   {
+    constexpr static unsigned int NUMBER_OF_ELEMENTS = 14;
     HillVertex(glm::vec3 pos,
                glm::vec2 texCoords,
                glm::vec3 normal,
@@ -43,10 +49,10 @@ private:
   void bufferVertex(GLfloat* vertices, int offset, HillVertex vertex);
   void fillBufferData();
   void setupGLBufferAttributes();
-  bool hasWaterNearby(int x, int y, int radius);
-  void compressMap(float thresholdPercent, float ratio);
+  bool hasWaterNearby(int centerX, int centerY, int radius);
+  void compressMap(float thresholdAbsValue, float ratio);
   void updateMaxHeight();
-  void removeMapPlateaus(float plateauHeight);
+  void removeHubbles(float hubbleHeight);
   void removeOrphanHills();
   void smoothMapSinks();
   void generateTangentMap();

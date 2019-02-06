@@ -8,7 +8,7 @@ Generator::Generator()
  tiles.reserve(NUM_TILES);
 }
 
-void Generator::createTiles(bool flat, bool createOnZeroTiles, map2D_f& map, float offsetY)
+void Generator::createTiles(bool flat, bool createOnZeroTiles, const map2D_f &map, float offsetY)
 {
   tiles.clear();
   for (unsigned int y = 1; y < map.size(); y++)
@@ -17,28 +17,24 @@ void Generator::createTiles(bool flat, bool createOnZeroTiles, map2D_f& map, flo
         {
           if (map[y][x] == TILE_NO_RENDER_VALUE)
             continue;
-          bool toCreate;
-            if (!flat)
-              toCreate = map[y][x] != 0 || map[y-1][x] != 0 || map[y][x-1] != 0 || map[y-1][x-1] != 0;
-            else
-              toCreate = map[y][x] != 0;
-            if (toCreate || createOnZeroTiles)
-              {
-                float lowLeft;
-                float lowRight;
-                float upRight;
-                float upLeft;
-                if (!flat)
-                  {
-                    lowLeft = (map[y][x-1] + offsetY == TILE_NO_RENDER_VALUE ? map[y][x] : map[y][x-1] + offsetY);
-                    lowRight = map[y][x] + offsetY;
-                    upRight = (map[y-1][x] + offsetY == TILE_NO_RENDER_VALUE ? map[y][x] : map[y-1][x] + offsetY);
-                    upLeft = (map[y-1][x-1] + offsetY == TILE_NO_RENDER_VALUE ? map[y][x] : map[y-1][x-1] + offsetY);
-                  }
-                else
-                  lowLeft = lowRight = upRight = upLeft = map[y][x];
-                tiles.emplace_back(x, y, lowLeft, lowRight, upRight, upLeft);
-              }
+          bool toCreate = flat ? map[y][x] != 0 : (map[y][x] != 0 || map[y-1][x] != 0 || map[y][x-1] != 0 || map[y-1][x-1] != 0);
+          if (toCreate || createOnZeroTiles)
+            {
+              float lowLeft;
+              float lowRight;
+              float upRight;
+              float upLeft;
+              if (!flat)
+                {
+                  lowLeft = (map[y][x-1] + offsetY == TILE_NO_RENDER_VALUE ? map[y][x] : map[y][x-1] + offsetY);
+                  lowRight = map[y][x] + offsetY;
+                  upRight = (map[y-1][x] + offsetY == TILE_NO_RENDER_VALUE ? map[y][x] : map[y-1][x] + offsetY);
+                  upLeft = (map[y-1][x-1] + offsetY == TILE_NO_RENDER_VALUE ? map[y][x] : map[y-1][x-1] + offsetY);
+                }
+              else
+                lowLeft = lowRight = upRight = upLeft = map[y][x];
+              tiles.emplace_back(x, y, lowLeft, lowRight, upRight, upLeft);
+            }
         }
     }
 }
@@ -46,11 +42,6 @@ void Generator::createTiles(bool flat, bool createOnZeroTiles, map2D_f& map, flo
 const map2D_f &Generator::getMap() const
 {
   return map;
-}
-
-std::vector<TerrainTile> &Generator::getTiles()
-{
-  return tiles;
 }
 
 void Generator::serialize(std::ofstream &output, bool setPrecision, unsigned int precision)
@@ -125,7 +116,7 @@ void Generator::smoothMapHeightChunks(map2D_f &map, float selfWeight, float even
   map.assign(shoreMapSmoothed.begin(), shoreMapSmoothed.end());
 }
 
-void Generator::smoothNormals(map2D_f &map, map2D_vec3 &normalMap)
+void Generator::smoothNormals(const map2D_f &map, map2D_vec3 &normalMap)
 {
   using glm::vec3;
   normalMap.clear();
@@ -133,8 +124,8 @@ void Generator::smoothNormals(map2D_f &map, map2D_vec3 &normalMap)
   for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
     {
       vec3 defaultNormal(0.0f, 1.0f, 0.0f);
-      std::vector<vec3> emptyVec(WORLD_WIDTH + 1, defaultNormal);
-      normalMap.emplace_back(emptyVec);
+      std::vector<vec3> defaultNormalsVec(WORLD_WIDTH + 1, defaultNormal);
+      normalMap.emplace_back(defaultNormalsVec);
     }
   for (unsigned int y = 1; y < map.size() - 1; y++)
     {
@@ -146,14 +137,26 @@ void Generator::smoothNormals(map2D_f &map, map2D_vec3 &normalMap)
           vec3 n1 = glm::normalize(vec3(map[y-1][x] - map[y-1][x+1], 1, map[y-1][x] - map[y][x]));
           vec3 n4 = glm::normalize(vec3(map[y][x] - map[y][x+1], 1, map[y][x] - map[y+1][x]));
           vec3 n9 = glm::normalize(vec3(map[y][x-1] - map[y][x], 1, map[y][x-1] - map[y+1][x-1]));
-          vec3 avgNormal = glm::normalize(n0 + n1 + n3 + n4 + n6 + n9);
+          vec3 averagedNormal = glm::normalize(n0 + n1 + n3 + n4 + n6 + n9);
+          normalMap[y][x] = averagedNormal;
+        }
+    }
 
-          //make sure that we do not have a default normal where it should not be (0,1,0)
-          //in this case just assign an approximation of three already calculated nearby normals
-          if (avgNormal.y == 1.0f)
-            avgNormal = glm::normalize(normalMap[y][x-1] + normalMap[y-1][x-1] + normalMap[y-1][x]);
-
-          normalMap[y][x] = avgNormal;
+  /* make sure that we do not have a default normal where it should not be (0,1,0)
+   * in this case just assign an approximation of three already calculated nearby normals
+   * case 1: incorrect normal on the upper-left edge of the surface with no adjacent surfaces
+   * case 2: incorrect normal on the bottom-right edge of the surface with no adjacent surfaces
+   */
+  for (unsigned int y = 1; y < map.size() - 1; y++)
+    {
+      for (unsigned int x = 1; x < map[0].size() - 1; x++)
+        {
+          //case 1
+          if (normalMap[y][x].y == 1.0f)
+            normalMap[y][x] = glm::normalize(normalMap[y][x+1] + normalMap[y+1][x+1] + normalMap[y+1][x]);
+          //case 2 (if we still have (0,1,0) - that must be the normal on a bottom-right edge)
+          if (normalMap[y][x].y == 1.0f)
+            normalMap[y][x] = glm::normalize(normalMap[y][x-1] + normalMap[y-1][x-1] + normalMap[y-1][x]);
         }
     }
 }

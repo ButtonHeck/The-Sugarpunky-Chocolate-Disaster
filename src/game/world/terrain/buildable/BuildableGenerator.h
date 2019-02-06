@@ -11,6 +11,8 @@ public:
 
 private:
   friend class BuildableRenderer;
+  const unsigned int UPPER_LEFT_CORNER_START_Y = 2;
+  const unsigned int UPPER_LEFT_CORNER_START_X = 1;
 
   void setupAndBindBuffers(BufferCollection& buffers);
   void fillBufferData();

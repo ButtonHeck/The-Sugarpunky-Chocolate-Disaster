@@ -1,6 +1,7 @@
 #ifndef LANDCHUNK_H
 #define LANDCHUNK_H
 #include "game/world/Chunk.h"
+#include "graphics/Frustum.h"
 
 class LandChunk : public Chunk
 {
@@ -11,6 +12,7 @@ public:
             unsigned int bottom,
             unsigned int offset,
             unsigned int instances);
+  bool isInsideFrustum(const Frustum& frustum) const;
 
   //instance offset
   void setInstanceOffset(unsigned int offset);

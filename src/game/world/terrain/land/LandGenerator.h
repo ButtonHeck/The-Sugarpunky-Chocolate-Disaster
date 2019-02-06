@@ -11,6 +11,7 @@ public:
   LandGenerator();
   virtual ~LandGenerator() = default;
   void setup(const map2D_f &shoreMap);
+  void updateCellsIndirectBuffer(const Frustum &frustum);
 
 private:
   friend class LandRenderer;
@@ -21,9 +22,10 @@ private:
   void splitCellChunks(int chunkSize);
   void fillBufferData();
   void fillCellBufferData();
-  void bufferData(GLuint& ebo, GLuint& vbo, GLfloat *buffer, size_t size);
+  void bufferData(BufferCollection &bufferCollection, GLfloat *buffer, size_t size);
   void setupGLBufferAttributes();
   void setupGLBufferInstancedAttributes();
+  void addIndirectBufferData(GLuint* buffer, GLuint& dataOffset, GLuint numInstances, GLuint instanceOffset);
 
   BufferCollection cellBuffers;
   map2D_f chunkMap;
@@ -31,6 +33,7 @@ private:
   std::default_random_engine randomizer;
   std::vector<LandChunk> chunks;
   std::vector<LandChunk> cellChunks;
+  GLuint cellPrimitiveCount;
 };
 
 #endif // LANDGENERATOR_H

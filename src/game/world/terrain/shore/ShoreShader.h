@@ -14,6 +14,7 @@ public:
               bool useClipDistanceRefraction);
   void updateNormals(const glm::mat4 &projectionView);
   void debugRenderMode(bool enable);
+
 private:
   Shader& renderShader;
   Shader& normalsShader;

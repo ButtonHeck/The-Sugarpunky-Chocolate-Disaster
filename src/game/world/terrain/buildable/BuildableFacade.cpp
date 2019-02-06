@@ -26,9 +26,8 @@ void BuildableFacade::drawSelected(const glm::mat4& projectionView, MouseInputMa
   if (generator.getMap()[mouseInput.getCursorMapZ()][mouseInput.getCursorMapX()] != 0)
     {
       BENCHMARK("Buildable: draw selected", true);
-      glm::mat4 selectedModel;
-      selectedModel = glm::translate(selectedModel, glm::vec3(-HALF_WORLD_WIDTH + mouseInput.getCursorMapX(), 0.0f, -HALF_WORLD_HEIGHT + mouseInput.getCursorMapZ()));
-      shader.updateSelected(projectionView, selectedModel);
+      glm::vec4 translationVector(-HALF_WORLD_WIDTH + mouseInput.getCursorMapX(), 0.01f, -HALF_WORLD_HEIGHT + mouseInput.getCursorMapZ(), 0.0f);
+      shader.updateSelected(projectionView, translationVector);
       renderer.renderSelected();
     }
 }

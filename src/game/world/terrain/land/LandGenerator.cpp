@@ -6,6 +6,7 @@ LandGenerator::LandGenerator()
     cellBuffers(VAO | VBO | INSTANCE_VBO | EBO | DIBO)
 {
   randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
+  //this collection already have VAO/VBO/EBO in Generator ctor
   basicGLBuffers.add(INSTANCE_VBO);
 }
 
@@ -34,16 +35,16 @@ void LandGenerator::splitChunks(int chunkSize)
   chunks.clear();
   tiles.clear();
   unsigned int chunkOffset = 0;
-  for (int y = 0; y < WORLD_HEIGHT - chunkSize + 1; y += chunkSize)
+  for (int startY = 0; startY < WORLD_HEIGHT - chunkSize + 1; startY += chunkSize)
     {
-      for (int x = 0; x < WORLD_WIDTH - chunkSize + 1; x += chunkSize)
+      for (int startX = 0; startX < WORLD_WIDTH - chunkSize + 1; startX += chunkSize)
         {
           bool emptyChunk = true;
-          for (int y1 = y; y1 < y + chunkSize; y1++)
+          for (int y = startY; y < startY + chunkSize; y++)
             {
-              for (int x1 = x; x1 < x + chunkSize; x1++)
+              for (int x = startX; x < startX + chunkSize; x++)
                 {
-                  if (map[y1][x1] != 0 || map[y1+1][x1] != 0 || map[y1+1][x1+1] != 0 || map[y1][x1+1] != 0)
+                  if (map[y][x] != 0 || map[y+1][x] != 0 || map[y+1][x+1] != 0 || map[y][x+1] != 0)
                     {
                       emptyChunk = false;
                       break;
@@ -54,16 +55,16 @@ void LandGenerator::splitChunks(int chunkSize)
             }
           if (emptyChunk)
             {
-              for (int ydel = y + 1; ydel < y + chunkSize; ydel++)
+              for (int noRenderY = startY + 1; noRenderY < startY + chunkSize; noRenderY++)
                 {
-                  for (int xdel = x + 1; xdel < x + chunkSize; xdel++)
+                  for (int noRenderX = startX + 1; noRenderX < startX + chunkSize; noRenderX++)
                     {
-                      map[ydel][xdel] = 0;
-                      chunkMap[ydel][xdel] = CHUNK_NO_RENDER_VALUE;
+                      map[noRenderY][noRenderX] = 0;
+                      chunkMap[noRenderY][noRenderX] = CHUNK_NO_RENDER_VALUE;
                     }
                 }
-              tiles.emplace_back(x, y, 0, 0, 0, 0, false);
-              chunks.emplace_back(x, x + chunkSize, y, y + chunkSize, chunkOffset, 1);
+              tiles.emplace_back(startX, startY, 0, 0, 0, 0);
+              chunks.emplace_back(startX, startX + chunkSize, startY, startY + chunkSize, chunkOffset, 1);
               ++chunkOffset;
             }
         }
@@ -75,94 +76,91 @@ void LandGenerator::splitCellChunks(int chunkSize)
   cellTiles.clear();
   cellChunks.clear();
   unsigned int chunkOffset = 0;
-  for (int y = 0; y < WORLD_HEIGHT - chunkSize + 1; y += chunkSize)
+  for (int startY = 0; startY < WORLD_HEIGHT - chunkSize + 1; startY += chunkSize)
     {
-      for (int x = 0; x < WORLD_WIDTH - chunkSize + 1; x += chunkSize)
+      for (int startX = 0; startX < WORLD_WIDTH - chunkSize + 1; startX += chunkSize)
         {
-          unsigned int instances = 0;
-          for (int y1 = y+1; y1 < y + chunkSize + 1; y1++)
+          unsigned int cellInstances = 0;
+          for (int y = startY + 1; y < startY + chunkSize + 1; y++)
             {
-              for (int x1 = x; x1 < x + chunkSize; x1++)
+              for (int x = startX; x < startX + chunkSize; x++)
                 {
-                  if ((map[y1][x1] == 0
-                       && map[y1-1][x1] == 0
-                       && map[y1-1][x1+1] == 0
-                       && map[y1][x1+1] == 0)
-                      &&
-                      (chunkMap[y1][x1] != CHUNK_NO_RENDER_VALUE
-                       && chunkMap[y1-1][x1] != CHUNK_NO_RENDER_VALUE
-                       && chunkMap[y1-1][x1+1] != CHUNK_NO_RENDER_VALUE
-                       && chunkMap[y1][x1+1] != CHUNK_NO_RENDER_VALUE))
+                  if (map[y][x] == 0 && map[y-1][x] == 0 && map[y-1][x+1] == 0 && map[y][x+1] == 0 &&
+                      chunkMap[y][x] != CHUNK_NO_RENDER_VALUE &&
+                      chunkMap[y-1][x] != CHUNK_NO_RENDER_VALUE &&
+                      chunkMap[y-1][x+1] != CHUNK_NO_RENDER_VALUE &&
+                      chunkMap[y][x+1] != CHUNK_NO_RENDER_VALUE)
                     {
-                      cellTiles.emplace_back(x1, y1, 0, 0, 0, 0, false);
-                      instances++;
+                      cellTiles.emplace_back(x, y, 0, 0, 0, 0);
+                      cellInstances++;
                     }
                 }
             }
-          if (instances != 0)
-            cellChunks.emplace_back(x, x+chunkSize, y, y+chunkSize, chunkOffset, instances);
-          chunkOffset += instances;
+          if (cellInstances != 0)
+            cellChunks.emplace_back(startX, startX+chunkSize, startY, startY+chunkSize, chunkOffset, cellInstances);
+          chunkOffset += cellInstances;
         }
     }
 }
 
 void LandGenerator::fillBufferData()
 {
-  GLfloat chunkVertices[20] = {
-      -1.0f, 0.0f,  1.0f, 0.0f,               0.0f,
-       1.0f, 0.0f,  1.0f, (float)CHUNK_SIZE,  0.0f,
-       1.0f, 0.0f, -1.0f, (float)CHUNK_SIZE,  (float)CHUNK_SIZE,
-      -1.0f, 0.0f, -1.0f, 0.0f,               (float)CHUNK_SIZE
+  float halfChunkSize = CHUNK_SIZE / 2;
+  const unsigned int CHUNK_VERTICES_SIZE_FLOATS = 20;
+  GLfloat chunkVertices[CHUNK_VERTICES_SIZE_FLOATS] = {
+      -halfChunkSize, 0.0f,  halfChunkSize, 0.0f,               0.0f,
+       halfChunkSize, 0.0f,  halfChunkSize, (float)CHUNK_SIZE,  0.0f,
+       halfChunkSize, 0.0f, -halfChunkSize, (float)CHUNK_SIZE,  (float)CHUNK_SIZE,
+      -halfChunkSize, 0.0f, -halfChunkSize, 0.0f,               (float)CHUNK_SIZE
   };
   basicGLBuffers.bind(VAO);
-  bufferData(basicGLBuffers.get(EBO), basicGLBuffers.get(VBO), chunkVertices, 20);
+  bufferData(basicGLBuffers, chunkVertices, CHUNK_VERTICES_SIZE_FLOATS);
   setupGLBufferAttributes();
-  glm::mat4 baseInstanceChunkModels[tiles.size()];
-  for (unsigned int i = 0; i < tiles.size(); i++)
+
+  glm::vec4 landChunkInstanceTranslations[tiles.size()];
+  for (unsigned int tileIndex = 0; tileIndex < tiles.size(); tileIndex++)
     {
-      glm::mat4 model;
-      TerrainTile& tile = tiles[i];
-      model = glm::translate(model, glm::vec3(- HALF_WORLD_WIDTH + tile.mapX + CHUNK_SIZE / 2, 0.0f, - HALF_WORLD_HEIGHT + tile.mapY + CHUNK_SIZE / 2));
-      model = glm::scale(model, glm::vec3(CHUNK_SIZE / 2, 0.0f, CHUNK_SIZE / 2));
-      baseInstanceChunkModels[i] = model;
+      TerrainTile& tile = tiles[tileIndex];
+      landChunkInstanceTranslations[tileIndex] = glm::vec4(-HALF_WORLD_WIDTH + tile.mapX + halfChunkSize,
+                                                           0.0f,
+                                                           -HALF_WORLD_HEIGHT + tile.mapY + halfChunkSize,
+                                                           0.0f);
     }
   basicGLBuffers.bind(INSTANCE_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * tiles.size(), &baseInstanceChunkModels[0], GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * tiles.size(), &landChunkInstanceTranslations[0], GL_STATIC_DRAW);
   setupGLBufferInstancedAttributes();
   BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
 void LandGenerator::fillCellBufferData()
 {
-  GLfloat cellVertices[20] = {
+  const unsigned int CELL_VERTICES_SIZE_FLOATS = 20;
+  GLfloat cellVertices[CELL_VERTICES_SIZE_FLOATS] = {
        0.0f, 0.0f,  1.0f, 0.0f,  0.0f,
        1.0f, 0.0f,  1.0f, 1.0f,  0.0f,
        1.0f, 0.0f,  0.0f, 1.0f,  1.0f,
        0.0f, 0.0f,  0.0f, 0.0f,  1.0f
   };
-  cellBuffers.bind(VAO);
-  glBindBuffer(GL_DRAW_INDIRECT_BUFFER, cellBuffers.get(DIBO));
-  bufferData(cellBuffers.get(EBO), cellBuffers.get(VBO), cellVertices, 20);
+  cellBuffers.bind(VAO | DIBO);
+  bufferData(cellBuffers, cellVertices, CELL_VERTICES_SIZE_FLOATS);
   setupGLBufferAttributes();
-  glm::mat4 cellInstanceModels[cellTiles.size()];
-  for (unsigned int i = 0; i < cellTiles.size(); i++)
+
+  glm::vec4 cellInstanceTranslations[cellTiles.size()];
+  for (unsigned int tileIndex = 0; tileIndex < cellTiles.size(); tileIndex++)
     {
-      glm::mat4 model;
-      TerrainTile& tile = cellTiles[i];
-      model = glm::translate(model, glm::vec3(- HALF_WORLD_WIDTH + tile.mapX, 0.0f, -HALF_WORLD_HEIGHT + tile.mapY - 1));
-      cellInstanceModels[i] = model;
+      TerrainTile& tile = cellTiles[tileIndex];
+      cellInstanceTranslations[tileIndex] = glm::vec4(-HALF_WORLD_WIDTH + tile.mapX, 0.0f, -HALF_WORLD_HEIGHT + tile.mapY - 1, 0.0f);
     }
   cellBuffers.bind(INSTANCE_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * cellTiles.size(), &cellInstanceModels[0], GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * cellTiles.size(), &cellInstanceTranslations[0], GL_STATIC_DRAW);
   setupGLBufferInstancedAttributes();
   BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
-void LandGenerator::bufferData(GLuint &ebo, GLuint &vbo, GLfloat* buffer, size_t size)
+void LandGenerator::bufferData(BufferCollection& bufferCollection, GLfloat* buffer, size_t size)
 {
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+  bufferCollection.bind(VBO | EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(buffer) * size, buffer, GL_STATIC_DRAW);
 }
 
@@ -176,10 +174,35 @@ void LandGenerator::setupGLBufferAttributes()
 
 void LandGenerator::setupGLBufferInstancedAttributes()
 {
-  for (unsigned int i = 0; i < 4; ++i)
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), 0);
+  glVertexAttribDivisor(2, 1);
+}
+
+void LandGenerator::updateCellsIndirectBuffer(const Frustum& frustum)
+{
+  cellBuffers.bind(VAO);
+  // {indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance}
+  GLuint indirectBuffer[cellChunks.size() * INDIRECT_DRAW_COMMAND_ARGUMENTS];
+  GLuint dataOffset = 0;
+  cellPrimitiveCount = 0;
+  for (unsigned int chunkIndex = 0; chunkIndex < cellChunks.size(); chunkIndex++)
     {
-      glEnableVertexAttribArray(i+3);
-      glVertexAttribPointer(i+3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(i * sizeof(glm::vec4)));
-      glVertexAttribDivisor(i+3, 1);
+      if (cellChunks[chunkIndex].isInsideFrustum(frustum))
+        {
+          ++cellPrimitiveCount;
+          addIndirectBufferData(indirectBuffer, dataOffset, cellChunks[chunkIndex].getNumInstances(), cellChunks[chunkIndex].getInstanceOffset());
+        }
     }
+  cellBuffers.bind(DIBO);
+  glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * cellPrimitiveCount, indirectBuffer, GL_STATIC_DRAW);
+}
+
+void LandGenerator::addIndirectBufferData(GLuint *buffer, GLuint &dataOffset, GLuint numInstances, GLuint instanceOffset)
+{
+  buffer[dataOffset++] = VERTICES_PER_QUAD;
+  buffer[dataOffset++] = numInstances;
+  buffer[dataOffset++] = 0;
+  buffer[dataOffset++] = 0;
+  buffer[dataOffset++] = instanceOffset;
 }
