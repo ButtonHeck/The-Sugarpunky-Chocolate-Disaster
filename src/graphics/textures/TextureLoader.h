@@ -14,7 +14,7 @@
 class TextureLoader
 {
 public:
-  TextureLoader(ScreenResolution& screenResolution);
+  TextureLoader(const ScreenResolution &screenResolution);
   GLuint loadTexture(const std::string& path,
                      GLuint textureUnit,
                      GLenum wrapType,
@@ -34,7 +34,7 @@ private:
   GLuint createTextureObject(GLenum target, GLuint textureUnit, bool isBindless);
   void setTexture2DParameters(GLuint texture, GLint magFilter, GLint minFilter, GLenum wrapType);
   void setTex2DArrayParameters(GLint magFilter, GLint minFilter, GLenum wrapType);
-  ScreenResolution& screenResolution;
+  const ScreenResolution& screenResolution;
 };
 
 #endif // TEXTURELOADER_H

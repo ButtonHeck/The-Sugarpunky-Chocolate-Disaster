@@ -1,6 +1,6 @@
 #include "graphics/textures/TextureLoader.h"
 
-TextureLoader::TextureLoader(ScreenResolution &screen)
+TextureLoader::TextureLoader(const ScreenResolution &screen)
   :
     screenResolution(screen)
 {

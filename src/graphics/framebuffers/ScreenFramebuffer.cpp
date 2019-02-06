@@ -1,6 +1,6 @@
 #include "graphics/framebuffers/ScreenFramebuffer.h"
 
-ScreenFramebuffer::ScreenFramebuffer(TextureManager &textureManager, ScreenResolution &screenResolution, ShaderManager &shaderManager)
+ScreenFramebuffer::ScreenFramebuffer(TextureManager &textureManager, const ScreenResolution &screenResolution, ShaderManager &shaderManager)
   :
     Framebuffer(textureManager),
     screenResolution(screenResolution),

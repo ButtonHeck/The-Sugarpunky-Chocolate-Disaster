@@ -91,7 +91,7 @@ ShaderManager::~ShaderManager()
   shader = &shaders[type]; \
   shader->use();
 
-void ShaderManager::setupConstantUniforms(ScreenResolution& screenResolution)
+void ShaderManager::setupConstantUniforms(const ScreenResolution& screenResolution)
 {
   BENCHMARK("Shader Manager: setup", false);
 

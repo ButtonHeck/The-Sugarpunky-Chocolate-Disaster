@@ -14,7 +14,7 @@ class ShaderManager
 public:
   ShaderManager();
   virtual ~ShaderManager();
-  void setupConstantUniforms(ScreenResolution &screenResolution);
+  void setupConstantUniforms(const ScreenResolution &screenResolution);
   Shader& get(SHADER type);
 private:
   std::unordered_map<int, Shader> shaders;

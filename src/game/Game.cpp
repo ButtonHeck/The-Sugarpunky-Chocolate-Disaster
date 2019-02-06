@@ -1,6 +1,6 @@
 #include "game/Game.h"
 
-Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& options, ScreenResolution &screenResolution)
+Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& options, const ScreenResolution &screenResolution)
   :
     screenResolution(screenResolution),
     window(window),
@@ -22,7 +22,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     shadowVolume(scene.getSunFacade()),
     shadowVolumeRenderer(shadowVolume),
     saveLoadManager(scene, camera, shadowCamera),
-    keyboard(KeyboardManager(window, camera, shadowCamera, options, scene.getSunFacade())),
+    keyboard(window, camera, shadowCamera, options, scene.getSunFacade()),
     mouseInput(MouseInputManager::getInstance()),
     textManager(FONT_DIR + "font.fnt", FONT_DIR + "font.png", shaderManager.get(SHADER_FONT), screenResolution)
 {
@@ -245,9 +245,7 @@ void Game::drawFrameRefraction(const glm::mat4 &projectionView)
   if (options[OPT_USE_MULTISAMPLING])
     glDisable(GL_MULTISAMPLE);
 
-  scene.drawWorldRefraction(shadowVolume.getLightDir(),
-                            shadowVolume.getLightSpaceMatrices(),
-                            projectionView);
+  scene.drawWorldRefraction(shadowVolume.getLightDir(), shadowVolume.getLightSpaceMatrices(), projectionView);
 
   if (options[OPT_USE_MULTISAMPLING])
     glEnable(GL_MULTISAMPLE);
@@ -321,17 +319,15 @@ void Game::setupThreads()
   waterAnimator = std::make_unique<std::thread>([this]()
   {
       while(!glfwWindowShouldClose(window))
+        {
+          if (waterNeedNewKeyFrame && options[OPT_ANIMATE_WATER] && options[OPT_DRAW_WATER])
             {
-              if (waterNeedNewKeyFrame &&
-                  options[OPT_ANIMATE_WATER] &&
-                  options[OPT_DRAW_WATER])
-                {
-                  waterKeyFrameReady = false;
-                  scene.getWaterFacade().updateAnimationFrame(glfwGetTime(), options);
-                  waterKeyFrameReady = true;
-                  waterNeedNewKeyFrame = false;
-                }
-              std::this_thread::yield();
+              waterKeyFrameReady = false;
+              scene.getWaterFacade().updateAnimationFrame(glfwGetTime(), options);
+              waterKeyFrameReady = true;
+              waterNeedNewKeyFrame = false;
             }
-        });
+          std::this_thread::yield();
+        }
+    });
 }

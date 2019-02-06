@@ -16,7 +16,7 @@
 class TextManager
 {
 public:
-  TextManager(const std::string& fontFile, const std::string& fontTexture, Shader& shader, ScreenResolution& screenResolution);
+  TextManager(const std::string& fontFile, const std::string& fontTexture, Shader& shader, const ScreenResolution &screenResolution);
   virtual ~TextManager() = default;
   void addText(const Camera &camera,
                Options &options,
@@ -37,7 +37,7 @@ private:
   void addString(const std::string &text, GLfloat x, GLfloat y, glm::vec2 &scale);
   FontLoader fontLoader;
   Shader& shader;
-  ScreenResolution& screenResolution;
+  const ScreenResolution& screenResolution;
   glm::vec2 lineOffset;
   glm::vec2 scale;
   BufferCollection basicGLBuffers;

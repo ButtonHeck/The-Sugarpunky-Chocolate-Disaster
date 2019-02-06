@@ -8,14 +8,12 @@
 #include "util/Timer.h"
 #include "util/BenchmarkTimer.h"
 #include "input/KeyboardManager.h"
-#include "input/MouseInputManager.h"
 #include "game/SaveLoadManager.h"
 #include "game/world/Scene.h"
 #include "graphics/shaders/ShaderManager.h"
 #include "graphics/textures/TextureManager.h"
 #include "graphics/textures/BindlessTextureManager.h"
 #include "graphics/Frustum.h"
-#include "graphics/RendererStateManager.h"
 #include "graphics/ShadowVolume.h"
 #include "graphics/gui/TextManager.h"
 #include "graphics/gui/CoordinateSystemRenderer.h"
@@ -29,11 +27,12 @@
 class Camera;
 class Options;
 class ScreenResolution;
+class MouseInputManager;
 
 class Game
 {
 public:
-  Game(GLFWwindow* window, Camera& camera, Camera& shadowCamera, Options& options, ScreenResolution& screenResolution);
+  Game(GLFWwindow* window, Camera& camera, Camera& shadowCamera, Options& options, const ScreenResolution& screenResolution);
   virtual ~Game();
   void setup();
   void loop();
@@ -49,7 +48,7 @@ private:
   void loadState();
 
   //context and hardware
-  ScreenResolution& screenResolution;
+  const ScreenResolution& screenResolution;
   GLFWwindow* window;
   Timer CPU_timer;
   unsigned long updateCount = 0;

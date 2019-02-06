@@ -8,7 +8,7 @@
 class ScreenFramebuffer : public Framebuffer
 {
 public:
-  ScreenFramebuffer(TextureManager& textureManager, ScreenResolution& screenResolution, ShaderManager& shaderManager);
+  ScreenFramebuffer(TextureManager& textureManager, const ScreenResolution &screenResolution, ShaderManager& shaderManager);
   virtual ~ScreenFramebuffer();
   virtual void setup() override;
   void bindToViewport(int viewportWidth, int viewportHeight) = delete;
@@ -18,7 +18,7 @@ public:
 private:
   void setupFramebuffers();
   void setupScreenQuadBuffer();
-  ScreenResolution& screenResolution;
+  const ScreenResolution& screenResolution;
   ShaderManager& shaderManager;
   BufferCollection screenBuffers;
   GLuint multisampleDepthRbo, multisampleFbo;
