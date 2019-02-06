@@ -1,11 +1,24 @@
 #include "game/world/ambience/theSun/TheSunFacade.h"
 
-TheSunFacade::TheSunFacade(Shader &renderShader)
+TheSunFacade::TheSunFacade(Shader &renderShader, const ScreenResolution &screenResolution)
   :
     theSun(),
     shader(renderShader),
     renderer(theSun)
-{}
+{
+  float pointSizeDivisorX = screenResolution.getWidthRatioToReference();
+  float pointSizeDivisorY = screenResolution.getHeightRatioToReference();
+  float pointSizeDivisor = (pointSizeDivisorX + pointSizeDivisorY) / 2;
+  float reflectionPointSizeDivisorX = FRAME_WATER_REFLECTION_WIDTH / ScreenResolution::REFERENCE_WIDTH;
+  float reflectionPointSizeDivisorY = FRAME_WATER_REFLECTION_HEIGHT / ScreenResolution::REFERENCE_HEIGHT;
+  float reflectionPointSizeDivisor = (reflectionPointSizeDivisorX + reflectionPointSizeDivisorY) / 2;
+
+  renderer.setPointSize(DEFAULT_SUN_POINT_SIZE * pointSizeDivisor);
+  renderer.setReflectionPointSize(DEFAULT_SUN_POINT_SIZE * reflectionPointSizeDivisor);
+  float pointSize = renderer.getPointSize();
+  maxSamplesPassed = pointSize * pointSize;
+  maxSamplesPassedMultisampling = maxSamplesPassed * MULTISAMPLES;
+}
 
 extern float debug_sunSpeed;
 
@@ -37,16 +50,7 @@ const glm::mat4& TheSunFacade::getRotationTransform() const
   return theSun.getRotationTransform();
 }
 
-GLfloat TheSunFacade::getSunVisibilityPercentage(bool multisampled) const
+GLfloat TheSunFacade::getSunVisibility(bool multisampled) const
 {
   return renderer.getSamplesPassedQueryResult() / (multisampled ? maxSamplesPassedMultisampling : maxSamplesPassed);
-}
-
-void TheSunFacade::adjustSunPointSize(float pointSizeDivisor, float relfectionPointSizeDivisor)
-{
-  renderer.setPointSize(DEFAULT_SUN_POINT_SIZE * pointSizeDivisor);
-  renderer.setReflectionPointSize(DEFAULT_SUN_POINT_SIZE * relfectionPointSizeDivisor);
-  float pointSize = renderer.getPointSize();
-  maxSamplesPassed = pointSize * pointSize;
-  maxSamplesPassedMultisampling = maxSamplesPassed * MULTISAMPLES;
 }

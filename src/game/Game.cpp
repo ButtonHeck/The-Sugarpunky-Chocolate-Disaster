@@ -97,7 +97,7 @@ void Game::loop()
       {
         if (!landIndirectBufferHasUpdated)
           {
-            scene.getLandFacade()->updateCellsIndirectBuffer(viewFrustum);
+            scene.getLandFacade().updateCellsIndirectBuffer(viewFrustum);
             landIndirectBufferHasUpdated = true;
           }
         else
@@ -106,7 +106,7 @@ void Game::loop()
     modelsIndirectBufferPrepared = false;
   }
   if (!landIndirectBufferHasUpdated)
-    scene.getLandFacade()->updateCellsIndirectBuffer(viewFrustum);
+    scene.getLandFacade().updateCellsIndirectBuffer(viewFrustum);
 
   if (options[OPT_RECREATE_TERRAIN_REQUEST])
     recreate();

@@ -1,6 +1,6 @@
 #include "game/world/Scene.h"
 
-Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &textureManager, ScreenResolution &screenResolution)
+Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &textureManager, const ScreenResolution &screenResolution)
   :
     shaderManager(shaderManager),
     options(options),
@@ -20,21 +20,12 @@ Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &tex
     plantsFacade(shaderManager.get(SHADER_MODELS_PHONG),
                  shaderManager.get(SHADER_MODELS_GOURAUD)),
     skyboxFacade(shaderManager.get(SHADER_SKYBOX)),
-    theSunFacade(shaderManager.get(SHADER_SUN)),
+    theSunFacade(shaderManager.get(SHADER_SUN), screenResolution),
     underwaterFacade(shaderManager.get(SHADER_UNDERWATER)),
-    landFacade(std::make_unique<LandFacade>(shaderManager.get(SHADER_LAND))),
-    lensFlareFacade(shaderManager.get(SHADER_LENS_FLARE), textureManager.getLoader()),
+    landFacade(shaderManager.get(SHADER_LAND)),
+    lensFlareFacade(shaderManager.get(SHADER_LENS_FLARE), textureManager.getLoader(), screenResolution),
     skysphereFacade(shaderManager.get(SHADER_SKYSPHERE))
-{
-  float sunPointSizeDivisorX = screenResolution.getWidthRatioToReference();
-  float sunPointSizeDivisorY = screenResolution.getHeightRatioToReference();
-  float sunPointSizeDivisor = (sunPointSizeDivisorX + sunPointSizeDivisorY) / 2;
-  float sunReflectionPointSizeDivisorX = FRAME_WATER_REFLECTION_WIDTH / ScreenResolution::REFERENCE_WIDTH;
-  float sunReflectionPointSizeDivisorY = FRAME_WATER_REFLECTION_HEIGHT / ScreenResolution::REFERENCE_HEIGHT;
-  float sunReflectionPointSizeDivisor = (sunReflectionPointSizeDivisorX + sunReflectionPointSizeDivisorY) / 2;
-  theSunFacade.adjustSunPointSize(sunPointSizeDivisor, sunReflectionPointSizeDivisor);
-  lensFlareFacade.adjustFlaresPointSize(sunPointSizeDivisor);
-}
+{}
 
 void Scene::setup()
 {
@@ -42,16 +33,16 @@ void Scene::setup()
   waterFacade.setup();
   hillsFacade.setup();
   shoreFacade.setup();
-  landFacade->setup(shoreFacade.getMap());
+  landFacade.setup(shoreFacade.getMap());
   waterFacade.setupConsiderTerrain();
-  buildableFacade.setup(landFacade->getMap(), hillsFacade.getMap());
-  plantsFacade.setup(landFacade->getMap(), hillsFacade.getMap(), hillsFacade.getNormalMap());
+  buildableFacade.setup(landFacade.getMap(), hillsFacade.getMap());
+  plantsFacade.setup(landFacade.getMap(), hillsFacade.getMap(), hillsFacade.getNormalMap());
   textureManager.createUnderwaterReliefTexture(waterFacade.getMap());
 }
 
 void Scene::recreate()
 {
-  landFacade.reset(new LandFacade(shaderManager.get(SHADER_LAND)));
+  Generator::initializeMap(const_cast<map2D_f&>(landFacade.getMap()));
   Generator::initializeMap(const_cast<map2D_f&>(waterFacade.getMap()));
   Generator::initializeMap(const_cast<map2D_f&>(hillsFacade.getMap()));
   setup();
@@ -61,15 +52,15 @@ void Scene::load()
 {
   hillsFacade.createTilesAndBufferData();
   shoreFacade.setup();
-  landFacade->setup(shoreFacade.getMap());
+  landFacade.setup(shoreFacade.getMap());
   waterFacade.setupConsiderTerrain();
-  buildableFacade.setup(landFacade->getMap(), hillsFacade.getMap());
+  buildableFacade.setup(landFacade.getMap(), hillsFacade.getMap());
   textureManager.createUnderwaterReliefTexture(waterFacade.getMap());
 }
 
 void Scene::serialize(std::ofstream &output)
 {
-  landFacade->serialize(output);
+  landFacade.serialize(output);
   hillsFacade.serialize(output);
   waterFacade.serialize(output);
   plantsFacade.serialize(output);
@@ -77,7 +68,7 @@ void Scene::serialize(std::ofstream &output)
 
 void Scene::deserialize(std::ifstream &input)
 {
-  landFacade->deserialize(input);
+  landFacade.deserialize(input);
   hillsFacade.deserialize(input);
   waterFacade.deserialize(input);
   plantsFacade.deserialize(input);
@@ -94,33 +85,25 @@ void Scene::drawWorld(const glm::vec3& lightDir,
 {
   BENCHMARK("Scene: draw all", true);
   glm::vec3 viewPosition = camera.getPosition();
-  glm::vec2 viewAcceleration = camera.getViewAcceleration();
+  bool useShadows = options[OPT_USE_SHADOWS];
+  bool isDebugRender = options[OPT_DEBUG_RENDER];
 
   hillsFacade.draw(lightDir,
                    lightSpaceMatrices,
                    projectionView,
                    viewPosition,
-                   viewAcceleration,
+                   camera.getViewAcceleration(),
                    cullingViewFrustum,
                    options[OPT_HILLS_CULLING],
-                   options[OPT_USE_SHADOWS],
-                   options[OPT_DEBUG_RENDER]);
+                   useShadows,
+                   isDebugRender);
 
   if (options[OPT_DRAW_LAND])
-    landFacade->draw(lightDir,
-                     lightSpaceMatrices,
-                     projectionView,
-                     options[OPT_USE_SHADOWS]);
+    landFacade.draw(lightDir, lightSpaceMatrices, projectionView, useShadows);
 
   underwaterFacade.draw(lightDir, projectionView);
 
-  shoreFacade.draw(lightDir,
-                   lightSpaceMatrices,
-                   projectionView,
-                   options[OPT_USE_SHADOWS],
-                   options[OPT_DEBUG_RENDER],
-                   false,
-                   false);
+  shoreFacade.draw(lightDir, lightSpaceMatrices, projectionView, useShadows, isDebugRender, false, false);
 
   if (options[OPT_DRAW_TREES])
     plantsFacade.draw(lightDir,
@@ -128,7 +111,7 @@ void Scene::drawWorld(const glm::vec3& lightDir,
                       projectionView,
                       viewPosition,
                       options[OPT_MODELS_PHONG_SHADING],
-                      options[OPT_USE_SHADOWS],
+                      useShadows,
                       options[OPT_MODELS_LAND_BLENDING]);
 
   if (options[OPT_DRAW_BUILDABLE])
@@ -136,10 +119,7 @@ void Scene::drawWorld(const glm::vec3& lightDir,
 
   if (options[OPT_SHOW_CURSOR])
     {
-      mouseInput.updateCursorMappingCoordinates(camera,
-                                                landFacade->getMap(),
-                                                hillsFacade.getMap(),
-                                                buildableFacade.getMap());
+      mouseInput.updateCursorMappingCoordinates(camera, landFacade.getMap(), hillsFacade.getMap(), buildableFacade.getMap());
       buildableFacade.drawSelected(projectionView, mouseInput);
     }
 
@@ -150,16 +130,12 @@ void Scene::drawWorld(const glm::vec3& lightDir,
   RendererStateManager::setAmbienceRenderingState(false);
 
   if (options[OPT_DRAW_WATER])
-    waterFacade.draw(lightDir,
-                     lightSpaceMatrices,
-                     projectionView,
-                     viewPosition,
-                     viewFrustum,
-                     options[OPT_WATER_CULLING],
-                     options[OPT_DEBUG_RENDER]);
+    waterFacade.draw(lightDir, lightSpaceMatrices, projectionView, viewPosition, viewFrustum, options[OPT_WATER_CULLING], isDebugRender);
 
-  float theSunVisibility = theSunFacade.getSunVisibilityPercentage(options[OPT_USE_MULTISAMPLING]);
-  theSunVisibility *= glm::clamp(-(lightDir.y + 0.02f - viewPosition.y / 1500.0f) * 8.0f, 0.0f, 1.0f);
+  float theSunVisibility = theSunFacade.getSunVisibility(options[OPT_USE_MULTISAMPLING]);
+  const float MIN_SUN_VISIBILITY_Y = 0.02f;
+  const float VIEW_POSITION_VISIBILITY_DIVISOR = 1500.0f;
+  theSunVisibility *= glm::clamp(-(lightDir.y + MIN_SUN_VISIBILITY_Y - viewPosition.y / VIEW_POSITION_VISIBILITY_DIVISOR) * 8.0f, 0.0f, 1.0f);
   if (theSunVisibility > 0)
     lensFlareFacade.draw(theSunFacade.getPosition(), skyboxProjectionView, theSunVisibility);
 }
@@ -167,7 +143,7 @@ void Scene::drawWorld(const glm::vec3& lightDir,
 void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                               bool grassCastShadow)
 {
-  BENCHMARK("Scene: draw depthmap all", true);
+  BENCHMARK("Scene: draw world depthmap", true);
   glClear(GL_DEPTH_BUFFER_BIT);
 
   glDisable(GL_MULTISAMPLE);
@@ -194,38 +170,26 @@ void Scene::drawWorldReflection(const glm::vec3& lightDir,
                                 const Frustum &cullingViewFrustum,
                                 const Camera &camera)
 {
+  BENCHMARK("Scene: draw world reflection", true);
   glm::vec3 viewPosition = camera.getPosition();
   viewPosition.y *= -1;
-  glm::vec2 viewAcceleration = camera.getViewAcceleration();
 
   hillsFacade.draw(lightDir,
                    lightSpaceMatrices,
                    projectionView,
                    viewPosition,
-                   viewAcceleration,
+                   camera.getViewAcceleration(),
                    cullingViewFrustum,
                    options[OPT_HILLS_CULLING],
                    options[OPT_USE_SHADOWS],
                    false);
 
   glEnable(GL_CLIP_DISTANCE0);
-  shoreFacade.draw(lightDir,
-                   lightSpaceMatrices,
-                   projectionView,
-                   false,
-                   false,
-                   true,
-                   false);
+  shoreFacade.draw(lightDir, lightSpaceMatrices, projectionView, false, false, true, false);
   glDisable(GL_CLIP_DISTANCE0);
 
   if (options[OPT_DRAW_TREES])
-    plantsFacade.draw(lightDir,
-                      lightSpaceMatrices,
-                      projectionView,
-                      viewPosition,
-                      false,
-                      false,
-                      false);
+    plantsFacade.draw(lightDir, lightSpaceMatrices, projectionView, viewPosition, false, false, false);
 
   RendererStateManager::setAmbienceRenderingState(true);
   skysphereFacade.draw(theSunFacade.getRotationTransform(), skyboxProjectionView, lightDir);
@@ -238,16 +202,12 @@ void Scene::drawWorldRefraction(const glm::vec3 &lightDir,
                                 const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                                 const glm::mat4 &projectionView)
 {
+  BENCHMARK("Scene: draw world refraction", true);
+
   underwaterFacade.draw(lightDir, projectionView);
 
   glEnable(GL_CLIP_DISTANCE0);
-  shoreFacade.draw(lightDir,
-                   lightSpaceMatrices,
-                   projectionView,
-                   false,
-                   false,
-                   false,
-                   true);
+  shoreFacade.draw(lightDir, lightSpaceMatrices, projectionView, false, false, false, true);
   glDisable(GL_CLIP_DISTANCE0);
 }
 
@@ -276,7 +236,7 @@ SkysphereFacade &Scene::getSkysphereFacade()
   return skysphereFacade;
 }
 
-std::unique_ptr<LandFacade> &Scene::getLandFacade()
+LandFacade &Scene::getLandFacade()
 {
   return landFacade;
 }

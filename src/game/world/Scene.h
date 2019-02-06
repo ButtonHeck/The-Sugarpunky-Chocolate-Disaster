@@ -1,6 +1,5 @@
 #ifndef SCENE_H
 #define SCENE_H
-#include <memory>
 #include "game/world/terrain/land/LandFacade.h"
 #include "game/world/terrain/hills/HillsFacade.h"
 #include "game/world/models/plants/PlantsFacade.h"
@@ -20,7 +19,7 @@
 class Scene
 {
 public:
-  Scene(ShaderManager& shaderManager, Options& options, TextureManager& textureManager, ScreenResolution& screenResolution);
+  Scene(ShaderManager& shaderManager, Options& options, TextureManager& textureManager, const ScreenResolution& screenResolution);
 
   //internal generators functions
   void setup();
@@ -56,7 +55,7 @@ public:
   PlantsFacade &getPlantsFacade();
   TheSunFacade &getSunFacade();
   SkysphereFacade &getSkysphereFacade();
-  std::unique_ptr<LandFacade> &getLandFacade();
+  LandFacade &getLandFacade();
 
 private:
   ShaderManager& shaderManager;
@@ -71,7 +70,7 @@ private:
   SkyboxFacade skyboxFacade;
   TheSunFacade theSunFacade;
   UnderwaterFacade underwaterFacade;
-  std::unique_ptr<LandFacade> landFacade;
+  LandFacade landFacade;
   LensFlareFacade lensFlareFacade;
   SkysphereFacade skysphereFacade;
 };

@@ -1,6 +1,6 @@
 #include "game/world/ambience/lensFlare/LensFlareFacade.h"
 
-LensFlareFacade::LensFlareFacade(Shader& shader, TextureLoader &textureLoader)
+LensFlareFacade::LensFlareFacade(Shader& shader, TextureLoader &textureLoader, const ScreenResolution &screenResolution)
   :
     BRIGHTNESS_HALO(1.25f),
     BRIGHTNESS_FLARES(0.55f),
@@ -25,6 +25,12 @@ LensFlareFacade::LensFlareFacade(Shader& shader, TextureLoader &textureLoader)
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
+
+  float pointSizeDivisorX = screenResolution.getWidthRatioToReference();
+  float pointSizeDivisorY = screenResolution.getHeightRatioToReference();
+  float pointSizeDivisor = (pointSizeDivisorX + pointSizeDivisorY) / 2;
+  for (LensFlareElement& flare : flares)
+    flare.adjustPointSize(pointSizeDivisor);
 }
 
 void LensFlareFacade::draw(const glm::vec3& sunWorldPosition, const glm::mat4& projectionView, float theSunVisibility)
@@ -44,12 +50,6 @@ void LensFlareFacade::draw(const glm::vec3& sunWorldPosition, const glm::mat4& p
       shader.update(brightnessFlares, brightnessHalo);
       renderer.draw(NUM_LENS_FLARES);
     }
-}
-
-void LensFlareFacade::adjustFlaresPointSize(float pointSizeDivisor)
-{
-  for (LensFlareElement& flare : flares)
-    flare.adjustPointSize(pointSizeDivisor);
 }
 
 void LensFlareFacade::updateFlaresPositions(const glm::vec2 &sunScreenPosition, const glm::vec2 &sunScreenPositionToScreenCenter)

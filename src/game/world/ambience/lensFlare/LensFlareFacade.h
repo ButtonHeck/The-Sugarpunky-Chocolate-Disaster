@@ -14,9 +14,8 @@ constexpr float FLARES_SPACING = 0.38f;
 class LensFlareFacade
 {
 public:
-  LensFlareFacade(Shader &shader, TextureLoader& textureLoader);
+  LensFlareFacade(Shader &shader, TextureLoader& textureLoader, const ScreenResolution& screenResolution);
   void draw(const glm::vec3 &sunWorldPosition, const glm::mat4 &projectionView, float brightnessAbs);
-  void adjustFlaresPointSize(float pointSizeDivisor);
 
 private:
   const float BRIGHTNESS_HALO, BRIGHTNESS_FLARES;
