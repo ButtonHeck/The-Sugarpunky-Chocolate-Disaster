@@ -31,6 +31,8 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
   shadowProjections[0] = glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, SHADOW_DISTANCE_LAYER1);
   shadowProjections[1] = glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_DISTANCE_LAYER1, SHADOW_DISTANCE_LAYER2);
   shadowProjections[2] = glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_DISTANCE_LAYER2, FAR_PLANE);
+  modelsIndirectBufferPrepared = false, modelsIndirectBufferNeedUpdate = false;
+  waterKeyFrameReady = false, waterNeedNewKeyFrame = true;
 }
 
 Game::~Game()

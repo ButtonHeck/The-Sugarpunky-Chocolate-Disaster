@@ -4,6 +4,7 @@
 #include <memory>
 #include <array>
 #include <GL/glew.h>
+#include <atomic>
 #include "util/DirectoriesSettings.h"
 #include "util/Timer.h"
 #include "util/BenchmarkTimer.h"
@@ -92,8 +93,8 @@ private:
   void setupThreads();
   std::unique_ptr<std::thread> waterAnimator;
   std::unique_ptr<std::thread> meshIndirectBufferUpdater;
-  volatile bool modelsIndirectBufferPrepared = false, modelsIndirectBufferNeedUpdate = false;
-  volatile bool waterKeyFrameReady = false, waterNeedNewKeyFrame = true;
+  std::atomic_bool modelsIndirectBufferPrepared, modelsIndirectBufferNeedUpdate;
+  std::atomic_bool waterKeyFrameReady, waterNeedNewKeyFrame;
   bool landIndirectBufferHasUpdated = false;
 };
 
