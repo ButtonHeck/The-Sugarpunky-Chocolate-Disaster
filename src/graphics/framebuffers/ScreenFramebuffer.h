@@ -13,11 +13,13 @@ public:
   virtual void setup() override;
   void bindToViewport(int viewportWidth, int viewportHeight) = delete;
   void unbindToViewport(int viewportWidth, int viewportHeight) = delete;
-  void draw(bool enableMultisampling, bool useDOF);
+  void draw(bool useMultisampling, bool useDOF);
   void bindAppropriateFBO(bool enableMultisampling);
+
 private:
   void setupFramebuffers();
   void setupScreenQuadBuffer();
+
   const ScreenResolution& screenResolution;
   ShaderManager& shaderManager;
   BufferCollection screenBuffers;

@@ -21,12 +21,12 @@ CoordinateSystemRenderer::CoordinateSystemRenderer(Shader *shader)
   BufferCollection::bindZero(VAO | VBO);
 }
 
-void CoordinateSystemRenderer::draw(const glm::mat3 &view, float aspect_ratio)
+void CoordinateSystemRenderer::draw(const glm::mat3 &view, float aspectRatio)
 {
   glLineWidth(2);
   shader->use();
   shader->setMat3("u_view", view);
-  shader->setFloat("u_aspectRatio", aspect_ratio);
+  shader->setFloat("u_aspectRatio", aspectRatio);
   basicGLBuffers.bind(VAO);
   glDrawArrays(GL_POINTS, 0, 3);
   glLineWidth(1);

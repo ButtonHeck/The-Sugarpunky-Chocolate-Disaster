@@ -20,6 +20,7 @@ public:
   std::unordered_map<char, Character>& getAlphabet();
   GLuint getTextureWidth() const;
   GLuint getTextureHeight() const;
+
 private:
   std::unordered_map<char, Character> alphabet;
   GLuint fontTexture, textureWidth, textureHeight;

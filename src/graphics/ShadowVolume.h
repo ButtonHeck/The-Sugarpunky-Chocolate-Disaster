@@ -6,16 +6,21 @@
 class ShadowVolume
 {
 public:
+  constexpr static unsigned int BOX_EXPECTED_VERTICES = 4;
+  constexpr static unsigned int BOX_ACTUAL_VERTICES = 8;
+  constexpr static float BOX_MIN_HEIGHT = 14.0f;
+
   ShadowVolume(TheSunFacade &sun);
   void update(const std::array<Frustum, NUM_SHADOW_LAYERS>& frustums);
   const glm::vec3 &getLightDir() const;
   const std::array<glm::mat4, NUM_SHADOW_LAYERS> &getLightSpaceMatrices() const;
+
 private:
   struct Box
   {
-    glm::vec2 ll, lr, ur, ul;
-    glm::vec3 nearLL, nearLR, nearUR, nearUL;
-    glm::vec3 farLL, farLR, farUR, farUL;
+    glm::vec2 expectedLL, expectedLR, expectedUR, expectedUL;
+    glm::vec3 lsPovNearLL, lsPovNearLR, lsPovNearUR, lsPovNearUL;
+    glm::vec3 lsPovFarLL, lsPovFarLR, lsPovFarUR, lsPovFarUL;
     glm::vec3 lightSource;
   };
   friend class ShadowVolumeRenderer;

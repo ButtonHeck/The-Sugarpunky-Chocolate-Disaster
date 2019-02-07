@@ -60,7 +60,7 @@ void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, flo
   float boxMidZ = (boxMaxZ + boxMinZ) * 0.5f;
 
   //step 4 - calculate light source position
-  const float EXPECTED_MAX_HEIGHT[3] = {14.0f, 28.0f, 56.0f};
+  const float EXPECTED_MAX_HEIGHT[3] = {BOX_MIN_HEIGHT, BOX_MIN_HEIGHT * 2, BOX_MIN_HEIGHT * 4};
   float x = boxWidth * 0.5f;
   float angleRad = glm::atan(EXPECTED_MAX_HEIGHT[layer] / x);
   float ellipseA = x / glm::cos(angleRad);
@@ -116,17 +116,17 @@ void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, flo
   lightSpaceMatrices[layer] = projection * view;
 
   //step 7 - update box struct (optional for visualization)
-  shadowBoxes[layer].ll = glm::vec2(boxMinX, boxMaxZ);
-  shadowBoxes[layer].lr = glm::vec2(boxMaxX, boxMaxZ);
-  shadowBoxes[layer].ur = glm::vec2(boxMaxX, boxMinZ);
-  shadowBoxes[layer].ul = glm::vec2(boxMinX, boxMinZ);
+  shadowBoxes[layer].expectedLL = glm::vec2(boxMinX, boxMaxZ);
+  shadowBoxes[layer].expectedLR = glm::vec2(boxMaxX, boxMaxZ);
+  shadowBoxes[layer].expectedUR = glm::vec2(boxMaxX, boxMinZ);
+  shadowBoxes[layer].expectedUL = glm::vec2(boxMinX, boxMinZ);
   shadowBoxes[layer].lightSource = lightSource;
-  shadowBoxes[layer].nearLL = lightSource + (NEAR_SIDE * lightDirTo) + (LEFT_SIDE * lightDirRight)  + (BOTTOM_SIDE * lightDirUp);
-  shadowBoxes[layer].nearLR = lightSource + (NEAR_SIDE * lightDirTo) + (RIGHT_SIDE * lightDirRight) + (BOTTOM_SIDE * lightDirUp);
-  shadowBoxes[layer].nearUR = lightSource + (NEAR_SIDE * lightDirTo) + (RIGHT_SIDE * lightDirRight) + (UP_SIDE * lightDirUp);
-  shadowBoxes[layer].nearUL = lightSource + (NEAR_SIDE * lightDirTo) + (LEFT_SIDE * lightDirRight)  + (UP_SIDE * lightDirUp);
-  shadowBoxes[layer].farLL =  lightSource + (FAR_SIDE * lightDirTo)  + (LEFT_SIDE * lightDirRight)  + (BOTTOM_SIDE * lightDirUp);
-  shadowBoxes[layer].farLR =  lightSource + (FAR_SIDE * lightDirTo)  + (RIGHT_SIDE * lightDirRight) + (BOTTOM_SIDE * lightDirUp);
-  shadowBoxes[layer].farUR =  lightSource + (FAR_SIDE * lightDirTo)  + (RIGHT_SIDE * lightDirRight) + (UP_SIDE * lightDirUp);
-  shadowBoxes[layer].farUL =  lightSource + (FAR_SIDE * lightDirTo)  + (LEFT_SIDE * lightDirRight)  + (UP_SIDE * lightDirUp);
+  shadowBoxes[layer].lsPovNearLL = lightSource + (NEAR_SIDE * lightDirTo) + (LEFT_SIDE * lightDirRight)  + (BOTTOM_SIDE * lightDirUp);
+  shadowBoxes[layer].lsPovNearLR = lightSource + (NEAR_SIDE * lightDirTo) + (RIGHT_SIDE * lightDirRight) + (BOTTOM_SIDE * lightDirUp);
+  shadowBoxes[layer].lsPovNearUR = lightSource + (NEAR_SIDE * lightDirTo) + (RIGHT_SIDE * lightDirRight) + (UP_SIDE * lightDirUp);
+  shadowBoxes[layer].lsPovNearUL = lightSource + (NEAR_SIDE * lightDirTo) + (LEFT_SIDE * lightDirRight)  + (UP_SIDE * lightDirUp);
+  shadowBoxes[layer].lsPovFarLL =  lightSource + (FAR_SIDE * lightDirTo)  + (LEFT_SIDE * lightDirRight)  + (BOTTOM_SIDE * lightDirUp);
+  shadowBoxes[layer].lsPovFarLR =  lightSource + (FAR_SIDE * lightDirTo)  + (RIGHT_SIDE * lightDirRight) + (BOTTOM_SIDE * lightDirUp);
+  shadowBoxes[layer].lsPovFarUR =  lightSource + (FAR_SIDE * lightDirTo)  + (RIGHT_SIDE * lightDirRight) + (UP_SIDE * lightDirUp);
+  shadowBoxes[layer].lsPovFarUL =  lightSource + (FAR_SIDE * lightDirTo)  + (LEFT_SIDE * lightDirRight)  + (UP_SIDE * lightDirUp);
 }

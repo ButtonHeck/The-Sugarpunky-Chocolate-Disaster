@@ -175,7 +175,7 @@ void Game::drawFrame(const glm::mat4 &projectionView)
 
   if (options[OPT_DRAW_DEBUG_TEXT])
     {
-      textManager.addText(camera, options, mouseInput, scene.getSunFacade().getPosition(), CPU_timer.getFPS());
+      textManager.addDebugText(camera, options, mouseInput, scene.getSunFacade().getPosition(), CPU_timer.getFPS());
       textManager.drawText();
       csRenderer.draw(camera.getViewMatrixMat3(), screenResolution.getAspectRatio());
     }

@@ -2,18 +2,17 @@
 
 Frustum::Frustum()
 {
-  for (unsigned int i = 0; i < 6; i++)
-    {
-      frustumPlanes.emplace_back(0.0f);
-    }
+  frustumPlanes.reserve(NUMBER_OF_PLANES);
+  for (unsigned int planeIndex = 0; planeIndex < NUMBER_OF_PLANES; planeIndex++)
+    frustumPlanes.emplace_back(0.0f);
 }
 
-void Frustum::normalizePlane(FRUSTUM_SIDE side)
+void Frustum::normalizePlane(FRUSTUM_PLANE plane)
 {
-  float magnitude = (float)glm::sqrt(frustumPlanes[side].x * frustumPlanes[side].x +
-                                     frustumPlanes[side].y * frustumPlanes[side].y +
-                                     frustumPlanes[side].z * frustumPlanes[side].z);
-  frustumPlanes[side] /= magnitude;
+  float magnitude = (float)glm::sqrt(frustumPlanes[plane].x * frustumPlanes[plane].x +
+                                     frustumPlanes[plane].y * frustumPlanes[plane].y +
+                                     frustumPlanes[plane].z * frustumPlanes[plane].z);
+  frustumPlanes[plane] /= magnitude;
 }
 
 void Frustum::updateFrustum(const glm::mat4 &projectionView)
@@ -150,7 +149,7 @@ bool Frustum::isInside(float x, float y, float z, float radius) const
   return true;
 }
 
-const glm::vec4& Frustum::getPlane(FRUSTUM_SIDE side) const
+const glm::vec4& Frustum::getPlane(FRUSTUM_PLANE plane) const
 {
-  return frustumPlanes[side];
+  return frustumPlanes[plane];
 }

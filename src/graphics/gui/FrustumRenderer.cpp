@@ -1,6 +1,6 @@
 #include "graphics/gui/FrustumRenderer.h"
 
-FrustumRenderer::FrustumRenderer(Frustum &frustum)
+FrustumRenderer::FrustumRenderer(const Frustum &frustum)
   :
     frustum(frustum),
     basicGLBuffers(VAO | VBO | EBO)
@@ -8,7 +8,7 @@ FrustumRenderer::FrustumRenderer(Frustum &frustum)
   basicGLBuffers.bind(VAO | VBO | EBO);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INDICES), INDICES, GL_STATIC_DRAW);
 }
 
 void FrustumRenderer::render()
@@ -48,5 +48,5 @@ void FrustumRenderer::render()
   vertices[23] = frustum.farUL.z;
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  glDrawElements(GL_LINE_STRIP, 24, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_LINE_STRIP, 3 * Frustum::NUMBER_OF_DISTINCT_VERTICES, GL_UNSIGNED_INT, 0);
 }

@@ -8,6 +8,7 @@ public:
   WaterReflectionFramebuffer(TextureManager& textureManager);
   virtual ~WaterReflectionFramebuffer();
   virtual void setup() override;
+
 private:
   GLuint rbo;
 };

@@ -7,5 +7,8 @@ uniform sampler2D u_fontTexture;
 
 void main()
 {
-    o_FragColor = vec4(0.0, 0.0, 0.0, texture(u_fontTexture, v_TexCoords).a);
+    float sampledAlpha = texture(u_fontTexture, v_TexCoords).a;
+    if (sampledAlpha < 0.6)
+        discard;
+    o_FragColor = vec4(0.0, 0.0, 0.0, sampledAlpha);
 }

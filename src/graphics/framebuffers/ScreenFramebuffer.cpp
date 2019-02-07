@@ -63,10 +63,10 @@ void ScreenFramebuffer::setupScreenQuadBuffer()
   BufferCollection::bindZero(VAO | VBO);
 }
 
-void ScreenFramebuffer::draw(bool enableMultisampling, bool useDOF)
+void ScreenFramebuffer::draw(bool useMultisampling, bool useDOF)
 {
   BENCHMARK("ScreenBuffer: draw", true);
-  if (enableMultisampling)
+  if (useMultisampling)
     {
       glBindFramebuffer(GL_READ_FRAMEBUFFER, multisampleFbo);
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
