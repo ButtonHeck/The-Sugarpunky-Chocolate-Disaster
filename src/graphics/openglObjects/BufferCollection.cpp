@@ -22,21 +22,20 @@ BufferCollection::BufferCollection(BufferCollection &&old) noexcept
   old.objects.clear();
 }
 
-BufferCollection::BufferCollection(const BufferCollection &copy)
+BufferCollection::BufferCollection(BufferCollection &copy)
 {
-  auto& rhs = const_cast<BufferCollection&>(copy);
-  if (rhs.objects[VAO])
-    objects[VAO] = rhs.objects[VAO];
-  if (rhs.objects[VBO])
-    objects[VBO] = rhs.objects[VBO];
-  if (rhs.objects[INSTANCE_VBO])
-    objects[INSTANCE_VBO] = rhs.objects[INSTANCE_VBO];
-  if (rhs.objects[EBO])
-    objects[EBO] = rhs.objects[EBO];
-  if (rhs.objects[DIBO])
-    objects[DIBO] = rhs.objects[DIBO];
-  if (rhs.objects[TFBO])
-    objects[TFBO] = rhs.objects[TFBO];
+  if (copy.objects[VAO])
+    objects[VAO] = copy.objects[VAO];
+  if (copy.objects[VBO])
+    objects[VBO] = copy.objects[VBO];
+  if (copy.objects[INSTANCE_VBO])
+    objects[INSTANCE_VBO] = copy.objects[INSTANCE_VBO];
+  if (copy.objects[EBO])
+    objects[EBO] = copy.objects[EBO];
+  if (copy.objects[DIBO])
+    objects[DIBO] = copy.objects[DIBO];
+  if (copy.objects[TFBO])
+    objects[TFBO] = copy.objects[TFBO];
 }
 
 BufferCollection::~BufferCollection()
@@ -98,22 +97,6 @@ void BufferCollection::create(int flags)
     }
 }
 
-void BufferCollection::reserveNameForFutureStorage(int flags)
-{
-  if (flags & VAO)
-    objects[VAO] = 0;
-  if (flags & VBO)
-    objects[VBO] = 0;
-  if (flags & INSTANCE_VBO)
-    objects[INSTANCE_VBO] = 0;
-  if (flags & EBO)
-    objects[EBO] = 0;
-  if (flags & DIBO)
-    objects[DIBO] = 0;
-  if (flags & TFBO)
-    objects[TFBO] = 0;
-}
-
 void BufferCollection::deleteBuffers()
 {
   if (objects[VAO])
@@ -162,7 +145,8 @@ GLuint &BufferCollection::get(int flag)
     return objects[DIBO];
   else if (flag & TFBO)
     return objects[TFBO];
-  else throw std::invalid_argument("Unknown GL object enum flag");
+  else
+    throw std::invalid_argument("Unknown GL object enum flag");
 }
 
 void BufferCollection::bind(int flag)

@@ -12,6 +12,7 @@ public:
   void checkStatus();
   void bindToViewport(int viewportWidth, int viewportHeight);
   void unbindToViewport(int viewportWidth, int viewportHeight);
+
 protected:
   GLuint fbo;
   TextureManager& textureManager;

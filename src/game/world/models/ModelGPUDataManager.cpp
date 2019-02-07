@@ -4,10 +4,7 @@ ModelGPUDataManager::ModelGPUDataManager(bool isParentModelLowPoly)
   :
     isLowPoly(isParentModelLowPoly),
     basicGLBuffers(VAO | VBO | INSTANCE_VBO | EBO)
-{
-  basicGLBuffers.reserveNameForFutureStorage(DIBO);
-  shadowDIBO.reserveNameForFutureStorage(DIBO);
-}
+{}
 
 void ModelGPUDataManager::setupBuffers(const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices)
 {
