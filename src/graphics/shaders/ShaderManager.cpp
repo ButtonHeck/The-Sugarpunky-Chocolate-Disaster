@@ -83,8 +83,8 @@ ShaderManager::ShaderManager()
 ShaderManager::~ShaderManager()
 {
   glUseProgram(0);
-  for (unsigned int i = 0; i < shaders.size(); i++)
-    shaders[i].cleanUp();
+  for (unsigned int shaderIndex = 0; shaderIndex < shaders.size(); shaderIndex++)
+    shaders[shaderIndex].cleanUp();
 }
 
 #define bindShaderUnit(shader, type) \
@@ -93,8 +93,6 @@ ShaderManager::~ShaderManager()
 
 void ShaderManager::setupConstantUniforms(const ScreenResolution& screenResolution)
 {
-  BENCHMARK("Shader Manager: setup", false);
-
   Shader* shader = nullptr;
   bindShaderUnit(shader, SHADER_HILLS);
   shader->setInt("u_land_diffuse[0]", TEX_LAND);
@@ -192,7 +190,7 @@ void ShaderManager::setupConstantUniforms(const ScreenResolution& screenResoluti
   shader->setInt("u_frameTexture", HDR_ENABLED ? TEX_FRAME_HDR : TEX_FRAME);
   shader->setInt("u_frameDepthTexture", TEX_FRAME_DEPTH);
   shader->setInt("u_vignetteTexture", TEX_FRAME_VIGNETTE);
-  shader->setFloat("u_exposure", 2.2f);
+  shader->setFloat("u_exposure", HDR_EXPOSURE);
   shader->setFloat("u_near", NEAR_PLANE);
   shader->setFloat("u_far", FAR_PLANE);
   shader->setFloat("u_aspectRatio", screenResolution.getAspectRatio());
@@ -211,7 +209,7 @@ void ShaderManager::setupConstantUniforms(const ScreenResolution& screenResoluti
   shader->setInt("u_starsDiffuse", TEX_SKYSPHERE_STARS);
 }
 
-Shader &ShaderManager::get(SHADER type)
+Shader &ShaderManager::get(SHADER_UNITS type)
 {
   return shaders[type];
 }

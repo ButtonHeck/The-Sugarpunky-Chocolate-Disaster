@@ -5,6 +5,7 @@
 constexpr float NEAR_PLANE = 0.3f;
 constexpr float FAR_PLANE = 500.0f;
 constexpr bool HDR_ENABLED = true;
+constexpr float HDR_EXPOSURE = 2.2f;
 constexpr unsigned int MULTISAMPLES = 4;
 constexpr float ANISOTROPY = 2.0f;
 

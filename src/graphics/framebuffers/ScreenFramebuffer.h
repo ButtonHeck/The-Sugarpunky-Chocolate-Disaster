@@ -4,6 +4,7 @@
 #include "graphics/ScreenResolution.h"
 #include "graphics/shaders/ShaderManager.h"
 #include "graphics/openglObjects/BufferCollection.h"
+#include "util/BenchmarkTimer.h"
 
 class ScreenFramebuffer : public Framebuffer
 {
