@@ -1,9 +1,12 @@
 #include "graphics/shaders/Shader.h"
 
 bool Shader::cachedUniforms = false;
+void Shader::cacheUniformsMode(bool cache)
+{
+  Shader::cachedUniforms = cache;
+}
 
-Shader::Shader(ShaderSource srcFile1,
-               ShaderIncludeList includes)
+Shader::Shader(ShaderSource srcFile1, ShaderIncludeList includes)
 {
   const std::string& src = srcFile1.second;
   GLuint shader = loadShader(srcFile1.first, std::string(SHADER_DIR + src), includes);
@@ -14,9 +17,7 @@ Shader::Shader(ShaderSource srcFile1,
   glDeleteShader(shader);
 }
 
-Shader::Shader(ShaderSource srcFile1,
-               ShaderSource srcFile2,
-               ShaderIncludeList includes)
+Shader::Shader(ShaderSource srcFile1, ShaderSource srcFile2, ShaderIncludeList includes)
 {
   const std::string& src1 = srcFile1.second;
   const std::string& src2 = srcFile2.second;
@@ -31,10 +32,7 @@ Shader::Shader(ShaderSource srcFile1,
   glDeleteShader(shader2);
 }
 
-Shader::Shader(ShaderSource srcFile1,
-               ShaderSource srcFile2,
-               ShaderSource srcFile3,
-               ShaderIncludeList includes)
+Shader::Shader(ShaderSource srcFile1, ShaderSource srcFile2, ShaderSource srcFile3, ShaderIncludeList includes)
 {
   const std::string& src1 = srcFile1.second;
   const std::string& src2 = srcFile2.second;
@@ -64,12 +62,17 @@ void Shader::link()
     }
 }
 
-void Shader::cacheUniformsMode(bool cache)
+GLuint Shader::getID() const
 {
-  Shader::cachedUniforms = cache;
+  return ID;
 }
 
-GLuint Shader::getUniformLocation(const std::string &uniformName)
+void Shader::use() const
+{
+  glUseProgram(ID);
+}
+
+GLuint Shader::getUniformLocation(const std::string &uniformName) const
 {
   auto uniformLocation = glGetUniformLocation(ID, uniformName.c_str());
   if (uniformLocation == -1)
@@ -81,21 +84,23 @@ void Shader::setInt(const std::__cxx11::string &uniformName, int value)
 {
   if (Shader::cachedUniforms)
     {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName.c_str()] = getUniformLocation(uniformName);
-      glUniform1i(uniformCache[uniformName.c_str()], value);
+      std::string inCacheName = shaderName + uniformName;
+      if (uniformCache.find(inCacheName) == uniformCache.end())
+        uniformCache[inCacheName] = getUniformLocation(uniformName);
+      glUniform1i(uniformCache[inCacheName], value);
     }
   else
     glUniform1i(getUniformLocation(uniformName), value);
 }
 
-void Shader::setUInt64(const std::string &uniformName, GLuint64 value)
+void Shader::setUint64(const std::string &uniformName, GLuint64 value)
 {
   if (Shader::cachedUniforms)
     {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName.c_str()] = getUniformLocation(uniformName);
-      glUniform1ui64ARB(uniformCache[uniformName.c_str()], value);
+      std::string inCacheName = shaderName + uniformName;
+      if (uniformCache.find(inCacheName) == uniformCache.end())
+        uniformCache[inCacheName] = getUniformLocation(uniformName);
+      glUniform1ui64ARB(uniformCache[inCacheName], value);
     }
   else
     glUniform1ui64ARB(getUniformLocation(uniformName), value);
@@ -105,9 +110,10 @@ void Shader::setFloat(const std::__cxx11::string &uniformName, float value)
 {
   if (Shader::cachedUniforms)
     {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName.c_str()] = getUniformLocation(uniformName);
-      glUniform1f(uniformCache[uniformName.c_str()], value);
+      std::string inCacheName = shaderName + uniformName;
+      if (uniformCache.find(inCacheName) == uniformCache.end())
+        uniformCache[inCacheName] = getUniformLocation(uniformName);
+      glUniform1f(uniformCache[inCacheName], value);
     }
   else
     glUniform1f(getUniformLocation(uniformName), value);
@@ -117,9 +123,10 @@ void Shader::setBool(const std::__cxx11::string &uniformName, bool value)
 {
   if (Shader::cachedUniforms)
     {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName.c_str()] = getUniformLocation(uniformName);
-      glUniform1i(uniformCache[uniformName.c_str()], value);
+      std::string inCacheName = shaderName + uniformName;
+      if (uniformCache.find(inCacheName) == uniformCache.end())
+        uniformCache[inCacheName] = getUniformLocation(uniformName);
+      glUniform1i(uniformCache[inCacheName], value);
     }
   else
     glUniform1i(getUniformLocation(uniformName), value);
@@ -129,9 +136,10 @@ void Shader::setVec3(const std::__cxx11::string &uniformName, float x, float y, 
 {
   if (Shader::cachedUniforms)
     {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName.c_str()] = getUniformLocation(uniformName);
-      glUniform3f(uniformCache[uniformName.c_str()], x, y, z);
+      std::string inCacheName = shaderName + uniformName;
+      if (uniformCache.find(inCacheName) == uniformCache.end())
+        uniformCache[inCacheName] = getUniformLocation(uniformName);
+      glUniform3f(uniformCache[inCacheName], x, y, z);
     }
   else
     glUniform3f(getUniformLocation(uniformName), x, y ,z);
@@ -141,9 +149,10 @@ void Shader::setVec2(const std::__cxx11::string &uniformName, float x, float y)
 {
   if (Shader::cachedUniforms)
     {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName.c_str()] = getUniformLocation(uniformName);
-      glUniform2f(uniformCache[uniformName.c_str()], x, y);
+      std::string inCacheName = shaderName + uniformName;
+      if (uniformCache.find(inCacheName) == uniformCache.end())
+        uniformCache[inCacheName] = getUniformLocation(uniformName);
+      glUniform2f(uniformCache[inCacheName], x, y);
     }
   else
     glUniform2f(getUniformLocation(uniformName), x, y);
@@ -153,46 +162,39 @@ void Shader::setVec4(const std::string &uniformName, float x, float y, float z, 
 {
   if (Shader::cachedUniforms)
     {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName.c_str()] = getUniformLocation(uniformName);
-      glUniform4f(uniformCache[uniformName.c_str()], x, y, z, w);
+      std::string inCacheName = shaderName + uniformName;
+      if (uniformCache.find(inCacheName) == uniformCache.end())
+        uniformCache[inCacheName] = getUniformLocation(uniformName);
+      glUniform4f(uniformCache[inCacheName], x, y, z, w);
     }
   else
     glUniform4f(getUniformLocation(uniformName), x, y ,z, w);
 }
 
-void Shader::setMat3(const std::string &uniformName, glm::mat3 mat)
+void Shader::setMat3(const std::string &uniformName, const glm::mat3 &mat)
 {
   if (Shader::cachedUniforms)
     {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName.c_str()] = getUniformLocation(uniformName);
-      glUniformMatrix3fv(uniformCache[uniformName.c_str()], 1, GL_FALSE, glm::value_ptr(mat));
+      std::string inCacheName = shaderName + uniformName;
+      if (uniformCache.find(inCacheName) == uniformCache.end())
+        uniformCache[inCacheName] = getUniformLocation(uniformName);
+      glUniformMatrix3fv(uniformCache[inCacheName], 1, GL_FALSE, glm::value_ptr(mat));
     }
   else
     glUniformMatrix3fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat));
 }
 
-void Shader::setMat4(const std::__cxx11::string &uniformName, glm::mat4 mat)
+void Shader::setMat4(const std::__cxx11::string &uniformName, const glm::mat4 &mat)
 {
   if (Shader::cachedUniforms)
     {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName.c_str()] = getUniformLocation(uniformName);
-      glUniformMatrix4fv(uniformCache[uniformName.c_str()], 1, GL_FALSE, glm::value_ptr(mat));
+      std::string inCacheName = shaderName + uniformName;
+      if (uniformCache.find(inCacheName) == uniformCache.end())
+        uniformCache[inCacheName] = getUniformLocation(uniformName);
+      glUniformMatrix4fv(uniformCache[inCacheName], 1, GL_FALSE, glm::value_ptr(mat));
     }
   else
     glUniformMatrix4fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat));
-}
-
-GLuint Shader::getID() const
-{
-  return ID;
-}
-
-void Shader::use() const
-{
-  glUseProgram(ID);
 }
 
 void Shader::cleanUp()
@@ -221,7 +223,7 @@ GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &filenam
     throw;
   }
   if (filename.find_first_of("_hdr") != std::string::npos && HDR_ENABLED)
-    stringSrc = std::regex_replace(stringSrc, std::regex("#version 450\n"), "#version 450\n#define HDR_ENABLED\n");
+    regexReplace(stringSrc, "#version 450\n", "#version 450\n#define HDR_ENABLED\n");
   const char* src = stringSrc.c_str();
   GLuint shader = glCreateShader(shaderType);
   glShaderSource(shader, 1, &src, NULL);
@@ -235,9 +237,7 @@ GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &filenam
   return shader;
 }
 
-void Shader::parseIncludes(GLenum shaderType,
-                           std::string &stringSrc,
-                           ShaderIncludeList includes)
+void Shader::parseIncludes(GLenum shaderType, std::string &stringSrc, ShaderIncludeList includes)
 {
   for (auto i = includes.begin(); i < includes.end(); i++)
     {
@@ -250,9 +250,16 @@ void Shader::parseIncludes(GLenum shaderType,
       includeStream.close();
       std::string includeSrc = includeStringStream.str();
       std::string includeToken = std::string("@include ").append(includeFileName);
-      if (stringSrc.find(includeToken) != std::string::npos)
-        stringSrc = std::regex_replace(stringSrc, std::regex(includeToken), includeSrc);
+      regexReplace(stringSrc, includeToken, includeSrc);
     }
   if (stringSrc.find("@include") != std::string::npos)
     throw std::invalid_argument("Some expected includes were not found");
+}
+
+void Shader::regexReplace(std::string &source, const std::string &toReplace, const std::string &substitution)
+{
+  size_t positionOfReplaceOccurence = source.find(toReplace);
+  //replace only one occurence of @toReplace per function call
+  if(positionOfReplaceOccurence != std::string::npos)
+    source.replace(positionOfReplaceOccurence, toReplace.size(), substitution);
 }
