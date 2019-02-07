@@ -28,8 +28,6 @@ void ModelGPUDataManager::setupBuffers(const std::vector<Vertex> &vertices, cons
   glEnableVertexAttribArray(9);
   //intentionally set GL_FLOAT although the data is a pair of unsigned integers
   glVertexAttribPointer(9, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexIndices));
-  glEnableVertexAttribArray(10);
-  glVertexAttribPointer(10, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, IsLowPoly));
 
   if (basicGLBuffers.get(DIBO) == 0)
     {

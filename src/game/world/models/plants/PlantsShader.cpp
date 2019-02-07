@@ -35,3 +35,8 @@ void PlantsShader::switchToGrass(bool isGrass)
 {
   currentShader->setBool("u_isGrass", isGrass);
 }
+
+void PlantsShader::switchToLowPoly(bool isLowPoly)
+{
+  currentShader->setBool("u_isLowPoly", isLowPoly);
+}

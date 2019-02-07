@@ -12,7 +12,6 @@ in float        v_SunPositionAttenuation;
 in float        v_NormalY;
 in vec3         v_FragPos;
 flat in uvec2   v_TexIndices;
-in float        v_IsLowPoly;
 
 uniform uint64_t  u_texture_diffuse[200];
 uniform uint64_t  u_texture_specular[150];
@@ -23,6 +22,7 @@ uniform bool      u_useLandBlending;
 uniform float     u_ambientDay;
 uniform float     u_ambientNight;
 uniform vec3      u_viewPosition;
+uniform bool      u_isLowPoly;
 
 const float MAX_DESATURATING_VALUE = 0.5;
 
@@ -44,7 +44,7 @@ void main()
         int shadowMapIndex;
         vec3 projectedCoords;
         float luminosity;
-        if (v_IsLowPoly != 1)
+        if (!u_isLowPoly)
         {
             ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
             luminosity = ext_calculateLuminosity5(shadowMapIndex, projectedCoords, u_bias);

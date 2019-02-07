@@ -54,12 +54,16 @@ void PlantsFacade::draw(const glm::vec3 &lightDir,
                           useShadows,
                           useLandBlending);
   shaders.switchToGrass(false);
+  shaders.switchToLowPoly(false);
   treesRenderer.render(landPlantsGenerator.models, hillTreesGenerator.models, false);
+  shaders.switchToLowPoly(true);
   treesRenderer.render(landPlantsGenerator.lowPolyModels, hillTreesGenerator.lowPolyModels, false);
 
   shaders.switchToGrass(true);
   shaders.updateGrass();
+  shaders.switchToLowPoly(false);
   grassRenderer.render(grassGenerator.models, false);
+  shaders.switchToLowPoly(true);
   grassRenderer.render(grassGenerator.lowPolyModels, false);
 
   if (useLandBlending)
