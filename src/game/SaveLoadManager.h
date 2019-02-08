@@ -1,7 +1,6 @@
 #ifndef SAVELOADMANAGER_H
 #define SAVELOADMANAGER_H
 #include <fstream>
-#include <string>
 #include <vector>
 #include "game/world/Scene.h"
 #include "util/Logger.h"

@@ -1,32 +1,29 @@
 #include "graphics/textures/BindlessTextureManager.h"
 
-std::vector<std::vector<BindlessTexture>> BindlessTextureManager::textures;
+vec2D_template<BindlessTexture> BindlessTextureManager::textures;
 void BindlessTextureManager::emplaceBack(const std::string &textureSamplerUniformName, GLuint textureID, BINDLESS_TEXTURE_TYPE textureType)
 {
   static bool capacityReserved = false;
   if (!capacityReserved)
     {
       textures.reserve(BINDLESS_TEXTURE_NUM_TYPES);
-      for (unsigned int i = 0; i < BINDLESS_TEXTURE_NUM_TYPES; i++)
+      for (unsigned int textureTypeIndex = 0; textureTypeIndex < BINDLESS_TEXTURE_NUM_TYPES; textureTypeIndex++)
         {
           std::vector<BindlessTexture> emptyVec;
           textures.push_back(emptyVec);
-          textures[i].reserve(256);
+          textures[textureTypeIndex].reserve(INITIAL_CAPACITY);
         }
       capacityReserved = true;
     }
   GLuint64 textureHandle = glGetTextureHandleARB(textureID);
-  if (textureType == BINDLESS_TEXTURE_MODEL)
-    textures[BINDLESS_TEXTURE_MODEL].emplace_back(textureSamplerUniformName, textureID, textureHandle);
-  else if (textureType == BINDLESS_TEXTURE_LENS_FLARE)
-    textures[BINDLESS_TEXTURE_LENS_FLARE].emplace_back(textureSamplerUniformName, textureID, textureHandle);
+  textures[textureType].emplace_back(textureSamplerUniformName, textureID, textureHandle);
 }
 
 void BindlessTextureManager::makeAllResident()
 {
-  for (unsigned int i = 0; i < textures.size(); i++)
+  for (unsigned int textureTypeIndex = 0; textureTypeIndex < textures.size(); textureTypeIndex++)
     {
-      for (BindlessTexture& texture : textures[i])
+      for (BindlessTexture& texture : textures[textureTypeIndex])
         glMakeTextureHandleResidentARB(texture.handle);
     }
 }
@@ -40,9 +37,9 @@ void BindlessTextureManager::loadToShader(Shader &shader, BINDLESS_TEXTURE_TYPE 
 
 void BindlessTextureManager::makeAllNonResident()
 {
-  for (unsigned int i = 0; i < textures.size(); i++)
+  for (unsigned int textureTypeIndex = 0; textureTypeIndex < textures.size(); textureTypeIndex++)
     {
-      for (BindlessTexture& texture : textures[i])
+      for (BindlessTexture& texture : textures[textureTypeIndex])
         glMakeTextureHandleNonResidentARB(texture.handle);
     }
 }

@@ -2,7 +2,6 @@
 #define SHADERPROGRAM_H
 #include <sstream>
 #include <fstream>
-#include <string>
 #include <unordered_map>
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -38,6 +37,7 @@ public:
   void setMat3(const std::string& uniformName, const glm::mat3 &mat);
   void setMat4(const std::string& uniformName, const glm::mat4 &mat);
   void cleanUp();
+
 private:
   static bool cachedUniforms;
   GLuint loadShader(GLenum shaderType, const std::string& filename, ShaderIncludeList includes);

@@ -38,7 +38,10 @@ public:
   {
     return fps;
   }
+
 private:
+  using chronoClock = std::chrono::high_resolution_clock;
+
   float lastTime, nowTime, delta;
   decltype(chronoClock::now()) frameTime, currentTime;
   unsigned int frames = 0, fps = 0, updateCount = 0;

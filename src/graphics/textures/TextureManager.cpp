@@ -25,7 +25,7 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_THE_SUN] = loader.loadTexture("theSun.png", TEX_THE_SUN, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
   textures[TEX_SKYSPHERE_THE_SUN_AMBIENT_LIGHTING] = loader.loadTexture("theSunEnvironmentLight.png", TEX_SKYSPHERE_THE_SUN_AMBIENT_LIGHTING, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false);
   textures[TEX_SKYSPHERE_STARS] = loader.loadTexture("theSky.png", TEX_SKYSPHERE_STARS, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true);
-  textures[TEX_FRAME_MULTISAMPLED] = loader.createFrameMSTexture(MULTISAMPLES, TEX_FRAME_MULTISAMPLED);
+  textures[TEX_FRAME_MULTISAMPLED] = loader.createFrameMSTexture(TEX_FRAME_MULTISAMPLED, MULTISAMPLES);
   textures[TEX_FRAME] = loader.createFrameTexture(TEX_FRAME, false, false);
   textures[TEX_FRAME_HDR] = loader.createFrameTexture(TEX_FRAME_HDR, false, false);
   textures[TEX_FRAME_DEPTH] = loader.createFrameTexture(TEX_FRAME_DEPTH, true, false);
@@ -33,23 +33,23 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_FRAME_WATER_REFLECTION] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFLECTION, false, FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT, true);
   textures[TEX_FRAME_WATER_REFRACTION] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFRACTION, false, FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT, true);
   textures[TEX_FRAME_WATER_REFRACTION_DEPTH] = loader.createFrameTextureSized(TEX_FRAME_WATER_REFRACTION_DEPTH, true, FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT, true);
-  textures[TEX_DEPTH_MAP_SUN] = loader.createDepthMapTexture(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT, TEX_DEPTH_MAP_SUN);
+  textures[TEX_DEPTH_MAP_SUN] = loader.createDepthMapTexture(TEX_DEPTH_MAP_SUN, DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
 }
 
 TextureManager::~TextureManager()
 {
-  for (unsigned int i = 0; i < textures.size(); i++)
-    glDeleteTextures(1, &(textures[i]));
+  for (unsigned int textureIndex = 0; textureIndex < textures.size(); textureIndex++)
+    glDeleteTextures(1, &(textures[textureIndex]));
 }
 
 void TextureManager::createUnderwaterReliefTexture(const map2D_f &waterMap)
 {
-  textures[TEX_UNDERWATER_RELIEF] = loader.createUnderwaterReliefTexture(waterMap, TEX_UNDERWATER_RELIEF, GL_LINEAR, GL_LINEAR);
+  textures[TEX_UNDERWATER_RELIEF] = loader.createUnderwaterReliefTexture(TEX_UNDERWATER_RELIEF, waterMap, GL_LINEAR, GL_LINEAR);
 }
 
-GLuint &TextureManager::get(int unit)
+GLuint &TextureManager::get(int textureUnit)
 {
-  return textures[unit];
+  return textures[textureUnit];
 }
 
 TextureLoader &TextureManager::getLoader()

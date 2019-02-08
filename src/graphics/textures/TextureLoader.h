@@ -1,6 +1,5 @@
 #ifndef TEXTURELOADER_H
 #define TEXTURELOADER_H
-#include <string>
 #include <GL/glew.h>
 #include <IL/il.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,16 +23,18 @@ public:
                      bool includeCWD = true,
                      bool isBindless = false,
                      bool explicitNoSRGB = false);
-  GLuint createFrameMSTexture(int multisample, GLuint textureUnit);
+  GLuint createFrameMSTexture(GLuint textureUnit, int multisamples);
   GLuint createFrameTexture(GLuint textureUnit, bool isDepthTexture, bool useAnisotropy);
   GLuint createFrameTextureSized(GLuint textureUnit, bool isDepthTexture, int width, int height, bool useAnisotropy);
-  GLuint createDepthMapTexture(int width, int height, GLuint textureUnit);
+  GLuint createDepthMapTexture(GLuint textureUnit, int width, int height);
   GLuint loadCubemap(const std::string& directory, GLuint textureUnit, bool explicitNoSRGB);
-  GLuint createUnderwaterReliefTexture(const map2D_f& waterMap, GLuint textureUnit, GLint magFilter, GLint minFilter);
+  GLuint createUnderwaterReliefTexture(GLuint textureUnit, const map2D_f& waterMap, GLint magFilter, GLint minFilter);
+
 private:
   GLuint createTextureObject(GLenum target, GLuint textureUnit, bool isBindless);
   void setTexture2DParameters(GLuint texture, GLint magFilter, GLint minFilter, GLenum wrapType);
   void setTex2DArrayParameters(GLint magFilter, GLint minFilter, GLenum wrapType);
+
   const ScreenResolution& screenResolution;
 };
 

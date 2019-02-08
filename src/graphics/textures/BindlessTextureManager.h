@@ -1,9 +1,8 @@
 #ifndef BINDLESSTEXTUREMANAGER_H
 #define BINDLESSTEXTUREMANAGER_H
 #include <GL/glew.h>
-#include <vector>
-#include <string>
 #include "graphics/shaders/Shader.h"
+#include "util/typeAliases.h"
 
 enum BINDLESS_TEXTURE_TYPE
 {
@@ -28,8 +27,10 @@ public:
   static void makeAllResident();
   static void loadToShader(Shader& shader, BINDLESS_TEXTURE_TYPE textureType);
   static void makeAllNonResident();
+
 private:
-  static std::vector<std::vector<BindlessTexture>> textures;
+  constexpr static unsigned int INITIAL_CAPACITY = 256;
+  static vec2D_template<BindlessTexture> textures;
 };
 
 #endif // BINDLESSTEXTUREMANAGER_H

@@ -5,9 +5,9 @@
 #include <string.h>
 #include <algorithm>
 #include <iomanip>
+#include <chrono>
 #include "util/DirectoriesSettings.h"
 #include "util/Logger.h"
-#include "util/typeAliases.h"
 
 //benchmarking
 #ifdef _DEBUG
@@ -27,7 +27,10 @@ public:
   static void printBenchmarksPerApp(unsigned int updateCount);
   static void printBenchmarksPerFrame(unsigned int updateCount, unsigned int ups);
   static void clearBenchmarksPerFrameValues();
+
 private:
+  using chronoClock = std::chrono::high_resolution_clock;
+
   static std::ofstream perFrameLog, perAppLog;
   static bool outputCreated;
   static std::map<std::string, unsigned long> benchmarksTimers;
