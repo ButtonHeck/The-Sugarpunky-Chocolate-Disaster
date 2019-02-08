@@ -74,8 +74,7 @@ void Scene::deserialize(std::ifstream &input)
   plantsFacade.deserialize(input);
 }
 
-void Scene::drawWorld(const glm::vec3& lightDir,
-                      const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
+void Scene::drawWorld(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                       const glm::mat4& projectionView,
                       const glm::mat4& skyboxProjectionView,
                       const Frustum &viewFrustum,
@@ -85,6 +84,7 @@ void Scene::drawWorld(const glm::vec3& lightDir,
 {
   BENCHMARK("Scene: draw all", true);
   glm::vec3 viewPosition = camera.getPosition();
+  const glm::vec3& lightDir = theSunFacade.getLightDir();
   bool useShadows = options[OPT_USE_SHADOWS];
   bool isDebugRender = options[OPT_DEBUG_RENDER];
 
@@ -133,6 +133,7 @@ void Scene::drawWorld(const glm::vec3& lightDir,
     waterFacade.draw(lightDir, lightSpaceMatrices, projectionView, viewPosition, viewFrustum, options[OPT_WATER_CULLING], isDebugRender);
 
   float theSunVisibility = theSunFacade.getSunVisibility(options[OPT_USE_MULTISAMPLING]);
+  //TODO: this code smells like it might be done in theSunFacade
   const float MIN_SUN_VISIBILITY_Y = 0.02f;
   const float VIEW_POSITION_VISIBILITY_DIVISOR = 1500.0f;
   theSunVisibility *= glm::clamp(-(lightDir.y + MIN_SUN_VISIBILITY_Y - viewPosition.y / VIEW_POSITION_VISIBILITY_DIVISOR) * 8.0f, 0.0f, 1.0f);
@@ -163,8 +164,7 @@ void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &li
   glEnable(GL_MULTISAMPLE);
 }
 
-void Scene::drawWorldReflection(const glm::vec3& lightDir,
-                                const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
+void Scene::drawWorldReflection(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                                 const glm::mat4 &projectionView,
                                 const glm::mat4 &skyboxProjectionView,
                                 const Frustum &cullingViewFrustum,
@@ -172,6 +172,7 @@ void Scene::drawWorldReflection(const glm::vec3& lightDir,
 {
   BENCHMARK("Scene: draw world reflection", true);
   glm::vec3 viewPosition = camera.getPosition();
+  const glm::vec3& lightDir = theSunFacade.getLightDir();
   viewPosition.y *= -1;
 
   hillsFacade.draw(lightDir,
@@ -198,11 +199,11 @@ void Scene::drawWorldReflection(const glm::vec3& lightDir,
   RendererStateManager::setAmbienceRenderingState(false);
 }
 
-void Scene::drawWorldRefraction(const glm::vec3 &lightDir,
-                                const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
+void Scene::drawWorldRefraction(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                                 const glm::mat4 &projectionView)
 {
   BENCHMARK("Scene: draw world refraction", true);
+  const glm::vec3& lightDir = theSunFacade.getLightDir();
 
   underwaterFacade.draw(lightDir, projectionView);
 

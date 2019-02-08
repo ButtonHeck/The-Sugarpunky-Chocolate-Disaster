@@ -18,17 +18,24 @@ void TheSun::move(float angleDegrees)
 {
   currentPosition = glm::rotate(currentPosition, glm::radians(angleDegrees), ROTATION_VECTOR);
   rotationTransform = glm::rotate(rotationTransform, glm::radians(angleDegrees), ROTATION_VECTOR);
+  lightDirTo = glm::normalize(-currentPosition);
 }
 
 void TheSun::moveAbsolutePosition(float angleDegrees)
 {
   currentPosition = glm::rotate(START_POSITION, glm::radians(angleDegrees), ROTATION_VECTOR);
   rotationTransform = glm::rotate(START_MODEL, glm::radians(angleDegrees), ROTATION_VECTOR);
+  lightDirTo = glm::normalize(-currentPosition);
 }
 
 const glm::vec3& TheSun::getPosition() const
 {
   return currentPosition;
+}
+
+const glm::vec3 &TheSun::getLightDir() const
+{
+  return lightDirTo;
 }
 
 const glm::mat4 &TheSun::getRotationTransform() const

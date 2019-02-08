@@ -45,6 +45,11 @@ const glm::vec3& TheSunFacade::getPosition() const
   return theSun.getPosition();
 }
 
+const glm::vec3 &TheSunFacade::getLightDir() const
+{
+  return theSun.getLightDir();
+}
+
 const glm::mat4& TheSunFacade::getRotationTransform() const
 {
   return theSun.getRotationTransform();

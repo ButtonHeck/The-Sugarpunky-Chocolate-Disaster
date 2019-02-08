@@ -233,17 +233,17 @@ void ShadowVolumeRenderer::bufferActualVolumes()
   actualVolumeVertices[71] = shadowVolume.shadowBoxes[2].lsPovFarUL.z;
 
   //near box light source
-  actualVolumeVertices[72] = shadowVolume.shadowBoxes[0].lightSource.x;
-  actualVolumeVertices[73] = shadowVolume.shadowBoxes[0].lightSource.y;
-  actualVolumeVertices[74] = shadowVolume.shadowBoxes[0].lightSource.z;
+  actualVolumeVertices[72] = shadowVolume.shadowBoxes[0].localLightSource.x;
+  actualVolumeVertices[73] = shadowVolume.shadowBoxes[0].localLightSource.y;
+  actualVolumeVertices[74] = shadowVolume.shadowBoxes[0].localLightSource.z;
   //middle box light source
-  actualVolumeVertices[75] = shadowVolume.shadowBoxes[1].lightSource.x;
-  actualVolumeVertices[76] = shadowVolume.shadowBoxes[1].lightSource.y;
-  actualVolumeVertices[77] = shadowVolume.shadowBoxes[1].lightSource.z;
+  actualVolumeVertices[75] = shadowVolume.shadowBoxes[1].localLightSource.x;
+  actualVolumeVertices[76] = shadowVolume.shadowBoxes[1].localLightSource.y;
+  actualVolumeVertices[77] = shadowVolume.shadowBoxes[1].localLightSource.z;
   //far box light source
-  actualVolumeVertices[78] = shadowVolume.shadowBoxes[2].lightSource.x;
-  actualVolumeVertices[79] = shadowVolume.shadowBoxes[2].lightSource.y;
-  actualVolumeVertices[80] = shadowVolume.shadowBoxes[2].lightSource.z;
+  actualVolumeVertices[78] = shadowVolume.shadowBoxes[2].localLightSource.x;
+  actualVolumeVertices[79] = shadowVolume.shadowBoxes[2].localLightSource.y;
+  actualVolumeVertices[80] = shadowVolume.shadowBoxes[2].localLightSource.z;
 
   actualVolumesGLBuffers.bind(VAO | VBO | EBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(actualVolumeVertices), actualVolumeVertices, GL_STATIC_DRAW);

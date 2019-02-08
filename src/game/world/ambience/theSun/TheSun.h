@@ -12,6 +12,7 @@ public:
   void move(float angleDegrees);
   void moveAbsolutePosition(float angleDegrees);
   const glm::vec3 &getPosition() const;
+  const glm::vec3 &getLightDir() const;
   const glm::mat4 &getRotationTransform() const;
 
 private:
@@ -20,6 +21,7 @@ private:
   BufferCollection basicGLBuffers;
   glm::mat4 rotationTransform;
   glm::vec3 currentPosition;
+  glm::vec3 lightDirTo;
 
   //constants for absolute positioning
   const glm::vec3 START_POSITION = currentPosition;

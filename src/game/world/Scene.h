@@ -29,8 +29,7 @@ public:
   void deserialize(std::ifstream& input);
 
   //rendering part
-  void drawWorld(const glm::vec3 &lightDir,
-                 const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
+  void drawWorld(const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
                  const glm::mat4 &projectionView,
                  const glm::mat4 &skyProjectionView,
                  const Frustum &viewFrustum,
@@ -39,14 +38,12 @@ public:
                  MouseInputManager& mouseInput);
   void drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
                          bool grassCastShadow);
-  void drawWorldReflection(const glm::vec3 &lightDir,
-                           const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
+  void drawWorldReflection(const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
                            const glm::mat4 &projectionView,
                            const glm::mat4 &skyProjectionView,
                            const Frustum &cullingViewFrustum,
                            const Camera &camera);
-  void drawWorldRefraction(const glm::vec3 &lightDir,
-                           const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
+  void drawWorldRefraction(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
                            const glm::mat4 &projectionView);
 
   //getters

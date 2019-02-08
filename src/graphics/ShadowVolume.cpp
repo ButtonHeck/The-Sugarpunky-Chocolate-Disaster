@@ -1,26 +1,27 @@
 #include "graphics/ShadowVolume.h"
 
-ShadowVolume::ShadowVolume(TheSunFacade& sun)
+ShadowVolume::ShadowVolume(TheSunFacade& theSunFacade)
   :
-    sun(sun)
+    theSunFacade(theSunFacade)
 {}
 
 void ShadowVolume::update(const std::array<Frustum, NUM_SHADOW_LAYERS> &frustums)
 {
-  glm::vec3 sunPosition = sun.getPosition();
+  glm::vec3 sunPosition = theSunFacade.getPosition();
+
+  //map sun position coordinates to [-1;1] assuming that the sun move trajectory is a circle
   float sunAbsPositionY = sunPosition.y / HALF_WORLD_WIDTH_F;
   float sunAbsPositionX = sunPosition.x / HALF_WORLD_WIDTH_F;
-  lightDirTo = glm::normalize(glm::vec3(0.0f) - sunPosition);
+
+  lightDirTo = theSunFacade.getLightDir();
   lightDirRight = glm::normalize(glm::cross(lightDirTo, glm::vec3(0.0f, 1.0f, 0.0f)));
-  lightDirUp = glm::normalize(glm::cross(lightDirRight, lightDirTo));
+  /* for "up" vector no need to normalize it explicitly
+   * as the cross product of 2 orthogonal unit vectors (lightDirRight and Y-axis unit vector) is already a unit length vector
+   */
+  lightDirUp = glm::cross(lightDirRight, lightDirTo);
 
-  for (unsigned int layer = 0; layer < NUM_SHADOW_LAYERS; layer++)
-    updateLightSpaceMatrix(frustums[layer], layer, sunAbsPositionY, sunAbsPositionX);
-}
-
-const glm::vec3& ShadowVolume::getLightDir() const
-{
-  return lightDirTo;
+  for (unsigned int layerIndex = 0; layerIndex < NUM_SHADOW_LAYERS; layerIndex++)
+    updateLightSpaceMatrix(frustums[layerIndex], layerIndex, sunAbsPositionY, sunAbsPositionX);
 }
 
 const std::array<glm::mat4, NUM_SHADOW_LAYERS> &ShadowVolume::getLightSpaceMatrices() const
@@ -36,35 +37,29 @@ void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, flo
   float boxMaxZ = frustum.getMaxCoordZ();
   float boxMinZ = frustum.getMinCoordZ();
 
-  //step 2 - correct bounding box
-  float offset;
+  //step 2 - offset bounding box position relative to where the sun is
+  float offset = glm::mix(SHADOW_BOX_MAX_OFFSET_X, 0.0f, sunAbsPositionY);
   if (lightDirTo.x < 0.0f)
-    {
-      offset = glm::mix(30.0f, 0.0f, sunAbsPositionY);
-      boxMaxX += offset;
-    }
+    boxMaxX += offset;
   else
-    {
-      offset = glm::mix(-30.0f, 0.0f, sunAbsPositionY);
-      boxMinX += offset;
-    }
-  const float SHADOW_BOX_BORDER_OFFSET = 0.5f; //use it to remove shadow artefacts at map edges
-  boxMaxZ = glm::min(HALF_WORLD_HEIGHT_F + SHADOW_BOX_BORDER_OFFSET, boxMaxZ);
-  boxMinZ = glm::max(-HALF_WORLD_HEIGHT_F - SHADOW_BOX_BORDER_OFFSET, boxMinZ);
-  boxMaxX = glm::min(HALF_WORLD_WIDTH_F + SHADOW_BOX_BORDER_OFFSET, boxMaxX);
-  boxMinX = glm::max(-HALF_WORLD_WIDTH_F - SHADOW_BOX_BORDER_OFFSET, boxMinX);
+    boxMinX -= offset;
+
+  //limit box bounds with offsetted map bounds to hide shadow artefacts at map edges
+  boxMaxZ = glm::min(HALF_WORLD_HEIGHT_F + SHADOW_BOX_MAP_BORDER_OFFSET, boxMaxZ);
+  boxMinZ = glm::max(-HALF_WORLD_HEIGHT_F - SHADOW_BOX_MAP_BORDER_OFFSET, boxMinZ);
+  boxMaxX = glm::min(HALF_WORLD_WIDTH_F + SHADOW_BOX_MAP_BORDER_OFFSET, boxMaxX);
+  boxMinX = glm::max(-HALF_WORLD_WIDTH_F - SHADOW_BOX_MAP_BORDER_OFFSET, boxMinX);
 
   //step 3 - calculate box center
   float boxWidth = boxMaxX - boxMinX;
+  float boxHalfWidth = boxWidth * 0.5f;
   float boxMidX = (boxMaxX + boxMinX) * 0.5f;
   float boxMidZ = (boxMaxZ + boxMinZ) * 0.5f;
 
   //step 4 - calculate light source position
-  const float EXPECTED_MAX_HEIGHT[3] = {BOX_MIN_HEIGHT, BOX_MIN_HEIGHT * 2, BOX_MIN_HEIGHT * 4};
-  float x = boxWidth * 0.5f;
-  float angleRad = glm::atan(EXPECTED_MAX_HEIGHT[layer] / x);
-  float ellipseA = x / glm::cos(angleRad);
-  float ellipseB = EXPECTED_MAX_HEIGHT[layer] / glm::sin(angleRad);
+  float angleRad = glm::atan(SHADOW_BOXES_MAX_HEIGHT[layer] / boxHalfWidth);
+  float ellipseA = boxHalfWidth / glm::cos(angleRad);
+  float ellipseB = SHADOW_BOXES_MAX_HEIGHT[layer] / glm::sin(angleRad);
 
   glm::vec3 lightSource(boxMidX + sunAbsPositionX * ellipseA,
                         sunAbsPositionY * ellipseB,
@@ -73,34 +68,37 @@ void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, flo
   //step 5 - calculate frustum borders
   const float RIGHT_SIDE = glm::abs(boxMinZ - boxMidZ);
   const float LEFT_SIDE = -RIGHT_SIDE;
+  glm::vec2 lightSourceXY = glm::vec2(lightSource);
+  glm::vec2 lightDirToXY = glm::vec2(lightDirTo);
+  glm::vec2 lightDirUpXY = glm::vec2(lightDirUp);
 
   glm::vec2 farPoint(lightDirTo.x > 0.0f ? boxMaxX : boxMinX, 0.0f);
-  glm::vec2 fromLStoFarPoint = farPoint - glm::vec2(lightSource);
+  glm::vec2 fromLStoFarPoint = farPoint - lightSourceXY;
   float fromLStoFarPointLength = glm::length(fromLStoFarPoint);
   glm::vec2 fromLStoFarPointNorm = glm::normalize(fromLStoFarPoint);
-  float cosAlpha = glm::dot(fromLStoFarPointNorm, glm::vec2(lightDirTo));
+  float cosAlpha = glm::dot(fromLStoFarPointNorm, lightDirToXY);
   const float FAR_SIDE = fromLStoFarPointLength * cosAlpha
                           + 4.0f * sunAbsPositionY; //+some offset when the sun is at its zenith
 
-  glm::vec2 nearPoint(lightDirTo.x > 0.0f ? boxMinX : boxMaxX, EXPECTED_MAX_HEIGHT[layer]);
-  glm::vec2 fromLStoNearPoint = nearPoint - glm::vec2(lightSource);
+  glm::vec2 nearPoint(lightDirTo.x > 0.0f ? boxMinX : boxMaxX, SHADOW_BOXES_MAX_HEIGHT[layer]);
+  glm::vec2 fromLStoNearPoint = nearPoint - lightSourceXY;
   float fromLStoNearPointLength = glm::length(fromLStoNearPoint);
   glm::vec2 fromLStoNearPointNorm = glm::normalize(fromLStoNearPoint);
-  cosAlpha = glm::dot(fromLStoNearPointNorm, glm::vec2(lightDirTo));
+  cosAlpha = glm::dot(fromLStoNearPointNorm, lightDirToXY);
   const float NEAR_SIDE = fromLStoNearPointLength * cosAlpha;
 
-  glm::vec2 upPoint(lightDirTo.x > 0.0f ? boxMaxX : boxMinX, EXPECTED_MAX_HEIGHT[layer]);
-  glm::vec2 fromLStoUpPoint = upPoint - glm::vec2(lightSource);
+  glm::vec2 upPoint(lightDirTo.x > 0.0f ? boxMaxX : boxMinX, SHADOW_BOXES_MAX_HEIGHT[layer]);
+  glm::vec2 fromLStoUpPoint = upPoint - lightSourceXY;
   float fromLStoUpPointLength = glm::length(fromLStoUpPoint);
   glm::vec2 fromLStoUpPointNorm = glm::normalize(fromLStoUpPoint);
-  cosAlpha = glm::dot(fromLStoUpPointNorm, glm::vec2(lightDirUp));
+  cosAlpha = glm::dot(fromLStoUpPointNorm, lightDirUpXY);
   const float UP_SIDE = fromLStoUpPointLength * cosAlpha;
 
   glm::vec2 bottomPoint(lightDirTo.x > 0.0f ? boxMinX : boxMaxX, 0.0f);
-  glm::vec2 fromLStoBottomPoint = bottomPoint - glm::vec2(lightSource);
+  glm::vec2 fromLStoBottomPoint = bottomPoint - lightSourceXY;
   float fromLStoBottomPointLength = glm::length(fromLStoBottomPoint);
   glm::vec2 fromLStoBottomPointNorm = glm::normalize(fromLStoBottomPoint);
-  cosAlpha = glm::dot(fromLStoBottomPointNorm, glm::vec2(-lightDirUp));
+  cosAlpha = glm::dot(fromLStoBottomPointNorm, -lightDirUpXY);
   const float BOTTOM_SIDE = -fromLStoBottomPointLength * cosAlpha
                             - 2.0f * (1.0f - sunAbsPositionY); //+some offset when the dusk or the dawn
 
@@ -120,7 +118,7 @@ void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, flo
   shadowBoxes[layer].expectedLR = glm::vec2(boxMaxX, boxMaxZ);
   shadowBoxes[layer].expectedUR = glm::vec2(boxMaxX, boxMinZ);
   shadowBoxes[layer].expectedUL = glm::vec2(boxMinX, boxMinZ);
-  shadowBoxes[layer].lightSource = lightSource;
+  shadowBoxes[layer].localLightSource = lightSource;
   shadowBoxes[layer].lsPovNearLL = lightSource + (NEAR_SIDE * lightDirTo) + (LEFT_SIDE * lightDirRight)  + (BOTTOM_SIDE * lightDirUp);
   shadowBoxes[layer].lsPovNearLR = lightSource + (NEAR_SIDE * lightDirTo) + (RIGHT_SIDE * lightDirRight) + (BOTTOM_SIDE * lightDirUp);
   shadowBoxes[layer].lsPovNearUR = lightSource + (NEAR_SIDE * lightDirTo) + (RIGHT_SIDE * lightDirRight) + (UP_SIDE * lightDirUp);

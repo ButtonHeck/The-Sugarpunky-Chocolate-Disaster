@@ -89,7 +89,7 @@ void Game::loop()
   scene.getSunFacade().move(timerDelta);
   scene.getSkysphereFacade().moveStarsSkysphere(timerDelta * PLANET_MOVE_SPEED);
 
-  glm::vec4 currentColor = glm::mix(NIGHT_SKY_COLOR, DAY_SKY_COLOR, glm::clamp(-shadowVolume.getLightDir().y * 5, 0.0f, 1.0f));
+  glm::vec4 currentColor = glm::mix(NIGHT_SKY_COLOR, DAY_SKY_COLOR, glm::clamp(-scene.getSunFacade().getLightDir().y * 5, 0.0f, 1.0f));
   glClearColor(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
 
   landIndirectBufferHasUpdated = false;
@@ -160,8 +160,7 @@ void Game::drawFrame(const glm::mat4 &projectionView)
       waterNeedNewKeyFrame = true;
     }
 
-  scene.drawWorld(shadowVolume.getLightDir(),
-                  shadowVolume.getLightSpaceMatrices(),
+  scene.drawWorld(shadowVolume.getLightSpaceMatrices(),
                   projectionView,
                   projection * glm::mat4(camera.getViewMatrixMat3()),
                   viewFrustum,
@@ -230,8 +229,7 @@ void Game::drawFrameReflection()
     glDisable(GL_MULTISAMPLE);
 
   glm::mat4 viewReflected = camera.getReflectionViewMatrix();
-  scene.drawWorldReflection(shadowVolume.getLightDir(),
-                            shadowVolume.getLightSpaceMatrices(),
+  scene.drawWorldReflection(shadowVolume.getLightSpaceMatrices(),
                             projection * viewReflected,
                             projection * glm::mat4(glm::mat3(viewReflected)),
                             cullingViewFrustum,
@@ -247,7 +245,7 @@ void Game::drawFrameRefraction(const glm::mat4 &projectionView)
   if (options[OPT_USE_MULTISAMPLING])
     glDisable(GL_MULTISAMPLE);
 
-  scene.drawWorldRefraction(shadowVolume.getLightDir(), shadowVolume.getLightSpaceMatrices(), projectionView);
+  scene.drawWorldRefraction(shadowVolume.getLightSpaceMatrices(), projectionView);
 
   if (options[OPT_USE_MULTISAMPLING])
     glEnable(GL_MULTISAMPLE);
