@@ -34,12 +34,9 @@ void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
       mouseInput.lastX = x;
       mouseInput.lastY = y;
       glfwGetCursorPos(window, &cursorScreenX, &cursorScreenY);
-      glm::vec3 view = camera.getDirection();
-      view = glm::normalize(view);
-      glm::vec3 h = camera.getRight();
-      h = glm::normalize(h);
-      glm::vec3 v = camera.getUp();
-      v = glm::normalize(v);
+      glm::vec3 view = camera.getDirection(); //normalized
+      glm::vec3 h = camera.getRight(); //normalized
+      glm::vec3 v = camera.getUp(); //normalized
       float fovRad = glm::radians(camera.getZoom());
       float vLength = std::tan(fovRad / 2) * NEAR_PLANE;
       float hLength = vLength * screenResolution.getAspectRatio();

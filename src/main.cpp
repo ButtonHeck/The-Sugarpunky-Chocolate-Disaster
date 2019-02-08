@@ -9,7 +9,7 @@
 GLFWwindow* window;
 ScreenResolution screenResolution;
 Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
-Camera shadowCamera(glm::vec3(0.0f, 12.0f, 0.0f));
+Camera shadowCamera(camera);
 Options options;
 Game* game;
 

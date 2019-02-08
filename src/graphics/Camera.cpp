@@ -3,26 +3,22 @@
 Camera::Camera(glm::vec3 position)
   :
     zoom(FOV),
-    moveSpeed(8),
-    mouseSensitivity(0.015f),
+    moveSpeed(MOVE_SPEED),
+    mouseSensitivity(INITIAL_MOUSE_SENSITIVITY),
     useAcceleration(true),
-    viewAccelerationSensitivity(0.001f),
-    moveAccelerationSensitivity(0.05f),
-    FPSmode(false),
-    yaw(-90.0f),
-    pitch(0.0f),
-    position(position),
-    front(glm::vec3(0.0, 0.0, -1.0)),
-    worldUp(0.0, 1.0, 0.0)
+    viewAccelerationSensitivity(INITIAL_VIEW_ACCELERATION_SENSITIVITY),
+    moveAccelerationSensitivity(INITIAL_MOVE_ACCELERATION_SENSITIVITY),
+    yaw(INITIAL_YAW_ANGLE_DEGREES),
+    position(position)
 {
-  updateVectors();
+  updateDirectionVectors();
 }
 
 Camera &Camera::operator=(const Camera &rhs)
 {
   this->mouseSensitivity = rhs.mouseSensitivity;
   this->useAcceleration = rhs.useAcceleration;
-  this->FPSmode = rhs.FPSmode;
+  this->firstPersonShooterMode = rhs.firstPersonShooterMode;
   this->yaw = rhs.yaw;
   this->pitch = rhs.pitch;
   this->position = rhs.position;
@@ -34,128 +30,10 @@ Camera &Camera::operator=(const Camera &rhs)
   this->moveAccelerationFront = rhs.moveAccelerationFront;
   this->moveAccelerationY = rhs.moveAccelerationY;
   this->accumulateMoveFront = rhs.accumulateMoveFront;
-  this->accumulateMoveSide = rhs.accumulateMoveSide;
-  this->accumulateMoveY = rhs.accumulateMoveY;
-  this->updateVectors();
+  this->accumulateMoveHorizontal = rhs.accumulateMoveHorizontal;
+  this->accumulateMoveVertical = rhs.accumulateMoveVertical;
+  this->updateDirectionVectors();
   return *this;
-}
-
-glm::mat4 Camera::getViewMatrix() const
-{
-  return glm::lookAt(position, position + front, worldUp);
-}
-
-glm::mat3 Camera::getViewMatrixMat3() const
-{
-  return glm::mat3(getViewMatrix());
-}
-
-glm::mat4 Camera::getReflectionViewMatrix() const
-{
-  glm::vec3 positionReflected(position.x, -position.y, position.z);
-  glm::vec3 lookDirectionReflected(position + front);
-  lookDirectionReflected.y *= -1;
-  return glm::lookAt(positionReflected, lookDirectionReflected, worldUp);
-}
-
-void Camera::updateViewAcceleration(float xOffset, float yOffset)
-{
-  viewAccelerationX += xOffset * mouseSensitivity;
-  viewAccelerationY += yOffset * mouseSensitivity;
-}
-
-void Camera::processMouseCursor()
-{
-  BENCHMARK("Camera: processMouse", true);
-  yaw -= viewAccelerationX;
-  pitch -= viewAccelerationY;
-  if (pitch >= 89.9f)
-    pitch = 89.9f;
-  if (pitch <= -65.0f)
-    pitch = -65.0f;
-
-  viewAccelerationX *= useAcceleration ? 0.85f : 0;
-  viewAccelerationY *= useAcceleration ? 0.85f : 0;
-
-  updateVectors();
-}
-
-void Camera::processMouseScroll(float yOffset)
-{
-  mouseSensitivity += yOffset * viewAccelerationSensitivity;
-  mouseSensitivity = glm::clamp(mouseSensitivity, 0.002f, 0.02f);
-}
-
-void Camera::updateAccelerations(MOVE_DIRECTION dir)
-{
-  if (dir == FORWARD)
-    {
-      accumulateMoveFront = true;
-      if (!useAcceleration)
-        moveAccelerationFront = 1.0f;
-      else
-        {
-          moveAccelerationFront += moveAccelerationSensitivity;
-          moveAccelerationFront = glm::min(moveAccelerationFront, 1.0f);
-        }
-    }
-  else if (dir == BACKWARD)
-    {
-      accumulateMoveFront = true;
-      if (!useAcceleration)
-        moveAccelerationFront = -1.0f;
-      else
-        {
-          moveAccelerationFront -= moveAccelerationSensitivity;
-          moveAccelerationFront = glm::max(moveAccelerationFront, -1.0f);
-        }
-    }
-
-  if (dir == RIGHT)
-    {
-      accumulateMoveSide = true;
-      if (!useAcceleration)
-        moveAccelerationSide = 1.0f;
-      else
-        {
-          moveAccelerationSide += moveAccelerationSensitivity;
-          moveAccelerationSide = glm::min(moveAccelerationSide, 1.0f);
-        }
-    }
-  else if (dir == LEFT)
-    {
-      accumulateMoveSide = true;
-      if (!useAcceleration)
-        moveAccelerationSide = -1.0f;
-      else
-        {
-          moveAccelerationSide -= moveAccelerationSensitivity;
-          moveAccelerationSide = glm::max(moveAccelerationSide, -1.0f);
-        }
-    }
-
-  if (dir == UP)
-    {
-      accumulateMoveY = true;
-      if (!useAcceleration)
-        moveAccelerationY = 1.0f;
-      else
-        {
-          moveAccelerationY += moveAccelerationSensitivity;
-          moveAccelerationY = glm::min(moveAccelerationY, 1.0f);
-        }
-    }
-  else if (dir == DOWN)
-    {
-      accumulateMoveY = true;
-      if (!useAcceleration)
-        moveAccelerationY = -1.0f;
-      else
-        {
-          moveAccelerationY -= moveAccelerationSensitivity;
-          moveAccelerationY = glm::max(moveAccelerationY, -1.0f);
-        }
-    }
 }
 
 void Camera::move(float delta, const map2D_f &hillsMap)
@@ -172,7 +50,7 @@ void Camera::move(float delta, const map2D_f &hillsMap)
 
   if (moveAccelerationSide != 0.0f)
     {
-      if (!accumulateMoveSide)
+      if (!accumulateMoveHorizontal)
         diminishMoveAcceleration(moveAccelerationSide);
       glm::vec3 move = right * velocity * moveAccelerationSide;
       position += move;
@@ -180,9 +58,9 @@ void Camera::move(float delta, const map2D_f &hillsMap)
 
   if (moveAccelerationY != 0.0f)
     {
-      if (!accumulateMoveY)
+      if (!accumulateMoveVertical)
         diminishMoveAcceleration(moveAccelerationY);
-      glm::vec3 move = worldUp * velocity * moveAccelerationY;
+      glm::vec3 move = WORLD_UP * velocity * moveAccelerationY;
       position += move;
     }
 
@@ -216,9 +94,121 @@ void Camera::move(float delta, const map2D_f &hillsMap)
     }
 }
 
+void Camera::updateViewAcceleration(float xOffset, float yOffset)
+{
+  viewAccelerationX += xOffset * mouseSensitivity;
+  viewAccelerationY += yOffset * mouseSensitivity;
+}
+
+void Camera::processMouseCursor()
+{
+  BENCHMARK("Camera: processMouse", true);
+  yaw -= viewAccelerationX;
+  pitch -= viewAccelerationY;
+  if (pitch >= MAX_PITCH)
+    pitch = MAX_PITCH;
+  if (pitch <= MIN_PITCH)
+    pitch = MIN_PITCH;
+
+  viewAccelerationX *= useAcceleration ? VIEW_ACCELERATION_DAMPENING_FACTOR : 0;
+  viewAccelerationY *= useAcceleration ? VIEW_ACCELERATION_DAMPENING_FACTOR : 0;
+
+  updateDirectionVectors();
+}
+
+void Camera::processMouseScroll(float yOffset)
+{
+  mouseSensitivity += yOffset * viewAccelerationSensitivity;
+  mouseSensitivity = glm::clamp(mouseSensitivity, MIN_MOUSE_SENSITIVITY, MAX_MOUSE_SENSITIVITY);
+}
+
+void Camera::updateAccelerations(MOVE_DIRECTION dir)
+{
+  if (dir == FORWARD)
+    {
+      accumulateMoveFront = true;
+      if (!useAcceleration)
+        moveAccelerationFront = 1.0f;
+      else
+        {
+          moveAccelerationFront += moveAccelerationSensitivity;
+          moveAccelerationFront = glm::min(moveAccelerationFront, 1.0f);
+        }
+    }
+  else if (dir == BACKWARD)
+    {
+      accumulateMoveFront = true;
+      if (!useAcceleration)
+        moveAccelerationFront = -1.0f;
+      else
+        {
+          moveAccelerationFront -= moveAccelerationSensitivity;
+          moveAccelerationFront = glm::max(moveAccelerationFront, -1.0f);
+        }
+    }
+
+  if (dir == RIGHT)
+    {
+      accumulateMoveHorizontal = true;
+      if (!useAcceleration)
+        moveAccelerationSide = 1.0f;
+      else
+        {
+          moveAccelerationSide += moveAccelerationSensitivity;
+          moveAccelerationSide = glm::min(moveAccelerationSide, 1.0f);
+        }
+    }
+  else if (dir == LEFT)
+    {
+      accumulateMoveHorizontal = true;
+      if (!useAcceleration)
+        moveAccelerationSide = -1.0f;
+      else
+        {
+          moveAccelerationSide -= moveAccelerationSensitivity;
+          moveAccelerationSide = glm::max(moveAccelerationSide, -1.0f);
+        }
+    }
+
+  if (dir == UP)
+    {
+      accumulateMoveVertical = true;
+      if (!useAcceleration)
+        moveAccelerationY = 1.0f;
+      else
+        {
+          moveAccelerationY += moveAccelerationSensitivity;
+          moveAccelerationY = glm::min(moveAccelerationY, 1.0f);
+        }
+    }
+  else if (dir == DOWN)
+    {
+      accumulateMoveVertical = true;
+      if (!useAcceleration)
+        moveAccelerationY = -1.0f;
+      else
+        {
+          moveAccelerationY -= moveAccelerationSensitivity;
+          moveAccelerationY = glm::max(moveAccelerationY, -1.0f);
+        }
+    }
+}
+
+void Camera::setYaw(float newYaw)
+{
+  yaw = newYaw;
+  updateDirectionVectors();
+}
+
+void Camera::setPitch(float newPitch)
+{
+  pitch = newPitch;
+  updateDirectionVectors();
+}
+
 void Camera::switchFPSmode()
 {
-  FPSmode = !FPSmode;
+  firstPersonShooterMode = !firstPersonShooterMode;
 }
 
 void Camera::switchAcceleration()
@@ -228,12 +218,25 @@ void Camera::switchAcceleration()
 
 void Camera::disableMoveAcceleration()
 {
-  accumulateMoveSide = accumulateMoveFront = accumulateMoveY = false;
+  accumulateMoveHorizontal = accumulateMoveFront = accumulateMoveVertical = false;
 }
 
-bool Camera::getFPSmode() const
+glm::mat4 Camera::getViewMatrix() const
 {
-  return FPSmode;
+  return glm::lookAt(position, position + front, WORLD_UP);
+}
+
+glm::mat3 Camera::getViewMatrixMat3() const
+{
+  return glm::mat3(getViewMatrix());
+}
+
+glm::mat4 Camera::getReflectionViewMatrix() const
+{
+  glm::vec3 positionReflected(position.x, -position.y, position.z);
+  glm::vec3 lookDirectionReflected(position + front);
+  lookDirectionReflected.y *= -1;
+  return glm::lookAt(positionReflected, lookDirectionReflected, WORLD_UP);
 }
 
 float Camera::getZoom() const
@@ -241,80 +244,36 @@ float Camera::getZoom() const
   return zoom;
 }
 
-glm::vec3 Camera::getPosition() const
+const glm::vec3 &Camera::getPosition() const
 {
   return position;
 }
 
-glm::vec3 Camera::getDirection() const
+const glm::vec3 &Camera::getDirection() const
 {
   return front;
 }
 
-void Camera::setYaw(float newYaw)
-{
-  this->yaw = newYaw;
-  updateVectors();
-}
-
-void Camera::setPitch(float newPitch)
-{
-  pitch = newPitch;
-  updateVectors();
-}
-
-glm::vec3 Camera::getRight() const
+const glm::vec3 &Camera::getRight() const
 {
   return right;
 }
 
-glm::vec3 Camera::getUp() const
+const glm::vec3 &Camera::getUp() const
 {
   return up;
 }
 
-void Camera::updateVectors()
+glm::vec2 Camera::getWorldCoordinates() const
 {
-  float x = std::cos(glm::radians(yaw)) * std::cos(glm::radians(pitch));
-  float y = std::sin(glm::radians(pitch));
-  float z = std::sin(glm::radians(yaw)) * std::cos(glm::radians(pitch));
-  glm::vec3 newFront(x,y,z);
-  front = glm::normalize(newFront);
-  right = glm::normalize(glm::cross(front, worldUp));
-  up = glm::normalize(glm::cross(right, front));
-}
-
-void Camera::diminishMoveAcceleration(float &accelerationDirectionValue)
-{
-  if (!useAcceleration)
-    {
-      accelerationDirectionValue = 0.0f;
-      return;
-    }
-  else
-    {
-      accelerationDirectionValue *= 0.92f;
-      if (glm::abs(accelerationDirectionValue) <= 0.01f)
-        accelerationDirectionValue = 0.0f;
-    }
-}
-
-int Camera::getMapCoordX() const
-{
-  return glm::clamp((int)(WORLD_WIDTH + glm::clamp(position.x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F)) - HALF_WORLD_WIDTH, 0, WORLD_WIDTH - 1);
-}
-
-int Camera::getMapCoordZ() const
-{
-  return glm::clamp((int)(WORLD_HEIGHT + glm::clamp(position.z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F)) - HALF_WORLD_HEIGHT, 0, WORLD_HEIGHT - 1);
+  using glm::clamp;
+  return glm::vec2(clamp((int)(WORLD_WIDTH + clamp(position.x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F)) - HALF_WORLD_WIDTH, 0, WORLD_WIDTH - 1),
+                   clamp((int)(WORLD_HEIGHT + clamp(position.z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F)) - HALF_WORLD_HEIGHT, 0, WORLD_HEIGHT - 1));
 }
 
 glm::vec2 Camera::getViewAcceleration() const
 {
-  if (useAcceleration)
-    return glm::vec2(viewAccelerationX, viewAccelerationY);
-  else
-    return glm::vec2(20.0f);
+  return useAcceleration ? glm::vec2(viewAccelerationX, viewAccelerationY) : glm::vec2(DEFAULT_VIEW_ACCELERATION);
 }
 
 void Camera::serialize(std::ofstream &output)
@@ -330,16 +289,43 @@ void Camera::serialize(std::ofstream &output)
 void Camera::deserialize(std::ifstream &input)
 {
   input >> position.x >> position.y >> position.z >> pitch >> yaw;
-  updateVectors();
+  updateDirectionVectors();
+}
+
+void Camera::updateDirectionVectors()
+{
+  float x = std::cos(glm::radians(yaw)) * std::cos(glm::radians(pitch));
+  float y = std::sin(glm::radians(pitch));
+  float z = std::sin(glm::radians(yaw)) * std::cos(glm::radians(pitch));
+  glm::vec3 newFront(x,y,z);
+  front = glm::normalize(newFront);
+  right = glm::normalize(glm::cross(front, WORLD_UP));
+  /* for "up" vector no need to normalize it explicitly
+   * as the cross product of 2 orthogonal unit vectors (front and WORLD_UP) is already a unit length vector
+   */
+  up = glm::cross(right, front);
+}
+
+void Camera::diminishMoveAcceleration(float &directionAccelerationValue)
+{
+  if (!useAcceleration)
+    {
+      directionAccelerationValue = 0.0f;
+      return;
+    }
+  else
+    {
+      directionAccelerationValue *= MOVE_ACCELERATION_DAMPENING_FACTOR;
+      if (glm::abs(directionAccelerationValue) <= 0.01f)
+        directionAccelerationValue = 0.0f;
+    }
 }
 
 void Camera::moveCameraFrontAxial(float velocity)
 {
   float moveDistance = velocity * moveAccelerationFront;
-  if (!FPSmode)
-    {
-      position += front * moveDistance;
-    }
+  if (!firstPersonShooterMode)
+    position += front * moveDistance;
   else
     {
       position.x += front.x * moveDistance;
