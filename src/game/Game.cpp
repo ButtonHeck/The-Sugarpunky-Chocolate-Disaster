@@ -18,8 +18,8 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     depthmapFramebuffer(textureManager),
     reflectionFramebuffer(textureManager),
     refractionFramebuffer(textureManager),
-    scene(shaderManager, options, textureManager, screenResolution),
-    shadowVolume(scene.getSunFacade()),
+    shadowVolume(),
+    scene(shaderManager, options, textureManager, screenResolution, shadowVolume),
     shadowVolumeRenderer(shadowVolume),
     saveLoadManager(scene, camera, shadowCamera),
     keyboard(window, camera, shadowCamera, options, scene.getSunFacade()),
@@ -160,8 +160,7 @@ void Game::drawFrame(const glm::mat4 &projectionView)
       waterNeedNewKeyFrame = true;
     }
 
-  scene.drawWorld(shadowVolume.getLightSpaceMatrices(),
-                  projectionView,
+  scene.drawWorld(projectionView,
                   projection * glm::mat4(camera.getViewMatrixMat3()),
                   viewFrustum,
                   cullingViewFrustum,
@@ -229,8 +228,7 @@ void Game::drawFrameReflection()
     glDisable(GL_MULTISAMPLE);
 
   glm::mat4 viewReflected = camera.getReflectionViewMatrix();
-  scene.drawWorldReflection(shadowVolume.getLightSpaceMatrices(),
-                            projection * viewReflected,
+  scene.drawWorldReflection(projection * viewReflected,
                             projection * glm::mat4(glm::mat3(viewReflected)),
                             cullingViewFrustum,
                             camera);
@@ -245,7 +243,7 @@ void Game::drawFrameRefraction(const glm::mat4 &projectionView)
   if (options[OPT_USE_MULTISAMPLING])
     glDisable(GL_MULTISAMPLE);
 
-  scene.drawWorldRefraction(shadowVolume.getLightSpaceMatrices(), projectionView);
+  scene.drawWorldRefraction(projectionView);
 
   if (options[OPT_USE_MULTISAMPLING])
     glEnable(GL_MULTISAMPLE);
@@ -265,18 +263,18 @@ void Game::recreate()
 void Game::updateDepthmap()
 {
   glm::mat4 shadowView = shadowCamera.getViewMatrix();
-  for (unsigned int layer = 0; layer < NUM_SHADOW_LAYERS; layer++)
+  for (unsigned int layerIndex = 0; layerIndex < NUM_SHADOW_LAYERS; layerIndex++)
     {
-      shadowCameraFrustums[layer].updateFrustum(shadowProjections[layer] * shadowView);
-      shadowCameraFrustums[layer].calculateIntersectionPoints();
+      shadowCameraFrustums[layerIndex].updateFrustum(shadowProjections[layerIndex] * shadowView);
+      shadowCameraFrustums[layerIndex].calculateIntersectionPoints();
     }
   {
     BENCHMARK("Shadow volume: update", true);
-    shadowVolume.update(shadowCameraFrustums);
+    shadowVolume.update(shadowCameraFrustums, scene.getSunFacade());
   }
 
   depthmapFramebuffer.bindToViewport(DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
-  scene.drawWorldDepthmap(shadowVolume.getLightSpaceMatrices(), options[OPT_GRASS_SHADOW]);
+  scene.drawWorldDepthmap(options[OPT_GRASS_SHADOW]);
   depthmapFramebuffer.unbindToViewport(screenResolution.getWidth(), screenResolution.getHeight());
 }
 

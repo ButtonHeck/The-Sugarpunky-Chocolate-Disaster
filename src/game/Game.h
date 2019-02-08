@@ -77,8 +77,8 @@ private:
   WaterRefractionFramebuffer refractionFramebuffer;
 
   //world
-  Scene scene;
   ShadowVolume shadowVolume;
+  Scene scene;
   ShadowVolumeRenderer shadowVolumeRenderer;
   SaveLoadManager saveLoadManager;
 

@@ -1,11 +1,6 @@
 #include "graphics/ShadowVolume.h"
 
-ShadowVolume::ShadowVolume(TheSunFacade& theSunFacade)
-  :
-    theSunFacade(theSunFacade)
-{}
-
-void ShadowVolume::update(const std::array<Frustum, NUM_SHADOW_LAYERS> &frustums)
+void ShadowVolume::update(const std::array<Frustum, NUM_SHADOW_LAYERS> &frustums, const TheSunFacade& theSunFacade)
 {
   glm::vec3 sunPosition = theSunFacade.getPosition();
 

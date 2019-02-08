@@ -15,11 +15,12 @@
 #include "graphics/textures/TextureManager.h"
 #include "input/MouseInputManager.h"
 #include "graphics/ScreenResolution.h"
+#include "graphics/ShadowVolume.h"
 
 class Scene
 {
 public:
-  Scene(ShaderManager& shaderManager, Options& options, TextureManager& textureManager, const ScreenResolution& screenResolution);
+  Scene(ShaderManager& shaderManager, Options& options, TextureManager& textureManager, const ScreenResolution& screenResolution, const ShadowVolume& shadowVolume);
 
   //internal generators functions
   void setup();
@@ -29,22 +30,18 @@ public:
   void deserialize(std::ifstream& input);
 
   //rendering part
-  void drawWorld(const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
-                 const glm::mat4 &projectionView,
+  void drawWorld(const glm::mat4 &projectionView,
                  const glm::mat4 &skyProjectionView,
                  const Frustum &viewFrustum,
                  const Frustum &cullingViewFrustum,
                  const Camera &camera,
                  MouseInputManager& mouseInput);
-  void drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
-                         bool grassCastShadow);
-  void drawWorldReflection(const std::array<glm::mat4, NUM_SHADOW_LAYERS>& lightSpaceMatrices,
-                           const glm::mat4 &projectionView,
+  void drawWorldDepthmap(bool grassCastShadow);
+  void drawWorldReflection(const glm::mat4 &projectionView,
                            const glm::mat4 &skyProjectionView,
                            const Frustum &cullingViewFrustum,
                            const Camera &camera);
-  void drawWorldRefraction(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                           const glm::mat4 &projectionView);
+  void drawWorldRefraction(const glm::mat4 &projectionView);
 
   //getters
   WaterFacade &getWaterFacade();
@@ -58,6 +55,7 @@ private:
   ShaderManager& shaderManager;
   Options& options;
   TextureManager& textureManager;
+  const ShadowVolume& shadowVolume;
 
   WaterFacade waterFacade;
   HillsFacade hillsFacade;

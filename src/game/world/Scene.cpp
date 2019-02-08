@@ -1,10 +1,11 @@
 #include "game/world/Scene.h"
 
-Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &textureManager, const ScreenResolution &screenResolution)
+Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &textureManager, const ScreenResolution &screenResolution, const ShadowVolume &shadowVolume)
   :
     shaderManager(shaderManager),
     options(options),
     textureManager(textureManager),
+    shadowVolume(shadowVolume),
     waterFacade(shaderManager.get(SHADER_WATER),
                 shaderManager.get(SHADER_WATER_CULLING),
                 shaderManager.get(SHADER_WATER_NORMALS)),
@@ -74,8 +75,7 @@ void Scene::deserialize(std::ifstream &input)
   plantsFacade.deserialize(input);
 }
 
-void Scene::drawWorld(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                      const glm::mat4& projectionView,
+void Scene::drawWorld(const glm::mat4& projectionView,
                       const glm::mat4& skyboxProjectionView,
                       const Frustum &viewFrustum,
                       const Frustum &cullingViewFrustum,
@@ -85,6 +85,7 @@ void Scene::drawWorld(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpace
   BENCHMARK("Scene: draw all", true);
   glm::vec3 viewPosition = camera.getPosition();
   const glm::vec3& lightDir = theSunFacade.getLightDir();
+  const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices = shadowVolume.getLightSpaceMatrices();
   bool useShadows = options[OPT_USE_SHADOWS];
   bool isDebugRender = options[OPT_DEBUG_RENDER];
 
@@ -141,10 +142,10 @@ void Scene::drawWorld(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpace
     lensFlareFacade.draw(theSunFacade.getPosition(), skyboxProjectionView, theSunVisibility);
 }
 
-void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                              bool grassCastShadow)
+void Scene::drawWorldDepthmap(bool grassCastShadow)
 {
   BENCHMARK("Scene: draw world depthmap", true);
+  const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices = shadowVolume.getLightSpaceMatrices();
   glClear(GL_DEPTH_BUFFER_BIT);
 
   glDisable(GL_MULTISAMPLE);
@@ -164,8 +165,7 @@ void Scene::drawWorldDepthmap(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &li
   glEnable(GL_MULTISAMPLE);
 }
 
-void Scene::drawWorldReflection(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                                const glm::mat4 &projectionView,
+void Scene::drawWorldReflection(const glm::mat4 &projectionView,
                                 const glm::mat4 &skyboxProjectionView,
                                 const Frustum &cullingViewFrustum,
                                 const Camera &camera)
@@ -173,6 +173,7 @@ void Scene::drawWorldReflection(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &
   BENCHMARK("Scene: draw world reflection", true);
   glm::vec3 viewPosition = camera.getPosition();
   const glm::vec3& lightDir = theSunFacade.getLightDir();
+  const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices = shadowVolume.getLightSpaceMatrices();
   viewPosition.y *= -1;
 
   hillsFacade.draw(lightDir,
@@ -199,11 +200,11 @@ void Scene::drawWorldReflection(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &
   RendererStateManager::setAmbienceRenderingState(false);
 }
 
-void Scene::drawWorldRefraction(const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                                const glm::mat4 &projectionView)
+void Scene::drawWorldRefraction(const glm::mat4 &projectionView)
 {
   BENCHMARK("Scene: draw world refraction", true);
   const glm::vec3& lightDir = theSunFacade.getLightDir();
+  const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices = shadowVolume.getLightSpaceMatrices();
 
   underwaterFacade.draw(lightDir, projectionView);
 

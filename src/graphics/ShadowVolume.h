@@ -10,8 +10,8 @@ public:
   constexpr static unsigned int BOX_ACTUAL_VERTICES = 8;
   constexpr static float BOX_MIN_HEIGHT = 14.0f;
 
-  ShadowVolume(TheSunFacade &theSunFacade);
-  void update(const std::array<Frustum, NUM_SHADOW_LAYERS>& frustums);
+  ShadowVolume() = default;
+  void update(const std::array<Frustum, NUM_SHADOW_LAYERS>& frustums, const TheSunFacade &theSunFacade);
   const std::array<glm::mat4, NUM_SHADOW_LAYERS> &getLightSpaceMatrices() const;
 
 private:
@@ -31,7 +31,6 @@ private:
 
   void updateLightSpaceMatrix(const Frustum& frustum, int layer, float sunAbsPositionY, float sunAbsPositionX);
 
-  TheSunFacade& theSunFacade;
   glm::vec3 lightDirTo, lightDirRight, lightDirUp;
   std::array<glm::mat4, NUM_SHADOW_LAYERS> lightSpaceMatrices;
   std::array<Box, NUM_SHADOW_LAYERS> shadowBoxes;
