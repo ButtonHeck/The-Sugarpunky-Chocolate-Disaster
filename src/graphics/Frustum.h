@@ -35,9 +35,11 @@ public:
 private:
   friend class ShadowVolume;
   friend class FrustumRenderer;
+
   void normalizePlane(FRUSTUM_PLANE plane);
-  glm::vec3 kramerIntersection(glm::vec4 frontOrBack, glm::vec4 topOrBottom, glm::vec4 rightOrLeft);
-  std::vector<glm::vec4> frustumPlanes;
+  glm::vec3 kramerIntersection(const glm::vec4 &frontOrBack, const glm::vec4 &topOrBottom, const glm::vec4 &rightOrLeft);
+  std::vector<glm::vec4> planes;
+  //8 vertices defined in the world space represents intersection points of frustum planes
   glm::vec3 nearLL, nearLR, nearUR, nearUL, farLL, farLR, farUR, farUL;
 };
 
