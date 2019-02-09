@@ -17,7 +17,7 @@ public:
   const glm::vec3 &getPosition() const;
   const glm::vec3 &getLightDir() const;
   const glm::mat4 &getRotationTransform() const;
-  GLfloat getSunVisibility(bool multisampled) const;
+  GLfloat getSunFlareBrightness(bool multisampled, float viewPositionY) const;
 
 private:
   TheSun theSun;

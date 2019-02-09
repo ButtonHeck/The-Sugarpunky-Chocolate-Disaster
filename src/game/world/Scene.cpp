@@ -133,13 +133,9 @@ void Scene::drawWorld(const glm::mat4& projectionView,
   if (options[OPT_DRAW_WATER])
     waterFacade.draw(lightDir, lightSpaceMatrices, projectionView, viewPosition, viewFrustum, options[OPT_WATER_CULLING], isDebugRender);
 
-  float theSunVisibility = theSunFacade.getSunVisibility(options[OPT_USE_MULTISAMPLING]);
-  //TODO: this code smells like it might be done in theSunFacade
-  const float MIN_SUN_VISIBILITY_Y = 0.02f;
-  const float VIEW_POSITION_VISIBILITY_DIVISOR = 1500.0f;
-  theSunVisibility *= glm::clamp(-(lightDir.y + MIN_SUN_VISIBILITY_Y - viewPosition.y / VIEW_POSITION_VISIBILITY_DIVISOR) * 8.0f, 0.0f, 1.0f);
-  if (theSunVisibility > 0)
-    lensFlareFacade.draw(theSunFacade.getPosition(), skyboxProjectionView, theSunVisibility);
+  float flareBrightness = theSunFacade.getSunFlareBrightness(options[OPT_USE_MULTISAMPLING], viewPosition.y);
+  if (flareBrightness > 0)
+    lensFlareFacade.draw(theSunFacade.getPosition(), skyboxProjectionView, flareBrightness);
 }
 
 void Scene::drawWorldDepthmap(bool grassCastShadow)

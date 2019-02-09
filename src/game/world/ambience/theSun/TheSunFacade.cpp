@@ -55,7 +55,11 @@ const glm::mat4& TheSunFacade::getRotationTransform() const
   return theSun.getRotationTransform();
 }
 
-GLfloat TheSunFacade::getSunVisibility(bool multisampled) const
+GLfloat TheSunFacade::getSunFlareBrightness(bool multisampled, float viewPositionY) const
 {
-  return renderer.getSamplesPassedQueryResult() / (multisampled ? maxSamplesPassedMultisampling : maxSamplesPassed);
+  GLfloat visibility = renderer.getSamplesPassedQueryResult() / (multisampled ? maxSamplesPassedMultisampling : maxSamplesPassed);
+  const float MIN_SUN_VISIBILITY_Y = 0.02f;
+  const float VIEW_POSITION_VISIBILITY_DIVISOR = 1500.0f;
+  visibility *= glm::clamp(-(getLightDir().y + MIN_SUN_VISIBILITY_Y - viewPositionY / VIEW_POSITION_VISIBILITY_DIVISOR) * 8.0f, 0.0f, 1.0f);
+  return visibility;
 }
