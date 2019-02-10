@@ -13,7 +13,6 @@ KeyboardManager::KeyboardManager(GLFWwindow *window, Camera &camera, Camera &sha
 
 void KeyboardManager::processInput()
 {
-  BENCHMARK("KeyboardManager: processInput", true);
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 

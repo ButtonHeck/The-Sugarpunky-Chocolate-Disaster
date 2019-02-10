@@ -28,37 +28,50 @@ void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
   static bool firstMouseInput = true;
   static double cursorScreenX = 0.0;
   static double cursorScreenY = 0.0;
-  MouseInputManager& mouseInput = MouseInputManager::getInstance();
+  MouseInputManager& mouseInput = getInstance();
+
   if (options[OPT_SHOW_CURSOR])
     {
       mouseInput.lastX = x;
       mouseInput.lastY = y;
       glfwGetCursorPos(window, &cursorScreenX, &cursorScreenY);
-      glm::vec3 view = camera.getDirection(); //normalized
-      glm::vec3 h = camera.getRight(); //normalized
-      glm::vec3 v = camera.getUp(); //normalized
+      glm::vec3 viewDirection = camera.getDirection(); //normalized
+      glm::vec3 viewHorizontal = camera.getRight(); //normalized
+      glm::vec3 viewVertical = camera.getUp(); //normalized
       float fovRad = glm::radians(camera.getZoom());
-      float vLength = std::tan(fovRad / 2) * NEAR_PLANE;
-      float hLength = vLength * screenResolution.getAspectRatio();
-      h *= hLength;
-      v *= vLength;
-      cursorScreenX -= screenResolution.getWidth() / 2;
-      cursorScreenY -= screenResolution.getHeight() / 2;
-      cursorScreenX /= (screenResolution.getWidth() / 2);
-      cursorScreenY /= (screenResolution.getHeight() / 2);
-      glm::vec3 newPos = camera.getPosition() + view * NEAR_PLANE + h * (float)cursorScreenX - v * (float)cursorScreenY;
-      glm::vec3 newDir = newPos - camera.getPosition();
-      mouseInput.cursorToViewportDirection = newDir;
-      return;
+      float verticalLength = std::tan(fovRad / 2) * NEAR_PLANE;
+      float horizontalLength = verticalLength * screenResolution.getAspectRatio();
+      viewHorizontal *= horizontalLength;
+      viewVertical *= verticalLength;
+
+      float halfScreenWidth = screenResolution.getWidth() / 2;
+      float halfScreenHeight = screenResolution.getHeight() / 2;
+      //map coordinates from [0 ; widthPixels or heightPixels] to the NDC space
+      cursorScreenX -= halfScreenWidth;
+      cursorScreenY -= halfScreenHeight;
+      cursorScreenX /= halfScreenWidth;
+      cursorScreenY /= halfScreenHeight;
+      glm::vec3 newPosition = camera.getPosition() + viewDirection * NEAR_PLANE //get point on the near plane
+                              + //horizontal pick shifting corresponds with the cursor horizontal direction
+                              viewHorizontal * (float)cursorScreenX //shift picked cursor point horizontally
+                              - //but vertical shifting is reflected (because window coordinate system Y axis is reflected)
+                              viewVertical * (float)cursorScreenY;    //shift picked cursor point vertically
+      mouseInput.cursorToNearPlaneWorldSpace = newPosition - camera.getPosition();
+
+      return; //if the cursor is on the screen - bypass camera movement
     }
+
   if (firstMouseInput)
     {
       mouseInput.lastX = x;
       mouseInput.lastY = y;
       firstMouseInput = false;
     }
+
+  //calculate velocities before update
   float dx = mouseInput.lastX - x;
-  float dy = y - mouseInput.lastY;
+  float dy = y - mouseInput.lastY; //must be reflected
+  //then update
   mouseInput.lastX = x;
   mouseInput.lastY = y;
   camera.updateViewAcceleration(dx, dy);
@@ -73,7 +86,7 @@ void MouseInputManager::scrollCallback(GLFWwindow *, double, double y)
 
 void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int action, int)
 {
-  MouseInputManager& mouseInput = MouseInputManager::getInstance();
+  MouseInputManager& mouseInput = getInstance();
   static bool mouseKeysPressed[GLFW_MOUSE_BUTTON_LAST];
   if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
     {
@@ -81,9 +94,11 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
         {
           options.toggle(OPT_SHOW_CURSOR);
           glfwSetInputMode(window, GLFW_CURSOR, options[OPT_SHOW_CURSOR] ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-          glfwSetCursorPos(window, screenResolution.getWidth() / 2.0f, screenResolution.getHeight() / 2.0f);
-          mouseInput.lastX = screenResolution.getWidth() / 2.0f;
-          mouseInput.lastY = screenResolution.getHeight() / 2.0f;
+          float halfScreenWidth = screenResolution.getWidth() / 2.0f;
+          float halfScreenHeight = screenResolution.getHeight() / 2.0f;
+          glfwSetCursorPos(window, halfScreenWidth, halfScreenHeight);
+          mouseInput.lastX = halfScreenWidth;
+          mouseInput.lastY = halfScreenHeight;
           mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT] = true;
         }
     }
@@ -91,17 +106,19 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
     mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT] = false;
 }
 
-void MouseInputManager::updateCursorMappingCoordinates(const Camera &camera,
-                                                       const map2D_f &baseMap,
-                                                       const map2D_f& hillMap,
-                                                       const map2D_f& buildableMap)
+void MouseInputManager::updateCursorMappingCoordinates(const Camera &camera, const map2D_f &landMap, const map2D_f& hillMap, const map2D_f& buildableMap)
 {
-  if (options[OPT_SHOW_CURSOR] && cursorToViewportDirection.y < 0.0f)
+  if (options[OPT_SHOW_CURSOR] && cursorToNearPlaneWorldSpace.y < 0.0f)
     {
-      float ratio = camera.getPosition().y / (-cursorToViewportDirection.y);
+      /* this variable is used to determine a cursor pick point on the world map where Y coordinate is 0.0
+       * i.e. the higher camera is, the farther a tile on which a cursor is pointing
+       * on the other side - the more "vertical" cursor world-space direction vector is, the nearer a tile
+       */
+      float cameraToCursorYposRatio = camera.getPosition().y / (-cursorToNearPlaneWorldSpace.y);
+
       bool cursorOutOfMap = false;
-      cursorAbsX = glm::clamp((cursorToViewportDirection.x * ratio) + camera.getPosition().x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F);
-      cursorAbsZ = glm::clamp((cursorToViewportDirection.z * ratio) + camera.getPosition().z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F);
+      cursorAbsX = glm::clamp((cursorToNearPlaneWorldSpace.x * cameraToCursorYposRatio) + camera.getPosition().x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F);
+      cursorAbsZ = glm::clamp((cursorToNearPlaneWorldSpace.z * cameraToCursorYposRatio) + camera.getPosition().z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F);
       if (cursorAbsX == -HALF_WORLD_WIDTH || cursorAbsX == HALF_WORLD_WIDTH ||
           cursorAbsZ == -HALF_WORLD_HEIGHT || cursorAbsZ == HALF_WORLD_HEIGHT)
         cursorOutOfMap = true;
@@ -110,23 +127,23 @@ void MouseInputManager::updateCursorMappingCoordinates(const Camera &camera,
           cursorTileName = "out of map";
           return;
         }
-      cursorMapX = (int)(WORLD_WIDTH + cursorAbsX) - HALF_WORLD_WIDTH;
-      cursorMapX = glm::clamp(cursorMapX, 1, WORLD_WIDTH - 2);
-      cursorMapZ = (int)(WORLD_HEIGHT + cursorAbsZ) - HALF_WORLD_HEIGHT + 1;
-      cursorMapZ = glm::clamp(cursorMapZ, 1, WORLD_HEIGHT - 1);
-      if (buildableMap[cursorMapZ][cursorMapX] != 0)
+      cursorWorldX = (int)(WORLD_WIDTH + cursorAbsX) - HALF_WORLD_WIDTH;
+      cursorWorldX = glm::clamp(cursorWorldX, 1, WORLD_WIDTH - 2);
+      cursorWorldZ = (int)(WORLD_HEIGHT + cursorAbsZ) - HALF_WORLD_HEIGHT + 1;
+      cursorWorldZ = glm::clamp(cursorWorldZ, 1, WORLD_HEIGHT - 1);
+      if (buildableMap[cursorWorldZ][cursorWorldX] != 0)
         cursorTileName = "Land";
-      else if (hillMap[cursorMapZ][cursorMapX] != 0 ||
-               hillMap[cursorMapZ-1][cursorMapX] != 0 ||
-               hillMap[cursorMapZ-1][cursorMapX+1] != 0 ||
-               hillMap[cursorMapZ][cursorMapX+1] != 0)
+      else if (hillMap[cursorWorldZ][cursorWorldX] != 0 ||
+               hillMap[cursorWorldZ-1][cursorWorldX] != 0 ||
+               hillMap[cursorWorldZ-1][cursorWorldX+1] != 0 ||
+               hillMap[cursorWorldZ][cursorWorldX+1] != 0)
         cursorTileName = "Hills";
       else
         {
-          if (baseMap[cursorMapZ][cursorMapX] == TILE_NO_RENDER_VALUE ||
-              baseMap[cursorMapZ-1][cursorMapX] == TILE_NO_RENDER_VALUE ||
-              baseMap[cursorMapZ-1][cursorMapX+1] == TILE_NO_RENDER_VALUE ||
-              baseMap[cursorMapZ][cursorMapX+1] == TILE_NO_RENDER_VALUE)
+          if (landMap[cursorWorldZ][cursorWorldX] == TILE_NO_RENDER_VALUE ||
+              landMap[cursorWorldZ-1][cursorWorldX] == TILE_NO_RENDER_VALUE ||
+              landMap[cursorWorldZ-1][cursorWorldX+1] == TILE_NO_RENDER_VALUE ||
+              landMap[cursorWorldZ][cursorWorldX+1] == TILE_NO_RENDER_VALUE)
             cursorTileName = "Water";
           else
             cursorTileName = "Shore";
@@ -136,19 +153,19 @@ void MouseInputManager::updateCursorMappingCoordinates(const Camera &camera,
     cursorTileName = "out of map";
 }
 
-int MouseInputManager::getCursorMapX() const
+int MouseInputManager::getCursorWorldX() const
 {
-  return cursorMapX;
+  return cursorWorldX;
 }
 
-int MouseInputManager::getCursorMapZ() const
+int MouseInputManager::getCursorWorldZ() const
 {
-  return cursorMapZ;
+  return cursorWorldZ;
 }
 
-const glm::vec3 &MouseInputManager::getCursorToViewportDirection() const
+const glm::vec3 &MouseInputManager::getCursorToNearPlaneWorldSpace() const
 {
-  return cursorToViewportDirection;
+  return cursorToNearPlaneWorldSpace;
 }
 
 const std::string &MouseInputManager::getCursorTileName() const

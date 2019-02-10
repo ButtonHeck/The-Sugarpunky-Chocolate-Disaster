@@ -50,9 +50,9 @@ void TextManager::addDebugText(const Camera& camera,
      << camera.getDirection().x << ": " << camera.getDirection().y << ": " << camera.getDirection().z;
   addString(ss.str(), LEFT_BORDER_OFFSET * lineOffset.x, screenHeight - (UPPER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++) * lineOffset.y, scale);
 
-  const glm::vec3& cursorToViewportDirection = mouseInput.getCursorToViewportDirection();
+  const glm::vec3& cursorToViewportDirection = mouseInput.getCursorToNearPlaneWorldSpace();
   ss.str("");
-  ss << "Cursor at: ";
+  ss << "Cursor world pos: ";
   if (!options[OPT_SHOW_CURSOR])
     ss << "inactive";
   else
@@ -69,7 +69,7 @@ void TextManager::addDebugText(const Camera& camera,
   else
     {
       ss << std::setprecision(3) << std::setw(3)
-         << mouseInput.getCursorMapX() << ": " << mouseInput.getCursorMapZ()-1 << ", " << mouseInput.getCursorTileName();
+         << mouseInput.getCursorWorldX() << ": " << mouseInput.getCursorWorldZ()-1 << ", " << mouseInput.getCursorTileName();
     }
   addString(ss.str(), LEFT_BORDER_OFFSET * lineOffset.x, screenHeight - (UPPER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++) * lineOffset.y, scale);
 
