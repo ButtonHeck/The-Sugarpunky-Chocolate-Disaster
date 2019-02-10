@@ -2,14 +2,17 @@
 #define BENCHMARKTIMER_H
 #include <fstream>
 #include <map>
-#include <string.h>
 #include <algorithm>
 #include <iomanip>
 #include <chrono>
 #include "util/DirectoriesSettings.h"
 #include "util/Logger.h"
 
-//benchmarking
+/* if in debug build - BENCHMARK macro creates an instance of BenchmarkTimer
+ * which takes timestamps in both ctor and dtor
+ * and automatically update timing results in one of the maps
+ * if in release build - just bypass and do nothing
+ */
 #ifdef _DEBUG
 #define BENCHMARK(benchmarkName, perFrame) BenchmarkTimer b(benchmarkName, perFrame);
 #else
@@ -20,27 +23,28 @@ class BenchmarkTimer
 {
 public:
   BenchmarkTimer() = default;
-  BenchmarkTimer(const std::string& text, bool perFrameBenchmark);
-  void operator()(const std::string& text, bool perFrameBenchmark);
+  BenchmarkTimer(const std::string& title, bool isPerFrame);
+  void operator()(const std::string& title, bool isPerFrame);
   virtual ~BenchmarkTimer();
   static void finish(unsigned int updateCount);
-  static void printBenchmarksPerApp(unsigned int updateCount);
-  static void printBenchmarksPerFrame(unsigned int updateCount, unsigned int ups);
-  static void clearBenchmarksPerFrameValues();
+  static void printApplicationBenchmarks(unsigned int updateCount);
+  static void printFrameBenchmarks(unsigned int updateCount, unsigned int ups);
+  static void resetFrameBenchmarks();
 
 private:
   using chronoClock = std::chrono::high_resolution_clock;
+  static constexpr int BENCH_TITLE_MAX_LENGTH = 40;
 
-  static std::ofstream perFrameLog, perAppLog;
+  static std::ofstream perFrameLogStream, perAppLogStream;
   static bool outputCreated;
-  static std::map<std::string, unsigned long> benchmarksTimers;
-  static std::map<std::string, int> benchmarksInvocations;
-  static std::map<std::string, float> appBenchmarks;
-  static constexpr int FORMAT_VALUE_ASCII = 45, BENCH_NAME_MAX_LENGTH = 40;
-  std::string benchmark;
-  bool perFrame;
-  decltype(chronoClock::now()) startTime = chronoClock::now();
-  decltype(startTime) endTime = startTime;
+  static std::map<std::string, float> applicationBenchmarks;
+  static std::map<std::string, unsigned long> frameBenchmarksTimings;
+  static std::map<std::string, int> frameBenchmarksInvocations;
+
+  std::string benchmarkTitle;
+  bool isPerFrame;
+  decltype(chronoClock::now()) startTimestamp = chronoClock::now();
+  decltype(startTimestamp) endTimestamp = startTimestamp;
 };
 
 #endif // BENCHMARKTIMER_H

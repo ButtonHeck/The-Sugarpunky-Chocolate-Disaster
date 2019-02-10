@@ -1,104 +1,111 @@
 #include "util/BenchmarkTimer.h"
 
-std::ofstream BenchmarkTimer::perFrameLog, BenchmarkTimer::perAppLog;
+std::ofstream BenchmarkTimer::perFrameLogStream, BenchmarkTimer::perAppLogStream;
 bool BenchmarkTimer::outputCreated = false;
-std::map<std::string, unsigned long> BenchmarkTimer::benchmarksTimers;
-std::map<std::string, int> BenchmarkTimer::benchmarksInvocations;
-std::map<std::string, float> BenchmarkTimer::appBenchmarks;
+std::map<std::string, unsigned long> BenchmarkTimer::frameBenchmarksTimings;
+std::map<std::string, int> BenchmarkTimer::frameBenchmarksInvocations;
+std::map<std::string, float> BenchmarkTimer::applicationBenchmarks;
 
-BenchmarkTimer::BenchmarkTimer(const std::string &text, bool isPerFrame)
+BenchmarkTimer::BenchmarkTimer(const std::string &title, bool isPerFrame)
   :
-    benchmark(text),
-    perFrame(isPerFrame)
+    benchmarkTitle(title),
+    isPerFrame(isPerFrame)
 {
   if (!outputCreated)
     {
-      perFrameLog.open(RES_DIR + "perFrameLog.txt", std::ios_base::ate);
-      if (!perFrameLog)
+      perFrameLogStream.open(RES_DIR + "perFrameLog.txt", std::ios_base::ate);
+      if (!perFrameLogStream)
         Logger::log("perFrameLog file not found!\n");
-      perFrameLog << "SOME INFORMATION MIGHT BE IRRELEVANT OR EVEN INCORRECT, GREAT CARE SHOULD BE TAKEN\n";
-      perFrameLog << "SI == Single Invocation (per second), ST == separate thread, m.p.u/a/i. == mean per update/app/invocation\n";
-      perAppLog.open(RES_DIR + "perAppLog.txt", std::ios_base::app);
-      if (!perAppLog)
+      perFrameLogStream << "SOME INFORMATION MIGHT BE IRRELEVANT OR EVEN INCORRECT, GREAT CARE SHOULD BE TAKEN\n";
+      perFrameLogStream << "SI == Single Invocation (per second), ST == separate thread, m.p.u/a/i. == mean per update/app/invocation\n";
+      perAppLogStream.open(RES_DIR + "perAppLog.txt", std::ios_base::app);
+      if (!perAppLogStream)
         Logger::log("perAppLog file not found!\n");
-      perAppLog << "SOME INFORMATION MIGHT BE IRRELEVANT OR EVEN INCORRECT, GREAT CARE SHOULD BE TAKEN\n";
-      perAppLog << "SI == Single Invocation (per second), ST == separate thread, m.p.u/a/i. == mean per update/app/invocation\n";
+      perAppLogStream << "SOME INFORMATION MIGHT BE IRRELEVANT OR EVEN INCORRECT, GREAT CARE SHOULD BE TAKEN\n";
+      perAppLogStream << "SI == Single Invocation (per second), ST == separate thread, m.p.u/a/i. == mean per update/app/invocation\n";
       outputCreated = true;
     }
-  if (appBenchmarks.find(benchmark) == appBenchmarks.end())
+  if (applicationBenchmarks.find(benchmarkTitle) == applicationBenchmarks.end())
     {
-      appBenchmarks[benchmark] = 0;
-      if (perFrame)
+      applicationBenchmarks[benchmarkTitle] = 0;
+      if (isPerFrame)
         {
-          benchmarksTimers[benchmark] = 0;
-          benchmarksInvocations[benchmark] = 0;
+          frameBenchmarksTimings[benchmarkTitle] = 0;
+          frameBenchmarksInvocations[benchmarkTitle] = 0;
         }
     }
 }
 
-void BenchmarkTimer::operator()(const std::string &text, bool perFrameBenchmark)
+void BenchmarkTimer::operator()(const std::string &title, bool isPerFrame)
 {
-  benchmark = text;
-  perFrame = perFrameBenchmark;
+  benchmarkTitle = title;
+  this->isPerFrame = isPerFrame;
 }
 
 BenchmarkTimer::~BenchmarkTimer()
 {
-  endTime = chronoClock::now();
-  unsigned long benchmarkResult = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-  float appBenchmarkResult = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() / 1000.0f;
-  if (perFrame)
+  endTimestamp = chronoClock::now();
+  unsigned long frameTimingResultMicros = std::chrono::duration_cast<std::chrono::microseconds>(endTimestamp - startTimestamp).count();
+  float applicationTimingResultMillis = frameTimingResultMicros / 1000.0f;
+  if (isPerFrame)
     {
-      benchmarksTimers[benchmark] += benchmarkResult;
-      benchmarksInvocations[benchmark]++;
+      frameBenchmarksTimings[benchmarkTitle] += frameTimingResultMicros;
+      frameBenchmarksInvocations[benchmarkTitle]++;
     }
-  appBenchmarks[benchmark] += appBenchmarkResult;
+  applicationBenchmarks[benchmarkTitle] += applicationTimingResultMillis;
 }
 
 void BenchmarkTimer::finish(unsigned int updateCount)
 {
-  perFrameLog.flush();
-  perFrameLog.close();
-  printBenchmarksPerApp(updateCount);
-  perAppLog << '\n' << std::flush;
-  perAppLog.close();
+  perFrameLogStream.flush();
+  perFrameLogStream.close();
+  printApplicationBenchmarks(updateCount);
+  perAppLogStream << '\n' << std::flush;
+  perAppLogStream.close();
 }
 
-void BenchmarkTimer::printBenchmarksPerApp(unsigned int updateCount)
+void BenchmarkTimer::printApplicationBenchmarks(unsigned int updateCount)
 {
+  //prepare char buffer of the current timestamp and format it
   time_t nowTime = time(0);
   struct tm  tstruct;
   char       dateCharBuffer[80];
   tstruct = *localtime(&nowTime);
   strftime(dateCharBuffer, sizeof(dateCharBuffer), "%Y.%m.%d %X", &tstruct);
-  perAppLog << "Benchmark: " << dateCharBuffer << ", summary ticks: " << updateCount << '\n';
-  std::multimap<float, std::string> appBenchmarksSorted;
-  std::transform(appBenchmarks.begin(),
-                 appBenchmarks.end(),
-                 std::inserter(appBenchmarksSorted, appBenchmarksSorted.begin()),
+  perAppLogStream << "Benchmark: " << dateCharBuffer << ", summary ticks: " << updateCount << '\n';
+
+  //create copy of application benchmark map, but switch its key<->value in order to sort them by their values, not the titles
+  std::multimap<float, std::string> applicationBenchmarksSortedByValue;
+  std::transform(applicationBenchmarks.begin(),
+                 applicationBenchmarks.end(),
+                 std::inserter(applicationBenchmarksSortedByValue, applicationBenchmarksSortedByValue.begin()),
                  [](std::pair<std::string, float> p)->std::pair<float, std::string>
   {
     return std::pair<float, std::string>(p.second, p.first);
   });
+
   //print in descending value order without external sorting
-  for (auto bench = appBenchmarksSorted.end(); bench != appBenchmarksSorted.begin();)
+  for (auto benchmark = applicationBenchmarksSortedByValue.end(); benchmark != applicationBenchmarksSortedByValue.begin();)
     {
-      --bench;
-      char benchmarkName[BENCH_NAME_MAX_LENGTH];
-      memset(benchmarkName, FORMAT_VALUE_ASCII, BENCH_NAME_MAX_LENGTH);
-      memcpy(benchmarkName, (bench->second.substr(0, BENCH_NAME_MAX_LENGTH)).c_str(), (bench->second.substr(0, BENCH_NAME_MAX_LENGTH)).size());
-      benchmarkName[BENCH_NAME_MAX_LENGTH-1] = '\0';
-      perAppLog << benchmarkName << ": " << std::setw(10) << std::setprecision(6) << bench->first << "ms";
-      if (benchmarksTimers.find(bench->second) != benchmarksTimers.end()) //check whether a benchmark is a "per frame" and if it is - print mean value
-        perAppLog << ", " << std::setw(10) << std::setprecision(5) << (bench->first / updateCount * 1000) << "us (m.p.a.)\n";
-      else
-        perAppLog << '\n';
+      --benchmark;
+      std::string benchmarkString(BENCH_TITLE_MAX_LENGTH, '-');
+      std::string benchmarkName(benchmark->second.substr(0, BENCH_TITLE_MAX_LENGTH));
+      benchmarkString.replace(0, benchmarkName.size(), benchmarkName);
+      perAppLogStream << benchmarkString << ": " << std::setw(10) << std::setprecision(6) << benchmark->first << "ms";
+
+      /* check whether a benchmark is a "per frame" and if it is - print mean value
+       * (how much in average this benchmark took time per one frame through application's lifetime)
+       */
+      if (frameBenchmarksTimings.find(benchmark->second) != frameBenchmarksTimings.end())
+        perAppLogStream << ", " << std::setw(10) << std::setprecision(5) << (benchmark->first / updateCount * 1000) << " us(m.p.a.)";
+
+      perAppLogStream << '\n';
     }
 }
 
-void BenchmarkTimer::printBenchmarksPerFrame(unsigned int updateCount, unsigned int ups)
+void BenchmarkTimer::printFrameBenchmarks(unsigned int updateCount, unsigned int ups)
 {
-  perFrameLog << "--Update: "
+  perFrameLogStream << "--Update: "
               << updateCount
               << ", UPS: "
               << ups
@@ -107,29 +114,28 @@ void BenchmarkTimer::printBenchmarksPerFrame(unsigned int updateCount, unsigned 
               << "ms ("
               << (1000000.0f / ups)
               << "us)\n";
-  for (auto bench = benchmarksTimers.begin(); bench != benchmarksTimers.end(); ++bench)
+  for (auto benchmark = frameBenchmarksTimings.begin(); benchmark != frameBenchmarksTimings.end(); ++benchmark)
     {
-      char benchmarkName[BENCH_NAME_MAX_LENGTH];
-      memset(benchmarkName, FORMAT_VALUE_ASCII, BENCH_NAME_MAX_LENGTH);
-      memcpy(benchmarkName, (bench->first.substr(0, BENCH_NAME_MAX_LENGTH)).c_str(), (bench->first.substr(0, BENCH_NAME_MAX_LENGTH)).size());
-      benchmarkName[BENCH_NAME_MAX_LENGTH-1] = '\0';
-      perFrameLog << benchmarkName << ": "
-                  << std::setw(8) << bench->second
-                  << ",  "
-                  << std::setw(8) << ((float)(bench->second) / ups)
-                  << "us (m.p.u.), calls: "
-                  << benchmarksInvocations[bench->first]
+      std::string benchmarkString(BENCH_TITLE_MAX_LENGTH, '-');
+      std::string benchmarkName(benchmark->first.substr(0, BENCH_TITLE_MAX_LENGTH));
+      benchmarkString.replace(0, benchmarkName.size(), benchmarkName);
+      perFrameLogStream << benchmarkString << ": "
+                  << std::setw(8) << benchmark->second
+                  << " us,  "
+                  << std::setw(12) << ((float)(benchmark->second) / ups)
+                  << " us(m.p.u.), calls: "
+                  << frameBenchmarksInvocations[benchmark->first]
                   << ",\t"
-                  << std::setw(8) << ((float)(bench->second) / benchmarksInvocations[bench->first])
-                  << "us (m.p.i.)\n";
+                  << std::setw(8) << ((float)(benchmark->second) / frameBenchmarksInvocations[benchmark->first])
+                  << " us(m.p.i.)\n";
     }
-  perFrameLog << '\n';
+  perFrameLogStream << '\n';
 }
 
-void BenchmarkTimer::clearBenchmarksPerFrameValues()
+void BenchmarkTimer::resetFrameBenchmarks()
 {
-  for (auto bench = benchmarksTimers.begin(); bench != benchmarksTimers.end(); ++bench)
-    bench->second = 0;
-  for (auto bench = benchmarksInvocations.begin(); bench != benchmarksInvocations.end(); ++bench)
-    bench->second = 0;
+  for (auto timingBenchmark = frameBenchmarksTimings.begin(); timingBenchmark != frameBenchmarksTimings.end(); ++timingBenchmark)
+    timingBenchmark->second = 0;
+  for (auto invocationCountBenchmark = frameBenchmarksInvocations.begin(); invocationCountBenchmark != frameBenchmarksInvocations.end(); ++invocationCountBenchmark)
+    invocationCountBenchmark->second = 0;
 }

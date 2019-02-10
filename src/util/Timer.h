@@ -26,8 +26,8 @@ public:
         fps = frames;
         if (updateCount > 1)
           {
-            BenchmarkTimer::printBenchmarksPerFrame(updateCount, fps);
-            BenchmarkTimer::clearBenchmarksPerFrameValues();
+            BenchmarkTimer::printFrameBenchmarks(updateCount, fps);
+            BenchmarkTimer::resetFrameBenchmarks();
           }
         frames = 0;
         ++updateCount;
