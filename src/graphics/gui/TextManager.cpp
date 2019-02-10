@@ -50,18 +50,6 @@ void TextManager::addDebugText(const Camera& camera,
      << camera.getDirection().x << ": " << camera.getDirection().y << ": " << camera.getDirection().z;
   addString(ss.str(), LEFT_BORDER_OFFSET * lineOffset.x, screenHeight - (UPPER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++) * lineOffset.y, scale);
 
-  const glm::vec3& cursorToViewportDirection = mouseInput.getCursorToNearPlaneWorldSpace();
-  ss.str("");
-  ss << "Cursor world pos: ";
-  if (!options[OPT_SHOW_CURSOR])
-    ss << "inactive";
-  else
-    {
-      ss << std::setprecision(3) << std::setw(3)
-         << cursorToViewportDirection.x << ": " << cursorToViewportDirection.y << ": " << cursorToViewportDirection.z;
-    }
-  addString(ss.str(), LEFT_BORDER_OFFSET * lineOffset.x, screenHeight - (UPPER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++) * lineOffset.y, scale);
-
   ss.str("");
   ss << "Cursor on map: ";
   if (!options[OPT_SHOW_CURSOR])
