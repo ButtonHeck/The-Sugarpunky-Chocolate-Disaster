@@ -158,6 +158,7 @@ void Game::drawFrame(const glm::mat4 &projectionView)
       BENCHMARK("Water: buffer animation frame", true);
       scene.getWaterFacade().bufferNewData();
       waterNeedNewKeyFrame = true;
+      waterNeedNewKeyFrameCV.notify_all();
     }
 
   scene.drawWorld(projectionView,
@@ -170,6 +171,7 @@ void Game::drawFrame(const glm::mat4 &projectionView)
   //after all mesh related draw calls we could start updating meshes indirect data buffers
   //start updating right after we've used it and before we need that data to be updated and buffered again
   modelsIndirectBufferNeedUpdate = true;
+  modelsIndirectBufferNeedUpdateCV.notify_all();
 
   if (options[OPT_DRAW_DEBUG_TEXT])
     {
@@ -311,7 +313,9 @@ void Game::setupThreads()
               modelsIndirectBufferPrepared = true;
               modelsIndirectBufferNeedUpdate = false;
             }
-          std::this_thread::yield();
+          std::unique_lock<std::mutex> lock(modelIndirectUpdateThreadMutex);
+          modelsIndirectBufferNeedUpdateCV.wait(lock, [this](){return (bool)modelsIndirectBufferNeedUpdate || glfwWindowShouldClose(window);});
+          lock.unlock();
         }
     });
   waterAnimator = std::make_unique<std::thread>([this]()
@@ -325,7 +329,9 @@ void Game::setupThreads()
               waterKeyFrameReady = true;
               waterNeedNewKeyFrame = false;
             }
-          std::this_thread::yield();
+          std::unique_lock<std::mutex> lock(waterAnimatorThreadMutex);
+          waterNeedNewKeyFrameCV.wait(lock, [this](){return (bool)waterNeedNewKeyFrame || glfwWindowShouldClose(window);});
+          lock.unlock();
         }
     });
 }

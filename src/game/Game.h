@@ -5,6 +5,8 @@
 #include <array>
 #include <GL/glew.h>
 #include <atomic>
+#include <mutex>
+#include <condition_variable>
 #include "util/DirectoriesSettings.h"
 #include "util/Timer.h"
 #include "util/BenchmarkTimer.h"
@@ -91,11 +93,18 @@ private:
 
   //multithreading
   void setupThreads();
-  std::unique_ptr<std::thread> waterAnimator;
+
   std::unique_ptr<std::thread> meshIndirectBufferUpdater;
+  std::mutex modelIndirectUpdateThreadMutex;
+  std::condition_variable modelsIndirectBufferNeedUpdateCV;
   std::atomic_bool modelsIndirectBufferPrepared, modelsIndirectBufferNeedUpdate;
+
+  std::unique_ptr<std::thread> waterAnimator;
+  std::mutex waterAnimatorThreadMutex;
+  std::condition_variable waterNeedNewKeyFrameCV;
   std::atomic_bool waterKeyFrameReady, waterNeedNewKeyFrame;
-  bool landIndirectBufferHasUpdated = false;
+
+  bool landIndirectBufferHasUpdated = false; //not used in any other threads, thus no need to declare as atomic
 };
 
 #endif // GAME_H

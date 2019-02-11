@@ -51,15 +51,17 @@ int main()
   game = new Game(window, camera, shadowCamera, options, screenResolution);
   game->setup();
 
-  //game loop
   std::thread inputHandlingThread([]()
     {
       while(!glfwWindowShouldClose(window))
         {
           glfwPollEvents();
-          std::this_thread::yield();
+          //~0.5ms delay of mouse/key input is applicable
+          std::this_thread::sleep_for(std::chrono::microseconds(500));
         }
     });
+
+  //game loop
   while(!glfwWindowShouldClose(window))
     {
       game->loop();
