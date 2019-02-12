@@ -104,8 +104,8 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene, GLuint meshVertexInd
 
   //process materials
   aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-  loadMaterialTextures(material, aiTextureType_DIFFUSE, "u_texture_diffuse", diffuseSamplerIndex);
-  loadMaterialTextures(material, aiTextureType_SPECULAR, "u_texture_specular", specularSamplerIndex);
+  loadMaterialTextures(material, aiTextureType_DIFFUSE, "u_textureDiffuse", diffuseSamplerIndex);
+  loadMaterialTextures(material, aiTextureType_SPECULAR, "u_textureSpecular", specularSamplerIndex);
 
   return Mesh(vertices, indices);
 }
