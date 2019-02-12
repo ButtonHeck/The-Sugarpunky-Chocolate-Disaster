@@ -7,8 +7,8 @@ in vec2  v_TexCoords;
 
 uniform sampler2D u_underwater_diffuse;
 uniform sampler2D u_bottomRelief_diffuse;
-uniform sampler2D u_normal_map;
-uniform float     u_mapDimension;
+uniform sampler2D u_normalMap;
+uniform float     u_mapDimensionReciprocal;
 uniform vec3      u_lightDir;
 uniform float     u_ambientDay;
 uniform float     u_ambientNight;
@@ -24,7 +24,7 @@ void main()
 
     @include shadingVariables.ifs
 
-    vec3 ShadingNormal = texture(u_normal_map, v_FragPosXZ * 0.125).xzy;
+    vec3 ShadingNormal = texture(u_normalMap, v_FragPosXZ * 0.125).xzy;
     ShadingNormal.xyz -= vec3(0.5);
     ShadingNormal = normalize(NORMAL + ShadingNormal);
 
@@ -34,7 +34,7 @@ void main()
     ambientColor = mix(ambientColorNightSelf, ambientColorDaySelf, sunPositionAttenuation);
     ambientColor += nightAmbientColor * (1.0 - sunPositionAttenuation);
 
-    float reliefAttenuation = 1.0 - texture(u_bottomRelief_diffuse, v_FragPosXZ * u_mapDimension + 0.5).r;
+    float reliefAttenuation = 1.0 - texture(u_bottomRelief_diffuse, v_FragPosXZ * u_mapDimensionReciprocal + 0.5).r;
     diffuseColor = sampledDiffuse.rgb * diffuseComponent * reliefAttenuation;
     resultColor = ambientColor + diffuseColor;
     o_FragColor = vec4(resultColor, sampledDiffuse.a);

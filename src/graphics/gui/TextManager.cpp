@@ -151,7 +151,9 @@ void TextManager::drawText()
   basicGLBuffers.bind(VAO | VBO);
   glBufferData(GL_ARRAY_BUFFER, bufferOffset * sizeof(GLfloat), vertexData, GL_STATIC_DRAW);
   glEnable(GL_BLEND);
+  glDisable(GL_DEPTH_TEST);
   glDrawArrays(GL_TRIANGLES, 0, glyphsCount * VERTICES_PER_QUAD);
+  glEnable(GL_DEPTH_TEST);
   glDisable(GL_BLEND);
 
   bufferOffset = 0;

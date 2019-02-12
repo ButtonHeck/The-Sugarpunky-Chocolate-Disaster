@@ -6,7 +6,7 @@ in vec3  v_FragPos;
 in vec3  v_Normal;
 
 uniform sampler2D   u_specular_map;
-uniform sampler2D   u_normal_map;
+uniform sampler2D   u_normalMap;
 uniform sampler2D   u_dudv_map;
 uniform sampler2D   u_reflectionMap;
 uniform sampler2D   u_refractionMap;
@@ -57,7 +57,7 @@ void main()
         vec2 screenSpaceTexCoordsRefraction = screenSpaceTexCoordsReflection;
         screenSpaceTexCoordsReflection.y = 1.0 - screenSpaceTexCoordsReflection.y;
 
-        vec3 ShadingNormal = texture(u_normal_map, fragPosTexCoords + dudvTextureOffset).xzy;
+        vec3 ShadingNormal = texture(u_normalMap, fragPosTexCoords + dudvTextureOffset).xzy;
         ShadingNormal.xz *= 2.0;
         ShadingNormal.xz -= 1.0;
         ShadingNormal = normalize(v_Normal + ShadingNormal);

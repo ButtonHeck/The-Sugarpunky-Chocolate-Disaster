@@ -18,15 +18,15 @@ out vec3 o_bitangent;
 
 void main()
 {
-    for (int i = 0; i < gl_in.length(); i++)
+    for (int vertexIndex = 0; vertexIndex < gl_in.length(); vertexIndex++)
     {
-        if (v_visible[i] != 1)
-            break;
-        o_pos = v_pos[i];
-        o_texCoords = v_texCoords[i];
-        o_normal = v_normal[i];
-        o_tangent = v_tangent[i];
-        o_bitangent = v_bitangent[i];
+        if (v_visible[vertexIndex] != 1)
+            break; //no need to continue as we would not get a triangle without all three vertices visible
+        o_pos = v_pos[vertexIndex];
+        o_texCoords = v_texCoords[vertexIndex];
+        o_normal = v_normal[vertexIndex];
+        o_tangent = v_tangent[vertexIndex];
+        o_bitangent = v_bitangent[vertexIndex];
         EmitVertex();
     }
     EndPrimitive();

@@ -8,11 +8,11 @@ in float v_TerrainTypeMix;
 in vec3  v_Normal;
 in float v_AlphaBlend;
 
-uniform sampler2D u_land_diffuse[2];
+uniform sampler2D u_landDiffuse[2];
 uniform sampler2D u_sand_diffuse[2];
-uniform sampler2D u_diffuse_mix_map;
-uniform float     u_mapDimension;
-uniform sampler2D u_normal_map;
+uniform sampler2D u_diffuseMixMap;
+uniform float     u_mapDimensionReciprocal;
+uniform sampler2D u_normalMap;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
 uniform bool      u_debugRenderMode;
@@ -33,19 +33,19 @@ void main()
         o_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
     else
     {
-        float DiffuseTextureMix = texture(u_diffuse_mix_map, v_FragPos.xz * u_mapDimension + 0.5).r;
+        float DiffuseTextureMix = texture(u_diffuseMixMap, v_FragPos.xz * u_mapDimensionReciprocal + 0.5).r;
         float TerrainTypeMixClamped = clamp(v_TerrainTypeMix, 0.0, 1.0);
         vec4 sampledDiffuse = mix(mix(texture(u_sand_diffuse[0], v_TexCoords),
                                       texture(u_sand_diffuse[1], v_TexCoords),
                                       DiffuseTextureMix),
-                                  mix(texture(u_land_diffuse[0], v_TexCoords),
-                                      texture(u_land_diffuse[1], v_TexCoords),
+                                  mix(texture(u_landDiffuse[0], v_TexCoords),
+                                      texture(u_landDiffuse[1], v_TexCoords),
                                       DiffuseTextureMix),
                                   TerrainTypeMixClamped);
 
         @include shadingVariables.ifs
 
-        vec3 ShadingNormal = texture(u_normal_map, v_FragPos.xz * 0.125).xzy;
+        vec3 ShadingNormal = texture(u_normalMap, v_FragPos.xz * 0.125).xzy;
         ShadingNormal.xyz -= vec3(0.5);
 
         vec3 ShadingNormalLand = normalize(NORMAL + 5.0 * ShadingNormal);

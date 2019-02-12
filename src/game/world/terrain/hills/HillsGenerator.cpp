@@ -65,9 +65,10 @@ void HillsGenerator::fillBufferData()
       if (tile.lowRight < tile.upperLeft || tile.upperLeft < tile.lowRight)
         verticesCrossed = true;
 
-      //map hill texture to cover 2x2 tiles instead of one
-      float texCoordXOffset = (tile.mapX % 2) * 0.5f;
-      float texCoordYOffset = ((WORLD_HEIGHT - tile.mapY) % 2) * 0.5f;
+      //map hill texture to cover HILL_TILING_PER_TEXTURE_QUAD^2 tiles instead of one
+      float tilingSizeReciprocal = 1.0f / HILL_TILING_PER_TEXTURE_QUAD;
+      float texCoordXOffset = (tile.mapX % HILL_TILING_PER_TEXTURE_QUAD) * tilingSizeReciprocal;
+      float texCoordYOffset = ((WORLD_HEIGHT - tile.mapY) % HILL_TILING_PER_TEXTURE_QUAD) * tilingSizeReciprocal;
       int x = tile.mapX, y = tile.mapY;
 
       HillVertex lowLeft(glm::vec3(x - 1, tile.lowLeft, y),
@@ -76,17 +77,17 @@ void HillsGenerator::fillBufferData()
                          tangentMap[y][x-1],
                          bitangentMap[y][x-1]);
       HillVertex lowRight(glm::vec3(x, tile.lowRight, y),
-                          glm::vec2(0.5f + texCoordXOffset, texCoordYOffset),
+                          glm::vec2(tilingSizeReciprocal + texCoordXOffset, texCoordYOffset),
                           normalMap[y][x],
                           tangentMap[y][x],
                           bitangentMap[y][x]);
       HillVertex upRight(glm::vec3(x, tile.upperRight, y - 1),
-                         glm::vec2(0.5f + texCoordXOffset, 0.5f + texCoordYOffset),
+                         glm::vec2(tilingSizeReciprocal + texCoordXOffset, tilingSizeReciprocal + texCoordYOffset),
                          normalMap[y-1][x],
                          tangentMap[y-1][x],
                          bitangentMap[y-1][x]);
       HillVertex upLeft(glm::vec3(x - 1, tile.upperLeft, y - 1),
-                        glm::vec2(texCoordXOffset, 0.5f + texCoordYOffset),
+                        glm::vec2(texCoordXOffset, tilingSizeReciprocal + texCoordYOffset),
                         normalMap[y-1][x-1],
                         tangentMap[y-1][x-1],
                         bitangentMap[y-1][x-1]);

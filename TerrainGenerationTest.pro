@@ -331,6 +331,7 @@ DISTFILES += \
     res/shaders/lensFlare/lensFlare.fs \
     res/shaders/skysphere/skysphere.fs \
     res/shaders/skysphere/skysphere.vs \
+    res/shaders/namingConvention.txt \
 \
     res/fonts/font.png \
     res/fonts/font.fnt \

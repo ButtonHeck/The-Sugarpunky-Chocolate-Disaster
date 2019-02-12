@@ -5,8 +5,8 @@ layout (location = 1) in vec2 i_texCoords;
 layout (location = 2) in vec3 i_normal;
 
 uniform mat4      u_projectionView;
-uniform float     u_mapDimension;
-uniform sampler2D u_diffuse_mix_map;
+uniform float     u_mapDimensionReciprocal;
+uniform sampler2D u_diffuseMixMap;
 uniform float     U_UNDERWATER_TILE_YPOS;
 uniform float     U_WATER_LEVEL;
 uniform bool      u_useClipDistanceReflection;
@@ -35,7 +35,7 @@ void main()
     v_TexCoords = i_texCoords;
     v_Normal = i_normal;
 
-    float TerrainSplattingRatio = texture(u_diffuse_mix_map, i_pos.xz * u_mapDimension + 0.5).g;
+    float TerrainSplattingRatio = texture(u_diffuseMixMap, i_pos.xz * u_mapDimensionReciprocal + 0.5).g;
     v_TerrainTypeMix = i_pos.y * TERRAIN_TYPE_TRANSITION_RATIO + 1.5 - TerrainSplattingRatio * 0.5;
     v_AlphaBlend = (i_pos.y + U_UNDERWATER_TILE_YPOS) * 0.5 - TerrainSplattingRatio * 0.25;
 }

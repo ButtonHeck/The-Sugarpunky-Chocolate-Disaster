@@ -1,27 +1,46 @@
 uniform bool  u_isGrass;
+//u_grassPosDistrubution - define how much grass position offset is applied
 uniform float u_grassPosDistrubution;
 
-const vec3 GRASS_WAVE_XYZ = vec3(0.007, 0.0023, 0.0035);
-const vec3 GRASS_WAVE_XYZ_NORMALIZED = normalize(GRASS_WAVE_XYZ);
+//define a maximum position change during animation
+const vec3  GRASS_WAVE_XYZ = vec3(0.007, 0.0023, 0.0035);
+const vec3  GRASS_WAVE_XYZ_NORMALIZED = normalize(GRASS_WAVE_XYZ);
+//limit stones and rocks to be animated (calculated empirically)
+const float MIN_HEIGHT_TO_ANIMATE = 0.38;
+//limit alpha transition for objects, the higher these values are - the faster transition ends
+const int   ALPHA_MULTIPLIER = 48;
+const int   GRASS_ALPHA_MULTIPLIER = 32;
+
+//v_AlphaValue - applied to the alpha component of a fragment to create smooth transition to the land surface
 out float v_AlphaValue;
 
-void ext_animateAndBlend(inout vec4 ModelWorldPosition)
+/*
+this function firstly is responsible for calculation of position offsets for grass depending on distribution value
+and secondly it defines how much alpha component will take place for current fragment, both for grass and other models
+*/
+void ext_animateAndBlend(inout vec4 worldPosition)
 {
     if (u_isGrass)
     {
-        if (i_pos.y > 0.38)
+        if (i_pos.y > MIN_HEIGHT_TO_ANIMATE)
         {
-            vec2 fractionOfWorldCoords = fract(ModelWorldPosition.xz); //offset tweaks: X - coarse, Z - fine
-            float influence = sin(u_grassPosDistrubution * max(fractionOfWorldCoords.x, 0.75) + fractionOfWorldCoords.y) * 0.5 + 0.5;
-            ModelWorldPosition.xyz += (mix(GRASS_WAVE_XYZ,
-                                           GRASS_WAVE_XYZ + i_normal * 0.005,
-                                           dot(GRASS_WAVE_XYZ_NORMALIZED, i_normal)))
-                                     * influence;
+            vec2 fractionOfWorldCoords = fract(worldPosition.xz); //offset tweaks: X - coarse, Z - fine
+            //map range from [-1;1] to [-0.5;0.5]
+            float influence = sin(u_grassPosDistrubution * max(fractionOfWorldCoords.x, 0.75) + fractionOfWorldCoords.y) * 0.5;
+            //if normal(or its negation) is close to animation direction - add/subtract a bit of it to the final position offset
+            worldPosition.xyz += influence * (mix(GRASS_WAVE_XYZ,
+                                                  GRASS_WAVE_XYZ + i_normal * 0.005,
+                                                  abs(dot(GRASS_WAVE_XYZ_NORMALIZED, i_normal))));
         }
-        v_AlphaValue = ModelWorldPosition.y * 32;
+        v_AlphaValue = worldPosition.y * GRASS_ALPHA_MULTIPLIER;
     }
     else
     {
-        v_AlphaValue = clamp(ModelWorldPosition.y * 48, 0.0, 4.0);
+        /*
+        clamp to 4.0 due to interpolation in a fragment shader, which might fuck up whole transition
+        if any vertex of a triangle is overly higher than the other two. Every steep triangle with at least
+        one of its vertices close to 0.0 in Y, would only be opaque at higher vertices without overclamping
+        */
+        v_AlphaValue = clamp(worldPosition.y * ALPHA_MULTIPLIER, 0.0, 4.0);
     }
 }

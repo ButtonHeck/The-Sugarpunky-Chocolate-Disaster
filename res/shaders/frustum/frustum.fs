@@ -1,3 +1,8 @@
+/*
+this shader is used only for visual debug purposes
+and is to be cut out from the project in release time
+*/
+
 #version 450
 
 out vec4 o_FragColor;
