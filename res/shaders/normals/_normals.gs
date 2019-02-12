@@ -1,3 +1,8 @@
+/*
+this shader is used only for visual debug purposes
+and is to be cut out from the project in release time
+*/
+
 #version 450
 
 layout (points) in;
@@ -9,11 +14,11 @@ in vec3 v_Normal[];
 in vec3 v_Tangent[];
 in vec3 v_Bitangent[];
 
-out vec3 g_Color;
+out vec3 v_fColor;
 
 void main()
 {
-    g_Color = vec3(abs(v_Normal[0].x) * 1.5, 0.0, abs(v_Normal[0]).z * 1.5);
+    v_fColor = vec3(abs(v_Normal[0].x) * 1.5, 0.0, abs(v_Normal[0]).z * 1.5);
     gl_Position = gl_in[0].gl_Position;
     EmitVertex();
     gl_Position = gl_in[0].gl_Position + u_projectionView * vec4(v_Normal[0], 0.0);

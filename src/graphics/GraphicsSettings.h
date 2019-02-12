@@ -8,6 +8,7 @@ constexpr bool HDR_ENABLED = true;
 constexpr float HDR_EXPOSURE = 2.2f;
 constexpr unsigned int MULTISAMPLES = 4;
 constexpr float ANISOTROPY = 2.0f;
+constexpr float DOF_DISTANCE_LINEAR = 0.17f;
 
 //constants for lighting calculations
 const glm::vec4 NIGHT_SKY_COLOR(0.02f, 0.0112f, 0.0088f, 1.0f);

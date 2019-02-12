@@ -113,14 +113,15 @@ void ShaderManager::setupConstantUniforms(const ScreenResolution& screenResoluti
   bindShaderUnit(shader, SHADER_SHORE);
   shader->setInt("u_landDiffuse[0]", TEX_LAND);
   shader->setInt("u_landDiffuse[1]", TEX_LAND_2);
-  shader->setInt("u_sand_diffuse[0]", TEX_SHORE);
-  shader->setInt("u_sand_diffuse[1]", TEX_SHORE_2);
+  shader->setInt("u_shoreDiffuse[0]", TEX_SHORE);
+  shader->setInt("u_shoreDiffuse[1]", TEX_SHORE_2);
   shader->setInt("u_diffuseMixMap", TEX_DIFFUSE_MIX_MAP);
   shader->setInt("u_normalMap", TEX_TERRAIN_NORMAL);
+  shader->setFloat("u_normalMapTilingReciprocal", NORMAL_MAP_TILING_RECIPROCAL);
   shader->setFloat("u_mapDimensionReciprocal", 1.0f / (float)WORLD_WIDTH);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
-  shader->setFloat("U_UNDERWATER_TILE_YPOS", -UNDERWATER_TILE_YPOS);
-  shader->setFloat("U_WATER_LEVEL", WATER_LEVEL);
+  shader->setFloat("u_underwaterSurfaceLevel", -UNDERWATER_TILE_YPOS);
+  shader->setFloat("u_waterLevel", WATER_LEVEL);
   shader->setFloat("u_bias", 1.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
@@ -196,7 +197,9 @@ void ShaderManager::setupConstantUniforms(const ScreenResolution& screenResoluti
   shader->setFloat("u_exposure", HDR_EXPOSURE);
   shader->setFloat("u_near", NEAR_PLANE);
   shader->setFloat("u_far", FAR_PLANE);
+  shader->setFloat("u_screenWidth", screenResolution.getWidth());
   shader->setFloat("u_aspectRatio", screenResolution.getAspectRatio());
+  shader->setFloat("u_dofDistanceLinear", DOF_DISTANCE_LINEAR);
 
   bindShaderUnit(shader, SHADER_WATER_NORMALS);
   shader->setInt("u_normalMap", TEX_TERRAIN_NORMAL);

@@ -7,21 +7,23 @@ layout (location = 2) in vec3 i_normal;
 uniform mat4      u_projectionView;
 uniform float     u_mapDimensionReciprocal;
 uniform sampler2D u_diffuseMixMap;
-uniform float     U_UNDERWATER_TILE_YPOS;
-uniform float     U_WATER_LEVEL;
+uniform float     u_underwaterSurfaceLevel;
+uniform float     u_waterLevel;
+//these two are used during scene reflection/refraction rendering routine
 uniform bool      u_useClipDistanceReflection;
 uniform bool      u_useClipDistanceRefraction;
 
-const vec4  CLIP_PLANE_REFLECTION = vec4(0.0, 1.0, 0.0, U_WATER_LEVEL);
-const vec4  CLIP_PLANE_REFRACTION = vec4(0.0, -1.0, 0.0, -U_WATER_LEVEL);
+const vec4  CLIP_PLANE_REFLECTION = vec4(0.0, 1.0, 0.0, u_waterLevel);
+const vec4  CLIP_PLANE_REFRACTION = vec4(0.0, -1.0, 0.0, -u_waterLevel);
+const float TERRAIN_TYPE_HEIGHT_DAMP_FACTOR = 1.75;
 
 out vec3  v_FragPos;
 out vec2  v_TexCoords;
+//v_TerrainTypeMix - define how much land or shore texture to use for a fragment
 out float v_TerrainTypeMix;
 out vec3  v_Normal;
-out float v_AlphaBlend;
-
-const float TERRAIN_TYPE_TRANSITION_RATIO = 1.75;
+//v_AlphaValue - applied to the alpha component of a fragment to create smooth transition to the underwater surface
+out float v_AlphaValue;
 
 void main()
 {
@@ -35,7 +37,8 @@ void main()
     v_TexCoords = i_texCoords;
     v_Normal = i_normal;
 
-    float TerrainSplattingRatio = texture(u_diffuseMixMap, i_pos.xz * u_mapDimensionReciprocal + 0.5).g;
-    v_TerrainTypeMix = i_pos.y * TERRAIN_TYPE_TRANSITION_RATIO + 1.5 - TerrainSplattingRatio * 0.5;
-    v_AlphaBlend = (i_pos.y + U_UNDERWATER_TILE_YPOS) * 0.5 - TerrainSplattingRatio * 0.25;
+    float terrainSplattingRatio = texture(u_diffuseMixMap, i_pos.xz * u_mapDimensionReciprocal + 0.5).g;
+    v_TerrainTypeMix = i_pos.y * TERRAIN_TYPE_HEIGHT_DAMP_FACTOR + 1.5 - terrainSplattingRatio * 0.5;
+    //for this its okay to clamp in a vertex shader stage
+    v_AlphaValue = clamp((i_pos.y + u_underwaterSurfaceLevel) * 0.5 - terrainSplattingRatio * 0.25, 0.0, 1.0);
 }
