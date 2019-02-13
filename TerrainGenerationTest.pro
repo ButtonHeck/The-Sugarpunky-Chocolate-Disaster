@@ -304,7 +304,7 @@ DISTFILES += \
     res/shaders/screen/MS_toDefault.vs \
     res/shaders/screen/MS_toDefault_hdr.fs \
     res/shaders/shadow/model_shadow.vs \
-    res/shaders/shadow/terrain_shadow.vs \
+    res/shaders/shadow/hills_shadow.vs \
     res/shaders/waterFC/waterFC.gs \
     res/shaders/waterFC/waterFC.vs \
     res/shaders/hillsFC/hillsFC.vs \

@@ -68,7 +68,7 @@ ShaderManager::ShaderManager()
                                     {GL_FRAGMENT_SHADER, "selected/selectedTile.fs"});
   shaders[SHADER_MS_TO_DEFAULT] = Shader({GL_VERTEX_SHADER, "screen/MS_toDefault.vs"},
                                          {GL_FRAGMENT_SHADER, "screen/MS_toDefault_hdr.fs"});
-  shaders[SHADER_SHADOW_TERRAIN] = Shader({GL_VERTEX_SHADER, "shadow/terrain_shadow.vs"},
+  shaders[SHADER_SHADOW_TERRAIN] = Shader({GL_VERTEX_SHADER, "shadow/hills_shadow.vs"},
                                           {GL_GEOMETRY_SHADER, "shadow/shadow.gs"});
   shaders[SHADER_SHADOW_MODELS] = Shader({GL_VERTEX_SHADER, "shadow/model_shadow.vs"},
                                          {GL_GEOMETRY_SHADER, "shadow/shadow.gs"});

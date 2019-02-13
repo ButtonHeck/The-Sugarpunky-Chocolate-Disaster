@@ -94,8 +94,12 @@ void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, flo
   float fromLStoBottomPointLength = glm::length(fromLStoBottomPoint);
   glm::vec2 fromLStoBottomPointNorm = glm::normalize(fromLStoBottomPoint);
   cosAlpha = glm::dot(fromLStoBottomPointNorm, -lightDirUpXY);
+  /*
+   * for this we should consider additional offset, because lowest shore fragments are occured below 0.0 level,
+   * thus the offset must be no less than lowest shore fragment. But we need this offset during only dusk and dawn
+   */
   const float BOTTOM_SIDE = -fromLStoBottomPointLength * cosAlpha
-                            - 2.0f * (1.0f - sunAbsPositionY); //+some offset when the dusk or the dawn
+                            - 5.0f * (1.0f - sunAbsPositionY);
 
   //step 6 - calculate light space matrix
   bool isLightDirPosX = lightDirTo.x > 0.0f;
