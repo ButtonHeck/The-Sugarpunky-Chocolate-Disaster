@@ -26,11 +26,12 @@ const float SOBEL_SIZE_VERTICAL = SOBEL_SIZE_HORIZONTAL / u_aspectRatio; //unuse
 /*
 this function takes current fragment depth (which is not linear)
 and returns a linear value representation of it
+do not divide by u_far when using this function as it has already done here
 */
 float linearizeDepth(float depth)
 {
     float z = depth * 2.0 - 1.0; // map back to NDC
-    return (2.0 * u_near * u_far) / (u_far + u_near - z * (u_far - u_near));
+    return (2.0 * u_near) / (u_far + u_near - z * (u_far - u_near)); // * u_far
 }
 
 /*
@@ -51,7 +52,7 @@ void blur(inout vec3 fragColor, int coordOffset, float depthClip)
         {
             vec2 neighbourTexCoords = vec2(v_TexCoords.x + x * BLUR_SIZE_HORIZONTAL, v_TexCoords.y + y * BLUR_SIZE_VERTICAL);
             float neighbourTexelDepth = texture(u_frameDepthTexture, neighbourTexCoords).r;
-            neighbourTexelDepth = linearizeDepth(neighbourTexelDepth) / u_far;
+            neighbourTexelDepth = linearizeDepth(neighbourTexelDepth);
             //also make sure that the most farthest texels (as environment/skybox etc.) do not get blurred
             if (neighbourTexelDepth > depthClip && neighbourTexelDepth < 0.999)
             {
@@ -91,7 +92,7 @@ void main()
     if (u_useDOF)
     {
         float sampledDepth = texture(u_frameDepthTexture, v_TexCoords).r;
-        sampledDepth = linearizeDepth(sampledDepth) / u_far;
+        sampledDepth = linearizeDepth(sampledDepth);
         //also make sure that the most farthest texels (as environment/skybox etc.) do not get blurred
         if (sampledDepth > u_dofDistanceLinear && sampledDepth < 0.999)
             blur(sampledColor, 1, u_dofDistanceLinear);

@@ -6,8 +6,9 @@ in vec2  v_FragPosXZ;
 in vec2  v_TexCoords;
 
 uniform sampler2D u_underwater_diffuse;
-uniform sampler2D u_bottomRelief_diffuse;
+uniform sampler2D u_bottomReliefDiffuse;
 uniform sampler2D u_normalMap;
+uniform float     u_normalMapTilingReciprocal;
 uniform float     u_mapDimensionReciprocal;
 uniform vec3      u_lightDir;
 uniform float     u_ambientDay;
@@ -24,20 +25,24 @@ void main()
 
     @include shadingVariables.ifs
 
-    vec3 ShadingNormal = texture(u_normalMap, v_FragPosXZ * 0.125).xzy;
-    ShadingNormal.xyz -= vec3(0.5);
-    ShadingNormal = normalize(NORMAL + ShadingNormal);
+    vec3 sampledNormal = texture(u_normalMap, v_FragPosXZ * u_normalMapTilingReciprocal).xzy;
+    sampledNormal.xyz -= vec3(0.5);
+    sampledNormal = normalize(NORMAL + sampledNormal);
 
     float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
-    float diffuseComponent = max(dot(ShadingNormal, u_lightDir), 0.0) * sunPositionAttenuation;
+    float diffuseComponent = max(dot(sampledNormal, u_lightDir), 0.0) * sunPositionAttenuation;
 
     ambientColor = mix(ambientColorNightSelf, ambientColorDaySelf, sunPositionAttenuation);
+    //add a bit of red in the night time
     ambientColor += nightAmbientColor * (1.0 - sunPositionAttenuation);
 
-    float reliefAttenuation = 1.0 - texture(u_bottomRelief_diffuse, v_FragPosXZ * u_mapDimensionReciprocal + 0.5).r;
+    //make underwater surface the more darker the closer it to the river kernel line (just a visual flavour)
+    float reliefAttenuation = 1.0 - texture(u_bottomReliefDiffuse, v_FragPosXZ * u_mapDimensionReciprocal + 0.5).r;
     diffuseColor = sampledDiffuse.rgb * diffuseComponent * reliefAttenuation;
     resultColor = ambientColor + diffuseColor;
     o_FragColor = vec4(resultColor, sampledDiffuse.a);
+
+    //calculation of this value depends on how much diffuse have influence on a fragment's color
     float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, diffuseComponent);
     ext_desaturate(o_FragColor, desaturatingValue);
 }

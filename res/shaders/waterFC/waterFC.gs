@@ -10,13 +10,13 @@ out vec3 o_pos;
 out vec3 o_normal;
 
 uniform vec4 u_frustumPlanes[5];
-const float TILE_RADIUS = 1.4142; //sqrt(2)
+const float CULLING_OFFSET = 1.4142; //sqrt(2)
 
 bool frustumCulling(vec3 position)
 {
-    for (int i = 0; i < u_frustumPlanes.length(); i++)
+    for (int planeIndex = 0; planeIndex < u_frustumPlanes.length(); planeIndex++)
     {
-        if (dot(u_frustumPlanes[i].xyz, position) <= -u_frustumPlanes[i].w - TILE_RADIUS)
+        if (dot(u_frustumPlanes[planeIndex].xyz, position) <= -u_frustumPlanes[planeIndex].w - CULLING_OFFSET)
           return false;
     }
   return true;

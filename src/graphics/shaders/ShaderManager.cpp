@@ -128,8 +128,9 @@ void ShaderManager::setupConstantUniforms(const ScreenResolution& screenResoluti
 
   bindShaderUnit(shader, SHADER_UNDERWATER);
   shader->setInt("u_underwater_diffuse", TEX_UNDERWATER_DIFFUSE);
-  shader->setInt("u_bottomRelief_diffuse", TEX_UNDERWATER_RELIEF);
+  shader->setInt("u_bottomReliefDiffuse", TEX_UNDERWATER_RELIEF);
   shader->setInt("u_normalMap", TEX_TERRAIN_NORMAL);
+  shader->setFloat("u_normalMapTilingReciprocal", NORMAL_MAP_TILING_RECIPROCAL);
   shader->setFloat("u_mapDimensionReciprocal", 1.0f / (float)WORLD_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
@@ -148,17 +149,18 @@ void ShaderManager::setupConstantUniforms(const ScreenResolution& screenResoluti
 
   bindShaderUnit(shader, SHADER_WATER);
   shader->setInt("u_normalMap", TEX_WATER_NORMAL);
-  shader->setInt("u_specular_map", TEX_WATER_SPECULAR);
-  shader->setInt("u_dudv_map", TEX_WATER_DUDV);
+  shader->setInt("u_specularTexture", TEX_WATER_SPECULAR);
+  shader->setInt("u_dudvMap", TEX_WATER_DUDV);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
   shader->setInt("u_reflectionMap", TEX_FRAME_WATER_REFLECTION);
   shader->setInt("u_refractionMap", TEX_FRAME_WATER_REFRACTION);
   shader->setInt("u_refractionDepthMap", TEX_FRAME_WATER_REFRACTION_DEPTH);
+  shader->setFloat("u_normalMapTilingReciprocal", NORMAL_MAP_TILING_RECIPROCAL);
   shader->setFloat("u_bias", 4.0f / DEPTH_MAP_TEXTURE_WIDTH);
   shader->setFloat("u_ambientDay", 0.08f);
   shader->setFloat("u_ambientNight", 0.03f);
-  shader->setFloat("U_SCREEN_WIDTH", screenResolution.getWidth());
-  shader->setFloat("U_SCREEN_HEIGHT", screenResolution.getHeight());
+  shader->setFloat("u_screenWidth", screenResolution.getWidth());
+  shader->setFloat("u_screenHeight", screenResolution.getHeight());
   shader->setFloat("u_near", NEAR_PLANE);
   shader->setFloat("u_far", FAR_PLANE);
 
