@@ -12,7 +12,7 @@ uniform int   u_type;
 const int   SKYBOX_TYPE_HILLS_NEAR = 0;
 const int   SKYBOX_TYPE_HILLS_FAR =  1;
 const int   SKYBOX_TYPE_CLOUDS =     2;
-const float PARALLAX_SCROLLING_SPEED = 0.004;
+const float PARALLAX_SCROLLING_OFFSET = 0.001;
 
 void main()
 {
@@ -21,7 +21,7 @@ void main()
 
     //apply some parallax to skybox position depending on the view position
     if (u_type != SKYBOX_TYPE_CLOUDS)
-        newPos -= u_viewPosition * (PARALLAX_SCROLLING_SPEED + u_type * PARALLAX_SCROLLING_SPEED);
+        newPos -= u_viewPosition * (PARALLAX_SCROLLING_OFFSET + u_type * PARALLAX_SCROLLING_OFFSET);
 
     vec4 correctPosition = u_projectionView * vec4(newPos, 1.0);
     //use W as Z, so after perspective division we get Z as 1.0
