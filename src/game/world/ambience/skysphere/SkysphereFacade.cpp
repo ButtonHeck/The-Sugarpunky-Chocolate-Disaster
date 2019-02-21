@@ -1,5 +1,29 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * SkysphereFacade.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for SkysphereFacade class
+ * @version 0.1.0
+ */
+
 #include "game/world/ambience/skysphere/SkysphereFacade.h"
 
+/**
+ * @brief Constructor with hardcoded paths for (hemi)sphere models
+ * @param renderShader compiled shader program fed to personal shader manager
+ */
 SkysphereFacade::SkysphereFacade(Shader& renderShader)
   :
     theSunAmbientLightingHemisphere("environment/hemisphere/hemisphere.obj"),
@@ -7,6 +31,13 @@ SkysphereFacade::SkysphereFacade(Shader& renderShader)
     shader(renderShader)
 {}
 
+/**
+ * @brief manages shader program object state changes during rendering and delegates draw call
+ * invocations to skysphere member objects
+ * @param transform transformation matrix to apply
+ * @param projectionView Projection*View matrix
+ * @param lightDir direction of the sunlight (directional lighting)
+ */
 void SkysphereFacade::draw(const glm::mat4 &transform,
                            const glm::mat4 &projectionView,
                            const glm::vec3 &lightDir)

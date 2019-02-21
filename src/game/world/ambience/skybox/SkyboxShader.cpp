@@ -29,7 +29,7 @@ SkyboxShader::SkyboxShader(Shader &renderShader)
 {}
 
 /**
- * @brief update uniform variables in a shader program
+ * @brief activates shader program and updates its uniform variables
  * @param projectionView Projection*View matrix
  * @param viewPosition current position of the camera
  * @param lightDir direction of the sunlight (directional lighting)
@@ -41,6 +41,7 @@ void SkyboxShader::update(const glm::mat4 &projectionView,
   renderShader.use();
   renderShader.setMat4("u_projectionView", projectionView);
   renderShader.setVec3("u_viewPosition", viewPosition);
+  //send this as reverse direction
   renderShader.setVec3("u_lightDir", -lightDir);
 }
 

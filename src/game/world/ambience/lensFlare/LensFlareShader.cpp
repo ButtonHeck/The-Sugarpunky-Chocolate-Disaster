@@ -28,6 +28,9 @@ LensFlareShader::LensFlareShader(Shader &renderShader)
     renderShader(renderShader)
 {}
 
+/**
+ * @brief activates shader program and update its uniforms
+ */
 void LensFlareShader::update(float brightnessFlares, float brightnessHalo)
 {
   renderShader.use();
