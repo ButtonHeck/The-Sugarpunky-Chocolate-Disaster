@@ -1,5 +1,28 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * TheSun.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for TheSun class
+ * @version 0.1.0
+ */
+
 #include "game/world/ambience/theSun/TheSun.h"
 
+/**
+ * @brief initialize member variables and setup array buffer
+ */
 TheSun::TheSun()
   :
     ROTATION_VECTOR(0.0f, 0.0f, 1.0f),
@@ -14,6 +37,10 @@ TheSun::TheSun()
   BufferCollection::bindZero(VAO | VBO);
 }
 
+/**
+ * @brief calculates new position, light direction and updates transformation matrix
+ * @param angleDegrees angle to rotate in degrees
+ */
 void TheSun::move(float angleDegrees)
 {
   currentPosition = glm::rotate(currentPosition, glm::radians(angleDegrees), ROTATION_VECTOR);
@@ -21,6 +48,11 @@ void TheSun::move(float angleDegrees)
   lightDirTo = glm::normalize(-currentPosition);
 }
 
+/**
+ * @brief sets position, light direction and transformation matrix depending on given angle
+ * @param angleDegrees angle to set in degrees
+ * @todo TEST ONLY! remove this from the game release version
+ */
 void TheSun::moveAbsolutePosition(float angleDegrees)
 {
   currentPosition = glm::rotate(START_POSITION, glm::radians(angleDegrees), ROTATION_VECTOR);
