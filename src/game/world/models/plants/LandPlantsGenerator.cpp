@@ -1,5 +1,28 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * LandPlantsGenerator.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for LandPlantsGenerator class
+ * @version 0.1.0
+ */
+
 #include "game/world/models/plants/LandPlantsGenerator.h"
 
+/**
+ * @brief load both plain and low-poly models
+ */
 LandPlantsGenerator::LandPlantsGenerator()
   :
     PlantGenerator()
@@ -37,14 +60,27 @@ LandPlantsGenerator::LandPlantsGenerator()
   assert(lowPolyModels.size() == models.size());
 }
 
+/**
+ * @brief initialize models chunks and accomodate land plants models on the world map based on input maps
+ * @param landMap map of the land
+ * @param hillMap map of the hills
+ * @param distributionMap map filled with distribution seed values
+ */
 void LandPlantsGenerator::setup(const map2D_f &landMap, const map2D_f &hillMap, const map2D_i &distributionMap)
 {
-  setupModelChunks();
+  initializeModelChunks();
   setupMatrices(landMap, hillMap, distributionMap);
 }
 
+/**
+ * @brief calculates instance matrices for land plants models and spreads them on world map
+ * @param landMap map of the land
+ * @param hillMap map of the hills
+ * @param distributionMap map filled with distribution seed values
+ */
 void LandPlantsGenerator::setupMatrices(const map2D_f &landMap, const map2D_f &hillMap, const map2D_i &distributionMap)
 {
+  //get empty boilerplate storage to fill during (re)allocation
   map2D_mat4 matricesStorage = substituteMatricesStorage();
   std::uniform_real_distribution<float> sizeDistribution(MIN_SCALE, MAX_SCALE);
   std::uniform_real_distribution<float> positionDistribution(MIN_POSITION_OFFSET, MAX_POSITION_OFFSET);
@@ -52,28 +88,32 @@ void LandPlantsGenerator::setupMatrices(const map2D_f &landMap, const map2D_f &h
   size_t numberOfModels = models.size();
   std::vector<unsigned int> instanceOffsetsVector(numberOfModels);
   std::vector<unsigned int> numInstanceVector(numberOfModels);
-  for (unsigned int i = 0; i < numberOfModels; i++)
+  for (unsigned int modelIndex = 0; modelIndex < numberOfModels; modelIndex++)
     {
+      //initially there are no instances and thus no offsets in each chunk
       instanceOffsetsVector.emplace_back(0);
       numInstanceVector.emplace_back(0);
     }
 
+  //used for circular indexing of a particular model/chunk
   unsigned int matrixCounter = 0, chunkCounter = 0;
   for (unsigned int startY = 0; startY < WORLD_HEIGHT; startY += CHUNK_SIZE)
     {
       for (unsigned int startX = 0; startX < WORLD_WIDTH; startX += CHUNK_SIZE)
         {
+          //need this to be set before allocation on each subsequent chunk as it depends on the previous ones
           chunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
           for (unsigned int y = startY; y < startY + CHUNK_SIZE; y++)
             {
               for (unsigned int x = startX; x < startX + CHUNK_SIZE; x++)
                 {
-                  if ( (landMap[y][x] == 0 && landMap[y+1][x+1] == 0 && landMap[y+1][x] == 0 && landMap[y][x+1] == 0) &&
-                      !(hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0) &&
-                      (rand() % (PLANTS_DISTRIBUTION_FREQUENCY / 2)) == 0 &&
-                      distributionMap[y][x] > PLANTS_DISTRIBUTION_FREQUENCY / 2)
+                  if ( (landMap[y][x] == 0 && landMap[y+1][x+1] == 0 && landMap[y+1][x] == 0 && landMap[y][x+1] == 0) && //is there land
+                      !(hillMap[y][x] != 0 || hillMap[y+1][x+1] != 0 || hillMap[y+1][x] != 0 || hillMap[y][x+1] != 0) && //is there no hills
+                      (rand() % (PLANTS_DISTRIBUTION_FREQUENCY / 2)) == 0 &&      //is there a randomizer "hit"
+                      distributionMap[y][x] > PLANTS_DISTRIBUTION_FREQUENCY / 2)  //is a seed value at these coordinates high enough to proceed
                     {
                       glm::mat4 model;
+                      //offset on XZ to place on a tile center
                       glm::vec3 translationVector(-HALF_WORLD_WIDTH_F + x + positionDistribution(randomizer) + 0.5f,
                                                   0.0f,
                                                   -HALF_WORLD_HEIGHT_F + y + positionDistribution(randomizer) + 0.5f);
@@ -83,7 +123,7 @@ void LandPlantsGenerator::setupMatrices(const map2D_f &landMap, const map2D_f &h
                       glm::vec3 scaleVector(scaleXandZ, sizeDistribution(randomizer), scaleXandZ); //uniform scaling for X and Z
                       model = glm::scale(model, scaleVector);
 
-                      size_t currentModelIndex = matrixCounter % matricesStorage.size();
+                      size_t currentModelIndex = matrixCounter % numberOfModels;
                       matricesStorage[currentModelIndex].emplace_back(std::move(model));
                       ++numInstanceVector[currentModelIndex];
                       ++instanceOffsetsVector[currentModelIndex];
@@ -92,6 +132,7 @@ void LandPlantsGenerator::setupMatrices(const map2D_f &landMap, const map2D_f &h
                 }
             }
           chunks.at(chunkCounter).setNumInstancesVector(numInstanceVector);
+          //numbers of each model occurencies should be reset for each subsequent chunk, but instance offsets keep accumulating
           for (unsigned int i = 0; i < numInstanceVector.size(); i++)
             numInstanceVector[i] = 0;
           ++chunkCounter;

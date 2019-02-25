@@ -1,4 +1,4 @@
-uniform bool  u_isGrass;
+uniform int   u_type;
 //u_grassPosDistrubution - define how much grass position offset is applied
 uniform float u_grassPosDistrubution;
 
@@ -10,6 +10,8 @@ const float MIN_HEIGHT_TO_ANIMATE = 0.38;
 //limit alpha transition for objects, the higher these values are - the faster transition ends
 const int   ALPHA_MULTIPLIER = 48;
 const int   GRASS_ALPHA_MULTIPLIER = 32;
+const int   PLANT_TYPE_STATIC = 0;
+const int   PLANT_TYPE_ANIMATED = 1;
 
 //v_AlphaValue - applied to the alpha component of a fragment to create smooth transition to the land surface
 out float v_AlphaValue;
@@ -20,7 +22,7 @@ and secondly it defines how much alpha component will take place for current fra
 */
 void ext_animateAndBlend(inout vec4 worldPosition)
 {
-    if (u_isGrass)
+    if (u_type == PLANT_TYPE_ANIMATED)
     {
         if (i_pos.y > MIN_HEIGHT_TO_ANIMATE)
         {

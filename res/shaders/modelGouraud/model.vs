@@ -54,7 +54,8 @@ void main()
 
     //diffuse
     v_DiffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0) * v_SunPositionAttenuation * (1.0 - u_ambientDay);
-    if (u_isGrass)
+
+    if (u_type == PLANT_TYPE_ANIMATED)
     {
         /*
         make grass diffuse lighting look more natural by calculating diffuse component for its reversed normal

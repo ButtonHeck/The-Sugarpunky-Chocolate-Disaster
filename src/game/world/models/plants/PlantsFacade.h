@@ -1,3 +1,23 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * PlantsFacade.h
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains declaration for PlantsFacade class and forward declaration for Frustum class
+ * @version 0.1.0
+ */
+
 #ifndef PLANTSFACADE_H
 #define PLANTSFACADE_H
 #include "util/typeAliases.h"
@@ -11,11 +31,14 @@
 
 class Frustum;
 
+/**
+ * @brief Facade for plants related code module.
+ * Responsible for delegating tasks to its member objects accordingly and preparing distribution map for generators
+ */
 class PlantsFacade
 {
 public:
   PlantsFacade(Shader& renderPhongShader, Shader& renderGouraudShader);
-  virtual ~PlantsFacade() = default;
   void setup(const map2D_f &landMap, const map2D_f &hillMap, const map2D_vec3 &hillsNormalMap);
   void prepareIndirectBufferData(const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);
   void updateIndirectBufferData();
@@ -33,9 +56,13 @@ public:
   void deserialize(std::ifstream& input);
 
 private:
-  void prepareDistributionMap(int cycles);
-  void prepareIndirectBufferData(PlantGenerator &generator, const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);
-  void updateIndirectBufferData(PlantGenerator& generator);
+  //define possible state for plants
+  enum PLANT_TYPE : int
+  {
+    PLANT_STATIC = 0,
+    PLANT_ANIMATED = 1
+  };
+  void prepareDistributionMap();
 
   map2D_i distributionMap;
   PlantsShader shaders;

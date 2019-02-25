@@ -17,7 +17,7 @@ uniform bool      u_shadow;
 uniform vec3      u_lightDir;
 uniform bool      u_shadowEnable;
 uniform bool      u_useLandBlending;
-uniform bool      u_isGrass;
+uniform int       u_type;
 uniform float     u_ambientDay;
 uniform float     u_ambientNight;
 uniform vec3      u_viewPosition;
@@ -25,6 +25,8 @@ uniform bool      u_isLowPoly;
 
 const float MAX_DESATURATING_VALUE = 0.5;
 const float SPECULAR_SHININESS = 4.0;
+const int   PLANT_TYPE_STATIC = 0;
+const int   PLANT_TYPE_ANIMATED = 1;
 
 @include shadowSampling.ifs
 @include desaturationFunc.ifs
@@ -40,7 +42,8 @@ void main()
     vec3 shadingNormal = normalize(v_Normal);
 
     float diffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0) * sunPositionAttenuation * (1.0 - u_ambientDay);
-    if (u_isGrass)
+
+    if (u_type == PLANT_TYPE_ANIMATED)
     {
         /*
         make grass diffuse lighting look more natural by calculating diffuse component for its reversed normal
