@@ -1,3 +1,23 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * Model.h
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definition for Model class
+ * @version 0.1.0
+ */
+
 #include "game/world/models/Model.h"
 
 TextureLoader* Model::textureLoader;
@@ -6,6 +26,12 @@ void Model::bindTextureLoader(TextureLoader &textureLoader)
   Model::textureLoader = &textureLoader;
 }
 
+/**
+ * @brief Model::Model model constructor
+ * @param path model's relative path to preset models directory
+ * @param isLowPoly low-poly indicator
+ * @param numRepetitions defines how many times in a row this model would be used by generator
+ */
 Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions)
   :
     isLowPoly(isLowPoly),
@@ -13,11 +39,14 @@ Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetition
     GPUDataManager(isLowPoly),
     renderer(GPUDataManager.getBasicGLBuffers(), GPUDataManager.getShadowDIBO())
 {
-  loadModel(MODELS_DIR + path);
-  setup();
+  load(MODELS_DIR + path);
 }
 
-void Model::loadModel(const std::string &path)
+/**
+ * @brief Model::load parses assimp scene data to internal data storage
+ * @param path model's relative path to preset models directory
+ */
+void Model::load(const std::string &path)
 {
   Assimp::Importer importer;
   const aiScene* scene = importer.ReadFile(path, aiProcess_CalcTangentSpace | aiProcess_FlipUVs | aiProcess_Triangulate);
@@ -26,91 +55,41 @@ void Model::loadModel(const std::string &path)
   directory = path.substr(0, path.find_last_of('/'));
   GLuint meshVertexIndexOffset = 0;
   processNode(scene->mRootNode, scene, meshVertexIndexOffset);
+  GPUDataManager.setupBuffers(vertices, indices);
 }
 
-void Model::processNode(aiNode *node, const aiScene* scene, GLuint& meshVertexIndexOffset)
+/**
+ * @brief Model::processNode parses particular mesh node
+ * @param node current node to process
+ * @param scene model's scene
+ * @param meshVertexIndexOffset offset applied for node vertices in the index buffer
+ */
+void Model::processNode(const aiNode *node, const aiScene* scene, GLuint& meshVertexIndexOffset)
 {
+  static unsigned int diffuseSamplerIndex = 0, specularSamplerIndex = 0;
   for (unsigned int meshIndex = 0; meshIndex < node->mNumMeshes; meshIndex++)
     {
-      aiMesh* mesh = scene->mMeshes[node->mMeshes[meshIndex]];
-      Mesh processedMesh = processMesh(mesh, scene, meshVertexIndexOffset);
-      GLuint currentMeshNumVertices = processedMesh.vertices.size();
-      meshes.emplace_back(std::move(processedMesh));
-      meshVertexIndexOffset += currentMeshNumVertices;
+      const aiMesh* mesh = scene->mMeshes[node->mMeshes[meshIndex]];
+      Mesh processedMesh = Mesh::generate(mesh, diffuseSamplerIndex, specularSamplerIndex, meshVertexIndexOffset);
+      const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+      loadMaterialTextures(material, aiTextureType_DIFFUSE, "u_textureDiffuse", diffuseSamplerIndex);
+      loadMaterialTextures(material, aiTextureType_SPECULAR, "u_textureSpecular", specularSamplerIndex);
+      vertices.insert(vertices.end(), processedMesh.getVertices().begin(), processedMesh.getVertices().end());
+      indices.insert(indices.end(), processedMesh.getIndices().begin(), processedMesh.getIndices().end());
+      meshVertexIndexOffset += processedMesh.getVertices().size();
     }
   for (unsigned int childNodeIndex = 0; childNodeIndex < node->mNumChildren; childNodeIndex++)
     processNode(node->mChildren[childNodeIndex], scene, meshVertexIndexOffset);
 }
 
-Mesh Model::processMesh(aiMesh *mesh, const aiScene* scene, GLuint meshVertexIndexOffset)
-{
-  static unsigned int diffuseSamplerIndex = 0, specularSamplerIndex = 0;
-  std::vector<Vertex> vertices;
-  std::vector<GLuint> indices;
-
-  for (unsigned int vertexIndex = 0; vertexIndex < mesh->mNumVertices; vertexIndex++)
-    {
-      Vertex vertex;
-      glm::vec3 attributeVector;
-
-      //position
-      attributeVector.x = mesh->mVertices[vertexIndex].x;
-      attributeVector.y = mesh->mVertices[vertexIndex].y;
-      attributeVector.z = mesh->mVertices[vertexIndex].z;
-      vertex.Position = attributeVector;
-
-      //normals
-      attributeVector.x = mesh->mNormals[vertexIndex].x;
-      attributeVector.y = mesh->mNormals[vertexIndex].y;
-      attributeVector.z = mesh->mNormals[vertexIndex].z;
-      vertex.Normal = attributeVector;
-
-      //Texture coordinates (if any)
-      if (mesh->mTextureCoords[0])
-        {
-          glm::vec2 textureCoordinates;
-          textureCoordinates.x = mesh->mTextureCoords[0][vertexIndex].x;
-          textureCoordinates.y = mesh->mTextureCoords[0][vertexIndex].y;
-          vertex.TexCoords = textureCoordinates;
-        }
-      else
-        vertex.TexCoords = glm::vec2(0.0f);
-
-      //tangent (not used yet)
-      attributeVector.x = mesh->mTangents[vertexIndex].x;
-      attributeVector.y = mesh->mTangents[vertexIndex].y;
-      attributeVector.z = mesh->mTangents[vertexIndex].z;
-      vertex.Tangent = attributeVector;
-
-      //bitangent (not used yet)
-      attributeVector.x = mesh->mBitangents[vertexIndex].x;
-      attributeVector.y = mesh->mBitangents[vertexIndex].y;
-      attributeVector.z = mesh->mBitangents[vertexIndex].z;
-      vertex.Bitangent = attributeVector;
-
-      //texture type indices (used as indices in arrays of bindless texture handlers in a shader)
-      vertex.TexIndices = glm::uvec2(diffuseSamplerIndex, specularSamplerIndex);
-
-      vertices.emplace_back(std::move(vertex));
-    }
-
-  //process indices
-  for (unsigned int faceIndex = 0; faceIndex < mesh->mNumFaces; faceIndex++)
-    {
-      aiFace face = mesh->mFaces[faceIndex];
-      for (unsigned int eboIndex = 0; eboIndex < face.mNumIndices; eboIndex++)
-        indices.emplace_back(std::move(face.mIndices[eboIndex] + meshVertexIndexOffset));
-    }
-
-  //process materials
-  aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-  loadMaterialTextures(material, aiTextureType_DIFFUSE, "u_textureDiffuse", diffuseSamplerIndex);
-  loadMaterialTextures(material, aiTextureType_SPECULAR, "u_textureSpecular", specularSamplerIndex);
-
-  return Mesh(vertices, indices);
-}
-
-void Model::loadMaterialTextures(aiMaterial *material,
+/**
+ * @brief Model::loadMaterialTextures load texture from given material and add it to bindless texture manager
+ * @param material material to load texture from
+ * @param type texture type
+ * @param uniformName glsl uniform name for the texture
+ * @param samplerIndex index for glsl sampler array in a shader
+ */
+void Model::loadMaterialTextures(const aiMaterial *material,
                                  aiTextureType type,
                                  const std::string& uniformName,
                                  unsigned int& samplerIndex)
@@ -129,20 +108,13 @@ void Model::loadMaterialTextures(aiMaterial *material,
     }
 }
 
-void Model::setup()
-{
-  for (Mesh& mesh : meshes)
-    {
-      vertices.insert(vertices.end(), mesh.vertices.begin(), mesh.vertices.end());
-      indices.insert(indices.end(), mesh.indices.begin(), mesh.indices.end());
-    }
-  GPUDataManager.setupBuffers(vertices, indices);
-}
-
+/**
+ * @brief Model::draw delegates a draw call to renderer
+ * @param isShadow define whether depthmap or plain on-screen rendering mode is on
+ */
 void Model::draw(bool isShadow)
 {
-  GLsizei primitiveCount = GPUDataManager.getPrimitiveCount(isShadow);
-  renderer.render(isShadow, primitiveCount);
+  renderer.render(isShadow, GPUDataManager.getPrimitiveCount(isShadow));
 }
 
 void Model::drawOneInstance()
@@ -150,6 +122,16 @@ void Model::drawOneInstance()
   renderer.renderOneInstance(indices.size());
 }
 
+/**
+ * @brief Model::prepareIndirectBufferData delegates indirect buffer data preparation to model's data manager
+ * @param chunks model's chunks storage
+ * @param modelIndex model's index in a chunks storage
+ * @param cameraPositionXZ position of the camera on the XZ plane
+ * @param frustum frustum to calculate visibility
+ * @param loadingDistance rendering distance for full-res models
+ * @param loadingDistanceShadow rendering distance for models' shadows
+ * @param loadingDistanceLowPoly rendering distance for low-poly models
+ */
 void Model::prepareIndirectBufferData(const std::vector<ModelChunk>& chunks,
                                       unsigned int modelIndex,
                                       const glm::vec2& cameraPositionXZ,
@@ -167,11 +149,19 @@ void Model::prepareIndirectBufferData(const std::vector<ModelChunk>& chunks,
                                            loadingDistanceLowPoly);
 }
 
+/**
+ * @brief Model::updateIndirectBufferData delegates indirect buffer data GPU update to model's data manager
+ */
 void Model::updateIndirectBufferData()
 {
   GPUDataManager.updateIndirectBufferData();
 }
 
+/**
+ * @brief Model::loadModelInstances delegates model's instances data loading to data manager
+ * @param instanceMatrices instance matrices storage
+ * @param numInstances number of this model instances
+ */
 void Model::loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances)
 {
   GPUDataManager.loadModelInstances(instanceMatrices, numInstances);
@@ -180,9 +170,4 @@ void Model::loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, u
 unsigned int Model::getRepeatCount() const
 {
   return numRepetitions;
-}
-
-void Model::cleanup()
-{
-  GPUDataManager.cleanup();
 }

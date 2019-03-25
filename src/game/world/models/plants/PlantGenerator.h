@@ -36,7 +36,6 @@ class PlantGenerator
 {
 public:
   PlantGenerator();
-  virtual ~PlantGenerator();
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
   void prepareIndirectBufferData(const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum);

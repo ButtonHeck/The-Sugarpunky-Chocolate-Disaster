@@ -33,14 +33,6 @@ PlantGenerator::PlantGenerator()
     }
 }
 
-PlantGenerator::~PlantGenerator()
-{
-  for (Model& model : models)
-    model.cleanup();
-  for (Model& model : lowPolyModels)
-    model.cleanup();
-}
-
 /**
  * @brief fills model chunks storage with empty chunks to work during next stages
  */

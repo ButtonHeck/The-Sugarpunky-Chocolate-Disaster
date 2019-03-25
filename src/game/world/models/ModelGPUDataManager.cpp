@@ -6,25 +6,25 @@ ModelGPUDataManager::ModelGPUDataManager(bool isParentModelLowPoly)
     basicGLBuffers(VAO | VBO | INSTANCE_VBO | EBO)
 {}
 
-void ModelGPUDataManager::setupBuffers(const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices)
+void ModelGPUDataManager::setupBuffers(const std::vector<Mesh::Vertex> &vertices, const std::vector<GLuint> &indices)
 {
   indicesSize = indices.size();
   basicGLBuffers.bind(VAO | VBO | EBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(Mesh::Vertex) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesSize, &indices[0], GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)0);
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, Normal));
   glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, TexCoords));
   glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, Tangent));
   glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+  glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, Bitangent));
   glEnableVertexAttribArray(9);
   //intentionally set GL_FLOAT although the data is a pair of unsigned integers
-  glVertexAttribPointer(9, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexIndices));
+  glVertexAttribPointer(9, 2, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, TexIndices));
 
   if (basicGLBuffers.get(DIBO) == 0)
     {
@@ -137,12 +137,6 @@ void ModelGPUDataManager::addIndirectBufferData(int distanceToChunk, GLuint indi
       indirectTokensShadow.insert(std::pair<int,IndirectBufferToken>(distanceToChunk, IndirectBufferToken(indicesSize, numInstances, instanceOffset)));
       ++drawIndirectCommandPrimCountShadow;
     }
-}
-
-void ModelGPUDataManager::cleanup()
-{
-  basicGLBuffers.deleteBuffers();
-  shadowDIBO.deleteBuffers();
 }
 
 GLsizei ModelGPUDataManager::getPrimitiveCount(bool isShadow) const

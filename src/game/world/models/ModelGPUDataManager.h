@@ -10,7 +10,7 @@ class ModelGPUDataManager
 {
 public:
   ModelGPUDataManager(bool isParentModelLowPoly);
-  void setupBuffers(const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices);
+  void setupBuffers(const std::vector<Mesh::Vertex> &vertices, const std::vector<GLuint> &indices);
   void prepareIndirectBufferData(const std::vector<ModelChunk>& chunks,
                                  unsigned int modelIndex,
                                  const glm::vec2& cameraPositionXZ,
@@ -20,7 +20,6 @@ public:
                                  float loadingDistanceLowPoly);
   void updateIndirectBufferData();
   void loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances);
-  void cleanup();
   GLsizei getPrimitiveCount(bool isShadow) const;
   BufferCollection &getBasicGLBuffers();
   BufferCollection &getShadowDIBO();
