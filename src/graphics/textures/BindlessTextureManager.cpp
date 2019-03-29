@@ -40,7 +40,10 @@ void BindlessTextureManager::makeAllNonResident()
   for (unsigned int textureTypeIndex = 0; textureTypeIndex < textures.size(); textureTypeIndex++)
     {
       for (BindlessTexture& texture : textures[textureTypeIndex])
-        glMakeTextureHandleNonResidentARB(texture.handle);
+        {
+          glMakeTextureHandleNonResidentARB(texture.handle);
+          glDeleteTextures(1, &texture.id);
+        }
     }
 }
 
