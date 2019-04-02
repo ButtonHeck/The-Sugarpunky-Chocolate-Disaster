@@ -131,22 +131,18 @@ glm::vec3 Frustum::kramerIntersection(const glm::vec4& frontOrBack, const glm::v
 
 bool Frustum::isInsideXZ(float x, float z, float radius) const
 {
-  for (unsigned int planeIndex = 0; planeIndex <= FRUSTUM_FRONT; planeIndex++)
-    {
-      if (planes[planeIndex].x * x + planes[planeIndex].z * z + planes[planeIndex].w <= -radius)
-        return false;
-    }
-  return true;
+  return std::all_of(planes.begin(), planes.begin() + FRUSTUM_BOTTOM, [&](const glm::vec4& plane)
+  {
+      return plane.x * x + plane.z * z + plane.w > -radius;
+    });
 }
 
 bool Frustum::isInside(float x, float y, float z, float radius) const
 {
-  for (unsigned int planeIndex = 0; planeIndex < NUMBER_OF_PLANES; planeIndex++)
-    {
-      if (planes[planeIndex].x * x + planes[planeIndex].y * y + planes[planeIndex].z * z + planes[planeIndex].w <= -radius)
-        return false;
-    }
-  return true;
+  return std::all_of(planes.begin(), planes.end(), [&](const glm::vec4& plane)
+  {
+      return plane.x * x + plane.y * y + plane.z * z + plane.w > -radius;
+    });
 }
 
 const glm::vec4& Frustum::getPlane(FRUSTUM_PLANE plane) const
