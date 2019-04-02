@@ -86,7 +86,6 @@ void HillTreesGenerator::setupMatrices(const map2D_f &hillMap, const map2D_i &di
 
   size_t numberOfModels = models.size();
   std::vector<unsigned int> instanceOffsetsVector(numberOfModels, 0);
-  std::vector<unsigned int> numInstancesVector(numberOfModels, 0);
 
   //used for circular indexing of a particular model/chunk, repeat counter used for models with repetitions >1
   unsigned int matrixCounter = 0, chunkCounter = 0, repeatCounter = 0;
@@ -96,6 +95,7 @@ void HillTreesGenerator::setupMatrices(const map2D_f &hillMap, const map2D_i &di
     {
       for (unsigned int startX = 0; startX < WORLD_WIDTH; startX += CHUNK_SIZE)
         {
+          std::vector<unsigned int> numInstancesVector(numberOfModels, 0);
           //need this to be set before allocation on each subsequent chunk as it depends on the previous ones
           chunks.at(chunkCounter).setInstanceOffsetsVector(instanceOffsetsVector);
           for (unsigned int y = startY; y < startY + CHUNK_SIZE; y++)
@@ -188,9 +188,6 @@ void HillTreesGenerator::setupMatrices(const map2D_f &hillMap, const map2D_i &di
                 }
             }
           chunks.at(chunkCounter).setNumInstancesVector(numInstancesVector);
-          //numbers of each model occurencies should be reset for each subsequent chunk, but instance offsets keep accumulating
-          for (unsigned int i = 0; i < numInstancesVector.size(); i++)
-            numInstancesVector[i] = 0;
           ++chunkCounter;
         }
     }
