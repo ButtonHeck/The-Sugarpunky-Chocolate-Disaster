@@ -86,14 +86,8 @@ void LandPlantsGenerator::setupMatrices(const map2D_f &landMap, const map2D_f &h
   std::uniform_real_distribution<float> positionDistribution(MIN_POSITION_OFFSET, MAX_POSITION_OFFSET);
 
   size_t numberOfModels = models.size();
-  std::vector<unsigned int> instanceOffsetsVector(numberOfModels);
-  std::vector<unsigned int> numInstanceVector(numberOfModels);
-  for (unsigned int modelIndex = 0; modelIndex < numberOfModels; modelIndex++)
-    {
-      //initially there are no instances and thus no offsets in each chunk
-      instanceOffsetsVector.emplace_back(0);
-      numInstanceVector.emplace_back(0);
-    }
+  std::vector<unsigned int> instanceOffsetsVector(numberOfModels, 0);
+  std::vector<unsigned int> numInstanceVector(numberOfModels, 0);
 
   //used for circular indexing of a particular model/chunk
   unsigned int matrixCounter = 0, chunkCounter = 0;
