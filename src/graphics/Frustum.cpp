@@ -131,7 +131,7 @@ glm::vec3 Frustum::kramerIntersection(const glm::vec4& frontOrBack, const glm::v
 
 bool Frustum::isInsideXZ(float x, float z, float radius) const
 {
-  for (unsigned int planeIndex = 0; planeIndex < NUMBER_OF_PLANES; planeIndex++)
+  for (unsigned int planeIndex = 0; planeIndex <= FRUSTUM_FRONT; planeIndex++)
     {
       if (planes[planeIndex].x * x + planes[planeIndex].z * z + planes[planeIndex].w <= -radius)
         return false;

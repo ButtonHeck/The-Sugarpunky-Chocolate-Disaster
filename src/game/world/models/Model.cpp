@@ -1,6 +1,6 @@
 /*
  * Copyright 2019 Ilya Malgin
- * Model.h
+ * Model.cpp
  * This file is part of The Sugarpunky Chocolate Disaster project
  *
  * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
