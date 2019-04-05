@@ -42,41 +42,32 @@ void ModelGPUDataManager::setupBuffers(const std::vector<Mesh::Vertex> &vertices
   BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
-void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<ModelChunk> &chunks,
+void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<ModelChunk, unsigned int>> &visibleChunks,
                                                     unsigned int modelIndex,
-                                                    const glm::vec2 &cameraPositionXZ,
-                                                    const Frustum &frustum,
                                                     float loadingDistance,
-                                                    float loadingDistanceShadow,
-                                                    float loadingDistanceLowPoly)
+                                                    float loadingDistanceShadow)
 {
   BENCHMARK("(ST)Model: prepare indirect buffer", true);
   drawIndirectCommandPrimCount = drawIndirectCommandPrimCountShadow = 0;
   indirectTokens.clear();
   indirectTokensShadow.clear();
-  for (unsigned int chunkIndex = 0; chunkIndex < chunks.size(); chunkIndex++)
+  for (unsigned int chunkIndex = 0; chunkIndex < visibleChunks.size(); chunkIndex++)
     {
-      glm::vec2 chunkMidPoint = chunks[chunkIndex].getMidPoint();
-      glm::vec2 directionToChunkCenter = chunkMidPoint - cameraPositionXZ;
-      unsigned int distanceToChunk = glm::length2(directionToChunkCenter);
-
-      //if a chunk is farther than the low-poly render distance - just discard it
-      if (distanceToChunk >= loadingDistanceLowPoly)
-        continue;
+      const ModelChunk& chunk = visibleChunks[chunkIndex].first;
+      unsigned int numInstancesInChunk = chunk.getNumInstances(modelIndex);
+      unsigned int instanceOffsetInChunk = chunk.getInstanceOffset(modelIndex);
+      unsigned int distanceToChunk = visibleChunks[chunkIndex].second;
 
       if ((!isLowPoly && distanceToChunk < loadingDistance) || (isLowPoly && distanceToChunk >= loadingDistance))
         {
-          if (chunks[chunkIndex].isInsideFrustum(frustum))
-            {
-              addIndirectBufferData(distanceToChunk, indicesSize, chunks[chunkIndex].getNumInstances(modelIndex), chunks[chunkIndex].getInstanceOffset(modelIndex), false);
-              if (distanceToChunk < loadingDistanceShadow)
-                addIndirectBufferData(distanceToChunk, indicesSize, chunks[chunkIndex].getNumInstances(modelIndex), chunks[chunkIndex].getInstanceOffset(modelIndex), true);
-            }
+          addIndirectBufferData(distanceToChunk, indicesSize, numInstancesInChunk, instanceOffsetInChunk, false);
+          if (distanceToChunk < loadingDistanceShadow)
+            addIndirectBufferData(distanceToChunk, indicesSize, numInstancesInChunk, instanceOffsetInChunk, true);
         }
     }
 
   GLuint dataOffset = 0;
-  for (auto& token : indirectTokens)
+  for (const auto& token : indirectTokens)
     {
         multiDrawIndirectData[dataOffset++] = token.second.indicesCount;
         multiDrawIndirectData[dataOffset++] = token.second.numInstances;
@@ -85,7 +76,7 @@ void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<ModelChunk
         multiDrawIndirectData[dataOffset++] = token.second.instanceOffset;
     }
   dataOffset = 0;
-  for (auto& token : indirectTokensShadow)
+  for (const auto& token : indirectTokensShadow)
     {
         multiDrawIndirectDataShadow[dataOffset++] = token.second.indicesCount;
         multiDrawIndirectDataShadow[dataOffset++] = token.second.numInstances;

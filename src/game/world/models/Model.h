@@ -43,13 +43,10 @@ public:
   static void bindTextureLoader(TextureLoader& textureLoader);
   void draw(bool isShadow);
   void drawOneInstance();
-  void prepareIndirectBufferData(const std::vector<ModelChunk> &chunks,
+  void prepareIndirectBufferData(const std::vector<std::pair<ModelChunk, unsigned int> > &visibleChunks,
                                  unsigned int modelIndex,
-                                 const glm::vec2& cameraPositionXZ,
-                                 const Frustum& frustum,
                                  float loadingDistance,
-                                 float loadingDistanceShadow,
-                                 float loadingDistanceLowPoly);
+                                 float loadingDistanceShadow);
   void updateIndirectBufferData();
   void loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances);
   unsigned int getRepeatCount() const;

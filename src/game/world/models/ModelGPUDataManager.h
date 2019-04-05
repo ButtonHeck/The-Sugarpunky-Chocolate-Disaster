@@ -11,13 +11,10 @@ class ModelGPUDataManager
 public:
   ModelGPUDataManager(bool isParentModelLowPoly);
   void setupBuffers(const std::vector<Mesh::Vertex> &vertices, const std::vector<GLuint> &indices);
-  void prepareIndirectBufferData(const std::vector<ModelChunk>& chunks,
+  void prepareIndirectBufferData(const std::vector<std::pair<ModelChunk, unsigned int> > &chunks,
                                  unsigned int modelIndex,
-                                 const glm::vec2& cameraPositionXZ,
-                                 const Frustum &frustum,
                                  float loadingDistance,
-                                 float loadingDistanceShadow,
-                                 float loadingDistanceLowPoly);
+                                 float loadingDistanceShadow);
   void updateIndirectBufferData();
   void loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances);
   GLsizei getPrimitiveCount(bool isShadow) const;

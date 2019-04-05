@@ -308,7 +308,7 @@ void Game::setupThreads()
               BENCHMARK("(ST)Model: update meshes DIBs data", true);
               float cameraOnMapX = glm::clamp(camera.getPosition().x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F);
               float cameraOnMapZ = glm::clamp(camera.getPosition().z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F);
-              glm::vec2 cameraPositionXZ = glm::vec2(cameraOnMapX, cameraOnMapZ);
+              glm::vec2 cameraPositionXZ(cameraOnMapX, cameraOnMapZ);
               scene.getPlantsFacade().prepareIndirectBufferData(cameraPositionXZ, viewFrustum);
               modelsIndirectBufferPrepared = true;
               modelsIndirectBufferNeedUpdate = false;

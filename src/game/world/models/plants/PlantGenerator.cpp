@@ -194,18 +194,27 @@ void PlantGenerator::deserialize(std::ifstream &input)
  */
 void PlantGenerator::prepareIndirectBufferData(const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum)
 {
+  //firstly precalculate only those chunks that are visible in a view frustum and close enough to a camera
+  std::vector<std::pair<ModelChunk, unsigned int>> visibleChunks;
+  for (ModelChunk& chunk : chunks)
+    {
+      if (chunk.isInsideFrustum(viewFrustum))
+        {
+          glm::vec2 directionToChunkCenter = chunk.getMidPoint() - cameraPositionXZ;
+          unsigned int distanceToChunk = glm::length2(directionToChunkCenter);
+
+          //if a chunk is farther than the low-poly render distance - just discard it
+          if (distanceToChunk < LOADING_DISTANCE_UNITS_LOWPOLY_SQUARE)
+            visibleChunks.emplace_back(chunk, distanceToChunk);
+        }
+    }
+
   for (unsigned int modelIndex = 0; modelIndex < models.size(); modelIndex++)
     {
       Model& model = models[modelIndex];
-      model.prepareIndirectBufferData(chunks, modelIndex, cameraPositionXZ, viewFrustum,
-                                      LOADING_DISTANCE_UNITS_SQUARE,
-                                      LOADING_DISTANCE_UNITS_SHADOW_SQUARE,
-                                      LOADING_DISTANCE_UNITS_LOWPOLY_SQUARE);
+      model.prepareIndirectBufferData(visibleChunks, modelIndex, LOADING_DISTANCE_UNITS_SQUARE, LOADING_DISTANCE_UNITS_SHADOW_SQUARE);
       Model& lowPolyModel = lowPolyModels[modelIndex];
-      lowPolyModel.prepareIndirectBufferData(chunks, modelIndex, cameraPositionXZ, viewFrustum,
-                                             LOADING_DISTANCE_UNITS_SQUARE,
-                                             LOADING_DISTANCE_UNITS_SHADOW_SQUARE,
-                                             LOADING_DISTANCE_UNITS_LOWPOLY_SQUARE);
+      lowPolyModel.prepareIndirectBufferData(visibleChunks, modelIndex, LOADING_DISTANCE_UNITS_SQUARE, LOADING_DISTANCE_UNITS_SHADOW_SQUARE);
     }
 }
 

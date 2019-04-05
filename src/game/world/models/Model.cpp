@@ -124,29 +124,17 @@ void Model::drawOneInstance()
 
 /**
  * @brief Model::prepareIndirectBufferData delegates indirect buffer data preparation to model's data manager
- * @param chunks model's chunks storage
+ * @param visibleChunks model's chunks storage with corresponding distance from the camera position
  * @param modelIndex model's index in a chunks storage
- * @param cameraPositionXZ position of the camera on the XZ plane
- * @param frustum frustum to calculate visibility
  * @param loadingDistance rendering distance for full-res models
  * @param loadingDistanceShadow rendering distance for models' shadows
- * @param loadingDistanceLowPoly rendering distance for low-poly models
  */
-void Model::prepareIndirectBufferData(const std::vector<ModelChunk>& chunks,
+void Model::prepareIndirectBufferData(const std::vector<std::pair<ModelChunk, unsigned int>>& visibleChunks,
                                       unsigned int modelIndex,
-                                      const glm::vec2& cameraPositionXZ,
-                                      const Frustum &frustum,
                                       float loadingDistance,
-                                      float loadingDistanceShadow,
-                                      float loadingDistanceLowPoly)
+                                      float loadingDistanceShadow)
 {
-  GPUDataManager.prepareIndirectBufferData(chunks,
-                                           modelIndex,
-                                           cameraPositionXZ,
-                                           frustum,
-                                           loadingDistance,
-                                           loadingDistanceShadow,
-                                           loadingDistanceLowPoly);
+  GPUDataManager.prepareIndirectBufferData(visibleChunks, modelIndex, loadingDistance, loadingDistanceShadow);
 }
 
 /**
