@@ -18,6 +18,7 @@
 #else
 #define BENCHMARK(dont, care) //noop
 #endif
+#define FORCE_BENCHMARK(benchmarkName, perFrame) BenchmarkTimer b(benchmarkName, perFrame);
 
 class BenchmarkTimer
 {

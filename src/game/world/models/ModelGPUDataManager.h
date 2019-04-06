@@ -39,19 +39,13 @@ private:
   //screen rendering related variables
   BufferCollection basicGLBuffers;
   GLuint multiDrawIndirectData[NUM_CHUNKS * INDIRECT_DRAW_COMMAND_ARGUMENTS] = {0};
-  /*
-  a multimap of approximated "distance-to-chunk" as a key and IndirectBufferToken as a value
-  has been chosen because after all necessary insertions we have indirect draw commands
-  (each of which is an instance of the IndirectBufferToken class) sorted in the ascending order,
-  thus we have roughly front to back order of model instances rendering
-  */
-  std::multimap<int, IndirectBufferToken> indirectTokens;
+  std::vector<std::pair<int, IndirectBufferToken>> indirectTokens;
   GLsizei drawIndirectCommandPrimCount = 0;
 
   //shadow rendering related variables
   BufferCollection shadowDIBO;
   GLuint multiDrawIndirectDataShadow[NUM_CHUNKS * INDIRECT_DRAW_COMMAND_ARGUMENTS] = {0};
-  std::multimap<int, IndirectBufferToken> indirectTokensShadow;
+  std::vector<std::pair<int, IndirectBufferToken>> indirectTokensShadow;
   GLsizei drawIndirectCommandPrimCountShadow = 0;
 };
 

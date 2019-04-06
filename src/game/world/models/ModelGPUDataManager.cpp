@@ -48,18 +48,19 @@ void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<
                                                     float loadingDistanceShadow)
 {
   BENCHMARK("(ST)Model: prepare indirect buffer", true);
-  drawIndirectCommandPrimCount = drawIndirectCommandPrimCountShadow = 0;
   indirectTokens.clear();
+  indirectTokens.reserve(visibleChunks.size());
   indirectTokensShadow.clear();
+  indirectTokensShadow.reserve(visibleChunks.size());
   for (unsigned int chunkIndex = 0; chunkIndex < visibleChunks.size(); chunkIndex++)
     {
       const ModelChunk& chunk = visibleChunks[chunkIndex].first;
-      unsigned int numInstancesInChunk = chunk.getNumInstances(modelIndex);
-      unsigned int instanceOffsetInChunk = chunk.getInstanceOffset(modelIndex);
       unsigned int distanceToChunk = visibleChunks[chunkIndex].second;
 
       if ((!isLowPoly && distanceToChunk < loadingDistance) || (isLowPoly && distanceToChunk >= loadingDistance))
         {
+          unsigned int numInstancesInChunk = chunk.getNumInstances(modelIndex);
+          unsigned int instanceOffsetInChunk = chunk.getInstanceOffset(modelIndex);
           addIndirectBufferData(distanceToChunk, indicesSize, numInstancesInChunk, instanceOffsetInChunk, false);
           if (distanceToChunk < loadingDistanceShadow)
             addIndirectBufferData(distanceToChunk, indicesSize, numInstancesInChunk, instanceOffsetInChunk, true);
@@ -75,6 +76,8 @@ void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<
         multiDrawIndirectData[dataOffset++] = token.second.BASE_VERTEX;
         multiDrawIndirectData[dataOffset++] = token.second.instanceOffset;
     }
+  drawIndirectCommandPrimCount = indirectTokens.size();
+
   dataOffset = 0;
   for (const auto& token : indirectTokensShadow)
     {
@@ -84,6 +87,7 @@ void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<
         multiDrawIndirectDataShadow[dataOffset++] = token.second.BASE_VERTEX;
         multiDrawIndirectDataShadow[dataOffset++] = token.second.instanceOffset;
     }
+  drawIndirectCommandPrimCountShadow = indirectTokensShadow.size();
 }
 
 void ModelGPUDataManager::updateIndirectBufferData()
@@ -119,15 +123,9 @@ void ModelGPUDataManager::loadModelInstances(const std::vector<glm::mat4> &insta
 void ModelGPUDataManager::addIndirectBufferData(int distanceToChunk, GLuint indicesSize, GLuint numInstances, GLuint instanceOffset, bool isShadow)
 {
   if (!isShadow)
-    {
-      indirectTokens.insert(std::pair<int,IndirectBufferToken>(distanceToChunk, IndirectBufferToken(indicesSize, numInstances, instanceOffset)));
-      ++drawIndirectCommandPrimCount;
-    }
+    indirectTokens.emplace_back(distanceToChunk, IndirectBufferToken(indicesSize, numInstances, instanceOffset));
   else
-    {
-      indirectTokensShadow.insert(std::pair<int,IndirectBufferToken>(distanceToChunk, IndirectBufferToken(indicesSize, numInstances, instanceOffset)));
-      ++drawIndirectCommandPrimCountShadow;
-    }
+    indirectTokensShadow.emplace_back(distanceToChunk, IndirectBufferToken(indicesSize, numInstances, instanceOffset));
 }
 
 GLsizei ModelGPUDataManager::getPrimitiveCount(bool isShadow) const
