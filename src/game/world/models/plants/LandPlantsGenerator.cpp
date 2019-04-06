@@ -68,7 +68,7 @@ LandPlantsGenerator::LandPlantsGenerator()
  */
 void LandPlantsGenerator::setup(const map2D_f &landMap, const map2D_f &hillMap, const map2D_i &distributionMap)
 {
-  initializeModelChunks();
+  initializeModelChunks(landMap);
   setupMatrices(landMap, hillMap, distributionMap);
 }
 

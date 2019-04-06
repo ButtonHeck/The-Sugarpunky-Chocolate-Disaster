@@ -129,14 +129,6 @@ glm::vec3 Frustum::kramerIntersection(const glm::vec4& frontOrBack, const glm::v
   return intersectionPoint;
 }
 
-bool Frustum::isInsideXZ(float x, float z, float radius) const
-{
-  return std::all_of(planes.begin(), planes.begin() + FRUSTUM_BOTTOM, [&](const glm::vec4& plane)
-  {
-      return plane.x * x + plane.z * z + plane.w > -radius;
-    });
-}
-
 bool Frustum::isInside(float x, float y, float z, float radius) const
 {
   return std::all_of(planes.begin(), planes.end(), [&](const glm::vec4& plane)

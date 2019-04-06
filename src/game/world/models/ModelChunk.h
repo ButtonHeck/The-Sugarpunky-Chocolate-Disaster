@@ -31,7 +31,7 @@
 class ModelChunk : public Chunk
 {
 public:
-  ModelChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom);
+  ModelChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom, float height);
   bool isInsideFrustum(const Frustum& frustum) const;
 
   //instance offsets (one unsigned int per model)

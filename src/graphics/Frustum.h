@@ -29,7 +29,6 @@ public:
   float getMinCoordX() const;
   float getMaxCoordZ() const;
   float getMinCoordZ() const;
-  bool isInsideXZ(float x, float z, float radius) const;
   bool isInside(float x, float y, float z, float radius) const;
   const glm::vec4 &getPlane(FRUSTUM_PLANE plane) const;
 

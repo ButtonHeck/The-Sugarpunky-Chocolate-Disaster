@@ -44,7 +44,7 @@ public:
   std::vector<ModelChunk>& getChunks();
 
 protected:
-  void initializeModelChunks();
+  void initializeModelChunks(const map2D_f &map);
   void loadMatrices(const map2D_mat4& newMatrices);
   map2D_mat4 substituteMatricesStorage();
 

@@ -20,9 +20,9 @@
 
 #include "game/world/models/ModelChunk.h"
 
-ModelChunk::ModelChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom)
+ModelChunk::ModelChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom, float height)
   :
-    Chunk(left, right, top, bottom)
+    Chunk(left, right, top, bottom, height)
 {}
 
 /**
@@ -33,8 +33,8 @@ ModelChunk::ModelChunk(unsigned int left, unsigned int right, unsigned int top, 
 bool ModelChunk::isInsideFrustum(const Frustum &frustum) const
 {
   BENCHMARK("ModelChunk: isInsideFrustum", true);
-  return frustum.isInsideXZ(midPointX - HALF_CHUNK_SIZE, midPointZ + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-         frustum.isInsideXZ(midPointX + HALF_CHUNK_SIZE, midPointZ + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-         frustum.isInsideXZ(midPointX + HALF_CHUNK_SIZE, midPointZ - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-         frustum.isInsideXZ(midPointX - HALF_CHUNK_SIZE, midPointZ - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET);
+  return frustum.isInside(midPointX - HALF_CHUNK_SIZE, height, midPointZ + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
+         frustum.isInside(midPointX + HALF_CHUNK_SIZE, height, midPointZ + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
+         frustum.isInside(midPointX + HALF_CHUNK_SIZE, height, midPointZ - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
+         frustum.isInside(midPointX - HALF_CHUNK_SIZE, height, midPointZ - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET);
 }

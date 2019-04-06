@@ -35,8 +35,9 @@ PlantGenerator::PlantGenerator()
 
 /**
  * @brief fills model chunks storage with empty chunks to work during next stages
+ * @param map terrain map used to define height values of the chunk coordinates
  */
-void PlantGenerator::initializeModelChunks()
+void PlantGenerator::initializeModelChunks(const map2D_f& map)
 {
   //in case of reinitialization make sure to clear previous content
   chunks.clear();
@@ -44,7 +45,7 @@ void PlantGenerator::initializeModelChunks()
   for (unsigned int y = 0; y < WORLD_HEIGHT; y += CHUNK_SIZE)
     {
       for (unsigned int x = 0; x < WORLD_WIDTH; x += CHUNK_SIZE)
-        chunks.emplace_back(x, x + CHUNK_SIZE, y, y + CHUNK_SIZE);
+        chunks.emplace_back(x, x + CHUNK_SIZE, y, y + CHUNK_SIZE, glm::max(map[y][x], 0.0f));
     }
 }
 
