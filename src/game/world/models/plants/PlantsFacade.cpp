@@ -44,6 +44,15 @@ void PlantsFacade::setup(const map2D_f &landMap, const map2D_f &hillMap, const m
 }
 
 /**
+ * @brief delegates chunk update call to the hill generator (necessary when loading terrain from file)
+ * @param hillMap new map of the hills
+ */
+void PlantsFacade::updateHillModelChunks(const map2D_f &hillMap)
+{
+  hillTreesGenerator.updateModelChunks(hillMap);
+}
+
+/**
  * @brief for each generator's models delegates command to prepare its indirect buffer data on CPU side
  * @param cameraPositionXZ X and Z coordinates of a current view position
  * @param viewFrustum frustum to perform CPU culling
