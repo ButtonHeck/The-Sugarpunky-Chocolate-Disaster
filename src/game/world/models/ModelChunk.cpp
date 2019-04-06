@@ -24,17 +24,3 @@ ModelChunk::ModelChunk(unsigned int left, unsigned int right, unsigned int top, 
   :
     Chunk(left, right, top, bottom, height)
 {}
-
-/**
- * @brief Check whether this chunk is within given view frustum at the moment
- * @param frustum view frustum to check
- * @return true if a chunk is inside a frustum, false otherwise
- */
-bool ModelChunk::isInsideFrustum(const Frustum &frustum) const
-{
-  BENCHMARK("ModelChunk: isInsideFrustum", true);
-  return frustum.isInside(midPointX - HALF_CHUNK_SIZE, height, midPointZ + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-         frustum.isInside(midPointX + HALF_CHUNK_SIZE, height, midPointZ + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-         frustum.isInside(midPointX + HALF_CHUNK_SIZE, height, midPointZ - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-         frustum.isInside(midPointX - HALF_CHUNK_SIZE, height, midPointZ - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET);
-}
