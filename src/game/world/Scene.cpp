@@ -57,7 +57,7 @@ void Scene::load()
   waterFacade.setupConsiderTerrain();
   buildableFacade.setup(landFacade.getMap(), hillsFacade.getMap());
   textureManager.createUnderwaterReliefTexture(waterFacade.getMap());
-  plantsFacade.updateHillModelChunks(hillsFacade.getMap());
+  plantsFacade.initializeModelRenderChunks(landFacade.getMap(), hillsFacade.getMap());
 }
 
 void Scene::serialize(std::ofstream &output)

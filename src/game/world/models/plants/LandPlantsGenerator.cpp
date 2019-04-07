@@ -70,6 +70,7 @@ void LandPlantsGenerator::setup(const map2D_f &landMap, const map2D_f &hillMap, 
 {
   initializeModelChunks(landMap);
   setupMatrices(landMap, hillMap, distributionMap);
+  initializeModelRenderChunks(landMap);
 }
 
 /**

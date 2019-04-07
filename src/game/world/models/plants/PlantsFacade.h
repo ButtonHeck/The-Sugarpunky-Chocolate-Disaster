@@ -40,7 +40,7 @@ class PlantsFacade
 public:
   PlantsFacade(Shader& renderPhongShader, Shader& renderGouraudShader);
   void setup(const map2D_f &landMap, const map2D_f &hillMap, const map2D_vec3 &hillsNormalMap);
-  void updateHillModelChunks(const map2D_f &hillMap);
+  void initializeModelRenderChunks(const map2D_f &landMap, const map2D_f &hillMap);
   void prepareIndirectBufferData(const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);
   void updateIndirectBufferData();
   void draw(const glm::vec3 &lightDir,

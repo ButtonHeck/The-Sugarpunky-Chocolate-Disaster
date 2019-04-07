@@ -50,6 +50,35 @@ void PlantGenerator::initializeModelChunks(const map2D_f& map)
 }
 
 /**
+ * @brief setup chunks for actual rendering and update height values
+ * @param map 2d map of the given terrain type
+ */
+void PlantGenerator::initializeModelRenderChunks(const map2D_f &map)
+{
+  //in case of reinitialization make sure to clear previous content
+  renderChunks.clear();
+  renderChunks.reserve(chunks.size());
+  for (auto& chunk : chunks)
+    {
+      bool isEmpty = true;
+      for (auto numInstances : chunk.getNumInstancesVector())
+        {
+          if (numInstances != 0)
+            {
+              isEmpty = false;
+              break;
+            }
+        }
+      if (!isEmpty)
+        renderChunks.push_back(chunk);
+    }
+  renderChunks.shrink_to_fit();
+
+  for (ModelChunk& renderChunk : renderChunks)
+    renderChunk.setHeight(glm::max(0.0f, map[renderChunk.getTop()][renderChunk.getLeft()]));
+}
+
+/**
  * @brief performs serialization of generated data
  * @param output file stream for serialization
  */
@@ -197,7 +226,7 @@ void PlantGenerator::prepareIndirectBufferData(const glm::vec2 &cameraPositionXZ
 {
   //firstly precalculate only those chunks that are visible in a view frustum and close enough to a camera
   std::vector<std::pair<ModelChunk, unsigned int>> visibleChunks;
-  for (ModelChunk& chunk : chunks)
+  for (ModelChunk& chunk : renderChunks)
     {
       if (chunk.isInsideFrustum(viewFrustum))
         {

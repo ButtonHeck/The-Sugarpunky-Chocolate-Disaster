@@ -67,16 +67,7 @@ void HillTreesGenerator::setup(const map2D_f &hillMap, const map2D_i &distributi
 {
   initializeModelChunks(hillMap);
   setupMatrices(hillMap, distributionMap, hillsNormalMap);
-}
-
-/**
- * @brief update height values of the chunks according to given map
- * @param hillMap map of the hills
- */
-void HillTreesGenerator::updateModelChunks(const map2D_f &hillMap)
-{
-  for (ModelChunk& chunk : chunks)
-    chunk.setHeight(hillMap[chunk.getTop()][chunk.getLeft()]);
+  initializeModelRenderChunks(hillMap);
 }
 
 /**

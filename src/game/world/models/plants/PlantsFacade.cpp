@@ -44,12 +44,15 @@ void PlantsFacade::setup(const map2D_f &landMap, const map2D_f &hillMap, const m
 }
 
 /**
- * @brief delegates chunk update call to the hill generator (necessary when loading terrain from file)
- * @param hillMap new map of the hills
+ * @brief delegates render chunks update call to generators (necessary when loading terrain from file)
+ * @param landMap map of the land
+ * @param hillMap map of the hills
  */
-void PlantsFacade::updateHillModelChunks(const map2D_f &hillMap)
+void PlantsFacade::initializeModelRenderChunks(const map2D_f &landMap, const map2D_f &hillMap)
 {
-  hillTreesGenerator.updateModelChunks(hillMap);
+  landPlantsGenerator.initializeModelRenderChunks(landMap);
+  grassGenerator.initializeModelRenderChunks(landMap);
+  hillTreesGenerator.initializeModelRenderChunks(hillMap);
 }
 
 /**

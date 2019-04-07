@@ -38,6 +38,7 @@ public:
   PlantGenerator();
   void serialize(std::ofstream& output);
   void deserialize(std::ifstream& input);
+  void initializeModelRenderChunks(const map2D_f &map);
   void prepareIndirectBufferData(const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum);
   void updateIndirectBufferData();
   std::vector<Model>& getModels(bool isLowPoly);
@@ -53,6 +54,7 @@ protected:
   map2D_mat4 matrices;
   std::unique_ptr<unsigned int[]> numPlants;
   std::vector<ModelChunk> chunks;
+  decltype(chunks) renderChunks;
   std::default_random_engine randomizer;
 
 private:

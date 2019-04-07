@@ -30,7 +30,6 @@ class HillTreesGenerator : public PlantGenerator
 {
 public:
   HillTreesGenerator();
-  void updateModelChunks(const map2D_f &hillMap);
   void setup(const map2D_f &hillMap, const map2D_i &distributionMap, const map2D_vec3 &hillsNormalMap);
 
 private:
