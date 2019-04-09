@@ -26,7 +26,7 @@
  */
 Skysphere::Skysphere(const std::string &path, const glm::mat4 &initialTransform)
   :
-    model(path, false),
+    model(path, false, 1, false),
     modelRotationTransform(initialTransform)
 {}
 

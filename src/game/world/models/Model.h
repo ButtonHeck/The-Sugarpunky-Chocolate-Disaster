@@ -39,7 +39,7 @@
 class Model
 {
 public:
-  Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions = 1);
+  Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions = 1, bool isInstanced = true);
   static void bindTextureLoader(TextureLoader& textureLoader);
   void draw(bool isShadow);
   void drawOneInstance();
@@ -60,13 +60,8 @@ private:
   std::string directory;
   std::vector<Mesh::Vertex> vertices;
   std::vector<GLuint> indices;
-  /**
-   * @brief isLowPoly defines whether this model would be approached as low-poly
-   */
+  bool isInstanced;
   bool isLowPoly;
-  /**
-   * @brief numRepetitions defines how many times in a row this model would be used during allocation on the map
-   */
   unsigned int numRepetitions;
   ModelGPUDataManager GPUDataManager;
   ModelRenderer renderer;

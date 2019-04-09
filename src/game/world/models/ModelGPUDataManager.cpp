@@ -6,7 +6,7 @@ ModelGPUDataManager::ModelGPUDataManager(bool isParentModelLowPoly)
     basicGLBuffers(VAO | VBO | INSTANCE_VBO | EBO)
 {}
 
-void ModelGPUDataManager::setupBuffers(const std::vector<Mesh::Vertex> &vertices, const std::vector<GLuint> &indices)
+void ModelGPUDataManager::setupBuffers(const std::vector<Mesh::Vertex> &vertices, const std::vector<GLuint> &indices, bool useIndirectBuffer)
 {
   indicesSize = indices.size();
   basicGLBuffers.bind(VAO | VBO | EBO);
@@ -26,20 +26,30 @@ void ModelGPUDataManager::setupBuffers(const std::vector<Mesh::Vertex> &vertices
   //intentionally set GL_FLOAT although the data is a pair of unsigned integers
   glVertexAttribPointer(9, 2, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, TexIndices));
 
+  if (useIndirectBuffer)
+    setupIndirectBuffer();
+
+  BufferCollection::bindZero(VAO | VBO | EBO);
+}
+
+void ModelGPUDataManager::setupIndirectBuffer()
+{
+  GLuint numElements = NUM_CHUNKS * INDIRECT_DRAW_COMMAND_ARGUMENTS;
+  GLsizei sizeInBytes = sizeof(GLuint) * numElements;
   if (basicGLBuffers.get(DIBO) == 0)
     {
+      multiDrawIndirectData = std::make_unique<GLuint[]>(numElements);
       basicGLBuffers.add(DIBO);
       basicGLBuffers.bind(DIBO);
-      glNamedBufferStorage(basicGLBuffers.get(DIBO), sizeof(multiDrawIndirectData), 0, GL_DYNAMIC_STORAGE_BIT);
+      glNamedBufferStorage(basicGLBuffers.get(DIBO), sizeInBytes, 0, GL_DYNAMIC_STORAGE_BIT);
     }
   if (shadowDIBO.get(DIBO) == 0)
     {
+      multiDrawIndirectDataShadow = std::make_unique<GLuint[]>(numElements);
       shadowDIBO.add(DIBO);
       shadowDIBO.bind(DIBO);
-      glNamedBufferStorage(shadowDIBO.get(DIBO), sizeof(multiDrawIndirectDataShadow), 0, GL_DYNAMIC_STORAGE_BIT);
+      glNamedBufferStorage(shadowDIBO.get(DIBO), sizeInBytes, 0, GL_DYNAMIC_STORAGE_BIT);
     }
-
-  BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
 void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<ModelChunk, unsigned int>> &visibleChunks,
@@ -94,9 +104,9 @@ void ModelGPUDataManager::updateIndirectBufferData()
 {
   BENCHMARK("Model: load indirect data to GPU", true);
   basicGLBuffers.bind(VAO | DIBO);
-  glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * drawIndirectCommandPrimCount, multiDrawIndirectData);
+  glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * drawIndirectCommandPrimCount, multiDrawIndirectData.get());
   shadowDIBO.bind(DIBO);
-  glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * drawIndirectCommandPrimCountShadow, multiDrawIndirectDataShadow);
+  glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * drawIndirectCommandPrimCountShadow, multiDrawIndirectDataShadow.get());
 }
 
 void ModelGPUDataManager::loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances)

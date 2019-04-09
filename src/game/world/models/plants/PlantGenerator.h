@@ -24,6 +24,7 @@
 #include <fstream>
 #include <memory>
 #include <random>
+#include <glm/gtx/norm.hpp>
 #include "game/world/models/Model.h"
 #include "game/world/models/ModelChunk.h"
 

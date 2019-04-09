@@ -29,11 +29,13 @@ void Model::bindTextureLoader(TextureLoader &textureLoader)
 /**
  * @brief Model::Model model constructor
  * @param path model's relative path to preset models directory
- * @param isLowPoly low-poly indicator
- * @param numRepetitions defines how many times in a row this model would be used by generator
+ * @param isLowPoly defines whether this model would be approached as low-poly
+ * @param numRepetitions defines how many times in a row this model would be used during allocation on the map
+ * @param isInstanced defines whether this model would be rendered with instancing
  */
-Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions)
+Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions, bool isInstanced)
   :
+    isInstanced(isInstanced),
     isLowPoly(isLowPoly),
     numRepetitions(numRepetitions),
     GPUDataManager(isLowPoly),
@@ -55,7 +57,7 @@ void Model::load(const std::string &path)
   directory = path.substr(0, path.find_last_of('/'));
   GLuint meshVertexIndexOffset = 0;
   processNode(scene->mRootNode, scene, meshVertexIndexOffset);
-  GPUDataManager.setupBuffers(vertices, indices);
+  GPUDataManager.setupBuffers(vertices, indices, isInstanced);
 }
 
 /**
