@@ -8,10 +8,10 @@ ModelGPUDataManager::ModelGPUDataManager(bool isParentModelLowPoly)
 
 void ModelGPUDataManager::setupBuffers(const std::vector<Mesh::Vertex> &vertices, const std::vector<GLuint> &indices, bool useIndirectBuffer)
 {
-  indicesSize = indices.size();
+  indicesCount = indices.size();
   basicGLBuffers.bind(VAO | VBO | EBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(Mesh::Vertex) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesSize, &indices[0], GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesCount, &indices[0], GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)0);
   glEnableVertexAttribArray(1);
@@ -71,31 +71,31 @@ void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<
         {
           unsigned int numInstancesInChunk = chunk.getNumInstances(modelIndex);
           unsigned int instanceOffsetInChunk = chunk.getInstanceOffset(modelIndex);
-          addIndirectBufferData(distanceToChunk, indicesSize, numInstancesInChunk, instanceOffsetInChunk, false);
+          addIndirectBufferData(numInstancesInChunk, instanceOffsetInChunk, false);
           if (distanceToChunk < loadingDistanceShadow)
-            addIndirectBufferData(distanceToChunk, indicesSize, numInstancesInChunk, instanceOffsetInChunk, true);
+            addIndirectBufferData(numInstancesInChunk, instanceOffsetInChunk, true);
         }
     }
 
   GLuint dataOffset = 0;
   for (const auto& token : indirectTokens)
     {
-        multiDrawIndirectData[dataOffset++] = token.second.indicesCount;
-        multiDrawIndirectData[dataOffset++] = token.second.numInstances;
-        multiDrawIndirectData[dataOffset++] = token.second.FIRST_INDEX;
-        multiDrawIndirectData[dataOffset++] = token.second.BASE_VERTEX;
-        multiDrawIndirectData[dataOffset++] = token.second.instanceOffset;
+        multiDrawIndirectData[dataOffset++] = indicesCount;
+        multiDrawIndirectData[dataOffset++] = token.numInstances;
+        multiDrawIndirectData[dataOffset++] = token.FIRST_INDEX;
+        multiDrawIndirectData[dataOffset++] = token.BASE_VERTEX;
+        multiDrawIndirectData[dataOffset++] = token.instanceOffset;
     }
   drawIndirectCommandPrimCount = indirectTokens.size();
 
   dataOffset = 0;
   for (const auto& token : indirectTokensShadow)
     {
-        multiDrawIndirectDataShadow[dataOffset++] = token.second.indicesCount;
-        multiDrawIndirectDataShadow[dataOffset++] = token.second.numInstances;
-        multiDrawIndirectDataShadow[dataOffset++] = token.second.FIRST_INDEX;
-        multiDrawIndirectDataShadow[dataOffset++] = token.second.BASE_VERTEX;
-        multiDrawIndirectDataShadow[dataOffset++] = token.second.instanceOffset;
+        multiDrawIndirectDataShadow[dataOffset++] = indicesCount;
+        multiDrawIndirectDataShadow[dataOffset++] = token.numInstances;
+        multiDrawIndirectDataShadow[dataOffset++] = token.FIRST_INDEX;
+        multiDrawIndirectDataShadow[dataOffset++] = token.BASE_VERTEX;
+        multiDrawIndirectDataShadow[dataOffset++] = token.instanceOffset;
     }
   drawIndirectCommandPrimCountShadow = indirectTokensShadow.size();
 }
@@ -103,7 +103,7 @@ void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<
 void ModelGPUDataManager::updateIndirectBufferData()
 {
   BENCHMARK("Model: load indirect data to GPU", true);
-  basicGLBuffers.bind(VAO | DIBO);
+  basicGLBuffers.bind(DIBO);
   glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * drawIndirectCommandPrimCount, multiDrawIndirectData.get());
   shadowDIBO.bind(DIBO);
   glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * drawIndirectCommandPrimCountShadow, multiDrawIndirectDataShadow.get());
@@ -130,12 +130,12 @@ void ModelGPUDataManager::loadModelInstances(const std::vector<glm::mat4> &insta
   BufferCollection::bindZero(VAO | VBO);
 }
 
-void ModelGPUDataManager::addIndirectBufferData(int distanceToChunk, GLuint indicesSize, GLuint numInstances, GLuint instanceOffset, bool isShadow)
+void ModelGPUDataManager::addIndirectBufferData(GLuint numInstances, GLuint instanceOffset, bool isShadow)
 {
   if (!isShadow)
-    indirectTokens.emplace_back(distanceToChunk, IndirectBufferToken(indicesSize, numInstances, instanceOffset));
+    indirectTokens.emplace_back(numInstances, instanceOffset);
   else
-    indirectTokensShadow.emplace_back(distanceToChunk, IndirectBufferToken(indicesSize, numInstances, instanceOffset));
+    indirectTokensShadow.emplace_back(numInstances, instanceOffset);
 }
 
 GLsizei ModelGPUDataManager::getPrimitiveCount(bool isShadow) const
@@ -153,9 +153,8 @@ BufferCollection &ModelGPUDataManager::getShadowDIBO()
   return shadowDIBO;
 }
 
-ModelGPUDataManager::IndirectBufferToken::IndirectBufferToken(GLuint indicesCount, GLuint numInstances, GLuint instanceOffset)
+ModelGPUDataManager::IndirectBufferToken::IndirectBufferToken(GLuint numInstances, GLuint instanceOffset)
   :
-    indicesCount(indicesCount),
     numInstances(numInstances),
     instanceOffset(instanceOffset)
 {}

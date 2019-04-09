@@ -27,28 +27,28 @@ private:
   struct IndirectBufferToken
   {
     //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
-    IndirectBufferToken(GLuint indicesCount, GLuint numInstances, GLuint instanceOffset);
-    GLuint indicesCount, numInstances, instanceOffset;
+    IndirectBufferToken(GLuint numInstances, GLuint instanceOffset);
+    GLuint numInstances, instanceOffset;
     static const GLuint FIRST_INDEX = 0, BASE_VERTEX = 0;
   };
 
   void setupIndirectBuffer();
-  void addIndirectBufferData(int distanceToChunk, GLuint indicesSize, GLuint numInstances, GLuint instanceOffset, bool isShadow);
+  void addIndirectBufferData(GLuint numInstances, GLuint instanceOffset, bool isShadow);
 
   //parent model attributes
-  GLuint indicesSize;
+  GLuint indicesCount;
   bool isLowPoly;
 
   //screen rendering related variables
   BufferCollection basicGLBuffers;
   std::unique_ptr<GLuint[]> multiDrawIndirectData;
-  std::vector<std::pair<int, IndirectBufferToken>> indirectTokens;
+  std::vector<IndirectBufferToken> indirectTokens;
   GLsizei drawIndirectCommandPrimCount = 0;
 
   //shadow rendering related variables
   BufferCollection shadowDIBO;
   std::unique_ptr<GLuint[]> multiDrawIndirectDataShadow;
-  std::vector<std::pair<int, IndirectBufferToken>> indirectTokensShadow;
+  std::vector<IndirectBufferToken> indirectTokensShadow;
   GLsizei drawIndirectCommandPrimCountShadow = 0;
 };
 
