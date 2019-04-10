@@ -15,12 +15,13 @@ Chunk::Chunk(unsigned int left, unsigned int right, unsigned int top, unsigned i
 /**
  * @brief Check whether this chunk is within given view frustum at the moment
  * @param frustum view frustum to check
+ * @param cullingOffset offset applied to frustum sides
  * @return true if a chunk is inside a frustum, false otherwise
  */
-bool Chunk::isInsideFrustum(const Frustum &frustum) const
+bool Chunk::isInsideFrustum(const Frustum &frustum, float cullingOffset) const
 {
-  return frustum.isInside(midPointX - HALF_CHUNK_SIZE, height, midPointZ + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-         frustum.isInside(midPointX + HALF_CHUNK_SIZE, height, midPointZ + HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-         frustum.isInside(midPointX + HALF_CHUNK_SIZE, height, midPointZ - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET) ||
-         frustum.isInside(midPointX - HALF_CHUNK_SIZE, height, midPointZ - HALF_CHUNK_SIZE, FRUSTUM_CULLING_DISTANCE_OFFSET);
+  return frustum.isInside(midPointX - HALF_CHUNK_SIZE, height, midPointZ + HALF_CHUNK_SIZE, cullingOffset) ||
+         frustum.isInside(midPointX + HALF_CHUNK_SIZE, height, midPointZ + HALF_CHUNK_SIZE, cullingOffset) ||
+         frustum.isInside(midPointX + HALF_CHUNK_SIZE, height, midPointZ - HALF_CHUNK_SIZE, cullingOffset) ||
+         frustum.isInside(midPointX - HALF_CHUNK_SIZE, height, midPointZ - HALF_CHUNK_SIZE, cullingOffset);
 }

@@ -58,6 +58,8 @@ LandPlantsGenerator::LandPlantsGenerator()
   lowPolyModels.emplace_back("landTrees/tree8LP/tree8LP.obj", true);
 
   assert(lowPolyModels.size() == models.size());
+
+  cullingOffset = FRUSTUM_CULLING_DISTANCE_OFFSET;
 }
 
 /**

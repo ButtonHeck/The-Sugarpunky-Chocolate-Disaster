@@ -56,6 +56,7 @@ protected:
   std::unique_ptr<unsigned int[]> numPlants;
   std::vector<ModelChunk> chunks;
   decltype(chunks) renderChunks;
+  float cullingOffset;
   std::default_random_engine randomizer;
 
 private:

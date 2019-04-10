@@ -228,7 +228,7 @@ void PlantGenerator::prepareIndirectBufferData(const glm::vec2 &cameraPositionXZ
   std::vector<std::pair<ModelChunk, unsigned int>> visibleChunks;
   for (ModelChunk& chunk : renderChunks)
     {
-      if (chunk.isInsideFrustum(viewFrustum))
+      if (chunk.isInsideFrustum(viewFrustum, cullingOffset))
         {
           glm::vec2 directionToChunkCenter = chunk.getMidPoint() - cameraPositionXZ;
           unsigned int distanceToChunk = glm::length2(directionToChunkCenter);

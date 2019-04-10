@@ -188,7 +188,7 @@ void LandGenerator::updateCellsIndirectBuffer(const Frustum& frustum)
   cellPrimitiveCount = 0;
   for (unsigned int chunkIndex = 0; chunkIndex < cellChunks.size(); chunkIndex++)
     {
-      if (cellChunks[chunkIndex].isInsideFrustum(frustum))
+      if (cellChunks[chunkIndex].isInsideFrustum(frustum, 0.0f))
         {
           ++cellPrimitiveCount;
           addIndirectBufferData(indirectBuffer, dataOffset, cellChunks[chunkIndex].getNumInstances(), cellChunks[chunkIndex].getInstanceOffset());

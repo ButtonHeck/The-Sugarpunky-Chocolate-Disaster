@@ -44,6 +44,8 @@ GrassGenerator::GrassGenerator()
   lowPolyModels.emplace_back("grass/grass6LP/grass6LP.obj", true);
 
   assert(lowPolyModels.size() == models.size());
+
+  cullingOffset = 0.0f;
 }
 
 /**

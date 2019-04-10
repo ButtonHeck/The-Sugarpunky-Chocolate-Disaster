@@ -14,7 +14,7 @@ public:
   unsigned int getTop() const;
   unsigned int getBottom() const;
   void setHeight(float height);
-  bool isInsideFrustum(const Frustum &frustum) const;
+  bool isInsideFrustum(const Frustum &frustum, float cullingOffset) const;
 
 protected:
   unsigned int left, right, top, bottom;
