@@ -11,14 +11,14 @@ void ModelRenderer::render(bool isShadow, GLsizei primCount)
   basicGLBuffers.bind(VAO);
   if (!isShadow)
     {
-      BENCHMARK("Model: draw", true);
       basicGLBuffers.bind(DIBO);
+      BENCHMARK("Model: draw", true);
       glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0);
     }
   else
     {
-      BENCHMARK("Model: draw shadows", true);
       shadowDIBO.bind(DIBO);
+      BENCHMARK("Model: draw shadows", true);
       glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0);
     }
 }

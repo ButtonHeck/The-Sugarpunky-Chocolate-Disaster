@@ -27,18 +27,9 @@
  */
 void GrassRenderer::render(std::vector<Model> &models, bool isShadow)
 {
-  BenchmarkTimer BENCHMARK_;
-  if (!isShadow)
-    BENCHMARK_("GrassRenderer: render", true);
-  else
-    BENCHMARK_("GrassRenderer: render depthmap", true);
-
   //grass polygon's back face is the same as front, so make sure no culling is applied here
   glDisable(GL_CULL_FACE);
-  for (unsigned int modelIndex = 0; modelIndex < models.size(); modelIndex++)
-    {
-      Model& model = models[modelIndex];
-      model.draw(isShadow);
-    }
+  for (Model& grassModel : models)
+    grassModel.draw(isShadow);
   glEnable(GL_CULL_FACE);
 }
