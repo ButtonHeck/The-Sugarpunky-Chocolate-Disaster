@@ -33,6 +33,7 @@ void WaterShader::update(const glm::vec3 &lightDir,
       cullingShader.setVec4("u_frustumPlanes[4]", viewFrustum.getPlane(FRUSTUM_BACK));
     }
   renderShader.use();
+  renderShader.setFloat("u_time", glfwGetTime());
   renderShader.setMat4("u_projectionView", projectionView);
   renderShader.setVec3("u_viewPosition", viewPosition);
   renderShader.setVec3("u_lightDir", -lightDir);
