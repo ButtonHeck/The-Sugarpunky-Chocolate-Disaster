@@ -6,7 +6,11 @@ WaterGenerator::WaterGenerator(WaterShader &shaders)
     culledBuffers(VAO | VBO | TFBO),
     shaders(shaders),
     heightOffsets(new GLfloat[HEIGHT_OFFSETS_BUFFER_SIZE])
-{}
+{
+  normalMap.resize(WORLD_HEIGHT + 1);
+  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
+    normalMap[row].resize(WORLD_WIDTH + 1, glm::vec3(0.0f, 1.0f, 0.0f));
+}
 
 void WaterGenerator::setup()
 {
@@ -436,19 +440,6 @@ void WaterGenerator::updateAnimationFrame(double time, Options& options)
     {
       heightOffsets[i] = std::cos(offsetMultiplier * ((i * i) % 19)) * HEIGHT_OFFSET_1 + WATER_LEVEL;
       heightOffsets[i+1] = std::sin(offsetMultiplier * ((i * i) % 29)) * HEIGHT_OFFSET_2 + WATER_LEVEL;
-    }
-
-  static bool mapCreated = false;
-  if (!mapCreated)
-    {
-      normalMap.clear();
-      normalMap.reserve(WORLD_HEIGHT + 1);
-      for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
-        {
-          vec3 defaultNormal(0.0f, 1.0f, 0.0f);
-          normalMap.emplace_back(WORLD_WIDTH + 1, defaultNormal);
-        }
-      mapCreated = true;
     }
 
   constexpr float NORMAL_Y_APPROX = 0.5f; //fake "true" normal calculation (use no sqrt and pow)
