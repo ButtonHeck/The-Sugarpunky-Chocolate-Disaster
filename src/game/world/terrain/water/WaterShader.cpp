@@ -9,8 +9,8 @@ WaterShader::WaterShader(Shader &renderShader, Shader &cullingShader, Shader &no
 
 void WaterShader::setupCulling()
 {
-  const unsigned int TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT = 2;
-  const GLchar* varyings[TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT] = {"o_pos", "o_normal"};
+  const unsigned int TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT = 1;
+  const GLchar* varyings[TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT] = {"o_pos"};
   glTransformFeedbackVaryings(cullingShader.getID(), TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT, varyings, GL_INTERLEAVED_ATTRIBS);
   cullingShader.link();
 }

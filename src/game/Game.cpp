@@ -32,12 +32,10 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
   shadowProjections[1] = glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_DISTANCE_LAYER1, SHADOW_DISTANCE_LAYER2);
   shadowProjections[2] = glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), SHADOW_DISTANCE_LAYER2, FAR_PLANE);
   modelsIndirectBufferPrepared = false, modelsIndirectBufferNeedUpdate = false;
-  waterKeyFrameReady = false, waterNeedNewKeyFrame = true;
 }
 
 Game::~Game()
 {
-  waterAnimator->join();
   meshIndirectBufferUpdater->join();
   BenchmarkTimer::finish(updateCount);
   BindlessTextureManager::makeAllNonResident();
@@ -153,14 +151,6 @@ void Game::drawFrame(const glm::mat4 &projectionView)
   if (options[OPT_CSM_VISUALIZATION])
     drawFrustumVisualizations(projectionView);
 
-//  if (options[OPT_ANIMATE_WATER])
-//    {
-//      BENCHMARK("Water: buffer animation frame", true);
-//      scene.getWaterFacade().bufferNewData();
-//      waterNeedNewKeyFrame = true;
-//      waterNeedNewKeyFrameCV.notify_all();
-//    }
-
   scene.drawWorld(projectionView,
                   projection * glm::mat4(camera.getViewMatrixMat3()),
                   viewFrustum,
@@ -254,12 +244,8 @@ void Game::drawFrameRefraction(const glm::mat4 &projectionView)
 void Game::recreate()
 {
   BENCHMARK("Game loop: recreate", true);
-//  while(!waterKeyFrameReady)
-//    std::this_thread::yield();//busy wait until water thread has done its business...and business is good
-//  waterNeedNewKeyFrame = false; //explicitly bypass water animation frame update routine
   scene.recreate();
   options[OPT_RECREATE_TERRAIN_REQUEST] = false;
-//  waterNeedNewKeyFrame = true; //it's okay now to begin animating water
 }
 
 void Game::updateDepthmap()
@@ -288,13 +274,9 @@ void Game::saveState()
 
 void Game::loadState()
 {
-//  while(!waterKeyFrameReady)
-//    std::this_thread::yield(); //busy wait
-//  waterNeedNewKeyFrame = false;
   saveLoadManager.loadFromFile(SAVES_DIR + "testSave.txt");
   scene.load();
   options[OPT_LOAD_REQUEST] = false;
-//  waterNeedNewKeyFrame = true;
 }
 
 void Game::setupThreads()
@@ -316,22 +298,6 @@ void Game::setupThreads()
           std::unique_lock<std::mutex> lock(modelIndirectUpdateThreadMutex);
           modelsIndirectBufferNeedUpdateCV.wait(lock, [this](){return (bool)modelsIndirectBufferNeedUpdate || glfwWindowShouldClose(window);});
           lock.unlock();
-        }
-    });
-  waterAnimator = std::make_unique<std::thread>([this]()
-  {
-      while(!glfwWindowShouldClose(window))
-        {
-          if (waterNeedNewKeyFrame && options[OPT_ANIMATE_WATER] && options[OPT_DRAW_WATER])
-            {
-//              waterKeyFrameReady = false;
-//              scene.getWaterFacade().updateAnimationFrame(glfwGetTime(), options);
-//              waterKeyFrameReady = true;
-//              waterNeedNewKeyFrame = false;
-            }
-//          std::unique_lock<std::mutex> lock(waterAnimatorThreadMutex);
-//          waterNeedNewKeyFrameCV.wait(lock, [this](){return (bool)waterNeedNewKeyFrame || glfwWindowShouldClose(window);});
-//          lock.unlock();
         }
     });
 }

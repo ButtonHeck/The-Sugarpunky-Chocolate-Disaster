@@ -3,7 +3,6 @@
 out vec4 o_FragColor;
 
 in vec3  v_FragPos;
-in vec3  v_Normal;
 
 uniform sampler2D   u_specularTexture;
 uniform sampler2D   u_normalMap;
@@ -24,6 +23,7 @@ uniform float       u_screenHeight;
 uniform float       u_near;
 uniform float       u_far;
 
+const vec3  NORMAL = vec3(0.0, 1.0, 0.0);
 const float MAX_DESATURATING_VALUE = 0.5;
 const float SPECULAR_SHININESS = 32.0;
 const vec3  KISSEL_COLOR = (vec3(133.75, 18.75, 6.25) / 255.0) ;
@@ -68,11 +68,10 @@ void main()
         screenSpaceTexCoordsReflection.y = 1.0 - screenSpaceTexCoordsReflection.y;
 
         //we need this to be swizzled (watch v_TNB comment in hills vertex shader) + use DUDV texCoords offset
-        vec3 shadingNormal = texture(u_normalMap, fragPosTexCoords + dudvTextureOffset).xzy;
-        //do not touch Y component
+        vec3 shadingNormal = texture(u_normalMap, fragPosTexCoords + dudvTextureOffset).xzy + NORMAL;
         shadingNormal.xz *= 2.0;
         shadingNormal.xz -= 1.0;
-        shadingNormal = normalize(v_Normal + shadingNormal);
+        shadingNormal = normalize(shadingNormal);
 
         vec3 viewDirection = normalize(u_viewPosition - v_FragPos);
         float sunPositionAttenuation = clamp((u_lightDir.y - 0.02) * 10, 0.0, 1.0);

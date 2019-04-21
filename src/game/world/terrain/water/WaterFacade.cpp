@@ -53,16 +53,6 @@ void WaterFacade::draw(const glm::vec3 &lightDir,
     }
 }
 
-void WaterFacade::bufferNewData()
-{
-  generator.bufferNewData();
-}
-
-void WaterFacade::updateAnimationFrame(double time, Options &options)
-{
-  generator.updateAnimationFrame(time, options);
-}
-
 const map2D_f &WaterFacade::getMap() const
 {
   return generator.getMap();

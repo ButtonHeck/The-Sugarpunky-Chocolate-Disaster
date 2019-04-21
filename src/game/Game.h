@@ -99,11 +99,6 @@ private:
   std::condition_variable modelsIndirectBufferNeedUpdateCV;
   std::atomic_bool modelsIndirectBufferPrepared, modelsIndirectBufferNeedUpdate;
 
-  std::unique_ptr<std::thread> waterAnimator;
-  std::mutex waterAnimatorThreadMutex;
-  std::condition_variable waterNeedNewKeyFrameCV;
-  std::atomic_bool waterKeyFrameReady, waterNeedNewKeyFrame;
-
   bool landIndirectBufferHasUpdated = false; //not used in any other threads, thus no need to declare as atomic
 };
 

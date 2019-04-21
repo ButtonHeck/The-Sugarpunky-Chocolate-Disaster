@@ -4,13 +4,8 @@ WaterGenerator::WaterGenerator(WaterShader &shaders)
   :
     Generator(),
     culledBuffers(VAO | VBO | TFBO),
-    shaders(shaders),
-    heightOffsets(new GLfloat[HEIGHT_OFFSETS_BUFFER_SIZE])
-{
-  normalMap.resize(WORLD_HEIGHT + 1);
-  for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
-    normalMap[row].resize(WORLD_WIDTH + 1, glm::vec3(0.0f, 1.0f, 0.0f));
-}
+    shaders(shaders)
+{}
 
 void WaterGenerator::setup()
 {
@@ -41,23 +36,22 @@ void WaterGenerator::fillBufferData()
   const size_t INDICES_DATA_LENGTH = tiles.size() * VERTICES_PER_QUAD;
   std::unique_ptr<GLuint[]> indices(new GLuint[INDICES_DATA_LENGTH]);
   size_t indicesBufferIndex = 0;
-  const static glm::vec3 DEFAULT_Y_NORMAL(0.0f, 1.0f, 0.0f);
 
   for (unsigned int tileIndex = 0; tileIndex < tiles.size(); tileIndex++)
     {
       TerrainTile& tile = tiles[tileIndex];
       int x = tile.mapX, y = tile.mapY;
 
-      WaterVertex lowLeft(glm::vec3(x - 1, tile.lowLeft, y), DEFAULT_Y_NORMAL);
-      WaterVertex lowRight(glm::vec3(x, tile.lowRight, y), DEFAULT_Y_NORMAL);
-      WaterVertex upRight(glm::vec3(x, tile.upperRight, y - 1), DEFAULT_Y_NORMAL);
-      WaterVertex upLeft(glm::vec3(x - 1, tile.upperLeft, y - 1), DEFAULT_Y_NORMAL);
+      WaterVertex lowLeft(glm::vec3(x - 1, tile.lowLeft, y));
+      WaterVertex lowRight(glm::vec3(x, tile.lowRight, y));
+      WaterVertex upRight(glm::vec3(x, tile.upperRight, y - 1));
+      WaterVertex upLeft(glm::vec3(x - 1, tile.upperLeft, y - 1));
 
       int vertexBufferOffset = tileIndex * UNIQUE_VERTICES_PER_TILE * WaterVertex::NUMBER_OF_ELEMENTS;
       bufferVertex(vertices.get(), vertexBufferOffset+0, lowLeft); //ll1
-      bufferVertex(vertices.get(), vertexBufferOffset+6, lowRight); //lr1
-      bufferVertex(vertices.get(), vertexBufferOffset+12, upRight); //ur1
-      bufferVertex(vertices.get(), vertexBufferOffset+18, upLeft); //ur2
+      bufferVertex(vertices.get(), vertexBufferOffset+3, lowRight); //lr1
+      bufferVertex(vertices.get(), vertexBufferOffset+6, upRight); //ur1
+      bufferVertex(vertices.get(), vertexBufferOffset+9, upLeft); //ur2
 
       GLuint indicesBufferBaseVertex = tileIndex * UNIQUE_VERTICES_PER_TILE;
       indices[indicesBufferIndex++] = indicesBufferBaseVertex + 0;
@@ -81,11 +75,6 @@ void WaterGenerator::fillBufferData()
   shaders.setupCulling();
   glTransformFeedbackBufferBase(culledBuffers.get(TFBO), 0, culledBuffers.get(VBO));
   BufferCollection::bindZero(VAO | VBO | EBO);
-}
-
-void WaterGenerator::bufferNewData()
-{
-  glNamedBufferData(basicGLBuffers.get(VBO), numVertices * sizeof(GLfloat), vertices.get(), GL_STREAM_DRAW);
 }
 
 void WaterGenerator::addWaterNearbyTerrain()
@@ -430,91 +419,11 @@ void WaterGenerator::fattenKernel(int x, int y, int& riverTileCounter, int& rive
     }
 }
 
-void WaterGenerator::updateAnimationFrame(double time, Options& options)
-{
-  BENCHMARK("(ST)Water: Update animation frame", true);
-  using glm::vec3;
-  using glm::vec4;
-  double offsetMultiplier = time * ANIMATION_SPEED;
-  for (size_t i = 0; i < HEIGHT_OFFSETS_BUFFER_SIZE; i+=2)
-    {
-      heightOffsets[i] = std::cos(offsetMultiplier * ((i * i) % 19)) * HEIGHT_OFFSET_1 + WATER_LEVEL;
-      heightOffsets[i+1] = std::sin(offsetMultiplier * ((i * i) % 29)) * HEIGHT_OFFSET_2 + WATER_LEVEL;
-    }
-
-  constexpr float NORMAL_Y_APPROX = 0.5f; //fake "true" normal calculation (use no sqrt and pow)
-  for (unsigned int y = 1; y < WORLD_HEIGHT - 1; y++)
-    {
-      for (unsigned int x = 1; x < WORLD_WIDTH - 1; x++)
-        {
-          vec3 n0 = glm::normalize(vec3(heightOffsets[y * WORLD_WIDTH + x-1] - heightOffsets[y * WORLD_WIDTH + x],
-                                        NORMAL_Y_APPROX,
-                                        heightOffsets[(y-1) * WORLD_WIDTH + x] - heightOffsets[y * WORLD_WIDTH + x]));
-          vec3 n3 = glm::normalize(vec3(heightOffsets[y * WORLD_WIDTH + x] - heightOffsets[y * WORLD_WIDTH + x+1],
-                                        NORMAL_Y_APPROX,
-                                        heightOffsets[(y-1) * WORLD_WIDTH + x+1] - heightOffsets[y * WORLD_WIDTH + x+1]));
-          vec3 n6 = glm::normalize(vec3(heightOffsets[(y+1) * WORLD_WIDTH + x-1] - heightOffsets[(y+1) * WORLD_WIDTH + x],
-                                        NORMAL_Y_APPROX,
-                                        heightOffsets[y * WORLD_WIDTH + x] - heightOffsets[(y+1) * WORLD_WIDTH + x]));
-          vec3 n1 = glm::normalize(vec3(heightOffsets[(y-1) * WORLD_WIDTH + x] - heightOffsets[(y-1) * WORLD_WIDTH + x+1],
-                                        NORMAL_Y_APPROX,
-                                        heightOffsets[(y-1) * WORLD_WIDTH + x] - heightOffsets[y * WORLD_WIDTH + x]));
-          vec3 n4 = glm::normalize(vec3(heightOffsets[y * WORLD_WIDTH + x] - heightOffsets[y * WORLD_WIDTH + x+1],
-                                        NORMAL_Y_APPROX,
-                                        heightOffsets[y * WORLD_WIDTH + x] - heightOffsets[(y+1) * WORLD_WIDTH + x]));
-          vec3 n9 = glm::normalize(vec3(heightOffsets[y * WORLD_WIDTH + x-1] - heightOffsets[y * WORLD_WIDTH + x],
-                                        NORMAL_Y_APPROX,
-                                        heightOffsets[y * WORLD_WIDTH + x-1] - heightOffsets[(y+1) * WORLD_WIDTH + x-1]));
-          vec3 averagedNormal = n0 + n1 + n3 + n4 + n6 + n9; //intentionally left unnormalized
-          normalMap[y][x] = averagedNormal;
-        }
-    }
-
-  for (unsigned int tileIndex = 0; tileIndex < tiles.size(); ++tileIndex)
-    {
-      if (options[OPT_RECREATE_TERRAIN_REQUEST])
-        return;
-      TerrainTile& tile = tiles[tileIndex];
-      unsigned int pointerOffsetWithStride = tileIndex * UNIQUE_VERTICES_PER_TILE * WaterVertex::NUMBER_OF_ELEMENTS;
-      unsigned int heightOffsetWithStrideForLow = (tile.mapY+1) * WORLD_WIDTH;
-      unsigned int heightOffsetWithStrideForUpper = tile.mapY * WORLD_WIDTH;
-
-      float ll = heightOffsets[heightOffsetWithStrideForLow + tile.mapX];
-      float lr = heightOffsets[heightOffsetWithStrideForLow + tile.mapX + 1];
-      float ur = heightOffsets[heightOffsetWithStrideForUpper + tile.mapX + 1];
-      float ul = heightOffsets[heightOffsetWithStrideForUpper + tile.mapX];
-      updateTileY(vertices.get(), pointerOffsetWithStride, vec4(ll, lr, ur, ul));
-
-      updateVertexNormal(vertices.get(), pointerOffsetWithStride+3, normalMap[tile.mapY][tile.mapX]);
-      updateVertexNormal(vertices.get(), pointerOffsetWithStride+9, normalMap[tile.mapY][tile.mapX+1]);
-      updateVertexNormal(vertices.get(), pointerOffsetWithStride+15, normalMap[tile.mapY-1][tile.mapX+1]);
-      updateVertexNormal(vertices.get(), pointerOffsetWithStride+21, normalMap[tile.mapY-1][tile.mapX]);
-    }
-}
-
 void WaterGenerator::bufferVertex(GLfloat *vertices, int offset, WaterVertex vertex)
 {
   vertices[offset+0] = vertex.posX;
   vertices[offset+1] = vertex.posY;
   vertices[offset+2] = vertex.posZ;
-  vertices[offset+3] = vertex.normalX;
-  vertices[offset+4] = vertex.normalY;
-  vertices[offset+5] = vertex.normalZ;
-}
-
-void WaterGenerator::updateVertexNormal(GLfloat *vertices, int offset, const glm::vec3& normal)
-{
-  vertices[offset+0] = normal.x;
-  vertices[offset+1] = normal.y;
-  vertices[offset+2] = normal.z;
-}
-
-void WaterGenerator::updateTileY(GLfloat *vertices, int offset, glm::vec4&& heights)
-{
-  vertices[offset+1] = heights.x;
-  vertices[offset+7] = heights.y;
-  vertices[offset+13] = heights.z;
-  vertices[offset+19] = heights.w;
 }
 
 void WaterGenerator::setupGLBufferAttributes()
@@ -522,12 +431,9 @@ void WaterGenerator::setupGLBufferAttributes()
   const size_t SIZE_OF_WATER_VERTEX = WaterVertex::NUMBER_OF_ELEMENTS * sizeof(GLfloat);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, SIZE_OF_WATER_VERTEX, 0);
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, SIZE_OF_WATER_VERTEX, (void*)(3 * sizeof(GLfloat)));
 }
 
-WaterGenerator::WaterVertex::WaterVertex(glm::vec3 position, glm::vec3 normal)
+WaterGenerator::WaterVertex::WaterVertex(glm::vec3 position)
   :
-    posX(position.x - HALF_WORLD_WIDTH), posY(position.y), posZ(position.z - HALF_WORLD_HEIGHT),
-    normalX(normal.x), normalY(normal.y), normalZ(normal.z)
+    posX(position.x - HALF_WORLD_WIDTH), posY(position.y), posZ(position.z - HALF_WORLD_HEIGHT)
 {}
