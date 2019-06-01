@@ -132,10 +132,8 @@ void ModelGPUDataManager::loadModelInstances(const std::vector<glm::mat4> &insta
 
 void ModelGPUDataManager::addIndirectBufferData(GLuint numInstances, GLuint instanceOffset, bool isShadow)
 {
-  if (!isShadow)
-    indirectTokens.emplace_back(numInstances, instanceOffset);
-  else
-    indirectTokensShadow.emplace_back(numInstances, instanceOffset);
+  std::vector<IndirectBufferToken>& tokens = isShadow ? indirectTokensShadow : indirectTokens;
+  tokens.emplace_back(numInstances, instanceOffset);
 }
 
 GLsizei ModelGPUDataManager::getPrimitiveCount(bool isShadow) const

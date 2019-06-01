@@ -51,17 +51,17 @@ private:
   std::unordered_map<std::string, GLint> uniformCache;
 };
 
-inline void Shader::setVec4(const std::__cxx11::string &uniformName, const glm::vec4 &vec)
+inline void Shader::setVec4(const std::string &uniformName, const glm::vec4 &vec)
 {
   setVec4(uniformName, vec.x, vec.y, vec.z, vec.w);
 }
 
-inline void Shader::setVec3(const std::__cxx11::string &uniformName, const glm::vec3 &vec)
+inline void Shader::setVec3(const std::string &uniformName, const glm::vec3 &vec)
 {
   setVec3(uniformName, vec.x, vec.y, vec.z);
 }
 
-inline void Shader::setVec2(const std::__cxx11::string &uniformName, const glm::vec2 &vec)
+inline void Shader::setVec2(const std::string &uniformName, const glm::vec2 &vec)
 {
   setVec2(uniformName, vec.x, vec.y);
 }

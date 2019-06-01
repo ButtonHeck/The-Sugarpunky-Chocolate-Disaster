@@ -1,11 +1,15 @@
 TEMPLATE = app
-CONFIG += console c++14
+CONFIG += console c++17
 CONFIG -= app_bundle
 CONFIG -= qt
+DEFINES -= UNICODE
+DEFINES -= _UNICODE
 
 INCLUDEPATH += $$PWD/src
 
 SOURCES += \
+    deps/include/IL/luadevil.c \
+    deps/include/glm/detail/glm.cpp \
     src/main.cpp \
     src/game/Game.cpp \
     src/game/SaveLoadManager.cpp \
@@ -96,6 +100,438 @@ SOURCES += \
     src/game/world/models/ModelGPUDataManager.cpp
 
 HEADERS += \
+    deps/include/GL/eglew.h \
+    deps/include/GL/glew.h \
+    deps/include/GL/glxew.h \
+    deps/include/GL/wglew.h \
+    deps/include/GLFW/glfw3.h \
+    deps/include/GLFW/glfw3native.h \
+    deps/include/IL/DevIL.i \
+    deps/include/IL/config.h.win \
+    deps/include/IL/devil_cpp_wrapper.hpp \
+    deps/include/IL/devil_internal_exports.h \
+    deps/include/IL/il.h \
+    deps/include/IL/il_wrap.h \
+    deps/include/IL/ilu.h \
+    deps/include/IL/ilu_region.h \
+    deps/include/IL/ilut.h \
+    deps/include/IL/ilut_config.h \
+    deps/include/assimp/Compiler/poppack1.h \
+    deps/include/assimp/Compiler/pstdint.h \
+    deps/include/assimp/Compiler/pushpack1.h \
+    deps/include/assimp/DefaultLogger.hpp \
+    deps/include/assimp/Exporter.hpp \
+    deps/include/assimp/IOStream.hpp \
+    deps/include/assimp/IOSystem.hpp \
+    deps/include/assimp/Importer.hpp \
+    deps/include/assimp/LogStream.hpp \
+    deps/include/assimp/Logger.hpp \
+    deps/include/assimp/NullLogger.hpp \
+    deps/include/assimp/ProgressHandler.hpp \
+    deps/include/assimp/ai_assert.h \
+    deps/include/assimp/anim.h \
+    deps/include/assimp/camera.h \
+    deps/include/assimp/cexport.h \
+    deps/include/assimp/cfileio.h \
+    deps/include/assimp/cimport.h \
+    deps/include/assimp/color4.h \
+    deps/include/assimp/color4.inl \
+    deps/include/assimp/config.h \
+    deps/include/assimp/defs.h \
+    deps/include/assimp/importerdesc.h \
+    deps/include/assimp/light.h \
+    deps/include/assimp/material.h \
+    deps/include/assimp/material.inl \
+    deps/include/assimp/matrix3x3.h \
+    deps/include/assimp/matrix3x3.inl \
+    deps/include/assimp/matrix4x4.h \
+    deps/include/assimp/matrix4x4.inl \
+    deps/include/assimp/mesh.h \
+    deps/include/assimp/metadata.h \
+    deps/include/assimp/postprocess.h \
+    deps/include/assimp/quaternion.h \
+    deps/include/assimp/quaternion.inl \
+    deps/include/assimp/scene.h \
+    deps/include/assimp/texture.h \
+    deps/include/assimp/types.h \
+    deps/include/assimp/vector2.h \
+    deps/include/assimp/vector2.inl \
+    deps/include/assimp/vector3.h \
+    deps/include/assimp/vector3.inl \
+    deps/include/assimp/version.h \
+    deps/include/glm/common.hpp \
+    deps/include/glm/detail/_features.hpp \
+    deps/include/glm/detail/_fixes.hpp \
+    deps/include/glm/detail/_noise.hpp \
+    deps/include/glm/detail/_swizzle.hpp \
+    deps/include/glm/detail/_swizzle_func.hpp \
+    deps/include/glm/detail/_vectorize.hpp \
+    deps/include/glm/detail/compute_common.hpp \
+    deps/include/glm/detail/compute_vector_relational.hpp \
+    deps/include/glm/detail/func_common.inl \
+    deps/include/glm/detail/func_common_simd.inl \
+    deps/include/glm/detail/func_exponential.inl \
+    deps/include/glm/detail/func_exponential_simd.inl \
+    deps/include/glm/detail/func_geometric.inl \
+    deps/include/glm/detail/func_geometric_simd.inl \
+    deps/include/glm/detail/func_integer.inl \
+    deps/include/glm/detail/func_integer_simd.inl \
+    deps/include/glm/detail/func_matrix.inl \
+    deps/include/glm/detail/func_matrix_simd.inl \
+    deps/include/glm/detail/func_packing.inl \
+    deps/include/glm/detail/func_packing_simd.inl \
+    deps/include/glm/detail/func_trigonometric.inl \
+    deps/include/glm/detail/func_trigonometric_simd.inl \
+    deps/include/glm/detail/func_vector_relational.inl \
+    deps/include/glm/detail/func_vector_relational_simd.inl \
+    deps/include/glm/detail/qualifier.hpp \
+    deps/include/glm/detail/setup.hpp \
+    deps/include/glm/detail/type_float.hpp \
+    deps/include/glm/detail/type_half.hpp \
+    deps/include/glm/detail/type_half.inl \
+    deps/include/glm/detail/type_mat2x2.hpp \
+    deps/include/glm/detail/type_mat2x2.inl \
+    deps/include/glm/detail/type_mat2x3.hpp \
+    deps/include/glm/detail/type_mat2x3.inl \
+    deps/include/glm/detail/type_mat2x4.hpp \
+    deps/include/glm/detail/type_mat2x4.inl \
+    deps/include/glm/detail/type_mat3x2.hpp \
+    deps/include/glm/detail/type_mat3x2.inl \
+    deps/include/glm/detail/type_mat3x3.hpp \
+    deps/include/glm/detail/type_mat3x3.inl \
+    deps/include/glm/detail/type_mat3x4.hpp \
+    deps/include/glm/detail/type_mat3x4.inl \
+    deps/include/glm/detail/type_mat4x2.hpp \
+    deps/include/glm/detail/type_mat4x2.inl \
+    deps/include/glm/detail/type_mat4x3.hpp \
+    deps/include/glm/detail/type_mat4x3.inl \
+    deps/include/glm/detail/type_mat4x4.hpp \
+    deps/include/glm/detail/type_mat4x4.inl \
+    deps/include/glm/detail/type_mat4x4_simd.inl \
+    deps/include/glm/detail/type_quat.hpp \
+    deps/include/glm/detail/type_quat.inl \
+    deps/include/glm/detail/type_quat_simd.inl \
+    deps/include/glm/detail/type_vec1.hpp \
+    deps/include/glm/detail/type_vec1.inl \
+    deps/include/glm/detail/type_vec2.hpp \
+    deps/include/glm/detail/type_vec2.inl \
+    deps/include/glm/detail/type_vec3.hpp \
+    deps/include/glm/detail/type_vec3.inl \
+    deps/include/glm/detail/type_vec4.hpp \
+    deps/include/glm/detail/type_vec4.inl \
+    deps/include/glm/detail/type_vec4_simd.inl \
+    deps/include/glm/exponential.hpp \
+    deps/include/glm/ext.hpp \
+    deps/include/glm/ext/matrix_clip_space.hpp \
+    deps/include/glm/ext/matrix_clip_space.inl \
+    deps/include/glm/ext/matrix_common.hpp \
+    deps/include/glm/ext/matrix_common.inl \
+    deps/include/glm/ext/matrix_double2x2.hpp \
+    deps/include/glm/ext/matrix_double2x2_precision.hpp \
+    deps/include/glm/ext/matrix_double2x3.hpp \
+    deps/include/glm/ext/matrix_double2x3_precision.hpp \
+    deps/include/glm/ext/matrix_double2x4.hpp \
+    deps/include/glm/ext/matrix_double2x4_precision.hpp \
+    deps/include/glm/ext/matrix_double3x2.hpp \
+    deps/include/glm/ext/matrix_double3x2_precision.hpp \
+    deps/include/glm/ext/matrix_double3x3.hpp \
+    deps/include/glm/ext/matrix_double3x3_precision.hpp \
+    deps/include/glm/ext/matrix_double3x4.hpp \
+    deps/include/glm/ext/matrix_double3x4_precision.hpp \
+    deps/include/glm/ext/matrix_double4x2.hpp \
+    deps/include/glm/ext/matrix_double4x2_precision.hpp \
+    deps/include/glm/ext/matrix_double4x3.hpp \
+    deps/include/glm/ext/matrix_double4x3_precision.hpp \
+    deps/include/glm/ext/matrix_double4x4.hpp \
+    deps/include/glm/ext/matrix_double4x4_precision.hpp \
+    deps/include/glm/ext/matrix_float2x2.hpp \
+    deps/include/glm/ext/matrix_float2x2_precision.hpp \
+    deps/include/glm/ext/matrix_float2x3.hpp \
+    deps/include/glm/ext/matrix_float2x3_precision.hpp \
+    deps/include/glm/ext/matrix_float2x4.hpp \
+    deps/include/glm/ext/matrix_float2x4_precision.hpp \
+    deps/include/glm/ext/matrix_float3x2.hpp \
+    deps/include/glm/ext/matrix_float3x2_precision.hpp \
+    deps/include/glm/ext/matrix_float3x3.hpp \
+    deps/include/glm/ext/matrix_float3x3_precision.hpp \
+    deps/include/glm/ext/matrix_float3x4.hpp \
+    deps/include/glm/ext/matrix_float3x4_precision.hpp \
+    deps/include/glm/ext/matrix_float4x2.hpp \
+    deps/include/glm/ext/matrix_float4x2_precision.hpp \
+    deps/include/glm/ext/matrix_float4x3.hpp \
+    deps/include/glm/ext/matrix_float4x3_precision.hpp \
+    deps/include/glm/ext/matrix_float4x4.hpp \
+    deps/include/glm/ext/matrix_float4x4_precision.hpp \
+    deps/include/glm/ext/matrix_projection.hpp \
+    deps/include/glm/ext/matrix_projection.inl \
+    deps/include/glm/ext/matrix_relational.hpp \
+    deps/include/glm/ext/matrix_relational.inl \
+    deps/include/glm/ext/matrix_transform.hpp \
+    deps/include/glm/ext/matrix_transform.inl \
+    deps/include/glm/ext/quaternion_common.hpp \
+    deps/include/glm/ext/quaternion_common.inl \
+    deps/include/glm/ext/quaternion_common_simd.inl \
+    deps/include/glm/ext/quaternion_double.hpp \
+    deps/include/glm/ext/quaternion_double_precision.hpp \
+    deps/include/glm/ext/quaternion_exponential.hpp \
+    deps/include/glm/ext/quaternion_exponential.inl \
+    deps/include/glm/ext/quaternion_float.hpp \
+    deps/include/glm/ext/quaternion_float_precision.hpp \
+    deps/include/glm/ext/quaternion_geometric.hpp \
+    deps/include/glm/ext/quaternion_geometric.inl \
+    deps/include/glm/ext/quaternion_relational.hpp \
+    deps/include/glm/ext/quaternion_relational.inl \
+    deps/include/glm/ext/quaternion_transform.hpp \
+    deps/include/glm/ext/quaternion_transform.inl \
+    deps/include/glm/ext/quaternion_trigonometric.hpp \
+    deps/include/glm/ext/quaternion_trigonometric.inl \
+    deps/include/glm/ext/scalar_common.hpp \
+    deps/include/glm/ext/scalar_common.inl \
+    deps/include/glm/ext/scalar_constants.hpp \
+    deps/include/glm/ext/scalar_constants.inl \
+    deps/include/glm/ext/scalar_int_sized.hpp \
+    deps/include/glm/ext/scalar_relational.hpp \
+    deps/include/glm/ext/scalar_relational.inl \
+    deps/include/glm/ext/scalar_uint_sized.hpp \
+    deps/include/glm/ext/scalar_ulp.hpp \
+    deps/include/glm/ext/scalar_ulp.inl \
+    deps/include/glm/ext/vector_bool1.hpp \
+    deps/include/glm/ext/vector_bool1_precision.hpp \
+    deps/include/glm/ext/vector_bool2.hpp \
+    deps/include/glm/ext/vector_bool2_precision.hpp \
+    deps/include/glm/ext/vector_bool3.hpp \
+    deps/include/glm/ext/vector_bool3_precision.hpp \
+    deps/include/glm/ext/vector_bool4.hpp \
+    deps/include/glm/ext/vector_bool4_precision.hpp \
+    deps/include/glm/ext/vector_common.hpp \
+    deps/include/glm/ext/vector_common.inl \
+    deps/include/glm/ext/vector_double1.hpp \
+    deps/include/glm/ext/vector_double1_precision.hpp \
+    deps/include/glm/ext/vector_double2.hpp \
+    deps/include/glm/ext/vector_double2_precision.hpp \
+    deps/include/glm/ext/vector_double3.hpp \
+    deps/include/glm/ext/vector_double3_precision.hpp \
+    deps/include/glm/ext/vector_double4.hpp \
+    deps/include/glm/ext/vector_double4_precision.hpp \
+    deps/include/glm/ext/vector_float1.hpp \
+    deps/include/glm/ext/vector_float1_precision.hpp \
+    deps/include/glm/ext/vector_float2.hpp \
+    deps/include/glm/ext/vector_float2_precision.hpp \
+    deps/include/glm/ext/vector_float3.hpp \
+    deps/include/glm/ext/vector_float3_precision.hpp \
+    deps/include/glm/ext/vector_float4.hpp \
+    deps/include/glm/ext/vector_float4_precision.hpp \
+    deps/include/glm/ext/vector_int1.hpp \
+    deps/include/glm/ext/vector_int1_precision.hpp \
+    deps/include/glm/ext/vector_int2.hpp \
+    deps/include/glm/ext/vector_int2_precision.hpp \
+    deps/include/glm/ext/vector_int3.hpp \
+    deps/include/glm/ext/vector_int3_precision.hpp \
+    deps/include/glm/ext/vector_int4.hpp \
+    deps/include/glm/ext/vector_int4_precision.hpp \
+    deps/include/glm/ext/vector_relational.hpp \
+    deps/include/glm/ext/vector_relational.inl \
+    deps/include/glm/ext/vector_uint1.hpp \
+    deps/include/glm/ext/vector_uint1_precision.hpp \
+    deps/include/glm/ext/vector_uint2.hpp \
+    deps/include/glm/ext/vector_uint2_precision.hpp \
+    deps/include/glm/ext/vector_uint3.hpp \
+    deps/include/glm/ext/vector_uint3_precision.hpp \
+    deps/include/glm/ext/vector_uint4.hpp \
+    deps/include/glm/ext/vector_uint4_precision.hpp \
+    deps/include/glm/ext/vector_ulp.hpp \
+    deps/include/glm/ext/vector_ulp.inl \
+    deps/include/glm/fwd.hpp \
+    deps/include/glm/geometric.hpp \
+    deps/include/glm/glm.hpp \
+    deps/include/glm/gtc/bitfield.hpp \
+    deps/include/glm/gtc/bitfield.inl \
+    deps/include/glm/gtc/color_space.hpp \
+    deps/include/glm/gtc/color_space.inl \
+    deps/include/glm/gtc/constants.hpp \
+    deps/include/glm/gtc/constants.inl \
+    deps/include/glm/gtc/epsilon.hpp \
+    deps/include/glm/gtc/epsilon.inl \
+    deps/include/glm/gtc/integer.hpp \
+    deps/include/glm/gtc/integer.inl \
+    deps/include/glm/gtc/matrix_access.hpp \
+    deps/include/glm/gtc/matrix_access.inl \
+    deps/include/glm/gtc/matrix_integer.hpp \
+    deps/include/glm/gtc/matrix_inverse.hpp \
+    deps/include/glm/gtc/matrix_inverse.inl \
+    deps/include/glm/gtc/matrix_transform.hpp \
+    deps/include/glm/gtc/matrix_transform.inl \
+    deps/include/glm/gtc/noise.hpp \
+    deps/include/glm/gtc/noise.inl \
+    deps/include/glm/gtc/packing.hpp \
+    deps/include/glm/gtc/packing.inl \
+    deps/include/glm/gtc/quaternion.hpp \
+    deps/include/glm/gtc/quaternion.inl \
+    deps/include/glm/gtc/quaternion_simd.inl \
+    deps/include/glm/gtc/random.hpp \
+    deps/include/glm/gtc/random.inl \
+    deps/include/glm/gtc/reciprocal.hpp \
+    deps/include/glm/gtc/reciprocal.inl \
+    deps/include/glm/gtc/round.hpp \
+    deps/include/glm/gtc/round.inl \
+    deps/include/glm/gtc/type_aligned.hpp \
+    deps/include/glm/gtc/type_precision.hpp \
+    deps/include/glm/gtc/type_precision.inl \
+    deps/include/glm/gtc/type_ptr.hpp \
+    deps/include/glm/gtc/type_ptr.inl \
+    deps/include/glm/gtc/ulp.hpp \
+    deps/include/glm/gtc/ulp.inl \
+    deps/include/glm/gtc/vec1.hpp \
+    deps/include/glm/gtx/associated_min_max.hpp \
+    deps/include/glm/gtx/associated_min_max.inl \
+    deps/include/glm/gtx/bit.hpp \
+    deps/include/glm/gtx/bit.inl \
+    deps/include/glm/gtx/closest_point.hpp \
+    deps/include/glm/gtx/closest_point.inl \
+    deps/include/glm/gtx/color_encoding.hpp \
+    deps/include/glm/gtx/color_encoding.inl \
+    deps/include/glm/gtx/color_space.hpp \
+    deps/include/glm/gtx/color_space.inl \
+    deps/include/glm/gtx/color_space_YCoCg.hpp \
+    deps/include/glm/gtx/color_space_YCoCg.inl \
+    deps/include/glm/gtx/common.hpp \
+    deps/include/glm/gtx/common.inl \
+    deps/include/glm/gtx/compatibility.hpp \
+    deps/include/glm/gtx/compatibility.inl \
+    deps/include/glm/gtx/component_wise.hpp \
+    deps/include/glm/gtx/component_wise.inl \
+    deps/include/glm/gtx/dual_quaternion.hpp \
+    deps/include/glm/gtx/dual_quaternion.inl \
+    deps/include/glm/gtx/easing.hpp \
+    deps/include/glm/gtx/easing.inl \
+    deps/include/glm/gtx/euler_angles.hpp \
+    deps/include/glm/gtx/euler_angles.inl \
+    deps/include/glm/gtx/extend.hpp \
+    deps/include/glm/gtx/extend.inl \
+    deps/include/glm/gtx/extended_min_max.hpp \
+    deps/include/glm/gtx/extended_min_max.inl \
+    deps/include/glm/gtx/exterior_product.hpp \
+    deps/include/glm/gtx/exterior_product.inl \
+    deps/include/glm/gtx/fast_exponential.hpp \
+    deps/include/glm/gtx/fast_exponential.inl \
+    deps/include/glm/gtx/fast_square_root.hpp \
+    deps/include/glm/gtx/fast_square_root.inl \
+    deps/include/glm/gtx/fast_trigonometry.hpp \
+    deps/include/glm/gtx/fast_trigonometry.inl \
+    deps/include/glm/gtx/float_notmalize.inl \
+    deps/include/glm/gtx/functions.hpp \
+    deps/include/glm/gtx/functions.inl \
+    deps/include/glm/gtx/gradient_paint.hpp \
+    deps/include/glm/gtx/gradient_paint.inl \
+    deps/include/glm/gtx/handed_coordinate_space.hpp \
+    deps/include/glm/gtx/handed_coordinate_space.inl \
+    deps/include/glm/gtx/hash.hpp \
+    deps/include/glm/gtx/hash.inl \
+    deps/include/glm/gtx/integer.hpp \
+    deps/include/glm/gtx/integer.inl \
+    deps/include/glm/gtx/intersect.hpp \
+    deps/include/glm/gtx/intersect.inl \
+    deps/include/glm/gtx/io.hpp \
+    deps/include/glm/gtx/io.inl \
+    deps/include/glm/gtx/log_base.hpp \
+    deps/include/glm/gtx/log_base.inl \
+    deps/include/glm/gtx/matrix_cross_product.hpp \
+    deps/include/glm/gtx/matrix_cross_product.inl \
+    deps/include/glm/gtx/matrix_decompose.hpp \
+    deps/include/glm/gtx/matrix_decompose.inl \
+    deps/include/glm/gtx/matrix_factorisation.hpp \
+    deps/include/glm/gtx/matrix_factorisation.inl \
+    deps/include/glm/gtx/matrix_interpolation.hpp \
+    deps/include/glm/gtx/matrix_interpolation.inl \
+    deps/include/glm/gtx/matrix_major_storage.hpp \
+    deps/include/glm/gtx/matrix_major_storage.inl \
+    deps/include/glm/gtx/matrix_operation.hpp \
+    deps/include/glm/gtx/matrix_operation.inl \
+    deps/include/glm/gtx/matrix_query.hpp \
+    deps/include/glm/gtx/matrix_query.inl \
+    deps/include/glm/gtx/matrix_transform_2d.hpp \
+    deps/include/glm/gtx/matrix_transform_2d.inl \
+    deps/include/glm/gtx/mixed_product.hpp \
+    deps/include/glm/gtx/mixed_product.inl \
+    deps/include/glm/gtx/norm.hpp \
+    deps/include/glm/gtx/norm.inl \
+    deps/include/glm/gtx/normal.hpp \
+    deps/include/glm/gtx/normal.inl \
+    deps/include/glm/gtx/normalize_dot.hpp \
+    deps/include/glm/gtx/normalize_dot.inl \
+    deps/include/glm/gtx/number_precision.hpp \
+    deps/include/glm/gtx/number_precision.inl \
+    deps/include/glm/gtx/optimum_pow.hpp \
+    deps/include/glm/gtx/optimum_pow.inl \
+    deps/include/glm/gtx/orthonormalize.hpp \
+    deps/include/glm/gtx/orthonormalize.inl \
+    deps/include/glm/gtx/perpendicular.hpp \
+    deps/include/glm/gtx/perpendicular.inl \
+    deps/include/glm/gtx/polar_coordinates.hpp \
+    deps/include/glm/gtx/polar_coordinates.inl \
+    deps/include/glm/gtx/projection.hpp \
+    deps/include/glm/gtx/projection.inl \
+    deps/include/glm/gtx/quaternion.hpp \
+    deps/include/glm/gtx/quaternion.inl \
+    deps/include/glm/gtx/range.hpp \
+    deps/include/glm/gtx/raw_data.hpp \
+    deps/include/glm/gtx/raw_data.inl \
+    deps/include/glm/gtx/rotate_normalized_axis.hpp \
+    deps/include/glm/gtx/rotate_normalized_axis.inl \
+    deps/include/glm/gtx/rotate_vector.hpp \
+    deps/include/glm/gtx/rotate_vector.inl \
+    deps/include/glm/gtx/scalar_multiplication.hpp \
+    deps/include/glm/gtx/scalar_relational.hpp \
+    deps/include/glm/gtx/scalar_relational.inl \
+    deps/include/glm/gtx/spline.hpp \
+    deps/include/glm/gtx/spline.inl \
+    deps/include/glm/gtx/std_based_type.hpp \
+    deps/include/glm/gtx/std_based_type.inl \
+    deps/include/glm/gtx/string_cast.hpp \
+    deps/include/glm/gtx/string_cast.inl \
+    deps/include/glm/gtx/texture.hpp \
+    deps/include/glm/gtx/texture.inl \
+    deps/include/glm/gtx/transform.hpp \
+    deps/include/glm/gtx/transform.inl \
+    deps/include/glm/gtx/transform2.hpp \
+    deps/include/glm/gtx/transform2.inl \
+    deps/include/glm/gtx/type_aligned.hpp \
+    deps/include/glm/gtx/type_aligned.inl \
+    deps/include/glm/gtx/type_trait.hpp \
+    deps/include/glm/gtx/type_trait.inl \
+    deps/include/glm/gtx/vec_swizzle.hpp \
+    deps/include/glm/gtx/vector_angle.hpp \
+    deps/include/glm/gtx/vector_angle.inl \
+    deps/include/glm/gtx/vector_query.hpp \
+    deps/include/glm/gtx/vector_query.inl \
+    deps/include/glm/gtx/wrap.hpp \
+    deps/include/glm/gtx/wrap.inl \
+    deps/include/glm/integer.hpp \
+    deps/include/glm/mat2x2.hpp \
+    deps/include/glm/mat2x3.hpp \
+    deps/include/glm/mat2x4.hpp \
+    deps/include/glm/mat3x2.hpp \
+    deps/include/glm/mat3x3.hpp \
+    deps/include/glm/mat3x4.hpp \
+    deps/include/glm/mat4x2.hpp \
+    deps/include/glm/mat4x3.hpp \
+    deps/include/glm/mat4x4.hpp \
+    deps/include/glm/matrix.hpp \
+    deps/include/glm/packing.hpp \
+    deps/include/glm/simd/common.h \
+    deps/include/glm/simd/exponential.h \
+    deps/include/glm/simd/geometric.h \
+    deps/include/glm/simd/integer.h \
+    deps/include/glm/simd/matrix.h \
+    deps/include/glm/simd/packing.h \
+    deps/include/glm/simd/platform.h \
+    deps/include/glm/simd/trigonometric.h \
+    deps/include/glm/simd/vector_relational.h \
+    deps/include/glm/trigonometric.hpp \
+    deps/include/glm/vec2.hpp \
+    deps/include/glm/vec3.hpp \
+    deps/include/glm/vec4.hpp \
+    deps/include/glm/vector_relational.hpp \
     src/game/Game.h \
     src/game/SaveLoadManager.h \
     src/game/Options.h \
@@ -192,29 +628,41 @@ HEADERS += \
     src/game/world/models/ModelRenderer.h \
     src/game/world/models/ModelGPUDataManager.h
 
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
+#unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGL
 
-INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
-DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+#INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+#DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
 
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGLEW
+#unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lGLEW
 
-INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
-DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+#INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+#DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
 
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lglfw
+#unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lglfw
 
-INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
-DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+#INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+#DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
 
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lIL
+#unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -lIL
 
-INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
-DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+#INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+#DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
 
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../../usr/lib/x86_64-linux-gnu/libIL.a
+#unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../../usr/lib/x86_64-linux-gnu/libIL.a
 
 DISTFILES += \
+    deps/include/IL/build-lua \
+    deps/include/IL/build-python \
+    deps/include/IL/stamp-h.in \
+    deps/include/glm/CMakeLists.txt \
+    deps/lib/GL/glew32.lib \
+    deps/lib/GL/glew32s.lib \
+    deps/lib/GLFW/libglfw3.a \
+    deps/lib/GLFW/libglfw3dll.a \
+    deps/lib/IL/DevIL.lib \
+    deps/lib/IL/ILU.lib \
+    deps/lib/IL/ILUT.lib \
+    deps/lib/assimp/assimp.lib \
     res/textures/land.jpg \
     res/textures/land2.jpg \
     res/textures/hill.jpg \
@@ -684,9 +1132,32 @@ DISTFILES += \
     res/models/environment/hemisphere/hemisphere.mtl \
     res/models/environment/sphere/sphere.mtl
 
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
+#unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lassimp
 
-INCLUDEPATH += $$PWD/../../../../../usr/local/include
-DEPENDPATH += $$PWD/../../../../../usr/local/include
+#INCLUDEPATH += $$PWD/../../../../../usr/local/include
+#DEPENDPATH += $$PWD/../../../../../usr/local/include
 
 unix:!macx: LIBS += -lpthread-2.23
+
+
+win32: LIBS += -L$$PWD/deps/lib/GL/ -lglew32
+
+INCLUDEPATH += $$PWD/deps/include
+DEPENDPATH += $$PWD/deps/include
+
+win32: LIBS += -L$$PWD/deps/lib/GLFW/ -lglfw3dll
+
+INCLUDEPATH += $$PWD/deps/include
+DEPENDPATH += $$PWD/deps/include
+
+win32: LIBS += -L$$PWD/deps/lib/IL/ -lDevIL
+
+INCLUDEPATH += $$PWD/deps/include
+DEPENDPATH += $$PWD/deps/include
+
+win32: LIBS += -lOpengl32
+
+win32: LIBS += -L$$PWD/deps/lib/assimp/ -lassimp
+
+INCLUDEPATH += $$PWD/deps/include
+DEPENDPATH += $$PWD/deps/include
