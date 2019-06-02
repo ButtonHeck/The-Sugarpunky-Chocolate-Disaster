@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/models/Mesh.h"
+#include "Mesh.h"
 
 /**
  * @brief static function for mesh creation

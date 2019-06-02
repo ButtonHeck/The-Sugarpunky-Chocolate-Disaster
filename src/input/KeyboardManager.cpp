@@ -1,4 +1,4 @@
-#include "input/KeyboardManager.h"
+#include "KeyboardManager.h"
 
 extern float debug_sunSpeed;
 

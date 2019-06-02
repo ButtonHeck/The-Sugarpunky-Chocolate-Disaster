@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/ambience/theSun/TheSunRenderer.h"
+#include "TheSunRenderer.h"
 
 /**
  * @param theSun entity to peek VAO from during rendering

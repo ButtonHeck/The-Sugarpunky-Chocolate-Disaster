@@ -1,5 +1,5 @@
-﻿################################################################################
-# Данный GITIGNORE-файл был автоматически создан Microsoft(R) Visual Studio.
-################################################################################
-
-/.vs/The Sugarpunky Chocolate Disaster/v15
+﻿/.vs
+/x64
+/The Sugarpunky Chocolate Disaster.vcxproj.user
+/The Sugarpunky Chocolate Disaster.vcxproj.filters
+/The Sugarpunky Chocolate Disaster.vcxproj

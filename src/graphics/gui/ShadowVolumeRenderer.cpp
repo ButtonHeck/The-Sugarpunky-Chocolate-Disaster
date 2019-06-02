@@ -1,4 +1,4 @@
-#include "graphics/gui/ShadowVolumeRenderer.h"
+#include "ShadowVolumeRenderer.h"
 
 ShadowVolumeRenderer::ShadowVolumeRenderer(ShadowVolume &shadowVolume)
   :

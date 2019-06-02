@@ -5,9 +5,9 @@
 #include <unordered_map>
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
-#include "util/DirectoriesSettings.h"
-#include "graphics/GraphicsSettings.h"
-#include "util/Logger.h"
+#include "../../src/util/DirectoriesSettings.h"
+#include "../../src/graphics/GraphicsSettings.h"
+#include "../../src/util/Logger.h"
 
 class Shader
 {

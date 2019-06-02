@@ -1,7 +1,7 @@
 #ifndef LANDRENDERER_H
 #define LANDRENDERER_H
-#include "game/world/terrain/land/LandGenerator.h"
-#include "util/BenchmarkTimer.h"
+#include "LandGenerator.h"
+#include "../../src/util/BenchmarkTimer.h"
 
 class LandRenderer
 {

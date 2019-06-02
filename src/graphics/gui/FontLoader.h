@@ -5,8 +5,8 @@
 #include <GL/glew.h>
 #include <IL/il.h>
 #include <unordered_map>
-#include "graphics/textures/TextureUnits.h"
-#include "util/Logger.h"
+#include "../../src/graphics/textures/TextureUnits.h"
+#include "../../src/util/Logger.h"
 
 struct Character {
   int asciiCode, x, y, width, height, xoffset, yoffset, xadvance;

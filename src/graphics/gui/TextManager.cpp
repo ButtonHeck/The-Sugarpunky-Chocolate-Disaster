@@ -1,4 +1,4 @@
-#include "graphics/gui/TextManager.h"
+#include "TextManager.h"
 
 TextManager::TextManager(const std::string &fontFile, const std::string &fontTexture, Shader &shader, const ScreenResolution &screenResolution)
   :

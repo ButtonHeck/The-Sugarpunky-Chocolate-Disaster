@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/models/plants/PlantsShader.h"
+#include "PlantsShader.h"
 
 /**
  * @param renderPhongShader compiled Phong shader program to use during rendering

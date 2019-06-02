@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/models/ModelChunk.h"
+#include "ModelChunk.h"
 
 ModelChunk::ModelChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom, float height)
   :

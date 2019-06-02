@@ -1,8 +1,8 @@
 #ifndef HILLSRENDERER_H
 #define HILLSRENDERER_H
-#include "game/world/terrain/hills/HillsGenerator.h"
-#include "game/world/terrain/hills/HillsShader.h"
-#include "util/BenchmarkTimer.h"
+#include "HillsGenerator.h"
+#include "HillsShader.h"
+#include "../../src/util/BenchmarkTimer.h"
 
 class HillsRenderer
 {

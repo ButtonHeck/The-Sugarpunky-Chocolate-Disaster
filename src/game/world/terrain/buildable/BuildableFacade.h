@@ -1,10 +1,10 @@
 #ifndef BUILDABLEFACADE_H
 #define BUILDABLEFACADE_H
-#include "game/world/terrain/buildable/BuildableGenerator.h"
-#include "game/world/terrain/buildable/BuildableShader.h"
-#include "game/world/terrain/buildable/BuildableRenderer.h"
-#include "util/BenchmarkTimer.h"
-#include "input/MouseInputManager.h"
+#include "BuildableGenerator.h"
+#include "BuildableShader.h"
+#include "BuildableRenderer.h"
+#include "../../src/util/BenchmarkTimer.h"
+#include "../../src/input/MouseInputManager.h"
 
 class BuildableFacade
 {

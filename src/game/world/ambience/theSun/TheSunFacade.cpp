@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/ambience/theSun/TheSunFacade.h"
+#include "TheSunFacade.h"
 
 /**
  * @brief initialize member variables, setup renderer point size and calculate maximum samples values

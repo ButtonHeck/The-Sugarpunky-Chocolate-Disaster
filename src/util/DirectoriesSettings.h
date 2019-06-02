@@ -1,7 +1,7 @@
 #ifndef DIRECTORIESSETTINGS
 #define DIRECTORIESSETTINGS
 #include <string>
-#include <unistd.h>
+#include <direct.h>
 
 const std::string getResourcesDirectory();
 const std::string RES_DIR = getResourcesDirectory() + "/res/";

@@ -1,6 +1,6 @@
 #ifndef BUIDABLESHADER_H
 #define BUIDABLESHADER_H
-#include "graphics/shaders/Shader.h"
+#include "../../src/graphics/shaders/Shader.h"
 
 class BuildableShader
 {

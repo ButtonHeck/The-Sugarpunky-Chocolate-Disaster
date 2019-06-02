@@ -1,4 +1,4 @@
-#include "graphics/openglObjects/BufferCollection.h"
+#include "BufferCollection.h"
 
 BufferCollection::BufferCollection(int flags)
 {

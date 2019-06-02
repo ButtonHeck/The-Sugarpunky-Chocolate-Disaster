@@ -1,4 +1,4 @@
-#include "game/world/terrain/shore/ShoreRenderer.h"
+#include "ShoreRenderer.h"
 
 ShoreRenderer::ShoreRenderer(ShoreGenerator &generator)
   :

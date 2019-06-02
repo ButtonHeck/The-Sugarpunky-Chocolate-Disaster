@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/models/plants/GrassRenderer.h"
+#include "GrassRenderer.h"
 
 /**
  * @brief just delegates a draw call for each given model and switches GL_CULL_FACE setting

@@ -20,7 +20,7 @@
 
 #ifndef TREESRENDERER_H
 #define TREESRENDERER_H
-#include "game/world/models/Model.h"
+#include "../../src/game/world/models/Model.h"
 
 /**
  * @brief Renderer wrapper for the entire bunch of land trees and hill trees models.

@@ -1,7 +1,7 @@
 #ifndef FRUSTUMRENDERER_H
 #define FRUSTUMRENDERER_H
-#include "graphics/Frustum.h"
-#include "graphics/openglObjects/BufferCollection.h"
+#include "../../src/graphics/Frustum.h"
+#include "../../src/graphics/openglObjects/BufferCollection.h"
 
 class FrustumRenderer
 {

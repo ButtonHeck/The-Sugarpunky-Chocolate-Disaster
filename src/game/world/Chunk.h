@@ -1,8 +1,8 @@
 #ifndef CHUNK_H
 #define CHUNK_H
 #include <glm/vec2.hpp>
-#include "game/world/SceneSettings.h"
-#include "graphics/Frustum.h"
+#include "../../src/game/world/SceneSettings.h"
+#include "../../src/graphics/Frustum.h"
 
 class Chunk
 {

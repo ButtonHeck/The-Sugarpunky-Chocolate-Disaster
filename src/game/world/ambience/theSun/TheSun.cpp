@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/ambience/theSun/TheSun.h"
+#include "TheSun.h"
 
 /**
  * @brief initialize member variables and setup array buffer

@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/ambience/lensFlare/LensFlareRenderer.h"
+#include "LensFlareRenderer.h"
 
 /**
  * @param basicGLBuffer buffer collection to fetch VAO from during rendering

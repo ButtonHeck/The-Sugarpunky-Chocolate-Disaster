@@ -21,7 +21,7 @@
 #ifndef SKYBOX_H
 #define SKYBOX_H
 #include <GL/glew.h>
-#include "graphics/openglObjects/BufferCollection.h"
+#include "../../src/graphics/openglObjects/BufferCollection.h"
 
 /**
  * @brief This class represents a simple wrapper for box-like structure of vertices

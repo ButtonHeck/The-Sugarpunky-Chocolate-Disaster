@@ -1,4 +1,4 @@
-#include "util/BenchmarkTimer.h"
+#include "BenchmarkTimer.h"
 
 std::ofstream BenchmarkTimer::perFrameLogStream, BenchmarkTimer::perAppLogStream;
 bool BenchmarkTimer::outputCreated = false;

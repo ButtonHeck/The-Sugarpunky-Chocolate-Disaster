@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/ambience/skybox/SkyboxFacade.h"
+#include "SkyboxFacade.h"
 
 /**
  * @param renderShader compiled program fed to personal shader manager

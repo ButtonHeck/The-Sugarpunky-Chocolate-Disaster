@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/ambience/theSun/TheSunShader.h"
+#include "TheSunShader.h"
 
 /**
  * @param renderShader compiled shader program to use during rendering

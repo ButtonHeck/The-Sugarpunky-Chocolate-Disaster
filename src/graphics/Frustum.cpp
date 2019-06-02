@@ -1,4 +1,4 @@
-#include "graphics/Frustum.h"
+#include "Frustum.h"
 
 Frustum::Frustum()
 {

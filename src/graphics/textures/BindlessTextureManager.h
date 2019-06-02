@@ -1,8 +1,8 @@
 #ifndef BINDLESSTEXTUREMANAGER_H
 #define BINDLESSTEXTUREMANAGER_H
 #include <GL/glew.h>
-#include "graphics/shaders/Shader.h"
-#include "util/typeAliases.h"
+#include "../../src/graphics/shaders/Shader.h"
+#include "../../src/util/typeAliases.h"
 
 enum BINDLESS_TEXTURE_TYPE
 {

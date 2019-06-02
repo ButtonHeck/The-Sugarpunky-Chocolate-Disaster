@@ -1,9 +1,9 @@
 #ifndef SHOREFACADE_H
 #define SHOREFACADE_H
-#include "game/world/terrain/shore/ShoreGenerator.h"
-#include "game/world/terrain/shore/ShoreShader.h"
-#include "game/world/terrain/shore/ShoreRenderer.h"
-#include "util/BenchmarkTimer.h"
+#include "ShoreGenerator.h"
+#include "ShoreShader.h"
+#include "ShoreRenderer.h"
+#include "../../src/util/BenchmarkTimer.h"
 
 class ShoreFacade
 {

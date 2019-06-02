@@ -21,12 +21,12 @@
 #ifndef LENSFLAREFACADE_H
 #define LENSFLAREFACADE_H
 #include <vector>
-#include "game/world/ambience/lensFlare/LensFlareElement.h"
-#include "game/world/ambience/lensFlare/LensFlareRenderer.h"
-#include "game/world/ambience/lensFlare/LensFlareShader.h"
-#include "graphics/openglObjects/BufferCollection.h"
-#include "graphics/textures/TextureLoader.h"
-#include "graphics/textures/BindlessTextureManager.h"
+#include "LensFlareElement.h"
+#include "LensFlareRenderer.h"
+#include "LensFlareShader.h"
+#include "../../src/graphics/openglObjects/BufferCollection.h"
+#include "../../src/graphics/textures/TextureLoader.h"
+#include "../../src/graphics/textures/BindlessTextureManager.h"
 
 constexpr unsigned int NUM_LENS_FLARES = 7;
 

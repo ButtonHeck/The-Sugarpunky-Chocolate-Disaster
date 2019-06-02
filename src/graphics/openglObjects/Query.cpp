@@ -1,4 +1,4 @@
-#include "graphics/openglObjects/Query.h"
+#include "Query.h"
 
 Query::Query(GLuint type)
   :

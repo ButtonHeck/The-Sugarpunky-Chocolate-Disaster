@@ -20,7 +20,7 @@
 
 #ifndef LANDPLANTSGENERATOR_H
 #define LANDPLANTSGENERATOR_H
-#include "game/world/models/plants/PlantGenerator.h"
+#include "PlantGenerator.h"
 
 /**
  * @brief Generator for plants located on the land.

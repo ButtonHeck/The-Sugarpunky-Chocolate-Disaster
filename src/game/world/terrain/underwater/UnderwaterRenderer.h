@@ -1,6 +1,6 @@
 #ifndef UNDERWATERRENDERER_H
 #define UNDERWATERRENDERER_H
-#include "game/world/terrain/underwater/UnderwaterGenerator.h"
+#include "UnderwaterGenerator.h"
 
 class UnderwaterRenderer
 {

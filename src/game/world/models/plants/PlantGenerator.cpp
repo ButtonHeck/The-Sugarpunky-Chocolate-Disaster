@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/models/plants/PlantGenerator.h"
+#include "PlantGenerator.h"
 
 /**
  * @brief sets seed for randomizer

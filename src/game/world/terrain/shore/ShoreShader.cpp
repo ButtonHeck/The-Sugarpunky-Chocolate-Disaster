@@ -1,4 +1,4 @@
-#include "game/world/terrain/shore/ShoreShader.h"
+#include "ShoreShader.h"
 
 ShoreShader::ShoreShader(Shader &renderShader, Shader &normalsShader)
   :

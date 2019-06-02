@@ -20,7 +20,7 @@
 
 #ifndef LENSFLARESHADER_H
 #define LENSFLARESHADER_H
-#include "graphics/shaders/Shader.h"
+#include "../../src/graphics/shaders/Shader.h"
 
 /**
  * @brief Personal shader manager for lens flare effect, responsible for updating non-constant uniform variables

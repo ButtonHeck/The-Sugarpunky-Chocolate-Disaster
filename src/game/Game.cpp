@@ -1,4 +1,4 @@
-#include "game/Game.h"
+#include "Game.h"
 
 Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& options, const ScreenResolution &screenResolution)
   :

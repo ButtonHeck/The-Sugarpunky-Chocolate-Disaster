@@ -1,4 +1,4 @@
-#include "game/world/terrain/water/WaterRenderer.h"
+#include "WaterRenderer.h"
 
 WaterRenderer::WaterRenderer(WaterShader &shaders, WaterGenerator &generator)
   :

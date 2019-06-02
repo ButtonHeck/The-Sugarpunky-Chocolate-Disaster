@@ -1,4 +1,4 @@
-#include "game/world/terrain/buildable/BuildableRenderer.h"
+#include "BuildableRenderer.h"
 
 BuildableRenderer::BuildableRenderer(BuildableGenerator &generator)
   :

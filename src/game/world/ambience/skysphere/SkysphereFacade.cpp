@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/ambience/skysphere/SkysphereFacade.h"
+#include "SkysphereFacade.h"
 
 /**
  * @brief Constructor with hardcoded paths for (hemi)sphere models

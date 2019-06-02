@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/models/plants/PlantsFacade.h"
+#include "PlantsFacade.h"
 
 /**
  * @param renderPhongShader compiled Phong shader program provided to a personal shader manager

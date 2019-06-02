@@ -1,4 +1,4 @@
-#include "input/MouseInputManager.h"
+#include "MouseInputManager.h"
 
 extern GLFWwindow* window;
 extern Camera camera;

@@ -23,13 +23,13 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#include "game/world/models/Mesh.h"
-#include "graphics/textures/TextureLoader.h"
-#include "graphics/textures/TextureUnits.h"
-#include "game/world/models/ModelChunk.h"
-#include "game/world/models/ModelGPUDataManager.h"
-#include "game/world/models/ModelRenderer.h"
-#include "graphics/textures/BindlessTextureManager.h"
+#include "Mesh.h"
+#include "../../src/graphics/textures/TextureLoader.h"
+#include "../../src/graphics/textures/TextureUnits.h"
+#include "ModelChunk.h"
+#include "ModelGPUDataManager.h"
+#include "ModelRenderer.h"
+#include "../../src/graphics/textures/BindlessTextureManager.h"
 
 /**
  * @brief Wrapper for .obj model.

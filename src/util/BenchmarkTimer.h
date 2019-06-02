@@ -5,8 +5,8 @@
 #include <algorithm>
 #include <iomanip>
 #include <chrono>
-#include "util/DirectoriesSettings.h"
-#include "util/Logger.h"
+#include "../../src/util/DirectoriesSettings.h"
+#include "../../src/util/Logger.h"
 
 /* if in debug build - BENCHMARK macro creates an instance of BenchmarkTimer
  * which takes timestamps in both ctor and dtor

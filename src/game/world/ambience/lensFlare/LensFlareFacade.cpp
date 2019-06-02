@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/ambience/lensFlare/LensFlareFacade.h"
+#include "LensFlareFacade.h"
 
 /**
  * @param shader compiled program fed to the dedicated shader object

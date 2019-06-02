@@ -20,7 +20,7 @@
 
 #ifndef SKYBOXSHADER_H
 #define SKYBOXSHADER_H
-#include "graphics/shaders/Shader.h"
+#include "../../src/graphics/shaders/Shader.h"
 
 /**
  * @brief Personal shader manager for skybox related code module, responsible for updating non-constant uniform variables

@@ -1,6 +1,6 @@
 #ifndef UNDERWATERSHADER_H
 #define UNDERWATERSHADER_H
-#include "graphics/shaders/Shader.h"
+#include "../../src/graphics/shaders/Shader.h"
 
 class UnderwaterShader
 {

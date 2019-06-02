@@ -1,6 +1,6 @@
 #ifndef SHORERENDERER_H
 #define SHORERENDERER_H
-#include "game/world/terrain/shore/ShoreGenerator.h"
+#include "ShoreGenerator.h"
 
 class ShoreRenderer
 {

@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/ambience/lensFlare/LensFlareShader.h"
+#include "LensFlareShader.h"
 
 /**
  * @param renderShader precompiled shader program which is used during rendering

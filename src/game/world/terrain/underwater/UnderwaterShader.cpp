@@ -1,4 +1,4 @@
-#include "game/world/terrain/underwater/UnderwaterShader.h"
+#include "UnderwaterShader.h"
 
 UnderwaterShader::UnderwaterShader(Shader &renderShader)
   :

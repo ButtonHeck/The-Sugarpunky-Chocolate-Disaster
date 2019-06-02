@@ -1,7 +1,7 @@
 #ifndef FRAMEBUFFER_H
 #define FRAMEBUFFER_H
 #include <GL/glew.h>
-#include "graphics/textures/TextureManager.h"
+#include "../../src/graphics/textures/TextureManager.h"
 
 class Framebuffer
 {

@@ -20,7 +20,7 @@
 
 #ifndef SKYSPHERESHADER_H
 #define SKYSPHERESHADER_H
-#include "graphics/shaders/Shader.h"
+#include "../../src/graphics/shaders/Shader.h"
 
 /**
  * @brief Personal shader manager for skysphere related code module.

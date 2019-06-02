@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/models/plants/TreesRenderer.h"
+#include "TreesRenderer.h"
 
 /**
  * @brief just delegates a draw call for each given model

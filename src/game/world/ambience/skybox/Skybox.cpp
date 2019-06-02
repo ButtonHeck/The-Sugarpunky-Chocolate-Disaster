@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/ambience/skybox/Skybox.h"
+#include "Skybox.h"
 
 Skybox::Skybox()
   :

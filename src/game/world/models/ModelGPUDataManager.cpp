@@ -1,4 +1,4 @@
-#include "game/world/models/ModelGPUDataManager.h"
+#include "ModelGPUDataManager.h"
 
 ModelGPUDataManager::ModelGPUDataManager(bool isParentModelLowPoly)
   :

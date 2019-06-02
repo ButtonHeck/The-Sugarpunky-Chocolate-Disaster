@@ -1,4 +1,4 @@
-#include "game/world/models/ModelRenderer.h"
+#include "ModelRenderer.h"
 
 ModelRenderer::ModelRenderer(BufferCollection &basicGLBuffers, BufferCollection &shadowDIBO)
   :

@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/ambience/skysphere/Skysphere.h"
+#include "Skysphere.h"
 
 /**
  * @param path path to the .obj model file

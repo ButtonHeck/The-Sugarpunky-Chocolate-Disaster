@@ -1,4 +1,4 @@
-#include "graphics/openglObjects/Framebuffer.h"
+#include "Framebuffer.h"
 
 Framebuffer::Framebuffer(TextureManager &textureManager)
   :

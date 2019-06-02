@@ -2,7 +2,7 @@
 #define TIMER_H
 #include <GLFW/glfw3.h>
 #include <chrono>
-#include "util/BenchmarkTimer.h"
+#include "../../src/util/BenchmarkTimer.h"
 
 class Timer
 {

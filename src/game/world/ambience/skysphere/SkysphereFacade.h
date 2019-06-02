@@ -20,8 +20,8 @@
 
 #ifndef SKYSPHEREFACADE_H
 #define SKYSPHEREFACADE_H
-#include "game/world/ambience/skysphere/Skysphere.h"
-#include "game/world/ambience/skysphere/SkysphereShader.h"
+#include "Skysphere.h"
+#include "SkysphereShader.h"
 
 /**
  * @brief Represents a facade to skysphere related code module.

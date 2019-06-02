@@ -1,4 +1,4 @@
-#include "game/world/terrain/hills/HillsFacade.h"
+#include "HillsFacade.h"
 
 HillsFacade::HillsFacade(Shader &renderShader,
                          Shader &cullingShader,

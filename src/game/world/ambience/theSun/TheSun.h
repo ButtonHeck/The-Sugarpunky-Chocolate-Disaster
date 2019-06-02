@@ -21,8 +21,8 @@
 #ifndef THESUN_H
 #define THESUN_H
 #include <glm/gtx/rotate_vector.hpp>
-#include "graphics/openglObjects/BufferCollection.h"
-#include "game/world/SceneSettings.h"
+#include "../../src/graphics/openglObjects/BufferCollection.h"
+#include "../../src/game/world/SceneSettings.h"
 
 /**
  * @brief Represents the Sun entity, contains its own buffer collection and transformations applied.

@@ -20,7 +20,7 @@
 
 #ifndef GRASSRENDERER_H
 #define GRASSRENDERER_H
-#include "game/world/models/Model.h"
+#include "../../src/game/world/models/Model.h"
 
 /**
  * @brief Renderer wrapper for the entire bunch of grass models.

@@ -1,4 +1,4 @@
-#include "game/world/terrain/underwater/UnderwaterFacade.h"
+#include "UnderwaterFacade.h"
 
 UnderwaterFacade::UnderwaterFacade(Shader &renderShader)
   :

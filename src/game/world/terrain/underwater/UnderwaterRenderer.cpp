@@ -1,4 +1,4 @@
-#include "game/world/terrain/underwater/UnderwaterRenderer.h"
+#include "UnderwaterRenderer.h"
 
 UnderwaterRenderer::UnderwaterRenderer(UnderwaterGenerator &generator)
   :

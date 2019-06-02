@@ -1,4 +1,4 @@
-#include "game/world/terrain/shore/ShoreFacade.h"
+#include "ShoreFacade.h"
 
 ShoreFacade::ShoreFacade(Shader &renderShader, Shader &normalsShader, const map2D_f &waterMap)
   :

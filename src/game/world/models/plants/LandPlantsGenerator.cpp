@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/models/plants/LandPlantsGenerator.h"
+#include "LandPlantsGenerator.h"
 
 /**
  * @brief load both plain and low-poly models

@@ -1,8 +1,8 @@
 #ifndef MODELRENDERER_H
 #define MODELRENDERER_H
 #include <GL/glew.h>
-#include "graphics/openglObjects/BufferCollection.h"
-#include "util/BenchmarkTimer.h"
+#include "../../src/graphics/openglObjects/BufferCollection.h"
+#include "../../src/util/BenchmarkTimer.h"
 
 class ModelRenderer
 {

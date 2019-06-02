@@ -1,10 +1,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "game/Game.h"
-#include "game/Options.h"
-#include "graphics/ScreenResolution.h"
-#include "util/Logger.h"
-#include "graphics/Camera.h"
+#include "../../src/game/Game.h"
+#include "../../src/game/Options.h"
+#include "../../src/graphics/ScreenResolution.h"
+#include "../../src/util/Logger.h"
+#include "../../src/graphics/Camera.h"
 
 GLFWwindow* window;
 ScreenResolution screenResolution;

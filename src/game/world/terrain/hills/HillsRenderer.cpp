@@ -1,4 +1,4 @@
-#include "game/world/terrain/hills/HillsRenderer.h"
+#include "HillsRenderer.h"
 
 HillsRenderer::HillsRenderer(HillsShader &shaders, HillsGenerator &generator)
   :

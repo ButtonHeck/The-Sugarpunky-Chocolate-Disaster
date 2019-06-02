@@ -20,7 +20,7 @@
 
 #ifndef THESUNSHADER_H
 #define THESUNSHADER_H
-#include "graphics/shaders/Shader.h"
+#include "../../src/graphics/shaders/Shader.h"
 
 /**
  * @brief Personal shader manager for the Sun related code module. Responsible for updating non-constant uniform variables

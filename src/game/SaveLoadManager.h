@@ -2,8 +2,8 @@
 #define SAVELOADMANAGER_H
 #include <fstream>
 #include <vector>
-#include "game/world/Scene.h"
-#include "util/Logger.h"
+#include "../../src/game/world/Scene.h"
+#include "../../src/util/Logger.h"
 
 class Camera;
 

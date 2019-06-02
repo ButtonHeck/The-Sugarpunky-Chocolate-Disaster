@@ -1,7 +1,8 @@
 #ifndef SHADOWVOLUME_H
 #define SHADOWVOLUME_H
-#include "game/world/ambience/theSun/TheSunFacade.h"
-#include "graphics/Frustum.h"
+#include <array>
+#include "../../src/game/world/ambience/theSun/TheSunFacade.h"
+#include "../../src/graphics/Frustum.h"
 
 class ShadowVolume
 {
@@ -32,7 +33,7 @@ private:
   void updateLightSpaceMatrix(const Frustum& frustum, int layer, float sunAbsPositionY, float sunAbsPositionX);
 
   glm::vec3 lightDirTo, lightDirRight, lightDirUp;
-  std::array<glm::mat4, NUM_SHADOW_LAYERS> lightSpaceMatrices;
+  std::array<glm::mat4, 3> lightSpaceMatrices;
   std::array<Box, NUM_SHADOW_LAYERS> shadowBoxes;
 };
 

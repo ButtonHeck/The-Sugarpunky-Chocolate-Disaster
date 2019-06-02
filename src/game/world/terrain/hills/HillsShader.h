@@ -1,7 +1,7 @@
 #ifndef HILLSSHADER_H
 #define HILLSSHADER_H
-#include "graphics/shaders/Shader.h"
-#include "graphics/Frustum.h"
+#include "../../src/graphics/shaders/Shader.h"
+#include "../../src/graphics/Frustum.h"
 
 class HillsShader
 {

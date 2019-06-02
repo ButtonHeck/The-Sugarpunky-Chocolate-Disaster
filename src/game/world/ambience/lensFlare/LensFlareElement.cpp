@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "game/world/ambience/lensFlare/LensFlareElement.h"
+#include "LensFlareElement.h"
 
 LensFlareElement::LensFlareElement(float pointSize, GLuint textureID)
   :

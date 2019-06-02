@@ -3,12 +3,12 @@
 #include <GL/glew.h>
 #include <IL/il.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include "graphics/ScreenResolution.h"
-#include "util/DirectoriesSettings.h"
-#include "graphics/GraphicsSettings.h"
-#include "game/world/SceneSettings.h"
-#include "util/Logger.h"
-#include "util/typeAliases.h"
+#include "../../src/graphics/ScreenResolution.h"
+#include "../../src/util/DirectoriesSettings.h"
+#include "../../src/graphics/GraphicsSettings.h"
+#include "../../src/game/world/SceneSettings.h"
+#include "../../src/util/Logger.h"
+#include "../../src/util/typeAliases.h"
 
 class TextureLoader
 {

@@ -2,9 +2,9 @@
 #define MODELGPUDATAMANAGER_H
 #include <GL/glew.h>
 #include <memory>
-#include "game/world/models/Mesh.h"
-#include "game/world/models/ModelChunk.h"
-#include "graphics/openglObjects/BufferCollection.h"
+#include "Mesh.h"
+#include "ModelChunk.h"
+#include "../../src/graphics/openglObjects/BufferCollection.h"
 
 class ModelGPUDataManager
 {

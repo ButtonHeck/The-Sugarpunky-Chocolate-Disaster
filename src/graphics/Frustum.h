@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include <algorithm>
-#include "util/BenchmarkTimer.h"
+#include "../../src/util/BenchmarkTimer.h"
 
 enum FRUSTUM_PLANE
 {

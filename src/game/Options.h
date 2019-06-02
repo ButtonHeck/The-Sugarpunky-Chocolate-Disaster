@@ -1,7 +1,7 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 #include <bitset>
-#include "game/OptionsUnits.h"
+#include "../../src/game/OptionsUnits.h"
 
 class Options
 {

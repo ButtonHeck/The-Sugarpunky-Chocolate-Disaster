@@ -20,7 +20,7 @@
 
 #ifndef SKYSPHERE_H
 #define SKYSPHERE_H
-#include "game/world/models/Model.h"
+#include "../../src/game/world/models/Model.h"
 
 /**
  * @brief Represents a simple wrapper for sphere-like model, responsible for keeping and handling

@@ -1,6 +1,6 @@
 #ifndef LANDCHUNK_H
 #define LANDCHUNK_H
-#include "game/world/Chunk.h"
+#include "../../src/game/world/Chunk.h"
 
 class LandChunk : public Chunk
 {

@@ -1,4 +1,4 @@
-#include "game/Options.h"
+#include "Options.h"
 
 Options::Options()
 {

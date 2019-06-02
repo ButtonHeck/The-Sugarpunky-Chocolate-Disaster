@@ -1,4 +1,4 @@
-#include "game/world/Chunk.h"
+#include "Chunk.h"
 
 Chunk::Chunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom, float height)
   :

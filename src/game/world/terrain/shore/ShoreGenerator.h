@@ -3,7 +3,7 @@
 #include <random>
 #include <chrono>
 #include <memory>
-#include "game/world/terrain/Generator.h"
+#include "../../src/game/world/terrain/Generator.h"
 
 constexpr float SHORE_CLIP_LEVEL = -4.0f;
 

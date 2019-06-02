@@ -1,9 +1,9 @@
 #ifndef HILLSFACADE_H
 #define HILLSFACADE_H
-#include "game/world/terrain/hills/HillsGenerator.h"
-#include "game/world/terrain/hills/HillsShader.h"
-#include "game/world/terrain/hills/HillsRenderer.h"
-#include "util/BenchmarkTimer.h"
+#include "HillsGenerator.h"
+#include "HillsShader.h"
+#include "HillsRenderer.h"
+#include "../../src/util/BenchmarkTimer.h"
 
 class HillsFacade
 {
