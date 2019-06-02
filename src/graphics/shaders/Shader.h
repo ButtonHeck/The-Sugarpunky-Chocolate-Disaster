@@ -3,6 +3,7 @@
 #include <sstream>
 #include <fstream>
 #include <unordered_map>
+#include <array>
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 #include "../../src/util/DirectoriesSettings.h"

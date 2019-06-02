@@ -40,7 +40,7 @@ void BuildableGenerator::fillBufferData()
   BufferCollection::bindZero(VAO | VBO | EBO);
 
   setupAndBindBuffers(basicGLBuffers);
-  glm::vec4 instancesTranslations[tiles.size()];
+  std::unique_ptr<glm::vec4[]> instancesTranslations(new glm::vec4[tiles.size()]);
   for (unsigned int tileIndex = 0; tileIndex < tiles.size(); tileIndex++)
     {
       TerrainTile& tile = tiles[tileIndex];

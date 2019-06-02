@@ -80,7 +80,7 @@ GLuint Shader::getUniformLocation(const std::string &uniformName) const
   return uniformLocation;
 }
 
-void Shader::setInt(const std::__cxx11::string &uniformName, int value)
+void Shader::setInt(const std::string &uniformName, int value)
 {
   if (Shader::cachedUniforms)
     {
@@ -106,7 +106,7 @@ void Shader::setUint64(const std::string &uniformName, GLuint64 value)
     glUniform1ui64ARB(getUniformLocation(uniformName), value);
 }
 
-void Shader::setFloat(const std::__cxx11::string &uniformName, float value)
+void Shader::setFloat(const std::string &uniformName, float value)
 {
   if (Shader::cachedUniforms)
     {
@@ -119,7 +119,7 @@ void Shader::setFloat(const std::__cxx11::string &uniformName, float value)
     glUniform1f(getUniformLocation(uniformName), value);
 }
 
-void Shader::setBool(const std::__cxx11::string &uniformName, bool value)
+void Shader::setBool(const std::string &uniformName, bool value)
 {
   if (Shader::cachedUniforms)
     {
@@ -132,7 +132,7 @@ void Shader::setBool(const std::__cxx11::string &uniformName, bool value)
     glUniform1i(getUniformLocation(uniformName), value);
 }
 
-void Shader::setVec3(const std::__cxx11::string &uniformName, float x, float y, float z)
+void Shader::setVec3(const std::string &uniformName, float x, float y, float z)
 {
   if (Shader::cachedUniforms)
     {
@@ -145,7 +145,7 @@ void Shader::setVec3(const std::__cxx11::string &uniformName, float x, float y, 
     glUniform3f(getUniformLocation(uniformName), x, y ,z);
 }
 
-void Shader::setVec2(const std::__cxx11::string &uniformName, float x, float y)
+void Shader::setVec2(const std::string &uniformName, float x, float y)
 {
   if (Shader::cachedUniforms)
     {
@@ -184,7 +184,7 @@ void Shader::setMat3(const std::string &uniformName, const glm::mat3 &mat)
     glUniformMatrix3fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat));
 }
 
-void Shader::setMat4(const std::__cxx11::string &uniformName, const glm::mat4 &mat)
+void Shader::setMat4(const std::string &uniformName, const glm::mat4 &mat)
 {
   if (Shader::cachedUniforms)
     {
@@ -202,7 +202,7 @@ void Shader::cleanUp()
   glDeleteProgram(ID);
 }
 
-GLuint Shader::loadShader(GLenum shaderType, const std::__cxx11::string &filename, ShaderIncludeList includes)
+GLuint Shader::loadShader(GLenum shaderType, const std::string &filename, ShaderIncludeList includes)
 {
   std::fstream fileStream(filename);
   std::stringstream fileStringStream;

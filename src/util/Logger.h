@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <unordered_set>
 #include <iostream>
+#include <string>
 
 namespace Logger
 {

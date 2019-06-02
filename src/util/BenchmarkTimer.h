@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <chrono>
+#include <iterator>
 #include "../../src/util/DirectoriesSettings.h"
 #include "../../src/util/Logger.h"
 

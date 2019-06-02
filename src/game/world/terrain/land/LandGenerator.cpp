@@ -117,7 +117,7 @@ void LandGenerator::fillBufferData()
   bufferData(basicGLBuffers, chunkVertices, CHUNK_VERTICES_SIZE_FLOATS);
   setupGLBufferAttributes();
 
-  glm::vec4 landChunkInstanceTranslations[tiles.size()];
+  std::unique_ptr<glm::vec4[]> landChunkInstanceTranslations(new glm::vec4[tiles.size()]);
   for (unsigned int tileIndex = 0; tileIndex < tiles.size(); tileIndex++)
     {
       TerrainTile& tile = tiles[tileIndex];
@@ -145,7 +145,7 @@ void LandGenerator::fillCellBufferData()
   bufferData(cellBuffers, cellVertices, CELL_VERTICES_SIZE_FLOATS);
   setupGLBufferAttributes();
 
-  glm::vec4 cellInstanceTranslations[cellTiles.size()];
+  std::unique_ptr<glm::vec4[]> cellInstanceTranslations(new glm::vec4[cellTiles.size()]);
   for (unsigned int tileIndex = 0; tileIndex < cellTiles.size(); tileIndex++)
     {
       TerrainTile& tile = cellTiles[tileIndex];
@@ -183,7 +183,7 @@ void LandGenerator::updateCellsIndirectBuffer(const Frustum& frustum)
 {
   cellBuffers.bind(VAO);
   // {indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance}
-  GLuint indirectBuffer[cellChunks.size() * INDIRECT_DRAW_COMMAND_ARGUMENTS];
+  std::unique_ptr<GLuint[]> indirectBuffer(new GLuint[cellChunks.size() * INDIRECT_DRAW_COMMAND_ARGUMENTS]);
   GLuint dataOffset = 0;
   cellPrimitiveCount = 0;
   for (unsigned int chunkIndex = 0; chunkIndex < cellChunks.size(); chunkIndex++)
@@ -191,11 +191,11 @@ void LandGenerator::updateCellsIndirectBuffer(const Frustum& frustum)
       if (cellChunks[chunkIndex].isInsideFrustum(frustum, 0.0f))
         {
           ++cellPrimitiveCount;
-          addIndirectBufferData(indirectBuffer, dataOffset, cellChunks[chunkIndex].getNumInstances(), cellChunks[chunkIndex].getInstanceOffset());
+          addIndirectBufferData(&indirectBuffer[0], dataOffset, cellChunks[chunkIndex].getNumInstances(), cellChunks[chunkIndex].getInstanceOffset());
         }
     }
   cellBuffers.bind(DIBO);
-  glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * cellPrimitiveCount, indirectBuffer, GL_STATIC_DRAW);
+  glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * cellPrimitiveCount, &indirectBuffer[0], GL_STATIC_DRAW);
 }
 
 void LandGenerator::addIndirectBufferData(GLuint *buffer, GLuint &dataOffset, GLuint numInstances, GLuint instanceOffset)

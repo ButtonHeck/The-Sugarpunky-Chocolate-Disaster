@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <IL/il.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <algorithm>
 #include "../../src/graphics/ScreenResolution.h"
 #include "../../src/util/DirectoriesSettings.h"
 #include "../../src/graphics/GraphicsSettings.h"
