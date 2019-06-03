@@ -2,7 +2,7 @@
 
 namespace Logger
 {
-  void glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar *glMessage, const void *)
+  void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar *glMessage, const void *)
   {
     static std::unordered_set<GLuint> debugMessages;
     if (id == 131169 || id == 131185 || id == 131218 || id == 131204 || debugMessages.find(id) != debugMessages.end()) return;

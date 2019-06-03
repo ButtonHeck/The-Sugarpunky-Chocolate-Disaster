@@ -4,3 +4,6 @@
 /The Sugarpunky Chocolate Disaster.vcxproj.filters
 /The Sugarpunky Chocolate Disaster.vcxproj
 /Debug
+/Release
+/res/perFrameLog.txt
+/res/perAppLog.txt
