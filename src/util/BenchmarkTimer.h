@@ -14,10 +14,15 @@
  * and automatically update timing results in one of the maps
  * if in release build - just bypass and do nothing
  */
-#ifdef _DEBUG
-#define BENCHMARK(benchmarkName, perFrame) BenchmarkTimer b(benchmarkName, perFrame);
-#else
-#define BENCHMARK(dont, care) //noop
+#define USE_BENCHMARK 0
+#if USE_BENCHMARK
+	#ifdef _DEBUG
+	#define BENCHMARK(benchmarkName, perFrame) BenchmarkTimer b(benchmarkName, perFrame);
+	#else
+	#define BENCHMARK(dont, care) //noop
+	#endif
+#else 
+	#define BENCHMARK(dont, care) //noop
 #endif
 #define FORCE_BENCHMARK(benchmarkName, perFrame) BenchmarkTimer b(benchmarkName, perFrame);
 

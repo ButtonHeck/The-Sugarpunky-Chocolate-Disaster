@@ -36,37 +36,40 @@ int main()
   glfwMakeContextCurrent(window);
   glewExperimental = GL_TRUE;
   glewInit();
+
 #ifdef _DEBUG
   Logger::log("%\n", glfwGetVersionString());
   GLint flags;
   glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
   if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
-    {
-      glEnable(GL_DEBUG_OUTPUT);
-      glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-      glDebugMessageCallback(Logger::glDebugCallback, nullptr);
-      glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-    }
+  {
+	  glEnable(GL_DEBUG_OUTPUT);
+	  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	  glDebugMessageCallback(Logger::glDebugCallback, nullptr);
+	  glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+  }
 #endif
-  game = new Game(window, camera, shadowCamera, options, screenResolution);
-  game->setup();
 
-  std::thread inputHandlingThread([]()
-    {
-      while(!glfwWindowShouldClose(window))
-        {
-          glfwPollEvents();
-          //~0.5ms delay of mouse/key input is applicable
-          std::this_thread::sleep_for(std::chrono::microseconds(500));
-        }
-    });
+  glfwMakeContextCurrent(NULL);
 
-  //game loop
-  while(!glfwWindowShouldClose(window))
-    {
-      game->loop();
-    }
-  inputHandlingThread.join();
+  std::thread gameThread([]()
+  {
+	  glfwMakeContextCurrent(window);
+	  game = new Game(window, camera, shadowCamera, options, screenResolution);
+	  game->setup();
+	  while (!glfwWindowShouldClose(window))
+	  {
+		  game->loop();
+	  }
+  });
+
+  while (!glfwWindowShouldClose(window))
+  {
+	  glfwPollEvents();
+	  //~0.5ms delay of mouse/key input is applicable
+	  std::this_thread::sleep_for(std::chrono::microseconds(500));
+  }
+  gameThread.join();
 
   //cleanup
   delete game;
