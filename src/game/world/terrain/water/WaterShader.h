@@ -1,5 +1,5 @@
-#ifndef WATERSHADER_H
-#define WATERSHADER_H
+#pragma once
+
 #include "Shader"
 #include "Frustum"
 
@@ -25,5 +25,3 @@ private:
   Shader& cullingShader;
   Shader& normalsShader;
 };
-
-#endif // WATERSHADER_H

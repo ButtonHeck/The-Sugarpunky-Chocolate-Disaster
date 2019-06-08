@@ -1,8 +1,9 @@
-#ifndef CHUNK_H
-#define CHUNK_H
-#include <glm/vec2.hpp>
+#pragma once
+
 #include "SceneSettings"
 #include "Frustum"
+
+#include <glm/vec2.hpp>
 
 class Chunk
 {
@@ -50,5 +51,3 @@ inline void Chunk::setHeight(float height)
 {
   this->height = height;
 }
-
-#endif // CHUNK_H

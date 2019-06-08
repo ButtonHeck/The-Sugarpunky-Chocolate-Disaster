@@ -1,5 +1,5 @@
-#ifndef LOGGER_H
-#define LOGGER_H
+#pragma once
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <unordered_set>
@@ -36,5 +36,3 @@ namespace Logger
                                 const GLchar* glMessage,
                                 const void*);
 };
-
-#endif // LOGGER_H

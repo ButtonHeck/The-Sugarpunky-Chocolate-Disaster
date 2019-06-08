@@ -1,5 +1,5 @@
-#ifndef HILLSSHADER_H
-#define HILLSSHADER_H
+#pragma once
+
 #include "Shader"
 #include "Frustum"
 
@@ -25,5 +25,3 @@ private:
   Shader& cullingShader;
   Shader& normalsShader;
 };
-
-#endif // HILLSSHADER_H

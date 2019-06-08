@@ -1,4 +1,8 @@
 #include "BenchmarkTimer"
+#include "Logger"
+
+#include <iomanip>
+#include <algorithm>
 
 std::ofstream BenchmarkTimer::perFrameLogStream, BenchmarkTimer::perAppLogStream;
 bool BenchmarkTimer::outputCreated = false;

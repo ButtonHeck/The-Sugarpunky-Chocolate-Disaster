@@ -1,10 +1,11 @@
-#ifndef WATERGENERATOR_H
-#define WATERGENERATOR_H
-#include <memory>
+#pragma once
+
 #include "Generator"
 #include "Options"
 #include "BenchmarkTimer"
 #include "WaterShader"
+
+#include <memory>
 
 class WaterGenerator : public Generator
 {
@@ -47,5 +48,3 @@ private:
   std::unique_ptr<GLfloat[]> vertices;
   map2D_f postProcessMap;
 };
-
-#endif // WATERGENERATOR_H

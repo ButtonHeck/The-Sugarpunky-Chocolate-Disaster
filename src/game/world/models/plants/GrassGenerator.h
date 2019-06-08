@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef GRASSGENERATOR_H
-#define GRASSGENERATOR_H
+#pragma once 
+
 #include "PlantGenerator"
 
 /**
@@ -37,5 +37,3 @@ private:
 
   void setupMatrices(const map2D_f &landMap, const map2D_f &hillMap, const map2D_i &distributionMap);
 };
-
-#endif // GRASSGENERATOR_H

@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef MESH_H
-#define MESH_H
+#pragma once
+
 #include <GL/glew.h>
 #include <vector>
 #include <glm/vec2.hpp>
@@ -56,5 +56,3 @@ private:
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
 };
-
-#endif // MESH_H

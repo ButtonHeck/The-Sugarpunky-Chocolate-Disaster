@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef SKYBOXSHADER_H
-#define SKYBOXSHADER_H
+#pragma once
+
 #include "Shader"
 
 /**
@@ -38,5 +38,3 @@ public:
 private:
   Shader& renderShader;
 };
-
-#endif // SKYBOXSHADER_H

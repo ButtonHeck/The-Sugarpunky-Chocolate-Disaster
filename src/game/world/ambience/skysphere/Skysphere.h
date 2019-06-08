@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef SKYSPHERE_H
-#define SKYSPHERE_H
+#pragma once
+
 #include "Model"
 
 /**
@@ -38,5 +38,3 @@ private:
   Model model;
   glm::mat4 modelRotationTransform;
 };
-
-#endif // SKYSPHERE_H

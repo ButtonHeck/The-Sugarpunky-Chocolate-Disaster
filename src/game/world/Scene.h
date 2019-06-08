@@ -1,5 +1,5 @@
-#ifndef SCENE_H
-#define SCENE_H
+#pragma once
+
 #include "LandFacade"
 #include "HillsFacade"
 #include "PlantsFacade"
@@ -69,5 +69,3 @@ private:
   LensFlareFacade lensFlareFacade;
   SkysphereFacade skysphereFacade;
 };
-
-#endif // SCENE_H

@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef TREESRENDERER_H
-#define TREESRENDERER_H
+#pragma once
+
 #include "Model"
 
 /**
@@ -32,5 +32,3 @@ public:
   TreesRenderer() = default;
   void render(std::vector<Model> &landModels, std::vector<Model> &hillModels, bool isShadow);
 };
-
-#endif // TREESRENDERER_H

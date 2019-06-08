@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef PLANTSSHADER_H
-#define PLANTSSHADER_H
+#pragma once
+
 #include "Shader"
 
 /**
@@ -46,5 +46,3 @@ private:
   Shader& renderGouraudShader;
   Shader* currentShader;
 };
-
-#endif // PLANTSSHADER_H

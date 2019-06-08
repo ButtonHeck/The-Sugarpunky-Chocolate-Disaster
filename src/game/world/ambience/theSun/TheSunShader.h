@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef THESUNSHADER_H
-#define THESUNSHADER_H
+#pragma once
+
 #include "Shader"
 
 /**
@@ -34,5 +34,3 @@ public:
 private:
   Shader& renderShader;
 };
-
-#endif // THESUNSHADER_H

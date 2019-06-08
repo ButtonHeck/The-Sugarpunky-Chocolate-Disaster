@@ -18,10 +18,11 @@
  * @version 0.1.0
  */
 
-#ifndef SKYBOX_H
-#define SKYBOX_H
-#include <GL/glew.h>
+#pragma once
+
 #include "BufferCollection"
+
+#include <GL/glew.h>
 
 /**
  * @brief This class represents a simple wrapper for box-like structure of vertices
@@ -83,5 +84,3 @@ private:
      1.0f, -0.8f,  1.0f
   };
 };
-
-#endif // SKYBOX_H

@@ -1,8 +1,9 @@
-#ifndef SHADOWVOLUME_H
-#define SHADOWVOLUME_H
-#include <array>
+#pragma once
+
 #include "TheSunFacade"
 #include "Frustum"
+
+#include <array>
 
 class ShadowVolume
 {
@@ -36,5 +37,3 @@ private:
   std::array<glm::mat4, 3> lightSpaceMatrices;
   std::array<Box, NUM_SHADOW_LAYERS> shadowBoxes;
 };
-
-#endif // SHADOWVOLUME_H

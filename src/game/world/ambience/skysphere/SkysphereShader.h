@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef SKYSPHERESHADER_H
-#define SKYSPHERESHADER_H
+#pragma once
+
 #include "Shader"
 
 /**
@@ -37,5 +37,3 @@ public:
 private:
   Shader& renderShader;
 };
-
-#endif // SKYSPHERESHADER_H

@@ -1,5 +1,5 @@
-#ifndef QUERY_H
-#define QUERY_H
+#pragma once
+
 #include <GL/glew.h>
 
 class Query
@@ -21,5 +21,3 @@ private:
   bool inUse = false;
   GLuint resultAvailable;
 };
-
-#endif // QUERY_H

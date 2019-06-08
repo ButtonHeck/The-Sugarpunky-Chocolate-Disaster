@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef PLANTSFACADE_H
-#define PLANTSFACADE_H
+#pragma once
+
 #include "TypeAliases"
 #include "LandPlantsGenerator"
 #include "GrassGenerator"
@@ -73,5 +73,3 @@ private:
   TreesRenderer treesRenderer;
   GrassRenderer grassRenderer;
 };
-
-#endif // PLANTSFACADE_H

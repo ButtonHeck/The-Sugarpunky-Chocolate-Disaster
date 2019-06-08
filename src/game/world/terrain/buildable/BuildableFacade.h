@@ -1,5 +1,5 @@
-#ifndef BUILDABLEFACADE_H
-#define BUILDABLEFACADE_H
+#pragma once
+
 #include "BuildableGenerator"
 #include "BuildableShader"
 #include "BuildableRenderer"
@@ -20,5 +20,3 @@ private:
   BuildableGenerator generator;
   BuildableRenderer renderer;
 };
-
-#endif // BUILDABLEFACADE_H

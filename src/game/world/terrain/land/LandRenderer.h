@@ -1,5 +1,5 @@
-#ifndef LANDRENDERER_H
-#define LANDRENDERER_H
+#pragma once
+
 #include "LandGenerator"
 #include "BenchmarkTimer"
 
@@ -12,5 +12,3 @@ public:
 private:
   LandGenerator& generator;
 };
-
-#endif // LANDRENDERER_H

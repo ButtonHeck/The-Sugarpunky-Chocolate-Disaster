@@ -1,11 +1,12 @@
-#ifndef KEYBOARDMANAGER_H
-#define KEYBOARDMANAGER_H
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <functional>
+#pragma once
+
 #include "Camera"
 #include "Options"
 #include "TheSunFacade"
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <functional>
 
 class KeyboardManager
 {
@@ -24,5 +25,3 @@ private:
   Options& options;
   TheSunFacade& sun;
 };
-
-#endif // KEYBOARDMANAGER_H

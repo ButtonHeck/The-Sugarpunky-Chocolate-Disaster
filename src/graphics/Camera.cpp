@@ -1,5 +1,7 @@
 #include "Camera"
 
+#include <iomanip>
+
 Camera::Camera(glm::vec3 position)
   :
     zoom(FOV),

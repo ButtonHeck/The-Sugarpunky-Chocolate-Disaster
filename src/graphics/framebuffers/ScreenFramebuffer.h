@@ -1,5 +1,5 @@
-#ifndef SCREENFRAMEBUFFER_H
-#define SCREENFRAMEBUFFER_H
+#pragma once
+
 #include "Framebuffer"
 #include "ScreenResolution"
 #include "ShaderManager"
@@ -26,5 +26,3 @@ private:
   BufferCollection screenBuffers;
   GLuint multisampleDepthRbo, multisampleFbo;
 };
-
-#endif // SCREENFRAMEBUFFER_H

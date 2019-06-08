@@ -1,5 +1,4 @@
-#ifndef SHADERUNITS_H
-#define SHADERUNITS_H
+#pragma once
 
 enum SHADER_UNITS
 {
@@ -28,5 +27,3 @@ enum SHADER_UNITS
   SHADER_FRUSTUM,
   SHADER_LENS_FLARE
 };
-
-#endif // SHADERUNITS_H

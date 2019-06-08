@@ -1,5 +1,5 @@
-#ifndef LANDSHADER_H
-#define LANDSHADER_H
+#pragma once
+
 #include "Shader"
 
 class LandShader
@@ -14,5 +14,3 @@ public:
 private:
   Shader& renderShader;
 };
-
-#endif // LANDSHADER_H

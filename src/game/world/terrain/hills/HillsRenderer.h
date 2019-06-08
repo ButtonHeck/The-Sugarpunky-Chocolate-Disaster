@@ -1,5 +1,5 @@
-#ifndef HILLSRENDERER_H
-#define HILLSRENDERER_H
+#pragma once
+
 #include "HillsGenerator"
 #include "HillsShader"
 #include "BenchmarkTimer"
@@ -17,5 +17,3 @@ private:
   HillsShader& shaders;
   HillsGenerator& generator;
 };
-
-#endif // HILLSRENDERER_H

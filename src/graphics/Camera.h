@@ -1,10 +1,11 @@
-#ifndef CAMERA_H
-#define CAMERA_H
-#include <fstream>
-#include <glm/gtc/matrix_transform.hpp>
+#pragma once
+
 #include "SceneSettings"
 #include "TypeAliases"
 #include "BenchmarkTimer"
+
+#include <fstream>
+#include <glm/gtc/matrix_transform.hpp>
 
 enum MOVE_DIRECTION
 {
@@ -89,5 +90,3 @@ private:
   //direction vectors
   glm::vec3 position, front, right, up;
 };
-
-#endif // CAMERA_H

@@ -1,5 +1,5 @@
-#ifndef SHORESHADER_H
-#define SHORESHADER_H
+#pragma once
+
 #include "Shader"
 
 class ShoreShader
@@ -19,5 +19,3 @@ private:
   Shader& renderShader;
   Shader& normalsShader;
 };
-
-#endif // SHORESHADER_H

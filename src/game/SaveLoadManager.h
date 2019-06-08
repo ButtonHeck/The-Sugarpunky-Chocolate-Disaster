@@ -1,9 +1,10 @@
-#ifndef SAVELOADMANAGER_H
-#define SAVELOADMANAGER_H
-#include <fstream>
-#include <vector>
+#pragma once
+
 #include "Scene"
 #include "Logger"
+
+#include <fstream>
+#include <vector>
 
 class Camera;
 
@@ -18,5 +19,3 @@ private:
   Camera& camera;
   Camera& shadowCamera;
 };
-
-#endif // SAVELOADMANAGER_H

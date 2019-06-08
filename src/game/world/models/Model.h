@@ -18,11 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef MODEL_H
-#define MODEL_H
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
+#pragma once
+
 #include "Mesh"
 #include "TextureLoader"
 #include "TextureUnits"
@@ -30,6 +27,10 @@
 #include "ModelGPUDataManager"
 #include "ModelRenderer"
 #include "BindlessTextureManager"
+
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 /**
  * @brief Wrapper for .obj model.
@@ -66,5 +67,3 @@ private:
   ModelGPUDataManager GPUDataManager;
   ModelRenderer renderer;
 };
-
-#endif // MODEL_H

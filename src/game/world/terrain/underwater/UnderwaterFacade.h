@@ -1,5 +1,5 @@
-#ifndef UNDERWATERFACADE_H
-#define UNDERWATERFACADE_H
+#pragma once
+
 #include "UnderwaterGenerator"
 #include "UnderwaterShader"
 #include "UnderwaterRenderer"
@@ -16,5 +16,3 @@ private:
   UnderwaterGenerator generator;
   UnderwaterRenderer renderer;
 };
-
-#endif // UNDERWATERFACADE_H

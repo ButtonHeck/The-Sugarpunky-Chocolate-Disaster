@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef THESUNRENDERER_H
-#define THESUNRENDERER_H
+#pragma once
+
 #include "TheSun"
 #include "Query"
 #include "RendererStateManager"
@@ -48,5 +48,3 @@ private:
   float pointSize;
   float reflectionPointSize;
 };
-
-#endif // THESUNRENDERER_H

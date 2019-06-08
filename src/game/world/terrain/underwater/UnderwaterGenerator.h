@@ -1,5 +1,5 @@
-#ifndef UNDERWATERGENERATOR_H
-#define UNDERWATERGENERATOR_H
+#pragma once
+
 #include "Generator"
 
 class UnderwaterGenerator : public Generator
@@ -10,5 +10,3 @@ public:
 private:
   friend class UnderwaterRenderer;
 };
-
-#endif // UNDERWATERGENERATOR_H

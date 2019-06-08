@@ -18,16 +18,16 @@
  * @version 0.1.0
  */
 
-#ifndef PLANTGENERATOR_H
-#define PLANTGENERATOR_H
+#pragma once
+
+#include "Model"
+#include "ModelChunk"
+
 #include <vector>
 #include <fstream>
 #include <memory>
 #include <random>
 #include <glm/gtx/norm.hpp>
-#include "Model"
-#include "ModelChunk"
-
 
 /**
  * @brief Boilerplate generator for all the plants.
@@ -80,5 +80,3 @@ private:
   constexpr static unsigned int LOADING_DISTANCE_UNITS_SHADOW = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS_SHADOW;
   constexpr static unsigned int LOADING_DISTANCE_UNITS_SHADOW_SQUARE = LOADING_DISTANCE_UNITS_SHADOW * LOADING_DISTANCE_UNITS_SHADOW;
 };
-
-#endif // PLANTGENERATOR_H

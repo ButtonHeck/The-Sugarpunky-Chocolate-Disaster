@@ -1,10 +1,11 @@
-#ifndef MODELGPUDATAMANAGER_H
-#define MODELGPUDATAMANAGER_H
-#include <GL/glew.h>
-#include <memory>
+#pragma once
+
 #include "Mesh"
 #include "ModelChunk"
 #include "BufferCollection"
+
+#include <GL/glew.h>
+#include <memory>
 
 class ModelGPUDataManager
 {
@@ -51,5 +52,3 @@ private:
   std::vector<IndirectBufferToken> indirectTokensShadow;
   GLsizei drawIndirectCommandPrimCountShadow = 0;
 };
-
-#endif // MODELGPUDATAMANAGER_H

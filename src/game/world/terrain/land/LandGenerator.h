@@ -1,9 +1,10 @@
-#ifndef LANDGENERATOR_H
-#define LANDGENERATOR_H
-#include <random>
-#include <chrono>
+#pragma once
+
 #include "Generator"
 #include "LandChunk"
+
+#include <random>
+#include <chrono>
 
 class LandGenerator : public Generator
 {
@@ -35,5 +36,3 @@ private:
   std::vector<LandChunk> cellChunks;
   GLuint cellPrimitiveCount;
 };
-
-#endif // LANDGENERATOR_H

@@ -1,7 +1,8 @@
-#ifndef BUILDABLEGENERATOR_H
-#define BUILDABLEGENERATOR_H
-#include <memory>
+#pragma once
+
 #include "Generator"
+
+#include <memory>
 
 class BuildableGenerator : public Generator
 {
@@ -20,5 +21,3 @@ private:
 
   BufferCollection selectedBuffers;
 };
-
-#endif // BUILDABLEGENERATOR_H

@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef LANDPLANTSGENERATOR_H
-#define LANDPLANTSGENERATOR_H
+#pragma once
+
 #include "PlantGenerator"
 
 /**
@@ -40,5 +40,3 @@ private:
 
   void setupMatrices(const map2D_f &landMap, const map2D_f &hillMap, const map2D_i &distributionMap);
 };
-
-#endif // LANDPLANTSGENERATOR_H

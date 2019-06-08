@@ -1,12 +1,13 @@
-#ifndef FONTLOADER_H
-#define FONTLOADER_H
+#pragma once
+
+#include "TextureUnits"
+#include "Logger"
+
 #include <fstream>
 #include <sstream>
 #include <GL/glew.h>
 #include <IL/il.h>
 #include <unordered_map>
-#include "TextureUnits"
-#include "Logger"
 
 struct Character {
   int asciiCode, x, y, width, height, xoffset, yoffset, xadvance;
@@ -25,5 +26,3 @@ private:
   std::unordered_map<char, Character> alphabet;
   GLuint fontTexture, textureWidth, textureHeight;
 };
-
-#endif // FONTLOADER_H

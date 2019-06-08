@@ -1,5 +1,5 @@
-#ifndef GRAPHICSSETTINGS_H
-#define GRAPHICSSETTINGS_H
+#pragma once
+
 #include <glm/vec4.hpp>
 
 constexpr float NEAR_PLANE = 0.3f;
@@ -22,5 +22,3 @@ constexpr int FRAME_WATER_REFRACTION_HEIGHT = FRAME_WATER_REFLECTION_HEIGHT;
 constexpr float SHADOW_DISTANCE_LAYER1 = 20.0f;
 constexpr float SHADOW_DISTANCE_LAYER2 = 60.0f;
 constexpr unsigned int NUM_SHADOW_LAYERS = 3;
-
-#endif // GRAPHICSSETTINGS_H

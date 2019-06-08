@@ -1,5 +1,5 @@
-#ifndef LANDCHUNK_H
-#define LANDCHUNK_H
+#pragma once
+
 #include "Chunk"
 
 class LandChunk : public Chunk
@@ -39,5 +39,3 @@ inline unsigned int LandChunk::getNumInstances() const
 {
   return numInstances;
 }
-
-#endif // LANDCHUNK_H

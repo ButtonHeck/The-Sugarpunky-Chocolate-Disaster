@@ -1,10 +1,11 @@
-#ifndef FRUSTUM_H
-#define FRUSTUM_H
+#pragma once
+
+#include "BenchmarkTimer"
+
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include <algorithm>
-#include "BenchmarkTimer"
 
 enum FRUSTUM_PLANE
 {
@@ -42,5 +43,3 @@ private:
   //8 vertices defined in the world space represents intersection points of frustum planes
   glm::vec3 nearLL, nearLR, nearUR, nearUL, farLL, farLR, farUR, farUL;
 };
-
-#endif // FRUSTUM_H

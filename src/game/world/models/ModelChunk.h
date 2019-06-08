@@ -18,10 +18,11 @@
  * @version 0.1.0
  */
 
-#ifndef MODELCHUNK_H
-#define MODELCHUNK_H
-#include <vector>
+#pragma once
+
 #include "Chunk"
+
+#include <vector>
 
 /**
  * @brief Represents chunk storage for all models. Responsible for keeping information about
@@ -90,5 +91,3 @@ inline std::vector<unsigned int> &ModelChunk::getNumInstancesVector()
 {
   return numInstances;
 }
-
-#endif // MODELCHUNK_H

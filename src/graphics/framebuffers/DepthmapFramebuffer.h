@@ -1,5 +1,5 @@
-#ifndef DEPTHMAPFRAMEBUFFER_H
-#define DEPTHMAPFRAMEBUFFER_H
+#pragma once
+
 #include "Framebuffer"
 
 class DepthmapFramebuffer : public Framebuffer
@@ -9,5 +9,3 @@ public:
   virtual ~DepthmapFramebuffer() = default;
   virtual void setup() override;
 };
-
-#endif // DEPTHMAPFRAMEBUFFER_H

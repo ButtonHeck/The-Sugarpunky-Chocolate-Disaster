@@ -1,5 +1,5 @@
-#ifndef WATERREFRACTIONFRAMEBUFFER_H
-#define WATERREFRACTIONFRAMEBUFFER_H
+#pragma once
+
 #include "Framebuffer"
 
 class WaterRefractionFramebuffer : public Framebuffer
@@ -9,5 +9,3 @@ public:
   virtual ~WaterRefractionFramebuffer() = default;
   virtual void setup() override;
 };
-
-#endif // WATERREFRACTIONFRAMEBUFFER_H

@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef THESUNFACADE_H
-#define THESUNFACADE_H
+#pragma once
+
 #include "TheSun"
 #include "TheSunShader"
 #include "TheSunRenderer"
@@ -48,5 +48,3 @@ private:
   TheSunRenderer renderer;
   GLfloat maxSamplesPassedMultisampling, maxSamplesPassed;
 };
-
-#endif // THESUNFACADE_H

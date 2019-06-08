@@ -1,7 +1,8 @@
-#ifndef FRAMEBUFFER_H
-#define FRAMEBUFFER_H
-#include <GL/glew.h>
+#pragma once
+
 #include "TextureManager"
+
+#include <GL/glew.h>
 
 class Framebuffer
 {
@@ -17,5 +18,3 @@ protected:
   GLuint fbo;
   TextureManager& textureManager;
 };
-
-#endif // FRAMEBUFFER_H

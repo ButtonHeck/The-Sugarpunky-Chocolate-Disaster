@@ -1,14 +1,15 @@
-#ifndef GENERATOR_H
-#define GENERATOR_H
+#pragma once
+
+#include "TerrainTile"
+#include "SceneSettings"
+#include "TypeAliases"
+#include "BufferCollection"
+
 #include <vector>
 #include <fstream>
 #include <iomanip>
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include "TerrainTile"
-#include "SceneSettings"
-#include "TypeAliases"
-#include "BufferCollection"
 
 constexpr unsigned int UNIQUE_VERTICES_PER_TILE = 4;
 
@@ -50,5 +51,3 @@ private:
                                unsigned int& row,
                                unsigned int& column);
 };
-
-#endif // GENERATOR_H

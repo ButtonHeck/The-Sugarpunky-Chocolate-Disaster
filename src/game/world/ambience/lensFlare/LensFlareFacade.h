@@ -18,15 +18,16 @@
  * @version 0.1.0
  */
 
-#ifndef LENSFLAREFACADE_H
-#define LENSFLAREFACADE_H
-#include <vector>
+#pragma once
+
 #include "LensFlareElement"
 #include "LensFlareRenderer"
 #include "LensFlareShader"
 #include "BufferCollection"
 #include "TextureLoader"
 #include "BindlessTextureManager"
+
+#include <vector>
 
 constexpr unsigned int NUM_LENS_FLARES = 7;
 
@@ -50,5 +51,3 @@ private:
   LensFlareShader shader;
   LensFlareRenderer renderer;
 };
-
-#endif // LENSFLAREFACADE_H

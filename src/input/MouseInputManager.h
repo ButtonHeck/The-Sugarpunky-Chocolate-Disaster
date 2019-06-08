@@ -1,10 +1,12 @@
-#ifndef MOUSEINPUTMANAGER_H
-#define MOUSEINPUTMANAGER_H
-#include <glm/gtc/matrix_transform.hpp>
+#pragma once
+
 #include "Camera"
 #include "Options"
 #include "ScreenResolution"
 #include "GraphicsSettings"
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <GLFW/glfw3.h>
 
 class MouseInputManager
 {
@@ -31,5 +33,3 @@ private:
   int cursorWorldZ = 0;
   std::string cursorTileName = "Land";
 };
-
-#endif // MOUSEINPUTMANAGER_H

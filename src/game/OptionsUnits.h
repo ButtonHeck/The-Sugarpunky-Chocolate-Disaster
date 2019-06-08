@@ -1,5 +1,4 @@
-#ifndef OPTIONSUNITS_H
-#define OPTIONSUNITS_H
+#pragma once
 
 enum OPTION
 {
@@ -31,5 +30,3 @@ enum OPTION
   OPT_GRASS_SHADOW,
   OPTIONS_COUNT
 };
-
-#endif // OPTIONSUNITS_H

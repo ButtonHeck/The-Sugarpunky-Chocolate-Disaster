@@ -1,13 +1,14 @@
-#ifndef TEXTMANAGER_H
-#define TEXTMANAGER_H
-#include <iomanip>
-#include <glm/vec2.hpp>
+#pragma once
+
 #include "FontLoader"
 #include "Shader"
 #include "BufferCollection"
 #include "Camera"
 #include "MouseInputManager"
 #include "VRAM_Monitor"
+
+#include <iomanip>
+#include <glm/vec2.hpp>
 
 class TextManager
 {
@@ -43,5 +44,3 @@ private:
   GLfloat vertexData[MAX_BUFFER_SIZE] = {0};
   int bufferOffset = 0, glyphsCount = 0;
 };
-
-#endif // TEXTMANAGER_H

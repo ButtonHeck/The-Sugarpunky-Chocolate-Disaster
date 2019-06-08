@@ -1,5 +1,5 @@
-#ifndef WATERREFLECTIONFRAMEBUFFER_H
-#define WATERREFLECTIONFRAMEBUFFER_H
+#pragma once
+
 #include "Framebuffer"
 
 class WaterReflectionFramebuffer : public Framebuffer
@@ -12,5 +12,3 @@ public:
 private:
   GLuint rbo;
 };
-
-#endif // WATERREFLECTIONFRAMEBUFFER_H

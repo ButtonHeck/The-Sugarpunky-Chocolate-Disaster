@@ -1,5 +1,5 @@
-#ifndef VRAM_MONITOR_H
-#define VRAM_MONITOR_H
+#pragma once
+
 #include <GL/glew.h>
 
 class VRAM_Monitor final
@@ -14,5 +14,3 @@ private:
   int ramAvailable, ramSize;
   float ramSizeFloatPercentage;
 };
-
-#endif // VRAM_MONITOR_H

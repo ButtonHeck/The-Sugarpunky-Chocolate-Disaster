@@ -1,5 +1,5 @@
-#ifndef FRUSTUMRENDERER_H
-#define FRUSTUMRENDERER_H
+#pragma once
+
 #include "Frustum"
 #include "BufferCollection"
 
@@ -22,5 +22,3 @@ private:
   BufferCollection basicGLBuffers;
   float vertices[3 * Frustum::NUMBER_OF_DISTINCT_VERTICES] = {0.0f};
 };
-
-#endif // FRUSTUMRENDERER_H

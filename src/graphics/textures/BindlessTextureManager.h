@@ -1,8 +1,9 @@
-#ifndef BINDLESSTEXTUREMANAGER_H
-#define BINDLESSTEXTUREMANAGER_H
-#include <GL/glew.h>
+#pragma once
+
 #include "Shader"
 #include "TypeAliases"
+
+#include <GL/glew.h>
 
 enum BINDLESS_TEXTURE_TYPE
 {
@@ -32,5 +33,3 @@ private:
   constexpr static unsigned int INITIAL_CAPACITY = 256;
   static vec2D_template<BindlessTexture> textures;
 };
-
-#endif // BINDLESSTEXTUREMANAGER_H

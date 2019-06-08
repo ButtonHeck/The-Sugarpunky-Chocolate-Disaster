@@ -1,5 +1,5 @@
-#ifndef HILLSFACADE_H
-#define HILLSFACADE_H
+#pragma once
+
 #include "HillsGenerator"
 #include "HillsShader"
 #include "HillsRenderer"
@@ -34,5 +34,3 @@ private:
   HillsGenerator generator;
   HillsRenderer renderer;
 };
-
-#endif // HILLSFACADE_H

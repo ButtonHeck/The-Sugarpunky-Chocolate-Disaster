@@ -1,5 +1,5 @@
-#ifndef WATERRENDERER_H
-#define WATERRENDERER_H
+#pragma once
+
 #include "WaterGenerator"
 #include "WaterShader"
 #include "BenchmarkTimer"
@@ -18,5 +18,3 @@ private:
   WaterGenerator& generator;
   Query anySamplesPassedQuery;
 };
-
-#endif // WATERRENDERER_H

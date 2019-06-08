@@ -1,5 +1,5 @@
-#ifndef RENDERERSTATEMANAGER_H
-#define RENDERERSTATEMANAGER_H
+#pragma once
+
 #include <GL/glew.h>
 
 namespace RendererStateManager
@@ -7,5 +7,3 @@ namespace RendererStateManager
   void setInitialRenderingState(bool useMultisample);
   void setAmbienceRenderingState(bool isOn);
 };
-
-#endif // RENDERERSTATEMANAGER_H

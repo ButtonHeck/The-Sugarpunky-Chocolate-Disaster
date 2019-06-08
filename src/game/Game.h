@@ -1,12 +1,6 @@
-#ifndef GAME_H
-#define GAME_H
-#include <thread>
-#include <memory>
-#include <array>
+#pragma once
+
 #include <GL/glew.h>
-#include <atomic>
-#include <mutex>
-#include <condition_variable>
 #include "DirectoriesSettings"
 #include "Timer"
 #include "BenchmarkTimer"
@@ -26,6 +20,13 @@
 #include "DepthmapFramebuffer"
 #include "WaterReflectionFramebuffer"
 #include "WaterRefractionFramebuffer"
+
+#include <thread>
+#include <memory>
+#include <array>
+#include <atomic>
+#include <mutex>
+#include <condition_variable>
 
 class Camera;
 class Options;
@@ -101,5 +102,3 @@ private:
 
   bool landIndirectBufferHasUpdated = false; //not used in any other threads, thus no need to declare as atomic
 };
-
-#endif // GAME_H

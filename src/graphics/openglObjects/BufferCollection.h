@@ -1,5 +1,5 @@
-#ifndef BUFFERCOLLECTION_H
-#define BUFFERCOLLECTION_H
+#pragma once
+
 #include <GL/glew.h>
 #include <unordered_map>
 
@@ -36,5 +36,3 @@ public:
 private:
   std::unordered_map<int, GLuint> objects;
 };
-
-#endif // BUFFERCOLLECTION_H

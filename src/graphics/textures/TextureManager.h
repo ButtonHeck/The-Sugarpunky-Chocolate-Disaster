@@ -1,9 +1,10 @@
-#ifndef TEXTUREMANAGER_H
-#define TEXTUREMANAGER_H
-#include <GL/glew.h>
-#include <unordered_map>
+#pragma once
+
 #include "TextureLoader"
 #include "TextureUnits"
+
+#include <GL/glew.h>
+#include <unordered_map>
 
 class TextureManager
 {
@@ -18,5 +19,3 @@ private:
   TextureLoader& loader;
   std::unordered_map<int, GLuint> textures;
 };
-
-#endif // TEXTUREMANAGER_H

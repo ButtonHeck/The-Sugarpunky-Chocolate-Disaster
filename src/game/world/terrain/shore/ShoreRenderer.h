@@ -1,5 +1,5 @@
-#ifndef SHORERENDERER_H
-#define SHORERENDERER_H
+#pragma once
+
 #include "ShoreGenerator"
 
 class ShoreRenderer
@@ -12,5 +12,3 @@ public:
 private:
   ShoreGenerator& generator;
 };
-
-#endif // SHORERENDERER_H

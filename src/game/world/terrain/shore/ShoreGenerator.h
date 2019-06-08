@@ -1,9 +1,10 @@
-#ifndef SHOREGENERATOR_H
-#define SHOREGENERATOR_H
+#pragma once
+
+#include "Generator"
+
 #include <random>
 #include <chrono>
 #include <memory>
-#include "Generator"
 
 constexpr float SHORE_CLIP_LEVEL = -4.0f;
 
@@ -46,5 +47,3 @@ private:
   map2D_vec3 normalMap;
   std::default_random_engine randomizer;
 };
-
-#endif // SHOREGENERATOR_H

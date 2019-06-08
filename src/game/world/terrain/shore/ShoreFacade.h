@@ -1,5 +1,5 @@
-#ifndef SHOREFACADE_H
-#define SHOREFACADE_H
+#pragma once
+
 #include "ShoreGenerator"
 #include "ShoreShader"
 #include "ShoreRenderer"
@@ -27,5 +27,3 @@ private:
   ShoreGenerator generator;
   ShoreRenderer renderer;
 };
-
-#endif // SHOREFACADE_H

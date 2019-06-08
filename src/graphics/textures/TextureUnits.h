@@ -1,5 +1,4 @@
-#ifndef TEXTUREUNITS_H
-#define TEXTUREUNITS_H
+#pragma once
 
 enum TEXTURE_UNITS
 {
@@ -37,5 +36,3 @@ enum TEXTURE_UNITS
   TEX_FONT,
   TEXTURE_UNITS_SIZE
 };
-
-#endif // TEXTUREUNITS_H

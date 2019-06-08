@@ -1,5 +1,5 @@
-#ifndef BUIDABLERENDERER_H
-#define BUIDABLERENDERER_H
+#pragma once
+
 #include "BuildableGenerator"
 
 class BuildableRenderer
@@ -12,5 +12,3 @@ public:
 private:
   BuildableGenerator& generator;
 };
-
-#endif // BUIDABLERENDERER_H

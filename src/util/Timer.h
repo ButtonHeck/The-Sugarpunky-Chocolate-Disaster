@@ -1,8 +1,9 @@
-#ifndef TIMER_H
-#define TIMER_H
+#pragma once
+
+#include "BenchmarkTimer"
+
 #include <GLFW/glfw3.h>
 #include <chrono>
-#include "BenchmarkTimer"
 
 class Timer
 {
@@ -46,5 +47,3 @@ private:
   decltype(chronoClock::now()) frameTime, currentTime;
   unsigned int frames = 0, fps = 0, updateCount = 0;
 };
-
-#endif // TIMER_H

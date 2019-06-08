@@ -1,5 +1,5 @@
-#ifndef WATERFACADE_H
-#define WATERFACADE_H
+#pragma once
+
 #include "WaterGenerator"
 #include "WaterShader"
 #include "WaterRenderer"
@@ -28,5 +28,3 @@ private:
   WaterGenerator generator;
   WaterRenderer renderer;
 };
-
-#endif // WATERFACADE_H

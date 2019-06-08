@@ -1,14 +1,15 @@
-#ifndef SHADERPROGRAM_H
-#define SHADERPROGRAM_H
+#pragma once
+
+#include "DirectoriesSettings"
+#include "GraphicsSettings"
+#include "Logger"
+
 #include <sstream>
 #include <fstream>
 #include <unordered_map>
 #include <array>
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
-#include "DirectoriesSettings"
-#include "GraphicsSettings"
-#include "Logger"
 
 class Shader
 {
@@ -66,5 +67,3 @@ inline void Shader::setVec2(const std::string &uniformName, const glm::vec2 &vec
 {
   setVec2(uniformName, vec.x, vec.y);
 }
-
-#endif // SHADERPROGRAM_H

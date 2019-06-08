@@ -1,5 +1,5 @@
-#ifndef BUIDABLESHADER_H
-#define BUIDABLESHADER_H
+#pragma once
+
 #include "Shader"
 
 class BuildableShader
@@ -13,5 +13,3 @@ private:
   Shader& buildableRenderShader;
   Shader& selectedRenderShader;
 };
-
-#endif // BUIDABLESHADER_H

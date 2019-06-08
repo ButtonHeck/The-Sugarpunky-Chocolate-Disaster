@@ -1,15 +1,16 @@
-#ifndef TEXTURELOADER_H
-#define TEXTURELOADER_H
-#include <GL/glew.h>
-#include <IL/il.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <algorithm>
+#pragma once
+
 #include "ScreenResolution"
 #include "DirectoriesSettings"
 #include "GraphicsSettings"
 #include "SceneSettings"
 #include "Logger"
 #include "TypeAliases"
+
+#include <GL/glew.h>
+#include <IL/il.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <algorithm>
 
 class TextureLoader
 {
@@ -38,5 +39,3 @@ private:
 
   const ScreenResolution& screenResolution;
 };
-
-#endif // TEXTURELOADER_H

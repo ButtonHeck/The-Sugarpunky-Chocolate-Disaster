@@ -1,7 +1,8 @@
-#ifndef HILLSGENERATOR_H
-#define HILLSGENERATOR_H
+#pragma once
+
 #include "Generator"
 #include "HillsShader"
+
 #include <random>
 #include <chrono>
 
@@ -67,5 +68,3 @@ private:
   map2D_vec3 bitangentMap;
   std::default_random_engine randomizer;
 };
-
-#endif // HILLSGENERATOR_H

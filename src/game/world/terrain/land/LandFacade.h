@@ -1,5 +1,5 @@
-#ifndef LANDFACADE_H
-#define LANDFACADE_H
+#pragma once
+
 #include "LandGenerator"
 #include "LandShader"
 #include "LandRenderer"
@@ -23,5 +23,3 @@ private:
   LandGenerator generator;
   LandRenderer renderer;
 };
-
-#endif // LANDFACADE_H

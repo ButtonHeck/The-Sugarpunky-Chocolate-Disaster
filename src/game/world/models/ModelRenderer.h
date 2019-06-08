@@ -1,8 +1,9 @@
-#ifndef MODELRENDERER_H
-#define MODELRENDERER_H
-#include <GL/glew.h>
+#pragma once
+
 #include "BufferCollection"
 #include "BenchmarkTimer"
+
+#include <GL/glew.h>
 
 class ModelRenderer
 {
@@ -15,5 +16,3 @@ private:
   BufferCollection& basicGLBuffers;
   BufferCollection& shadowDIBO;
 };
-
-#endif // MODELRENDERER_H

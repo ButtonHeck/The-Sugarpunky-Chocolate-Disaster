@@ -1,7 +1,8 @@
-#ifndef OPTIONS_H
-#define OPTIONS_H
-#include <bitset>
+#pragma once
+
 #include "OptionsUnits"
+
+#include <bitset>
 
 class Options
 {
@@ -13,5 +14,3 @@ public:
 private:
   std::bitset<OPTIONS_COUNT> options;
 };
-
-#endif // OPTIONS_H

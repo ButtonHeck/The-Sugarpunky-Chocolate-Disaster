@@ -18,11 +18,12 @@
  * @version 0.1.0
  */
 
-#ifndef THESUN_H
-#define THESUN_H
-#include <glm/gtx/rotate_vector.hpp>
+#pragma once
+
 #include "BufferCollection"
 #include "SceneSettings"
+
+#include <glm/gtx/rotate_vector.hpp>
 
 /**
  * @brief Represents the Sun entity, contains its own buffer collection and transformations applied.
@@ -52,5 +53,3 @@ private:
   const glm::vec3 START_POSITION = currentPosition;
   const glm::mat4 START_MODEL = glm::mat4();
 };
-
-#endif // THESUN_H

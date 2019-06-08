@@ -1,5 +1,4 @@
-#ifndef SCENESETTINGS_H
-#define SCENESETTINGS_H
+#pragma once
 
 //scene config
 constexpr int WORLD_WIDTH = 384;
@@ -25,5 +24,3 @@ constexpr int CHUNK_SIZE = 4;
 constexpr float HALF_CHUNK_SIZE = CHUNK_SIZE / 2.0f;
 constexpr float FRUSTUM_CULLING_DISTANCE_OFFSET = CHUNK_SIZE;
 constexpr float PLANET_MOVE_SPEED = 0.045f;
-
-#endif // SCENESETTINGS_H

@@ -1,5 +1,5 @@
-#ifndef SHADOWVOLUMEBOXRENDERER_H
-#define SHADOWVOLUMEBOXRENDERER_H
+#pragma once
+
 #include "ShadowVolume"
 #include "BufferCollection"
 
@@ -36,5 +36,3 @@ private:
                                                   5,4,7,7,6,5,
                                                   4,0,3,3,7,4};
 };
-
-#endif // SHADOWVOLUMEBOXRENDERER_H

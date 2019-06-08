@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef LENSFLAREELEMENT_H
-#define LENSFLAREELEMENT_H
+#pragma once
+
 #include <glm/vec2.hpp>
 #include <GL/glew.h>
 
@@ -43,5 +43,3 @@ private:
   float pointSize;
   GLuint textureID;
 };
-
-#endif // LENSFLAREELEMENT_H

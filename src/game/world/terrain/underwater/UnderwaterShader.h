@@ -1,5 +1,5 @@
-#ifndef UNDERWATERSHADER_H
-#define UNDERWATERSHADER_H
+#pragma once
+
 #include "Shader"
 
 class UnderwaterShader
@@ -11,5 +11,3 @@ public:
 private:
   Shader& renderShader;
 };
-
-#endif // UNDERWATERSHADER_H

@@ -1,5 +1,4 @@
-#ifndef TERRAIN_TILE_H
-#define TERRAIN_TILE_H
+#pragma once
 
 struct TerrainTile
 {
@@ -7,5 +6,3 @@ struct TerrainTile
   const int mapX, mapY;
   const float lowLeft, lowRight, upperRight, upperLeft;
 };
-
-#endif // TERRAIN_TILE_H

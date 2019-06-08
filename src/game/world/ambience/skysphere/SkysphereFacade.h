@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef SKYSPHEREFACADE_H
-#define SKYSPHEREFACADE_H
+#pragma once
+
 #include "Skysphere"
 #include "SkysphereShader"
 
@@ -49,5 +49,3 @@ private:
   Skysphere theSunAmbientLightingHemisphere, starsSkysphere;
   SkysphereShader shader;
 };
-
-#endif // SKYSPHEREFACADE_H

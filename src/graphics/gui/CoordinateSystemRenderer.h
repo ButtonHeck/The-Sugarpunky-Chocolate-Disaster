@@ -1,5 +1,5 @@
-#ifndef COORDINATESYSTEMRENDERER_H
-#define COORDINATESYSTEMRENDERER_H
+#pragma once
+
 #include "Shader"
 #include "BufferCollection"
 
@@ -14,5 +14,3 @@ private:
   BufferCollection basicGLBuffers;
   Shader* shader;
 };
-
-#endif // COORDINATESYSTEMRENDERER_H

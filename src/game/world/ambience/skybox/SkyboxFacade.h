@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef SKYBOXFACADE_H
-#define SKYBOXFACADE_H
+#pragma once
+
 #include "Skybox"
 #include "SkyboxShader"
 #include "BenchmarkTimer"
@@ -47,5 +47,3 @@ private:
   SkyboxShader shader;
   Skybox skybox;
 };
-
-#endif // SKYBOXFACADE_H

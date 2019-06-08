@@ -18,8 +18,8 @@
  * @version 0.1.0
  */
 
-#ifndef HILLTREESGENERATOR_H
-#define HILLTREESGENERATOR_H
+#pragma once
+
 #include "PlantGenerator"
 
 /**
@@ -49,5 +49,3 @@ private:
   //some models must have perpendicular orientation to a particular hill tile
   size_t numSurfaceOrientedModels;
 };
-
-#endif // HILLTREESGENERATOR_H

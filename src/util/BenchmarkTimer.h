@@ -1,13 +1,11 @@
-#ifndef BENCHMARKTIMER_H
-#define BENCHMARKTIMER_H
+#pragma once
+
+#include "DirectoriesSettings"
+
 #include <fstream>
 #include <map>
-#include <algorithm>
-#include <iomanip>
 #include <chrono>
 #include <iterator>
-#include "DirectoriesSettings"
-#include "Logger"
 
 /* if in debug build - BENCHMARK macro creates an instance of BenchmarkTimer
  * which takes timestamps in both ctor and dtor
@@ -53,5 +51,3 @@ private:
   decltype(chronoClock::now()) startTimestamp = chronoClock::now();
   decltype(startTimestamp) endTimestamp = startTimestamp;
 };
-
-#endif // BENCHMARKTIMER_H

@@ -18,10 +18,11 @@
  * @version 0.1.0
  */
 
-#ifndef LENSFLARERENDERER_H
-#define LENSFLARERENDERER_H
-#include <GL/glew.h>
+#pragma once
+
 #include "BufferCollection"
+
+#include <GL/glew.h>
 
 /**
  * @brief Renderer for lens flare effect which is responsible for sending appropriate draw call to the GPU
@@ -36,5 +37,3 @@ public:
 private:
   BufferCollection& basicGLBuffer;
 };
-
-#endif // LENSFLARERENDERER_H
