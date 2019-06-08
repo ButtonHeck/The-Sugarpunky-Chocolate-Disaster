@@ -1,10 +1,10 @@
 #ifndef WATERGENERATOR_H
 #define WATERGENERATOR_H
 #include <memory>
-#include "../../src/game/world/terrain/Generator.h"
-#include "../../src/game/Options.h"
-#include "../../src/util/BenchmarkTimer.h"
-#include "WaterShader.h"
+#include "Generator"
+#include "Options"
+#include "BenchmarkTimer"
+#include "WaterShader"
 
 class WaterGenerator : public Generator
 {

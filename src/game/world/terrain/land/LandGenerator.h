@@ -2,8 +2,8 @@
 #define LANDGENERATOR_H
 #include <random>
 #include <chrono>
-#include "../../src/game/world/terrain/Generator.h"
-#include "LandChunk.h"
+#include "Generator"
+#include "LandChunk"
 
 class LandGenerator : public Generator
 {

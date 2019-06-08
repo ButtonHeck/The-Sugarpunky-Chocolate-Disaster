@@ -1,4 +1,4 @@
-#include "LandRenderer.h"
+#include "LandRenderer"
 
 LandRenderer::LandRenderer(LandGenerator &generator)
   :

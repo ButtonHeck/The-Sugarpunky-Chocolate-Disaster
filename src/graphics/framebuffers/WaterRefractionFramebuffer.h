@@ -1,6 +1,6 @@
 #ifndef WATERREFRACTIONFRAMEBUFFER_H
 #define WATERREFRACTIONFRAMEBUFFER_H
-#include "../../src/graphics/openglObjects/Framebuffer.h"
+#include "Framebuffer"
 
 class WaterRefractionFramebuffer : public Framebuffer
 {

@@ -1,4 +1,4 @@
-#include "BuildableGenerator.h"
+#include "BuildableGenerator"
 
 BuildableGenerator::BuildableGenerator()
   :

@@ -1,4 +1,4 @@
-#include "ShoreGenerator.h"
+#include "ShoreGenerator"
 
 ShoreGenerator::ShoreGenerator(const map2D_f &waterMap)
   :

@@ -1,4 +1,4 @@
-#include "HillsFacade.h"
+#include "HillsFacade"
 
 HillsFacade::HillsFacade(Shader &renderShader,
                          Shader &cullingShader,

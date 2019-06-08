@@ -1,4 +1,4 @@
-#include "VRAM_Monitor.h"
+#include "VRAM_Monitor"
 
 VRAM_Monitor::VRAM_Monitor()
 {

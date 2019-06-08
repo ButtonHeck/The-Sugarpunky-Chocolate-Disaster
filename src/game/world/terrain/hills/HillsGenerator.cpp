@@ -1,4 +1,4 @@
-#include "HillsGenerator.h"
+#include "HillsGenerator"
 
 HillsGenerator::HillsGenerator(HillsShader &shaders, const map2D_f &waterMap)
   :

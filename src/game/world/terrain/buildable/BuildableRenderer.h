@@ -1,6 +1,6 @@
 #ifndef BUIDABLERENDERER_H
 #define BUIDABLERENDERER_H
-#include "BuildableGenerator.h"
+#include "BuildableGenerator"
 
 class BuildableRenderer
 {

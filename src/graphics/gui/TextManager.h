@@ -2,12 +2,12 @@
 #define TEXTMANAGER_H
 #include <iomanip>
 #include <glm/vec2.hpp>
-#include "../../src/graphics/gui/FontLoader.h"
-#include "../../src/graphics/shaders/Shader.h"
-#include "../../src/graphics/openglObjects/BufferCollection.h"
-#include "../../src/graphics/Camera.h"
-#include "../../src/input/MouseInputManager.h"
-#include "../../src/util/VRAM_Monitor.h"
+#include "FontLoader"
+#include "Shader"
+#include "BufferCollection"
+#include "Camera"
+#include "MouseInputManager"
+#include "VRAM_Monitor"
 
 class TextManager
 {

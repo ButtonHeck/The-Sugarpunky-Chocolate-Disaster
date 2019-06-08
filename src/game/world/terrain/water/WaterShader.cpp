@@ -1,4 +1,4 @@
-#include "WaterShader.h"
+#include "WaterShader"
 
 WaterShader::WaterShader(Shader &renderShader, Shader &cullingShader, Shader &normalsShader)
   :

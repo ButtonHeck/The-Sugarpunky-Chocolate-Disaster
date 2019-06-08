@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "LensFlareShader.h"
+#include "LensFlareShader"
 
 /**
  * @param renderShader precompiled shader program which is used during rendering

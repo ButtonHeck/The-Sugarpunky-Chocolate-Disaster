@@ -1,4 +1,4 @@
-#include "ShadowVolume.h"
+#include "ShadowVolume"
 
 void ShadowVolume::update(const std::array<Frustum, NUM_SHADOW_LAYERS> &frustums, const TheSunFacade& theSunFacade)
 {

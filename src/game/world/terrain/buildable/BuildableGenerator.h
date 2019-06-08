@@ -1,7 +1,7 @@
 #ifndef BUILDABLEGENERATOR_H
 #define BUILDABLEGENERATOR_H
 #include <memory>
-#include "../../src/game/world/terrain/Generator.h"
+#include "Generator"
 
 class BuildableGenerator : public Generator
 {

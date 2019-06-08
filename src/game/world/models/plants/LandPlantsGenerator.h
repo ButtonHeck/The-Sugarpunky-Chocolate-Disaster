@@ -20,7 +20,7 @@
 
 #ifndef LANDPLANTSGENERATOR_H
 #define LANDPLANTSGENERATOR_H
-#include "PlantGenerator.h"
+#include "PlantGenerator"
 
 /**
  * @brief Generator for plants located on the land.

@@ -1,4 +1,4 @@
-#include "Query.h"
+#include "Query"
 
 Query::Query(GLuint type)
   :

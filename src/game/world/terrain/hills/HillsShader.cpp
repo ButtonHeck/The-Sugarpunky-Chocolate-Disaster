@@ -1,4 +1,4 @@
-#include "HillsShader.h"
+#include "HillsShader"
 
 HillsShader::HillsShader(Shader &renderShader, Shader &cullingShader, Shader &normalsShader)
   :

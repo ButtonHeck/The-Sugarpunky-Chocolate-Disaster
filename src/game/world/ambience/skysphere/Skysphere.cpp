@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "Skysphere.h"
+#include "Skysphere"
 
 /**
  * @param path path to the .obj model file

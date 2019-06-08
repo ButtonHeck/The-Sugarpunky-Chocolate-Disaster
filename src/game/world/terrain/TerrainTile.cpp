@@ -1,4 +1,4 @@
-#include "TerrainTile.h"
+#include "TerrainTile"
 
 TerrainTile::TerrainTile(int x, int y, float lowLeft, float lowRight, float upperRight, float upperLeft)
   :

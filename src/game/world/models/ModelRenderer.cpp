@@ -1,4 +1,4 @@
-#include "ModelRenderer.h"
+#include "ModelRenderer"
 
 ModelRenderer::ModelRenderer(BufferCollection &basicGLBuffers, BufferCollection &shadowDIBO)
   :

@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "TheSun.h"
+#include "TheSun"
 
 /**
  * @brief initialize member variables and setup array buffer

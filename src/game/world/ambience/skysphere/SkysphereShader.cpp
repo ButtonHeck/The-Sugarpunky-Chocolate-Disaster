@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "SkysphereShader.h"
+#include "SkysphereShader"
 
 /**
  * @brief SkysphereShader::SkysphereShader

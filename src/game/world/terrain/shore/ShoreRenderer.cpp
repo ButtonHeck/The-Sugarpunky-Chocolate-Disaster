@@ -1,4 +1,4 @@
-#include "ShoreRenderer.h"
+#include "ShoreRenderer"
 
 ShoreRenderer::ShoreRenderer(ShoreGenerator &generator)
   :

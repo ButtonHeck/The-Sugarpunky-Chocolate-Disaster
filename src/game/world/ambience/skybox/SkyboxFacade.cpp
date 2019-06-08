@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "SkyboxFacade.h"
+#include "SkyboxFacade"
 
 /**
  * @param renderShader compiled program fed to personal shader manager

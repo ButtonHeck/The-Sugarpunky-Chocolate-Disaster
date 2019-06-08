@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "SkysphereFacade.h"
+#include "SkysphereFacade"
 
 /**
  * @brief Constructor with hardcoded paths for (hemi)sphere models

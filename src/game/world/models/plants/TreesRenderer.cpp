@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "TreesRenderer.h"
+#include "TreesRenderer"
 
 /**
  * @brief just delegates a draw call for each given model

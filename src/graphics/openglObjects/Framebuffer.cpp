@@ -1,4 +1,4 @@
-#include "Framebuffer.h"
+#include "Framebuffer"
 
 Framebuffer::Framebuffer(TextureManager &textureManager)
   :

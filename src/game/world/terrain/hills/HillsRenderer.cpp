@@ -1,4 +1,4 @@
-#include "HillsRenderer.h"
+#include "HillsRenderer"
 
 HillsRenderer::HillsRenderer(HillsShader &shaders, HillsGenerator &generator)
   :

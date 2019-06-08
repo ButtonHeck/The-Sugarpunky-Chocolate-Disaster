@@ -1,7 +1,7 @@
 #ifndef COORDINATESYSTEMRENDERER_H
 #define COORDINATESYSTEMRENDERER_H
-#include "../../src/graphics/shaders/Shader.h"
-#include "../../src/graphics/openglObjects/BufferCollection.h"
+#include "Shader"
+#include "BufferCollection"
 
 class CoordinateSystemRenderer
 {

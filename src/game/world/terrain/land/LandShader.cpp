@@ -1,4 +1,4 @@
-#include "LandShader.h"
+#include "LandShader"
 
 LandShader::LandShader(Shader &renderShader)
   :

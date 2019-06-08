@@ -1,9 +1,9 @@
 #ifndef WATERRENDERER_H
 #define WATERRENDERER_H
-#include "WaterGenerator.h"
-#include "WaterShader.h"
-#include "../../src/util/BenchmarkTimer.h"
-#include "../../src/graphics/openglObjects/Query.h"
+#include "WaterGenerator"
+#include "WaterShader"
+#include "BenchmarkTimer"
+#include "Query"
 
 class WaterRenderer
 {

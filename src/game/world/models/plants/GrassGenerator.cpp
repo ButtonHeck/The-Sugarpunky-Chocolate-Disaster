@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "GrassGenerator.h"
+#include "GrassGenerator"
 
 /**
  * @brief load both plain and low-poly models

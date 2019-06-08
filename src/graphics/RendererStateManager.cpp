@@ -1,4 +1,4 @@
-#include "RendererStateManager.h"
+#include "RendererStateManager"
 
 namespace RendererStateManager
 {

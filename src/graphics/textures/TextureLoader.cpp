@@ -1,4 +1,4 @@
-#include "TextureLoader.h"
+#include "TextureLoader"
 
 TextureLoader::TextureLoader(const ScreenResolution &screenResolution)
   :

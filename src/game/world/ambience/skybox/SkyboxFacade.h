@@ -20,9 +20,9 @@
 
 #ifndef SKYBOXFACADE_H
 #define SKYBOXFACADE_H
-#include "Skybox.h"
-#include "SkyboxShader.h"
-#include "../../src/util/BenchmarkTimer.h"
+#include "Skybox"
+#include "SkyboxShader"
+#include "BenchmarkTimer"
 
 /**
  * @brief Represents a facade for skybox in the game, contains a single skybox object and personal shader.

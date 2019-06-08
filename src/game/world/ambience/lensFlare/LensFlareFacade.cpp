@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "LensFlareFacade.h"
+#include "LensFlareFacade"
 
 /**
  * @param shader compiled program fed to the dedicated shader object

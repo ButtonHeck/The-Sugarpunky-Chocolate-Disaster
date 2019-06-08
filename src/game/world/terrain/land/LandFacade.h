@@ -1,8 +1,8 @@
 #ifndef LANDFACADE_H
 #define LANDFACADE_H
-#include "LandGenerator.h"
-#include "LandShader.h"
-#include "LandRenderer.h"
+#include "LandGenerator"
+#include "LandShader"
+#include "LandRenderer"
 
 class LandFacade
 {

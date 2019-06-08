@@ -4,12 +4,12 @@
 #include <IL/il.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <algorithm>
-#include "../../src/graphics/ScreenResolution.h"
-#include "../../src/util/DirectoriesSettings.h"
-#include "../../src/graphics/GraphicsSettings.h"
-#include "../../src/game/world/SceneSettings.h"
-#include "../../src/util/Logger.h"
-#include "../../src/util/typeAliases.h"
+#include "ScreenResolution"
+#include "DirectoriesSettings"
+#include "GraphicsSettings"
+#include "SceneSettings"
+#include "Logger"
+#include "TypeAliases"
 
 class TextureLoader
 {

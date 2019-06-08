@@ -1,6 +1,6 @@
 #ifndef UNDERWATERRENDERER_H
 #define UNDERWATERRENDERER_H
-#include "UnderwaterGenerator.h"
+#include "UnderwaterGenerator"
 
 class UnderwaterRenderer
 {

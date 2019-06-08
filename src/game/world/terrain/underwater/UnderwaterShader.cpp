@@ -1,4 +1,4 @@
-#include "UnderwaterShader.h"
+#include "UnderwaterShader"
 
 UnderwaterShader::UnderwaterShader(Shader &renderShader)
   :

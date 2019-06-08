@@ -1,7 +1,7 @@
 #ifndef HILLSGENERATOR_H
 #define HILLSGENERATOR_H
-#include "../../src/game/world/terrain/Generator.h"
-#include "HillsShader.h"
+#include "Generator"
+#include "HillsShader"
 #include <random>
 #include <chrono>
 

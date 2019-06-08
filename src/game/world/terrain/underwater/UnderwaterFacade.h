@@ -1,9 +1,9 @@
 #ifndef UNDERWATERFACADE_H
 #define UNDERWATERFACADE_H
-#include "UnderwaterGenerator.h"
-#include "UnderwaterShader.h"
-#include "UnderwaterRenderer.h"
-#include "../../src/util/BenchmarkTimer.h"
+#include "UnderwaterGenerator"
+#include "UnderwaterShader"
+#include "UnderwaterRenderer"
+#include "BenchmarkTimer"
 
 class UnderwaterFacade
 {

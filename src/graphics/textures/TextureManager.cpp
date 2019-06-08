@@ -1,4 +1,4 @@
-#include "TextureManager.h"
+#include "TextureManager"
 
 TextureManager::TextureManager(TextureLoader& loader)
   :

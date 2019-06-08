@@ -20,14 +20,14 @@
 
 #ifndef PLANTSFACADE_H
 #define PLANTSFACADE_H
-#include "../../src/util/typeAliases.h"
-#include "LandPlantsGenerator.h"
-#include "GrassGenerator.h"
-#include "HillTreesGenerator.h"
-#include "../../src/game/world/terrain/Generator.h"
-#include "PlantsShader.h"
-#include "TreesRenderer.h"
-#include "GrassRenderer.h"
+#include "TypeAliases"
+#include "LandPlantsGenerator"
+#include "GrassGenerator"
+#include "HillTreesGenerator"
+#include "Generator"
+#include "PlantsShader"
+#include "TreesRenderer"
+#include "GrassRenderer"
 
 class Frustum;
 

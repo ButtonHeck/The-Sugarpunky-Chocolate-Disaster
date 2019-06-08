@@ -1,4 +1,4 @@
-#include "ShoreShader.h"
+#include "ShoreShader"
 
 ShoreShader::ShoreShader(Shader &renderShader, Shader &normalsShader)
   :

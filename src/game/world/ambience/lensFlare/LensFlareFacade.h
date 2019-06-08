@@ -21,12 +21,12 @@
 #ifndef LENSFLAREFACADE_H
 #define LENSFLAREFACADE_H
 #include <vector>
-#include "LensFlareElement.h"
-#include "LensFlareRenderer.h"
-#include "LensFlareShader.h"
-#include "../../src/graphics/openglObjects/BufferCollection.h"
-#include "../../src/graphics/textures/TextureLoader.h"
-#include "../../src/graphics/textures/BindlessTextureManager.h"
+#include "LensFlareElement"
+#include "LensFlareRenderer"
+#include "LensFlareShader"
+#include "BufferCollection"
+#include "TextureLoader"
+#include "BindlessTextureManager"
 
 constexpr unsigned int NUM_LENS_FLARES = 7;
 

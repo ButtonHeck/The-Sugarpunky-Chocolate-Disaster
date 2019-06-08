@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "Model.h"
+#include "Model"
 
 TextureLoader* Model::textureLoader;
 void Model::bindTextureLoader(TextureLoader &textureLoader)

@@ -1,4 +1,4 @@
-#include "ScreenResolution.h"
+#include "ScreenResolution"
 
 ScreenResolution::ScreenResolution(int width, int height, float aspect)
   :

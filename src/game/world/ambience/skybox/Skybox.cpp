@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "Skybox.h"
+#include "Skybox"
 
 Skybox::Skybox()
   :

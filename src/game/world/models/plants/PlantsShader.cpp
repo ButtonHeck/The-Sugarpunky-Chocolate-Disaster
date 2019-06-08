@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "PlantsShader.h"
+#include "PlantsShader"
 
 /**
  * @param renderPhongShader compiled Phong shader program to use during rendering

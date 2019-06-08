@@ -20,7 +20,7 @@
 
 #ifndef PLANTSSHADER_H
 #define PLANTSSHADER_H
-#include "../../src/graphics/shaders/Shader.h"
+#include "Shader"
 
 /**
  * @brief Personal shader manager for plants related code module.

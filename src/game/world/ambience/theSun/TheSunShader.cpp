@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "TheSunShader.h"
+#include "TheSunShader"
 
 /**
  * @param renderShader compiled shader program to use during rendering

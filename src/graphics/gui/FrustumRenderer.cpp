@@ -1,4 +1,4 @@
-#include "FrustumRenderer.h"
+#include "FrustumRenderer"
 
 FrustumRenderer::FrustumRenderer(const Frustum &frustum)
   :

@@ -2,9 +2,9 @@
 #define CAMERA_H
 #include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
-#include "../../src/game/world/SceneSettings.h"
-#include "../../src/util/typeAliases.h"
-#include "../../src/util/BenchmarkTimer.h"
+#include "SceneSettings"
+#include "TypeAliases"
+#include "BenchmarkTimer"
 
 enum MOVE_DIRECTION
 {

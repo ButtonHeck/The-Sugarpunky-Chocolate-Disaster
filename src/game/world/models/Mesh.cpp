@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "Mesh.h"
+#include "Mesh"
 
 /**
  * @brief static function for mesh creation

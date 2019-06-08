@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "TheSunRenderer.h"
+#include "TheSunRenderer"
 
 /**
  * @param theSun entity to peek VAO from during rendering

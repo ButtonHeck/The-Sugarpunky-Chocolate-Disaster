@@ -20,7 +20,7 @@
 
 #ifndef GRASSGENERATOR_H
 #define GRASSGENERATOR_H
-#include "PlantGenerator.h"
+#include "PlantGenerator"
 
 /**
  * @brief Generator for grass. Responsible for accomodating all grass models on the world map

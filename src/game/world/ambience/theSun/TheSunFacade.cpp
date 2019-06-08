@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "TheSunFacade.h"
+#include "TheSunFacade"
 
 /**
  * @brief initialize member variables, setup renderer point size and calculate maximum samples values

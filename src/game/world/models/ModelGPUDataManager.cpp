@@ -1,4 +1,4 @@
-#include "ModelGPUDataManager.h"
+#include "ModelGPUDataManager"
 
 ModelGPUDataManager::ModelGPUDataManager(bool isParentModelLowPoly)
   :

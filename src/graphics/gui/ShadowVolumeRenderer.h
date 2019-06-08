@@ -1,7 +1,7 @@
 #ifndef SHADOWVOLUMEBOXRENDERER_H
 #define SHADOWVOLUMEBOXRENDERER_H
-#include "../../src/graphics/ShadowVolume.h"
-#include "../../src/graphics/openglObjects/BufferCollection.h"
+#include "ShadowVolume"
+#include "BufferCollection"
 
 class ShadowVolumeRenderer
 {

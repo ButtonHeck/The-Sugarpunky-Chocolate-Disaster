@@ -1,10 +1,10 @@
 #ifndef MOUSEINPUTMANAGER_H
 #define MOUSEINPUTMANAGER_H
 #include <glm/gtc/matrix_transform.hpp>
-#include "../../src/graphics/Camera.h"
-#include "../../src/game/Options.h"
-#include "../../src/graphics/ScreenResolution.h"
-#include "../../src/graphics/GraphicsSettings.h"
+#include "Camera"
+#include "Options"
+#include "ScreenResolution"
+#include "GraphicsSettings"
 
 class MouseInputManager
 {

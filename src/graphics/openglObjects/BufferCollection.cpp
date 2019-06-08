@@ -1,4 +1,4 @@
-#include "BufferCollection.h"
+#include "BufferCollection"
 
 BufferCollection::BufferCollection(int flags)
 {

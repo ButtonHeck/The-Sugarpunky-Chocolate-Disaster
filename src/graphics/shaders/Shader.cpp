@@ -1,4 +1,4 @@
-#include "Shader.h"
+#include "Shader"
 
 bool Shader::cachedUniforms = false;
 void Shader::cacheUniformsMode(bool cache)

@@ -1,6 +1,6 @@
 #ifndef SHORERENDERER_H
 #define SHORERENDERER_H
-#include "ShoreGenerator.h"
+#include "ShoreGenerator"
 
 class ShoreRenderer
 {

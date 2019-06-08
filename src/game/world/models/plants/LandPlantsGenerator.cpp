@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "LandPlantsGenerator.h"
+#include "LandPlantsGenerator"
 
 /**
  * @brief load both plain and low-poly models

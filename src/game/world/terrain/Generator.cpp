@@ -1,4 +1,4 @@
-#include "Generator.h"
+#include "Generator"
 
 Generator::Generator()
   :

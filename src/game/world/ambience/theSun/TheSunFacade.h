@@ -20,10 +20,10 @@
 
 #ifndef THESUNFACADE_H
 #define THESUNFACADE_H
-#include "TheSun.h"
-#include "TheSunShader.h"
-#include "TheSunRenderer.h"
-#include "../../src/graphics/ScreenResolution.h"
+#include "TheSun"
+#include "TheSunShader"
+#include "TheSunRenderer"
+#include "ScreenResolution"
 
 /**
  * @brief Represents facade to the Sun related code module. Contains the Sun entity itself, personal shader and renderer,

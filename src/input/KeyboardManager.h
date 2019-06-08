@@ -3,9 +3,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <functional>
-#include "../../src/graphics/Camera.h"
-#include "../../src/game/Options.h"
-#include "../../src/game/world/ambience/theSun/TheSunFacade.h"
+#include "Camera"
+#include "Options"
+#include "TheSunFacade"
 
 class KeyboardManager
 {

@@ -1,9 +1,9 @@
 #ifndef SHOREFACADE_H
 #define SHOREFACADE_H
-#include "ShoreGenerator.h"
-#include "ShoreShader.h"
-#include "ShoreRenderer.h"
-#include "../../src/util/BenchmarkTimer.h"
+#include "ShoreGenerator"
+#include "ShoreShader"
+#include "ShoreRenderer"
+#include "BenchmarkTimer"
 
 class ShoreFacade
 {

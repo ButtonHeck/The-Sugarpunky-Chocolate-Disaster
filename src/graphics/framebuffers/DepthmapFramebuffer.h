@@ -1,6 +1,6 @@
 #ifndef DEPTHMAPFRAMEBUFFER_H
 #define DEPTHMAPFRAMEBUFFER_H
-#include "../../src/graphics/openglObjects/Framebuffer.h"
+#include "Framebuffer"
 
 class DepthmapFramebuffer : public Framebuffer
 {

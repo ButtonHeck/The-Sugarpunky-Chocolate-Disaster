@@ -2,8 +2,8 @@
 #define TEXTUREMANAGER_H
 #include <GL/glew.h>
 #include <unordered_map>
-#include "../../src/graphics/textures/TextureLoader.h"
-#include "../../src/graphics/textures/TextureUnits.h"
+#include "TextureLoader"
+#include "TextureUnits"
 
 class TextureManager
 {

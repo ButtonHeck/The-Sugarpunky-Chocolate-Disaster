@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "PlantGenerator.h"
+#include "PlantGenerator"
 
 /**
  * @brief sets seed for randomizer

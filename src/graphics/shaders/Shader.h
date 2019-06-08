@@ -6,9 +6,9 @@
 #include <array>
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
-#include "../../src/util/DirectoriesSettings.h"
-#include "../../src/graphics/GraphicsSettings.h"
-#include "../../src/util/Logger.h"
+#include "DirectoriesSettings"
+#include "GraphicsSettings"
+#include "Logger"
 
 class Shader
 {

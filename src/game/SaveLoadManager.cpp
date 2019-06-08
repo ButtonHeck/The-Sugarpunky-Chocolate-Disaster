@@ -1,4 +1,4 @@
-#include "SaveLoadManager.h"
+#include "SaveLoadManager"
 
 SaveLoadManager::SaveLoadManager(Scene &scene, Camera& camera, Camera &shadowCamera)
   :

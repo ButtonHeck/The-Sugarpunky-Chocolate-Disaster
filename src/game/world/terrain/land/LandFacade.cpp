@@ -1,4 +1,4 @@
-#include "LandFacade.h"
+#include "LandFacade"
 
 LandFacade::LandFacade(Shader &renderShader)
   :

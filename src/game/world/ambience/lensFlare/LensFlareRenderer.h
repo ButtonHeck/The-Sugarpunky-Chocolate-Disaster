@@ -21,7 +21,7 @@
 #ifndef LENSFLARERENDERER_H
 #define LENSFLARERENDERER_H
 #include <GL/glew.h>
-#include "../../src/graphics/openglObjects/BufferCollection.h"
+#include "BufferCollection"
 
 /**
  * @brief Renderer for lens flare effect which is responsible for sending appropriate draw call to the GPU

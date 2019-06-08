@@ -1,4 +1,4 @@
-#include "LandGenerator.h"
+#include "LandGenerator"
 
 LandGenerator::LandGenerator()
   :

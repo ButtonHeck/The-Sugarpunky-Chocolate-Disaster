@@ -1,7 +1,7 @@
 #ifndef WATERSHADER_H
 #define WATERSHADER_H
-#include "../../src/graphics/shaders/Shader.h"
-#include "../../src/graphics/Frustum.h"
+#include "Shader"
+#include "Frustum"
 
 class WaterShader
 {

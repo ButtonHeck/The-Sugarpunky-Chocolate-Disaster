@@ -1,4 +1,4 @@
-#include "Scene.h"
+#include "Scene"
 
 Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &textureManager, const ScreenResolution &screenResolution, const ShadowVolume &shadowVolume)
   :

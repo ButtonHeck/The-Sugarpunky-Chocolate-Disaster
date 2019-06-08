@@ -21,7 +21,7 @@
 #ifndef MODELCHUNK_H
 #define MODELCHUNK_H
 #include <vector>
-#include "../../src/game/world/Chunk.h"
+#include "Chunk"
 
 /**
  * @brief Represents chunk storage for all models. Responsible for keeping information about

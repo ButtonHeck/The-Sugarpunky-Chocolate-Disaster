@@ -20,8 +20,8 @@
 
 #ifndef SKYSPHEREFACADE_H
 #define SKYSPHEREFACADE_H
-#include "Skysphere.h"
-#include "SkysphereShader.h"
+#include "Skysphere"
+#include "SkysphereShader"
 
 /**
  * @brief Represents a facade to skysphere related code module.

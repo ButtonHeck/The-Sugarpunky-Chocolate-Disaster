@@ -1,4 +1,4 @@
-#include "WaterRefractionFramebuffer.h"
+#include "WaterRefractionFramebuffer"
 
 WaterRefractionFramebuffer::WaterRefractionFramebuffer(TextureManager &textureManager)
   :

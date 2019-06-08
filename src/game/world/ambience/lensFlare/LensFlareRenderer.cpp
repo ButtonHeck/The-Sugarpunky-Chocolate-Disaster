@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "LensFlareRenderer.h"
+#include "LensFlareRenderer"
 
 /**
  * @param basicGLBuffer buffer collection to fetch VAO from during rendering

@@ -20,10 +20,10 @@
 
 #ifndef THESUNRENDERER_H
 #define THESUNRENDERER_H
-#include "TheSun.h"
-#include "../../src/graphics/openglObjects/Query.h"
-#include "../../src/graphics/RendererStateManager.h"
-#include "../../src/util/BenchmarkTimer.h"
+#include "TheSun"
+#include "Query"
+#include "RendererStateManager"
+#include "BenchmarkTimer"
 
 /**
  * @brief Represents personal renderer for the Sun related code module.

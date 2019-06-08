@@ -1,4 +1,4 @@
-#include "WaterFacade.h"
+#include "WaterFacade"
 
 WaterFacade::WaterFacade(Shader &renderShader, Shader &cullingShader, Shader &normalsShader)
   :

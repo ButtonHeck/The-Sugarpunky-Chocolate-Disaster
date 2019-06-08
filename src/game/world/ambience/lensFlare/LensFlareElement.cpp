@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "LensFlareElement.h"
+#include "LensFlareElement"
 
 LensFlareElement::LensFlareElement(float pointSize, GLuint textureID)
   :

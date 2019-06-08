@@ -1,10 +1,10 @@
 #ifndef SCREENFRAMEBUFFER_H
 #define SCREENFRAMEBUFFER_H
-#include "../../src/graphics/openglObjects/Framebuffer.h"
-#include "../../src/graphics/ScreenResolution.h"
-#include "../../src/graphics/shaders/ShaderManager.h"
-#include "../../src/graphics/openglObjects/BufferCollection.h"
-#include "../../src/util/BenchmarkTimer.h"
+#include "Framebuffer"
+#include "ScreenResolution"
+#include "ShaderManager"
+#include "BufferCollection"
+#include "BenchmarkTimer"
 
 class ScreenFramebuffer : public Framebuffer
 {

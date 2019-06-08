@@ -5,10 +5,10 @@
 #include <iomanip>
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include "TerrainTile.h"
-#include "../../src/game/world/SceneSettings.h"
-#include "../../src/util/typeAliases.h"
-#include "../../src/graphics/openglObjects/BufferCollection.h"
+#include "TerrainTile"
+#include "SceneSettings"
+#include "TypeAliases"
+#include "BufferCollection"
 
 constexpr unsigned int UNIQUE_VERTICES_PER_TILE = 4;
 

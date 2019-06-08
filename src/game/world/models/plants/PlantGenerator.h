@@ -25,8 +25,8 @@
 #include <memory>
 #include <random>
 #include <glm/gtx/norm.hpp>
-#include "../../src/game/world/models/Model.h"
-#include "../../src/game/world/models/ModelChunk.h"
+#include "Model"
+#include "ModelChunk"
 
 
 /**

@@ -20,7 +20,7 @@
 
 #ifndef HILLTREESGENERATOR_H
 #define HILLTREESGENERATOR_H
-#include "PlantGenerator.h"
+#include "PlantGenerator"
 
 /**
  * @brief Generator for plants located on hills.

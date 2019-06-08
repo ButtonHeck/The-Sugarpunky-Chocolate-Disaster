@@ -1,4 +1,4 @@
-#include "WaterGenerator.h"
+#include "WaterGenerator"
 
 WaterGenerator::WaterGenerator(WaterShader &shaders)
   :

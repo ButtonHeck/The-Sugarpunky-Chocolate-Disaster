@@ -1,8 +1,8 @@
 #ifndef SHADOWVOLUME_H
 #define SHADOWVOLUME_H
 #include <array>
-#include "../../src/game/world/ambience/theSun/TheSunFacade.h"
-#include "../../src/graphics/Frustum.h"
+#include "TheSunFacade"
+#include "Frustum"
 
 class ShadowVolume
 {

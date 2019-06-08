@@ -1,10 +1,10 @@
 #ifndef BUILDABLEFACADE_H
 #define BUILDABLEFACADE_H
-#include "BuildableGenerator.h"
-#include "BuildableShader.h"
-#include "BuildableRenderer.h"
-#include "../../src/util/BenchmarkTimer.h"
-#include "../../src/input/MouseInputManager.h"
+#include "BuildableGenerator"
+#include "BuildableShader"
+#include "BuildableRenderer"
+#include "BenchmarkTimer"
+#include "MouseInputManager"
 
 class BuildableFacade
 {

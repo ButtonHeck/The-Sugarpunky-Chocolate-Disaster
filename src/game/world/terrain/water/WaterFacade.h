@@ -1,9 +1,9 @@
 #ifndef WATERFACADE_H
 #define WATERFACADE_H
-#include "WaterGenerator.h"
-#include "WaterShader.h"
-#include "WaterRenderer.h"
-#include "../../src/util/BenchmarkTimer.h"
+#include "WaterGenerator"
+#include "WaterShader"
+#include "WaterRenderer"
+#include "BenchmarkTimer"
 
 class WaterFacade
 {
