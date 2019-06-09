@@ -19,6 +19,7 @@
  */
 
 #include "SkysphereShader"
+#include "Shader"
 
 /**
  * @brief SkysphereShader::SkysphereShader

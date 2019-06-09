@@ -1,4 +1,9 @@
 #include "ScreenFramebuffer"
+#include "TextureManager"
+#include "BenchmarkTimer"
+#include "ShaderManager"
+#include "Shader"
+#include "ScreenResolution"
 
 ScreenFramebuffer::ScreenFramebuffer(TextureManager &textureManager, const ScreenResolution &screenResolution, ShaderManager &shaderManager)
   :

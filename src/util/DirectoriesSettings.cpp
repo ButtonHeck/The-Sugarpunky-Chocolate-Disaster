@@ -1,5 +1,7 @@
 #include "DirectoriesSettings"
 
+#include <direct.h>
+
 const std::string getResourcesDirectory()
 {
   char cwd_buffer[FILENAME_MAX];

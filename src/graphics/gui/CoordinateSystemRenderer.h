@@ -1,7 +1,10 @@
 #pragma once
 
-#include "Shader"
 #include "BufferCollection"
+
+#include <glm/mat3x3.hpp>
+
+class Shader;
 
 class CoordinateSystemRenderer
 {

@@ -1,4 +1,8 @@
 #include "HillsRenderer"
+#include "HillsGenerator"
+#include "HillsShader"
+#include "Shader"
+#include "BenchmarkTimer"
 
 HillsRenderer::HillsRenderer(HillsShader &shaders, HillsGenerator &generator)
   :

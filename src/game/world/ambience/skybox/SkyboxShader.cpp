@@ -19,6 +19,7 @@
  */
 
 #include "SkyboxShader"
+#include "Shader"
 
 /**
  * @param renderShader precompiled shader program which is used during rendering

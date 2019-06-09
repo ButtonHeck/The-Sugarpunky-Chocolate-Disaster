@@ -1,9 +1,8 @@
 #pragma once
 
-#include "BufferCollection"
-#include "BenchmarkTimer"
-
 #include <GL/glew.h>
+
+class BufferCollection;
 
 class ModelRenderer
 {

@@ -1,4 +1,6 @@
 #include "LandRenderer"
+#include "LandGenerator"
+#include "BenchmarkTimer"
 
 LandRenderer::LandRenderer(LandGenerator &generator)
   :

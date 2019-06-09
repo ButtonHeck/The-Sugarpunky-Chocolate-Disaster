@@ -1,4 +1,5 @@
 #include "WaterGenerator"
+#include "WaterShader"
 
 WaterGenerator::WaterGenerator(WaterShader &shaders)
   :

@@ -1,5 +1,7 @@
 #include "LandGenerator"
 
+#include <chrono>
+
 LandGenerator::LandGenerator()
   :
     Generator(),

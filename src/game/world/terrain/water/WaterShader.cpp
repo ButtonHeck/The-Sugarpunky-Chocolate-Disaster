@@ -1,4 +1,8 @@
 #include "WaterShader"
+#include "Frustum"
+#include "Shader"
+
+#include <GLFW/glfw3.h>
 
 WaterShader::WaterShader(Shader &renderShader, Shader &cullingShader, Shader &normalsShader)
   :

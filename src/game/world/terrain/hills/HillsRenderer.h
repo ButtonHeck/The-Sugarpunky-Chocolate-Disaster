@@ -1,8 +1,10 @@
 #pragma once
 
-#include "HillsGenerator"
-#include "HillsShader"
-#include "BenchmarkTimer"
+#include <GL/glew.h>
+#include <glm/vec2.hpp>
+
+class HillsGenerator;
+class HillsShader;
 
 class HillsRenderer
 {

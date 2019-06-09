@@ -3,7 +3,6 @@
 #include "ShoreGenerator"
 #include "ShoreShader"
 #include "ShoreRenderer"
-#include "BenchmarkTimer"
 
 class ShoreFacade
 {

@@ -1,4 +1,5 @@
 #include "Camera"
+#include "BenchmarkTimer"
 
 #include <iomanip>
 

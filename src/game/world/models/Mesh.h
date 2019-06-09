@@ -24,7 +24,8 @@
 #include <vector>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
-#include <assimp/mesh.h>
+
+class aiMesh;
 
 /**
  * @brief Represents storage for a mesh vertices and indices.

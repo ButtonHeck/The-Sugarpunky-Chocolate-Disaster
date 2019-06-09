@@ -7,9 +7,6 @@
 
 #include <vector>
 #include <fstream>
-#include <iomanip>
-#include <GL/glew.h>
-#include <glm/gtc/matrix_transform.hpp>
 
 constexpr unsigned int UNIQUE_VERTICES_PER_TILE = 4;
 

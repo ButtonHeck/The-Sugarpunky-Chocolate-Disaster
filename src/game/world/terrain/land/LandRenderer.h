@@ -1,7 +1,6 @@
 #pragma once
 
-#include "LandGenerator"
-#include "BenchmarkTimer"
+class LandGenerator;
 
 class LandRenderer
 {

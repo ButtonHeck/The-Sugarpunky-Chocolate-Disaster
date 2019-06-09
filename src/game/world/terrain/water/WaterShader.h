@@ -1,7 +1,13 @@
 #pragma once
 
-#include "Shader"
-#include "Frustum"
+#include "GraphicsSettings"
+
+#include <array>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+
+class Frustum;
+class Shader;
 
 class WaterShader
 {

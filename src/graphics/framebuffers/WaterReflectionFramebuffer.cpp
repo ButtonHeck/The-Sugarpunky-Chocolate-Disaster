@@ -1,4 +1,6 @@
 #include "WaterReflectionFramebuffer"
+#include "GraphicsSettings"
+#include "TextureManager"
 
 WaterReflectionFramebuffer::WaterReflectionFramebuffer(TextureManager &textureManager)
   :

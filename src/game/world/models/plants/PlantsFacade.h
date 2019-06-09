@@ -24,7 +24,6 @@
 #include "LandPlantsGenerator"
 #include "GrassGenerator"
 #include "HillTreesGenerator"
-#include "Generator"
 #include "PlantsShader"
 #include "TreesRenderer"
 #include "GrassRenderer"

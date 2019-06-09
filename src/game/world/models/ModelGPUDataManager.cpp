@@ -1,4 +1,6 @@
 #include "ModelGPUDataManager"
+#include "BenchmarkTimer"
+#include "ModelChunk"
 
 ModelGPUDataManager::ModelGPUDataManager(bool isParentModelLowPoly)
   :

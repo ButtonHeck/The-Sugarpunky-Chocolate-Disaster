@@ -1,4 +1,6 @@
 #include "KeyboardManager"
+#include "Camera"
+#include "TheSunFacade"
 
 extern float debug_sunSpeed;
 

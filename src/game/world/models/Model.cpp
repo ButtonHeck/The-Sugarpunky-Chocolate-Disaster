@@ -19,6 +19,13 @@
  */
 
 #include "Model"
+#include "BindlessTextureManager"
+#include "TextureLoader"
+#include "DirectoriesSettings"
+#include "Logger"
+
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
 
 TextureLoader* Model::textureLoader;
 void Model::bindTextureLoader(TextureLoader &textureLoader)

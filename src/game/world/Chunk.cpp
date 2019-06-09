@@ -1,4 +1,6 @@
 #include "Chunk"
+#include "SceneSettings"
+#include "Frustum"
 
 Chunk::Chunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom, float height)
   :

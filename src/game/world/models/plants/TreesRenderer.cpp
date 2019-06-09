@@ -19,6 +19,7 @@
  */
 
 #include "TreesRenderer"
+#include "Model"
 
 /**
  * @brief just delegates a draw call for each given model

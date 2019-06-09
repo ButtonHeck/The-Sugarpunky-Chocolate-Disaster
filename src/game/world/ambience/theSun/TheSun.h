@@ -21,7 +21,6 @@
 #pragma once
 
 #include "BufferCollection"
-#include "SceneSettings"
 
 #include <glm/gtx/rotate_vector.hpp>
 

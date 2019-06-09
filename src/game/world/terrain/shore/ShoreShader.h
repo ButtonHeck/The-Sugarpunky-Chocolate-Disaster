@@ -1,6 +1,12 @@
 #pragma once
 
-#include "Shader"
+#include "GraphicsSettings"
+
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+#include <array>
+
+class Shader;
 
 class ShoreShader
 {

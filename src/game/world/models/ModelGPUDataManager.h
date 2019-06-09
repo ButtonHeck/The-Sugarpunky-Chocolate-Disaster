@@ -1,11 +1,14 @@
 #pragma once
 
 #include "Mesh"
-#include "ModelChunk"
 #include "BufferCollection"
+#include "SceneSettings"
 
 #include <GL/glew.h>
+#include <glm/mat4x4.hpp>
 #include <memory>
+
+class ModelChunk;
 
 class ModelGPUDataManager
 {

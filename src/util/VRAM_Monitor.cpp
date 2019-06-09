@@ -1,4 +1,5 @@
 #include "VRAM_Monitor"
+#include <GL/glew.h>
 
 VRAM_Monitor::VRAM_Monitor()
 {

@@ -19,6 +19,7 @@
  */
 
 #include "TheSun"
+#include "SceneSettings"
 
 /**
  * @brief initialize member variables and setup array buffer

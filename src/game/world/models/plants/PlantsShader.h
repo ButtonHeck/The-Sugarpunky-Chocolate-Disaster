@@ -20,7 +20,12 @@
 
 #pragma once
 
-#include "Shader"
+#include <array>
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+#include "GraphicsSettings"
+
+class Shader;
 
 /**
  * @brief Personal shader manager for plants related code module.

@@ -19,6 +19,9 @@
  */
 
 #include "LandPlantsGenerator"
+#include "Model"
+
+#include <glm/gtc/matrix_transform.hpp>
 
 /**
  * @brief load both plain and low-poly models

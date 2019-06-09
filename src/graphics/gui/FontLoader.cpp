@@ -1,4 +1,10 @@
 #include "FontLoader"
+#include "TextureUnits"
+#include "Logger"
+
+#include <IL/il.h>
+#include <fstream>
+#include <sstream>
 
 FontLoader::FontLoader(const std::string &fontFile, const std::string &textureFile)
 {

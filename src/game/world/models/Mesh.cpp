@@ -20,6 +20,8 @@
 
 #include "Mesh"
 
+#include <assimp/mesh.h>
+
 /**
  * @brief static function for mesh creation
  * @param mesh Assimp library mesh representation

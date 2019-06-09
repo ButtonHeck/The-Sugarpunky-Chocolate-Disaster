@@ -20,7 +20,10 @@
 
 #pragma once
 
-#include "Shader"
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+
+class Shader;
 
 /**
  * @brief Personal shader manager for skysphere related code module.

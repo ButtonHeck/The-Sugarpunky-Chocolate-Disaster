@@ -20,7 +20,10 @@
 
 #pragma once
 
-#include "Shader"
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+
+class Shader;
 
 /**
  * @brief Personal shader manager for skybox related code module, responsible for updating non-constant uniform variables

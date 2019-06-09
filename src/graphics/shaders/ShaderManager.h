@@ -1,13 +1,11 @@
 #pragma once
 
-#include "Shader"
-#include "TextureUnits"
 #include "ShaderUnits"
-#include "SceneSettings"
-#include "ScreenResolution"
 
 #include <unordered_map>
-#include <glm/gtc/matrix_transform.hpp>
+
+class ScreenResolution;
+class Shader;
 
 class ShaderManager
 {
@@ -15,7 +13,7 @@ public:
   ShaderManager();
   virtual ~ShaderManager();
   void setupConstantUniforms(const ScreenResolution &screenResolution);
-  Shader& get(SHADER_UNITS type);
+  Shader& get(SHADER_UNIT type);
 
 private:
   std::unordered_map<int, Shader> shaders;

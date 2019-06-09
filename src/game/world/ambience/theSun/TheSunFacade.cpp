@@ -19,6 +19,8 @@
  */
 
 #include "TheSunFacade"
+#include "ScreenResolution"
+#include "GraphicsSettings"
 
 /**
  * @brief initialize member variables, setup renderer point size and calculate maximum samples values

@@ -19,6 +19,7 @@
  */
 
 #include "GrassRenderer"
+#include "Model"
 
 /**
  * @brief just delegates a draw call for each given model and switches GL_CULL_FACE setting

@@ -20,7 +20,9 @@
 
 #pragma once
 
-#include "Model"
+#include <vector>
+
+class Model;
 
 /**
  * @brief Renderer wrapper for the entire bunch of grass models.

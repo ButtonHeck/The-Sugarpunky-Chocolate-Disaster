@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "Shader"
+class Shader;
 
 /**
  * @brief Personal shader manager for lens flare effect, responsible for updating non-constant uniform variables

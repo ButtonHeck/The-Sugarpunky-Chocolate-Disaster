@@ -19,6 +19,9 @@
  */
 
 #include "PlantsShader"
+#include "Shader"
+
+#include <GLFW/glfw3.h>
 
 /**
  * @param renderPhongShader compiled Phong shader program to use during rendering

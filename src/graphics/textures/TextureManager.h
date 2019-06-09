@@ -1,10 +1,12 @@
 #pragma once
 
-#include "TextureLoader"
 #include "TextureUnits"
+#include "TypeAliases"
 
 #include <GL/glew.h>
 #include <unordered_map>
+
+class TextureLoader;
 
 class TextureManager
 {

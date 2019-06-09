@@ -1,16 +1,10 @@
 #pragma once
 
-#include "ScreenResolution"
-#include "DirectoriesSettings"
-#include "GraphicsSettings"
-#include "SceneSettings"
-#include "Logger"
 #include "TypeAliases"
 
 #include <GL/glew.h>
-#include <IL/il.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <algorithm>
+
+class ScreenResolution;
 
 class TextureLoader
 {

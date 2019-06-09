@@ -1,6 +1,6 @@
 #pragma once
 
-enum SHADER_UNITS
+enum SHADER_UNIT
 {
   SHADER_HILLS_CULLING = 0,
   SHADER_HILLS,

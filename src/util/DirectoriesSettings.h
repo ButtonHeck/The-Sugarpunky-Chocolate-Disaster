@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <direct.h>
 
 const std::string getResourcesDirectory();
 const std::string RES_DIR = getResourcesDirectory() + "/res/";

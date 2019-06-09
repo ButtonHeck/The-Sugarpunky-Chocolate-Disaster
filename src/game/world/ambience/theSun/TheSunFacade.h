@@ -23,7 +23,8 @@
 #include "TheSun"
 #include "TheSunShader"
 #include "TheSunRenderer"
-#include "ScreenResolution"
+
+class ScreenResolution;
 
 /**
  * @brief Represents facade to the Sun related code module. Contains the Sun entity itself, personal shader and renderer,

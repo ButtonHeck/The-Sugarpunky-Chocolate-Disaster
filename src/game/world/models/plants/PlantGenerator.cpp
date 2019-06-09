@@ -19,8 +19,12 @@
  */
 
 #include "PlantGenerator"
+#include "Model"
 
 #include <iomanip>
+#include <chrono>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/norm.hpp>
 
 /**
  * @brief sets seed for randomizer

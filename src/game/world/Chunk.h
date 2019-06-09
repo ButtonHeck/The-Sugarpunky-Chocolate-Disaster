@@ -1,9 +1,8 @@
 #pragma once
 
-#include "SceneSettings"
-#include "Frustum"
-
 #include <glm/vec2.hpp>
+
+class Frustum;
 
 class Chunk
 {

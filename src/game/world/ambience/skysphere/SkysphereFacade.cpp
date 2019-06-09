@@ -20,6 +20,8 @@
 
 #include "SkysphereFacade"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 /**
  * @brief Constructor with hardcoded paths for (hemi)sphere models
  * @param renderShader compiled shader program fed to personal shader manager

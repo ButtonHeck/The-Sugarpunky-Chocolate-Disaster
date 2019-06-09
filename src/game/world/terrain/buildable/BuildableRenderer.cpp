@@ -1,4 +1,5 @@
 #include "BuildableRenderer"
+#include "BuildableGenerator"
 
 BuildableRenderer::BuildableRenderer(BuildableGenerator &generator)
   :

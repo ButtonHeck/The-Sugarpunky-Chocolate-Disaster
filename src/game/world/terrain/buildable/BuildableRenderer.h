@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BuildableGenerator"
+class BuildableGenerator;
 
 class BuildableRenderer
 {

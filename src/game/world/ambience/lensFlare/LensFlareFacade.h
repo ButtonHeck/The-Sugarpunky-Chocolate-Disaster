@@ -24,10 +24,12 @@
 #include "LensFlareRenderer"
 #include "LensFlareShader"
 #include "BufferCollection"
-#include "TextureLoader"
-#include "BindlessTextureManager"
 
 #include <vector>
+#include <glm/gtc/type_ptr.hpp>
+
+class TextureLoader;
+class ScreenResolution;
 
 constexpr unsigned int NUM_LENS_FLARES = 7;
 

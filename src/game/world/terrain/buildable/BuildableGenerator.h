@@ -2,8 +2,6 @@
 
 #include "Generator"
 
-#include <memory>
-
 class BuildableGenerator : public Generator
 {
 public:

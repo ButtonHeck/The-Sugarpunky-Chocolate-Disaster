@@ -1,15 +1,10 @@
 #pragma once
 
-#include "DirectoriesSettings"
 #include "GraphicsSettings"
-#include "Logger"
 
-#include <sstream>
-#include <fstream>
 #include <unordered_map>
-#include <array>
 #include <GL/glew.h>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/mat4x4.hpp>
 
 class Shader
 {

@@ -1,14 +1,15 @@
 #pragma once
 
 #include "FontLoader"
-#include "Shader"
 #include "BufferCollection"
-#include "Camera"
-#include "MouseInputManager"
-#include "VRAM_Monitor"
 
-#include <iomanip>
 #include <glm/vec2.hpp>
+
+class Camera;
+class ScreenResolution;
+class Options;
+class Shader;
+class MouseInputManager;
 
 class TextManager
 {

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "SceneSettings"
 #include "TypeAliases"
-#include "BenchmarkTimer"
+#include "SceneSettings"
 
 #include <fstream>
 #include <glm/gtc/matrix_transform.hpp>

@@ -1,12 +1,10 @@
 #pragma once
 
-#include "Camera"
-#include "Options"
-#include "ScreenResolution"
-#include "GraphicsSettings"
+#include "TypeAliases"
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
+
+class Camera;
 
 class MouseInputManager
 {

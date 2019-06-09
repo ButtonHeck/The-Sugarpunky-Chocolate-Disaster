@@ -1,6 +1,6 @@
 #pragma once
 
-enum TEXTURE_UNITS
+enum TEXTURE_UNIT
 {
   TEX_LAND = 0,
   TEX_LAND_2,

@@ -3,8 +3,8 @@
 #include "BuildableGenerator"
 #include "BuildableShader"
 #include "BuildableRenderer"
-#include "BenchmarkTimer"
-#include "MouseInputManager"
+
+class MouseInputManager;
 
 class BuildableFacade
 {

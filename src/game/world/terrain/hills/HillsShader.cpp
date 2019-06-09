@@ -1,4 +1,6 @@
 #include "HillsShader"
+#include "Shader"
+#include "Frustum"
 
 HillsShader::HillsShader(Shader &renderShader, Shader &cullingShader, Shader &normalsShader)
   :

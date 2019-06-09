@@ -1,4 +1,7 @@
 #include "HillsGenerator"
+#include "HillsShader"
+
+#include <chrono>
 
 HillsGenerator::HillsGenerator(HillsShader &shaders, const map2D_f &waterMap)
   :

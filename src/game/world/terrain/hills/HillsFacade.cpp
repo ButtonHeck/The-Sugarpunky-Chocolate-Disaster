@@ -1,9 +1,6 @@
 #include "HillsFacade"
 
-HillsFacade::HillsFacade(Shader &renderShader,
-                         Shader &cullingShader,
-                         Shader &normalsShader,
-                         const map2D_f &waterMap)
+HillsFacade::HillsFacade(Shader &renderShader, Shader &cullingShader, Shader &normalsShader, const map2D_f &waterMap)
   :
     shaders(renderShader, cullingShader, normalsShader),
     generator(shaders, waterMap),

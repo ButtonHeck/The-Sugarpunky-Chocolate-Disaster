@@ -19,6 +19,7 @@
  */
 
 #include "SkyboxFacade"
+#include "BenchmarkTimer"
 
 /**
  * @param renderShader compiled program fed to personal shader manager

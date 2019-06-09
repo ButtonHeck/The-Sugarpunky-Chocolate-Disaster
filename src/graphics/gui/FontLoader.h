@@ -1,12 +1,6 @@
 #pragma once
 
-#include "TextureUnits"
-#include "Logger"
-
-#include <fstream>
-#include <sstream>
 #include <GL/glew.h>
-#include <IL/il.h>
 #include <unordered_map>
 
 struct Character {

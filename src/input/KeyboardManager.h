@@ -1,12 +1,13 @@
 #pragma once
 
-#include "Camera"
 #include "Options"
-#include "TheSunFacade"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <functional>
+
+class Camera;
+class TheSunFacade;
 
 class KeyboardManager
 {

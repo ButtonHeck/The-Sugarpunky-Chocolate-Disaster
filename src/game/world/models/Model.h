@@ -21,16 +21,13 @@
 #pragma once
 
 #include "Mesh"
-#include "TextureLoader"
-#include "TextureUnits"
-#include "ModelChunk"
 #include "ModelGPUDataManager"
 #include "ModelRenderer"
-#include "BindlessTextureManager"
 
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
 #include <assimp/scene.h>
+
+class TextureLoader;
+class ModelChunk;
 
 /**
  * @brief Wrapper for .obj model.

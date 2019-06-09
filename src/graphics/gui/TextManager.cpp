@@ -1,4 +1,14 @@
 #include "TextManager"
+#include "Camera"
+#include "ScreenResolution"
+#include "Options"
+#include "BenchmarkTimer"
+#include "VRAM_Monitor"
+#include "Shader"
+#include "MouseInputManager"
+
+#include <sstream>
+#include <iomanip>
 
 TextManager::TextManager(const std::string &fontFile, const std::string &fontTexture, Shader &shader, const ScreenResolution &screenResolution)
   :

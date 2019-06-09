@@ -1,9 +1,13 @@
 #pragma once
 
-#include "TheSunFacade"
-#include "Frustum"
+#include "GraphicsSettings"
 
 #include <array>
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
+
+class TheSunFacade;
+class Frustum;
 
 class ShadowVolume
 {

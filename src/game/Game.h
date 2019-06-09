@@ -1,17 +1,13 @@
 #pragma once
 
 #include <GL/glew.h>
-#include "DirectoriesSettings"
 #include "Timer"
-#include "BenchmarkTimer"
 #include "KeyboardManager"
 #include "SaveLoadManager"
 #include "Scene"
 #include "ShaderManager"
+#include "TextureLoader"
 #include "TextureManager"
-#include "BindlessTextureManager"
-#include "Frustum"
-#include "ShadowVolume"
 #include "TextManager"
 #include "CoordinateSystemRenderer"
 #include "FrustumRenderer"

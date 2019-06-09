@@ -1,4 +1,10 @@
 #include "Shader"
+#include "DirectoriesSettings"
+#include "Logger"
+
+#include <sstream>
+#include <fstream>
+#include <glm/gtc/type_ptr.hpp>
 
 bool Shader::cachedUniforms = false;
 void Shader::cacheUniformsMode(bool cache)

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Framebuffer"
-#include "ScreenResolution"
-#include "ShaderManager"
 #include "BufferCollection"
-#include "BenchmarkTimer"
+
+class ShaderManager;
+class ScreenResolution;
 
 class ScreenFramebuffer : public Framebuffer
 {

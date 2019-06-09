@@ -1,4 +1,6 @@
 #include "Framebuffer"
+#include "TextureManager"
+#include "Logger"
 
 Framebuffer::Framebuffer(TextureManager &textureManager)
   :

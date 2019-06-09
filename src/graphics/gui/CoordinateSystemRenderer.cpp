@@ -1,4 +1,5 @@
 #include "CoordinateSystemRenderer"
+#include "Shader"
 
 CoordinateSystemRenderer::CoordinateSystemRenderer(Shader *shader)
   :

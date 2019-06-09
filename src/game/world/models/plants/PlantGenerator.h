@@ -20,14 +20,16 @@
 
 #pragma once
 
-#include "Model"
 #include "ModelChunk"
+#include "TypeAliases"
+#include "SceneSettings"
 
 #include <vector>
 #include <fstream>
 #include <memory>
 #include <random>
-#include <glm/gtx/norm.hpp>
+
+class Model;
 
 /**
  * @brief Boilerplate generator for all the plants.

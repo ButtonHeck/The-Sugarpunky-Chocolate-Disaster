@@ -1,4 +1,11 @@
 #include "Game"
+#include "BindlessTextureManager"
+#include "Camera"
+#include "MouseInputManager"
+#include "DirectoriesSettings"
+#include "ScreenResolution"
+#include "RendererStateManager"
+#include "Shader"
 
 Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& options, const ScreenResolution &screenResolution)
   :

@@ -1,4 +1,11 @@
 #include "MouseInputManager"
+#include "SceneSettings"
+#include "GraphicsSettings"
+#include "Options"
+#include "Camera"
+#include "ScreenResolution"
+
+#include <glm/glm.hpp>
 
 extern GLFWwindow* window;
 extern Camera camera;

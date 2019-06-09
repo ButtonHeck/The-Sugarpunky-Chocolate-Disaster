@@ -3,7 +3,6 @@
 #include "WaterGenerator"
 #include "WaterShader"
 #include "WaterRenderer"
-#include "BenchmarkTimer"
 
 class WaterFacade
 {

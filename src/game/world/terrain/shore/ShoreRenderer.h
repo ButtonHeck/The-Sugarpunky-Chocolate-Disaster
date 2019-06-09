@@ -1,6 +1,8 @@
 #pragma once
 
-#include "ShoreGenerator"
+#include <GL/glew.h>
+
+class ShoreGenerator;
 
 class ShoreRenderer
 {

@@ -19,6 +19,8 @@
  */
 
 #include "TheSunRenderer"
+#include "BenchmarkTimer"
+#include "TheSun"
 
 /**
  * @param theSun entity to peek VAO from during rendering

@@ -19,6 +19,9 @@
  */
 
 #include "PlantsFacade"
+#include "Generator"
+#include "BenchmarkTimer"
+#include "Model"
 
 /**
  * @param renderPhongShader compiled Phong shader program provided to a personal shader manager

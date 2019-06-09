@@ -20,6 +20,8 @@
 
 #include "Skysphere"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 /**
  * @param path path to the .obj model file
  * @param initialTransform initial rotation transform

@@ -11,11 +11,14 @@
 #include "SkyboxFacade"
 #include "TheSunFacade"
 #include "LensFlareFacade"
-#include "ShaderManager"
-#include "TextureManager"
-#include "MouseInputManager"
-#include "ScreenResolution"
-#include "ShadowVolume"
+
+class ShaderManager;
+class TextureManager;
+class MouseInputManager;
+class Camera;
+class ScreenResolution;
+class Options;
+class ShadowVolume;
 
 class Scene
 {

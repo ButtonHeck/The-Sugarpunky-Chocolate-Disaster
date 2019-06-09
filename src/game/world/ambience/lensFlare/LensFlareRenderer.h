@@ -20,9 +20,7 @@
 
 #pragma once
 
-#include "BufferCollection"
-
-#include <GL/glew.h>
+class BufferCollection;
 
 /**
  * @brief Renderer for lens flare effect which is responsible for sending appropriate draw call to the GPU

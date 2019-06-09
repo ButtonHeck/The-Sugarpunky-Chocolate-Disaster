@@ -1,5 +1,8 @@
 #include "ShoreGenerator"
 
+#include <chrono>
+#include <memory>
+
 ShoreGenerator::ShoreGenerator(const map2D_f &waterMap)
   :
     Generator(),

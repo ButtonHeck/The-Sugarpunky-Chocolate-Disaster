@@ -1,9 +1,9 @@
 #pragma once
 
-#include "WaterGenerator"
-#include "WaterShader"
-#include "BenchmarkTimer"
 #include "Query"
+
+class WaterGenerator;
+class WaterShader;
 
 class WaterRenderer
 {

@@ -1,11 +1,10 @@
 #pragma once
 
 #include "Generator"
-#include "Options"
-#include "BenchmarkTimer"
-#include "WaterShader"
 
 #include <memory>
+
+class WaterShader;
 
 class WaterGenerator : public Generator
 {

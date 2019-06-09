@@ -1,4 +1,5 @@
 #include "DepthmapFramebuffer"
+#include "TextureManager"
 
 DepthmapFramebuffer::DepthmapFramebuffer(TextureManager &textureManager)
   :

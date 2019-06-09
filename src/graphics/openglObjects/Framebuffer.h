@@ -1,8 +1,8 @@
 #pragma once
 
-#include "TextureManager"
-
 #include <GL/glew.h>
+
+class TextureManager;
 
 class Framebuffer
 {

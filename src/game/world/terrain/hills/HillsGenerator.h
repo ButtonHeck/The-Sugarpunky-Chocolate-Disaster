@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Generator"
-#include "HillsShader"
 
 #include <random>
-#include <chrono>
+
+class HillsShader;
 
 namespace HILL_DENSITY
 {

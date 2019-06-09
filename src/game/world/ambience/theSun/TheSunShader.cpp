@@ -19,6 +19,7 @@
  */
 
 #include "TheSunShader"
+#include "Shader"
 
 /**
  * @param renderShader compiled shader program to use during rendering

@@ -1,4 +1,6 @@
 #include "TextureManager"
+#include "GraphicsSettings"
+#include "TextureLoader"
 
 TextureManager::TextureManager(TextureLoader& loader)
   :

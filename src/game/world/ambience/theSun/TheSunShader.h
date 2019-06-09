@@ -20,7 +20,9 @@
 
 #pragma once
 
-#include "Shader"
+#include <glm/mat4x4.hpp>
+
+class Shader;
 
 /**
  * @brief Personal shader manager for the Sun related code module. Responsible for updating non-constant uniform variables

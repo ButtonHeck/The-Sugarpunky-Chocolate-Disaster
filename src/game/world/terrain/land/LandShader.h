@@ -1,6 +1,12 @@
 #pragma once
 
-#include "Shader"
+#include "GraphicsSettings"
+
+#include <array>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+
+class Shader;
 
 class LandShader
 {

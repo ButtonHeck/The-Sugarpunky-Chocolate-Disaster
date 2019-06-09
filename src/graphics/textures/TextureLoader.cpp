@@ -1,4 +1,12 @@
 #include "TextureLoader"
+#include "ScreenResolution"
+#include "DirectoriesSettings"
+#include "GraphicsSettings"
+#include "SceneSettings"
+#include "Logger"
+
+#include <algorithm>
+#include <IL/il.h>
 
 TextureLoader::TextureLoader(const ScreenResolution &screenResolution)
   :

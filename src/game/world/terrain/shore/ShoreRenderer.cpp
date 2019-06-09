@@ -1,4 +1,5 @@
 #include "ShoreRenderer"
+#include "ShoreGenerator"
 
 ShoreRenderer::ShoreRenderer(ShoreGenerator &generator)
   :

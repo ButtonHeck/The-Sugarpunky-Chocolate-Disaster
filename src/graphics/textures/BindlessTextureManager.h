@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Shader"
 #include "TypeAliases"
 
 #include <GL/glew.h>
+
+class Shader;
 
 enum BINDLESS_TEXTURE_TYPE
 {

@@ -1,4 +1,10 @@
 #include "ShaderManager"
+#include "Shader"
+#include "ScreenResolution"
+#include "TextureUnits"
+#include "SceneSettings"
+
+#include <glm/gtc/matrix_transform.hpp>
 
 ShaderManager::ShaderManager()
 {
@@ -217,7 +223,7 @@ void ShaderManager::setupConstantUniforms(const ScreenResolution& screenResoluti
   shader->setInt("u_starsDiffuse", TEX_SKYSPHERE_STARS);
 }
 
-Shader &ShaderManager::get(SHADER_UNITS type)
+Shader &ShaderManager::get(SHADER_UNIT type)
 {
   return shaders[type];
 }

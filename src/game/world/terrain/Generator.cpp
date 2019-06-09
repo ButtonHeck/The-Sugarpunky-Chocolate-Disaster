@@ -1,5 +1,7 @@
 #include "Generator"
 
+#include <iomanip>
+
 Generator::Generator()
   :
     basicGLBuffers(VAO | VBO | EBO)

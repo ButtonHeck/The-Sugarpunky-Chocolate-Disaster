@@ -22,7 +22,6 @@
 
 #include "Skybox"
 #include "SkyboxShader"
-#include "BenchmarkTimer"
 
 /**
  * @brief Represents a facade for skybox in the game, contains a single skybox object and personal shader.

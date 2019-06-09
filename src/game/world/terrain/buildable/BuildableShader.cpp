@@ -1,4 +1,5 @@
 #include "BuildableShader"
+#include "Shader"
 
 BuildableShader::BuildableShader(Shader &buildableRenderShader, Shader &selectedRenderShader)
   :

@@ -1,4 +1,5 @@
 #include "UnderwaterRenderer"
+#include "UnderwaterGenerator"
 
 UnderwaterRenderer::UnderwaterRenderer(UnderwaterGenerator &generator)
   :

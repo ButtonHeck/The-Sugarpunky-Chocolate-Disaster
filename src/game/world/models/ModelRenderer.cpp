@@ -1,4 +1,6 @@
 #include "ModelRenderer"
+#include "BufferCollection"
+#include "BenchmarkTimer"
 
 ModelRenderer::ModelRenderer(BufferCollection &basicGLBuffers, BufferCollection &shadowDIBO)
   :

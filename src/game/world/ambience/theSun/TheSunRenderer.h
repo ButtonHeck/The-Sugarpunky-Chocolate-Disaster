@@ -20,10 +20,9 @@
 
 #pragma once
 
-#include "TheSun"
 #include "Query"
-#include "RendererStateManager"
-#include "BenchmarkTimer"
+
+class TheSun;
 
 /**
  * @brief Represents personal renderer for the Sun related code module.

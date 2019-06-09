@@ -3,7 +3,6 @@
 #include "UnderwaterGenerator"
 #include "UnderwaterShader"
 #include "UnderwaterRenderer"
-#include "BenchmarkTimer"
 
 class UnderwaterFacade
 {

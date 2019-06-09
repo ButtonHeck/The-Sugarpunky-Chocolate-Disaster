@@ -1,4 +1,5 @@
 #include "ShoreFacade"
+#include "BenchmarkTimer"
 
 ShoreFacade::ShoreFacade(Shader &renderShader, Shader &normalsShader, const map2D_f &waterMap)
   :

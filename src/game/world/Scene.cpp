@@ -1,4 +1,13 @@
 #include "Scene"
+#include "Camera"
+#include "ShaderManager"
+#include "Shader"
+#include "TextureManager"
+#include "MouseInputManager"
+#include "ShadowVolume"
+#include "RendererStateManager"
+#include "Options"
+#include "BenchmarkTimer"
 
 Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &textureManager, const ScreenResolution &screenResolution, const ShadowVolume &shadowVolume)
   :

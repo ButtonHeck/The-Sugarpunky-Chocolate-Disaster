@@ -1,4 +1,8 @@
 #include "WaterRenderer"
+#include "WaterGenerator"
+#include "WaterShader"
+#include "Shader"
+#include "BenchmarkTimer"
 
 WaterRenderer::WaterRenderer(WaterShader &shaders, WaterGenerator &generator)
   :

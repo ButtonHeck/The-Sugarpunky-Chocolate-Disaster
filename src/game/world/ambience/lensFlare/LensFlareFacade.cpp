@@ -19,6 +19,11 @@
  */
 
 #include "LensFlareFacade"
+#include "TextureLoader"
+#include "ScreenResolution"
+#include "BindlessTextureManager"
+
+#include <string>
 
 /**
  * @param shader compiled program fed to the dedicated shader object

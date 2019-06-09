@@ -1,6 +1,9 @@
 #pragma once
 
-#include "Shader"
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
+
+class Shader;
 
 class BuildableShader
 {

@@ -1,4 +1,7 @@
 #include "SaveLoadManager"
+#include "Camera"
+#include "Scene"
+#include "Logger"
 
 SaveLoadManager::SaveLoadManager(Scene &scene, Camera& camera, Camera &shadowCamera)
   :

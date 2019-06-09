@@ -1,4 +1,5 @@
 #include "BindlessTextureManager"
+#include "Shader"
 
 vec2D_template<BindlessTexture> BindlessTextureManager::textures;
 void BindlessTextureManager::emplaceBack(const std::string &textureSamplerUniformName, GLuint textureID, BINDLESS_TEXTURE_TYPE textureType)

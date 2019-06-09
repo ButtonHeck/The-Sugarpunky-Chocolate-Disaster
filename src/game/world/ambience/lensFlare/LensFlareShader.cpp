@@ -19,6 +19,7 @@
  */
 
 #include "LensFlareShader"
+#include "Shader"
 
 /**
  * @param renderShader precompiled shader program which is used during rendering

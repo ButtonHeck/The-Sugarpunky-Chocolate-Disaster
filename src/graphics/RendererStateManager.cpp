@@ -1,5 +1,7 @@
 #include "RendererStateManager"
 
+#include <GL/glew.h>
+
 namespace RendererStateManager
 {
   void setInitialRenderingState(bool useMultisample)

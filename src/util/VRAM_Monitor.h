@@ -1,7 +1,5 @@
 #pragma once
 
-#include <GL/glew.h>
-
 class VRAM_Monitor final
 {
 public:
@@ -9,6 +7,7 @@ public:
   void updateAvailable();
   int getAvailableMemory() const;
   float getAvailableMemoryPercent() const;
+
 private:
   VRAM_Monitor();
   int ramAvailable, ramSize;

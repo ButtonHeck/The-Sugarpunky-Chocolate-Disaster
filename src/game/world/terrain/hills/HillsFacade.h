@@ -3,15 +3,11 @@
 #include "HillsGenerator"
 #include "HillsShader"
 #include "HillsRenderer"
-#include "BenchmarkTimer"
 
 class HillsFacade
 {
 public:
-  HillsFacade(Shader &renderShader,
-              Shader& cullingShader,
-              Shader &normalsShader,
-              const map2D_f &waterMap);
+  HillsFacade(Shader &renderShader, Shader& cullingShader, Shader &normalsShader, const map2D_f &waterMap);
   void setup();
   void createTilesAndBufferData();
   void serialize(std::ofstream &output);
