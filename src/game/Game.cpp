@@ -53,7 +53,7 @@ void Game::setup()
   BENCHMARK("Game: setup", false);
   Shader::cacheUniformsMode(true);
   RendererStateManager::setInitialRenderingState(options[OPT_USE_MULTISAMPLING]);
-  MouseInputManager::initialize(window, options);
+  MouseInputManager::initialize(window, options, screenResolution);
   MouseInputManager::setCallbacks();
   scene.setup();
   BindlessTextureManager::makeAllResident();

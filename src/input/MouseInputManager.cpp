@@ -9,10 +9,10 @@
 
 extern Camera camera;
 extern Camera shadowCamera;
-extern ScreenResolution screenResolution;
 
 GLFWwindow* MouseInputManager::window;
 Options* MouseInputManager::options;
+const ScreenResolution* MouseInputManager::screenResolution;
 
 /*
 Singleton for mouse input, C++11 guarantees thread-safe instantiation
@@ -23,10 +23,11 @@ MouseInputManager &MouseInputManager::getInstance()
   return instance;
 }
 
-void MouseInputManager::initialize(GLFWwindow * window, Options & options) noexcept
+void MouseInputManager::initialize(GLFWwindow * window, Options & options, const ScreenResolution & screenResolution) noexcept
 {
 	MouseInputManager::window = window;
 	MouseInputManager::options = &options;
+	MouseInputManager::screenResolution = &screenResolution;
 }
 
 void MouseInputManager::setCallbacks() noexcept
@@ -54,12 +55,12 @@ void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
       glm::vec3 viewVertical = camera.getUp(); //normalized
       float fovRad = glm::radians(camera.getZoom());
       float verticalLength = std::tan(fovRad / 2) * NEAR_PLANE;
-      float horizontalLength = verticalLength * screenResolution.getAspectRatio();
+      float horizontalLength = verticalLength * screenResolution->getAspectRatio();
       viewHorizontal *= horizontalLength;
       viewVertical *= verticalLength;
 
-      float halfScreenWidth = screenResolution.getWidth() / 2;
-      float halfScreenHeight = screenResolution.getHeight() / 2;
+      float halfScreenWidth = screenResolution->getWidth() / 2;
+      float halfScreenHeight = screenResolution->getHeight() / 2;
       //map coordinates from [0 ; widthPixels or heightPixels] to the NDC space
       cursorScreenX -= halfScreenWidth;
       cursorScreenY -= halfScreenHeight;
@@ -108,8 +109,8 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
         {
           options->toggle(OPT_SHOW_CURSOR);
           glfwSetInputMode(window, GLFW_CURSOR, (*options)[OPT_SHOW_CURSOR] ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-          float halfScreenWidth = screenResolution.getWidth() / 2.0f;
-          float halfScreenHeight = screenResolution.getHeight() / 2.0f;
+          float halfScreenWidth = screenResolution->getWidth() / 2.0f;
+          float halfScreenHeight = screenResolution->getHeight() / 2.0f;
           glfwSetCursorPos(window, halfScreenWidth, halfScreenHeight);
           mouseInput.lastX = halfScreenWidth;
           mouseInput.lastY = halfScreenHeight;

@@ -6,7 +6,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-ScreenResolution screenResolution;
 Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
 Camera shadowCamera(camera);
 
@@ -28,6 +27,7 @@ int main()
 #endif
   GLFWmonitor* monitor = glfwGetPrimaryMonitor();
   const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
+  ScreenResolution screenResolution;
   screenResolution.updateResolution(vidmode->width, vidmode->height);
   GLFWwindow* window = glfwCreateWindow(screenResolution.getWidth(), screenResolution.getHeight(), "The Sugarpunky Chocolate Disaster", monitor, 0);
   glfwMakeContextCurrent(window);

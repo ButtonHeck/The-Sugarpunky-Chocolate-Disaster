@@ -6,12 +6,13 @@
 
 class Camera;
 class Options;
+class ScreenResolution;
 
 class MouseInputManager
 {
 public:
   static MouseInputManager& getInstance();
-  static void initialize(GLFWwindow* window, Options& options) noexcept;
+  static void initialize(GLFWwindow* window, Options& options, const ScreenResolution& screenResolution) noexcept;
   static void setCallbacks() noexcept;
   void updateCursorMappingCoordinates(const Camera& camera, const map2D_f &landMap, const map2D_f &hillMap, const map2D_f &buildableMap);
   int getCursorWorldX() const noexcept;
@@ -27,6 +28,8 @@ private:
 
   static GLFWwindow* window;
   static Options* options;
+  static const ScreenResolution* screenResolution;
+
   glm::vec3 cursorToNearPlaneWorldSpace;
   float lastX, lastY;
   float cursorAbsX = 0.0f;
