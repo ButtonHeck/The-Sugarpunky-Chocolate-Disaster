@@ -7,7 +7,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-GLFWwindow* window;
 ScreenResolution screenResolution;
 Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
 Camera shadowCamera(camera);
@@ -32,7 +31,7 @@ int main()
   GLFWmonitor* monitor = glfwGetPrimaryMonitor();
   const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
   screenResolution.updateResolution(vidmode->width, vidmode->height);
-  window = glfwCreateWindow(screenResolution.getWidth(), screenResolution.getHeight(), "The Sugarpunky Chocolate Disaster", monitor, 0);
+  GLFWwindow* window = glfwCreateWindow(screenResolution.getWidth(), screenResolution.getHeight(), "The Sugarpunky Chocolate Disaster", monitor, 0);
   glfwMakeContextCurrent(window);
   glewExperimental = GL_TRUE;
   glewInit();
@@ -52,7 +51,7 @@ int main()
 
   glfwMakeContextCurrent(NULL);
 
-  std::thread gameThread([]()
+  std::thread gameThread([&]()
   {
 	  glfwMakeContextCurrent(window);
 	  Game* game = new Game(window, camera, shadowCamera, options, screenResolution);
