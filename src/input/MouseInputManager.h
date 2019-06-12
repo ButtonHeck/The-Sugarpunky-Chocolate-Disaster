@@ -2,11 +2,10 @@
 
 #include "TypeAliases"
 
-#include <GLFW/glfw3.h>
-
 class Camera;
 class Options;
 class ScreenResolution;
+class GLFWwindow;
 
 class MouseInputManager
 {

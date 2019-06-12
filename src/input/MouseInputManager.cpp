@@ -1,3 +1,4 @@
+#include <GLFW/glfw3.h>
 #include "MouseInputManager"
 #include "SceneSettings"
 #include "GraphicsSettings"
