@@ -71,19 +71,19 @@ GLuint TextureLoader::loadTexture(const std::string& path,
   return textureID;
 }
 
-GLuint TextureLoader::createFrameMSTexture(GLuint textureUnit, int multisamples)
+GLuint TextureLoader::createFrameMSTexture(GLuint textureUnit, int multisamples) noexcept
 {
   GLuint textureID = createTextureObject(GL_TEXTURE_2D_MULTISAMPLE, textureUnit, false);
   glTextureStorage2DMultisample(textureID, multisamples, GL_RGB16, screenResolution.getWidth(), screenResolution.getHeight(), GL_TRUE);
   return textureID;
 }
 
-GLuint TextureLoader::createFrameTexture(GLuint textureUnit, bool isDepthTexture, bool useAnisotropy)
+GLuint TextureLoader::createFrameTexture(GLuint textureUnit, bool isDepthTexture, bool useAnisotropy) noexcept
 {
   return createFrameTextureSized(textureUnit, isDepthTexture, screenResolution.getWidth(), screenResolution.getHeight(), useAnisotropy);
 }
 
-GLuint TextureLoader::createFrameTextureSized(GLuint textureUnit, bool isDepthTexture, int width, int height, bool useAnisotropy)
+GLuint TextureLoader::createFrameTextureSized(GLuint textureUnit, bool isDepthTexture, int width, int height, bool useAnisotropy) noexcept
 {
   GLuint textureID = createTextureObject(GL_TEXTURE_2D, textureUnit, false);
   GLenum format = isDepthTexture ? GL_DEPTH_COMPONENT24 : GL_RGB16;
@@ -95,7 +95,7 @@ GLuint TextureLoader::createFrameTextureSized(GLuint textureUnit, bool isDepthTe
   return textureID;
 }
 
-GLuint TextureLoader::createDepthMapTexture(GLuint textureUnit, int width, int height)
+GLuint TextureLoader::createDepthMapTexture(GLuint textureUnit, int width, int height) noexcept
 {
   GLuint textureID = createTextureObject(GL_TEXTURE_2D_ARRAY, textureUnit, false);
   glTextureStorage3D(textureID, 3, GL_DEPTH_COMPONENT24, width, height, 3);

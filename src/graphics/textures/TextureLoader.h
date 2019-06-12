@@ -19,10 +19,10 @@ public:
                      bool includeCWD = true,
                      bool isBindless = false,
                      bool explicitNoSRGB = false);
-  GLuint createFrameMSTexture(GLuint textureUnit, int multisamples);
-  GLuint createFrameTexture(GLuint textureUnit, bool isDepthTexture, bool useAnisotropy);
-  GLuint createFrameTextureSized(GLuint textureUnit, bool isDepthTexture, int width, int height, bool useAnisotropy);
-  GLuint createDepthMapTexture(GLuint textureUnit, int width, int height);
+  GLuint createFrameMSTexture(GLuint textureUnit, int multisamples) noexcept;
+  GLuint createFrameTexture(GLuint textureUnit, bool isDepthTexture, bool useAnisotropy) noexcept;
+  GLuint createFrameTextureSized(GLuint textureUnit, bool isDepthTexture, int width, int height, bool useAnisotropy) noexcept;
+  GLuint createDepthMapTexture(GLuint textureUnit, int width, int height) noexcept;
   GLuint loadCubemap(const std::string& directory, GLuint textureUnit, bool explicitNoSRGB);
   GLuint createUnderwaterReliefTexture(GLuint textureUnit, const map2D_f& waterMap, GLint magFilter, GLint minFilter);
 

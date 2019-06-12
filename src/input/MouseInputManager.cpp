@@ -7,7 +7,6 @@
 
 #include <glm/glm.hpp>
 
-extern GLFWwindow* window;
 extern Camera camera;
 extern Camera shadowCamera;
 extern Options options;
@@ -22,8 +21,11 @@ MouseInputManager &MouseInputManager::getInstance()
   return instance;
 }
 
+GLFWwindow* MouseInputManager::window;
+
 void MouseInputManager::setCallbacks(GLFWwindow *window) noexcept
 {
+  MouseInputManager::window = window;
   glfwSetCursorPosCallback(window, cursorMoveCallback);
   glfwSetMouseButtonCallback(window, cursorClickCallback);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

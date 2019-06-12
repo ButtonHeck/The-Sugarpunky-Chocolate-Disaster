@@ -1,7 +1,7 @@
 #include "DepthmapFramebuffer"
 #include "TextureManager"
 
-DepthmapFramebuffer::DepthmapFramebuffer(TextureManager &textureManager)
+DepthmapFramebuffer::DepthmapFramebuffer(TextureManager &textureManager) noexcept
   :
     Framebuffer(textureManager)
 {}

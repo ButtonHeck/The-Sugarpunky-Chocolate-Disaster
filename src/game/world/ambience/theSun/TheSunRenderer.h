@@ -34,9 +34,9 @@ class TheSunRenderer
 public:
   constexpr static float DEFAULT_SUN_POINT_SIZE = 64.0f;
 
-  TheSunRenderer(TheSun& theSun);
+  TheSunRenderer(TheSun& theSun) noexcept;
   void render(bool doOcclusionTest, bool useReflectionPointSize);
-  GLuint getSamplesPassedQueryResult() const;
+  GLuint getSamplesPassedQueryResult() const noexcept;
   void setPointSize(float pointSize) noexcept;
   void setReflectionPointSize(float pointSize) noexcept;
   float getPointSize() const noexcept;

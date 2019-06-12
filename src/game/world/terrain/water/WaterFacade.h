@@ -19,8 +19,8 @@ public:
             const Frustum &viewFrustum,
             bool useFrustumCulling,
             bool useDebugRender);
-  const map2D_f& getMap() const;
-  bool hasWaterInFrame() const;
+  const map2D_f& getMap() const noexcept;
+  bool hasWaterInFrame() const noexcept;
 
 private:
   WaterShader shaders;

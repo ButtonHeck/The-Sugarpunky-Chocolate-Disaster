@@ -62,7 +62,7 @@ void HillsFacade::drawDepthmap()
   renderer.renderDepthmap();
 }
 
-const map2D_f &HillsFacade::getMap() const
+const map2D_f &HillsFacade::getMap() const noexcept
 {
   return generator.getMap();
 }

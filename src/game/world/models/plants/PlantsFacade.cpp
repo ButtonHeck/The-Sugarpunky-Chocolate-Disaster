@@ -27,7 +27,7 @@
  * @param renderPhongShader compiled Phong shader program provided to a personal shader manager
  * @param renderGouraudShader compiled Gouraud shader program provided to a personal shader manager
  */
-PlantsFacade::PlantsFacade(Shader &renderPhongShader, Shader &renderGouraudShader)
+PlantsFacade::PlantsFacade(Shader &renderPhongShader, Shader &renderGouraudShader) noexcept
   :
     shaders(renderPhongShader, renderGouraudShader)
 {}

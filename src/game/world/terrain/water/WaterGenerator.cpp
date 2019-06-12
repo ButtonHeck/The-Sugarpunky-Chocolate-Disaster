@@ -410,11 +410,11 @@ void WaterGenerator::fattenKernel(int x, int y, int& riverTileCounter, int& rive
   int xRight = ((int)(x+shoreSizeXR+riverWidthOffset) >= WORLD_WIDTH ? WORLD_WIDTH : x+shoreSizeXR+riverWidthOffset);
   int yTop = ((int)(y-shoreSizeYT-riverWidthOffset) <= 0 ? 0 : y-shoreSizeYT-riverWidthOffset);
   int yBottom = ((int)(y+shoreSizeYB+riverWidthOffset) >= WORLD_HEIGHT ? WORLD_HEIGHT : y+shoreSizeYB+riverWidthOffset);
-  for (int y = yTop; y <= yBottom; y++)
+  for (int y1 = yTop; y1 <= yBottom; y1++)
     {
-      for (int x = xLeft; x <= xRight; x++)
+      for (int x1 = xLeft; x1 <= xRight; x1++)
         {
-          map[y][x] = WATER_LEVEL;
+          map[y1][x1] = WATER_LEVEL;
           ++numTiles;
         }
     }

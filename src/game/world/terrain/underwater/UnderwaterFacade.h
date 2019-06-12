@@ -7,7 +7,7 @@
 class UnderwaterFacade
 {
 public:
-  UnderwaterFacade(Shader& renderShader);
+  UnderwaterFacade(Shader& renderShader) noexcept;
   void draw(const glm::vec3 &lightDir, const glm::mat4 &projectionView);
 
 private:

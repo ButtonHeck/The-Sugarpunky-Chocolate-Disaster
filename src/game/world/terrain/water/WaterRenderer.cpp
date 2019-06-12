@@ -4,7 +4,7 @@
 #include "Shader"
 #include "BenchmarkTimer"
 
-WaterRenderer::WaterRenderer(WaterShader &shaders, WaterGenerator &generator)
+WaterRenderer::WaterRenderer(WaterShader &shaders, WaterGenerator &generator) noexcept
   :
     shaders(shaders),
     generator(generator),
@@ -77,7 +77,7 @@ void WaterRenderer::debugRender(GLenum primitiveType)
   glLineWidth(1.0f);
 }
 
-bool WaterRenderer::anySamplesPassed() const
+bool WaterRenderer::anySamplesPassed() const noexcept
 {
   return anySamplesPassedQuery.getResult() == GL_TRUE;
 }

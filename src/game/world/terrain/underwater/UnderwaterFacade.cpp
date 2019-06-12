@@ -1,7 +1,7 @@
 #include "UnderwaterFacade"
 #include "BenchmarkTimer"
 
-UnderwaterFacade::UnderwaterFacade(Shader &renderShader)
+UnderwaterFacade::UnderwaterFacade(Shader &renderShader) noexcept
   :
     shader(renderShader),
     generator(),

@@ -1,6 +1,6 @@
 #include "LandFacade"
 
-LandFacade::LandFacade(Shader &renderShader)
+LandFacade::LandFacade(Shader &renderShader) noexcept
   :
     shader(renderShader),
     generator(),
@@ -31,7 +31,7 @@ void LandFacade::draw(const glm::vec3 &lightDir,
   renderer.render();
 }
 
-const map2D_f &LandFacade::getMap() const
+const map2D_f &LandFacade::getMap() const noexcept
 {
   return generator.getMap();
 }

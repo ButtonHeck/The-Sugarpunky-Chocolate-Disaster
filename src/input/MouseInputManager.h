@@ -23,6 +23,7 @@ private:
   static void scrollCallback(GLFWwindow*, double, double y);
   static void cursorClickCallback(GLFWwindow*, int, int, int);
 
+  static GLFWwindow* window;
   glm::vec3 cursorToNearPlaneWorldSpace;
   float lastX, lastY;
   float cursorAbsX = 0.0f;

@@ -7,7 +7,7 @@ VRAM_Monitor::VRAM_Monitor() noexcept
   ramSizeFloatPercentage = (float)ramSize / 100;
 }
 
-VRAM_Monitor &VRAM_Monitor::getInstance()
+VRAM_Monitor &VRAM_Monitor::getInstance() noexcept
 {
   static VRAM_Monitor instance;
   return instance;

@@ -30,7 +30,7 @@
 class SkyboxFacade
 {
 public:
-  SkyboxFacade(Shader& renderShader);
+  SkyboxFacade(Shader& renderShader) noexcept;
   void draw(const glm::mat4 &skyboxProjectionView,
             const glm::vec3 &viewPosition,
             const glm::vec3 &lightDir);

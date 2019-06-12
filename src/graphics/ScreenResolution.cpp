@@ -7,7 +7,7 @@ ScreenResolution::ScreenResolution(int width, int height, float aspect) noexcept
     aspectRatio(aspect)
 {}
 
-void ScreenResolution::updateResolution(int newWidth, int newHeight)
+void ScreenResolution::updateResolution(int newWidth, int newHeight) noexcept
 {
   width = newWidth;
   height = newHeight;

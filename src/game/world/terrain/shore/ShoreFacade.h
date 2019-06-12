@@ -19,7 +19,7 @@ public:
             bool useClipDistanceReflection,
             bool useClipDistanceRefraction);
   void drawDepthmap();
-  const map2D_f& getMap() const;
+  const map2D_f& getMap() const noexcept;
 
 private:
   ShoreShader shader;

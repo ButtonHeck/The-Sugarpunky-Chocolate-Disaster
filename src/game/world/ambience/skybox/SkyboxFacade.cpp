@@ -24,7 +24,7 @@
 /**
  * @param renderShader compiled program fed to personal shader manager
  */
-SkyboxFacade::SkyboxFacade(Shader &renderShader)
+SkyboxFacade::SkyboxFacade(Shader &renderShader) noexcept
   :
     shader(renderShader),
     skybox()

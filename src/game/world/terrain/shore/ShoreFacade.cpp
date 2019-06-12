@@ -58,7 +58,7 @@ void ShoreFacade::drawDepthmap()
   renderer.render();
 }
 
-const map2D_f &ShoreFacade::getMap() const
+const map2D_f &ShoreFacade::getMap() const noexcept
 {
   return generator.getMap();
 }

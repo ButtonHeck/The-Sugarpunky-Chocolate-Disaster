@@ -8,7 +8,7 @@ public:
 
   ScreenResolution() = default;
   ScreenResolution(int width, int height, float aspect) noexcept;
-  void updateResolution(int newWidth, int newHeight);
+  void updateResolution(int newWidth, int newHeight) noexcept;
   int getWidth() const noexcept;
   int getHeight() const noexcept;
   float getAspectRatio() const noexcept;

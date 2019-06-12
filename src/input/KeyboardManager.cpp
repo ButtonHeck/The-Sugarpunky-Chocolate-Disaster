@@ -18,7 +18,7 @@ void KeyboardManager::processInput()
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 
-  processKey(GLFW_KEY_F1, [&]()
+  processKey(GLFW_KEY_F1, [&]() noexcept
   {
       camera.switchFPSmode();
       shadowCamera.switchFPSmode();
@@ -94,7 +94,7 @@ void KeyboardManager::processInput()
       camera.setPitch(-90.0f);
       shadowCamera.setPitch(-90.0f);
     });
-  processKey(GLFW_KEY_E, [&]()
+  processKey(GLFW_KEY_E, [&]() noexcept
   {
       camera.switchAcceleration();
       shadowCamera.switchAcceleration();

@@ -2,7 +2,7 @@
 #include "BenchmarkTimer"
 #include "MouseInputManager"
 
-BuildableFacade::BuildableFacade(Shader &buildableRenderShader, Shader &selectedRenderShader)
+BuildableFacade::BuildableFacade(Shader &buildableRenderShader, Shader &selectedRenderShader) noexcept
   :
     shader(buildableRenderShader, selectedRenderShader),
     generator(),
@@ -34,7 +34,7 @@ void BuildableFacade::drawSelected(const glm::mat4& projectionView, MouseInputMa
     }
 }
 
-const map2D_f &BuildableFacade::getMap() const
+const map2D_f &BuildableFacade::getMap() const noexcept
 {
   return generator.getMap();
 }

@@ -5,7 +5,7 @@
 class WaterRefractionFramebuffer : public Framebuffer
 {
 public:
-  WaterRefractionFramebuffer(TextureManager& textureManager);
+  WaterRefractionFramebuffer(TextureManager& textureManager) noexcept;
   virtual ~WaterRefractionFramebuffer() = default;
   virtual void setup() override;
 };

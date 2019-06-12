@@ -53,12 +53,12 @@ void WaterFacade::draw(const glm::vec3 &lightDir,
     }
 }
 
-const map2D_f &WaterFacade::getMap() const
+const map2D_f &WaterFacade::getMap() const noexcept
 {
   return generator.getMap();
 }
 
-bool WaterFacade::hasWaterInFrame() const
+bool WaterFacade::hasWaterInFrame() const noexcept
 {
   return renderer.anySamplesPassed();
 }

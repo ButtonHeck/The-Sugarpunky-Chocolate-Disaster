@@ -1,7 +1,7 @@
 #include "WaterRefractionFramebuffer"
 #include "TextureManager"
 
-WaterRefractionFramebuffer::WaterRefractionFramebuffer(TextureManager &textureManager)
+WaterRefractionFramebuffer::WaterRefractionFramebuffer(TextureManager &textureManager) noexcept
   :
     Framebuffer(textureManager)
 {}

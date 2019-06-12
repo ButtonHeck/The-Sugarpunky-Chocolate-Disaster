@@ -55,12 +55,13 @@ int main()
   std::thread gameThread([]()
   {
 	  glfwMakeContextCurrent(window);
-	  Game game(window, camera, shadowCamera, options, screenResolution);
-	  game.setup();
+	  Game* game = new Game(window, camera, shadowCamera, options, screenResolution);
+	  game->setup();
 	  while (!glfwWindowShouldClose(window))
 	  {
-		  game.loop();
+		  game->loop();
 	  }
+	  delete game;
   });
 
   while (!glfwWindowShouldClose(window))

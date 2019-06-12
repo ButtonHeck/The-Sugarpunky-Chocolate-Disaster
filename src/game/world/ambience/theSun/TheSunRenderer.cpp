@@ -25,7 +25,7 @@
 /**
  * @param theSun entity to peek VAO from during rendering
  */
-TheSunRenderer::TheSunRenderer(TheSun& theSun)
+TheSunRenderer::TheSunRenderer(TheSun& theSun) noexcept
   :
     theSun(theSun),
     samplesPassedQuery(GL_SAMPLES_PASSED),
@@ -55,7 +55,7 @@ void TheSunRenderer::render(bool doOcclusionTest, bool useReflectionPointSize)
     samplesPassedQuery.requestResult();
 }
 
-GLuint TheSunRenderer::getSamplesPassedQueryResult() const
+GLuint TheSunRenderer::getSamplesPassedQueryResult() const noexcept
 {
   return samplesPassedQuery.getResult();
 }

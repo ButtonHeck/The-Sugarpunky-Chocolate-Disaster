@@ -3,7 +3,7 @@
 class VRAM_Monitor final
 {
 public:
-  static VRAM_Monitor& getInstance();
+  static VRAM_Monitor& getInstance() noexcept;
   void updateAvailable() noexcept;
   int getAvailableMemory() const noexcept;
   float getAvailableMemoryPercent() const noexcept;

@@ -2,7 +2,7 @@
 #include "GraphicsSettings"
 #include "TextureManager"
 
-WaterReflectionFramebuffer::WaterReflectionFramebuffer(TextureManager &textureManager)
+WaterReflectionFramebuffer::WaterReflectionFramebuffer(TextureManager &textureManager) noexcept
   :
     Framebuffer(textureManager)
 {

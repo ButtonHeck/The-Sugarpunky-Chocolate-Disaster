@@ -27,7 +27,7 @@
  * @param renderShader compiled shader program fed to personal shader manager
  * @param screenResolution current screen resolution to determine maximum possible samples to be drawn
  */
-TheSunFacade::TheSunFacade(Shader &renderShader, const ScreenResolution &screenResolution)
+TheSunFacade::TheSunFacade(Shader &renderShader, const ScreenResolution &screenResolution) noexcept
   :
     theSun(),
     shader(renderShader),
@@ -88,17 +88,17 @@ void TheSunFacade::draw(const glm::mat4 &skyProjectionView, bool doOcclusionTest
   renderer.render(doOcclusionTest, useReflectionPointSize);
 }
 
-const glm::vec3& TheSunFacade::getPosition() const
+const glm::vec3& TheSunFacade::getPosition() const noexcept
 {
   return theSun.getPosition();
 }
 
-const glm::vec3 &TheSunFacade::getLightDir() const
+const glm::vec3 &TheSunFacade::getLightDir() const noexcept
 {
   return theSun.getLightDir();
 }
 
-const glm::mat4& TheSunFacade::getRotationTransform() const
+const glm::mat4& TheSunFacade::getRotationTransform() const noexcept
 {
   return theSun.getRotationTransform();
 }

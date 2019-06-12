@@ -5,7 +5,7 @@
 class LandChunk : public Chunk
 {
 public:
-  LandChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom, unsigned int offset, unsigned int instances);
+  LandChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom, unsigned int offset, unsigned int instances) noexcept;
 
   //instance offset
   void setInstanceOffset(unsigned int offset) noexcept;
