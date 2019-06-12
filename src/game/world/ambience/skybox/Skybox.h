@@ -31,7 +31,7 @@
 class Skybox
 {
 public:
-  Skybox();
+  Skybox() noexcept;
   void draw();
 
 private:

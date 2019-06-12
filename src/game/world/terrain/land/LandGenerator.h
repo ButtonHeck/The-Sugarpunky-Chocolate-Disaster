@@ -8,7 +8,7 @@
 class LandGenerator : public Generator
 {
 public:
-  LandGenerator();
+  LandGenerator() noexcept;
   virtual ~LandGenerator() = default;
   void setup(const map2D_f &shoreMap);
   void updateCellsIndirectBuffer(const Frustum &frustum);
@@ -23,9 +23,9 @@ private:
   void fillBufferData();
   void fillCellBufferData();
   void bufferData(BufferCollection &bufferCollection, GLfloat *buffer, size_t size);
-  void setupGLBufferAttributes();
-  void setupGLBufferInstancedAttributes();
-  void addIndirectBufferData(GLuint* buffer, GLuint& dataOffset, GLuint numInstances, GLuint instanceOffset);
+  void setupGLBufferAttributes() noexcept;
+  void setupGLBufferInstancedAttributes() noexcept;
+  void addIndirectBufferData(GLuint* buffer, GLuint& dataOffset, GLuint numInstances, GLuint instanceOffset) noexcept;
 
   BufferCollection cellBuffers;
   map2D_f chunkMap;

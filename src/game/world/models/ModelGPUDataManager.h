@@ -21,9 +21,9 @@ public:
                                  float loadingDistanceShadow);
   void updateIndirectBufferData();
   void loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances);
-  GLsizei getPrimitiveCount(bool isShadow) const;
-  BufferCollection &getBasicGLBuffers();
-  BufferCollection &getShadowDIBO();
+  GLsizei getPrimitiveCount(bool isShadow) const noexcept;
+  BufferCollection &getBasicGLBuffers() noexcept;
+  BufferCollection &getShadowDIBO() noexcept;
 
 private:
   constexpr static int NUM_CHUNKS = (WORLD_WIDTH / CHUNK_SIZE) * (WORLD_HEIGHT / CHUNK_SIZE);
@@ -31,7 +31,7 @@ private:
   struct IndirectBufferToken
   {
     //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
-    IndirectBufferToken(GLuint numInstances, GLuint instanceOffset);
+    IndirectBufferToken(GLuint numInstances, GLuint instanceOffset) noexcept;
     GLuint numInstances, instanceOffset;
     static const GLuint FIRST_INDEX = 0, BASE_VERTEX = 0;
   };

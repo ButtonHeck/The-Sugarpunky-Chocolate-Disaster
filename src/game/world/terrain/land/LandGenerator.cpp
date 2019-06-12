@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-LandGenerator::LandGenerator()
+LandGenerator::LandGenerator() noexcept
   :
     Generator(),
     cellBuffers(VAO | VBO | INSTANCE_VBO | EBO | DIBO)
@@ -166,7 +166,7 @@ void LandGenerator::bufferData(BufferCollection& bufferCollection, GLfloat* buff
   glBufferData(GL_ARRAY_BUFFER, sizeof(buffer) * size, buffer, GL_STATIC_DRAW);
 }
 
-void LandGenerator::setupGLBufferAttributes()
+void LandGenerator::setupGLBufferAttributes() noexcept
 {
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
@@ -174,7 +174,7 @@ void LandGenerator::setupGLBufferAttributes()
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
 }
 
-void LandGenerator::setupGLBufferInstancedAttributes()
+void LandGenerator::setupGLBufferInstancedAttributes() noexcept
 {
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), 0);
@@ -200,7 +200,7 @@ void LandGenerator::updateCellsIndirectBuffer(const Frustum& frustum)
   glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * cellPrimitiveCount, &indirectBuffer[0], GL_STATIC_DRAW);
 }
 
-void LandGenerator::addIndirectBufferData(GLuint *buffer, GLuint &dataOffset, GLuint numInstances, GLuint instanceOffset)
+void LandGenerator::addIndirectBufferData(GLuint *buffer, GLuint &dataOffset, GLuint numInstances, GLuint instanceOffset) noexcept
 {
   buffer[dataOffset++] = VERTICES_PER_QUAD;
   buffer[dataOffset++] = numInstances;

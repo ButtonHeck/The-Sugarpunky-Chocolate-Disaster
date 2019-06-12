@@ -2,7 +2,7 @@
 
 #include <iomanip>
 
-Generator::Generator()
+Generator::Generator() noexcept
   :
     basicGLBuffers(VAO | VBO | EBO)
 {
@@ -41,7 +41,7 @@ void Generator::createTiles(bool flat, bool createOnZeroTiles, const map2D_f &ma
     }
 }
 
-const map2D_f &Generator::getMap() const
+const map2D_f &Generator::getMap() const noexcept
 {
   return map;
 }

@@ -29,7 +29,7 @@
 class HillTreesGenerator : public PlantGenerator
 {
 public:
-  HillTreesGenerator();
+  HillTreesGenerator() noexcept;
   void setup(const map2D_f &hillMap, const map2D_i &distributionMap, const map2D_vec3 &hillsNormalMap);
 
 private:

@@ -2,7 +2,7 @@
 #include "BufferCollection"
 #include "BenchmarkTimer"
 
-ModelRenderer::ModelRenderer(BufferCollection &basicGLBuffers, BufferCollection &shadowDIBO)
+ModelRenderer::ModelRenderer(BufferCollection &basicGLBuffers, BufferCollection &shadowDIBO) noexcept
   :
     basicGLBuffers(basicGLBuffers),
     shadowDIBO(shadowDIBO)

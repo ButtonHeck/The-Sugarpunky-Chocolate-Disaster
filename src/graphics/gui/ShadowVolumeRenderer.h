@@ -11,7 +11,7 @@ public:
   void renderExpectedVolume(int index);
   void bufferActualVolumes();
   void renderActualVolume(int index);
-  void renderLightSource(int index);
+  void renderLightSource(int index) noexcept;
 
 private:
   constexpr static unsigned int VOLUMES_INDICES_COUNT = 24;

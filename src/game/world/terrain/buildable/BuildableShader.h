@@ -8,7 +8,7 @@ class Shader;
 class BuildableShader
 {
 public:
-  BuildableShader(Shader& buildableRenderShader, Shader& selectedRenderShader);
+  BuildableShader(Shader& buildableRenderShader, Shader& selectedRenderShader) noexcept;
   void updateBuildable(const glm::mat4 &projectionView);
   void updateSelected(const glm::mat4 &projectionView, const glm::vec4 &selectedTranslation);
 

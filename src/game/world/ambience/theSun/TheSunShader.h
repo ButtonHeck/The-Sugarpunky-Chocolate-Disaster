@@ -30,7 +30,7 @@ class Shader;
 class TheSunShader
 {
 public:
-  TheSunShader(Shader& renderShader);
+  TheSunShader(Shader& renderShader) noexcept;
   void update(const glm::mat4 &projectionView, const glm::mat4 &model);
 
 private:

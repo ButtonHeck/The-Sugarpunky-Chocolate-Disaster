@@ -8,7 +8,7 @@ class Shader;
 class UnderwaterShader
 {
 public:
-  UnderwaterShader(Shader& renderShader);
+  UnderwaterShader(Shader& renderShader) noexcept;
   void update(const glm::vec3 &lightDir, const glm::mat4 &projectionView);
 
 private:

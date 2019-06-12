@@ -36,7 +36,7 @@ private:
                glm::vec2 texCoords,
                glm::vec3 normal,
                glm::vec3 tangent,
-               glm::vec3 bitangent);
+               glm::vec3 bitangent) noexcept;
     GLfloat posX, posY, posZ;
     GLfloat texCoordX, texCoordY;
     GLfloat normalX, normalY, normalZ;
@@ -47,9 +47,9 @@ private:
   void generateMap(int cycles, float density);
   void generateKernel(int cycles, float density);
   void fattenKernel(int cycles);
-  void bufferVertex(GLfloat* vertices, int offset, HillVertex vertex);
+  void bufferVertex(GLfloat* vertices, int offset, HillVertex vertex) noexcept;
   void fillBufferData();
-  void setupGLBufferAttributes();
+  void setupGLBufferAttributes() noexcept;
   bool hasWaterNearby(int centerX, int centerY, int radius);
   void compressMap(float thresholdAbsValue, float ratio);
   void updateMaxHeight();

@@ -1,7 +1,7 @@
 #include "UnderwaterRenderer"
 #include "UnderwaterGenerator"
 
-UnderwaterRenderer::UnderwaterRenderer(UnderwaterGenerator &generator)
+UnderwaterRenderer::UnderwaterRenderer(UnderwaterGenerator &generator) noexcept
   :
     generator(generator)
 {}

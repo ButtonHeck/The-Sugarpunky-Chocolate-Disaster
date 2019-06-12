@@ -7,7 +7,7 @@ class BufferCollection;
 class ModelRenderer
 {
 public:
-  ModelRenderer(BufferCollection& basicGLBuffers, BufferCollection& shadowDIBO);
+  ModelRenderer(BufferCollection& basicGLBuffers, BufferCollection& shadowDIBO) noexcept;
   void render(bool isShadow, GLsizei primCount);
   void renderOneInstance(GLsizei numIndices);
 

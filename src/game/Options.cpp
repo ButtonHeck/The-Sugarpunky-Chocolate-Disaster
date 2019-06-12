@@ -1,6 +1,6 @@
 #include "Options"
 
-Options::Options()
+Options::Options() noexcept
 {
   options[OPT_DRAW_TREES] = true;
   options[OPT_ANIMATE_WATER] = true;

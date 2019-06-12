@@ -1,6 +1,6 @@
 #include "TerrainTile"
 
-TerrainTile::TerrainTile(int x, int y, float lowLeft, float lowRight, float upperRight, float upperLeft)
+TerrainTile::TerrainTile(int x, int y, float lowLeft, float lowRight, float upperRight, float upperLeft) noexcept
   :
     mapX(x),
     mapY(y),

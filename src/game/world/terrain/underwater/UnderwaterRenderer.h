@@ -5,7 +5,7 @@ class UnderwaterGenerator;
 class UnderwaterRenderer
 {
 public:
-  UnderwaterRenderer(UnderwaterGenerator& generator);
+  UnderwaterRenderer(UnderwaterGenerator& generator) noexcept;
   void render();
 
 private:

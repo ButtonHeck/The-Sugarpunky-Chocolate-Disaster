@@ -15,7 +15,7 @@ public:
   void bindToViewport(int viewportWidth, int viewportHeight) = delete;
   void unbindToViewport(int viewportWidth, int viewportHeight) = delete;
   void draw(bool useMultisampling, bool useDOF);
-  void bindAppropriateFBO(bool enableMultisampling);
+  void bindAppropriateFBO(bool enableMultisampling) noexcept;
 
 private:
   void setupFramebuffers();

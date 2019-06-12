@@ -28,7 +28,7 @@
 class GrassGenerator : public PlantGenerator
 {
 public:
-  GrassGenerator();
+  GrassGenerator() noexcept;
   void setup(const map2D_f &landMap, const map2D_f &hillMap, const map2D_i &distributionMap);
 
 private:

@@ -21,13 +21,13 @@ public:
   constexpr static unsigned int NUMBER_OF_DISTINCT_VERTICES = 8;
   constexpr static unsigned int NUMBER_OF_PLANES = 6;
 
-  Frustum();
+  Frustum() noexcept;
   void updateFrustum(const glm::mat4 &projectionView);
   void calculateIntersectionPoints();
-  float getMaxCoordX() const;
-  float getMinCoordX() const;
-  float getMaxCoordZ() const;
-  float getMinCoordZ() const;
+  float getMaxCoordX() const noexcept;
+  float getMinCoordX() const noexcept;
+  float getMaxCoordZ() const noexcept;
+  float getMinCoordZ() const noexcept;
   bool isInside(float x, float y, float z, float radius) const;
   const glm::vec4 &getPlane(FRUSTUM_PLANE plane) const;
 

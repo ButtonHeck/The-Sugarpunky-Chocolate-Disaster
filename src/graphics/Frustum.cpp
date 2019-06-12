@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <glm/gtc/type_ptr.hpp>
 
-Frustum::Frustum()
+Frustum::Frustum() noexcept
 {
   planes.reserve(NUMBER_OF_PLANES);
   for (unsigned int planeIndex = 0; planeIndex < NUMBER_OF_PLANES; planeIndex++)
@@ -78,25 +78,25 @@ void Frustum::calculateIntersectionPoints()
   farUL = kramerIntersection(BACK, TOP, LEFT);
 }
 
-float Frustum::getMaxCoordX() const
+float Frustum::getMaxCoordX() const noexcept
 {
   return std::max({nearLL.x, nearLR.x, nearUR.x, nearUL.x,
                    farLL.x, farLR.x, farUR.x, farUL.x});
 }
 
-float Frustum::getMinCoordX() const
+float Frustum::getMinCoordX() const noexcept
 {
   return std::min({nearLL.x, nearLR.x, nearUR.x, nearUL.x,
                    farLL.x, farLR.x, farUR.x, farUL.x});
 }
 
-float Frustum::getMaxCoordZ() const
+float Frustum::getMaxCoordZ() const noexcept
 {
   return std::max({nearLL.z, nearLR.z, nearUR.z, nearUL.z,
                    farLL.z, farLR.z, farUR.z, farUL.z});
 }
 
-float Frustum::getMinCoordZ() const
+float Frustum::getMinCoordZ() const noexcept
 {
   return std::min({nearLL.z, nearLR.z, nearUR.z, nearUL.z,
                    farLL.z, farLR.z, farUR.z, farUL.z});
@@ -135,7 +135,7 @@ glm::vec3 Frustum::kramerIntersection(const glm::vec4& frontOrBack, const glm::v
 
 bool Frustum::isInside(float x, float y, float z, float radius) const
 {
-  return std::all_of(planes.begin(), planes.end(), [&](const glm::vec4& plane)
+  return std::all_of(planes.begin(), planes.end(), [&](const glm::vec4& plane) noexcept
   {
       return plane.x * x + plane.y * y + plane.z * z + plane.w > -radius;
     });

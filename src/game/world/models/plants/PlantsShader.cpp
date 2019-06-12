@@ -27,7 +27,7 @@
  * @param renderPhongShader compiled Phong shader program to use during rendering
  * @param renderGouraudShader compiled Gouraud shader program to use during rendering
  */
-PlantsShader::PlantsShader(Shader &renderPhongShader, Shader &renderGouraudShader)
+PlantsShader::PlantsShader(Shader &renderPhongShader, Shader &renderGouraudShader) noexcept
   :
     renderPhongShader(renderPhongShader),
     renderGouraudShader(renderGouraudShader)

@@ -5,7 +5,7 @@
 class BuildableGenerator : public Generator
 {
 public:
-  BuildableGenerator();
+  BuildableGenerator() noexcept;
   virtual ~BuildableGenerator() = default;
   void setup(const map2D_f &landMap, const map2D_f &hillsMap);
 

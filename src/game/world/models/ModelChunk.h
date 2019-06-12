@@ -37,13 +37,13 @@ public:
   void setInstanceOffsetsVector(std::vector<unsigned int>& instanceOffsets);
   void setInstanceOffset(unsigned int index, unsigned int offset);
   unsigned int getInstanceOffset(int index) const;
-  std::vector<unsigned int>& getInstanceOffsetVector();
+  std::vector<unsigned int>& getInstanceOffsetVector() noexcept;
 
   //number of models instances (one unsigned int per model)
   void setNumInstancesVector(std::vector<unsigned int>& numInstances);
   void setNumInstances(unsigned int index, unsigned int instances);
   unsigned int getNumInstances(int index) const;
-  std::vector<unsigned int>& getNumInstancesVector();
+  std::vector<unsigned int>& getNumInstancesVector() noexcept;
 
 private:
   std::vector<unsigned int> instanceOffsets;
@@ -77,7 +77,7 @@ inline unsigned int ModelChunk::getInstanceOffset(int index) const
   return instanceOffsets[index];
 }
 
-inline std::vector<unsigned int> &ModelChunk::getInstanceOffsetVector()
+inline std::vector<unsigned int> &ModelChunk::getInstanceOffsetVector() noexcept
 {
   return instanceOffsets;
 }
@@ -87,7 +87,7 @@ inline unsigned int ModelChunk::getNumInstances(int index) const
   return numInstances[index];
 }
 
-inline std::vector<unsigned int> &ModelChunk::getNumInstancesVector()
+inline std::vector<unsigned int> &ModelChunk::getNumInstancesVector() noexcept
 {
   return numInstances;
 }

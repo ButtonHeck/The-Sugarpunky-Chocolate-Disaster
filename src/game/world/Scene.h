@@ -47,12 +47,12 @@ public:
   void drawWorldRefraction(const glm::mat4 &projectionView);
 
   //getters
-  WaterFacade &getWaterFacade();
-  HillsFacade &getHillsFacade();
-  PlantsFacade &getPlantsFacade();
-  TheSunFacade &getSunFacade();
-  SkysphereFacade &getSkysphereFacade();
-  LandFacade &getLandFacade();
+  WaterFacade &getWaterFacade() noexcept;
+  HillsFacade &getHillsFacade() noexcept;
+  PlantsFacade &getPlantsFacade() noexcept;
+  TheSunFacade &getSunFacade() noexcept;
+  SkysphereFacade &getSkysphereFacade() noexcept;
+  LandFacade &getLandFacade() noexcept;
 
 private:
   ShaderManager& shaderManager;

@@ -4,12 +4,12 @@ class VRAM_Monitor final
 {
 public:
   static VRAM_Monitor& getInstance();
-  void updateAvailable();
-  int getAvailableMemory() const;
-  float getAvailableMemoryPercent() const;
+  void updateAvailable() noexcept;
+  int getAvailableMemory() const noexcept;
+  float getAvailableMemoryPercent() const noexcept;
 
 private:
-  VRAM_Monitor();
+  VRAM_Monitor() noexcept;
   int ramAvailable, ramSize;
   float ramSizeFloatPercentage;
 };

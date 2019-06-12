@@ -29,7 +29,7 @@
 /**
  * @brief sets seed for randomizer
  */
-PlantGenerator::PlantGenerator()
+PlantGenerator::PlantGenerator() noexcept
 {
   static bool randomizerInitialized = false;
   if (!randomizerInitialized)
@@ -309,12 +309,12 @@ map2D_mat4 PlantGenerator::substituteMatricesStorage()
   return newMatrices;
 }
 
-std::vector<Model> &PlantGenerator::getModels(bool isLowPoly)
+std::vector<Model> &PlantGenerator::getModels(bool isLowPoly) noexcept
 {
   return isLowPoly ? lowPolyModels : models;
 }
 
-std::vector<ModelChunk> &PlantGenerator::getChunks()
+std::vector<ModelChunk> &PlantGenerator::getChunks() noexcept
 {
   return chunks;
 }

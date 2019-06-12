@@ -26,7 +26,7 @@
 /**
  * @brief load both plain and low-poly models
  */
-HillTreesGenerator::HillTreesGenerator()
+HillTreesGenerator::HillTreesGenerator() noexcept
   :
     PlantGenerator()
 {

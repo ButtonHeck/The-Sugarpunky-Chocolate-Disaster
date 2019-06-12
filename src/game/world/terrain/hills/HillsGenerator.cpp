@@ -194,7 +194,7 @@ void HillsGenerator::fattenKernel(int cycles)
     }
 }
 
-void HillsGenerator::bufferVertex(GLfloat* buffer, int offset, HillVertex vertex)
+void HillsGenerator::bufferVertex(GLfloat* buffer, int offset, HillVertex vertex) noexcept
 {
   buffer[offset] =   vertex.posX;
   buffer[offset+1] = vertex.posY;
@@ -212,7 +212,7 @@ void HillsGenerator::bufferVertex(GLfloat* buffer, int offset, HillVertex vertex
   buffer[offset+13] = vertex.bitangentZ;
 }
 
-void HillsGenerator::setupGLBufferAttributes()
+void HillsGenerator::setupGLBufferAttributes() noexcept
 {
   const size_t SIZE_OF_HILL_VERTEX =  HillVertex::NUMBER_OF_ELEMENTS * sizeof(GLfloat);
   glEnableVertexAttribArray(0);
@@ -391,7 +391,7 @@ void HillsGenerator::generateBitangentMap()
     }
 }
 
-HillsGenerator::HillVertex::HillVertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal, glm::vec3 tangent, glm::vec3 bitangent)
+HillsGenerator::HillVertex::HillVertex(glm::vec3 pos, glm::vec2 texCoords, glm::vec3 normal, glm::vec3 tangent, glm::vec3 bitangent) noexcept
   :
     posX(pos.x - HALF_WORLD_WIDTH), posY(pos.y), posZ(pos.z - HALF_WORLD_HEIGHT),
     texCoordX(texCoords.x), texCoordY(texCoords.y),

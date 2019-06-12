@@ -21,7 +21,7 @@ private:
   struct WaterVertex
   {
     constexpr static unsigned int NUMBER_OF_ELEMENTS = 3;
-    WaterVertex(glm::vec3 position);
+    WaterVertex(glm::vec3 position) noexcept;
     float posX, posY, posZ;
   };
   enum DIRECTION : int {
@@ -34,10 +34,10 @@ private:
                        unsigned int &curveMaxDistance,
                        DIRECTION &currentDirection,
                        DIRECTION validDirectionLeft,
-                       DIRECTION validDirectionRight);
+                       DIRECTION validDirectionRight) noexcept;
   void fattenKernel(int x, int y, int &riverTileCounter, int &riverWidthOffset, bool &riverWidthIncrease);
-  void bufferVertex(GLfloat* vertices, int offset, WaterVertex vertex);
-  void setupGLBufferAttributes();
+  void bufferVertex(GLfloat* vertices, int offset, WaterVertex vertex) noexcept;
+  void setupGLBufferAttributes() noexcept;
   void fillBufferData();
 
   BufferCollection culledBuffers;

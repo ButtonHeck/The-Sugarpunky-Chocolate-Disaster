@@ -38,7 +38,7 @@ class Model
 {
 public:
   Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions = 1, bool isInstanced = true);
-  static void bindTextureLoader(TextureLoader& textureLoader);
+  static void bindTextureLoader(TextureLoader& textureLoader) noexcept;
   void draw(bool isShadow);
   void drawOneInstance();
   void prepareIndirectBufferData(const std::vector<std::pair<ModelChunk, unsigned int> > &visibleChunks,
@@ -47,7 +47,7 @@ public:
                                  float loadingDistanceShadow);
   void updateIndirectBufferData();
   void loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances);
-  unsigned int getRepeatCount() const;
+  unsigned int getRepeatCount() const noexcept;
 
 private:
   static TextureLoader* textureLoader;

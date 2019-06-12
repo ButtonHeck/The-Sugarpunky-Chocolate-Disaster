@@ -26,7 +26,7 @@
 /**
  * @brief load both plain and low-poly models
  */
-LandPlantsGenerator::LandPlantsGenerator()
+LandPlantsGenerator::LandPlantsGenerator() noexcept
   :
     PlantGenerator()
 {

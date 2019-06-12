@@ -12,7 +12,7 @@ class Frustum;
 class HillsShader
 {
 public:
-  HillsShader(Shader& renderShader, Shader& cullingShader, Shader& normalsShader);
+  HillsShader(Shader& renderShader, Shader& cullingShader, Shader& normalsShader) noexcept;
   void setupCulling();
   void update(const glm::vec3 &lightDir,
               const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,

@@ -4,7 +4,7 @@
 #include "Shader"
 #include "BenchmarkTimer"
 
-HillsRenderer::HillsRenderer(HillsShader &shaders, HillsGenerator &generator)
+HillsRenderer::HillsRenderer(HillsShader &shaders, HillsGenerator &generator) noexcept
   :
     shaders(shaders),
     generator(generator)

@@ -20,7 +20,7 @@
 
 #include "Skybox"
 
-Skybox::Skybox()
+Skybox::Skybox() noexcept
   :
     basicGLBuffers(VAO | VBO)
 {

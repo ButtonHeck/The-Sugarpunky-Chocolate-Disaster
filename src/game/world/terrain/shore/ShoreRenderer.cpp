@@ -1,7 +1,7 @@
 #include "ShoreRenderer"
 #include "ShoreGenerator"
 
-ShoreRenderer::ShoreRenderer(ShoreGenerator &generator)
+ShoreRenderer::ShoreRenderer(ShoreGenerator &generator) noexcept
   :
     generator(generator)
 {}

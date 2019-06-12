@@ -3,7 +3,7 @@
 #include "Scene"
 #include "Logger"
 
-SaveLoadManager::SaveLoadManager(Scene &scene, Camera& camera, Camera &shadowCamera)
+SaveLoadManager::SaveLoadManager(Scene &scene, Camera& camera, Camera &shadowCamera) noexcept
   :
     scene(scene),
     camera(camera),

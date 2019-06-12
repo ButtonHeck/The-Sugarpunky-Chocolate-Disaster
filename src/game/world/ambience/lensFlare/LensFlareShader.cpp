@@ -24,7 +24,7 @@
 /**
  * @param renderShader precompiled shader program which is used during rendering
  */
-LensFlareShader::LensFlareShader(Shader &renderShader)
+LensFlareShader::LensFlareShader(Shader &renderShader) noexcept
   :
     renderShader(renderShader)
 {}

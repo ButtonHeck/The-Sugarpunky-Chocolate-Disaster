@@ -6,7 +6,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-ShaderManager::ShaderManager()
+ShaderManager::ShaderManager() noexcept
 {
   shaders[SHADER_HILLS_CULLING] = Shader({GL_VERTEX_SHADER, "hillsFC/hillsFC.vs"},
                                          {GL_GEOMETRY_SHADER, "hillsFC/hillsFC.gs"});

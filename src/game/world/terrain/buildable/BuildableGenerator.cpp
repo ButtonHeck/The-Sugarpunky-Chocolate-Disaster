@@ -1,6 +1,6 @@
 #include "BuildableGenerator"
 
-BuildableGenerator::BuildableGenerator()
+BuildableGenerator::BuildableGenerator() noexcept
   :
     Generator(),
     selectedBuffers(VAO | VBO | EBO)

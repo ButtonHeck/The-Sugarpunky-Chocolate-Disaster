@@ -34,7 +34,7 @@ class Shader;
 class PlantsShader
 {
 public:
-  PlantsShader(Shader& renderPhongShader, Shader& renderGouraudShader);
+  PlantsShader(Shader& renderPhongShader, Shader& renderGouraudShader) noexcept;
   void updateAllPlants(bool usePhongShading,
                        const glm::vec3 &lightDir,
                        const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,

@@ -2,7 +2,7 @@
 #include "LandGenerator"
 #include "BenchmarkTimer"
 
-LandRenderer::LandRenderer(LandGenerator &generator)
+LandRenderer::LandRenderer(LandGenerator &generator) noexcept
   :
     generator(generator)
 {}

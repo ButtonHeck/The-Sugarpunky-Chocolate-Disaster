@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <IL/il.h>
 
-TextureLoader::TextureLoader(const ScreenResolution &screenResolution)
+TextureLoader::TextureLoader(const ScreenResolution &screenResolution) noexcept
   :
     screenResolution(screenResolution)
 {
@@ -17,7 +17,7 @@ TextureLoader::TextureLoader(const ScreenResolution &screenResolution)
   ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
 }
 
-GLuint TextureLoader::createTextureObject(GLenum target, GLuint textureUnit, bool isBindless)
+GLuint TextureLoader::createTextureObject(GLenum target, GLuint textureUnit, bool isBindless) noexcept
 {
   GLuint textureID;
   glCreateTextures(target, 1, &textureID);
@@ -147,7 +147,7 @@ GLuint TextureLoader::createUnderwaterReliefTexture(GLuint textureUnit, const ma
 {
   static bool needStorage = true;
   static GLuint textureID;
-  GLubyte textureData[WORLD_WIDTH * WORLD_HEIGHT] = {0};
+  GLubyte* textureData = new GLubyte[WORLD_WIDTH * WORLD_HEIGHT];
   int left, right, top, bottom;
   float waterCount;
   for (int y = 1; y < WORLD_HEIGHT; y++)
@@ -183,10 +183,11 @@ GLuint TextureLoader::createUnderwaterReliefTexture(GLuint textureUnit, const ma
   glBindTexture(GL_TEXTURE_2D, textureID);
   glTextureSubImage2D(textureID, 0, 0, 0, WORLD_WIDTH, WORLD_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, textureData);
   setTexture2DParameters(textureID, magFilter, minFilter, GL_REPEAT);
+  delete[] textureData;
   return textureID;
 }
 
-void TextureLoader::setTexture2DParameters(GLuint texture, GLint magFilter, GLint minFilter, GLenum wrapType)
+void TextureLoader::setTexture2DParameters(GLuint texture, GLint magFilter, GLint minFilter, GLenum wrapType) noexcept
 {
   glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, magFilter);
   glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, minFilter);
@@ -194,7 +195,7 @@ void TextureLoader::setTexture2DParameters(GLuint texture, GLint magFilter, GLin
   glTextureParameteri(texture, GL_TEXTURE_WRAP_T, wrapType);
 }
 
-void TextureLoader::setTex2DArrayParameters(GLint magFilter, GLint minFilter, GLenum wrapType)
+void TextureLoader::setTex2DArrayParameters(GLint magFilter, GLint minFilter, GLenum wrapType) noexcept
 {
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, magFilter);
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, minFilter);

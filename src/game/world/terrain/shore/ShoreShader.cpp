@@ -1,7 +1,7 @@
 #include "ShoreShader"
 #include "Shader"
 
-ShoreShader::ShoreShader(Shader &renderShader, Shader &normalsShader)
+ShoreShader::ShoreShader(Shader &renderShader, Shader &normalsShader) noexcept
   :
     renderShader(renderShader),
     normalsShader(normalsShader)

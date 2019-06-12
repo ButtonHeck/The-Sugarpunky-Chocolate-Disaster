@@ -7,16 +7,16 @@ public:
   constexpr static float REFERENCE_HEIGHT = 900.0f;
 
   ScreenResolution() = default;
-  ScreenResolution(int width, int height, float aspect);
+  ScreenResolution(int width, int height, float aspect) noexcept;
   void updateResolution(int newWidth, int newHeight);
-  int getWidth() const;
-  int getHeight() const;
-  float getAspectRatio() const;
-  float getWidthRatioToReference() const;
-  float getHeightRatioToReference() const;
+  int getWidth() const noexcept;
+  int getHeight() const noexcept;
+  float getAspectRatio() const noexcept;
+  float getWidthRatioToReference() const noexcept;
+  float getHeightRatioToReference() const noexcept;
 
 private:
-  void updateAspectRatio(float newAspect);
+  void updateAspectRatio(float newAspect) noexcept;
 
   int width = 0, height = 0;
   float aspectRatio = 1.0f;

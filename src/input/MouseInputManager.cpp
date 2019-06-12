@@ -22,7 +22,7 @@ MouseInputManager &MouseInputManager::getInstance()
   return instance;
 }
 
-void MouseInputManager::setCallbacks(GLFWwindow *window)
+void MouseInputManager::setCallbacks(GLFWwindow *window) noexcept
 {
   glfwSetCursorPosCallback(window, cursorMoveCallback);
   glfwSetMouseButtonCallback(window, cursorClickCallback);
@@ -160,22 +160,22 @@ void MouseInputManager::updateCursorMappingCoordinates(const Camera &camera, con
     cursorTileName = "out of map";
 }
 
-int MouseInputManager::getCursorWorldX() const
+int MouseInputManager::getCursorWorldX() const noexcept
 {
   return cursorWorldX;
 }
 
-int MouseInputManager::getCursorWorldZ() const
+int MouseInputManager::getCursorWorldZ() const noexcept
 {
   return cursorWorldZ;
 }
 
-const glm::vec3 &MouseInputManager::getCursorToNearPlaneWorldSpace() const
+const glm::vec3 &MouseInputManager::getCursorToNearPlaneWorldSpace() const noexcept
 {
   return cursorToNearPlaneWorldSpace;
 }
 
-const std::string &MouseInputManager::getCursorTileName() const
+const std::string &MouseInputManager::getCursorTileName() const noexcept
 {
   return cursorTileName;
 }

@@ -7,7 +7,7 @@
 class Options
 {
 public:
-  Options();
+  Options() noexcept;
   std::bitset<OPTIONS_COUNT>::reference operator[](OPTION value);
   void toggle(OPTION value);
 

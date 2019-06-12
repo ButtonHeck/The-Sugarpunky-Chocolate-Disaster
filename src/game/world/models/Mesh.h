@@ -48,8 +48,8 @@ public:
   };
 
   static Mesh generate(const aiMesh *mesh, GLuint &diffuseSamplerIndex, GLuint &specularSamplerIndex, GLuint indexOffset);
-  const std::vector<Vertex>& getVertices() const;
-  const std::vector<unsigned int>& getIndices() const;
+  const std::vector<Vertex>& getVertices() const noexcept;
+  const std::vector<unsigned int>& getIndices() const noexcept;
 
 private:
   Mesh() = default;

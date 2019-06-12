@@ -9,7 +9,7 @@ class ScreenResolution;
 class TextureLoader
 {
 public:
-  TextureLoader(const ScreenResolution &screenResolution);
+  TextureLoader(const ScreenResolution &screenResolution) noexcept;
   GLuint loadTexture(const std::string& path,
                      GLuint textureUnit,
                      GLenum wrapType,
@@ -27,9 +27,9 @@ public:
   GLuint createUnderwaterReliefTexture(GLuint textureUnit, const map2D_f& waterMap, GLint magFilter, GLint minFilter);
 
 private:
-  GLuint createTextureObject(GLenum target, GLuint textureUnit, bool isBindless);
-  void setTexture2DParameters(GLuint texture, GLint magFilter, GLint minFilter, GLenum wrapType);
-  void setTex2DArrayParameters(GLint magFilter, GLint minFilter, GLenum wrapType);
+  GLuint createTextureObject(GLenum target, GLuint textureUnit, bool isBindless) noexcept;
+  void setTexture2DParameters(GLuint texture, GLint magFilter, GLint minFilter, GLenum wrapType) noexcept;
+  void setTex2DArrayParameters(GLint magFilter, GLint minFilter, GLenum wrapType) noexcept;
 
   const ScreenResolution& screenResolution;
 };

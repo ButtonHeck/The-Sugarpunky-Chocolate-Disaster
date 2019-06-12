@@ -5,14 +5,14 @@
 class Query
 {
 public:
-  Query(GLuint type);
+  Query(GLuint type) noexcept;
   virtual ~Query();
-  void start();
-  void end();
-  bool isResultAvailable();
-  GLuint requestResult();
-  GLuint getResult() const;
-  bool isInUse() const;
+  void start() noexcept;
+  void end() noexcept;
+  bool isResultAvailable() noexcept;
+  GLuint requestResult() noexcept;
+  GLuint getResult() const noexcept;
+  bool isInUse() const noexcept;
 
 private:
   GLuint id;

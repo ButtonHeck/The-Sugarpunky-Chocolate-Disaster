@@ -116,7 +116,7 @@ void ShoreGenerator::correctMapAtEdges()
     }
 }
 
-void ShoreGenerator::compressMap(float ratio)
+void ShoreGenerator::compressMap(float ratio) noexcept
 {
   for (std::vector<float>& row : map)
     {
@@ -217,7 +217,7 @@ void ShoreGenerator::fillBufferData()
   BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
-void ShoreGenerator::bufferVertex(GLfloat *vertices, int offset, ShoreVertex vertex)
+void ShoreGenerator::bufferVertex(GLfloat *vertices, int offset, ShoreVertex vertex) noexcept
 {
   vertices[offset+0] = vertex.posX;
   vertices[offset+1] = vertex.posY;
@@ -229,7 +229,7 @@ void ShoreGenerator::bufferVertex(GLfloat *vertices, int offset, ShoreVertex ver
   vertices[offset+7] = vertex.normalZ;
 }
 
-ShoreGenerator::ShoreVertex::ShoreVertex(glm::vec3 position, glm::vec2 texCoords, glm::vec3 normal)
+ShoreGenerator::ShoreVertex::ShoreVertex(glm::vec3 position, glm::vec2 texCoords, glm::vec3 normal) noexcept
   :
     posX(position.x - HALF_WORLD_WIDTH), posY(position.y), posZ(position.z - HALF_WORLD_HEIGHT),
     texCoordX(texCoords.x), texCoordY(texCoords.y),

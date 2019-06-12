@@ -8,7 +8,7 @@
 class Timer
 {
 public:
-  Timer()
+  Timer() noexcept
     :
       frameTime(chronoClock::now()),
       currentTime(frameTime)
@@ -35,7 +35,7 @@ public:
       }
     return delta;
   }
-  unsigned int getFPS()
+  unsigned int getFPS() noexcept
   {
     return fps;
   }

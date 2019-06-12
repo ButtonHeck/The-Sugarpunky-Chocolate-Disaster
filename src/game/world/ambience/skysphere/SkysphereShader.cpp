@@ -25,7 +25,7 @@
  * @brief SkysphereShader::SkysphereShader
  * @param renderShader precompiled shader program which is used during rendering
  */
-SkysphereShader::SkysphereShader(Shader &renderShader)
+SkysphereShader::SkysphereShader(Shader &renderShader) noexcept
   :
     renderShader(renderShader)
 {}

@@ -168,7 +168,7 @@ void TextManager::drawText()
   glyphsCount = 0;
 }
 
-TextManager::GlyphVertex::GlyphVertex(glm::vec2 pos, glm::vec2 texCoords)
+TextManager::GlyphVertex::GlyphVertex(glm::vec2 pos, glm::vec2 texCoords) noexcept
   :
     posX(pos.x), posY(pos.y),
     texCoordX(texCoords.x), texCoordY(texCoords.y)

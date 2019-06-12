@@ -50,7 +50,7 @@ void Skysphere::draw()
   model.drawOneInstance();
 }
 
-const glm::mat4 &Skysphere::getRotationTransform() const
+const glm::mat4 &Skysphere::getRotationTransform() const noexcept
 {
   return modelRotationTransform;
 }

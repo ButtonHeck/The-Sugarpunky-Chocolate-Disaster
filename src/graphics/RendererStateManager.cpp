@@ -4,7 +4,7 @@
 
 namespace RendererStateManager
 {
-  void setInitialRenderingState(bool useMultisample)
+  void setInitialRenderingState(bool useMultisample) noexcept
   {
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
@@ -16,7 +16,7 @@ namespace RendererStateManager
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   }
 
-  void setAmbienceRenderingState(bool isOn)
+  void setAmbienceRenderingState(bool isOn) noexcept
   {
     if (isOn)
       {

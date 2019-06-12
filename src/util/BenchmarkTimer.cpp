@@ -85,7 +85,7 @@ void BenchmarkTimer::printApplicationBenchmarks(unsigned int updateCount)
   std::transform(applicationBenchmarks.begin(),
                  applicationBenchmarks.end(),
                  std::inserter(applicationBenchmarksSortedByValue, applicationBenchmarksSortedByValue.begin()),
-                 [](std::pair<std::string, float> p)->std::pair<float, std::string>
+                 [](std::pair<std::string, float> p) noexcept ->std::pair<float, std::string>
   {
     return std::pair<float, std::string>(p.second, p.first);
   });

@@ -4,7 +4,7 @@
 
 #include <GLFW/glfw3.h>
 
-WaterShader::WaterShader(Shader &renderShader, Shader &cullingShader, Shader &normalsShader)
+WaterShader::WaterShader(Shader &renderShader, Shader &cullingShader, Shader &normalsShader) noexcept
   :
     renderShader(renderShader),
     cullingShader(cullingShader),

@@ -2,7 +2,7 @@
 #include "Shader"
 #include "Frustum"
 
-HillsShader::HillsShader(Shader &renderShader, Shader &cullingShader, Shader &normalsShader)
+HillsShader::HillsShader(Shader &renderShader, Shader &cullingShader, Shader &normalsShader) noexcept
   :
     renderShader(renderShader),
     cullingShader(cullingShader),

@@ -18,7 +18,7 @@ public:
 
   ShadowVolume() = default;
   void update(const std::array<Frustum, NUM_SHADOW_LAYERS>& frustums, const TheSunFacade &theSunFacade);
-  const std::array<glm::mat4, NUM_SHADOW_LAYERS> &getLightSpaceMatrices() const;
+  const std::array<glm::mat4, NUM_SHADOW_LAYERS> &getLightSpaceMatrices() const noexcept;
 
 private:
   constexpr static float SHADOW_BOX_MAX_OFFSET_X = 30.0f;

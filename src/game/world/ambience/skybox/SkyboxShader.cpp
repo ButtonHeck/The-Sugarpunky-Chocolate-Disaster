@@ -24,7 +24,7 @@
 /**
  * @param renderShader precompiled shader program which is used during rendering
  */
-SkyboxShader::SkyboxShader(Shader &renderShader)
+SkyboxShader::SkyboxShader(Shader &renderShader) noexcept
   :
     renderShader(renderShader)
 {}

@@ -10,12 +10,12 @@ class MouseInputManager
 {
 public:
   static MouseInputManager& getInstance();
-  static void setCallbacks(GLFWwindow* window);
+  static void setCallbacks(GLFWwindow* window) noexcept;
   void updateCursorMappingCoordinates(const Camera& camera, const map2D_f &landMap, const map2D_f &hillMap, const map2D_f &buildableMap);
-  int getCursorWorldX() const;
-  int getCursorWorldZ() const;
-  const glm::vec3& getCursorToNearPlaneWorldSpace() const;
-  const std::string& getCursorTileName() const;
+  int getCursorWorldX() const noexcept;
+  int getCursorWorldZ() const noexcept;
+  const glm::vec3& getCursorToNearPlaneWorldSpace() const noexcept;
+  const std::string& getCursorTileName() const noexcept;
 
 private:
   MouseInputManager() = default;

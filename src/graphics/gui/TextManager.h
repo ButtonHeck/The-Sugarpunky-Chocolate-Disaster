@@ -30,7 +30,7 @@ private:
   struct GlyphVertex
   {
     constexpr static unsigned int NUMBER_OF_ELEMENTS = 4;
-    GlyphVertex(glm::vec2 pos, glm::vec2 texCoords);
+    GlyphVertex(glm::vec2 pos, glm::vec2 texCoords) noexcept;
     float posX, posY;
     float texCoordX, texCoordY;
   };

@@ -24,7 +24,7 @@
 /**
  * @param renderShader compiled shader program to use during rendering
  */
-TheSunShader::TheSunShader(Shader &renderShader)
+TheSunShader::TheSunShader(Shader &renderShader) noexcept
   :
     renderShader(renderShader)
 {}

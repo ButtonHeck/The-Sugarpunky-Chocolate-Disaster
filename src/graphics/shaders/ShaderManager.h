@@ -10,7 +10,7 @@ class Shader;
 class ShaderManager
 {
 public:
-  ShaderManager();
+  ShaderManager() noexcept;
   virtual ~ShaderManager();
   void setupConstantUniforms(const ScreenResolution &screenResolution);
   Shader& get(SHADER_UNIT type);

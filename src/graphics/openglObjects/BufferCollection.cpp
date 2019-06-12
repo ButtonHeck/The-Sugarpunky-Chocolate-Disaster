@@ -43,7 +43,7 @@ BufferCollection::~BufferCollection()
   deleteBuffers();
 }
 
-void BufferCollection::bindZero(int flag)
+void BufferCollection::bindZero(int flag) noexcept
 {
   if (flag & VAO)
     glBindVertexArray(0);

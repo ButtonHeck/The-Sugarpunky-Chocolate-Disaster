@@ -24,7 +24,7 @@
 /**
  * @param basicGLBuffer buffer collection to fetch VAO from during rendering
  */
-LensFlareRenderer::LensFlareRenderer(BufferCollection &basicGLBuffer)
+LensFlareRenderer::LensFlareRenderer(BufferCollection &basicGLBuffer) noexcept
   :
     basicGLBuffer(basicGLBuffer)
 {}

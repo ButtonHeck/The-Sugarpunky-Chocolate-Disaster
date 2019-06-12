@@ -25,7 +25,7 @@ public:
   BufferCollection(BufferCollection&& old) noexcept;
   BufferCollection(BufferCollection& copy);
   virtual ~BufferCollection();
-  static void bindZero(int flags);
+  static void bindZero(int flags) noexcept;
   void create(int flags);
   void deleteBuffers();
   void deleteBuffer(int flag);

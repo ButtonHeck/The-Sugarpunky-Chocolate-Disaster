@@ -74,17 +74,17 @@ FontLoader::FontLoader(const std::string &fontFile, const std::string &textureFi
   inputStream.close();
 }
 
-std::unordered_map<char, Character> &FontLoader::getAlphabet()
+std::unordered_map<char, Character> &FontLoader::getAlphabet() noexcept
 {
   return alphabet;
 }
 
-GLuint FontLoader::getTextureWidth() const
+GLuint FontLoader::getTextureWidth() const noexcept
 {
   return textureWidth;
 }
 
-GLuint FontLoader::getTextureHeight() const
+GLuint FontLoader::getTextureHeight() const noexcept
 {
   return textureHeight;
 }

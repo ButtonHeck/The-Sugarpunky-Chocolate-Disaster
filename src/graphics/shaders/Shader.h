@@ -11,15 +11,15 @@ class Shader
 public:
   using ShaderIncludeList = std::initializer_list<std::pair<GLenum, std::string>>;
   using ShaderSource = std::pair<GLenum, const std::string>;
-  static void cacheUniformsMode(bool cache);
+  static void cacheUniformsMode(bool cache) noexcept;
 
   Shader() = default;
   Shader(ShaderSource srcFile1, ShaderIncludeList includes = {});
   Shader(ShaderSource srcFile1, ShaderSource srcFile2, ShaderIncludeList includes = {});
   Shader(ShaderSource srcFile1, ShaderSource srcFile2, ShaderSource srcFile3, ShaderIncludeList includes = {});
   void link();
-  GLuint getID() const;
-  void use() const;
+  GLuint getID() const noexcept;
+  void use() const noexcept;
   GLuint getUniformLocation(const std::string& uniformName) const;
   void setInt(const std::string& uniformName, int value);
   void setUint64(const std::string& uniformName, GLuint64 value);
@@ -33,7 +33,7 @@ public:
   void setVec4(const std::string& uniformName, float x, float y, float z, float w);
   void setMat3(const std::string& uniformName, const glm::mat3 &mat);
   void setMat4(const std::string& uniformName, const glm::mat4 &mat);
-  void cleanUp();
+  void cleanUp() noexcept;
 
 private:
   static bool cachedUniforms;

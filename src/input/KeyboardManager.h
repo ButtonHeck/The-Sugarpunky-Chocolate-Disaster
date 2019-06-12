@@ -12,7 +12,7 @@ class TheSunFacade;
 class KeyboardManager
 {
 public:
-  KeyboardManager(GLFWwindow* window, Camera& camera, Camera& shadowCamera, Options& options, TheSunFacade &sun);
+  KeyboardManager(GLFWwindow* window, Camera& camera, Camera& shadowCamera, Options& options, TheSunFacade &sun) noexcept;
   void processInput();
 
 private:

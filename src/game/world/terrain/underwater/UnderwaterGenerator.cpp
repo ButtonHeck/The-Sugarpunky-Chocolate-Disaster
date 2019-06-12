@@ -1,6 +1,6 @@
 #include "UnderwaterGenerator"
 
-UnderwaterGenerator::UnderwaterGenerator()
+UnderwaterGenerator::UnderwaterGenerator() noexcept
   :
     Generator()
 {

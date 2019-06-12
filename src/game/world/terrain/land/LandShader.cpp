@@ -1,7 +1,7 @@
 #include "LandShader"
 #include "Shader"
 
-LandShader::LandShader(Shader &renderShader)
+LandShader::LandShader(Shader &renderShader) noexcept
   :
     renderShader(renderShader)
 {}

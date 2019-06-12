@@ -28,7 +28,7 @@
 #include <assimp/postprocess.h>
 
 TextureLoader* Model::textureLoader;
-void Model::bindTextureLoader(TextureLoader &textureLoader)
+void Model::bindTextureLoader(TextureLoader &textureLoader) noexcept
 {
   Model::textureLoader = &textureLoader;
 }
@@ -61,10 +61,13 @@ void Model::load(const std::string &path)
   const aiScene* scene = importer.ReadFile(path, aiProcess_CalcTangentSpace | aiProcess_FlipUVs | aiProcess_Triangulate);
   if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
     Logger::log("Error while loading Assimp: %\n", importer.GetErrorString());
-  directory = path.substr(0, path.find_last_of('/'));
-  GLuint meshVertexIndexOffset = 0;
-  processNode(scene->mRootNode, scene, meshVertexIndexOffset);
-  GPUDataManager.setupBuffers(vertices, indices, isInstanced);
+  else
+  {
+	  directory = path.substr(0, path.find_last_of('/'));
+	  GLuint meshVertexIndexOffset = 0;
+	  processNode(scene->mRootNode, scene, meshVertexIndexOffset);
+	  GPUDataManager.setupBuffers(vertices, indices, isInstanced);
+  }
 }
 
 /**
@@ -164,7 +167,7 @@ void Model::loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, u
   GPUDataManager.loadModelInstances(instanceMatrices, numInstances);
 }
 
-unsigned int Model::getRepeatCount() const
+unsigned int Model::getRepeatCount() const noexcept
 {
   return numRepetitions;
 }

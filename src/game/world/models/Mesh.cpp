@@ -92,12 +92,12 @@ Mesh Mesh::generate(const aiMesh *mesh, GLuint &diffuseSamplerIndex, GLuint &spe
   return resultMesh;
 }
 
-const std::vector<Mesh::Vertex> &Mesh::getVertices() const
+const std::vector<Mesh::Vertex> &Mesh::getVertices() const noexcept
 {
   return vertices;
 }
 
-const std::vector<unsigned int> &Mesh::getIndices() const
+const std::vector<unsigned int> &Mesh::getIndices() const noexcept
 {
   return indices;
 }

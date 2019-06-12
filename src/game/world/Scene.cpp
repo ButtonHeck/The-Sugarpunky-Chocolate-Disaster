@@ -219,32 +219,32 @@ void Scene::drawWorldRefraction(const glm::mat4 &projectionView)
   glDisable(GL_CLIP_DISTANCE0);
 }
 
-WaterFacade &Scene::getWaterFacade()
+WaterFacade &Scene::getWaterFacade() noexcept
 {
   return waterFacade;
 }
 
-HillsFacade &Scene::getHillsFacade()
+HillsFacade &Scene::getHillsFacade() noexcept
 {
   return hillsFacade;
 }
 
-PlantsFacade &Scene::getPlantsFacade()
+PlantsFacade &Scene::getPlantsFacade() noexcept
 {
   return plantsFacade;
 }
 
-TheSunFacade &Scene::getSunFacade()
+TheSunFacade &Scene::getSunFacade() noexcept
 {
   return theSunFacade;
 }
 
-SkysphereFacade &Scene::getSkysphereFacade()
+SkysphereFacade &Scene::getSkysphereFacade() noexcept
 {
   return skysphereFacade;
 }
 
-LandFacade &Scene::getLandFacade()
+LandFacade &Scene::getLandFacade() noexcept
 {
   return landFacade;
 }

@@ -37,9 +37,9 @@ public:
   TheSunRenderer(TheSun& theSun);
   void render(bool doOcclusionTest, bool useReflectionPointSize);
   GLuint getSamplesPassedQueryResult() const;
-  void setPointSize(float pointSize);
-  void setReflectionPointSize(float pointSize);
-  float getPointSize() const;
+  void setPointSize(float pointSize) noexcept;
+  void setReflectionPointSize(float pointSize) noexcept;
+  float getPointSize() const noexcept;
 
 private:
   TheSun& theSun;

@@ -25,7 +25,7 @@ private:
   struct ShoreVertex
   {
     constexpr static unsigned int NUMBER_OF_ELEMENTS = 8;
-    ShoreVertex(glm::vec3 position, glm::vec2 texCoords, glm::vec3 normal);
+    ShoreVertex(glm::vec3 position, glm::vec2 texCoords, glm::vec3 normal) noexcept;
     float posX, posY, posZ;
     float texCoordX, texCoordY;
     float normalX, normalY, normalZ;
@@ -35,11 +35,11 @@ private:
   void smoothMap();
   void randomizeShore();
   void correctMapAtEdges();
-  void compressMap(float ratio);
+  void compressMap(float ratio) noexcept;
   void removeUnderwaterTiles(float thresholdValue);
   void createTiles();
   void fillBufferData();
-  void bufferVertex(GLfloat* vertices, int offset, ShoreVertex vertex);
+  void bufferVertex(GLfloat* vertices, int offset, ShoreVertex vertex) noexcept;
 
   const map2D_f& waterMap;
   map2D_vec3 normalMap;

@@ -97,7 +97,7 @@ void Camera::move(float delta, const map2D_f &hillsMap)
     }
 }
 
-void Camera::updateViewAcceleration(float xOffset, float yOffset)
+void Camera::updateViewAcceleration(float xOffset, float yOffset) noexcept
 {
   viewAccelerationX += xOffset * mouseSensitivity;
   viewAccelerationY += yOffset * mouseSensitivity;
@@ -209,17 +209,17 @@ void Camera::setPitch(float newPitch)
   updateDirectionVectors();
 }
 
-void Camera::switchFPSmode()
+void Camera::switchFPSmode() noexcept
 {
   firstPersonShooterMode = !firstPersonShooterMode;
 }
 
-void Camera::switchAcceleration()
+void Camera::switchAcceleration() noexcept
 {
   useAcceleration = !useAcceleration;
 }
 
-void Camera::disableMoveAcceleration()
+void Camera::disableMoveAcceleration() noexcept
 {
   accumulateMoveHorizontal = accumulateMoveFront = accumulateMoveVertical = false;
 }
@@ -242,27 +242,27 @@ glm::mat4 Camera::getReflectionViewMatrix() const
   return glm::lookAt(positionReflected, lookDirectionReflected, WORLD_UP);
 }
 
-float Camera::getZoom() const
+float Camera::getZoom() const noexcept
 {
   return zoom;
 }
 
-const glm::vec3 &Camera::getPosition() const
+const glm::vec3 &Camera::getPosition() const noexcept
 {
   return position;
 }
 
-const glm::vec3 &Camera::getDirection() const
+const glm::vec3 &Camera::getDirection() const noexcept
 {
   return front;
 }
 
-const glm::vec3 &Camera::getRight() const
+const glm::vec3 &Camera::getRight() const noexcept
 {
   return right;
 }
 
-const glm::vec3 &Camera::getUp() const
+const glm::vec3 &Camera::getUp() const noexcept
 {
   return up;
 }

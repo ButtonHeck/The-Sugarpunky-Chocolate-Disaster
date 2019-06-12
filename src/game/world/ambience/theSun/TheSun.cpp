@@ -24,7 +24,7 @@
 /**
  * @brief initialize member variables and setup array buffer
  */
-TheSun::TheSun()
+TheSun::TheSun() noexcept
   :
     ROTATION_VECTOR(0.0f, 0.0f, 1.0f),
     basicGLBuffers(VAO | VBO),
@@ -61,17 +61,17 @@ void TheSun::moveAbsolutePosition(float angleDegrees)
   lightDirTo = glm::normalize(-currentPosition);
 }
 
-const glm::vec3& TheSun::getPosition() const
+const glm::vec3& TheSun::getPosition() const noexcept
 {
   return currentPosition;
 }
 
-const glm::vec3 &TheSun::getLightDir() const
+const glm::vec3 &TheSun::getLightDir() const noexcept
 {
   return lightDirTo;
 }
 
-const glm::mat4 &TheSun::getRotationTransform() const
+const glm::mat4 &TheSun::getRotationTransform() const noexcept
 {
   return rotationTransform;
 }

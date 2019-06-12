@@ -378,7 +378,7 @@ void WaterGenerator::setNewDirection(unsigned int &curveDistanceStep,
                                      unsigned int &curveMaxDistance,
                                      DIRECTION &currentDirection,
                                      DIRECTION validDirectionLeft,
-                                     DIRECTION validDirectionRight)
+                                     DIRECTION validDirectionRight) noexcept
 {
   curveDistanceStep = 0;
   curveMaxDistance = rand() % RIVER_DIRECTION_CHANGE_DELAY + RIVER_DIRECTION_CHANGE_DELAY;
@@ -420,21 +420,21 @@ void WaterGenerator::fattenKernel(int x, int y, int& riverTileCounter, int& rive
     }
 }
 
-void WaterGenerator::bufferVertex(GLfloat *vertices, int offset, WaterVertex vertex)
+void WaterGenerator::bufferVertex(GLfloat *vertices, int offset, WaterVertex vertex) noexcept
 {
   vertices[offset+0] = vertex.posX;
   vertices[offset+1] = vertex.posY;
   vertices[offset+2] = vertex.posZ;
 }
 
-void WaterGenerator::setupGLBufferAttributes()
+void WaterGenerator::setupGLBufferAttributes() noexcept
 {
   const size_t SIZE_OF_WATER_VERTEX = WaterVertex::NUMBER_OF_ELEMENTS * sizeof(GLfloat);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, SIZE_OF_WATER_VERTEX, 0);
 }
 
-WaterGenerator::WaterVertex::WaterVertex(glm::vec3 position)
+WaterGenerator::WaterVertex::WaterVertex(glm::vec3 position) noexcept
   :
     posX(position.x - HALF_WORLD_WIDTH), posY(position.y), posZ(position.z - HALF_WORLD_HEIGHT)
 {}

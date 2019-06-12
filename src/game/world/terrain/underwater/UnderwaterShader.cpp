@@ -1,7 +1,7 @@
 #include "UnderwaterShader"
 #include "Shader"
 
-UnderwaterShader::UnderwaterShader(Shader &renderShader)
+UnderwaterShader::UnderwaterShader(Shader &renderShader) noexcept
   :
     renderShader(renderShader)
 {}

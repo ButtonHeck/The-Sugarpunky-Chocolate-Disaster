@@ -2,7 +2,7 @@
 #include "TextureManager"
 #include "Logger"
 
-Framebuffer::Framebuffer(TextureManager &textureManager)
+Framebuffer::Framebuffer(TextureManager &textureManager) noexcept
   :
     textureManager(textureManager)
 {
@@ -20,13 +20,13 @@ void Framebuffer::checkStatus()
     Logger::log("Framebuffer is not complete\n");
 }
 
-void Framebuffer::bindToViewport(int viewportWidth, int viewportHeight)
+void Framebuffer::bindToViewport(int viewportWidth, int viewportHeight) noexcept
 {
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
   glViewport(0, 0, viewportWidth, viewportHeight);
 }
 
-void Framebuffer::unbindToViewport(int viewportWidth, int viewportHeight)
+void Framebuffer::unbindToViewport(int viewportWidth, int viewportHeight) noexcept
 {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glViewport(0, 0, viewportWidth, viewportHeight);

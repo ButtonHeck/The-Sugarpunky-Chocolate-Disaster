@@ -32,7 +32,7 @@ class Shader;
 class SkyboxShader
 {
 public:
-  SkyboxShader(Shader& renderShader);
+  SkyboxShader(Shader& renderShader) noexcept;
   void update(const glm::mat4 &projectionView,
               const glm::vec3 &viewPosition,
               const glm::vec3 &lightDir);

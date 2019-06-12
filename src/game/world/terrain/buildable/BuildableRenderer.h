@@ -5,7 +5,7 @@ class BuildableGenerator;
 class BuildableRenderer
 {
 public:
-  BuildableRenderer(BuildableGenerator& generator);
+  BuildableRenderer(BuildableGenerator& generator) noexcept;
   void renderBuildable();
   void renderSelected();
 

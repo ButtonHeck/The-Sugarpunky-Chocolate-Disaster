@@ -4,7 +4,7 @@
 
 extern float debug_sunSpeed;
 
-KeyboardManager::KeyboardManager(GLFWwindow *window, Camera &camera, Camera &shadowCamera, Options &options, TheSunFacade &sun)
+KeyboardManager::KeyboardManager(GLFWwindow *window, Camera &camera, Camera &shadowCamera, Options &options, TheSunFacade &sun) noexcept
   :
     window(window),
     camera(camera),
@@ -99,15 +99,15 @@ void KeyboardManager::processInput()
       camera.switchAcceleration();
       shadowCamera.switchAcceleration();
     });
-  processKey(GLFW_KEY_UP, []()
+  processKey(GLFW_KEY_UP, []() noexcept
   {
       debug_sunSpeed += 0.5f;
     });
-  processKey(GLFW_KEY_DOWN, []()
+  processKey(GLFW_KEY_DOWN, []() noexcept
   {
       debug_sunSpeed -= 0.5f;
     });
-  processKey(GLFW_KEY_KP_0, []()
+  processKey(GLFW_KEY_KP_0, []() noexcept
   {
       debug_sunSpeed = 0.0f;
     });

@@ -5,7 +5,7 @@
 class UnderwaterGenerator : public Generator
 {
 public:
-  UnderwaterGenerator();
+  UnderwaterGenerator() noexcept;
   virtual ~UnderwaterGenerator() = default;
 
 private:

@@ -26,22 +26,22 @@ LensFlareElement::LensFlareElement(float pointSize, GLuint textureID)
     textureID(textureID)
 {}
 
-void LensFlareElement::setPosition(const glm::vec2 &position)
+void LensFlareElement::setPosition(const glm::vec2 &position) noexcept
 {
   this->position = position;
 }
 
-const glm::vec2 &LensFlareElement::getPosition() const
+const glm::vec2 &LensFlareElement::getPosition() const noexcept
 {
   return position;
 }
 
-float LensFlareElement::getPointSize() const
+float LensFlareElement::getPointSize() const noexcept
 {
   return pointSize;
 }
 
-GLuint LensFlareElement::getTextureID() const
+GLuint LensFlareElement::getTextureID() const noexcept
 {
   return textureID;
 }
@@ -52,7 +52,7 @@ GLuint LensFlareElement::getTextureID() const
  * (might be greater than 1.0 if current screen resolution is greater than the reference
  * or lesser than 1.0 otherwise)
  */
-void LensFlareElement::adjustPointSize(float pointSizeDivisor)
+void LensFlareElement::adjustPointSize(float pointSizeDivisor) noexcept
 {
   pointSize *= pointSizeDivisor;
 }

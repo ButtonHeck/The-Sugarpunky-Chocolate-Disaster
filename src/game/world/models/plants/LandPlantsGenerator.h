@@ -29,7 +29,7 @@
 class LandPlantsGenerator : public PlantGenerator
 {
 public:
-  LandPlantsGenerator();
+  LandPlantsGenerator() noexcept;
   void setup(const map2D_f &landMap, const map2D_f &hillMap, const map2D_i &distributionMap);
 
 private:

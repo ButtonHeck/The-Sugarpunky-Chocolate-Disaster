@@ -138,22 +138,22 @@ void ModelGPUDataManager::addIndirectBufferData(GLuint numInstances, GLuint inst
   tokens.emplace_back(numInstances, instanceOffset);
 }
 
-GLsizei ModelGPUDataManager::getPrimitiveCount(bool isShadow) const
+GLsizei ModelGPUDataManager::getPrimitiveCount(bool isShadow) const noexcept
 {
   return isShadow ? drawIndirectCommandPrimCountShadow : drawIndirectCommandPrimCount;
 }
 
-BufferCollection &ModelGPUDataManager::getBasicGLBuffers()
+BufferCollection &ModelGPUDataManager::getBasicGLBuffers() noexcept
 {
   return basicGLBuffers;
 }
 
-BufferCollection &ModelGPUDataManager::getShadowDIBO()
+BufferCollection &ModelGPUDataManager::getShadowDIBO() noexcept
 {
   return shadowDIBO;
 }
 
-ModelGPUDataManager::IndirectBufferToken::IndirectBufferToken(GLuint numInstances, GLuint instanceOffset)
+ModelGPUDataManager::IndirectBufferToken::IndirectBufferToken(GLuint numInstances, GLuint instanceOffset) noexcept
   :
     numInstances(numInstances),
     instanceOffset(instanceOffset)

@@ -1,7 +1,7 @@
 #include "BuildableRenderer"
 #include "BuildableGenerator"
 
-BuildableRenderer::BuildableRenderer(BuildableGenerator &generator)
+BuildableRenderer::BuildableRenderer(BuildableGenerator &generator) noexcept
   :
     generator(generator)
 {}

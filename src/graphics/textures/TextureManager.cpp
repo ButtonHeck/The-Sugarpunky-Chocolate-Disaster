@@ -54,7 +54,7 @@ GLuint &TextureManager::get(int textureUnit)
   return textures[textureUnit];
 }
 
-TextureLoader &TextureManager::getLoader()
+TextureLoader &TextureManager::getLoader() noexcept
 {
   return loader;
 }

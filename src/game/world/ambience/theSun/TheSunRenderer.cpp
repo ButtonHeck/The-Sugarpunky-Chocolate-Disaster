@@ -60,17 +60,17 @@ GLuint TheSunRenderer::getSamplesPassedQueryResult() const
   return samplesPassedQuery.getResult();
 }
 
-void TheSunRenderer::setPointSize(float pointSize)
+void TheSunRenderer::setPointSize(float pointSize) noexcept
 {
   this->pointSize = pointSize;
 }
 
-void TheSunRenderer::setReflectionPointSize(float pointSize)
+void TheSunRenderer::setReflectionPointSize(float pointSize) noexcept
 {
   this->reflectionPointSize = pointSize;
 }
 
-float TheSunRenderer::getPointSize() const
+float TheSunRenderer::getPointSize() const noexcept
 {
   return pointSize;
 }

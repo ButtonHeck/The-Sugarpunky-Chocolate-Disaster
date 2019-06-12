@@ -26,7 +26,7 @@
 /**
  * @brief load both plain and low-poly models
  */
-GrassGenerator::GrassGenerator()
+GrassGenerator::GrassGenerator() noexcept
   :
     PlantGenerator()
 {

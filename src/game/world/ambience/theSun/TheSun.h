@@ -32,12 +32,12 @@
 class TheSun
 {
 public:
-  TheSun();
+  TheSun() noexcept;
   void move(float angleDegrees);
   void moveAbsolutePosition(float angleDegrees);
-  const glm::vec3 &getPosition() const;
-  const glm::vec3 &getLightDir() const;
-  const glm::mat4 &getRotationTransform() const;
+  const glm::vec3 &getPosition() const noexcept;
+  const glm::vec3 &getLightDir() const noexcept;
+  const glm::mat4 &getRotationTransform() const noexcept;
 
 private:
   //renderer would need access of the VAO to use

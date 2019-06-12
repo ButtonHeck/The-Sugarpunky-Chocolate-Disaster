@@ -1,7 +1,7 @@
 #include "BuildableShader"
 #include "Shader"
 
-BuildableShader::BuildableShader(Shader &buildableRenderShader, Shader &selectedRenderShader)
+BuildableShader::BuildableShader(Shader &buildableRenderShader, Shader &selectedRenderShader) noexcept
   :
     buildableRenderShader(buildableRenderShader),
     selectedRenderShader(selectedRenderShader)

@@ -22,7 +22,7 @@ void ShadowVolume::update(const std::array<Frustum, NUM_SHADOW_LAYERS> &frustums
     updateLightSpaceMatrix(frustums[layerIndex], layerIndex, sunAbsPositionY, sunAbsPositionX);
 }
 
-const std::array<glm::mat4, NUM_SHADOW_LAYERS> &ShadowVolume::getLightSpaceMatrices() const
+const std::array<glm::mat4, NUM_SHADOW_LAYERS> &ShadowVolume::getLightSpaceMatrices() const noexcept
 {
   return lightSpaceMatrices;
 }

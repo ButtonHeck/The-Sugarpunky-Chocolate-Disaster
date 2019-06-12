@@ -93,7 +93,7 @@ void ScreenFramebuffer::draw(bool useMultisampling, bool useDOF)
   glEnable(GL_DEPTH_TEST);
 }
 
-void ScreenFramebuffer::bindAppropriateFBO(bool enableMultisampling)
+void ScreenFramebuffer::bindAppropriateFBO(bool enableMultisampling) noexcept
 {
   glBindFramebuffer(GL_FRAMEBUFFER, enableMultisampling ? multisampleFbo : fbo);
 }

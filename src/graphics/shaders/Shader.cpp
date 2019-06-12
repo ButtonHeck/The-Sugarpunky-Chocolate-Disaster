@@ -7,7 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 bool Shader::cachedUniforms = false;
-void Shader::cacheUniformsMode(bool cache)
+void Shader::cacheUniformsMode(bool cache) noexcept
 {
   Shader::cachedUniforms = cache;
 }
@@ -68,12 +68,12 @@ void Shader::link()
     }
 }
 
-GLuint Shader::getID() const
+GLuint Shader::getID() const noexcept
 {
   return ID;
 }
 
-void Shader::use() const
+void Shader::use() const noexcept
 {
   glUseProgram(ID);
 }
@@ -203,7 +203,7 @@ void Shader::setMat4(const std::string &uniformName, const glm::mat4 &mat)
     glUniformMatrix4fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat));
 }
 
-void Shader::cleanUp()
+void Shader::cleanUp() noexcept
 {
   glDeleteProgram(ID);
 }

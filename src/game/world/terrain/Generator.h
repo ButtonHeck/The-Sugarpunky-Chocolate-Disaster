@@ -13,10 +13,10 @@ constexpr unsigned int UNIQUE_VERTICES_PER_TILE = 4;
 class Generator
 {
 public:
-  Generator();
+  Generator() noexcept;
   virtual ~Generator() = default;
   void createTiles(bool flat, bool createOnZeroTiles, const map2D_f& map, float offsetY);
-  const map2D_f& getMap() const;
+  const map2D_f& getMap() const noexcept;
   virtual void serialize(std::ofstream& output, bool usePrecision = false, unsigned int precision = 6);
   virtual void deserialize(std::ifstream& input);
 

@@ -303,7 +303,7 @@ void Game::setupThreads()
               modelsIndirectBufferNeedUpdate = false;
             }
           std::unique_lock<std::mutex> lock(modelIndirectUpdateThreadMutex);
-          modelsIndirectBufferNeedUpdateCV.wait(lock, [this](){return (bool)modelsIndirectBufferNeedUpdate || glfwWindowShouldClose(window);});
+          modelsIndirectBufferNeedUpdateCV.wait(lock, [this]() noexcept {return (bool)modelsIndirectBufferNeedUpdate || glfwWindowShouldClose(window);});
           lock.unlock();
         }
     });

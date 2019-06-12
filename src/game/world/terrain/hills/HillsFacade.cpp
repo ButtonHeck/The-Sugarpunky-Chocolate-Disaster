@@ -67,7 +67,7 @@ const map2D_f &HillsFacade::getMap() const
   return generator.getMap();
 }
 
-const map2D_vec3 &HillsFacade::getNormalMap() const
+const map2D_vec3 &HillsFacade::getNormalMap() const noexcept
 {
   return generator.normalMap;
 }

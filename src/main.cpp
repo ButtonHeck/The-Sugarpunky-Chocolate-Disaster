@@ -12,7 +12,6 @@ ScreenResolution screenResolution;
 Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
 Camera shadowCamera(camera);
 Options options;
-Game* game;
 
 float debug_sunSpeed = 2.0f;
 
@@ -56,11 +55,11 @@ int main()
   std::thread gameThread([]()
   {
 	  glfwMakeContextCurrent(window);
-	  game = new Game(window, camera, shadowCamera, options, screenResolution);
-	  game->setup();
+	  Game game(window, camera, shadowCamera, options, screenResolution);
+	  game.setup();
 	  while (!glfwWindowShouldClose(window))
 	  {
-		  game->loop();
+		  game.loop();
 	  }
   });
 
@@ -73,7 +72,6 @@ int main()
   gameThread.join();
 
   //cleanup
-  delete game;
   glfwDestroyWindow(window);
   glfwTerminate();
 }

@@ -255,7 +255,7 @@ void ShadowVolumeRenderer::renderActualVolume(int index)
   glDrawElementsBaseVertex(GL_LINE_STRIP, VOLUMES_INDICES_COUNT, GL_UNSIGNED_INT, 0, index * ShadowVolume::BOX_ACTUAL_VERTICES);
 }
 
-void ShadowVolumeRenderer::renderLightSource(int index)
+void ShadowVolumeRenderer::renderLightSource(int index) noexcept
 {
   glPointSize(LIGHT_SOURCE_POSITION_POINT_SIZE);
   glDrawElementsBaseVertex(GL_POINTS, 1, GL_UNSIGNED_INT, 0, VOLUMES_INDICES_COUNT + index);

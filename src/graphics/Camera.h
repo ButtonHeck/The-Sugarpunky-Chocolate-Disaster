@@ -24,25 +24,25 @@ public:
 
   //mutators and setters
   void move(float delta, const map2D_f& hillsMap);
-  void updateViewAcceleration(float xOffset, float yOffset);
+  void updateViewAcceleration(float xOffset, float yOffset) noexcept;
   void processMouseCursor();
   void processMouseScroll(float yOffset);
   void updateAccelerations(MOVE_DIRECTION dir);
   void setYaw(float newYaw);
   void setPitch(float newPitch);
-  void switchFPSmode();
-  void switchAcceleration();
-  void disableMoveAcceleration();
+  void switchFPSmode() noexcept;
+  void switchAcceleration() noexcept;
+  void disableMoveAcceleration() noexcept;
 
   //getters
   glm::mat4 getViewMatrix() const;
   glm::mat3 getViewMatrixMat3() const;
   glm::mat4 getReflectionViewMatrix() const;
-  float getZoom() const;
-  const glm::vec3& getPosition() const;
-  const glm::vec3& getDirection() const;
-  const glm::vec3& getRight() const;
-  const glm::vec3& getUp() const;
+  float getZoom() const noexcept;
+  const glm::vec3& getPosition() const noexcept;
+  const glm::vec3& getDirection() const noexcept;
+  const glm::vec3& getRight() const noexcept;
+  const glm::vec3& getUp() const noexcept;
   glm::vec2 getWorldCoordinates() const;
   glm::vec2 getViewAcceleration() const;
 

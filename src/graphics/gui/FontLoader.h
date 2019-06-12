@@ -12,9 +12,9 @@ class FontLoader
 public:
   FontLoader(const std::string& fontFile, const std::string& fontTexture);
   virtual ~FontLoader() = default;
-  std::unordered_map<char, Character>& getAlphabet();
-  GLuint getTextureWidth() const;
-  GLuint getTextureHeight() const;
+  std::unordered_map<char, Character>& getAlphabet() noexcept;
+  GLuint getTextureWidth() const noexcept;
+  GLuint getTextureHeight() const noexcept;
 
 private:
   std::unordered_map<char, Character> alphabet;

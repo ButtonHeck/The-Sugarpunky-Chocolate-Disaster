@@ -2,6 +2,6 @@
 
 namespace RendererStateManager
 {
-  void setInitialRenderingState(bool useMultisample);
-  void setAmbienceRenderingState(bool isOn);
+  void setInitialRenderingState(bool useMultisample) noexcept;
+  void setAmbienceRenderingState(bool isOn) noexcept;
 };
