@@ -5,6 +5,7 @@
 #include "KeyboardManager"
 #include "SaveLoadManager"
 #include "Scene"
+#include "Options"
 #include "ShaderManager"
 #include "TextureLoader"
 #include "TextureManager"
@@ -25,14 +26,13 @@
 #include <condition_variable>
 
 class Camera;
-class Options;
 class ScreenResolution;
 class MouseInputManager;
 
 class Game
 {
 public:
-  Game(GLFWwindow* window, Camera& camera, Camera& shadowCamera, Options& options, const ScreenResolution& screenResolution);
+  Game(GLFWwindow* window, Camera& camera, Camera& shadowCamera, const ScreenResolution& screenResolution);
   virtual ~Game();
   void setup();
   void loop();
@@ -63,7 +63,7 @@ private:
   std::array<glm::mat4, NUM_SHADOW_LAYERS> shadowProjections;
 
   //options
-  Options& options;
+  Options options;
 
   //graphics
   ShaderManager shaderManager;

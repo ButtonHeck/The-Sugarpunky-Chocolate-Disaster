@@ -9,8 +9,10 @@
 
 extern Camera camera;
 extern Camera shadowCamera;
-extern Options options;
 extern ScreenResolution screenResolution;
+
+GLFWwindow* MouseInputManager::window;
+Options* MouseInputManager::options;
 
 /*
 Singleton for mouse input, C++11 guarantees thread-safe instantiation
@@ -21,11 +23,14 @@ MouseInputManager &MouseInputManager::getInstance()
   return instance;
 }
 
-GLFWwindow* MouseInputManager::window;
-
-void MouseInputManager::setCallbacks(GLFWwindow *window) noexcept
+void MouseInputManager::initialize(GLFWwindow * window, Options & options) noexcept
 {
-  MouseInputManager::window = window;
+	MouseInputManager::window = window;
+	MouseInputManager::options = &options;
+}
+
+void MouseInputManager::setCallbacks() noexcept
+{
   glfwSetCursorPosCallback(window, cursorMoveCallback);
   glfwSetMouseButtonCallback(window, cursorClickCallback);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -39,7 +44,7 @@ void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
   static double cursorScreenY = 0.0;
   MouseInputManager& mouseInput = getInstance();
 
-  if (options[OPT_SHOW_CURSOR])
+  if ((*options)[OPT_SHOW_CURSOR])
     {
       mouseInput.lastX = x;
       mouseInput.lastY = y;
@@ -101,8 +106,8 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
     {
       if (!mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT])
         {
-          options.toggle(OPT_SHOW_CURSOR);
-          glfwSetInputMode(window, GLFW_CURSOR, options[OPT_SHOW_CURSOR] ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+          options->toggle(OPT_SHOW_CURSOR);
+          glfwSetInputMode(window, GLFW_CURSOR, (*options)[OPT_SHOW_CURSOR] ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
           float halfScreenWidth = screenResolution.getWidth() / 2.0f;
           float halfScreenHeight = screenResolution.getHeight() / 2.0f;
           glfwSetCursorPos(window, halfScreenWidth, halfScreenHeight);
@@ -117,7 +122,7 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
 
 void MouseInputManager::updateCursorMappingCoordinates(const Camera &camera, const map2D_f &landMap, const map2D_f& hillMap, const map2D_f& buildableMap)
 {
-  if (options[OPT_SHOW_CURSOR] && cursorToNearPlaneWorldSpace.y < 0.0f)
+  if ((*options)[OPT_SHOW_CURSOR] && cursorToNearPlaneWorldSpace.y < 0.0f)
     {
       /* this variable is used to determine a cursor pick point on the world map where Y coordinate is 0.0
        * i.e. the higher camera is, the farther a tile on which a cursor is pointing

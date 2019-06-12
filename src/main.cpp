@@ -1,5 +1,4 @@
 #include "Game"
-#include "Options"
 #include "ScreenResolution"
 #include "Logger"
 #include "Camera"
@@ -10,7 +9,6 @@
 ScreenResolution screenResolution;
 Camera camera(glm::vec3(0.0f, 12.0f, 0.0f));
 Camera shadowCamera(camera);
-Options options;
 
 float debug_sunSpeed = 2.0f;
 
@@ -54,7 +52,7 @@ int main()
   std::thread gameThread([&]()
   {
 	  glfwMakeContextCurrent(window);
-	  Game* game = new Game(window, camera, shadowCamera, options, screenResolution);
+	  Game* game = new Game(window, camera, shadowCamera, screenResolution);
 	  game->setup();
 	  while (!glfwWindowShouldClose(window))
 	  {

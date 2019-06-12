@@ -7,7 +7,7 @@
 #include "RendererStateManager"
 #include "Shader"
 
-Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& options, const ScreenResolution &screenResolution)
+Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, const ScreenResolution &screenResolution)
   :
     screenResolution(screenResolution),
     window(window),
@@ -16,7 +16,7 @@ Game::Game(GLFWwindow *window, Camera& camera, Camera &shadowCamera, Options& op
     shadowFrustumRenderers({{shadowCameraFrustums[0], shadowCameraFrustums[1]}}),
     projection(glm::perspective(glm::radians(camera.getZoom()), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE)),
     cullingProjection(glm::perspective(glm::radians(camera.getZoom() + 10.0f), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE)),
-    options(options),
+    options(),
     shaderManager(),
     textureLoader(screenResolution),
     textureManager(textureLoader),
@@ -53,7 +53,8 @@ void Game::setup()
   BENCHMARK("Game: setup", false);
   Shader::cacheUniformsMode(true);
   RendererStateManager::setInitialRenderingState(options[OPT_USE_MULTISAMPLING]);
-  MouseInputManager::setCallbacks(window);
+  MouseInputManager::initialize(window, options);
+  MouseInputManager::setCallbacks();
   scene.setup();
   BindlessTextureManager::makeAllResident();
   BindlessTextureManager::loadToShader(shaderManager.get(SHADER_MODELS_GOURAUD), BINDLESS_TEXTURE_MODEL);
