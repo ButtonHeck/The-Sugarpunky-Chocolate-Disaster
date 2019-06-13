@@ -7,7 +7,7 @@ public:
   constexpr static float REFERENCE_HEIGHT = 900.0f;
 
   ScreenResolution() = default;
-  ScreenResolution(int width, int height, float aspect) noexcept;
+  ScreenResolution(int width, int height) noexcept;
   void updateResolution(int newWidth, int newHeight) noexcept;
   int getWidth() const noexcept;
   int getHeight() const noexcept;

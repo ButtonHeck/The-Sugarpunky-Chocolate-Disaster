@@ -1,10 +1,10 @@
 #include "ScreenResolution"
 
-ScreenResolution::ScreenResolution(int width, int height, float aspect) noexcept
+ScreenResolution::ScreenResolution(int width, int height) noexcept
   :
     width(width),
     height(height),
-    aspectRatio(aspect)
+    aspectRatio((float)width / (float)height)
 {}
 
 void ScreenResolution::updateResolution(int newWidth, int newHeight) noexcept

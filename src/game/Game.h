@@ -4,6 +4,7 @@
 #include "Timer"
 #include "KeyboardManager"
 #include "SaveLoadManager"
+#include "Camera"
 #include "Scene"
 #include "Options"
 #include "ShaderManager"
@@ -25,14 +26,13 @@
 #include <mutex>
 #include <condition_variable>
 
-class Camera;
 class ScreenResolution;
 class MouseInputManager;
 
 class Game
 {
 public:
-  Game(GLFWwindow* window, Camera& camera, Camera& shadowCamera, const ScreenResolution& screenResolution);
+  Game(GLFWwindow* window, const ScreenResolution& screenResolution);
   virtual ~Game();
   void setup();
   void loop();
@@ -54,8 +54,7 @@ private:
   unsigned long updateCount = 0;
 
   //camera and related stuff
-  Camera& camera;
-  Camera& shadowCamera;
+  Camera camera, shadowCamera;
   Frustum viewFrustum, cullingViewFrustum;
   std::array<Frustum, NUM_SHADOW_LAYERS> shadowCameraFrustums;
   std::array<FrustumRenderer, NUM_SHADOW_LAYERS-1> shadowFrustumRenderers;

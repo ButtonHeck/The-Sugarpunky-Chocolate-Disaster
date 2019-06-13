@@ -8,12 +8,11 @@
 
 #include <glm/glm.hpp>
 
-extern Camera camera;
-extern Camera shadowCamera;
-
 GLFWwindow* MouseInputManager::window;
 Options* MouseInputManager::options;
 const ScreenResolution* MouseInputManager::screenResolution;
+Camera* MouseInputManager::camera;
+Camera* MouseInputManager::shadowCamera;
 
 /*
 Singleton for mouse input, C++11 guarantees thread-safe instantiation
@@ -24,11 +23,17 @@ MouseInputManager &MouseInputManager::getInstance()
   return instance;
 }
 
-void MouseInputManager::initialize(GLFWwindow * window, Options & options, const ScreenResolution & screenResolution) noexcept
+void MouseInputManager::initialize(GLFWwindow * window, 
+								   Options & options, 
+								   const ScreenResolution & screenResolution,
+								   Camera& camera, 
+								   Camera& shadowCamera) noexcept
 {
 	MouseInputManager::window = window;
 	MouseInputManager::options = &options;
 	MouseInputManager::screenResolution = &screenResolution;
+	MouseInputManager::camera = &camera;
+	MouseInputManager::shadowCamera = &shadowCamera;
 }
 
 void MouseInputManager::setCallbacks() noexcept
@@ -51,10 +56,10 @@ void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
       mouseInput.lastX = x;
       mouseInput.lastY = y;
       glfwGetCursorPos(window, &cursorScreenX, &cursorScreenY);
-      glm::vec3 viewDirection = camera.getDirection(); //normalized
-      glm::vec3 viewHorizontal = camera.getRight(); //normalized
-      glm::vec3 viewVertical = camera.getUp(); //normalized
-      float fovRad = glm::radians(camera.getZoom());
+      glm::vec3 viewDirection = camera->getDirection(); //normalized
+      glm::vec3 viewHorizontal = camera->getRight(); //normalized
+      glm::vec3 viewVertical = camera->getUp(); //normalized
+      float fovRad = glm::radians(camera->getZoom());
       float verticalLength = std::tan(fovRad / 2) * NEAR_PLANE;
       float horizontalLength = verticalLength * screenResolution->getAspectRatio();
       viewHorizontal *= horizontalLength;
@@ -67,12 +72,12 @@ void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
       cursorScreenY -= halfScreenHeight;
       cursorScreenX /= halfScreenWidth;
       cursorScreenY /= halfScreenHeight;
-      glm::vec3 newPosition = camera.getPosition() + viewDirection * NEAR_PLANE //get point on the near plane
+      glm::vec3 newPosition = camera->getPosition() + viewDirection * NEAR_PLANE //get point on the near plane
                               + //horizontal pick shifting corresponds with the cursor horizontal direction
                               viewHorizontal * (float)cursorScreenX //shift picked cursor point horizontally
                               - //but vertical shifting is reflected (because window coordinate system Y axis is reflected)
                               viewVertical * (float)cursorScreenY;    //shift picked cursor point vertically
-      mouseInput.cursorToNearPlaneWorldSpace = newPosition - camera.getPosition();
+      mouseInput.cursorToNearPlaneWorldSpace = newPosition - camera->getPosition();
 
       return; //if the cursor is on the screen - bypass camera movement
     }
@@ -90,14 +95,14 @@ void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
   //then update
   mouseInput.lastX = x;
   mouseInput.lastY = y;
-  camera.updateViewAcceleration(dx, dy);
-  shadowCamera.updateViewAcceleration(dx, dy);
+  camera->updateViewAcceleration(dx, dy);
+  shadowCamera->updateViewAcceleration(dx, dy);
 }
 
 void MouseInputManager::scrollCallback(GLFWwindow *, double, double y)
 {
-  camera.processMouseScroll(y);
-  shadowCamera.processMouseScroll(y);
+  camera->processMouseScroll(y);
+  shadowCamera->processMouseScroll(y);
 }
 
 void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int action, int)
