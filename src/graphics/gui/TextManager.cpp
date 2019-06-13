@@ -88,11 +88,16 @@ void TextManager::addDebugText(const Camera& camera,
   ss << "Shadow cam fixed: " << std::boolalpha << options[OPT_SHADOW_CAMERA_FIXED];
   addString(ss.str(), LEFT_BORDER_OFFSET * lineOffset.x, (LOWER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++) * lineOffset.y, scale);
 
-  VRAM_Monitor& vram = VRAM_Monitor::getInstance();
-  vram.updateAvailable();
   ss.str("");
-  ss << "RAM available: " << std::setprecision(6) << std::setw(8)
-     << vram.getAvailableMemory() << ", " << vram.getAvailableMemoryPercent() << "%";
+  ss << "RAM available: " << std::setprecision(6) << std::setw(8);
+  if (options[OPT_SHOW_VRAM_AVAILABLE])
+  {
+	  VRAM_Monitor& vram = VRAM_Monitor::getInstance();
+	  vram.updateAvailable();
+	  ss << vram.getAvailableMemory() << ", " << vram.getAvailableMemoryPercent() << "%";
+  }
+  else
+	  ss << "not active";
   addString(ss.str(), LEFT_BORDER_OFFSET * lineOffset.x, (LOWER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++) * lineOffset.y, scale);
 
   ss.str("");

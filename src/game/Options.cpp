@@ -28,6 +28,7 @@ Options::Options() noexcept
   options[OPT_ACTUAL_VOLUME_VISUALIZATION] = true;
   options[OPT_USE_DOF] = true;
   options[OPT_GRASS_SHADOW] = false;
+  options[OPT_SHOW_VRAM_AVAILABLE] = false;
 }
 
 std::bitset<OPTIONS_COUNT>::reference Options::operator[](OPTION value)

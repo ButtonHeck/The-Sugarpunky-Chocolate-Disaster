@@ -28,6 +28,7 @@ void KeyboardManager::processInput()
   processKey(GLFW_KEY_F5, OPT_DRAW_DEBUG_TEXT);
   processKey(GLFW_KEY_F6, OPT_DRAW_BUILDABLE);
   processKey(GLFW_KEY_F7, OPT_MODELS_PHONG_SHADING);
+  processKey(GLFW_KEY_F8, OPT_SHOW_VRAM_AVAILABLE);
   processKey(GLFW_KEY_F9, [&]()
   {
       options[OPT_RECREATE_TERRAIN_REQUEST] = true;
