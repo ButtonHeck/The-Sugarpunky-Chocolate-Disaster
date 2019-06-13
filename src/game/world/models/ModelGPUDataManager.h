@@ -26,8 +26,6 @@ public:
   BufferCollection &getShadowDIBO() noexcept;
 
 private:
-  constexpr static int NUM_CHUNKS = (WORLD_WIDTH / CHUNK_SIZE) * (WORLD_HEIGHT / CHUNK_SIZE);
-
   struct IndirectBufferToken
   {
     //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }

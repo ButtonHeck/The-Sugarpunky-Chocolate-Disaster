@@ -21,6 +21,7 @@ constexpr int PLANTS_DISTRIBUTION_FREQUENCY = 8;
 
 //scene update & rendering config
 constexpr int CHUNK_SIZE = 4;
+constexpr int NUM_CHUNKS = (WORLD_WIDTH / CHUNK_SIZE) * (WORLD_HEIGHT / CHUNK_SIZE);
 constexpr float HALF_CHUNK_SIZE = CHUNK_SIZE / 2.0f;
 constexpr float FRUSTUM_CULLING_DISTANCE_OFFSET = CHUNK_SIZE;
 constexpr float PLANET_MOVE_SPEED = 0.045f;

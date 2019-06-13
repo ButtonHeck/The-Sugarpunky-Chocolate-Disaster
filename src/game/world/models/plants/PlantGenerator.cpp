@@ -232,6 +232,8 @@ void PlantGenerator::prepareIndirectBufferData(const glm::vec2 &cameraPositionXZ
 {
   //firstly precalculate only those chunks that are visible in a view frustum and close enough to a camera
   std::vector<std::pair<ModelChunk, unsigned int>> visibleChunks;
+  visibleChunks.reserve(NUM_CHUNKS / 2);
+
   for (ModelChunk& chunk : renderChunks)
     {
       if (chunk.isInsideFrustum(viewFrustum, cullingOffset))
