@@ -1,5 +1,7 @@
 #include "Logger"
 
+#include <unordered_set>
+
 namespace Logger
 {
   void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar *glMessage, const void *)
