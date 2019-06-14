@@ -20,19 +20,19 @@ public:
   void link();
   GLuint getID() const noexcept;
   void use() const noexcept;
-  GLuint getUniformLocation(const std::string& uniformName) const;
-  void setInt(const std::string& uniformName, int value);
-  void setUint64(const std::string& uniformName, GLuint64 value);
-  void setFloat(const std::string& uniformName, float value);
-  void setBool(const std::string& uniformName, bool value);
-  void setVec3(const std::string& uniformName, const glm::vec3 &vec);
-  void setVec3(const std::string& uniformName, float x, float y, float z);
-  void setVec2(const std::string& uniformName, const glm::vec2 &vec);
-  void setVec2(const std::string& uniformName, float x, float y);
-  void setVec4(const std::string& uniformName, const glm::vec4 &vec);
-  void setVec4(const std::string& uniformName, float x, float y, float z, float w);
-  void setMat3(const std::string& uniformName, const glm::mat3 &mat);
-  void setMat4(const std::string& uniformName, const glm::mat4 &mat);
+  GLuint getUniformLocation(const char* uniformName) const;
+  void setInt(const char* uniformName, int value);
+  void setUint64(const char* uniformName, GLuint64 value);
+  void setFloat(const char* uniformName, float value);
+  void setBool(const char* uniformName, bool value);
+  void setVec3(const char* uniformName, const glm::vec3 &vec);
+  void setVec3(const char* uniformName, float x, float y, float z);
+  void setVec2(const char* uniformName, const glm::vec2 &vec);
+  void setVec2(const char* uniformName, float x, float y);
+  void setVec4(const char* uniformName, const glm::vec4 &vec);
+  void setVec4(const char* uniformName, float x, float y, float z, float w);
+  void setMat3(const char* uniformName, const glm::mat3 &mat);
+  void setMat4(const char* uniformName, const glm::mat4 &mat);
   void cleanUp() noexcept;
 
 private:
@@ -45,20 +45,20 @@ private:
   std::string shaderName;
   int status;
   char infoLog[512];
-  std::unordered_map<std::string, GLint> uniformCache;
+  std::unordered_map<const char*, GLint> uniformCache;
 };
 
-inline void Shader::setVec4(const std::string &uniformName, const glm::vec4 &vec)
+inline void Shader::setVec4(const char* uniformName, const glm::vec4 &vec)
 {
   setVec4(uniformName, vec.x, vec.y, vec.z, vec.w);
 }
 
-inline void Shader::setVec3(const std::string &uniformName, const glm::vec3 &vec)
+inline void Shader::setVec3(const char* uniformName, const glm::vec3 &vec)
 {
   setVec3(uniformName, vec.x, vec.y, vec.z);
 }
 
-inline void Shader::setVec2(const std::string &uniformName, const glm::vec2 &vec)
+inline void Shader::setVec2(const char* uniformName, const glm::vec2 &vec)
 {
   setVec2(uniformName, vec.x, vec.y);
 }

@@ -33,7 +33,7 @@ void BindlessTextureManager::loadToShader(Shader &shader, BINDLESS_TEXTURE_TYPE 
 {
   shader.use();
   for (BindlessTexture& texture : textures.at(textureType))
-    shader.setUint64(texture.samplerUniformName, texture.handle);
+    shader.setUint64(texture.samplerUniformName.c_str(), texture.handle);
 }
 
 void BindlessTextureManager::makeAllNonResident()

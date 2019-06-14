@@ -78,126 +78,117 @@ void Shader::use() const noexcept
   glUseProgram(ID);
 }
 
-GLuint Shader::getUniformLocation(const std::string &uniformName) const
+GLuint Shader::getUniformLocation(const char* uniformName) const
 {
-  auto uniformLocation = glGetUniformLocation(ID, uniformName.c_str());
+  auto uniformLocation = glGetUniformLocation(ID, uniformName);
   if (uniformLocation == -1)
-    Logger::log("Unknown uniform: %\n", uniformName + " for: " + shaderName);
+    Logger::log("Unknown uniform: % for: %\n", uniformName, shaderName);
   return uniformLocation;
 }
 
-void Shader::setInt(const std::string &uniformName, int value)
+void Shader::setInt(const char* uniformName, int value)
 {
   if (Shader::cachedUniforms)
     {
-      std::string inCacheName = shaderName + uniformName;
-      if (uniformCache.find(inCacheName) == uniformCache.end())
-        uniformCache[inCacheName] = getUniformLocation(uniformName);
-      glUniform1i(uniformCache[inCacheName], value);
+      if (uniformCache.find(uniformName) == uniformCache.end())
+        uniformCache[uniformName] = getUniformLocation(uniformName);
+      glUniform1i(uniformCache[uniformName], value);
     }
   else
     glUniform1i(getUniformLocation(uniformName), value);
 }
 
-void Shader::setUint64(const std::string &uniformName, GLuint64 value)
+void Shader::setUint64(const char* uniformName, GLuint64 value)
 {
   if (Shader::cachedUniforms)
     {
-      std::string inCacheName = shaderName + uniformName;
-      if (uniformCache.find(inCacheName) == uniformCache.end())
-        uniformCache[inCacheName] = getUniformLocation(uniformName);
-      glUniform1ui64ARB(uniformCache[inCacheName], value);
+      if (uniformCache.find(uniformName) == uniformCache.end())
+        uniformCache[uniformName] = getUniformLocation(uniformName);
+      glUniform1ui64ARB(uniformCache[uniformName], value);
     }
   else
     glUniform1ui64ARB(getUniformLocation(uniformName), value);
 }
 
-void Shader::setFloat(const std::string &uniformName, float value)
+void Shader::setFloat(const char* uniformName, float value)
 {
   if (Shader::cachedUniforms)
     {
-      std::string inCacheName = shaderName + uniformName;
-      if (uniformCache.find(inCacheName) == uniformCache.end())
-        uniformCache[inCacheName] = getUniformLocation(uniformName);
-      glUniform1f(uniformCache[inCacheName], value);
+      if (uniformCache.find(uniformName) == uniformCache.end())
+        uniformCache[uniformName] = getUniformLocation(uniformName);
+      glUniform1f(uniformCache[uniformName], value);
     }
   else
     glUniform1f(getUniformLocation(uniformName), value);
 }
 
-void Shader::setBool(const std::string &uniformName, bool value)
+void Shader::setBool(const char* uniformName, bool value)
 {
   if (Shader::cachedUniforms)
     {
-      std::string inCacheName = shaderName + uniformName;
-      if (uniformCache.find(inCacheName) == uniformCache.end())
-        uniformCache[inCacheName] = getUniformLocation(uniformName);
-      glUniform1i(uniformCache[inCacheName], value);
+      if (uniformCache.find(uniformName) == uniformCache.end())
+        uniformCache[uniformName] = getUniformLocation(uniformName);
+      glUniform1i(uniformCache[uniformName], value);
     }
   else
     glUniform1i(getUniformLocation(uniformName), value);
 }
 
-void Shader::setVec3(const std::string &uniformName, float x, float y, float z)
+void Shader::setVec3(const char* uniformName, float x, float y, float z)
 {
   if (Shader::cachedUniforms)
     {
-      std::string inCacheName = shaderName + uniformName;
-      if (uniformCache.find(inCacheName) == uniformCache.end())
-        uniformCache[inCacheName] = getUniformLocation(uniformName);
-      glUniform3f(uniformCache[inCacheName], x, y, z);
+      if (uniformCache.find(uniformName) == uniformCache.end())
+        uniformCache[uniformName] = getUniformLocation(uniformName);
+      glUniform3f(uniformCache[uniformName], x, y, z);
     }
   else
     glUniform3f(getUniformLocation(uniformName), x, y ,z);
 }
 
-void Shader::setVec2(const std::string &uniformName, float x, float y)
+void Shader::setVec2(const char* uniformName, float x, float y)
 {
   if (Shader::cachedUniforms)
     {
-      std::string inCacheName = shaderName + uniformName;
-      if (uniformCache.find(inCacheName) == uniformCache.end())
-        uniformCache[inCacheName] = getUniformLocation(uniformName);
-      glUniform2f(uniformCache[inCacheName], x, y);
+      if (uniformCache.find(uniformName) == uniformCache.end())
+        uniformCache[uniformName] = getUniformLocation(uniformName);
+      glUniform2f(uniformCache[uniformName], x, y);
     }
   else
     glUniform2f(getUniformLocation(uniformName), x, y);
 }
 
-void Shader::setVec4(const std::string &uniformName, float x, float y, float z, float w)
+void Shader::setVec4(const char* uniformName, float x, float y, float z, float w)
 {
   if (Shader::cachedUniforms)
     {
-      std::string inCacheName = shaderName + uniformName;
-      if (uniformCache.find(inCacheName) == uniformCache.end())
-        uniformCache[inCacheName] = getUniformLocation(uniformName);
-      glUniform4f(uniformCache[inCacheName], x, y, z, w);
+      if (uniformCache.find(uniformName) == uniformCache.end())
+        uniformCache[uniformName] = getUniformLocation(uniformName);
+      glUniform4f(uniformCache[uniformName], x, y, z, w);
     }
   else
     glUniform4f(getUniformLocation(uniformName), x, y ,z, w);
 }
 
-void Shader::setMat3(const std::string &uniformName, const glm::mat3 &mat)
+void Shader::setMat3(const char* uniformName, const glm::mat3 &mat)
 {
   if (Shader::cachedUniforms)
     {
-      std::string inCacheName = shaderName + uniformName;
-      if (uniformCache.find(inCacheName) == uniformCache.end())
-        uniformCache[inCacheName] = getUniformLocation(uniformName);
-      glUniformMatrix3fv(uniformCache[inCacheName], 1, GL_FALSE, glm::value_ptr(mat));
+      if (uniformCache.find(uniformName) == uniformCache.end())
+        uniformCache[uniformName] = getUniformLocation(uniformName);
+      glUniformMatrix3fv(uniformCache[uniformName], 1, GL_FALSE, glm::value_ptr(mat));
     }
   else
     glUniformMatrix3fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat));
 }
 
-void Shader::setMat4(const std::string &uniformName, const glm::mat4 &mat)
+void Shader::setMat4(const char* uniformName, const glm::mat4 &mat)
 {
   if (Shader::cachedUniforms)
     {
-      std::string inCacheName = shaderName + uniformName;
-      if (uniformCache.find(inCacheName) == uniformCache.end())
-        uniformCache[inCacheName] = getUniformLocation(uniformName);
-      glUniformMatrix4fv(uniformCache[inCacheName], 1, GL_FALSE, glm::value_ptr(mat));
+      if (uniformCache.find(uniformName) == uniformCache.end())
+        uniformCache[uniformName] = getUniformLocation(uniformName);
+      glUniformMatrix4fv(uniformCache[uniformName], 1, GL_FALSE, glm::value_ptr(mat));
     }
   else
     glUniformMatrix4fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat));
