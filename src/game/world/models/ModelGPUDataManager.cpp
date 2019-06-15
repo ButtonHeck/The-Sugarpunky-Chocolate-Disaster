@@ -66,17 +66,29 @@ void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<
   indirectTokensShadow.reserve(visibleChunks.size());
   for (unsigned int chunkIndex = 0; chunkIndex < visibleChunks.size(); chunkIndex++)
     {
+	  //TODO: maybe do assertion that number of instances should not be zero (no instances of this model in this chunk)
       const ModelChunk& chunk = visibleChunks[chunkIndex].first;
       unsigned int distanceToChunk = visibleChunks[chunkIndex].second;
 
-      if ((!isLowPoly && distanceToChunk < loadingDistance) || (isLowPoly && distanceToChunk >= loadingDistance))
-        {
-          unsigned int numInstancesInChunk = chunk.getNumInstances(modelIndex);
-          unsigned int instanceOffsetInChunk = chunk.getInstanceOffset(modelIndex);
-          addIndirectBufferData(numInstancesInChunk, instanceOffsetInChunk, false);
-          if (distanceToChunk < loadingDistanceShadow)
-            addIndirectBufferData(numInstancesInChunk, instanceOffsetInChunk, true);
-        }
+	  unsigned int numInstancesInChunk = chunk.getNumInstances(modelIndex);
+	  unsigned int instanceOffsetInChunk = chunk.getInstanceOffset(modelIndex);
+	  if (distanceToChunk < loadingDistanceShadow)
+	  {
+		  if (!isLowPoly)
+		  {
+			  if (distanceToChunk < loadingDistance)
+				//draw nearby camera if fullpoly
+				addIndirectBufferData(numInstancesInChunk, instanceOffsetInChunk, false);
+		  }
+		  else
+		  {
+			  //draw as shadow source if lowpoly
+			  addIndirectBufferData(numInstancesInChunk, instanceOffsetInChunk, true);
+		  }
+	  }
+	  //draw farther from camera if lowpoly
+	  if (isLowPoly && distanceToChunk >= loadingDistance)
+		  addIndirectBufferData(numInstancesInChunk, instanceOffsetInChunk, false);
     }
 
   GLuint dataOffset = 0;
