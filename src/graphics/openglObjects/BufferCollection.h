@@ -6,6 +6,7 @@
 constexpr unsigned char QUAD_INDICES[6] = {0,1,2,2,3,0};
 constexpr unsigned int VERTICES_PER_QUAD = 6;
 constexpr unsigned int INDIRECT_DRAW_COMMAND_ARGUMENTS = 5;
+constexpr GLsizeiptr INDIRECT_DRAW_COMMAND_BYTE_SIZE = sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS;
 
 enum OPENGL_OBJECT : int
 {

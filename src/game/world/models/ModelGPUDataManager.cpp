@@ -66,11 +66,13 @@ void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<
   indirectTokensShadow.reserve(visibleChunks.size());
   for (unsigned int chunkIndex = 0; chunkIndex < visibleChunks.size(); chunkIndex++)
     {
-	  //TODO: maybe do assertion that number of instances should not be zero (no instances of this model in this chunk)
       const ModelChunk& chunk = visibleChunks[chunkIndex].first;
       unsigned int distanceToChunk = visibleChunks[chunkIndex].second;
 
 	  unsigned int numInstancesInChunk = chunk.getNumInstances(modelIndex);
+	  //no need to process chunk if this model is not presented in there
+	  if (numInstancesInChunk == 0)
+		  continue;
 	  unsigned int instanceOffsetInChunk = chunk.getInstanceOffset(modelIndex);
 	  if (distanceToChunk < loadingDistanceShadow)
 	  {
@@ -118,9 +120,9 @@ void ModelGPUDataManager::updateIndirectBufferData()
 {
   BENCHMARK("Model: load indirect data to GPU", true);
   basicGLBuffers.bind(DIBO);
-  glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * drawIndirectCommandPrimCount, multiDrawIndirectData.get());
+  glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, INDIRECT_DRAW_COMMAND_BYTE_SIZE * drawIndirectCommandPrimCount, multiDrawIndirectData.get());
   shadowDIBO.bind(DIBO);
-  glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * drawIndirectCommandPrimCountShadow, multiDrawIndirectDataShadow.get());
+  glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, INDIRECT_DRAW_COMMAND_BYTE_SIZE * drawIndirectCommandPrimCountShadow, multiDrawIndirectDataShadow.get());
 }
 
 void ModelGPUDataManager::loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances)

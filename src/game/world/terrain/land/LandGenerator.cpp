@@ -197,7 +197,7 @@ void LandGenerator::updateCellsIndirectBuffer(const Frustum& frustum)
         }
     }
   cellBuffers.bind(DIBO);
-  glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(GLuint) * INDIRECT_DRAW_COMMAND_ARGUMENTS * cellPrimitiveCount, &indirectBuffer[0], GL_STATIC_DRAW);
+  glBufferData(GL_DRAW_INDIRECT_BUFFER, INDIRECT_DRAW_COMMAND_BYTE_SIZE * cellPrimitiveCount, &indirectBuffer[0], GL_STATIC_DRAW);
 }
 
 void LandGenerator::addIndirectBufferData(GLuint *buffer, GLuint &dataOffset, GLuint numInstances, GLuint instanceOffset) noexcept
