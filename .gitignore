@@ -8,3 +8,7 @@
 /res/perFrameLog.txt
 /res/perAppLog.txt
 /res/saves/testSave.txt
+/packages.config
+/packages
+/Doxyfile
+/doxygen
