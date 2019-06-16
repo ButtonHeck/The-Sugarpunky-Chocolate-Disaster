@@ -1,10 +1,38 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * BufferCollection.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definition for BufferCollection class
+ * @version 0.1.0
+ */
+
 #include "BufferCollection"
 
+/**
+* @brief creating a preset buffer objects pipeline according to given flags
+* @param flags integer union of individual flags
+*/
 BufferCollection::BufferCollection(int flags)
 {
   create(flags);
 }
 
+/**
+* @brief move ctor
+* @param old collection to be moved
+*/
 BufferCollection::BufferCollection(BufferCollection &&old) noexcept
 {
   if (old.objects[VAO])
@@ -22,6 +50,10 @@ BufferCollection::BufferCollection(BufferCollection &&old) noexcept
   old.objects.clear();
 }
 
+/**
+* @brief copy ctor
+* @param copy collection to be copied from
+*/
 BufferCollection::BufferCollection(BufferCollection &copy)
 {
   if (copy.objects[VAO])
@@ -43,6 +75,10 @@ BufferCollection::~BufferCollection()
   deleteBuffers();
 }
 
+/**
+* @brief replaces all bind-to-zero GL calls boilerplate code in one function
+* @param flag indicator of the GL object type that should be unbound
+*/
 void BufferCollection::bindZero(int flag) noexcept
 {
   if (flag & VAO)
@@ -57,6 +93,10 @@ void BufferCollection::bindZero(int flag) noexcept
     glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 }
 
+/**
+* @brief sends create command to OpenGL side and stores object's ID in the storage
+* @param flags integer union of individual flags
+*/
 void BufferCollection::create(int flags)
 {
   if (flags & VAO)
@@ -97,6 +137,9 @@ void BufferCollection::create(int flags)
     }
 }
 
+/**
+* @brief sends command to OpenGL to delete each GL object if one exists in a collection 
+*/
 void BufferCollection::deleteBuffers()
 {
   if (objects[VAO])
@@ -113,6 +156,10 @@ void BufferCollection::deleteBuffers()
     glDeleteTransformFeedbacks(1, &objects[TFBO]);
 }
 
+/**
+* @brief sends command to OpenGL to delete a particular GL object
+* @param flag indicator of the GL object type that should be deleted
+*/
 void BufferCollection::deleteBuffer(int flag)
 {
   if (flag & VAO)
@@ -131,6 +178,10 @@ void BufferCollection::deleteBuffer(int flag)
     throw std::invalid_argument("Unknown GL object enum flag");
 }
 
+/**
+* @brief return a GL object's ID
+* @param flag indicator of the GL object type whose ID should be returned
+*/
 GLuint &BufferCollection::get(int flag)
 {
   if (flag & VAO)
@@ -149,6 +200,10 @@ GLuint &BufferCollection::get(int flag)
     throw std::invalid_argument("Unknown GL object enum flag");
 }
 
+/**
+* @brief sends bind command to OpenGL for a chosen GL objects
+* @param flag indicator of the GL object to be bound
+*/
 void BufferCollection::bind(int flag)
 {
   if (flag & VAO)
@@ -165,6 +220,10 @@ void BufferCollection::bind(int flag)
     glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, objects[TFBO]);
 }
 
+/**
+* @brief similar to create method, but intended to be used after collection has been created and suppose to take one type per call
+* @param flag indicator of the GL object to be created
+*/
 void BufferCollection::add(int flag)
 {
   if (flag & VAO)
