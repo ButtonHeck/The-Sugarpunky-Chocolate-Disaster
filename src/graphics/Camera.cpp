@@ -140,7 +140,6 @@ void Camera::move(float delta, const map2D_f &hillsMap)
 
   //Prevent collision with hills
   //Beware of float truncation!
-  /**@todo step movement here is still a problem*/
   if (hillsMap[position.z + HALF_WORLD_HEIGHT][position.x + HALF_WORLD_WIDTH] > 0 ||
       hillsMap[position.z + HALF_WORLD_HEIGHT + 1][position.x + HALF_WORLD_WIDTH] > 0 ||
       hillsMap[position.z + HALF_WORLD_HEIGHT][position.x + HALF_WORLD_WIDTH + 1] > 0 ||
@@ -148,9 +147,9 @@ void Camera::move(float delta, const map2D_f &hillsMap)
     {
 	  //calculate tile bounds
       int x1 = std::floor(position.x + HALF_WORLD_WIDTH);
-      int x2 = std::round(position.x + HALF_WORLD_WIDTH);
+      int x2 = std::floor(position.x + HALF_WORLD_WIDTH + 1);
       int z1 = std::floor(position.z + HALF_WORLD_HEIGHT);
-      int z2 = std::round(position.z + HALF_WORLD_HEIGHT);
+      int z2 = std::floor(position.z + HALF_WORLD_HEIGHT + 1);
       float xRatio = position.x + HALF_WORLD_WIDTH - x1;
       float zRatio = position.z + HALF_WORLD_HEIGHT - z1;
 
