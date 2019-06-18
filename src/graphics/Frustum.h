@@ -1,3 +1,23 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * Frustum.h
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains declaration for Frustum class
+ * @version 0.1.0
+ */
+
 #pragma once
 
 #include <glm/mat4x4.hpp>
@@ -15,6 +35,9 @@ enum FRUSTUM_PLANE
   FRUSTUM_TOP = 5
 };
 
+/**
+* @brief view frustum representation. Containing information about its planes and their intersection points
+*/
 class Frustum
 {
 public:
@@ -37,7 +60,9 @@ private:
 
   void normalizePlane(FRUSTUM_PLANE plane);
   glm::vec3 kramerIntersection(const glm::vec4 &frontOrBack, const glm::vec4 &topOrBottom, const glm::vec4 &rightOrLeft);
+
   std::vector<glm::vec4> planes;
   //8 vertices defined in the world space represents intersection points of frustum planes
+  //LL - low left (min X, max Z), LR - low right (max X, max Z), UR - up right (max X, min Z), UL - up left (min X, min Z)
   glm::vec3 nearLL, nearLR, nearUR, nearUL, farLL, farLR, farUR, farUL;
 };

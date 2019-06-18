@@ -1,9 +1,32 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * Frustum.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definition for Frustum class
+ * @version 0.1.0
+ */
+
 #include "Frustum"
 #include "BenchmarkTimer"
 
 #include <algorithm>
 #include <glm/gtc/type_ptr.hpp>
 
+/**
+* @brief plain ctor. Initializes all the planes to zero vectors
+*/
 Frustum::Frustum() noexcept
 {
   planes.reserve(NUMBER_OF_PLANES);
@@ -11,6 +34,10 @@ Frustum::Frustum() noexcept
     planes.emplace_back(0.0f);
 }
 
+/**
+* @brief normalizes plane vector (based on its XYZ part) to have unit length
+* @param plane plane to normalize
+*/
 void Frustum::normalizePlane(FRUSTUM_PLANE plane)
 {
   float magnitude = (float)glm::sqrt(planes[plane].x * planes[plane].x +
@@ -19,6 +46,10 @@ void Frustum::normalizePlane(FRUSTUM_PLANE plane)
   planes[plane] /= magnitude;
 }
 
+/**
+* @brief updates all the planes depending on the given projectionView matrix
+* @param projectionView "projection * view"  matrix
+*/
 void Frustum::updateFrustum(const glm::mat4 &projectionView)
 {
   BENCHMARK("Frustum: update", true);
@@ -60,6 +91,10 @@ void Frustum::updateFrustum(const glm::mat4 &projectionView)
   normalizePlane(FRUSTUM_FRONT);
 }
 
+/**
+* @brief updates all the planes intersection points using the Kramer's rule
+* @note see: https://en.wikipedia.org/wiki/Cramer%27s_rule
+*/
 void Frustum::calculateIntersectionPoints()
 {
   const glm::vec4& FRONT = planes[FRUSTUM_FRONT];
@@ -78,30 +113,50 @@ void Frustum::calculateIntersectionPoints()
   farUL = kramerIntersection(BACK, TOP, LEFT);
 }
 
+/**
+* @brief returns maximum X coordinate of each of 8 intersection points
+*/
 float Frustum::getMaxCoordX() const noexcept
 {
   return std::max({nearLL.x, nearLR.x, nearUR.x, nearUL.x,
                    farLL.x, farLR.x, farUR.x, farUL.x});
 }
 
+/**
+* @brief returns minimum X coordinate of each of 8 intersection points
+*/
 float Frustum::getMinCoordX() const noexcept
 {
   return std::min({nearLL.x, nearLR.x, nearUR.x, nearUL.x,
                    farLL.x, farLR.x, farUR.x, farUL.x});
 }
 
+/**
+* @brief returns maximum Z coordinate of each of 8 intersection points
+*/
 float Frustum::getMaxCoordZ() const noexcept
 {
   return std::max({nearLL.z, nearLR.z, nearUR.z, nearUL.z,
                    farLL.z, farLR.z, farUR.z, farUL.z});
 }
 
+/**
+* @brief returns minimum Z coordinate of each of 8 intersection points
+*/
 float Frustum::getMinCoordZ() const noexcept
 {
   return std::min({nearLL.z, nearLR.z, nearUR.z, nearUL.z,
                    farLL.z, farLR.z, farUR.z, farUL.z});
 }
 
+/**
+* @brief calculates a point of intersection of three planes
+* @param frontOrBack either front or back frustum plane
+* @param topOrBottom either top or bottom frustum plane
+* @param rightOrLeft either left or right frustum plane
+* @note see: https://en.wikipedia.org/wiki/Cramer%27s_rule
+* @note It's programmer's responsibility to track chosen sides and their order promoted to this function
+*/
 glm::vec3 Frustum::kramerIntersection(const glm::vec4& frontOrBack, const glm::vec4& topOrBottom, const glm::vec4& rightOrLeft)
 {
   glm::mat3 xyzCoefficientMatrix;
@@ -133,6 +188,14 @@ glm::vec3 Frustum::kramerIntersection(const glm::vec4& frontOrBack, const glm::v
   return intersectionPoint;
 }
 
+/**
+* @brief helper function that checks whether given set of coordinates is inside (or close enough) the frustum
+* @param x X coordinate of a point
+* @param y Y coordinate of a point
+* @param z Z coordinate of a point
+* @param radius an offset applied to distance: if the point is outside the frustum, 
+* but its "outside" section length is less than radius, then the point considered to be inside the frustum anyway.
+*/
 bool Frustum::isInside(float x, float y, float z, float radius) const
 {
   return std::all_of(planes.begin(), planes.end(), [&](const glm::vec4& plane) noexcept
