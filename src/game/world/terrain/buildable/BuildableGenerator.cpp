@@ -20,6 +20,8 @@
 
 #include "BuildableGenerator"
 
+#include <memory>
+
 /**
 * @brief plain ctor. Adds instance buffer object for inherited buffer collection and creates vao/vbo/ebo collection
 * for selected tile

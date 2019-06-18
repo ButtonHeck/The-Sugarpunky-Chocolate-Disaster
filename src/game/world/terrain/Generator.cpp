@@ -1,6 +1,7 @@
 #include "Generator"
 
 #include <iomanip>
+#include <fstream>
 
 Generator::Generator() noexcept
   :

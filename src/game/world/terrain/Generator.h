@@ -6,7 +6,6 @@
 #include "BufferCollection"
 
 #include <vector>
-#include <fstream>
 
 constexpr unsigned int UNIQUE_VERTICES_PER_TILE = 4;
 
