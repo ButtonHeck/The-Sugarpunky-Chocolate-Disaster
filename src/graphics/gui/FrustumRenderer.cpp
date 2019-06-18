@@ -1,5 +1,29 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * FrustumRenderer.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definition for FrustumRenderer class
+ * @version 0.1.0
+ */
+
 #include "FrustumRenderer"
 
+/**
+* @brief plain ctor. Initializes GL buffer objects pipeline, load indices to buffer and sets layout to OpenGL
+* @param frustum view frustum to be visualized
+*/
 FrustumRenderer::FrustumRenderer(const Frustum &frustum)
   :
     frustum(frustum),
@@ -11,6 +35,9 @@ FrustumRenderer::FrustumRenderer(const Frustum &frustum)
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INDICES), INDICES, GL_STATIC_DRAW);
 }
 
+/**
+* @brief updates vertex buffer data (depend on the frustum state) and sends draw call to OpenGL
+*/
 void FrustumRenderer::render()
 {
   basicGLBuffers.bind(VAO | VBO | EBO);
