@@ -74,7 +74,7 @@ void Game::loop()
   {
     BENCHMARK("Game loop: process input and camera", true);
     keyboard.processInput();
-    camera.processMouseCursor();
+    camera.updateViewDirection();
     camera.move(timerDelta, scene.getHillsFacade().getMap());
     if (!options[OPT_USE_SHADOW_CAMERA_MATRIX])
       view = camera.getViewMatrix();
@@ -86,7 +86,7 @@ void Game::loop()
 
     if (!options[OPT_SHADOW_CAMERA_FIXED])
       {
-        shadowCamera.processMouseCursor();
+        shadowCamera.updateViewDirection();
         shadowCamera.move(timerDelta, scene.getHillsFacade().getMap());
       }
   }

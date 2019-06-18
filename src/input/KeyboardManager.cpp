@@ -180,38 +180,38 @@ void KeyboardManager::processInput()
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS &&
       glfwGetKey(window, GLFW_KEY_S) != GLFW_PRESS)
     {
-      camera.updateAccelerations(FORWARD);
-      shadowCamera.updateAccelerations(FORWARD);
+      camera.updateMoveAccelerations(FORWARD);
+      shadowCamera.updateMoveAccelerations(FORWARD);
     }
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS &&
       glfwGetKey(window, GLFW_KEY_W) != GLFW_PRESS)
     {
-      camera.updateAccelerations(BACKWARD);
-      shadowCamera.updateAccelerations(BACKWARD);
+      camera.updateMoveAccelerations(BACKWARD);
+      shadowCamera.updateMoveAccelerations(BACKWARD);
     }
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS &&
       glfwGetKey(window, GLFW_KEY_D) != GLFW_PRESS)
     {
-      camera.updateAccelerations(LEFT);
-      shadowCamera.updateAccelerations(LEFT);
+      camera.updateMoveAccelerations(LEFT);
+      shadowCamera.updateMoveAccelerations(LEFT);
     }
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS &&
       glfwGetKey(window, GLFW_KEY_A) != GLFW_PRESS)
     {
-      camera.updateAccelerations(RIGHT);
-      shadowCamera.updateAccelerations(RIGHT);
+      camera.updateMoveAccelerations(RIGHT);
+      shadowCamera.updateMoveAccelerations(RIGHT);
     }
   if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
       glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_PRESS)
     {
-      camera.updateAccelerations(DOWN);
-      shadowCamera.updateAccelerations(DOWN);
+      camera.updateMoveAccelerations(DOWN);
+      shadowCamera.updateMoveAccelerations(DOWN);
     }
   if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS &&
       glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_PRESS)
     {
-      camera.updateAccelerations(UP);
-      shadowCamera.updateAccelerations(UP);
+      camera.updateMoveAccelerations(UP);
+      shadowCamera.updateMoveAccelerations(UP);
     }
 }
 

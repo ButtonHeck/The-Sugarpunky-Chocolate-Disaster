@@ -101,8 +101,8 @@ void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
 
 void MouseInputManager::scrollCallback(GLFWwindow *, double, double y)
 {
-  camera->processMouseScroll(y);
-  shadowCamera->processMouseScroll(y);
+  camera->adjustMouseSensitivity(y);
+  shadowCamera->adjustMouseSensitivity(y);
 }
 
 void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int action, int)

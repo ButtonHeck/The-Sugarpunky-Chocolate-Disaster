@@ -51,7 +51,7 @@ void TextManager::addDebugText(const Camera& camera,
   addString(ss.str(), LEFT_BORDER_OFFSET * lineOffset.x, screenHeight - (UPPER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++) * lineOffset.y, scale);
 
   ss.str("");
-  glm::vec2 cameraWorldCoords = camera.getWorldCoordinates();
+  glm::ivec2 cameraWorldCoords = camera.getWorldCoordinates();
   ss << "Camera on map: " << cameraWorldCoords.x << ": " << cameraWorldCoords.y;
   addString(ss.str(), LEFT_BORDER_OFFSET * lineOffset.x, screenHeight - (UPPER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++) * lineOffset.y, scale);
 
