@@ -18,9 +18,9 @@ void ShoreGenerator::setup()
     {
       smoothMap();
       float selfWeight = 0.5f - 0.02f * cycleCount;
-      float evenWeight = (1.0f - selfWeight) / 8.0f;
-      float diagonalWeight = evenWeight;
-      smoothMapHeightChunks(map, selfWeight, evenWeight, diagonalWeight);
+      float sideNeighbourWeight = (1.0f - selfWeight) / 8.0f;
+      float diagonalNeighbourWeight = sideNeighbourWeight;
+      smoothMapAdjacentHeights(selfWeight, sideNeighbourWeight, diagonalNeighbourWeight);
     }
   randomizeShore();
   compressMap(2.0f);
@@ -28,7 +28,7 @@ void ShoreGenerator::setup()
   removeUnderwaterTiles(SHORE_CLIP_LEVEL);
   createTiles();
   tiles.shrink_to_fit();
-  smoothNormals(map, normalMap);
+  createNormalMap(normalMap);
   fillBufferData();
 }
 

@@ -62,9 +62,35 @@ void BuildableGenerator::setup(const map2D_f &landMap, const map2D_f &hillsMap)
             }
         }
     }
-  createTiles(true, false, map, 0);
+  createTiles();
   tiles.shrink_to_fit();
   fillBufferData();
+}
+
+/**
+* @brief create flat square tiles based on the map data
+*/
+void BuildableGenerator::createTiles()
+{
+	//in case of recreation need to remove old tiles
+	tiles.clear();
+
+	for (unsigned int y = 1; y < map.size(); y++)
+	{
+		for (unsigned int x = 1; x < map[0].size(); x++)
+		{
+			if (map[y][x] == TILE_NO_RENDER_VALUE)
+				continue;
+			if (map[y][x] != 0)
+			{
+				float lowLeft = map[y][x];
+				float lowRight = map[y][x];
+				float upRight = map[y][x];
+				float upLeft = map[y][x];
+				tiles.emplace_back(x, y, lowLeft, lowRight, upRight, upLeft);
+			}
+		}
+	}
 }
 
 /**

@@ -12,6 +12,7 @@ public:
   WaterGenerator(WaterShader& shaders);
   void setup();
   void setupConsiderTerrain();
+  void createTiles();
 
 private:
   constexpr static unsigned int RIVER_SIZE_TO_INCREASE_COUNTER = 19;

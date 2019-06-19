@@ -25,9 +25,32 @@ void WaterGenerator::setupConsiderTerrain()
   //by this moment we have smoothed shore, so make sure that water still covers it
   for (unsigned int i = 0; i < SHORE_SMOOTH_CYCLES - 1; i++)
     addWaterNearbyTerrain();
-  createTiles(true, false, postProcessMap, 0);
+  createTiles();
   tiles.shrink_to_fit();
   fillBufferData();
+}
+
+void WaterGenerator::createTiles()
+{
+	//in case of recreation need to remove old tiles
+	tiles.clear();
+
+	for (unsigned int y = 1; y < postProcessMap.size(); y++)
+	{
+		for (unsigned int x = 1; x < postProcessMap[0].size(); x++)
+		{
+			if (postProcessMap[y][x] == TILE_NO_RENDER_VALUE)
+				continue;
+			if (postProcessMap[y][x] != 0)
+			{
+				float lowLeft = postProcessMap[y][x];
+				float lowRight = postProcessMap[y][x];
+				float upRight = postProcessMap[y][x];
+				float upLeft = postProcessMap[y][x];
+				tiles.emplace_back(x, y, lowLeft, lowRight, upRight, upLeft);
+			}
+		}
+	}
 }
 
 void WaterGenerator::fillBufferData()

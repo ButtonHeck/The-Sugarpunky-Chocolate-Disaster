@@ -23,7 +23,7 @@ void HillsGenerator::setup()
   removeHubbles(1.0f);
   for (unsigned int i = 0; i < 4; i++)
     {
-      smoothMapHeightChunks(map, 0.6f, 0.05f, 0.05f);
+      smoothMapAdjacentHeights(0.6f, 0.05f, 0.05f);
     }
   createTilesAndBufferData();
 }
@@ -47,7 +47,7 @@ void HillsGenerator::createTilesAndBufferData()
             }
         }
     }
-  smoothNormals(map, normalMap);
+  createNormalMap(normalMap);
   generateTangentMap();
   generateBitangentMap();
   tiles.shrink_to_fit();

@@ -33,6 +33,7 @@ public:
   BuildableGenerator() noexcept;
   virtual ~BuildableGenerator() = default;
   void setup(const map2D_f &landMap, const map2D_f &hillsMap);
+  void createTiles();
 
 private:
   friend class BuildableRenderer;
