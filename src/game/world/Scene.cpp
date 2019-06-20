@@ -60,7 +60,7 @@ void Scene::recreate()
 
 void Scene::load()
 {
-  hillsFacade.createTilesAndBufferData();
+  hillsFacade.recreateTilesAndBufferData();
   shoreFacade.setup();
   landFacade.setup(shoreFacade.getMap());
   waterFacade.setupConsiderTerrain();

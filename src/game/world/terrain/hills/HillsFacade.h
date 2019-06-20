@@ -32,7 +32,7 @@ class HillsFacade
 public:
   HillsFacade(Shader &renderShader, Shader& cullingShader, Shader &normalsShader, const map2D_f &waterMap);
   void setup();
-  void createTilesAndBufferData();
+  void recreateTilesAndBufferData();
   void serialize(std::ofstream &output);
   void deserialize(std::ifstream& input);
   void draw(const glm::vec3 &lightDir,

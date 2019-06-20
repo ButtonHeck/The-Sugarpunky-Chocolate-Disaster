@@ -43,11 +43,14 @@ void HillsFacade::setup()
 }
 
 /**
-* @brief sends postprocess command to generator
+* @brief sends recreation command to generator
 */
-void HillsFacade::createTilesAndBufferData()
+void HillsFacade::recreateTilesAndBufferData()
 {
-  generator.createTilesAndBufferData();
+  generator.updateMaxHeight();
+  generator.createTiles();
+  generator.createAuxiliaryMaps();
+  generator.fillBufferData();
 }
 
 /**
