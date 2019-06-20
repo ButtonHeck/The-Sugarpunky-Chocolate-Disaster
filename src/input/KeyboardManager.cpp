@@ -1,9 +1,38 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * KeyboardManager.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for KeyboardManager class
+ * @version 0.1.0
+ */
+
 #include "KeyboardManager"
 #include "Camera"
 #include "TheSunFacade"
 
+/** @todo remove this from release version of the game */
 extern float debug_sunSpeed;
 
+/**
+* @brief plain ctor
+* @param window window handler
+* @param camera player's camera
+* @param shadowCamera auxiliary camera defining shadow regions
+* @param options set of options
+* @param sun sun facade (used for debugging only)
+*/
 KeyboardManager::KeyboardManager(GLFWwindow *window, Camera &camera, Camera &shadowCamera, Options &options, TheSunFacade &sun) noexcept
   :
     window(window),
@@ -13,6 +42,9 @@ KeyboardManager::KeyboardManager(GLFWwindow *window, Camera &camera, Camera &sha
     sun(sun)
 {}
 
+/**
+* @brief walks through all the possible keys and processes binded events if a certain key is pressed/released
+*/
 void KeyboardManager::processInput()
 {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -33,7 +65,10 @@ void KeyboardManager::processInput()
   {
       options[OPT_RECREATE_TERRAIN_REQUEST] = true;
     });
-  processKey(GLFW_KEY_F10, [&](){options[OPT_SAVE_REQUEST] = true;});
+  processKey(GLFW_KEY_F10, [&]()
+  {
+	  options[OPT_SAVE_REQUEST] = true;
+  });
   processKey(GLFW_KEY_F11, [&]()
   {
       options[OPT_LOAD_REQUEST] = true;
@@ -113,6 +148,7 @@ void KeyboardManager::processInput()
       debug_sunSpeed = 0.0f;
     });
 
+  //temporary debugging stuff
   processKey(GLFW_KEY_EQUAL, [&]()
   {
       debug_sunSpeed = 0.0f;
@@ -215,6 +251,11 @@ void KeyboardManager::processInput()
     }
 }
 
+/**
+* @brief utility function that switches an option on/off
+* @param keyCode virtual keyboard code
+* @param option option unit to toggle
+*/
 void KeyboardManager::processKey(int keyCode, OPTION option)
 {
   if (glfwGetKey(window, keyCode) == GLFW_PRESS)
@@ -229,6 +270,11 @@ void KeyboardManager::processKey(int keyCode, OPTION option)
     keysPressed[keyCode] = false;
 }
 
+/**
+* @brief utility function that invokes promoted argument function if related key was pressed
+* @param keyCode virtual keyboard code
+* @param function function object to be called
+*/
 void KeyboardManager::processKey(int keyCode, std::function<void ()> function)
 {
   if (glfwGetKey(window, keyCode) == GLFW_PRESS)
