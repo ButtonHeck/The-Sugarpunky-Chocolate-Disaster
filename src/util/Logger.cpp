@@ -1,14 +1,44 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * Logger.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions of logging functions
+ * @version 0.1.0
+ */
+
 #include "Logger"
 
 #include <unordered_set>
 
 namespace Logger
 {
+	/**
+	* @brief custom debug callback function for OpenGL context
+	* @param source source of the debug message
+	* @param type type of the message
+	* @param id GL internal message ID
+	* @param severity severity of the message
+	* @param glMessage GL internal message
+	*/
   void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar *glMessage, const void *)
   {
-    static std::unordered_set<GLuint> debugMessages;
+	//make sure that same message would not be flooding console
+    static std::unordered_set<GLuint> debugMessages;	
     if (id == 131169 || id == 131185 || id == 131218 || id == 131204 || debugMessages.find(id) != debugMessages.end()) return;
     debugMessages.emplace(id);
+
     std::string message = "Debug message: (" + std::to_string(id) + "), ";
     switch(source)
       {
@@ -41,10 +71,12 @@ namespace Logger
     std::cout << message << std::endl << glMessage << std::endl << std::endl;
   }
 
+  /**
+  * @brief plain non-templated wrapper for std::cout
+  * @param msg message to log
+  */
   void log(const char *msg)
   {
     std::cout << msg;
   }
 }
-
-
