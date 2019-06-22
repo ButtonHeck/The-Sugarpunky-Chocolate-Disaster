@@ -46,7 +46,7 @@ public:
                                  float loadingDistance,
                                  float loadingDistanceShadow);
   void updateIndirectBufferData();
-  void loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances);
+  void loadModelInstances(const std::vector<glm::mat4> &instanceMatrices);
   unsigned int getRepeatCount() const noexcept;
 
 private:

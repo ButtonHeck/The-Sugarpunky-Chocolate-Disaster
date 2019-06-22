@@ -46,7 +46,7 @@ Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetition
     isLowPoly(isLowPoly),
     numRepetitions(numRepetitions),
     GPUDataManager(isLowPoly),
-    renderer(GPUDataManager.getBasicGLBuffers(), GPUDataManager.getShadowDIBO())
+    renderer(GPUDataManager.getBasicGLBuffers(), GPUDataManager.getDepthmapDIBO())
 {
   load(MODELS_DIR + path);
 }
@@ -160,11 +160,10 @@ void Model::updateIndirectBufferData()
 /**
  * @brief delegates model's instances data loading to data manager
  * @param instanceMatrices instance matrices storage
- * @param numInstances number of this model instances
  */
-void Model::loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances)
+void Model::loadModelInstances(const std::vector<glm::mat4> &instanceMatrices)
 {
-  GPUDataManager.loadModelInstances(instanceMatrices, numInstances);
+  GPUDataManager.loadModelInstancesData(instanceMatrices);
 }
 
 unsigned int Model::getRepeatCount() const noexcept

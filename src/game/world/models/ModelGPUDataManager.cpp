@@ -1,13 +1,43 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * ModelGPUDataManager.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for ModelGPUDataManager class and IndirectBufferToken struct
+ * @version 0.1.0
+ */
+
 #include "ModelGPUDataManager"
 #include "BenchmarkTimer"
 #include "ModelChunk"
 
+/**
+* @brief plain ctor
+* @param isParentModelLowPoly indicator of the model's low-poly flag
+*/
 ModelGPUDataManager::ModelGPUDataManager(bool isParentModelLowPoly)
   :
     isLowPoly(isParentModelLowPoly),
     basicGLBuffers(VAO | VBO | INSTANCE_VBO | EBO)
 {}
 
+/**
+* @brief setup OpenGL buffers state and buffer necessary data to GPU
+* @param vertices storage with vertices data
+* @param indices storage with indices data
+* @param useIndirectBuffer indicator of whether indirect buffer will be used for this model
+*/
 void ModelGPUDataManager::setupBuffers(const std::vector<Mesh::Vertex> &vertices, const std::vector<GLuint> &indices, bool useIndirectBuffer)
 {
   indicesCount = indices.size();
@@ -34,6 +64,9 @@ void ModelGPUDataManager::setupBuffers(const std::vector<Mesh::Vertex> &vertices
   BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
+/**
+* @brief initializes indirect buffer for both onscreen and depthmap buffer collections 
+*/
 void ModelGPUDataManager::setupIndirectBuffer()
 {
   GLuint numElements = NUM_CHUNKS * INDIRECT_DRAW_COMMAND_ARGUMENTS;
@@ -45,25 +78,34 @@ void ModelGPUDataManager::setupIndirectBuffer()
       basicGLBuffers.bind(DIBO);
       glNamedBufferStorage(basicGLBuffers.get(DIBO), sizeInBytes, 0, GL_DYNAMIC_STORAGE_BIT);
     }
-  if (shadowDIBO.get(DIBO) == 0)
+  if (depthmapDIBO.get(DIBO) == 0)
     {
-      multiDrawIndirectDataShadow = std::make_unique<GLuint[]>(numElements);
-      shadowDIBO.add(DIBO);
-      shadowDIBO.bind(DIBO);
-      glNamedBufferStorage(shadowDIBO.get(DIBO), sizeInBytes, 0, GL_DYNAMIC_STORAGE_BIT);
+      multiDrawIndirectDataDepthmap = std::make_unique<GLuint[]>(numElements);
+      depthmapDIBO.add(DIBO);
+      depthmapDIBO.bind(DIBO);
+      glNamedBufferStorage(depthmapDIBO.get(DIBO), sizeInBytes, 0, GL_DYNAMIC_STORAGE_BIT);
     }
 }
 
+/**
+* @brief updates internal indirect buffer storages with given chunks data
+* @param visibleChunks storage of the currently visible models chunks
+* @param modelIndex index of this model in each chunk
+* @param loadingDistance maximum distance for onscreen rendering of full-poly models
+* @param loadingDistanceShadow maximum distance for offscreen depthmap rendering of all models
+*/
 void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<ModelChunk, unsigned int>> &visibleChunks,
                                                     unsigned int modelIndex,
                                                     float loadingDistance,
                                                     float loadingDistanceShadow)
 {
   BENCHMARK("(ST)Model: prepare indirect buffer", true);
+  //recreate indirect draw commands storages
   indirectTokens.clear();
   indirectTokens.reserve(visibleChunks.size());
-  indirectTokensShadow.clear();
-  indirectTokensShadow.reserve(visibleChunks.size());
+  indirectTokensDepthmap.clear();
+  indirectTokensDepthmap.reserve(visibleChunks.size());
+
   for (unsigned int chunkIndex = 0; chunkIndex < visibleChunks.size(); chunkIndex++)
     {
       const ModelChunk& chunk = visibleChunks[chunkIndex].first;
@@ -74,25 +116,27 @@ void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<
 	  if (numInstancesInChunk == 0)
 		  continue;
 	  unsigned int instanceOffsetInChunk = chunk.getInstanceOffset(modelIndex);
+
 	  if (distanceToChunk < loadingDistanceShadow)
 	  {
 		  if (!isLowPoly)
 		  {
 			  if (distanceToChunk < loadingDistance)
 				//draw nearby camera if fullpoly
-				addIndirectBufferData(numInstancesInChunk, instanceOffsetInChunk, false);
+				addIndirectBufferToken(numInstancesInChunk, instanceOffsetInChunk, false);
 		  }
 		  else
 		  {
 			  //draw as shadow source if lowpoly
-			  addIndirectBufferData(numInstancesInChunk, instanceOffsetInChunk, true);
+			  addIndirectBufferToken(numInstancesInChunk, instanceOffsetInChunk, true);
 		  }
 	  }
 	  //draw farther from camera if lowpoly
 	  if (isLowPoly && distanceToChunk >= loadingDistance)
-		  addIndirectBufferData(numInstancesInChunk, instanceOffsetInChunk, false);
+		  addIndirectBufferToken(numInstancesInChunk, instanceOffsetInChunk, false);
     }
 
+  //after indirect tokens have been updated load them to local buffers
   GLuint dataOffset = 0;
   for (const auto& token : indirectTokens)
     {
@@ -105,27 +149,34 @@ void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<
   drawIndirectCommandPrimCount = indirectTokens.size();
 
   dataOffset = 0;
-  for (const auto& token : indirectTokensShadow)
+  for (const auto& token : indirectTokensDepthmap)
     {
-        multiDrawIndirectDataShadow[dataOffset++] = indicesCount;
-        multiDrawIndirectDataShadow[dataOffset++] = token.numInstances;
-        multiDrawIndirectDataShadow[dataOffset++] = token.FIRST_INDEX;
-        multiDrawIndirectDataShadow[dataOffset++] = token.BASE_VERTEX;
-        multiDrawIndirectDataShadow[dataOffset++] = token.instanceOffset;
+        multiDrawIndirectDataDepthmap[dataOffset++] = indicesCount;
+        multiDrawIndirectDataDepthmap[dataOffset++] = token.numInstances;
+        multiDrawIndirectDataDepthmap[dataOffset++] = token.FIRST_INDEX;
+        multiDrawIndirectDataDepthmap[dataOffset++] = token.BASE_VERTEX;
+        multiDrawIndirectDataDepthmap[dataOffset++] = token.instanceOffset;
     }
-  drawIndirectCommandPrimCountShadow = indirectTokensShadow.size();
+  drawIndirectCommandPrimCountDepthmap = indirectTokensDepthmap.size();
 }
 
+/**
+* @brief updates indirect buffers on the GPU side with data from client buffer storages
+*/
 void ModelGPUDataManager::updateIndirectBufferData()
 {
   BENCHMARK("Model: load indirect data to GPU", true);
   basicGLBuffers.bind(DIBO);
   glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, INDIRECT_DRAW_COMMAND_BYTE_SIZE * drawIndirectCommandPrimCount, multiDrawIndirectData.get());
-  shadowDIBO.bind(DIBO);
-  glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, INDIRECT_DRAW_COMMAND_BYTE_SIZE * drawIndirectCommandPrimCountShadow, multiDrawIndirectDataShadow.get());
+  depthmapDIBO.bind(DIBO);
+  glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, INDIRECT_DRAW_COMMAND_BYTE_SIZE * drawIndirectCommandPrimCountDepthmap, multiDrawIndirectDataDepthmap.get());
 }
 
-void ModelGPUDataManager::loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances)
+/**
+* @brief updates instances dedicated vbo with given data
+* @param instanceMatrices storage of instances 'model' matrices
+*/
+void ModelGPUDataManager::loadModelInstancesData(const std::vector<glm::mat4> &instanceMatrices)
 {
   basicGLBuffers.bind(VAO);
   if (basicGLBuffers.get(INSTANCE_VBO) != 0)
@@ -136,7 +187,7 @@ void ModelGPUDataManager::loadModelInstances(const std::vector<glm::mat4> &insta
     }
   basicGLBuffers.add(INSTANCE_VBO);
   basicGLBuffers.bind(INSTANCE_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * numInstances, &instanceMatrices[0], GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * instanceMatrices.size(), &instanceMatrices[0], GL_STATIC_DRAW);
   for (unsigned int i = 0; i < 4; ++i)
     {
       glEnableVertexAttribArray(i+5);
@@ -146,15 +197,21 @@ void ModelGPUDataManager::loadModelInstances(const std::vector<glm::mat4> &insta
   BufferCollection::bindZero(VAO | VBO);
 }
 
-void ModelGPUDataManager::addIndirectBufferData(GLuint numInstances, GLuint instanceOffset, bool isShadow)
+/**
+* @brief helper function that creates one indirect draw command token with given parameters
+* @param numInstances number of instances for indirect draw command
+* @param instanceOffset instance offset for indirect draw command
+* @param isDepthmap indicator of indirect draw command purpose
+*/
+void ModelGPUDataManager::addIndirectBufferToken(GLuint numInstances, GLuint instanceOffset, bool isDepthmap)
 {
-  std::vector<IndirectBufferToken>& tokens = isShadow ? indirectTokensShadow : indirectTokens;
+  std::vector<IndirectBufferToken>& tokens = isDepthmap ? indirectTokensDepthmap : indirectTokens;
   tokens.emplace_back(numInstances, instanceOffset);
 }
 
-GLsizei ModelGPUDataManager::getPrimitiveCount(bool isShadow) const noexcept
+GLsizei ModelGPUDataManager::getPrimitiveCount(bool isDepthmap) const noexcept
 {
-  return isShadow ? drawIndirectCommandPrimCountShadow : drawIndirectCommandPrimCount;
+  return isDepthmap ? drawIndirectCommandPrimCountDepthmap : drawIndirectCommandPrimCount;
 }
 
 BufferCollection &ModelGPUDataManager::getBasicGLBuffers() noexcept
@@ -162,11 +219,16 @@ BufferCollection &ModelGPUDataManager::getBasicGLBuffers() noexcept
   return basicGLBuffers;
 }
 
-BufferCollection &ModelGPUDataManager::getShadowDIBO() noexcept
+BufferCollection &ModelGPUDataManager::getDepthmapDIBO() noexcept
 {
-  return shadowDIBO;
+  return depthmapDIBO;
 }
 
+/**
+* @brief plain ctor
+* @param numInstances number of instances used in an indirect draw command
+* @param instanceOffset instance offset used in an indirect draw command
+*/
 ModelGPUDataManager::IndirectBufferToken::IndirectBufferToken(GLuint numInstances, GLuint instanceOffset) noexcept
   :
     numInstances(numInstances),

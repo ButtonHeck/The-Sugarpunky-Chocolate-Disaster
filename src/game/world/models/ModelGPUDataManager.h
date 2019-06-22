@@ -1,3 +1,23 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * ModelGPUDataManager.h
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains declaration for ModelGPUDataManager class and IndirectBufferToken struct
+ * @version 0.1.0
+ */
+
 #pragma once
 
 #include "Mesh"
@@ -10,6 +30,10 @@
 
 class ModelChunk;
 
+/**
+* @brief manager for GPU model data. Responsible for initializing and updating data for indirect rendering of a model.
+* Has a separate indirect draw buffer for depthmap rendering
+*/
 class ModelGPUDataManager
 {
 public:
@@ -20,12 +44,15 @@ public:
                                  float loadingDistance,
                                  float loadingDistanceShadow);
   void updateIndirectBufferData();
-  void loadModelInstances(const std::vector<glm::mat4> &instanceMatrices, unsigned int numInstances);
-  GLsizei getPrimitiveCount(bool isShadow) const noexcept;
+  void loadModelInstancesData(const std::vector<glm::mat4> &instanceMatrices);
+  GLsizei getPrimitiveCount(bool isDepthmap) const noexcept;
   BufferCollection &getBasicGLBuffers() noexcept;
-  BufferCollection &getShadowDIBO() noexcept;
+  BufferCollection &getDepthmapDIBO() noexcept;
 
 private:
+  /**
+  * @brief representation of one indirect draw command data token
+  */
   struct IndirectBufferToken
   {
     //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
@@ -35,7 +62,7 @@ private:
   };
 
   void setupIndirectBuffer();
-  void addIndirectBufferData(GLuint numInstances, GLuint instanceOffset, bool isShadow);
+  void addIndirectBufferToken(GLuint numInstances, GLuint instanceOffset, bool isDepthmap);
 
   //parent model attributes
   GLuint indicesCount;
@@ -47,9 +74,9 @@ private:
   std::vector<IndirectBufferToken> indirectTokens;
   GLsizei drawIndirectCommandPrimCount = 0;
 
-  //shadow rendering related variables
-  BufferCollection shadowDIBO;
-  std::unique_ptr<GLuint[]> multiDrawIndirectDataShadow;
-  std::vector<IndirectBufferToken> indirectTokensShadow;
-  GLsizei drawIndirectCommandPrimCountShadow = 0;
+  //depthmap rendering related variables
+  BufferCollection depthmapDIBO;
+  std::unique_ptr<GLuint[]> multiDrawIndirectDataDepthmap;
+  std::vector<IndirectBufferToken> indirectTokensDepthmap;
+  GLsizei drawIndirectCommandPrimCountDepthmap = 0;
 };

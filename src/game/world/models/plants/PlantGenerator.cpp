@@ -292,9 +292,9 @@ void PlantGenerator::loadMatrices(const map2D_mat4 &newMatrices)
 
   //update instance matrices for each provided model
   for (unsigned int modelIndex = 0; modelIndex < models.size(); modelIndex++)
-    models[modelIndex].loadModelInstances(matrices[modelIndex], numPlants[modelIndex]);
+    models[modelIndex].loadModelInstances(matrices[modelIndex]);
   for (unsigned int modelIndex = 0; modelIndex < lowPolyModels.size(); modelIndex++)
-    lowPolyModels[modelIndex].loadModelInstances(matrices[modelIndex], numPlants[modelIndex]);
+    lowPolyModels[modelIndex].loadModelInstances(matrices[modelIndex]);
 }
 
 /**
