@@ -1,3 +1,23 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * Scene.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for Scene class
+ * @version 0.1.0
+ */
+
 #include "Scene"
 #include "Camera"
 #include "ShaderManager"
@@ -9,6 +29,13 @@
 #include "Options"
 #include "BenchmarkTimer"
 
+/**
+* @brief plain ctor, creates subsystems objects
+* @param shaderManager global shader manager to request shader programs from
+* @param options set of options
+* @param textureManager texture manager
+* @param screenResolution current resolution of screen
+*/
 Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &textureManager, const ScreenResolution &screenResolution, const ShadowVolume &shadowVolume)
   :
     shaderManager(shaderManager),
@@ -37,6 +64,9 @@ Scene::Scene(ShaderManager &shaderManager, Options &options, TextureManager &tex
     skysphereFacade(shaderManager.get(SHADER_SKYSPHERE))
 {}
 
+/**
+* @brief prepares subsystems facades
+*/
 void Scene::setup()
 {
   BENCHMARK("Scene: setup", false);
@@ -50,6 +80,10 @@ void Scene::setup()
   textureManager.createUnderwaterReliefTexture(waterFacade.getMap());
 }
 
+/**
+* @brief explicitly reinitializes some terrain maps and prepares subsystems again
+* @todo get rid of ugly castings (then probably this function will lose any reason to exist)
+*/
 void Scene::recreate()
 {
   Generator::initializeMap(const_cast<map2D_f&>(landFacade.getMap()));
@@ -58,6 +92,9 @@ void Scene::recreate()
   setup();
 }
 
+/**
+* @brief delegates partial reinitialization to subsystems to synchronize them with loaded data
+*/
 void Scene::load()
 {
   hillsFacade.recreateTilesAndBufferData();
@@ -69,6 +106,12 @@ void Scene::load()
   plantsFacade.initializeModelRenderChunks(landFacade.getMap(), hillsFacade.getMap());
 }
 
+/**
+* @brief handles serialization process for susbsytems whose data is necessary to save
+* @param output file stream to write data to
+* @note it is programmer's responsibility to keep susbystems ordering matched for both save/load processes
+* @see deserialize
+*/
 void Scene::serialize(std::ofstream &output)
 {
   landFacade.serialize(output);
@@ -77,6 +120,12 @@ void Scene::serialize(std::ofstream &output)
   plantsFacade.serialize(output);
 }
 
+/**
+* @brief handles deserialization process for subsystems whose data is necessary to load
+* @param input file stream to read data from
+* @note it is programmer's responsibility to keep susbystems ordering matched for both save/load processes
+* @see serialize
+*/
 void Scene::deserialize(std::ifstream &input)
 {
   landFacade.deserialize(input);
@@ -85,8 +134,17 @@ void Scene::deserialize(std::ifstream &input)
   plantsFacade.deserialize(input);
 }
 
+/**
+* @brief handles plain onscreen rendering of the scene objects
+* @param projectionView 'projection * view' matrix
+* @param ambienceProjectionView auxiliary 'projection * view' matrix used for ambience-like objects (skybox, sun etc.)
+* @param viewFrustum camera's view frustum
+* @param cullingViewFrustum auxiliary view frustum, used for hills frustum culling routine
+* @param camera player's camera
+* @param mouseInput mouse input manager
+*/
 void Scene::drawWorld(const glm::mat4& projectionView,
-                      const glm::mat4& skyboxProjectionView,
+                      const glm::mat4& ambienceProjectionView,
                       const Frustum &viewFrustum,
                       const Frustum &cullingViewFrustum,
                       const Camera& camera,
@@ -135,9 +193,9 @@ void Scene::drawWorld(const glm::mat4& projectionView,
     }
 
   RendererState::setAmbienceRenderingState(true);
-  skysphereFacade.draw(theSunFacade.getRotationTransform(), skyboxProjectionView, lightDir);
-  theSunFacade.draw(skyboxProjectionView, true, false);
-  skyboxFacade.draw(skyboxProjectionView, viewPosition, lightDir);
+  skysphereFacade.draw(theSunFacade.getRotationTransform(), ambienceProjectionView, lightDir);
+  theSunFacade.draw(ambienceProjectionView, true, false);
+  skyboxFacade.draw(ambienceProjectionView, viewPosition, lightDir);
   RendererState::setAmbienceRenderingState(false);
 
   if (options[OPT_DRAW_WATER])
@@ -145,16 +203,23 @@ void Scene::drawWorld(const glm::mat4& projectionView,
 
   float flareBrightness = theSunFacade.getSunFlareBrightness(options[OPT_USE_MULTISAMPLING], viewPosition.y);
   if (flareBrightness > 0)
-    lensFlareFacade.draw(theSunFacade.getPosition(), skyboxProjectionView, flareBrightness);
+    lensFlareFacade.draw(theSunFacade.getPosition(), ambienceProjectionView, flareBrightness);
 }
 
+/**
+* @brief handles offscreen rendering of the world parts to depthmap (from the sun point of view)
+* @param grassCastShadow defines whether grass models would be rendered to depthmap
+*/
 void Scene::drawWorldDepthmap(bool grassCastShadow)
 {
   BENCHMARK("Scene: draw world depthmap", true);
   const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices = shadowVolume.getLightSpaceMatrices();
   glClear(GL_DEPTH_BUFFER_BIT);
 
+  //must disable multisampling for this rendering mode
   glDisable(GL_MULTISAMPLE);
+
+  /** @todo smells like it is code duplicate, may be move this part to shader manager as separate function */
   shaderManager.get(SHADER_SHADOW_TERRAIN).use();
   shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrices[0]);
   shaderManager.get(SHADER_SHADOW_TERRAIN).setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrices[1]);
@@ -168,11 +233,19 @@ void Scene::drawWorldDepthmap(bool grassCastShadow)
       shaderManager.get(SHADER_SHADOW_MODELS).setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrices[2]);
       plantsFacade.drawDepthmap(grassCastShadow);
     }
+
   glEnable(GL_MULTISAMPLE);
 }
 
+/**
+* @brief handles offscreen rendering of the world reflection image from the water surface point of view
+* @param projectionView 'projection * view' matrix
+* @param ambienceProjectionView auxiliary 'projection * view' matrix used for ambience-like objects (skybox, sun etc.)
+* @param cullingViewFrustum auxiliary view frustum, used for hills frustum culling routine
+* @param camera player's camera
+*/
 void Scene::drawWorldReflection(const glm::mat4 &projectionView,
-                                const glm::mat4 &skyboxProjectionView,
+                                const glm::mat4 &ambienceProjectionView,
                                 const Frustum &cullingViewFrustum,
                                 const Camera &camera)
 {
@@ -196,16 +269,21 @@ void Scene::drawWorldReflection(const glm::mat4 &projectionView,
   shoreFacade.draw(lightDir, lightSpaceMatrices, projectionView, false, false, true, false);
   glDisable(GL_CLIP_DISTANCE0);
 
+  /** @todo substitue fullpoly models with lowpoly ones for this rendering mode to increase FPS a bit */
   if (options[OPT_DRAW_TREES])
     plantsFacade.draw(lightDir, lightSpaceMatrices, projectionView, viewPosition, false, false, false);
 
   RendererState::setAmbienceRenderingState(true);
-  skysphereFacade.draw(theSunFacade.getRotationTransform(), skyboxProjectionView, lightDir);
-  theSunFacade.draw(skyboxProjectionView, false, true);
-  skyboxFacade.draw(skyboxProjectionView, viewPosition, lightDir);
+  skysphereFacade.draw(theSunFacade.getRotationTransform(), ambienceProjectionView, lightDir);
+  theSunFacade.draw(ambienceProjectionView, false, true);
+  skyboxFacade.draw(ambienceProjectionView, viewPosition, lightDir);
   RendererState::setAmbienceRenderingState(false);
 }
 
+/**
+* @brief handles offscreen rendering of the world refraction image from the water surface point of view
+* @param projectionView 'projection * view' matrix
+*/
 void Scene::drawWorldRefraction(const glm::mat4 &projectionView)
 {
   BENCHMARK("Scene: draw world refraction", true);
