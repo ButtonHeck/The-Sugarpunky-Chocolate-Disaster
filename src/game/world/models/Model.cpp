@@ -34,7 +34,7 @@ void Model::bindTextureLoader(TextureLoader &textureLoader) noexcept
 }
 
 /**
- * @brief Model::Model model constructor
+ * @brief plain ctor
  * @param path model's relative path to preset models directory
  * @param isLowPoly defines whether this model would be approached as low-poly
  * @param numRepetitions defines how many times in a row this model would be used during allocation on the map
@@ -52,7 +52,7 @@ Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetition
 }
 
 /**
- * @brief Model::load parses assimp scene data to internal data storage
+ * @brief parses assimp data to own data storage
  * @param path model's relative path to preset models directory
  */
 void Model::load(const std::string &path)
@@ -71,7 +71,7 @@ void Model::load(const std::string &path)
 }
 
 /**
- * @brief Model::processNode parses particular mesh node
+ * @brief parses particular mesh node
  * @param node current node to process
  * @param scene model's scene
  * @param meshVertexIndexOffset offset applied for node vertices in the index buffer
@@ -95,7 +95,7 @@ void Model::processNode(const aiNode *node, const aiScene* scene, GLuint& meshVe
 }
 
 /**
- * @brief Model::loadMaterialTextures load texture from given material and add it to bindless texture manager
+ * @brief load texture from given material and add it to bindless texture manager
  * @param material material to load texture from
  * @param type texture type
  * @param uniformName glsl uniform name for the texture
@@ -121,7 +121,7 @@ void Model::loadMaterialTextures(const aiMaterial *material,
 }
 
 /**
- * @brief Model::draw delegates a draw call to renderer
+ * @brief delegates a draw call to renderer
  * @param isShadow define whether depthmap or plain on-screen rendering mode is on
  */
 void Model::draw(bool isShadow)
@@ -135,7 +135,7 @@ void Model::drawOneInstance()
 }
 
 /**
- * @brief Model::prepareIndirectBufferData delegates indirect buffer data preparation to model's data manager
+ * @brief delegates indirect buffer data preparation to model's data manager
  * @param visibleChunks model's chunks storage with corresponding distance from the camera position
  * @param modelIndex model's index in a chunks storage
  * @param loadingDistance rendering distance for full-res models
@@ -150,7 +150,7 @@ void Model::prepareIndirectBufferData(const std::vector<std::pair<ModelChunk, un
 }
 
 /**
- * @brief Model::updateIndirectBufferData delegates indirect buffer data GPU update to model's data manager
+ * @brief delegates indirect buffer data GPU update to model's data manager
  */
 void Model::updateIndirectBufferData()
 {
@@ -158,7 +158,7 @@ void Model::updateIndirectBufferData()
 }
 
 /**
- * @brief Model::loadModelInstances delegates model's instances data loading to data manager
+ * @brief delegates model's instances data loading to data manager
  * @param instanceMatrices instance matrices storage
  * @param numInstances number of this model instances
  */
