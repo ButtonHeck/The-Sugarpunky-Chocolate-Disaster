@@ -1,3 +1,23 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * MouseInputManager.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for MouseInputManager class
+ * @version 0.1.0
+ */
+
 #include <GLFW/glfw3.h>
 #include "MouseInputManager"
 #include "SceneSettings"
@@ -8,14 +28,15 @@
 
 #include <glm/glm.hpp>
 
+//static variables declarations
 GLFWwindow* MouseInputManager::window;
 Options* MouseInputManager::options;
 const ScreenResolution* MouseInputManager::screenResolution;
 Camera* MouseInputManager::camera;
 Camera* MouseInputManager::shadowCamera;
 
-/*
-Singleton for mouse input, C++11 guarantees thread-safe instantiation
+/**
+* @brief get mouse input object, C++11 guarantees thread-safe instantiation
 */
 MouseInputManager &MouseInputManager::getInstance()
 {
@@ -23,6 +44,14 @@ MouseInputManager &MouseInputManager::getInstance()
   return instance;
 }
 
+/**
+* @brief initializes static variables
+* @param window application window
+* @param options set of options
+* @param screenResolution current resolution of the screen
+* @param camera player'camera
+* @param shadowCamera auxiliary shadow regions defining camera
+*/
 void MouseInputManager::initialize(GLFWwindow * window, 
 								   Options & options, 
 								   const ScreenResolution & screenResolution,
@@ -36,6 +65,9 @@ void MouseInputManager::initialize(GLFWwindow * window,
 	MouseInputManager::shadowCamera = &shadowCamera;
 }
 
+/**
+* @brief binds custom callback functions to GL context
+*/
 void MouseInputManager::setCallbacks() noexcept
 {
   glfwSetCursorPosCallback(window, cursorMoveCallback);
@@ -44,6 +76,9 @@ void MouseInputManager::setCallbacks() noexcept
   glfwSetScrollCallback(window, scrollCallback);
 }
 
+/**
+* @brief custom callback function for cursor moving events
+*/
 void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
 {
   static bool firstMouseInput = true;
@@ -99,12 +134,21 @@ void MouseInputManager::cursorMoveCallback(GLFWwindow *, double x, double y)
   shadowCamera->updateViewAcceleration(dx, dy);
 }
 
+/**
+* @brief custom callback function for mouse scroll events
+*/
 void MouseInputManager::scrollCallback(GLFWwindow *, double, double y)
 {
   camera->adjustMouseSensitivity(y);
   shadowCamera->adjustMouseSensitivity(y);
 }
 
+/**
+* @brief custom callback function for mouse buttons click events
+* @param window application window
+* @param button GL defined button value
+* @param action GL defined action value
+*/
 void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int action, int)
 {
   MouseInputManager& mouseInput = getInstance();
@@ -127,8 +171,15 @@ void MouseInputManager::cursorClickCallback(GLFWwindow *window, int button, int 
     mouseKeysPressed[GLFW_MOUSE_BUTTON_RIGHT] = false;
 }
 
-void MouseInputManager::updateCursorMappingCoordinates(const Camera &camera, const map2D_f &landMap, const map2D_f& hillMap, const map2D_f& buildableMap)
+/**
+* @brief updates map coordinates of the cursor and terrain type that it is pointing on (if cursor is on the screen)
+* @param landMap map of the lands
+* @param hillMap map of the hills
+* @param buildableMap map of the buildable tiles
+*/
+void MouseInputManager::updateCursorMappingCoordinates(const map2D_f &landMap, const map2D_f& hillMap, const map2D_f& buildableMap)
 {
+  const Camera& camera = *(MouseInputManager::camera);
   if ((*options)[OPT_SHOW_CURSOR] && cursorToNearPlaneWorldSpace.y < 0.0f)
     {
       /* this variable is used to determine a cursor pick point on the world map where Y coordinate is 0.0
@@ -148,10 +199,13 @@ void MouseInputManager::updateCursorMappingCoordinates(const Camera &camera, con
           cursorTileName = "out of map";
           return;
         }
-      cursorWorldX = (int)(WORLD_WIDTH + cursorAbsX) - HALF_WORLD_WIDTH;
+
+      //update cursor worldmap coordinates
+	  cursorWorldX = (int)(WORLD_WIDTH + cursorAbsX) - HALF_WORLD_WIDTH;
       cursorWorldX = glm::clamp(cursorWorldX, 1, WORLD_WIDTH - 2);
       cursorWorldZ = (int)(WORLD_HEIGHT + cursorAbsZ) - HALF_WORLD_HEIGHT + 1;
       cursorWorldZ = glm::clamp(cursorWorldZ, 1, WORLD_HEIGHT - 1);
+
       if (buildableMap[cursorWorldZ][cursorWorldX] != 0)
         cursorTileName = "Land";
       else if (hillMap[cursorWorldZ][cursorWorldX] != 0 ||

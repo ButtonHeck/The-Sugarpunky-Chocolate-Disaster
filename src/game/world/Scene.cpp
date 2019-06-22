@@ -130,7 +130,7 @@ void Scene::drawWorld(const glm::mat4& projectionView,
 
   if (options[OPT_SHOW_CURSOR])
     {
-      mouseInput.updateCursorMappingCoordinates(camera, landFacade.getMap(), hillsFacade.getMap(), buildableFacade.getMap());
+      mouseInput.updateCursorMappingCoordinates(landFacade.getMap(), hillsFacade.getMap(), buildableFacade.getMap());
       buildableFacade.drawSelected(projectionView, mouseInput);
     }
 
