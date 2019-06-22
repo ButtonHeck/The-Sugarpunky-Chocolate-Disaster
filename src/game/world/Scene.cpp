@@ -5,7 +5,7 @@
 #include "TextureManager"
 #include "MouseInputManager"
 #include "ShadowVolume"
-#include "RendererStateManager"
+#include "RendererState"
 #include "Options"
 #include "BenchmarkTimer"
 
@@ -134,11 +134,11 @@ void Scene::drawWorld(const glm::mat4& projectionView,
       buildableFacade.drawSelected(projectionView, mouseInput);
     }
 
-  RendererStateManager::setAmbienceRenderingState(true);
+  RendererState::setAmbienceRenderingState(true);
   skysphereFacade.draw(theSunFacade.getRotationTransform(), skyboxProjectionView, lightDir);
   theSunFacade.draw(skyboxProjectionView, true, false);
   skyboxFacade.draw(skyboxProjectionView, viewPosition, lightDir);
-  RendererStateManager::setAmbienceRenderingState(false);
+  RendererState::setAmbienceRenderingState(false);
 
   if (options[OPT_DRAW_WATER])
     waterFacade.draw(lightDir, lightSpaceMatrices, projectionView, viewPosition, viewFrustum, options[OPT_WATER_CULLING], isDebugRender);
@@ -199,11 +199,11 @@ void Scene::drawWorldReflection(const glm::mat4 &projectionView,
   if (options[OPT_DRAW_TREES])
     plantsFacade.draw(lightDir, lightSpaceMatrices, projectionView, viewPosition, false, false, false);
 
-  RendererStateManager::setAmbienceRenderingState(true);
+  RendererState::setAmbienceRenderingState(true);
   skysphereFacade.draw(theSunFacade.getRotationTransform(), skyboxProjectionView, lightDir);
   theSunFacade.draw(skyboxProjectionView, false, true);
   skyboxFacade.draw(skyboxProjectionView, viewPosition, lightDir);
-  RendererStateManager::setAmbienceRenderingState(false);
+  RendererState::setAmbienceRenderingState(false);
 }
 
 void Scene::drawWorldRefraction(const glm::mat4 &projectionView)

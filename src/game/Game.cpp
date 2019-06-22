@@ -23,7 +23,7 @@
 #include "MouseInputManager"
 #include "DirectoriesSettings"
 #include "ScreenResolution"
-#include "RendererStateManager"
+#include "RendererState"
 #include "Shader"
 
 /**
@@ -89,7 +89,7 @@ void Game::setup()
 {
   BENCHMARK("Game: setup", false);
   Shader::cacheUniformsMode(true);
-  RendererStateManager::setInitialRenderingState(options[OPT_USE_MULTISAMPLING]);
+  RendererState::setInitialRenderingState(options[OPT_USE_MULTISAMPLING]);
   MouseInputManager::initialize(window, options, screenResolution, camera, shadowCamera);
   MouseInputManager::setCallbacks();
   scene.setup();
