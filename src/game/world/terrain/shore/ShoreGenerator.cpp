@@ -1,8 +1,32 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * ShoreGenerator.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for ShoreGenerator class and ShoreVertex struct
+ * @version 0.1.0
+ */
+
 #include "ShoreGenerator"
 
 #include <chrono>
 #include <memory>
 
+/**
+* @brief plain ctor
+* @param waterMap map of the water
+*/
 ShoreGenerator::ShoreGenerator(const map2D_f &waterMap)
   :
     Generator(),
@@ -11,30 +35,40 @@ ShoreGenerator::ShoreGenerator(const map2D_f &waterMap)
   randomizer.seed(std::chrono::system_clock::now().time_since_epoch().count());
 }
 
+/**
+* @brief prepares shore map and buffer collections
+*/
 void ShoreGenerator::setup()
 {
   generateMap();
   for (unsigned int cycleCount = 0; cycleCount < SHORE_SMOOTH_CYCLES; cycleCount++)
     {
-      smoothMap();
+      shapeShoreProfile();
       float selfWeight = 0.5f - 0.02f * cycleCount;
       float sideNeighbourWeight = (1.0f - selfWeight) / 8.0f;
       float diagonalNeighbourWeight = sideNeighbourWeight;
       smoothMapAdjacentHeights(selfWeight, sideNeighbourWeight, diagonalNeighbourWeight);
     }
   randomizeShore();
-  compressMap(2.0f);
+  applySlopeToProfile(2.0f);
   correctMapAtEdges();
-  removeUnderwaterTiles(SHORE_CLIP_LEVEL);
+  const float SHORE_CUT_LEVEL = -4.0f;
+  removeUnderwaterTiles(SHORE_CUT_LEVEL);
   createTiles();
-  tiles.shrink_to_fit();
   createNormalMap(normalMap);
   fillBufferData();
 }
 
+/**
+* @brief generates shore data based on existing water map data
+* @todo remove shore generation artefacts on the edges of world map
+*/
 void ShoreGenerator::generateMap()
 {
+  const float MIN_HEIGHT_KERNEL_OFFSET = 0.9f;
+  const float MAX_HEIGHT_KERNEL_OFFSET = 1.1f;
   std::uniform_real_distribution<float> positionDistribution(MIN_HEIGHT_KERNEL_OFFSET, MAX_HEIGHT_KERNEL_OFFSET);
+
   for (unsigned int y = 0; y <= WORLD_HEIGHT; y++)
     {
       for (unsigned int x = 0; x <= WORLD_WIDTH; x++)
@@ -42,9 +76,14 @@ void ShoreGenerator::generateMap()
     }
 }
 
-void ShoreGenerator::smoothMap()
+/**
+* @brief makes shore looks like a shore - farther tiles from land are deeper under water
+*/
+void ShoreGenerator::shapeShoreProfile()
 {
+  const float HEIGHT_SMOOTH_OFFSET = 0.25f;
   float waterLevel = WATER_LEVEL + HEIGHT_SMOOTH_OFFSET;
+
   //smooth tile below on map
   for (unsigned int y = 1; y < WORLD_HEIGHT + 1; y++)
     {
@@ -83,9 +122,15 @@ void ShoreGenerator::smoothMap()
     }
 }
 
+/**
+* @brief randomizes shore profile a bit
+*/
 void ShoreGenerator::randomizeShore()
 {
+  const float MIN_HEIGHT_RANDOMIZE_OFFSET = -0.24f;
+  const float MAX_HEIGHT_RANDOMIZE_OFFSET = 0.24f;
   std::uniform_real_distribution<float> distribution(MIN_HEIGHT_RANDOMIZE_OFFSET, MAX_HEIGHT_RANDOMIZE_OFFSET);
+
   for (unsigned int y = 0; y < WORLD_HEIGHT; y++)
     {
       for (unsigned int x = 0; x < WORLD_WIDTH; x++)
@@ -96,6 +141,9 @@ void ShoreGenerator::randomizeShore()
     }
 }
 
+/**
+* @brief removes shore tiles at map edges if there is water
+*/
 void ShoreGenerator::correctMapAtEdges()
 {
   //correct top and bottom sides of the map
@@ -116,7 +164,12 @@ void ShoreGenerator::correctMapAtEdges()
     }
 }
 
-void ShoreGenerator::compressMap(float ratio) noexcept
+/**
+* @brief makes shore profile less steep for a given ratio
+* @param ratio slope ratio, higher number means more gentle profile sloping
+* @note think of this function as an inverse of compression - farther from zero level values lifted up for a bigger amount
+*/
+void ShoreGenerator::applySlopeToProfile(float ratio) noexcept
 {
   for (std::vector<float>& row : map)
     {
@@ -128,10 +181,18 @@ void ShoreGenerator::compressMap(float ratio) noexcept
     }
 }
 
+/**
+* @brief marks all map points that are below underwater level as non-tileable
+* @param thresholdValue value below which a map coordinate would be treated as non-tileable
+*/
 void ShoreGenerator::removeUnderwaterTiles(float thresholdValue)
 {
   for (unsigned int y = 1; y < WORLD_HEIGHT; y++)
     {
+	  /*
+	  * check neighbours also to ensure that there would be no visual gaps between underwater and shore 
+	  * if we would not create a tile using this coordinate
+	  */
       for (unsigned int x = 1; x < WORLD_WIDTH; x++)
         {
           if (map[y-1][x-1] < thresholdValue &&
@@ -148,9 +209,14 @@ void ShoreGenerator::removeUnderwaterTiles(float thresholdValue)
     }
 }
 
+/**
+* @brief creates tiles based on processed map data
+*/
 void ShoreGenerator::createTiles()
 {
+  //in case of recreation need to remove old tiles
   tiles.clear();
+
   for (unsigned int y = 1; y < map.size(); y++)
     {
       for (unsigned int x = 1; x < map[0].size(); x++)
@@ -167,8 +233,12 @@ void ShoreGenerator::createTiles()
             }
         }
     }
+  tiles.shrink_to_fit();
 }
 
+/**
+* @brief prepares buffer collection
+*/
 void ShoreGenerator::fillBufferData()
 {
   using glm::vec2;
@@ -189,10 +259,10 @@ void ShoreGenerator::fillBufferData()
       ShoreVertex upLeft(vec3(x - 1, tile.upperLeft, y - 1), vec2(0.0f, 1.0f), normalMap[y-1][x-1]);
 
       int vertexBufferOffset = tileIndex * UNIQUE_VERTICES_PER_TILE * ShoreVertex::NUMBER_OF_ELEMENTS;
-      bufferVertex(vertices.get(), vertexBufferOffset,    lowLeft);
-      bufferVertex(vertices.get(), vertexBufferOffset+8,  lowRight);
-      bufferVertex(vertices.get(), vertexBufferOffset+16, upRight);
-      bufferVertex(vertices.get(), vertexBufferOffset+24, upLeft);
+      bufferVertex(vertices.get(), vertexBufferOffset + ShoreVertex::NUMBER_OF_ELEMENTS * 0,    lowLeft);
+      bufferVertex(vertices.get(), vertexBufferOffset + ShoreVertex::NUMBER_OF_ELEMENTS * 1,  lowRight);
+      bufferVertex(vertices.get(), vertexBufferOffset + ShoreVertex::NUMBER_OF_ELEMENTS * 2, upRight);
+      bufferVertex(vertices.get(), vertexBufferOffset + ShoreVertex::NUMBER_OF_ELEMENTS * 3, upLeft);
 
       GLuint indicesBufferBaseVertex = tileIndex * UNIQUE_VERTICES_PER_TILE;
       indices[indicesBufferIndex++] = indicesBufferBaseVertex + 0;
@@ -217,21 +287,30 @@ void ShoreGenerator::fillBufferData()
   BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
+/**
+* @brief helper function that fills data of a shore vertex to local storage
+* @param vertices vertices local storage
+* @param offset index offset to storage
+* @param vertex shore vertex to be bufferred
+*/
 void ShoreGenerator::bufferVertex(GLfloat *vertices, int offset, ShoreVertex vertex) noexcept
 {
-  vertices[offset+0] = vertex.posX;
-  vertices[offset+1] = vertex.posY;
-  vertices[offset+2] = vertex.posZ;
-  vertices[offset+3] = vertex.texCoordX;
-  vertices[offset+4] = vertex.texCoordY;
-  vertices[offset+5] = vertex.normalX;
-  vertices[offset+6] = vertex.normalY;
-  vertices[offset+7] = vertex.normalZ;
+  vertices[offset+0] = vertex.position.x;
+  vertices[offset+1] = vertex.position.y;
+  vertices[offset+2] = vertex.position.z;
+  vertices[offset+3] = vertex.texCoords.x;
+  vertices[offset+4] = vertex.texCoords.y;
+  vertices[offset+5] = vertex.normal.x;
+  vertices[offset+6] = vertex.normal.y;
+  vertices[offset+7] = vertex.normal.z;
 }
 
+/**
+* @brief plain ctor
+*/
 ShoreGenerator::ShoreVertex::ShoreVertex(glm::vec3 position, glm::vec2 texCoords, glm::vec3 normal) noexcept
-  :
-    posX(position.x - HALF_WORLD_WIDTH), posY(position.y), posZ(position.z - HALF_WORLD_HEIGHT),
-    texCoordX(texCoords.x), texCoordY(texCoords.y),
-    normalX(normal.x), normalY(normal.y), normalZ(normal.z)
+	:
+	position{ position.x - HALF_WORLD_WIDTH, position.y, position.z - HALF_WORLD_HEIGHT },
+	texCoords{ texCoords.x, texCoords.y },
+	normal{ normal.x, normal.y, normal.z }
 {}
