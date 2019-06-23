@@ -1,8 +1,33 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * ShadowVolume.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for ShadowVolume class
+ * @version 0.1.0
+ */
+
 #include "ShadowVolume"
 #include "TheSunFacade"
 #include "Frustum"
 #include "SceneSettings"
 
+/**
+* @brief updates light direction vectors and light space matrices
+* @param frustums a set of frustums defining shadow regions position and dimension parameters
+* @param theSunFacade the Sun facade, needed to update light direction vectors
+*/
 void ShadowVolume::update(const std::array<Frustum, NUM_SHADOW_LAYERS> &frustums, const TheSunFacade& theSunFacade)
 {
   glm::vec3 sunPosition = theSunFacade.getPosition();
@@ -13,8 +38,9 @@ void ShadowVolume::update(const std::array<Frustum, NUM_SHADOW_LAYERS> &frustums
 
   lightDirTo = theSunFacade.getLightDir();
   lightDirRight = glm::normalize(glm::cross(lightDirTo, glm::vec3(0.0f, 1.0f, 0.0f)));
-  /* for "up" vector no need to normalize it explicitly
-   * as the cross product of 2 orthogonal unit vectors (lightDirRight and Y-axis unit vector) is already a unit length vector
+  /* 
+   * for "up" vector no need to normalize it explicitly
+   * as the cross product of 2 orthogonal unit length vectors is already a unit length vector
    */
   lightDirUp = glm::cross(lightDirRight, lightDirTo);
 
@@ -27,6 +53,13 @@ const std::array<glm::mat4, NUM_SHADOW_LAYERS> &ShadowVolume::getLightSpaceMatri
   return lightSpaceMatrices;
 }
 
+/**
+* @brief applies some math and vector processing to get projectionView matrix paramters for each region
+* @param frustum frustum defining shadow region position and dimension parameters
+* @param layer layer index of shadow region
+* @param sunAbsPositionY normalized value of the sun Y pos (in range [-1;1])
+* @param sunAbsPositionX normalized value of the sun X pos (in range [-1;1])
+*/
 void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, float sunAbsPositionY, float sunAbsPositionX)
 {
   //step 1 - calculate bounding boxes bounds
@@ -35,14 +68,14 @@ void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, flo
   float boxMaxZ = frustum.getMaxCoordZ();
   float boxMinZ = frustum.getMinCoordZ();
 
-  //step 2 - offset bounding box position relative to where the sun is
+  //step 2 - offset bounding box position relative to the sun position
   float offset = glm::mix(SHADOW_BOX_MAX_OFFSET_X, 0.0f, sunAbsPositionY);
   if (lightDirTo.x < 0.0f)
     boxMaxX += offset;
   else
     boxMinX -= offset;
 
-  //limit box bounds with offsetted map bounds to hide shadow artefacts at map edges
+  //limit box bounds with offset map bounds to hide shadow artefacts at map edges
   boxMaxZ = glm::min(HALF_WORLD_HEIGHT_F + SHADOW_BOX_MAP_BORDER_OFFSET, boxMaxZ);
   boxMinZ = glm::max(-HALF_WORLD_HEIGHT_F - SHADOW_BOX_MAP_BORDER_OFFSET, boxMinZ);
   boxMaxX = glm::min(HALF_WORLD_WIDTH_F + SHADOW_BOX_MAP_BORDER_OFFSET, boxMaxX);
@@ -55,9 +88,9 @@ void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, flo
   float boxMidZ = (boxMaxZ + boxMinZ) * 0.5f;
 
   //step 4 - calculate light source position
-  float angleRad = glm::atan(SHADOW_BOXES_MAX_HEIGHT[layer] / boxHalfWidth);
+  float angleRad = glm::atan(SHADOW_BOXES_MIN_HEIGHT[layer] / boxHalfWidth);
   float ellipseA = boxHalfWidth / glm::cos(angleRad);
-  float ellipseB = SHADOW_BOXES_MAX_HEIGHT[layer] / glm::sin(angleRad);
+  float ellipseB = SHADOW_BOXES_MIN_HEIGHT[layer] / glm::sin(angleRad);
 
   glm::vec3 lightSource(boxMidX + sunAbsPositionX * ellipseA,
                         sunAbsPositionY * ellipseB,
@@ -78,14 +111,14 @@ void ShadowVolume::updateLightSpaceMatrix(const Frustum &frustum, int layer, flo
   const float FAR_SIDE = fromLStoFarPointLength * cosAlpha
                           + 4.0f * sunAbsPositionY; //+some offset when the sun is at its zenith
 
-  glm::vec2 nearPoint(lightDirTo.x > 0.0f ? boxMinX : boxMaxX, SHADOW_BOXES_MAX_HEIGHT[layer]);
+  glm::vec2 nearPoint(lightDirTo.x > 0.0f ? boxMinX : boxMaxX, SHADOW_BOXES_MIN_HEIGHT[layer]);
   glm::vec2 fromLStoNearPoint = nearPoint - lightSourceXY;
   float fromLStoNearPointLength = glm::length(fromLStoNearPoint);
   glm::vec2 fromLStoNearPointNorm = glm::normalize(fromLStoNearPoint);
   cosAlpha = glm::dot(fromLStoNearPointNorm, lightDirToXY);
   const float NEAR_SIDE = fromLStoNearPointLength * cosAlpha;
 
-  glm::vec2 upPoint(lightDirTo.x > 0.0f ? boxMaxX : boxMinX, SHADOW_BOXES_MAX_HEIGHT[layer]);
+  glm::vec2 upPoint(lightDirTo.x > 0.0f ? boxMaxX : boxMinX, SHADOW_BOXES_MIN_HEIGHT[layer]);
   glm::vec2 fromLStoUpPoint = upPoint - lightSourceXY;
   float fromLStoUpPointLength = glm::length(fromLStoUpPoint);
   glm::vec2 fromLStoUpPointNorm = glm::normalize(fromLStoUpPoint);
