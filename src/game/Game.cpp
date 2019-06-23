@@ -25,6 +25,7 @@
 #include "ScreenResolution"
 #include "RendererState"
 #include "Shader"
+#include "BenchmarkTimer"
 
 /**
 * @brief plain ctor. Creates all the submodules, sets randomizer seed
