@@ -1,5 +1,29 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * ShadowVolumeRenderer.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for ShadowVolumeRenderer class
+ * @version 0.1.0
+ */
+
 #include "ShadowVolumeRenderer"
 
+/**
+* @brief plain ctor, initializes buffer collections for rendering both expected and actual shadow volume regions boxes
+* @param shadowVolume shadow volume
+*/
 ShadowVolumeRenderer::ShadowVolumeRenderer(ShadowVolume &shadowVolume)
   :
     shadowVolume(shadowVolume),
@@ -17,6 +41,9 @@ ShadowVolumeRenderer::ShadowVolumeRenderer(ShadowVolume &shadowVolume)
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(volumesIndices), volumesIndices, GL_STATIC_DRAW);
 }
 
+/**
+* @brief fills local storage with data stored in shadow volume regions expected boxes and buffers them to GPU
+*/
 void ShadowVolumeRenderer::bufferExpectedVolumes()
 {
   //near box ground level border points
@@ -125,12 +152,19 @@ void ShadowVolumeRenderer::bufferExpectedVolumes()
   glBufferData(GL_ARRAY_BUFFER, sizeof(expectedVolumesVertices), expectedVolumesVertices, GL_STATIC_DRAW);
 }
 
+/**
+* @brief sends draw expected volume region expected box call to OpenGL
+* @param index index of the shadow volume region
+*/
 void ShadowVolumeRenderer::renderExpectedVolume(int index)
 {
   expectedVolumesGLBuffers.bind(VAO | VBO | EBO);
   glDrawElementsBaseVertex(GL_LINE_STRIP, VOLUMES_INDICES_COUNT, GL_UNSIGNED_INT, 0, index * ShadowVolume::BOX_EXPECTED_VERTICES * 2);
 }
 
+/**
+* @brief fills local storage with data stored in shadow volume regions actual boxes and buffers them to GPU
+*/
 void ShadowVolumeRenderer::bufferActualVolumes()
 {
   //near box
@@ -249,12 +283,20 @@ void ShadowVolumeRenderer::bufferActualVolumes()
   glBufferData(GL_ARRAY_BUFFER, sizeof(actualVolumeVertices), actualVolumeVertices, GL_STATIC_DRAW);
 }
 
+/**
+* @brief sends draw shadow region actual box call to OpenGL
+* @param index index of the shadow volume region
+*/
 void ShadowVolumeRenderer::renderActualVolume(int index)
 {
   actualVolumesGLBuffers.bind(VAO | VBO | EBO);
   glDrawElementsBaseVertex(GL_LINE_STRIP, VOLUMES_INDICES_COUNT, GL_UNSIGNED_INT, 0, index * ShadowVolume::BOX_ACTUAL_VERTICES);
 }
 
+/**
+* @brief sends draw shadow volume region box light source call to OpenGL
+* @param index index of the shadow volume region
+*/
 void ShadowVolumeRenderer::renderLightSource(int index) noexcept
 {
   glPointSize(LIGHT_SOURCE_POSITION_POINT_SIZE);
