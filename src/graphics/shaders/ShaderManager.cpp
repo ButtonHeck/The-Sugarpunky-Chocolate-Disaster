@@ -1,3 +1,23 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * ShaderManager.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for ShaderManager class
+ * @version 0.1.0
+ */
+
 #include "ShaderManager"
 #include "Shader"
 #include "ScreenResolution"
@@ -6,6 +26,9 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+/**
+* @brief plain ctor, initializes all shaders
+*/
 ShaderManager::ShaderManager() noexcept
 {
   shaders[SHADER_HILLS_CULLING] = Shader({GL_VERTEX_SHADER, "hillsFC/hillsFC.vs"},
@@ -86,6 +109,9 @@ ShaderManager::ShaderManager() noexcept
                                       {GL_FRAGMENT_SHADER, "skysphere/skysphere.fs"});
 }
 
+/**
+* @brief unbinds any shader that is currently bound and delegates cleanup command to each shader in storage
+*/
 ShaderManager::~ShaderManager()
 {
   glUseProgram(0);
@@ -93,10 +119,17 @@ ShaderManager::~ShaderManager()
     shaders[shaderIndex].cleanUp();
 }
 
-#define bindShaderUnit(shader, type) \
-  shader = &shaders[type]; \
+/**
+* @brief helper macro that sets shader pointer to the given shader unit
+*/
+#define bindShaderUnit(shader, unit) \
+  shader = &shaders[unit]; \
   shader->use();
 
+/**
+* @brief sets constant uniform values for each shader in the storage
+* @param screenResolution current resolution of the screen
+*/
 void ShaderManager::setupConstantUniforms(const ScreenResolution& screenResolution)
 {
   Shader* shader = nullptr;
