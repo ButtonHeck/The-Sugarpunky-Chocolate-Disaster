@@ -1,7 +1,31 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * TextureManager.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for TextureManager class
+ * @version 0.1.0
+ */
+
 #include "TextureManager"
 #include "GraphicsSettings"
 #include "TextureLoader"
 
+/**
+* @brief plain ctor, initializes all non-bindless textures with appropriate parameters
+* @param loader texture loader that does all 'low-level' stuff
+*/
 TextureManager::TextureManager(TextureLoader& loader)
   :
     loader(loader)
@@ -38,12 +62,19 @@ TextureManager::TextureManager(TextureLoader& loader)
   textures[TEX_DEPTH_MAP_SUN] = loader.createDepthMapTexture(TEX_DEPTH_MAP_SUN, DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT);
 }
 
+/**
+* @brief sends delete texture command to OpenGL for each texture in storage
+*/
 TextureManager::~TextureManager()
 {
   for (unsigned int textureIndex = 0; textureIndex < textures.size(); textureIndex++)
     glDeleteTextures(1, &(textures[textureIndex]));
 }
 
+/**
+* @brief explicitly delegates command to create underwater relief texture and stores (or replaces) it in storage
+* @param waterMap map of the water
+*/
 void TextureManager::createUnderwaterReliefTexture(const map2D_f &waterMap)
 {
   textures[TEX_UNDERWATER_RELIEF] = loader.createUnderwaterReliefTexture(TEX_UNDERWATER_RELIEF, waterMap, GL_LINEAR, GL_LINEAR);
