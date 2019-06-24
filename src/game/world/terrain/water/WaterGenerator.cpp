@@ -1,6 +1,30 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * WaterGenerator.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for WaterGenerator class
+ * @version 0.1.0
+ */
+
 #include "WaterGenerator"
 #include "WaterShader"
 
+/**
+* @brief plain ctor
+* @param shaders water shader manager
+*/
 WaterGenerator::WaterGenerator(WaterShader &shaders)
   :
     Generator(),
@@ -8,28 +32,38 @@ WaterGenerator::WaterGenerator(WaterShader &shaders)
     shaders(shaders)
 {}
 
+/**
+* @brief prepares map
+*/
 void WaterGenerator::setup()
 {
   generateMap();
-  while (numTiles < WORLD_WIDTH * (RIVER_WIDTH_DEFAULT + 2) * (RIVER_WIDTH_DEFAULT + 2) * 9 ||
-         numTiles > WORLD_WIDTH * (RIVER_WIDTH_DEFAULT + 3) * (RIVER_WIDTH_DEFAULT + 3) * 9)
+  //if there are too little or too much water in the map - try generation again
+  while (numTiles < WORLD_WIDTH * (RIVER_WIDTH_BASE + 2) * (RIVER_WIDTH_BASE + 2) * 9 ||
+         numTiles > WORLD_WIDTH * (RIVER_WIDTH_BASE + 3) * (RIVER_WIDTH_BASE + 3) * 9)
     {
       initializeMap(map);
       generateMap();
     }
 }
 
+/**
+* @brief additional post-process generation routine. Once we have shores smoothened, we should recalculate water
+* in order to eliminate gaps between water and shores
+*/
 void WaterGenerator::setupConsiderTerrain()
 {
   initializeMap(postProcessMap);
   //by this moment we have smoothed shore, so make sure that water still covers it
   for (unsigned int i = 0; i < SHORE_SMOOTH_CYCLES - 1; i++)
-    addWaterNearbyTerrain();
+    expandWaterArea();
   createTiles();
-  tiles.shrink_to_fit();
   fillBufferData();
 }
 
+/**
+* @brief creates water tiles based on generated map data
+*/
 void WaterGenerator::createTiles()
 {
 	//in case of recreation need to remove old tiles
@@ -51,8 +85,12 @@ void WaterGenerator::createTiles()
 			}
 		}
 	}
+	tiles.shrink_to_fit();
 }
 
+/**
+* @brief for each tile creates set of vertices, buffers them to GPU. Prepares buffer collections layouts and bindings
+*/
 void WaterGenerator::fillBufferData()
 {
   numVertices = tiles.size() * UNIQUE_VERTICES_PER_TILE * WaterVertex::NUMBER_OF_ELEMENTS;
@@ -66,17 +104,20 @@ void WaterGenerator::fillBufferData()
       TerrainTile& tile = tiles[tileIndex];
       int x = tile.mapX, y = tile.mapY;
 
+	  //create set of vertices according to a tile
       WaterVertex lowLeft(glm::vec3(x - 1, tile.lowLeft, y));
       WaterVertex lowRight(glm::vec3(x, tile.lowRight, y));
       WaterVertex upRight(glm::vec3(x, tile.upperRight, y - 1));
       WaterVertex upLeft(glm::vec3(x - 1, tile.upperLeft, y - 1));
 
+	  //buffer vertices to local storage
       int vertexBufferOffset = tileIndex * UNIQUE_VERTICES_PER_TILE * WaterVertex::NUMBER_OF_ELEMENTS;
-      bufferVertex(vertices.get(), vertexBufferOffset+0, lowLeft); //ll1
-      bufferVertex(vertices.get(), vertexBufferOffset+3, lowRight); //lr1
-      bufferVertex(vertices.get(), vertexBufferOffset+6, upRight); //ur1
-      bufferVertex(vertices.get(), vertexBufferOffset+9, upLeft); //ur2
+      bufferVertex(vertices.get(), vertexBufferOffset + WaterVertex::NUMBER_OF_ELEMENTS * 0, lowLeft);
+      bufferVertex(vertices.get(), vertexBufferOffset + WaterVertex::NUMBER_OF_ELEMENTS * 1, lowRight);
+      bufferVertex(vertices.get(), vertexBufferOffset + WaterVertex::NUMBER_OF_ELEMENTS * 2, upRight);
+      bufferVertex(vertices.get(), vertexBufferOffset + WaterVertex::NUMBER_OF_ELEMENTS * 3, upLeft);
 
+	  //buffer indices to local storage
       GLuint indicesBufferBaseVertex = tileIndex * UNIQUE_VERTICES_PER_TILE;
       indices[indicesBufferIndex++] = indicesBufferBaseVertex + 0;
       indices[indicesBufferIndex++] = indicesBufferBaseVertex + 1;
@@ -85,23 +126,36 @@ void WaterGenerator::fillBufferData()
       indices[indicesBufferIndex++] = indicesBufferBaseVertex + 3;
       indices[indicesBufferIndex++] = indicesBufferBaseVertex + 0;
     }
+  //buffer vertices and indices from local storage to GPU
   basicGLBuffers.bind(VAO | VBO | EBO);
   glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(GLfloat), vertices.get(), GL_STREAM_DRAW);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * INDICES_DATA_LENGTH, indices.get(), GL_STATIC_DRAW);
-  setupGLBufferAttributes();
+  setupVBOAttributes();
 
+  //prepare buffer collection used for frustum culling
   if (culledBuffers.get(VAO) != 0)
-    culledBuffers.deleteBuffers();
-  culledBuffers.create(VAO | VBO | TFBO);
+  {
+	  culledBuffers.deleteBuffers();
+	  culledBuffers.create(VAO | VBO | TFBO);
+  }
   culledBuffers.bind(VAO | VBO | TFBO);
-  glNamedBufferStorage(culledBuffers.get(VBO), numVertices * sizeof(GLfloat), 0, GL_NONE);
-  setupGLBufferAttributes();
+  /*
+   * after transform feedback we have 1.5 times more data to buffer in GL_ARRAY_BUFFER
+   * (6 indices of 4 vertices transforms into 6 vertices, 2 of them have the same attributes)
+   * because of duplication of vertices that have same attributes but different indices
+   */
+  const GLsizeiptr CULLED_DATA_SIZE_BYTES = (GLsizeiptr)((float)numVertices * 1.5f) * sizeof(GLfloat);
+  glNamedBufferStorage(culledBuffers.get(VBO), CULLED_DATA_SIZE_BYTES, 0, GL_NONE);
+  setupVBOAttributes();
   shaders.setupCulling();
   glTransformFeedbackBufferBase(culledBuffers.get(TFBO), 0, culledBuffers.get(VBO));
   BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
-void WaterGenerator::addWaterNearbyTerrain()
+/**
+* @brief expands existing water area
+*/
+void WaterGenerator::expandWaterArea()
 {
   //add water above the tile
   for (unsigned int y = 0; y < WORLD_HEIGHT - 1; y++)
@@ -180,6 +234,9 @@ void WaterGenerator::addWaterNearbyTerrain()
     }
 }
 
+/**
+* @brief generates data for water on the world map
+*/
 void WaterGenerator::generateMap()
 {
   numTiles = 0;
@@ -192,7 +249,7 @@ void WaterGenerator::generateMap()
   x = startAxisFromX ? startCoord : 0;
   y = startAxisFromX ? 0 : startCoord;
   DIRECTION riverDirection = startAxisFromX ? DOWN : RIGHT;
-  int riverWidthOffset = 0, riverTileCounter = 0;
+  int riverWidthOffset = 0, kernelCounter = 0;
   bool riverWidthIncrease = true;
 
   while (!riverEnd)
@@ -393,10 +450,18 @@ void WaterGenerator::generateMap()
         default:
           break;
       }
-      fattenKernel(x, y, riverTileCounter, riverWidthOffset, riverWidthIncrease);
+      fattenKernel(x, y, kernelCounter, riverWidthOffset, riverWidthIncrease);
     }
 }
 
+/**
+* @brief sets new incremental generating direction
+* @param curveDistanceStep incremental step of previous direction of generating
+* @param curveMaxDistance maximum steps for new direction during generating process
+* @param currentDirection current direction of generating
+* @param validDirectionLeft valid expected new direction if it curves left
+* @param validDirectionRight valid expected new direction if it curves right
+*/
 void WaterGenerator::setNewDirection(unsigned int &curveDistanceStep,
                                      unsigned int &curveMaxDistance,
                                      DIRECTION &currentDirection,
@@ -410,18 +475,30 @@ void WaterGenerator::setNewDirection(unsigned int &curveDistanceStep,
     currentDirection = (DIRECTION)(rand() % DIRECTION::NUM_DIRECTIONS);
 }
 
-void WaterGenerator::fattenKernel(int x, int y, int& riverTileCounter, int& riverWidthOffset, bool& riverWidthIncrease)
+/**
+* @brief fattens generated water kernel value
+* @param x x coordinate of water kernel
+* @param y y coordinate of water kernel
+* @param kernelCounter virtual counter defining when frequency of river width updating
+* @param riverWidthOffset additional offset to width of the river
+* @param riverWidthIncrease defines whether width offset is currently incrementing
+*/
+void WaterGenerator::fattenKernel(int x, int y, int& kernelCounter, int& riverWidthOffset, bool& riverWidthIncrease)
 {
-  int shoreSizeYT = rand() % 2 + RIVER_WIDTH_DEFAULT;
-  int shoreSizeYB = rand() % 2 + RIVER_WIDTH_DEFAULT;
-  int shoreSizeXL = rand() % 2 + RIVER_WIDTH_DEFAULT;
-  int shoreSizeXR = rand() % 2 + RIVER_WIDTH_DEFAULT;
-  ++riverTileCounter;
-  if (riverTileCounter % RIVER_SIZE_TO_INCREASE_COUNTER == 0)
+  //calculate area coordinates to add water to
+  int shoreSizeYT = rand() % 2 + RIVER_WIDTH_BASE;
+  int shoreSizeYB = rand() % 2 + RIVER_WIDTH_BASE;
+  int shoreSizeXL = rand() % 2 + RIVER_WIDTH_BASE;
+  int shoreSizeXR = rand() % 2 + RIVER_WIDTH_BASE;
+
+  //check if we need to update width offset 
+  const unsigned int RIVER_SIZE_TO_INCREASE_COUNTER = 19;
+  ++kernelCounter;
+  if (kernelCounter % RIVER_SIZE_TO_INCREASE_COUNTER == 0)
     {
-      riverTileCounter = 0;
+      kernelCounter = 0;
       riverWidthOffset += riverWidthIncrease ? 1 : -1;
-      if (riverWidthOffset > RIVER_WIDTH_DEFAULT)
+      if (riverWidthOffset > RIVER_WIDTH_BASE)
         riverWidthIncrease = !riverWidthIncrease;
       else if (riverWidthOffset < 0)
         {
@@ -429,10 +506,14 @@ void WaterGenerator::fattenKernel(int x, int y, int& riverTileCounter, int& rive
           riverWidthIncrease = !riverWidthIncrease;
         }
     }
+
+  //sanitize area coordinates and apply offset
   int xLeft = ((int)(x-shoreSizeXL-riverWidthOffset) <= 0 ? 0 : x-shoreSizeXL-riverWidthOffset);
   int xRight = ((int)(x+shoreSizeXR+riverWidthOffset) >= WORLD_WIDTH ? WORLD_WIDTH : x+shoreSizeXR+riverWidthOffset);
   int yTop = ((int)(y-shoreSizeYT-riverWidthOffset) <= 0 ? 0 : y-shoreSizeYT-riverWidthOffset);
   int yBottom = ((int)(y+shoreSizeYB+riverWidthOffset) >= WORLD_HEIGHT ? WORLD_HEIGHT : y+shoreSizeYB+riverWidthOffset);
+
+  //pour the water around
   for (int y1 = yTop; y1 <= yBottom; y1++)
     {
       for (int x1 = xLeft; x1 <= xRight; x1++)
@@ -443,21 +524,33 @@ void WaterGenerator::fattenKernel(int x, int y, int& riverTileCounter, int& rive
     }
 }
 
+/**
+* @brief helper function that buffers a vertex to local storage
+* @param vertices local buffer
+* @param offset index offset of buffer
+* @param vertex water vertex to be buffered
+*/
 void WaterGenerator::bufferVertex(GLfloat *vertices, int offset, WaterVertex vertex) noexcept
 {
-  vertices[offset+0] = vertex.posX;
-  vertices[offset+1] = vertex.posY;
-  vertices[offset+2] = vertex.posZ;
+  vertices[offset+0] = vertex.position.x;
+  vertices[offset+1] = vertex.position.y;
+  vertices[offset+2] = vertex.position.z;
 }
 
-void WaterGenerator::setupGLBufferAttributes() noexcept
+/**
+* @brief helper function that sets appropriate layout for vertex data on the OpenGL side
+*/
+void WaterGenerator::setupVBOAttributes() noexcept
 {
   const size_t SIZE_OF_WATER_VERTEX = WaterVertex::NUMBER_OF_ELEMENTS * sizeof(GLfloat);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, SIZE_OF_WATER_VERTEX, 0);
+  glVertexAttribPointer(0, WaterVertex::NUMBER_OF_ELEMENTS, GL_FLOAT, GL_FALSE, SIZE_OF_WATER_VERTEX, 0);
 }
 
+/**
+* @brief plain ctor
+*/
 WaterGenerator::WaterVertex::WaterVertex(glm::vec3 position) noexcept
   :
-    posX(position.x - HALF_WORLD_WIDTH), posY(position.y), posZ(position.z - HALF_WORLD_HEIGHT)
+	position{ position.x - HALF_WORLD_WIDTH, position.y, position.z - HALF_WORLD_HEIGHT }
 {}

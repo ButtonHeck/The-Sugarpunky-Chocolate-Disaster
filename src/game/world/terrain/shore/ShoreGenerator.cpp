@@ -259,8 +259,8 @@ void ShoreGenerator::fillBufferData()
       ShoreVertex upLeft(vec3(x - 1, tile.upperLeft, y - 1), vec2(0.0f, 1.0f), normalMap[y-1][x-1]);
 
       int vertexBufferOffset = tileIndex * UNIQUE_VERTICES_PER_TILE * ShoreVertex::NUMBER_OF_ELEMENTS;
-      bufferVertex(vertices.get(), vertexBufferOffset + ShoreVertex::NUMBER_OF_ELEMENTS * 0,    lowLeft);
-      bufferVertex(vertices.get(), vertexBufferOffset + ShoreVertex::NUMBER_OF_ELEMENTS * 1,  lowRight);
+      bufferVertex(vertices.get(), vertexBufferOffset + ShoreVertex::NUMBER_OF_ELEMENTS * 0, lowLeft);
+      bufferVertex(vertices.get(), vertexBufferOffset + ShoreVertex::NUMBER_OF_ELEMENTS * 1, lowRight);
       bufferVertex(vertices.get(), vertexBufferOffset + ShoreVertex::NUMBER_OF_ELEMENTS * 2, upRight);
       bufferVertex(vertices.get(), vertexBufferOffset + ShoreVertex::NUMBER_OF_ELEMENTS * 3, upLeft);
 
