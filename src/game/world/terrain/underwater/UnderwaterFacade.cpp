@@ -28,8 +28,8 @@
 UnderwaterFacade::UnderwaterFacade(Shader &renderShader) noexcept
   :
     shader(renderShader),
-    generator(),
-    renderer(generator)
+    surface(),
+    renderer(surface)
 {}
 
 /**

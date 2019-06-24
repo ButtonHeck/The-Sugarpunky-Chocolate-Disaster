@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "UnderwaterGenerator"
+#include "UnderwaterSurface"
 #include "UnderwaterShader"
 #include "UnderwaterRenderer"
 
@@ -36,6 +36,6 @@ public:
 
 private:
   UnderwaterShader shader;
-  UnderwaterGenerator generator;
+  UnderwaterSurface surface;
   UnderwaterRenderer renderer;
 };

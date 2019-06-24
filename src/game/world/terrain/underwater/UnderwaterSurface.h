@@ -1,6 +1,6 @@
 /*
  * Copyright 2019 Ilya Malgin
- * UnderwaterShader.cpp
+ * UnderwaterSurface.h
  * This file is part of The Sugarpunky Chocolate Disaster project
  *
  * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
@@ -14,30 +14,25 @@
  * GNU General Public License for more details.
  * See <http://www.gnu.org/licenses/>
  *
- * Purpose: contains definitions for UnderwaterShader class
+ * Purpose: contains declaration for UnderwaterSurface class
  * @version 0.1.0
  */
 
-#include "UnderwaterShader"
-#include "Shader"
+#pragma once
+
+#include "BufferCollection"
 
 /**
-* @brief plain ctor
-* @param renderShader shader program used for rendering
+* @brief representation of the underwater surface tile. 
+* Responsible for initializing buffer collection and loading underwater tile data to GPU
 */
-UnderwaterShader::UnderwaterShader(Shader &renderShader) noexcept
-  :
-    renderShader(renderShader)
-{}
-
-/**
-* @brief updates shader program uniforms
-* @param lightDir sunlight direction vector
-* @param projectionView "projection * view" matrix
-*/
-void UnderwaterShader::update(const glm::vec3 &lightDir, const glm::mat4 &projectionView)
+class UnderwaterSurface
 {
-  renderShader.use();
-  renderShader.setMat4("u_projectionView", projectionView);
-  renderShader.setVec3("u_lightDir", -lightDir);
-}
+public:
+  UnderwaterSurface() noexcept;
+
+private:
+  friend class UnderwaterRenderer;
+
+  BufferCollection basicGLBuffers;
+};
