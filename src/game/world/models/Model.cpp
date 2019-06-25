@@ -58,7 +58,10 @@ Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetition
 void Model::load(const std::string &path)
 {
   Assimp::Importer importer;
-  const aiScene* scene = importer.ReadFile(path, aiProcess_CalcTangentSpace | aiProcess_FlipUVs | aiProcess_Triangulate);
+  const aiScene* scene = importer.ReadFile(path, aiProcess_CalcTangentSpace | 
+												 aiProcess_FlipUVs | 
+												 aiProcess_Triangulate | 
+												 aiProcess_JoinIdenticalVertices);
   if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
     Logger::log("Error while loading Assimp: %\n", importer.GetErrorString());
   else
