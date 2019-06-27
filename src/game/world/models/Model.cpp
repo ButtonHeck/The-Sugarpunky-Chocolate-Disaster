@@ -70,6 +70,9 @@ void Model::load(const std::string &path)
 	  GLuint meshVertexIndexOffset = 0;
 	  processNode(scene->mRootNode, scene, meshVertexIndexOffset);
 	  GPUDataManager.setupBuffers(vertices, indices, isInstanced);
+	  //once we have model's data loaded to GPU memory we don't need it on the CPU side
+	  vertices.clear();
+	  indices.clear();
   }
 }
 
