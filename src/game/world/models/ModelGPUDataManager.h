@@ -46,6 +46,7 @@ public:
   void updateIndirectBufferData();
   void loadModelInstancesData(const std::vector<glm::mat4> &instanceMatrices);
   GLsizei getPrimitiveCount(bool isDepthmap) const noexcept;
+  GLuint getIndicesCount() const noexcept;
   BufferCollection &getBasicGLBuffers() noexcept;
   BufferCollection &getDepthmapDIBO() noexcept;
 

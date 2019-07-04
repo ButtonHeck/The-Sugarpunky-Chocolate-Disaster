@@ -137,7 +137,7 @@ void Model::draw(bool isShadow)
 
 void Model::drawOneInstance()
 {
-  renderer.renderOneInstance(indices.size());
+  renderer.renderOneInstance(GPUDataManager.getIndicesCount());
 }
 
 /**

@@ -214,6 +214,11 @@ GLsizei ModelGPUDataManager::getPrimitiveCount(bool isDepthmap) const noexcept
   return isDepthmap ? drawIndirectCommandPrimCountDepthmap : drawIndirectCommandPrimCount;
 }
 
+GLuint ModelGPUDataManager::getIndicesCount() const noexcept
+{
+	return indicesCount;
+}
+
 BufferCollection &ModelGPUDataManager::getBasicGLBuffers() noexcept
 {
   return basicGLBuffers;
