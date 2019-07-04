@@ -57,7 +57,6 @@ void WaterShader::setupCulling()
 * @param viewPosition position vector of the camera
 * @param viewFrustum view frustum of the camera
 * @param useFrustumCulling indicator of whether to use frustum culling when drawing
-* @todo fix dudv water animation tearing bug
 */
 void WaterShader::update(const glm::vec3 &lightDir,
                          const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
@@ -89,7 +88,7 @@ void WaterShader::update(const glm::vec3 &lightDir,
 
   const float DUDV_ANIMATION_SPEED = 0.0004f;
   dudvMoveOffset += DUDV_ANIMATION_SPEED;
-  if (dudvMoveOffset >= 1.0f)
+  if (dudvMoveOffset >= 2.0f)
     dudvMoveOffset = 0.0f;
 }
 
