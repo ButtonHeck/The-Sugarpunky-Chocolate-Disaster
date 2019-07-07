@@ -26,11 +26,15 @@
 * @brief plain ctor
 * @param basicGLBuffers onscreen rendering buffer collection
 * @param depthmapDIBO offscreen indirect draw buffer for depthmap rendering
+* @param reflectionDIBO onscreen indirect draw buffer for world reflection rendering
 */
-ModelRenderer::ModelRenderer(BufferCollection &basicGLBuffers, BufferCollection &depthmapDIBO) noexcept
+ModelRenderer::ModelRenderer(BufferCollection &basicGLBuffers, 
+							 BufferCollection &depthmapDIBO,
+							 BufferCollection& reflectionDIBO) noexcept
   :
     basicGLBuffers(basicGLBuffers),
-    depthmapDIBO(depthmapDIBO)
+    depthmapDIBO(depthmapDIBO),
+	reflectionDIBO(reflectionDIBO)
 {}
 
 /**
@@ -38,21 +42,27 @@ ModelRenderer::ModelRenderer(BufferCollection &basicGLBuffers, BufferCollection 
 * @param isDepthmap rendering mode
 * @param primCount number of instances to render
 */
-void ModelRenderer::render(bool isDepthmap, GLsizei primCount)
+void ModelRenderer::render(MODEL_INDIRECT_BUFFER_TYPE type, GLsizei primCount)
 {
   basicGLBuffers.bind(VAO);
-  if (!isDepthmap)
+  if (type == PLAIN_ONSCREEN)
     {
       basicGLBuffers.bind(DIBO);
       BENCHMARK("Model: draw", true);
       glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0);
     }
-  else
+  else if (type == DEPTHMAP_OFFSCREEN)
     {
       depthmapDIBO.bind(DIBO);
       BENCHMARK("Model: draw shadows", true);
       glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0);
     }
+  else
+  {
+	  reflectionDIBO.bind(DIBO);
+	  BENCHMARK("Model: draw reflections", true);
+	  glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0);
+  }
 }
 
 /**

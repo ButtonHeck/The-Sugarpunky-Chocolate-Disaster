@@ -90,6 +90,7 @@ void PlantsFacade::updateIndirectBufferData()
  * @param usePhongShading define what shading model to use
  * @param useShadows define whether to use shadows
  * @param useLandBlending define whether to use blending
+ * @param worldReflectionMode define whether world reflection rendering stage is currently on
  */
 void PlantsFacade::draw(const glm::vec3 &lightDir,
                         const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
@@ -97,9 +98,10 @@ void PlantsFacade::draw(const glm::vec3 &lightDir,
                         const glm::vec3 &viewPosition,
                         bool usePhongShading,
                         bool useShadows,
-                        bool useLandBlending)
+                        bool useLandBlending,
+						bool worldReflectionMode)
 {
-  if (useLandBlending)
+  if (useLandBlending && !worldReflectionMode)
     glEnable(GL_BLEND);
   else
     glDisable(GL_BLEND);
@@ -114,20 +116,32 @@ void PlantsFacade::draw(const glm::vec3 &lightDir,
 
   //draw trees and hill models first (plain and low-poly)
   shaders.setType(PLANT_STATIC);
-  shaders.setLowPolyMode(false);
-  treesRenderer.render(landPlantsGenerator.getModels(false), hillTreesGenerator.getModels(false), false);
-  shaders.setLowPolyMode(true);
-  treesRenderer.render(landPlantsGenerator.getModels(true), hillTreesGenerator.getModels(true), false);
+  if (!worldReflectionMode)
+  {
+	  shaders.setLowPolyMode(false);
+	  treesRenderer.render(landPlantsGenerator.getModels(false), hillTreesGenerator.getModels(false), false);
+	  shaders.setLowPolyMode(true);
+	  treesRenderer.render(landPlantsGenerator.getModels(true), hillTreesGenerator.getModels(true), false);
+  }
+  else
+  {
+	  shaders.setLowPolyMode(true);
+	  treesRenderer.renderWorldReflection(landPlantsGenerator.getModels(true), hillTreesGenerator.getModels(true));
+  }
+  
 
-  //draw grass (plain and low-poly)
-  shaders.setType(PLANT_ANIMATED);
-  shaders.updateGrassKeyframe();
-  shaders.setLowPolyMode(false);
-  grassRenderer.render(grassGenerator.getModels(false), false);
-  shaders.setLowPolyMode(true);
-  grassRenderer.render(grassGenerator.getModels(true), false);
+  //draw grass (plain and low-poly), no need to render it if world reflection rendering stage is on
+  if (!worldReflectionMode)
+  {
+	  shaders.setType(PLANT_ANIMATED);
+	  shaders.updateGrassKeyframe();
+	  shaders.setLowPolyMode(false);
+	  grassRenderer.render(grassGenerator.getModels(false), false);
+	  shaders.setLowPolyMode(true);
+	  grassRenderer.render(grassGenerator.getModels(true), false);
+  } 
 
-  if (useLandBlending)
+  if (useLandBlending || worldReflectionMode)
     glDisable(GL_BLEND);
 }
 

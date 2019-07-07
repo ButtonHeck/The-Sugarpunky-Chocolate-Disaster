@@ -59,15 +59,15 @@ void ModelGPUDataManager::setupBuffers(const std::vector<Mesh::Vertex> &vertices
   glVertexAttribPointer(9, 2, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, TexIndices));
 
   if (useIndirectBuffer)
-    setupIndirectBuffer();
+    setupIndirectBuffers();
 
   BufferCollection::bindZero(VAO | VBO | EBO);
 }
 
 /**
-* @brief initializes indirect buffer for both onscreen and depthmap buffer collections 
+* @brief initializes indirect buffer for plain onscreen, depthmap and world reflection buffer collections 
 */
-void ModelGPUDataManager::setupIndirectBuffer()
+void ModelGPUDataManager::setupIndirectBuffers()
 {
   GLuint numElements = NUM_CHUNKS * INDIRECT_DRAW_COMMAND_ARGUMENTS;
   GLsizei sizeInBytes = sizeof(GLuint) * numElements;
@@ -85,6 +85,13 @@ void ModelGPUDataManager::setupIndirectBuffer()
       depthmapDIBO.bind(DIBO);
       glNamedBufferStorage(depthmapDIBO.get(DIBO), sizeInBytes, 0, GL_DYNAMIC_STORAGE_BIT);
     }
+  if (reflectionDIBO.get(DIBO) == 0)
+  {
+	  multiDrawIndirectDataReflection = std::make_unique<GLuint[]>(numElements);
+	  reflectionDIBO.add(DIBO);
+	  reflectionDIBO.bind(DIBO);
+	  glNamedBufferStorage(reflectionDIBO.get(DIBO), sizeInBytes, 0, GL_DYNAMIC_STORAGE_BIT);
+  }
 }
 
 /**
@@ -105,6 +112,8 @@ void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<
   indirectTokens.reserve(visibleChunks.size());
   indirectTokensDepthmap.clear();
   indirectTokensDepthmap.reserve(visibleChunks.size());
+  indirectTokensReflection.clear();
+  indirectTokensReflection.reserve(visibleChunks.size());
 
   for (unsigned int chunkIndex = 0; chunkIndex < visibleChunks.size(); chunkIndex++)
     {
@@ -123,17 +132,21 @@ void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<
 		  {
 			  if (distanceToChunk < loadingDistance)
 				//draw nearby camera if fullpoly
-				addIndirectBufferToken(numInstancesInChunk, instanceOffsetInChunk, false);
+				addIndirectBufferToken(numInstancesInChunk, instanceOffsetInChunk, PLAIN_ONSCREEN);
 		  }
 		  else
 		  {
 			  //draw as shadow source if lowpoly
-			  addIndirectBufferToken(numInstancesInChunk, instanceOffsetInChunk, true);
+			  addIndirectBufferToken(numInstancesInChunk, instanceOffsetInChunk, DEPTHMAP_OFFSCREEN);
 		  }
 	  }
 	  //draw farther from camera if lowpoly
 	  if (isLowPoly && distanceToChunk >= loadingDistance)
-		  addIndirectBufferToken(numInstancesInChunk, instanceOffsetInChunk, false);
+		  addIndirectBufferToken(numInstancesInChunk, instanceOffsetInChunk, PLAIN_ONSCREEN);
+
+	  //for world reflection rendering mode better render all models as lowpoly regardless of distance 
+	  if (isLowPoly)
+		  addIndirectBufferToken(numInstancesInChunk, instanceOffsetInChunk, REFLECTION_ONSCREEN);
     }
 
   //after indirect tokens have been updated load them to local buffers
@@ -158,6 +171,17 @@ void ModelGPUDataManager::prepareIndirectBufferData(const std::vector<std::pair<
         multiDrawIndirectDataDepthmap[dataOffset++] = token.instanceOffset;
     }
   drawIndirectCommandPrimCountDepthmap = indirectTokensDepthmap.size();
+
+  dataOffset = 0;
+  for (const auto& token : indirectTokensReflection)
+  {
+	  multiDrawIndirectDataReflection[dataOffset++] = indicesCount;
+	  multiDrawIndirectDataReflection[dataOffset++] = token.numInstances;
+	  multiDrawIndirectDataReflection[dataOffset++] = token.FIRST_INDEX;
+	  multiDrawIndirectDataReflection[dataOffset++] = token.BASE_VERTEX;
+	  multiDrawIndirectDataReflection[dataOffset++] = token.instanceOffset;
+  }
+  drawIndirectCommandPrimCountReflection = indirectTokensReflection.size();
 }
 
 /**
@@ -170,6 +194,8 @@ void ModelGPUDataManager::updateIndirectBufferData()
   glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, INDIRECT_DRAW_COMMAND_BYTE_SIZE * drawIndirectCommandPrimCount, multiDrawIndirectData.get());
   depthmapDIBO.bind(DIBO);
   glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, INDIRECT_DRAW_COMMAND_BYTE_SIZE * drawIndirectCommandPrimCountDepthmap, multiDrawIndirectDataDepthmap.get());
+  reflectionDIBO.bind(DIBO);
+  glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, INDIRECT_DRAW_COMMAND_BYTE_SIZE * drawIndirectCommandPrimCountReflection, multiDrawIndirectDataReflection.get());
 }
 
 /**
@@ -201,17 +227,26 @@ void ModelGPUDataManager::loadModelInstancesData(const std::vector<glm::mat4> &i
 * @brief helper function that creates one indirect draw command token with given parameters
 * @param numInstances number of instances for indirect draw command
 * @param instanceOffset instance offset for indirect draw command
-* @param isDepthmap indicator of indirect draw command purpose
+* @param type type of indirect buffer to which token should be added
 */
-void ModelGPUDataManager::addIndirectBufferToken(GLuint numInstances, GLuint instanceOffset, bool isDepthmap)
+void ModelGPUDataManager::addIndirectBufferToken(GLuint numInstances, GLuint instanceOffset, MODEL_INDIRECT_BUFFER_TYPE type)
 {
-  std::vector<IndirectBufferToken>& tokens = isDepthmap ? indirectTokensDepthmap : indirectTokens;
-  tokens.emplace_back(numInstances, instanceOffset);
+	if (type == PLAIN_ONSCREEN)
+		indirectTokens.emplace_back(numInstances, instanceOffset);
+	else if (type == DEPTHMAP_OFFSCREEN)
+		indirectTokensDepthmap.emplace_back(numInstances, instanceOffset);
+	else if (type == REFLECTION_ONSCREEN)
+		indirectTokensReflection.emplace_back(numInstances, instanceOffset);
 }
 
-GLsizei ModelGPUDataManager::getPrimitiveCount(bool isDepthmap) const noexcept
+GLsizei ModelGPUDataManager::getPrimitiveCount(MODEL_INDIRECT_BUFFER_TYPE type) const noexcept
 {
-  return isDepthmap ? drawIndirectCommandPrimCountDepthmap : drawIndirectCommandPrimCount;
+	if (type == PLAIN_ONSCREEN)
+		return drawIndirectCommandPrimCount;
+	else if (type == DEPTHMAP_OFFSCREEN)
+		return drawIndirectCommandPrimCountDepthmap;
+	else
+		return drawIndirectCommandPrimCountReflection;
 }
 
 GLuint ModelGPUDataManager::getIndicesCount() const noexcept
@@ -227,6 +262,11 @@ BufferCollection &ModelGPUDataManager::getBasicGLBuffers() noexcept
 BufferCollection &ModelGPUDataManager::getDepthmapDIBO() noexcept
 {
   return depthmapDIBO;
+}
+
+BufferCollection & ModelGPUDataManager::getReflectionDIBO() noexcept
+{
+	return reflectionDIBO;
 }
 
 /**

@@ -40,6 +40,7 @@ public:
   Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions = 1, bool isInstanced = true);
   static void bindTextureLoader(TextureLoader& textureLoader) noexcept;
   void draw(bool isShadow);
+  void drawWorldReflection();
   void drawOneInstance();
   void prepareIndirectBufferData(const std::vector<std::pair<ModelChunk, unsigned int> > &visibleChunks,
                                  unsigned int modelIndex,

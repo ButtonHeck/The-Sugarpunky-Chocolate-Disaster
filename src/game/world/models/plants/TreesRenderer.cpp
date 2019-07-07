@@ -34,3 +34,16 @@ void TreesRenderer::render(std::vector<Model> &landModels, std::vector<Model> &h
   for (Model& hillModel : hillModels)
     hillModel.draw(isShadow);
 }
+
+/**
+* @brief delegates world reflection draw call for each given model
+* @param landModels vector of land trees models to go through
+* @param hillModels vector of hills trees models to go through
+*/
+void TreesRenderer::renderWorldReflection(std::vector<Model>& landModels, std::vector<Model>& hillModels)
+{
+	for (Model& landModel : landModels)
+		landModel.drawWorldReflection();
+	for (Model& hillModel : hillModels)
+		hillModel.drawWorldReflection();
+}

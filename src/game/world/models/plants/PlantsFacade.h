@@ -48,7 +48,8 @@ public:
             const glm::vec3 &viewPosition,
             bool usePhongShading,
             bool useShadows,
-            bool useLandBlending);
+            bool useLandBlending,
+			bool worldReflectionMode = false);
   void drawDepthmap(bool grassCastShadow);
 
   //save/load routine

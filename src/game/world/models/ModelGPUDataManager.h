@@ -23,6 +23,7 @@
 #include "Mesh"
 #include "BufferCollection"
 #include "SceneSettings"
+#include "ModelIndirectBufferTypes.h"
 
 #include <GL/glew.h>
 #include <glm/mat4x4.hpp>
@@ -45,10 +46,11 @@ public:
                                  float loadingDistanceShadow);
   void updateIndirectBufferData();
   void loadModelInstancesData(const std::vector<glm::mat4> &instanceMatrices);
-  GLsizei getPrimitiveCount(bool isDepthmap) const noexcept;
+  GLsizei getPrimitiveCount(MODEL_INDIRECT_BUFFER_TYPE type) const noexcept;
   GLuint getIndicesCount() const noexcept;
   BufferCollection &getBasicGLBuffers() noexcept;
   BufferCollection &getDepthmapDIBO() noexcept;
+  BufferCollection &getReflectionDIBO() noexcept;
 
 private:
   /**
@@ -62,8 +64,8 @@ private:
     static const GLuint FIRST_INDEX = 0, BASE_VERTEX = 0;
   };
 
-  void setupIndirectBuffer();
-  void addIndirectBufferToken(GLuint numInstances, GLuint instanceOffset, bool isDepthmap);
+  void setupIndirectBuffers();
+  void addIndirectBufferToken(GLuint numInstances, GLuint instanceOffset, MODEL_INDIRECT_BUFFER_TYPE type);
 
   //parent model attributes
   GLuint indicesCount;
@@ -80,4 +82,10 @@ private:
   std::unique_ptr<GLuint[]> multiDrawIndirectDataDepthmap;
   std::vector<IndirectBufferToken> indirectTokensDepthmap;
   GLsizei drawIndirectCommandPrimCountDepthmap = 0;
+
+  //world reflection rendering related variables
+  BufferCollection reflectionDIBO;
+  std::unique_ptr<GLuint[]> multiDrawIndirectDataReflection;
+  std::vector<IndirectBufferToken> indirectTokensReflection;
+  GLsizei drawIndirectCommandPrimCountReflection = 0;
 };

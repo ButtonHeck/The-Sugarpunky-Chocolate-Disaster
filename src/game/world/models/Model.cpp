@@ -46,7 +46,7 @@ Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetition
     isLowPoly(isLowPoly),
     numRepetitions(numRepetitions),
     GPUDataManager(isLowPoly),
-    renderer(GPUDataManager.getBasicGLBuffers(), GPUDataManager.getDepthmapDIBO())
+    renderer(GPUDataManager.getBasicGLBuffers(), GPUDataManager.getDepthmapDIBO(), GPUDataManager.getReflectionDIBO())
 {
   load(MODELS_DIR + path);
 }
@@ -132,7 +132,16 @@ void Model::loadMaterialTextures(const aiMaterial *material,
  */
 void Model::draw(bool isShadow)
 {
-  renderer.render(isShadow, GPUDataManager.getPrimitiveCount(isShadow));
+	MODEL_INDIRECT_BUFFER_TYPE type = isShadow ? DEPTHMAP_OFFSCREEN : PLAIN_ONSCREEN;
+	renderer.render(type, GPUDataManager.getPrimitiveCount(type));
+}
+
+/**
+* @brief delegates world reflection call to renderer
+*/
+void Model::drawWorldReflection()
+{
+	renderer.render(REFLECTION_ONSCREEN, GPUDataManager.getPrimitiveCount(REFLECTION_ONSCREEN));
 }
 
 void Model::drawOneInstance()

@@ -33,4 +33,5 @@ class TreesRenderer
 public:
   TreesRenderer() = default;
   void render(std::vector<Model> &landModels, std::vector<Model> &hillModels, bool isShadow);
+  void renderWorldReflection(std::vector<Model> &landModels, std::vector<Model> &hillModels);
 };

@@ -269,9 +269,8 @@ void Scene::drawWorldReflection(const glm::mat4 &projectionView,
   shoreFacade.draw(lightDir, lightSpaceMatrices, projectionView, false, false, true, false);
   glDisable(GL_CLIP_DISTANCE0);
 
-  /** @todo substitue fullpoly models with lowpoly ones for this rendering mode to increase FPS a bit */
   if (options[OPT_DRAW_TREES])
-    plantsFacade.draw(lightDir, lightSpaceMatrices, projectionView, viewPosition, false, false, false);
+    plantsFacade.draw(lightDir, lightSpaceMatrices, projectionView, viewPosition, false, false, false, true);
 
   RendererState::setAmbienceRenderingState(true);
   skysphereFacade.draw(theSunFacade.getRotationTransform(), ambienceProjectionView, lightDir);

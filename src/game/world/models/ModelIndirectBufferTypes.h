@@ -1,6 +1,6 @@
 /*
  * Copyright 2019 Ilya Malgin
- * ModelRenderer.h
+ * ModelIndirectBufferTypes.h
  * This file is part of The Sugarpunky Chocolate Disaster project
  *
  * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
@@ -14,33 +14,15 @@
  * GNU General Public License for more details.
  * See <http://www.gnu.org/licenses/>
  *
- * Purpose: contains declaration for ModelRenderer class
+ * Purpose: contains enumeration of possible model indirect buffer usage types
  * @version 0.1.0
  */
 
 #pragma once
 
-#include "ModelIndirectBufferTypes.h"
-
-#include <GL/glew.h>
-
-class BufferCollection;
-
-/**
-* @brief renderer for model for both onscreen and depthmap modes. 
-* Has two options: render only one model and instanced indirect rendering
-*/
-class ModelRenderer
+enum MODEL_INDIRECT_BUFFER_TYPE
 {
-public:
-  ModelRenderer(BufferCollection& basicGLBuffers, 
-				BufferCollection& depthmapDIBO, 
-				BufferCollection& reflectionDIBO) noexcept;
-  void render(MODEL_INDIRECT_BUFFER_TYPE type, GLsizei primCount);
-  void renderOneInstance(GLsizei numIndices);
-
-private:
-  BufferCollection& basicGLBuffers;
-  BufferCollection& depthmapDIBO;
-  BufferCollection& reflectionDIBO;
+	PLAIN_ONSCREEN,
+	DEPTHMAP_OFFSCREEN,
+	REFLECTION_ONSCREEN
 };
