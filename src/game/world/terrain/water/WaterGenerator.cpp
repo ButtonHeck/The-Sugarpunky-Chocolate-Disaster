@@ -105,10 +105,10 @@ void WaterGenerator::fillBufferData()
       int x = tile.mapX, y = tile.mapY;
 
 	  //create set of vertices according to a tile
-      WaterVertex lowLeft(glm::vec3(x - 1, tile.lowLeft, y));
-      WaterVertex lowRight(glm::vec3(x, tile.lowRight, y));
-      WaterVertex upRight(glm::vec3(x, tile.upperRight, y - 1));
-      WaterVertex upLeft(glm::vec3(x - 1, tile.upperLeft, y - 1));
+      WaterVertex lowLeft(glm::vec3(x - 1, tile.lowLeft, y), glm::vec2(x - 1, y));
+      WaterVertex lowRight(glm::vec3(x, tile.lowRight, y), glm::vec2(x, y));
+      WaterVertex upRight(glm::vec3(x, tile.upperRight, y - 1), glm::vec2(x, y - 1));
+      WaterVertex upLeft(glm::vec3(x - 1, tile.upperLeft, y - 1), glm::vec2(x - 1, y - 1));
 
 	  //buffer vertices to local storage
       int vertexBufferOffset = tileIndex * UNIQUE_VERTICES_PER_TILE * WaterVertex::NUMBER_OF_ELEMENTS;
@@ -535,6 +535,7 @@ void WaterGenerator::bufferVertex(GLfloat *vertices, int offset, WaterVertex ver
   vertices[offset+0] = vertex.position.x;
   vertices[offset+1] = vertex.position.y;
   vertices[offset+2] = vertex.position.z;
+  vertices[offset+3] = vertex.animationOffset;
 }
 
 /**
@@ -549,8 +550,11 @@ void WaterGenerator::setupVBOAttributes() noexcept
 
 /**
 * @brief plain ctor
+* @param position water vertex XYZ position
+* @param animOffsetVec pair of XZ position dependent values crunched into an offset value for water animation
 */
-WaterGenerator::WaterVertex::WaterVertex(glm::vec3 position) noexcept
+WaterGenerator::WaterVertex::WaterVertex(glm::vec3 position, glm::vec2 animOffsetVec) noexcept
   :
-	position{ position.x - HALF_WORLD_WIDTH, position.y, position.z - HALF_WORLD_HEIGHT }
+	position{ position.x - HALF_WORLD_WIDTH, position.y, position.z - HALF_WORLD_HEIGHT },
+	animationOffset(animOffsetVec.x * X_POS_ANIM_MULTIPLIER + animOffsetVec.y * (animOffsetVec.x + X_POS_ANIM_OFFSET))
 {}

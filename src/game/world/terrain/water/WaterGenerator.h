@@ -48,13 +48,16 @@ private:
   */
   struct WaterVertex
   {
-    constexpr static unsigned int NUMBER_OF_ELEMENTS = 3;
-    WaterVertex(glm::vec3 position) noexcept;
+    constexpr static unsigned int NUMBER_OF_ELEMENTS = 4;
+	const float X_POS_ANIM_MULTIPLIER = 15.11f;
+	const float X_POS_ANIM_OFFSET = 121.197f;
+    WaterVertex(glm::vec3 position, glm::vec2 animationOffset) noexcept;
 
 	struct
 	{
 		float x, y, z;
 	} position;
+	float animationOffset;
   };
 
   enum DIRECTION : int {
