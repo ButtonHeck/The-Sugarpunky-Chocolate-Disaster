@@ -170,7 +170,7 @@ void Scene::drawWorld(const glm::mat4& projectionView,
   if (options[OPT_DRAW_LAND])
     landFacade.draw(lightDir, lightSpaceMatrices, projectionView, useShadows);
 
-  underwaterFacade.draw(lightDir, projectionView);
+  underwaterFacade.draw(lightDir, projectionView, useShadows);
 
   shoreFacade.draw(lightDir, lightSpaceMatrices, projectionView, useShadows, isDebugRender, false, false);
 
@@ -289,7 +289,7 @@ void Scene::drawWorldRefraction(const glm::mat4 &projectionView)
   const glm::vec3& lightDir = theSunFacade.getLightDir();
   const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices = shadowVolume.getLightSpaceMatrices();
 
-  underwaterFacade.draw(lightDir, projectionView);
+  underwaterFacade.draw(lightDir, projectionView, options[OPT_USE_SHADOWS]);
 
   glEnable(GL_CLIP_DISTANCE0);
   shoreFacade.draw(lightDir, lightSpaceMatrices, projectionView, false, false, false, true);

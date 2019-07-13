@@ -34,10 +34,12 @@ UnderwaterShader::UnderwaterShader(Shader &renderShader) noexcept
 * @brief updates shader program uniforms
 * @param lightDir sunlight direction vector
 * @param projectionView "projection * view" matrix
+* @param useDesaturation define whether to apply desaturation
 */
-void UnderwaterShader::update(const glm::vec3 &lightDir, const glm::mat4 &projectionView)
+void UnderwaterShader::update(const glm::vec3 &lightDir, const glm::mat4 &projectionView, bool useDesaturation)
 {
   renderShader.use();
   renderShader.setMat4("u_projectionView", projectionView);
   renderShader.setVec3("u_lightDir", -lightDir);
+  renderShader.setBool("u_useDesaturation", useDesaturation);
 }

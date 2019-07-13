@@ -36,10 +36,11 @@ UnderwaterFacade::UnderwaterFacade(Shader &renderShader) noexcept
 * @brief handles rendering routine
 * @param lightDir sunlight direction vector
 * @param projectionView "projection * view" matrix
+* @param useDesaturation define whether to apply desaturation
 */
-void UnderwaterFacade::draw(const glm::vec3 &lightDir, const glm::mat4& projectionView)
+void UnderwaterFacade::draw(const glm::vec3 &lightDir, const glm::mat4& projectionView, bool useDesaturation)
 {
   BENCHMARK("UnderwaterRenderer: draw", true);
-  shader.update(lightDir, projectionView);
+  shader.update(lightDir, projectionView, useDesaturation);
   renderer.render();
 }

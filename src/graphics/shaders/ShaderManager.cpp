@@ -156,6 +156,8 @@ void ShaderManager::setupConstantUniforms(const ScreenResolution& screenResoluti
   shader->setInt("u_shoreDiffuse[1]", TEX_SHORE_2);
   shader->setInt("u_diffuseMixMap", TEX_DIFFUSE_MIX_MAP);
   shader->setInt("u_normalMap", TEX_TERRAIN_NORMAL);
+  shader->setInt("u_underwaterDiffuse", TEX_UNDERWATER_DIFFUSE);
+  shader->setInt("u_bottomReliefDiffuse", TEX_UNDERWATER_RELIEF);
   shader->setFloat("u_normalMapTilingReciprocal", NORMAL_MAP_TILING_RECIPROCAL);
   shader->setFloat("u_mapDimensionReciprocal", 1.0f / (float)WORLD_WIDTH);
   shader->setInt("u_shadowMap", TEX_DEPTH_MAP_SUN);
@@ -166,7 +168,7 @@ void ShaderManager::setupConstantUniforms(const ScreenResolution& screenResoluti
   shader->setFloat("u_ambientNight", 0.03f);
 
   bindShaderUnit(shader, SHADER_UNDERWATER);
-  shader->setInt("u_underwater_diffuse", TEX_UNDERWATER_DIFFUSE);
+  shader->setInt("u_underwaterDiffuse", TEX_UNDERWATER_DIFFUSE);
   shader->setInt("u_bottomReliefDiffuse", TEX_UNDERWATER_RELIEF);
   shader->setInt("u_normalMap", TEX_TERRAIN_NORMAL);
   shader->setFloat("u_normalMapTilingReciprocal", NORMAL_MAP_TILING_RECIPROCAL);

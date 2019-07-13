@@ -5,7 +5,7 @@ out vec4 o_FragColor;
 in vec2  v_FragPosXZ;
 in vec2  v_TexCoords;
 
-uniform sampler2D u_underwater_diffuse;
+uniform sampler2D u_underwaterDiffuse;
 uniform sampler2D u_bottomReliefDiffuse;
 uniform sampler2D u_normalMap;
 uniform float     u_normalMapTilingReciprocal;
@@ -13,6 +13,7 @@ uniform float     u_mapDimensionReciprocal;
 uniform vec3      u_lightDir;
 uniform float     u_ambientDay;
 uniform float     u_ambientNight;
+uniform bool	  u_useDesaturation;
 
 const vec3  NORMAL = vec3(0.0, 1.0, 0.0);
 const float MAX_DESATURATING_VALUE = 0.3;
@@ -21,7 +22,7 @@ const float MAX_DESATURATING_VALUE = 0.3;
 
 void main()
 {
-    vec4 sampledDiffuse = texture(u_underwater_diffuse, v_TexCoords);
+    vec4 sampledDiffuse = texture(u_underwaterDiffuse, v_TexCoords);
 
     @include shadingVariables.ifs
 
@@ -42,7 +43,10 @@ void main()
     resultColor = ambientColor + diffuseColor;
     o_FragColor = vec4(resultColor, sampledDiffuse.a);
 
-    //calculation of this value depends on how much diffuse have influence on a fragment's color
-    float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, diffuseComponent);
-    ext_desaturate(o_FragColor, desaturatingValue);
+	if(u_useDesaturation)
+	{
+		//calculation of this value depends on how much diffuse have influence on a fragment's color
+		float desaturatingValue = mix(0.0, MAX_DESATURATING_VALUE, diffuseComponent);
+		ext_desaturate(o_FragColor, desaturatingValue);
+	}
 }

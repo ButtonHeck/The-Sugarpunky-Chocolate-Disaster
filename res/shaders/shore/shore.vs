@@ -19,11 +19,11 @@ const float TERRAIN_TYPE_HEIGHT_DAMP_FACTOR = 1.75;
 
 out vec3  v_FragPos;
 out vec2  v_TexCoords;
-//v_TerrainTypeMix - define how much land or shore texture to use for a fragment
-out float v_TerrainTypeMix;
+//v_ShoreLandMix - define how much land or shore texture to use for a fragment
+out float v_ShoreLandMix;
+//v_ShoreUnderwaterMix - define how much underwater or shore texture to use for a fragment
+out float v_ShoreUnderwaterMix;
 out vec3  v_Normal;
-//v_AlphaValue - applied to the alpha component of a fragment to create smooth transition to the underwater surface
-out float v_AlphaValue;
 
 void main()
 {
@@ -38,7 +38,7 @@ void main()
     v_Normal = i_normal;
 
     float terrainSplattingRatio = texture(u_diffuseMixMap, i_pos.xz * u_mapDimensionReciprocal + 0.5).g;
-    v_TerrainTypeMix = i_pos.y * TERRAIN_TYPE_HEIGHT_DAMP_FACTOR + 1.5 - terrainSplattingRatio * 0.5;
+    v_ShoreLandMix = i_pos.y * TERRAIN_TYPE_HEIGHT_DAMP_FACTOR + 1.5 - terrainSplattingRatio * 0.5;
     //for this its okay to clamp in a vertex shader stage
-    v_AlphaValue = clamp((i_pos.y + u_underwaterSurfaceLevel) * 0.5 - terrainSplattingRatio * 0.25, 0.0, 1.0);
+    v_ShoreUnderwaterMix = 1.0 - clamp((i_pos.y + u_underwaterSurfaceLevel) * 0.5 - 0.1, 0.0, 1.0);
 }

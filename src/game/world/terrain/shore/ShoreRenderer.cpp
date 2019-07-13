@@ -31,14 +31,12 @@ ShoreRenderer::ShoreRenderer(ShoreGenerator &generator) noexcept
 {}
 
 /**
-* @brief sends draw call to OpenGL with blending enabled
+* @brief sends draw call to OpenGL
 */
 void ShoreRenderer::render()
 {
   generator.basicGLBuffers.bind(VAO);
-  glEnable(GL_BLEND);
   glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
-  glDisable(GL_BLEND);
 }
 
 /**
