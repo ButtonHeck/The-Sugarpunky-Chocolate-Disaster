@@ -37,8 +37,10 @@ void main()
     v_TexCoords = i_texCoords;
     v_Normal = i_normal;
 
-    float terrainSplattingRatio = texture(u_diffuseMixMap, i_pos.xz * u_mapDimensionReciprocal + 0.5).g;
-    v_ShoreLandMix = i_pos.y * TERRAIN_TYPE_HEIGHT_DAMP_FACTOR + 1.5 - terrainSplattingRatio * 0.5;
+	float terrainSplattingOffset = texture(u_diffuseMixMap, i_pos.xz * u_mapDimensionReciprocal * 0.125 + 0.5).g * 2;
+	terrainSplattingOffset = max(terrainSplattingOffset, 0.6);
+	v_ShoreLandMix = 0.4 + i_pos.y * TERRAIN_TYPE_HEIGHT_DAMP_FACTOR + terrainSplattingOffset;
+
     //for this its okay to clamp in a vertex shader stage
     v_ShoreUnderwaterMix = 1.0 - clamp((i_pos.y + u_underwaterSurfaceLevel) * 0.5 - 0.1, 0.0, 1.0);
 }
