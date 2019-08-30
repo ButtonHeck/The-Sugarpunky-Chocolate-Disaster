@@ -14,7 +14,8 @@ uniform bool      u_useClipDistanceReflection;
 uniform bool      u_useClipDistanceRefraction;
 
 const vec4  CLIP_PLANE_REFLECTION = vec4(0.0, 1.0, 0.0, u_waterLevel);
-const vec4  CLIP_PLANE_REFRACTION = vec4(0.0, -1.0, 0.0, -u_waterLevel);
+const float CLIP_PLANE_REFRACTION_DISTANCE_OFFSET = -1.6;
+const vec4  CLIP_PLANE_REFRACTION = vec4(0.0, -1.0, 0.0, -u_waterLevel + CLIP_PLANE_REFRACTION_DISTANCE_OFFSET);
 const float TERRAIN_TYPE_HEIGHT_DAMP_FACTOR = 1.75;
 
 out vec3  v_FragPos;
