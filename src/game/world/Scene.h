@@ -47,52 +47,56 @@ class ShadowVolume;
 class Scene
 {
 public:
-  Scene(ShaderManager& shaderManager, Options& options, TextureManager& textureManager, const ScreenResolution& screenResolution, const ShadowVolume& shadowVolume);
+	Scene( ShaderManager & shaderManager, 
+		   Options & options, 
+		   TextureManager & textureManager, 
+		   const ScreenResolution & screenResolution, 
+		   const ShadowVolume & shadowVolume );
 
-  //subsystems functions
-  void setup();
-  void recreate();
-  void load();
-  void serialize(std::ofstream& output);
-  void deserialize(std::ifstream& input);
+	//subsystems functions
+	void setup();
+	void recreate();
+	void load();
+	void serialize( std::ofstream & output );
+	void deserialize( std::ifstream & input );
 
-  //rendering stuff
-  void drawWorld(const glm::mat4 &projectionView,
-                 const glm::mat4 &ambienceProjectionView,
-                 const Frustum &viewFrustum,
-                 const Frustum &cullingViewFrustum,
-                 const Camera &camera,
-                 MouseInputManager& mouseInput);
-  void drawWorldDepthmap(bool grassCastShadow);
-  void drawWorldReflection(const glm::mat4 &projectionView,
-                           const glm::mat4 &ambienceProjectionView,
-                           const Frustum &cullingViewFrustum,
-                           const Camera &camera);
-  void drawWorldRefraction(const glm::mat4 &projectionView);
+	//rendering stuff
+	void drawWorld( const glm::mat4 & projectionView,
+					const glm::mat4 & ambienceProjectionView,
+					const Frustum & viewFrustum,
+					const Frustum & cullingViewFrustum,
+					const Camera & camera,
+					MouseInputManager & mouseInput );
+	void drawWorldDepthmap( bool grassCastShadow );
+	void drawWorldReflection( const glm::mat4 & projectionView,
+							  const glm::mat4 & ambienceProjectionView,
+							  const Frustum & cullingViewFrustum,
+							  const Camera & camera );
+	void drawWorldRefraction( const glm::mat4 & projectionView );
 
-  //getters
-  WaterFacade &getWaterFacade() noexcept;
-  HillsFacade &getHillsFacade() noexcept;
-  PlantsFacade &getPlantsFacade() noexcept;
-  TheSunFacade &getSunFacade() noexcept;
-  SkysphereFacade &getSkysphereFacade() noexcept;
-  LandFacade &getLandFacade() noexcept;
+	//getters
+	WaterFacade & getWaterFacade() noexcept;
+	HillsFacade & getHillsFacade() noexcept;
+	PlantsFacade & getPlantsFacade() noexcept;
+	TheSunFacade & getSunFacade() noexcept;
+	SkysphereFacade & getSkysphereFacade() noexcept;
+	LandFacade & getLandFacade() noexcept;
 
 private:
-  ShaderManager& shaderManager;
-  Options& options;
-  TextureManager& textureManager;
-  const ShadowVolume& shadowVolume;
+	ShaderManager & shaderManager;
+	Options & options;
+	TextureManager & textureManager;
+	const ShadowVolume & shadowVolume;
 
-  WaterFacade waterFacade;
-  HillsFacade hillsFacade;
-  ShoreFacade shoreFacade;
-  BuildableFacade buildableFacade;
-  PlantsFacade plantsFacade;
-  SkyboxFacade skyboxFacade;
-  TheSunFacade theSunFacade;
-  UnderwaterFacade underwaterFacade;
-  LandFacade landFacade;
-  LensFlareFacade lensFlareFacade;
-  SkysphereFacade skysphereFacade;
+	WaterFacade waterFacade;
+	HillsFacade hillsFacade;
+	ShoreFacade shoreFacade;
+	BuildableFacade buildableFacade;
+	PlantsFacade plantsFacade;
+	SkyboxFacade skyboxFacade;
+	TheSunFacade theSunFacade;
+	UnderwaterFacade underwaterFacade;
+	LandFacade landFacade;
+	LensFlareFacade lensFlareFacade;
+	SkysphereFacade skysphereFacade;
 };

@@ -26,11 +26,10 @@
  * @brief Constructor with hardcoded paths for (hemi)sphere models
  * @param renderShader compiled shader program fed to personal shader manager
  */
-SkysphereFacade::SkysphereFacade(Shader& renderShader)
-  :
-    theSunAmbientLightingHemisphere("environment/hemisphere/hemisphere.obj"),
-    starsSkysphere("environment/sphere/sphere.obj", glm::rotate(glm::mat4(), glm::radians(94.0f), glm::vec3(1.0f, 0.0f, -0.5f))),
-    shader(renderShader)
+SkysphereFacade::SkysphereFacade( Shader & renderShader )
+	: theSunAmbientLightingHemisphere( "environment/hemisphere/hemisphere.obj" )
+	, starsSkysphere( "environment/sphere/sphere.obj", glm::rotate( glm::mat4(), glm::radians( 94.0f ), glm::vec3( 1.0f, 0.0f, -0.5f ) ) )
+	, shader( renderShader )
 {}
 
 /**
@@ -40,18 +39,18 @@ SkysphereFacade::SkysphereFacade(Shader& renderShader)
  * @param projectionView Projection*View matrix
  * @param lightDir direction of the sunlight (directional lighting)
  */
-void SkysphereFacade::draw(const glm::mat4 &transform,
-                           const glm::mat4 &projectionView,
-                           const glm::vec3 &lightDir)
+void SkysphereFacade::draw( const glm::mat4 & transform,
+							const glm::mat4 & projectionView,
+							const glm::vec3 & lightDir )
 {
-  shader.update(projectionView, lightDir);
-  shader.setSkysphereType(SKYSPHERE_AMBIENT_LIGHTING, transform);
-  theSunAmbientLightingHemisphere.draw();
-  shader.setSkysphereType(SKYSPHERE_STARS, starsSkysphere.getRotationTransform());
-  starsSkysphere.draw();
+	shader.update( projectionView, lightDir );
+	shader.setSkysphereType( SKYSPHERE_AMBIENT_LIGHTING, transform );
+	theSunAmbientLightingHemisphere.draw();
+	shader.setSkysphereType( SKYSPHERE_STARS, starsSkysphere.getRotationTransform() );
+	starsSkysphere.draw();
 }
 
-void SkysphereFacade::moveStarsSkysphere(float angleDegrees)
+void SkysphereFacade::moveStarsSkysphere( float angleDegrees )
 {
-  starsSkysphere.rotate(angleDegrees, SKYSPHERE_STARS_ROTATION);
+	starsSkysphere.rotate( angleDegrees, SKYSPHERE_STARS_ROTATION );
 }

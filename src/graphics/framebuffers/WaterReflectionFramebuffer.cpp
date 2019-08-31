@@ -25,11 +25,10 @@
 /**
 * @brief plain ctor, additionally sends create renderbuffer call to OpenGL
 */
-WaterReflectionFramebuffer::WaterReflectionFramebuffer(TextureManager &textureManager) noexcept
-  :
-    Framebuffer(textureManager)
+WaterReflectionFramebuffer::WaterReflectionFramebuffer( TextureManager & textureManager ) noexcept
+	: Framebuffer( textureManager )
 {
-  glCreateRenderbuffers(1, &rbo);
+	glCreateRenderbuffers( 1, &rbo );
 }
 
 /**
@@ -37,7 +36,7 @@ WaterReflectionFramebuffer::WaterReflectionFramebuffer(TextureManager &textureMa
 */
 WaterReflectionFramebuffer::~WaterReflectionFramebuffer()
 {
-  glDeleteRenderbuffers(1, &rbo);
+	glDeleteRenderbuffers( 1, &rbo );
 }
 
 /**
@@ -45,11 +44,11 @@ WaterReflectionFramebuffer::~WaterReflectionFramebuffer()
 */
 void WaterReflectionFramebuffer::setup()
 {
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureManager.get(TEX_FRAME_WATER_REFLECTION), 0);
-  glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
-  checkStatus();
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer( GL_FRAMEBUFFER, fbo );
+	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureManager.get( TEX_FRAME_WATER_REFLECTION ), 0 );
+	glBindRenderbuffer( GL_RENDERBUFFER, rbo );
+	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT );
+	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo );
+	checkStatus();
+	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 }

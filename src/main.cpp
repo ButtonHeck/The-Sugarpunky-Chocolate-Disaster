@@ -33,72 +33,73 @@ float debug_sunSpeed = 2.0f;
 
 int main()
 {
-  //initialize GLFW stuff
-  glfwSetErrorCallback([](int, const char* msg)
-  {
-      Logger::log("Error with GLFW library: %\n", msg);
-    });
-  if (!glfwInit())
-    throw std::runtime_error("Error while loading GLFW\n");
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	//initialize GLFW stuff
+	glfwSetErrorCallback( []( int,
+							  const char * msg )
+	{
+		Logger::log( "Error with GLFW library: %\n", msg );
+	} );
+	if( !glfwInit() )
+		throw std::runtime_error( "Error while loading GLFW\n" );
+	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 4 );
+	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 5 );
+	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
 #ifdef _DEBUG
-  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+	glfwWindowHint( GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE );
 #endif
-  GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-  const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
-  ScreenResolution screenResolution(vidmode->width, vidmode->height);
-  GLFWwindow* window = glfwCreateWindow(screenResolution.getWidth(), screenResolution.getHeight(), "The Sugarpunky Chocolate Disaster", monitor, 0);
-  glfwMakeContextCurrent(window);
+	GLFWmonitor * monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode * vidmode = glfwGetVideoMode( monitor );
+	ScreenResolution screenResolution( vidmode->width, vidmode->height );
+	GLFWwindow * window = glfwCreateWindow( screenResolution.getWidth(), screenResolution.getHeight(), "The Sugarpunky Chocolate Disaster", monitor, nullptr );
+	glfwMakeContextCurrent( window );
 
-  //initialize GLEW
-  glewExperimental = GL_TRUE;
-  glewInit();
+	//initialize GLEW
+	glewExperimental = GL_TRUE;
+	glewInit();
 
 #ifdef _DEBUG
-  Logger::log("%\n", glfwGetVersionString());
-  GLint flags;
-  glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-  if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
-  {
-	  glEnable(GL_DEBUG_OUTPUT);
-	  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-	  glDebugMessageCallback(Logger::glDebugCallback, nullptr);
-	  glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-  }
+	Logger::log( "%\n", glfwGetVersionString() );
+	GLint flags;
+	glGetIntegerv( GL_CONTEXT_FLAGS, &flags );
+	if( flags & GL_CONTEXT_FLAG_DEBUG_BIT )
+	{
+		glEnable( GL_DEBUG_OUTPUT );
+		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
+		glDebugMessageCallback( Logger::glDebugCallback, nullptr );
+		glDebugMessageControl( GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE );
+	}
 #endif
 
-  //explicitly make non-current from this thread, as the context will mainly be used in the game child thread
-  glfwMakeContextCurrent(NULL);
+	//explicitly make non-current from this thread, as the context will mainly be used in the game child thread
+	glfwMakeContextCurrent( NULL );
 
-  std::thread gameThread([&]()
-  {
-	  glfwMakeContextCurrent(window);
-	  /*
-	   * compiler gives warning if I try to allocate Game object in stack memory,
-	   * on the other hand, using smart pointer for this only because of warning is overkill,
-	   * so, plain old new/delete is ok here
-	   */
-	  Game* game = new Game(window, screenResolution);
-	  game->setup();
-	  while (!glfwWindowShouldClose(window))
-	  {
-		  game->loop();
-	  }
-	  delete game;
-  });
+	std::thread gameThread( [&]()
+	{
+		glfwMakeContextCurrent( window );
+		/*
+		 * compiler gives warning if I try to allocate Game object in stack memory,
+		 * on the other hand, using smart pointer for this only because of warning is overkill,
+		 * so, plain old new/delete is ok here
+		 */
+		Game* game = new Game( window, screenResolution );
+		game->setup();
+		while( !glfwWindowShouldClose( window ) )
+		{
+			game->loop();
+		}
+		delete game;
+	} );
 
-  //don't know why pollEvents function is working as we nullified current context for this thread, but it works.
-  while (!glfwWindowShouldClose(window))
-  {
-	  glfwPollEvents();
-	  //~0.5ms delay of mouse/key input is applicable
-	  std::this_thread::sleep_for(std::chrono::microseconds(500));
-  }
-  gameThread.join();
+	//don't know why pollEvents function is working as we nullified current context for this thread, but it works.
+	while( !glfwWindowShouldClose( window ) )
+	{
+		glfwPollEvents();
+		//~0.5ms delay of mouse/key input is applicable
+		std::this_thread::sleep_for( std::chrono::microseconds( 500 ) );
+	}
+	gameThread.join();
 
-  //cleanup
-  glfwDestroyWindow(window);
-  glfwTerminate();
+	//cleanup
+	glfwDestroyWindow( window );
+	glfwTerminate();
 }

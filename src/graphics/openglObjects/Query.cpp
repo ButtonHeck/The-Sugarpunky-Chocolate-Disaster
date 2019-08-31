@@ -24,11 +24,10 @@
 * @brief plain ctor. Sends create query of a given type command to OpenGL
 * @param type GL defined type of this query
 */
-Query::Query(GLuint type) noexcept
-  :
-    type(type)
+Query::Query( GLuint type ) noexcept
+	: type( type )
 {
-  glCreateQueries(type, 1, &id);
+	glCreateQueries( type, 1, &id );
 }
 
 /**
@@ -36,7 +35,7 @@ Query::Query(GLuint type) noexcept
 */
 Query::~Query()
 {
-  glDeleteQueries(1, &id);
+	glDeleteQueries( 1, &id );
 }
 
 /**
@@ -44,8 +43,8 @@ Query::~Query()
 */
 void Query::start() noexcept
 {
-  glBeginQuery(type, id);
-  inUse = true;
+	glBeginQuery( type, id );
+	inUse = true;
 }
 
 /**
@@ -53,7 +52,7 @@ void Query::start() noexcept
 */
 void Query::end() noexcept
 {
-  glEndQuery(type);
+	glEndQuery( type );
 }
 
 /**
@@ -61,8 +60,8 @@ void Query::end() noexcept
 */
 bool Query::isResultAvailable() noexcept
 {
-  glGetQueryObjectuiv(id, GL_QUERY_RESULT_AVAILABLE, &resultAvailable);
-  return resultAvailable;
+	glGetQueryObjectuiv( id, GL_QUERY_RESULT_AVAILABLE, &resultAvailable );
+	return resultAvailable;
 }
 
 /**
@@ -70,27 +69,27 @@ bool Query::isResultAvailable() noexcept
 */
 GLuint Query::requestResult() noexcept
 {
-  inUse = false;
-  glGetQueryObjectuiv(id, GL_QUERY_RESULT, &result);
-  return result;
+	inUse = false;
+	glGetQueryObjectuiv( id, GL_QUERY_RESULT, &result );
+	return result;
 }
 
 /**
-* @brief similar to request version, but do not forces OpenGL to load result from GPU, 
+* @brief similar to request version, but do not forces OpenGL to load result from GPU,
 * it just returns whatever is stored in local variable
 */
 GLuint Query::getResult() const noexcept
 {
-  return result;
+	return result;
 }
 
 /**
-* @note a query is in 'inUse' state from the client point of view if glBeginQuery call has been made 
-* and result of a query has NOT yet been returned by GPU. 
+* @note a query is in 'inUse' state from the client point of view if glBeginQuery call has been made
+* and result of a query has NOT yet been returned by GPU.
 * e.g. glEndQuery without subsequent glGetQueryObjectuiv(result) call does NOT change the 'inUse' state.
 * This decision was made on purpose to avoid CPU stalling when GPU is on its business
 */
 bool Query::isInUse() const noexcept
 {
-  return inUse;
+	return inUse;
 }

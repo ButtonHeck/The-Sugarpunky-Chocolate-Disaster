@@ -26,11 +26,12 @@
 * @param cullingShader shader program used for offscreen rendering with frustum culling
 * @param normalsShader shader program used for onscreen rendering of water normals
 */
-WaterFacade::WaterFacade(Shader &renderShader, Shader &cullingShader, Shader &normalsShader)
-  :
-    shaders(renderShader, cullingShader, normalsShader),
-    generator(shaders),
-    renderer(shaders, generator)
+WaterFacade::WaterFacade( Shader & renderShader, 
+						  Shader & cullingShader, 
+						  Shader & normalsShader )
+	: shaders( renderShader, cullingShader, normalsShader )
+	, generator( shaders )
+	, renderer( shaders, generator )
 {}
 
 /**
@@ -38,7 +39,7 @@ WaterFacade::WaterFacade(Shader &renderShader, Shader &cullingShader, Shader &no
 */
 void WaterFacade::setup()
 {
-  generator.setup();
+	generator.setup();
 }
 
 /**
@@ -46,25 +47,25 @@ void WaterFacade::setup()
 */
 void WaterFacade::setupConsiderTerrain()
 {
-  generator.setupConsiderTerrain();
+	generator.setupConsiderTerrain();
 }
 
 /**
 * @brief delegates serialization call to generator
 * @param output file stream to write data to
 */
-void WaterFacade::serialize(std::ofstream &output)
+void WaterFacade::serialize( std::ofstream & output )
 {
-  generator.serialize(output);
+	generator.serialize( output );
 }
 
 /**
 * @brief delegates deserialization call to generator
 * @param input file stream to read data from
 */
-void WaterFacade::deserialize(std::ifstream &input)
+void WaterFacade::deserialize( std::ifstream & input )
 {
-  generator.deserialize(input);
+	generator.deserialize( input );
 }
 
 /**
@@ -77,36 +78,36 @@ void WaterFacade::deserialize(std::ifstream &input)
 * @param useFrustumCulling defines whether frustum culling mode is on
 * @param useDebugRender defines whether debug rendering mode is on
 */
-void WaterFacade::draw(const glm::vec3 &lightDir,
-                       const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                       const glm::mat4& projectionView,
-                       const glm::vec3 &viewPosition,
-                       const Frustum &viewFrustum,
-                       bool useFrustumCulling,
-                       bool useDebugRender)
+void WaterFacade::draw( const glm::vec3 & lightDir,
+						const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+						const glm::mat4 & projectionView,
+						const glm::vec3 & viewPosition,
+						const Frustum & viewFrustum,
+						bool useFrustumCulling,
+						bool useDebugRender )
 {
-  shaders.update(lightDir,
-                 lightSpaceMatrices,
-                 projectionView,
-                 viewPosition,
-                 viewFrustum,
-                 useFrustumCulling);
-  shaders.debugRenderMode(false);
-  renderer.render(useFrustumCulling);
+	shaders.update( lightDir,
+					lightSpaceMatrices,
+					projectionView,
+					viewPosition,
+					viewFrustum,
+					useFrustumCulling );
+	shaders.debugRenderMode( false );
+	renderer.render( useFrustumCulling );
 
-  //temporary code for visual debugging
-  if (useDebugRender)
-    {
-      shaders.debugRenderMode(true);
-      renderer.debugRender(GL_TRIANGLES);
-      shaders.updateNormals(projectionView);
-      renderer.debugRender(GL_POINTS);
-    }
+	//temporary code for visual debugging
+	if( useDebugRender )
+	{
+		shaders.debugRenderMode( true );
+		renderer.debugRender( GL_TRIANGLES );
+		shaders.updateNormals( projectionView );
+		renderer.debugRender( GL_POINTS );
+	}
 }
 
-const map2D_f &WaterFacade::getMap() const noexcept
+const map2D_f & WaterFacade::getMap() const noexcept
 {
-  return generator.getMap();
+	return generator.getMap();
 }
 
 /**
@@ -114,5 +115,5 @@ const map2D_f &WaterFacade::getMap() const noexcept
 */
 bool WaterFacade::hasWaterInFrame() const noexcept
 {
-  return renderer.anySamplesPassed();
+	return renderer.anySamplesPassed();
 }

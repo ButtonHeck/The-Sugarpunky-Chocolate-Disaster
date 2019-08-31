@@ -28,18 +28,18 @@ class ScreenResolution;
 class Shader;
 
 /**
-* @brief manager for all shader programs in the game. 
-* Responsible for holding shader programs and initializing their 'constant' uniforms 
+* @brief manager for all shader programs in the game.
+* Responsible for holding shader programs and initializing their 'constant' uniforms
 * (the ones that just set once at the beginning)
 */
 class ShaderManager
 {
 public:
-  ShaderManager() noexcept;
-  virtual ~ShaderManager();
-  void setupConstantUniforms(const ScreenResolution &screenResolution);
-  Shader& get(SHADER_UNIT type);
+	ShaderManager() noexcept;
+	virtual ~ShaderManager();
+	void setupConstantUniforms( const ScreenResolution & screenResolution );
+	Shader & get( SHADER_UNIT type );
 
 private:
-  std::unordered_map<int, Shader> shaders;
+	std::unordered_map<int, Shader> shaders;
 };

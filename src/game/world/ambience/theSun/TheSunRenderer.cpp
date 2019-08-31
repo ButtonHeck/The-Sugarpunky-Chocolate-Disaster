@@ -25,11 +25,10 @@
 /**
  * @param theSun entity to peek VAO from during rendering
  */
-TheSunRenderer::TheSunRenderer(TheSun& theSun) noexcept
-  :
-    theSun(theSun),
-    samplesPassedQuery(GL_SAMPLES_PASSED),
-    pointSize(0.0f)
+TheSunRenderer::TheSunRenderer( TheSun & theSun ) noexcept
+	: theSun( theSun )
+	, samplesPassedQuery( GL_SAMPLES_PASSED )
+	, pointSize( 0.0f )
 {}
 
 /**
@@ -37,40 +36,45 @@ TheSunRenderer::TheSunRenderer(TheSun& theSun) noexcept
  * @param doOcclusionTest define whether or not occlusion query takes place during rendering
  * @param useReflectionPointSize a flag indicating what point size to use
  */
-void TheSunRenderer::render(bool doOcclusionTest, bool useReflectionPointSize)
+void TheSunRenderer::render( bool doOcclusionTest, 
+							 bool useReflectionPointSize )
 {
-  BENCHMARK("SunRenderer: draw", true);
-  glPointSize(useReflectionPointSize ? reflectionPointSize : pointSize);
-  theSun.basicGLBuffers.bind(VAO);
-  if (doOcclusionTest && !samplesPassedQuery.isInUse())
-    {
-      samplesPassedQuery.start();
-      glDrawArrays(GL_POINTS, 0, 1);
-      samplesPassedQuery.end();
-    }
-  else
-    glDrawArrays(GL_POINTS, 0, 1);
+	BENCHMARK( "SunRenderer: draw", true );
+	glPointSize( useReflectionPointSize ? reflectionPointSize : pointSize );
+	theSun.basicGLBuffers.bind( VAO );
+	if( doOcclusionTest && !samplesPassedQuery.isInUse() )
+	{
+		samplesPassedQuery.start();
+		glDrawArrays( GL_POINTS, 0, 1 );
+		samplesPassedQuery.end();
+	}
+	else
+	{
+		glDrawArrays( GL_POINTS, 0, 1 );
+	}
 
-  if (samplesPassedQuery.isResultAvailable())
-    samplesPassedQuery.requestResult();
+	if( samplesPassedQuery.isResultAvailable() )
+	{
+		samplesPassedQuery.requestResult();
+	}
 }
 
 GLuint TheSunRenderer::getSamplesPassedQueryResult() const noexcept
 {
-  return samplesPassedQuery.getResult();
+	return samplesPassedQuery.getResult();
 }
 
-void TheSunRenderer::setPointSize(float pointSize) noexcept
+void TheSunRenderer::setPointSize( float pointSize ) noexcept
 {
-  this->pointSize = pointSize;
+	this->pointSize = pointSize;
 }
 
-void TheSunRenderer::setReflectionPointSize(float pointSize) noexcept
+void TheSunRenderer::setReflectionPointSize( float pointSize ) noexcept
 {
-  this->reflectionPointSize = pointSize;
+	this->reflectionPointSize = pointSize;
 }
 
 float TheSunRenderer::getPointSize() const noexcept
 {
-  return pointSize;
+	return pointSize;
 }

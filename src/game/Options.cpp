@@ -25,49 +25,49 @@
 */
 Options::Options() noexcept
 {
-  options[OPT_DRAW_TREES] = true;
-  options[OPT_ANIMATE_WATER] = true;
-  options[OPT_DRAW_DEBUG_TEXT] = true;
-  options[OPT_RECREATE_TERRAIN_REQUEST] = false;
-  options[OPT_SAVE_REQUEST] = false;
-  options[OPT_LOAD_REQUEST] = false;
-  options[OPT_SHOW_CURSOR] = false;
-  options[OPT_DRAW_BUILDABLE] = false;
-  options[OPT_HILLS_CULLING] = true;
-  options[OPT_WATER_CULLING] = false;
-  options[OPT_USE_MULTISAMPLING] = true;
-  options[OPT_USE_SHADOWS] = true;
-  options[OPT_DRAW_LAND] = true;
-  options[OPT_DRAW_WATER] = true;
-  options[OPT_MODELS_LAND_BLENDING] = true;
-  options[OPT_MODELS_PHONG_SHADING] = true;
-  options[OPT_POLYGON_LINE] = false;
-  options[OPT_DEBUG_RENDER] = false;
-  options[OPT_SHADOW_CAMERA_FIXED] = false;
-  options[OPT_USE_SHADOW_CAMERA_MATRIX] = false;
-  options[OPT_CSM_VISUALIZATION] = false;
-  options[OPT_FRUSTUM_VISUALIZATION] = true;
-  options[OPT_EXPECTED_VOLUME_VISUALIZATION] = true;
-  options[OPT_ACTUAL_VOLUME_VISUALIZATION] = true;
-  options[OPT_USE_DOF] = true;
-  options[OPT_GRASS_SHADOW] = false;
-  options[OPT_SHOW_VRAM_AVAILABLE] = false;
+	options[OPT_DRAW_TREES] = true;
+	options[OPT_ANIMATE_WATER] = true;
+	options[OPT_DRAW_DEBUG_TEXT] = true;
+	options[OPT_RECREATE_TERRAIN_REQUEST] = false;
+	options[OPT_SAVE_REQUEST] = false;
+	options[OPT_LOAD_REQUEST] = false;
+	options[OPT_SHOW_CURSOR] = false;
+	options[OPT_DRAW_BUILDABLE] = false;
+	options[OPT_HILLS_CULLING] = true;
+	options[OPT_WATER_CULLING] = false;
+	options[OPT_USE_MULTISAMPLING] = true;
+	options[OPT_USE_SHADOWS] = true;
+	options[OPT_DRAW_LAND] = true;
+	options[OPT_DRAW_WATER] = true;
+	options[OPT_MODELS_LAND_BLENDING] = true;
+	options[OPT_MODELS_PHONG_SHADING] = true;
+	options[OPT_POLYGON_LINE] = false;
+	options[OPT_DEBUG_RENDER] = false;
+	options[OPT_SHADOW_CAMERA_FIXED] = false;
+	options[OPT_USE_SHADOW_CAMERA_MATRIX] = false;
+	options[OPT_CSM_VISUALIZATION] = false;
+	options[OPT_FRUSTUM_VISUALIZATION] = true;
+	options[OPT_EXPECTED_VOLUME_VISUALIZATION] = true;
+	options[OPT_ACTUAL_VOLUME_VISUALIZATION] = true;
+	options[OPT_USE_DOF] = true;
+	options[OPT_GRASS_SHADOW] = false;
+	options[OPT_SHOW_VRAM_AVAILABLE] = false;
 }
 
 /**
 * @brief utility operator overloading that just returns bool value for a given option
 * @param option option to check
 */
-std::bitset<OPTIONS_COUNT>::reference Options::operator[](OPTION option)
+std::bitset<OPTIONS_COUNT>::reference Options::operator[]( OPTION option )
 {
-  return options[option];
+	return options[option];
 }
 
 /**
 * @brief switches option state
 * @param option option to switch
 */
-void Options::toggle(OPTION option)
+void Options::toggle( OPTION option )
 {
-  options.flip(option);
+	options.flip( option );
 }

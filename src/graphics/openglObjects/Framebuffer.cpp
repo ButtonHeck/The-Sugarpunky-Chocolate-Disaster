@@ -25,11 +25,10 @@
 /**
 * @brief plain ctor. Creates a framebuffer object on the OpenGL side
 */
-Framebuffer::Framebuffer(TextureManager &textureManager) noexcept
-  :
-    textureManager(textureManager)
+Framebuffer::Framebuffer( TextureManager & textureManager ) noexcept
+	: textureManager( textureManager )
 {
-  glCreateFramebuffers(1, &fbo);
+	glCreateFramebuffers( 1, &fbo );
 }
 
 /**
@@ -37,17 +36,19 @@ Framebuffer::Framebuffer(TextureManager &textureManager) noexcept
 */
 Framebuffer::~Framebuffer()
 {
-  glDeleteFramebuffers(1, &fbo);
+	glDeleteFramebuffers( 1, &fbo );
 }
 
 /**
-* @brief validates framebuffer object. 
+* @brief validates framebuffer object.
 * @note Any bindings and initialization is done in descendent framebuffer classes
 */
 void Framebuffer::checkStatus()
 {
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    Logger::log("Framebuffer is not complete\n");
+	if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+	{
+		Logger::log( "Framebuffer is not complete\n" );
+	}
 }
 
 /**
@@ -55,10 +56,11 @@ void Framebuffer::checkStatus()
 * @param viewportWidth width of a viewport used with this fbo
 * @param viewportHeight height of a viewport used with this fbo
 */
-void Framebuffer::bindToViewport(int viewportWidth, int viewportHeight) noexcept
+void Framebuffer::bindToViewport( int viewportWidth, 
+								  int viewportHeight ) noexcept
 {
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  glViewport(0, 0, viewportWidth, viewportHeight);
+	glBindFramebuffer( GL_FRAMEBUFFER, fbo );
+	glViewport( 0, 0, viewportWidth, viewportHeight );
 }
 
 /**
@@ -66,8 +68,9 @@ void Framebuffer::bindToViewport(int viewportWidth, int viewportHeight) noexcept
 * @param viewportWidth width of a viewport used after this fbo has been used
 * @param viewportHeight height of a viewport used after this fbo has been used
 */
-void Framebuffer::unbindToViewport(int viewportWidth, int viewportHeight) noexcept
+void Framebuffer::unbindToViewport( int viewportWidth, 
+									int viewportHeight ) noexcept
 {
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glViewport(0, 0, viewportWidth, viewportHeight);
+	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+	glViewport( 0, 0, viewportWidth, viewportHeight );
 }

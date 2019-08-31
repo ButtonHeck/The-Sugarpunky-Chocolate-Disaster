@@ -29,46 +29,47 @@
 * @param camera player's camera
 * @param shadowCamera auxiliary shadow regions defining camera
 */
-SaveLoadManager::SaveLoadManager(Scene &scene, Camera& camera, Camera &shadowCamera) noexcept
-  :
-    scene(scene),
-    camera(camera),
-    shadowCamera(shadowCamera)
+SaveLoadManager::SaveLoadManager( Scene & scene, 
+								  Camera & camera, 
+								  Camera & shadowCamera ) noexcept
+	: scene( scene )
+	, camera( camera )
+	, shadowCamera( shadowCamera )
 {}
 
 /**
 * @brief handles file saving routine
 * @param filename string file name to write data to
 */
-bool SaveLoadManager::saveToFile(const std::string &filename)
+bool SaveLoadManager::saveToFile( const std::string & filename )
 {
-  std::ofstream output(filename);
-  if (!output)
-    {
-      Logger::log("Could not open file for saving: %\n", filename.c_str());
-      return false;
-    }
-  scene.serialize(output);
-  camera.serialize(output);
-  output.close();
-  return true;
+	std::ofstream output( filename );
+	if( !output )
+	{
+		Logger::log( "Could not open file for saving: %\n", filename.c_str() );
+		return false;
+	}
+	scene.serialize( output );
+	camera.serialize( output );
+	output.close();
+	return true;
 }
 
 /**
 * @brief handles file loading routine
 * @param filename string file name to read data from
 */
-bool SaveLoadManager::loadFromFile(const std::string &filename)
+bool SaveLoadManager::loadFromFile( const std::string & filename )
 {
-  std::ifstream input(filename);
-  if (!input)
-    {
-      Logger::log("Could not open file for loading: %\n", filename.c_str());
-      return false;
-    }
-  scene.deserialize(input);
-  camera.deserialize(input);
-  shadowCamera = camera; //temporary assignment as long as shadowCamera exists in application code
-  input.close();
-  return true;
+	std::ifstream input( filename );
+	if( !input )
+	{
+		Logger::log( "Could not open file for loading: %\n", filename.c_str() );
+		return false;
+	}
+	scene.deserialize( input );
+	camera.deserialize( input );
+	shadowCamera = camera; //temporary assignment as long as shadowCamera exists in application code
+	input.close();
+	return true;
 }

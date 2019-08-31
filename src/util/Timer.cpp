@@ -27,12 +27,11 @@
 * @brief plain ctor, initializes frame time with the timestamp of this constructor invocation
 */
 Timer::Timer() noexcept
-	:
-	frameTime(chronoClock::now()),
-	currentTime(frameTime),
-	frames(0),
-	fps(0),
-	updateCount(0)
+	: frameTime( chronoClock::now() )
+	, currentTime( frameTime )
+	, frames( 0 )
+	, fps( 0 )
+	, updateCount( 0 )
 {}
 
 /**
@@ -50,13 +49,13 @@ float Timer::tick()
 	currentTime = chronoClock::now();
 
 	//update FPS value
-	if (std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - frameTime).count() > 1000)
+	if( std::chrono::duration_cast<std::chrono::milliseconds>( currentTime - frameTime ).count() > 1000 )
 	{
 		frameTime = currentTime;
 		fps = frames;
-		if (updateCount > 1)
+		if( updateCount > 1 )
 		{
-			BenchmarkTimer::printFrameBenchmarks(updateCount, fps);
+			BenchmarkTimer::printFrameBenchmarks( updateCount, fps );
 			BenchmarkTimer::resetFrameBenchmarks();
 		}
 		frames = 0;

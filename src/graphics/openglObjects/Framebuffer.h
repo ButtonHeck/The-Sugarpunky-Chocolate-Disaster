@@ -31,14 +31,16 @@ class TextureManager;
 class Framebuffer
 {
 public:
-  Framebuffer(TextureManager& textureManager) noexcept;
-  virtual ~Framebuffer();
-  virtual void setup() = 0;
-  void checkStatus();
-  void bindToViewport(int viewportWidth, int viewportHeight) noexcept;
-  void unbindToViewport(int viewportWidth, int viewportHeight) noexcept;
+	Framebuffer( TextureManager & textureManager ) noexcept;
+	virtual ~Framebuffer();
+	virtual void setup() = 0;
+	void checkStatus();
+	void bindToViewport( int viewportWidth, 
+						 int viewportHeight ) noexcept;
+	void unbindToViewport( int viewportWidth, 
+						   int viewportHeight ) noexcept;
 
 protected:
-  GLuint fbo;
-  TextureManager& textureManager;
+	GLuint fbo;
+	TextureManager & textureManager;
 };

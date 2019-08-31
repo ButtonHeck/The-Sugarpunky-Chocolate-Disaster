@@ -27,11 +27,11 @@
 * @param buildableRenderShader shader used to render buidable tiles
 * @param selectedRenderShader shader used to render selected tile
 */
-BuildableFacade::BuildableFacade(Shader &buildableRenderShader, Shader &selectedRenderShader) noexcept
-  :
-    shader(buildableRenderShader, selectedRenderShader),
-    generator(),
-    renderer(generator)
+BuildableFacade::BuildableFacade( Shader & buildableRenderShader, 
+								  Shader & selectedRenderShader ) noexcept
+	: shader( buildableRenderShader, selectedRenderShader )
+	, generator()
+	, renderer( generator )
 {}
 
 /**
@@ -39,22 +39,23 @@ BuildableFacade::BuildableFacade(Shader &buildableRenderShader, Shader &selected
 * @param landMap map of the land tiles
 * @param hillsMap map of the hill tiles
 */
-void BuildableFacade::setup(const map2D_f &landMap, const map2D_f &hillsMap)
+void BuildableFacade::setup( const map2D_f & landMap, 
+							 const map2D_f & hillsMap )
 {
-  generator.setup(landMap, hillsMap);
+	generator.setup( landMap, hillsMap );
 }
 
 /**
 * @brief launches buildable tiles rendering routine
 * @param projectionView "projection * view" matrix fed to the shader
 */
-void BuildableFacade::drawBuildable(const glm::mat4& projectionView)
+void BuildableFacade::drawBuildable( const glm::mat4 & projectionView )
 {
-  shader.updateBuildable(projectionView);
-  {
-    BENCHMARK("Buildable: draw buildable", true);
-    renderer.renderBuildable();
-  }
+	shader.updateBuildable( projectionView );
+	{
+		BENCHMARK( "Buildable: draw buildable", true );
+		renderer.renderBuildable();
+	}
 }
 
 /**
@@ -62,21 +63,22 @@ void BuildableFacade::drawBuildable(const glm::mat4& projectionView)
 * @param projectionView "projection * view" matrix fed to the shader
 * @param mouseInput mouse input object used to pick cursor current map coordinates
 */
-void BuildableFacade::drawSelected(const glm::mat4& projectionView, MouseInputManager& mouseInput)
+void BuildableFacade::drawSelected( const glm::mat4 & projectionView, 
+									MouseInputManager & mouseInput )
 {
-  if (generator.getMap()[mouseInput.getCursorWorldZ()][mouseInput.getCursorWorldX()] != 0)
-    {
-      BENCHMARK("Buildable: draw selected", true);
-      glm::vec4 translationVector(-HALF_WORLD_WIDTH + mouseInput.getCursorWorldX(), 0.01f, -HALF_WORLD_HEIGHT + mouseInput.getCursorWorldZ(), 0.0f);
-      shader.updateSelected(projectionView, translationVector);
-      renderer.renderSelected();
-    }
+	if( generator.getMap()[mouseInput.getCursorWorldZ()][mouseInput.getCursorWorldX()] != 0 )
+	{
+		BENCHMARK( "Buildable: draw selected", true );
+		glm::vec4 translationVector( -HALF_WORLD_WIDTH + mouseInput.getCursorWorldX(), 0.01f, -HALF_WORLD_HEIGHT + mouseInput.getCursorWorldZ(), 0.0f );
+		shader.updateSelected( projectionView, translationVector );
+		renderer.renderSelected();
+	}
 }
 
 /**
 * @brief getter of the buildable map
 */
-const map2D_f &BuildableFacade::getMap() const noexcept
+const map2D_f & BuildableFacade::getMap() const noexcept
 {
-  return generator.getMap();
+	return generator.getMap();
 }

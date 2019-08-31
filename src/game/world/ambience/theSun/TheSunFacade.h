@@ -34,18 +34,23 @@ class ScreenResolution;
 class TheSunFacade
 {
 public:
-  TheSunFacade(Shader& renderShader, const ScreenResolution& screenResolution) noexcept;
-  void move(float angleDegrees);
-  void moveAbsolutePosition(float angleDegrees);
-  void draw(const glm::mat4 &skyProjectionView, bool doOcclusionTest, bool useReflectionPointSize);
-  const glm::vec3 &getPosition() const noexcept;
-  const glm::vec3 &getLightDir() const noexcept;
-  const glm::mat4 &getRotationTransform() const noexcept;
-  GLfloat getSunFlareBrightness(bool multisampled, float viewPositionY) const;
+	TheSunFacade( Shader & renderShader, 
+				  const ScreenResolution & screenResolution ) noexcept;
+	void move( float angleDegrees );
+	void moveAbsolutePosition( float angleDegrees );
+	void draw( const glm::mat4 & skyProjectionView, 
+			   bool doOcclusionTest, 
+			   bool useReflectionPointSize );
+	const glm::vec3 & getPosition() const noexcept;
+	const glm::vec3 & getLightDir() const noexcept;
+	const glm::mat4 & getRotationTransform() const noexcept;
+	GLfloat getSunFlareBrightness( bool multisampled, 
+								   float viewPositionY ) const;
 
 private:
-  TheSun theSun;
-  TheSunShader shader;
-  TheSunRenderer renderer;
-  GLfloat maxSamplesPassedMultisampling, maxSamplesPassed;
+	TheSun theSun;
+	TheSunShader shader;
+	TheSunRenderer renderer;
+	GLfloat maxSamplesPassedMultisampling;
+	GLfloat maxSamplesPassed;
 };

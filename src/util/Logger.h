@@ -27,32 +27,36 @@
 
 namespace Logger
 {
-  void log(const char* msg);
+	void log( const char * msg );
 
-  /**
-  * @brief prints log message to console
-  * @param pattern string pattern including wildcard symbols
-  * @param token templated data for wildcard
-  * @param rest other data for wildcarded format (for recursive parameterized calls)
-  */
-  template <typename T, typename... Args>
-  void log(const char* pattern, T token, Args... rest)
-  {
-    std::string message = std::string(pattern).append(token);
-	for (; *pattern != '\0'; pattern++) {
-		if (*pattern == '%') {
-			std::cout << token;
-			log(pattern + 1, rest...);
-			return;
+	/**
+	* @brief prints log message to console
+	* @param pattern string pattern including wildcard symbols
+	* @param token templated data for wildcard
+	* @param rest other data for wildcarded format (for recursive parameterized calls)
+	*/
+	template <typename T, typename... Args>
+	void log( const char * pattern, 
+			  T token, 
+			  Args... rest )
+	{
+		std::string message = std::string( pattern ).append( token );
+		for( ; *pattern != '\0'; pattern++ )
+		{
+			if( *pattern == '%' )
+			{
+				std::cout << token;
+				log( pattern + 1, rest... );
+				return;
+			}
+			std::cout << *pattern;
 		}
-		std::cout << *pattern;
 	}
-  }
-  void APIENTRY glDebugCallback(GLenum source,
-                                GLenum type,
-                                GLuint id,
-                                GLenum severity,
-                                GLsizei,
-                                const GLchar* glMessage,
-                                const void*);
+	void APIENTRY glDebugCallback( GLenum source,
+								   GLenum type,
+								   GLuint id,
+								   GLenum severity,
+								   GLsizei,
+								   const GLchar * glMessage,
+								   const void * );
 };

@@ -29,12 +29,14 @@
 class Skysphere
 {
 public:
-  Skysphere(const std::string& path, const glm::mat4 &initialTransform = glm::mat4());
-  void rotate(float angleDegrees, const glm::vec3& rotationVector);
-  void draw();
-  const glm::mat4& getRotationTransform() const noexcept;
+	Skysphere( const std::string & path, 
+			   const glm::mat4 & initialTransform = glm::mat4() );
+	void rotate( float angleDegrees, 
+				 const glm::vec3 & rotationVector );
+	void draw();
+	const glm::mat4 & getRotationTransform() const noexcept;
 
 private:
-  Model model;
-  glm::mat4 modelRotationTransform;
+	Model model;
+	glm::mat4 modelRotationTransform;
 };

@@ -26,20 +26,20 @@
 * @param buildableRenderShader shader used during buildable tiles rendering
 * @param selectedRenderShader shader used during selected tile rendering
 */
-BuildableShader::BuildableShader(Shader &buildableRenderShader, Shader &selectedRenderShader) noexcept
-  :
-    buildableRenderShader(buildableRenderShader),
-    selectedRenderShader(selectedRenderShader)
+BuildableShader::BuildableShader( Shader & buildableRenderShader, 
+								  Shader & selectedRenderShader ) noexcept
+	: buildableRenderShader( buildableRenderShader )
+	, selectedRenderShader( selectedRenderShader )
 {}
 
 /**
 * @brief updates necessary uniforms in buildable shader
 * @param projectionView "projection * view" matrix
 */
-void BuildableShader::updateBuildable(const glm::mat4 &projectionView)
+void BuildableShader::updateBuildable( const glm::mat4 & projectionView )
 {
-  buildableRenderShader.use();
-  buildableRenderShader.setMat4("u_projectionView", projectionView);
+	buildableRenderShader.use();
+	buildableRenderShader.setMat4( "u_projectionView", projectionView );
 }
 
 /**
@@ -47,9 +47,10 @@ void BuildableShader::updateBuildable(const glm::mat4 &projectionView)
 * @param projectionView "projection * view" matrix
 * @param selectedTranslation translation vector of the selected cell geometry
 */
-void BuildableShader::updateSelected(const glm::mat4 &projectionView, const glm::vec4 &selectedTranslation)
+void BuildableShader::updateSelected( const glm::mat4 & projectionView, 
+									  const glm::vec4 & selectedTranslation )
 {
-  selectedRenderShader.use();
-  selectedRenderShader.setMat4("u_projectionView", projectionView);
-  selectedRenderShader.setVec4("u_translation", selectedTranslation);
+	selectedRenderShader.use();
+	selectedRenderShader.setMat4( "u_projectionView", projectionView );
+	selectedRenderShader.setVec4( "u_translation", selectedTranslation );
 }

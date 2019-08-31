@@ -26,20 +26,22 @@ class Camera;
 class Scene;
 
 /**
-* @brief manager to file save/load operations. 
-* Responsible for handling file i/o streams, ordering serialization/deserialization calls of the game modules data 
+* @brief manager to file save/load operations.
+* Responsible for handling file i/o streams, ordering serialization/deserialization calls of the game modules data
 * that should be stored to or loaded from a file
 */
 class SaveLoadManager
 {
 public:
-  SaveLoadManager(Scene& scene, Camera& camera, Camera& shadowCamera) noexcept;
-  bool saveToFile(const std::string& filename);
-  bool loadFromFile(const std::string& filename);
+	SaveLoadManager( Scene & scene, 
+					 Camera & camera, 
+					 Camera & shadowCamera ) noexcept;
+	bool saveToFile( const std::string & filename );
+	bool loadFromFile( const std::string & filename );
 
 private:
-  Scene& scene;
-  Camera& camera;
-  /** @todo remove this in release version of the game */
-  Camera& shadowCamera;
+	Scene & scene;
+	Camera & camera;
+	/** @todo remove this in release version of the game */
+	Camera & shadowCamera;
 };

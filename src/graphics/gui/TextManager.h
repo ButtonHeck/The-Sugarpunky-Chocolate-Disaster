@@ -37,44 +37,52 @@ class MouseInputManager;
 class TextManager
 {
 public:
-  TextManager(const std::string& fontFile, const std::string& fontTexture, Shader& shader, const ScreenResolution &screenResolution);
-  void addDebugText(const Camera &camera,
-                    Options &options,
-                    const MouseInputManager& mouseInput,
-                    const glm::vec3 &sunPosition,
-                    unsigned int fps);
-  void drawText();
+	TextManager( const std::string & fontFile, 
+				 const std::string & fontTexture, 
+				 Shader & shader, 
+				 const ScreenResolution & screenResolution );
+	void addDebugText( const Camera & camera,
+					   Options & options,
+					   const MouseInputManager & mouseInput,
+					   const glm::vec3 & sunPosition,
+					   unsigned int fps );
+	void drawText();
 
 private:
-  constexpr static unsigned int MAX_BUFFER_SIZE = 1024 * 24;
-  const glm::vec2 DEFAULT_SCALE = glm::vec2(0.19f, 0.2f);
+	constexpr static unsigned int MAX_BUFFER_SIZE = 1024 * 24;
+	const glm::vec2 DEFAULT_SCALE = glm::vec2( 0.19f, 0.2f );
 
-  /**
-  * @brief representation of a glyph vertex as it is in the font shader
-  */
-  struct GlyphVertex
-  {
-    constexpr static unsigned int NUMBER_OF_ELEMENTS = 4;
-    GlyphVertex(glm::vec2 pos, glm::vec2 texCoords) noexcept;
-
-	struct
+	/**
+	* @brief representation of a glyph vertex as it is in the font shader
+	*/
+	struct GlyphVertex
 	{
-		float x, y;
-	} position;
-	struct
-	{
-		float x, y;
-	} texCoords;
-  };
+		constexpr static unsigned int NUMBER_OF_ELEMENTS = 4;
+		GlyphVertex( glm::vec2 pos, 
+					 glm::vec2 texCoords ) noexcept;
 
-  void addString(const std::string &text, GLfloat x, GLfloat y, const glm::vec2 &scale);
+		struct
+		{
+			float x, y;
+		} position;
+		struct
+		{
+			float x, y;
+		} texCoords;
+	};
 
-  FontLoader fontLoader;
-  Shader& shader;
-  const ScreenResolution& screenResolution;
-  glm::vec2 resolutionRelativeOffset;
-  glm::vec2 scale;
-  BufferCollection basicGLBuffers;
-  GLfloat vertexData[MAX_BUFFER_SIZE] = {0};
-  int bufferOffset, glyphsCount;
+	void addString( const std::string & text, 
+					GLfloat x, 
+					GLfloat y, 
+					const glm::vec2 & scale );
+
+	FontLoader fontLoader;
+	Shader & shader;
+	const ScreenResolution & screenResolution;
+	glm::vec2 resolutionRelativeOffset;
+	glm::vec2 scale;
+	BufferCollection basicGLBuffers;
+	GLfloat vertexData[MAX_BUFFER_SIZE] = { 0 };
+	int bufferOffset;
+	int glyphsCount;
 };

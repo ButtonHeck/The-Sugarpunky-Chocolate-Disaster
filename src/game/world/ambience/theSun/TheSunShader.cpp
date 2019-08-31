@@ -24,9 +24,8 @@
 /**
  * @param renderShader compiled shader program to use during rendering
  */
-TheSunShader::TheSunShader(Shader &renderShader) noexcept
-  :
-    renderShader(renderShader)
+TheSunShader::TheSunShader( Shader & renderShader ) noexcept
+	: renderShader( renderShader )
 {}
 
 /**
@@ -34,9 +33,10 @@ TheSunShader::TheSunShader(Shader &renderShader) noexcept
  * @param projectionView Projection*View matrix
  * @param model Model matrix
  */
-void TheSunShader::update(const glm::mat4 &projectionView, const glm::mat4& model)
+void TheSunShader::update( const glm::mat4 & projectionView, 
+						   const glm::mat4 & model )
 {
-  renderShader.use();
-  renderShader.setMat4("u_projectionView", projectionView);
-  renderShader.setMat4("u_model", model);
+	renderShader.use();
+	renderShader.setMat4( "u_projectionView", projectionView );
+	renderShader.setMat4( "u_model", model );
 }

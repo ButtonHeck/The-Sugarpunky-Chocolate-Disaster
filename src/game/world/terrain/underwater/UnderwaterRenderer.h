@@ -28,9 +28,9 @@ class UnderwaterSurface;
 class UnderwaterRenderer
 {
 public:
-  UnderwaterRenderer(UnderwaterSurface& surface) noexcept;
-  void render();
+	UnderwaterRenderer( UnderwaterSurface & surface ) noexcept;
+	void render();
 
 private:
-  UnderwaterSurface& surface;
+	UnderwaterSurface & surface;
 };

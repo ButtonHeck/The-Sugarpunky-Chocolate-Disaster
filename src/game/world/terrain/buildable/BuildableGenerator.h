@@ -30,18 +30,20 @@
 class BuildableGenerator : public Generator
 {
 public:
-  BuildableGenerator() noexcept;
-  virtual ~BuildableGenerator() = default;
-  void setup(const map2D_f &landMap, const map2D_f &hillsMap);
-  void createTiles();
+	BuildableGenerator() noexcept;
+	virtual ~BuildableGenerator() = default;
+	void setup( const map2D_f & landMap, 
+				const map2D_f & hillsMap );
+	void createTiles();
 
 private:
-  friend class BuildableRenderer;
-  const unsigned int UPPER_LEFT_CORNER_START_Y = 2;
-  const unsigned int UPPER_LEFT_CORNER_START_X = 1;
+	friend class BuildableRenderer;
 
-  void setupAndBindBuffers(BufferCollection& buffers);
-  void fillBufferData();
+	const unsigned int UPPER_LEFT_CORNER_START_Y = 2;
+	const unsigned int UPPER_LEFT_CORNER_START_X = 1;
 
-  BufferCollection selectedBuffers;
+	void setupAndBindBuffers( BufferCollection & buffers );
+	void fillBufferData();
+
+	BufferCollection selectedBuffers;
 };

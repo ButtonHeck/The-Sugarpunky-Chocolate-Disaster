@@ -24,25 +24,24 @@
 /**
  * @param basicGLBuffer buffer collection to fetch VAO from during rendering
  */
-LensFlareRenderer::LensFlareRenderer(BufferCollection &basicGLBuffer) noexcept
-  :
-    basicGLBuffer(basicGLBuffer)
+LensFlareRenderer::LensFlareRenderer( BufferCollection & basicGLBuffer ) noexcept
+	: basicGLBuffer( basicGLBuffer )
 {}
 
 /**
  * @brief setup appropriate OpenGL state and draw given number of points
  * @param numFlares flare points count to be drawn
  */
-void LensFlareRenderer::draw(unsigned int numFlares)
+void LensFlareRenderer::draw( unsigned int numFlares )
 {
-  basicGLBuffer.bind(VAO);
-  glEnable(GL_BLEND);
-  glEnable(GL_PROGRAM_POINT_SIZE);
-  glDepthMask(GL_FALSE); //do not write to depth buffer otherwise flares would occlude each other
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE); //apply additive blending
-  glDrawArrays(GL_POINTS, 0, numFlares);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //switch back to default blending function
-  glDepthMask(GL_TRUE); //switch back depth writing
-  glDisable(GL_PROGRAM_POINT_SIZE);
-  glDisable(GL_BLEND);
+	basicGLBuffer.bind( VAO );
+	glEnable( GL_BLEND );
+	glEnable( GL_PROGRAM_POINT_SIZE );
+	glDepthMask( GL_FALSE ); //do not write to depth buffer otherwise flares would occlude each other
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE ); //apply additive blending
+	glDrawArrays( GL_POINTS, 0, numFlares );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ); //switch back to default blending function
+	glDepthMask( GL_TRUE ); //switch back depth writing
+	glDisable( GL_PROGRAM_POINT_SIZE );
+	glDisable( GL_BLEND );
 }

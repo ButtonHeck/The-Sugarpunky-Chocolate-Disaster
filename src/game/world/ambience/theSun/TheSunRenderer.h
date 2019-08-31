@@ -32,18 +32,19 @@ class TheSun;
 class TheSunRenderer
 {
 public:
-  constexpr static float DEFAULT_SUN_POINT_SIZE = 64.0f;
+	constexpr static float DEFAULT_SUN_POINT_SIZE = 64.0f;
 
-  TheSunRenderer(TheSun& theSun) noexcept;
-  void render(bool doOcclusionTest, bool useReflectionPointSize);
-  GLuint getSamplesPassedQueryResult() const noexcept;
-  void setPointSize(float pointSize) noexcept;
-  void setReflectionPointSize(float pointSize) noexcept;
-  float getPointSize() const noexcept;
+	TheSunRenderer( TheSun & theSun ) noexcept;
+	void render( bool doOcclusionTest, 
+				 bool useReflectionPointSize );
+	GLuint getSamplesPassedQueryResult() const noexcept;
+	void setPointSize( float pointSize ) noexcept;
+	void setReflectionPointSize( float pointSize ) noexcept;
+	float getPointSize() const noexcept;
 
 private:
-  TheSun& theSun;
-  Query samplesPassedQuery;
-  float pointSize;
-  float reflectionPointSize;
+	TheSun & theSun;
+	Query samplesPassedQuery;
+	float pointSize;
+	float reflectionPointSize;
 };

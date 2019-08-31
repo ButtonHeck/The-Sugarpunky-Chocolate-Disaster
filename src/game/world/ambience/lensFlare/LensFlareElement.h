@@ -31,15 +31,16 @@
 class LensFlareElement
 {
 public:
-  LensFlareElement(float pointSize, GLuint textureID);
-  void setPosition(const glm::vec2 &position) noexcept;
-  const glm::vec2& getPosition() const noexcept;
-  float getPointSize() const noexcept;
-  GLuint getTextureID() const noexcept;
-  void adjustPointSize(float pointSizeDivisor) noexcept;
+	LensFlareElement( float pointSize, 
+					  GLuint textureID );
+	void setPosition( const glm::vec2 & position ) noexcept;
+	const glm::vec2 & getPosition() const noexcept;
+	float getPointSize() const noexcept;
+	GLuint getTextureID() const noexcept;
+	void adjustPointSize( float pointSizeDivisor ) noexcept;
 
 private:
-  glm::vec2 position;
-  float pointSize;
-  GLuint textureID;
+	glm::vec2 position;
+	float pointSize;
+	GLuint textureID;
 };

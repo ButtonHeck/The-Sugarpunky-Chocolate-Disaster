@@ -27,10 +27,10 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
-TextureLoader* Model::textureLoader;
-void Model::bindTextureLoader(TextureLoader &textureLoader) noexcept
+TextureLoader * Model::textureLoader;
+void Model::bindTextureLoader( TextureLoader & textureLoader ) noexcept
 {
-  Model::textureLoader = &textureLoader;
+	Model::textureLoader = &textureLoader;
 }
 
 /**
@@ -40,40 +40,44 @@ void Model::bindTextureLoader(TextureLoader &textureLoader) noexcept
  * @param numRepetitions defines how many times in a row this model would be used during allocation on the map
  * @param isInstanced defines whether this model would be rendered with instancing
  */
-Model::Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions, bool isInstanced)
-  :
-    isInstanced(isInstanced),
-    isLowPoly(isLowPoly),
-    numRepetitions(numRepetitions),
-    GPUDataManager(isLowPoly),
-    renderer(GPUDataManager.getBasicGLBuffers(), GPUDataManager.getDepthmapDIBO(), GPUDataManager.getReflectionDIBO())
+Model::Model( const std::string & path,
+			  bool isLowPoly,
+			  unsigned int numRepetitions,
+			  bool isInstanced )
+	: isInstanced( isInstanced )
+	, isLowPoly( isLowPoly )
+	, numRepetitions( numRepetitions )
+	, GPUDataManager( isLowPoly )
+	, renderer( GPUDataManager.getBasicGLBuffers(), GPUDataManager.getDepthmapDIBO(), GPUDataManager.getReflectionDIBO() )
 {
-  load(MODELS_DIR + path);
+	load( MODELS_DIR + path );
 }
 
 /**
  * @brief parses assimp data to own data storage
  * @param path model's relative path to preset models directory
  */
-void Model::load(const std::string &path)
+void Model::load( const std::string & path )
 {
-  Assimp::Importer importer;
-  const aiScene* scene = importer.ReadFile(path, aiProcess_CalcTangentSpace | 
-												 aiProcess_FlipUVs | 
-												 aiProcess_Triangulate | 
-												 aiProcess_JoinIdenticalVertices);
-  if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
-    Logger::log("Error while loading Assimp: %\n", importer.GetErrorString());
-  else
-  {
-	  directory = path.substr(0, path.find_last_of('/'));
-	  GLuint meshVertexIndexOffset = 0;
-	  processNode(scene->mRootNode, scene, meshVertexIndexOffset);
-	  GPUDataManager.setupBuffers(vertices, indices, isInstanced);
-	  //once we have model's data loaded to GPU memory we don't need it on the CPU side
-	  vertices.clear();
-	  indices.clear();
-  }
+	Assimp::Importer importer;
+	const aiScene * scene = importer.ReadFile( path, aiProcess_CalcTangentSpace |
+											   aiProcess_FlipUVs |
+											   aiProcess_Triangulate |
+											   aiProcess_JoinIdenticalVertices );
+	if( !scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE )
+	{
+		Logger::log( "Error while loading Assimp: %\n", importer.GetErrorString() );
+	}
+	else
+	{
+		directory = path.substr( 0, path.find_last_of( '/' ) );
+		GLuint meshVertexIndexOffset = 0;
+		processNode( scene->mRootNode, scene, meshVertexIndexOffset );
+		GPUDataManager.setupBuffers( vertices, indices, isInstanced );
+		//once we have model's data loaded to GPU memory we don't need it on the CPU side
+		vertices.clear();
+		indices.clear();
+	}
 }
 
 /**
@@ -82,22 +86,26 @@ void Model::load(const std::string &path)
  * @param scene model's scene
  * @param meshVertexIndexOffset offset applied for node vertices in the index buffer
  */
-void Model::processNode(const aiNode *node, const aiScene* scene, GLuint& meshVertexIndexOffset)
+void Model::processNode( const aiNode * node,
+						 const aiScene * scene,
+						 GLuint & meshVertexIndexOffset )
 {
-  static unsigned int diffuseSamplerIndex = 0, specularSamplerIndex = 0;
-  for (unsigned int meshIndex = 0; meshIndex < node->mNumMeshes; meshIndex++)
-    {
-      const aiMesh* mesh = scene->mMeshes[node->mMeshes[meshIndex]];
-      Mesh processedMesh = Mesh::generate(mesh, diffuseSamplerIndex, specularSamplerIndex, meshVertexIndexOffset);
-      const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-      loadMaterialTextures(material, aiTextureType_DIFFUSE, "u_textureDiffuse", diffuseSamplerIndex);
-      loadMaterialTextures(material, aiTextureType_SPECULAR, "u_textureSpecular", specularSamplerIndex);
-      vertices.insert(vertices.end(), processedMesh.getVertices().begin(), processedMesh.getVertices().end());
-      indices.insert(indices.end(), processedMesh.getIndices().begin(), processedMesh.getIndices().end());
-      meshVertexIndexOffset += processedMesh.getVertices().size();
-    }
-  for (unsigned int childNodeIndex = 0; childNodeIndex < node->mNumChildren; childNodeIndex++)
-    processNode(node->mChildren[childNodeIndex], scene, meshVertexIndexOffset);
+	static unsigned int diffuseSamplerIndex = 0, specularSamplerIndex = 0;
+	for( unsigned int meshIndex = 0; meshIndex < node->mNumMeshes; meshIndex++ )
+	{
+		const aiMesh * mesh = scene->mMeshes[node->mMeshes[meshIndex]];
+		Mesh processedMesh = Mesh::generate( mesh, diffuseSamplerIndex, specularSamplerIndex, meshVertexIndexOffset );
+		const aiMaterial * material = scene->mMaterials[mesh->mMaterialIndex];
+		loadMaterialTextures( material, aiTextureType_DIFFUSE, "u_textureDiffuse", diffuseSamplerIndex );
+		loadMaterialTextures( material, aiTextureType_SPECULAR, "u_textureSpecular", specularSamplerIndex );
+		vertices.insert( vertices.end(), processedMesh.getVertices().begin(), processedMesh.getVertices().end() );
+		indices.insert( indices.end(), processedMesh.getIndices().begin(), processedMesh.getIndices().end() );
+		meshVertexIndexOffset += processedMesh.getVertices().size();
+	}
+	for( unsigned int childNodeIndex = 0; childNodeIndex < node->mNumChildren; childNodeIndex++ )
+	{
+		processNode( node->mChildren[childNodeIndex], scene, meshVertexIndexOffset );
+	}
 }
 
 /**
@@ -107,33 +115,33 @@ void Model::processNode(const aiNode *node, const aiScene* scene, GLuint& meshVe
  * @param uniformName glsl uniform name for the texture
  * @param samplerIndex index for glsl sampler array in a shader
  */
-void Model::loadMaterialTextures(const aiMaterial *material,
-                                 aiTextureType type,
-                                 const std::string& uniformName,
-                                 unsigned int& samplerIndex)
+void Model::loadMaterialTextures( const aiMaterial * material,
+								  aiTextureType type,
+								  const std::string & uniformName,
+								  unsigned int & samplerIndex )
 {
-  for (unsigned int textureIndex = 0; textureIndex < material->GetTextureCount(type); textureIndex++)
-    {
-      aiString texturePath;
-      material->GetTexture(type, textureIndex, &texturePath);
-      std::string path = this->directory + '/' + texturePath.C_Str();
-      GLenum magFilter = type == aiTextureType_DIFFUSE ? GL_LINEAR : GL_NEAREST;
-      GLenum minFilter = type == aiTextureType_DIFFUSE ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
-      bool useNoSRGB = type == aiTextureType_SPECULAR;
-      GLuint texture = textureLoader->loadTexture(path, 0, GL_REPEAT, magFilter, minFilter, true, false, true, useNoSRGB);
-      BindlessTextureManager::emplaceBack(uniformName + "[" + std::to_string(samplerIndex) + "]", texture, BINDLESS_TEXTURE_MODEL);
-      samplerIndex++;
-    }
+	for( unsigned int textureIndex = 0; textureIndex < material->GetTextureCount( type ); textureIndex++ )
+	{
+		aiString texturePath;
+		material->GetTexture( type, textureIndex, &texturePath );
+		std::string path = this->directory + '/' + texturePath.C_Str();
+		GLenum magFilter = type == aiTextureType_DIFFUSE ? GL_LINEAR : GL_NEAREST;
+		GLenum minFilter = type == aiTextureType_DIFFUSE ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
+		bool useNoSRGB = type == aiTextureType_SPECULAR;
+		GLuint texture = textureLoader->loadTexture( path, 0, GL_REPEAT, magFilter, minFilter, true, false, true, useNoSRGB );
+		BindlessTextureManager::emplaceBack( uniformName + "[" + std::to_string( samplerIndex ) + "]", texture, BINDLESS_TEXTURE_MODEL );
+		samplerIndex++;
+	}
 }
 
 /**
  * @brief delegates a draw call to renderer
  * @param isShadow define whether depthmap or plain on-screen rendering mode is on
  */
-void Model::draw(bool isShadow)
+void Model::draw( bool isShadow )
 {
 	MODEL_INDIRECT_BUFFER_TYPE type = isShadow ? DEPTHMAP_OFFSCREEN : PLAIN_ONSCREEN;
-	renderer.render(type, GPUDataManager.getPrimitiveCount(type));
+	renderer.render( type, GPUDataManager.getPrimitiveCount( type ) );
 }
 
 /**
@@ -141,12 +149,12 @@ void Model::draw(bool isShadow)
 */
 void Model::drawWorldReflection()
 {
-	renderer.render(REFLECTION_ONSCREEN, GPUDataManager.getPrimitiveCount(REFLECTION_ONSCREEN));
+	renderer.render( REFLECTION_ONSCREEN, GPUDataManager.getPrimitiveCount( REFLECTION_ONSCREEN ) );
 }
 
 void Model::drawOneInstance()
 {
-  renderer.renderOneInstance(GPUDataManager.getIndicesCount());
+	renderer.renderOneInstance( GPUDataManager.getIndicesCount() );
 }
 
 /**
@@ -156,12 +164,12 @@ void Model::drawOneInstance()
  * @param loadingDistance rendering distance for full-res models
  * @param loadingDistanceShadow rendering distance for models' shadows
  */
-void Model::prepareIndirectBufferData(const std::vector<std::pair<ModelChunk, unsigned int>>& visibleChunks,
-                                      unsigned int modelIndex,
-                                      float loadingDistance,
-                                      float loadingDistanceShadow)
+void Model::prepareIndirectBufferData( const std::vector<std::pair<ModelChunk, unsigned int>> & visibleChunks,
+									   unsigned int modelIndex,
+									   float loadingDistance,
+									   float loadingDistanceShadow )
 {
-  GPUDataManager.prepareIndirectBufferData(visibleChunks, modelIndex, loadingDistance, loadingDistanceShadow);
+	GPUDataManager.prepareIndirectBufferData( visibleChunks, modelIndex, loadingDistance, loadingDistanceShadow );
 }
 
 /**
@@ -169,19 +177,19 @@ void Model::prepareIndirectBufferData(const std::vector<std::pair<ModelChunk, un
  */
 void Model::updateIndirectBufferData()
 {
-  GPUDataManager.updateIndirectBufferData();
+	GPUDataManager.updateIndirectBufferData();
 }
 
 /**
  * @brief delegates model's instances data loading to data manager
  * @param instanceMatrices instance matrices storage
  */
-void Model::loadModelInstances(const std::vector<glm::mat4> &instanceMatrices)
+void Model::loadModelInstances( const std::vector<glm::mat4> & instanceMatrices )
 {
-  GPUDataManager.loadModelInstancesData(instanceMatrices);
+	GPUDataManager.loadModelInstancesData( instanceMatrices );
 }
 
 unsigned int Model::getRepeatCount() const noexcept
 {
-  return numRepetitions;
+	return numRepetitions;
 }

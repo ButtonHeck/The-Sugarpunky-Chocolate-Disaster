@@ -33,54 +33,62 @@ class WaterShader;
 class WaterGenerator : public Generator
 {
 public:
-  WaterGenerator(WaterShader& shaders);
-  void setup();
-  void setupConsiderTerrain();
-  void createTiles();
+	WaterGenerator( WaterShader & shaders );
+	void setup();
+	void setupConsiderTerrain();
+	void createTiles();
 
 private:
-  constexpr static unsigned int RIVER_DIRECTION_CHANGE_DELAY = 48;
+	constexpr static unsigned int RIVER_DIRECTION_CHANGE_DELAY = 48;
 
-  friend class WaterRenderer;
+	friend class WaterRenderer;
 
-  /**
-  * @brief representation of a water vertex as it is in water shader
-  */
-  struct WaterVertex
-  {
-    constexpr static unsigned int NUMBER_OF_ELEMENTS = 4;
-	const float X_POS_ANIM_MULTIPLIER = 15.11f;
-	const float X_POS_ANIM_OFFSET = 121.197f;
-    WaterVertex(glm::vec3 position, glm::vec2 animationOffset) noexcept;
-
-	struct
+	/**
+	* @brief representation of a water vertex as it is in water shader
+	*/
+	struct WaterVertex
 	{
-		float x, y, z;
-	} position;
-	float animationOffset;
-  };
+		constexpr static unsigned int NUMBER_OF_ELEMENTS = 4;
+		const float X_POS_ANIM_MULTIPLIER = 15.11f;
+		const float X_POS_ANIM_OFFSET = 121.197f;
+		WaterVertex( glm::vec3 position, 
+					 glm::vec2 animationOffset ) noexcept;
 
-  enum DIRECTION : int {
-      UP = 0, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, UP_LEFT, NUM_DIRECTIONS
-  };
+		struct
+		{
+			float x, y, z;
+		} position;
+		float animationOffset;
+	};
 
-  void generateMap();
-  void expandWaterArea();
-  void setNewDirection(unsigned int &curveDistanceStep,
-                       unsigned int &curveMaxDistance,
-                       DIRECTION &currentDirection,
-                       DIRECTION validDirectionLeft,
-                       DIRECTION validDirectionRight) noexcept;
-  void fattenKernel(int x, int y, int &kernelCounter, int &riverWidthOffset, bool &riverWidthIncrease);
-  void bufferVertex(GLfloat* vertices, int offset, WaterVertex vertex) noexcept;
-  void setupVBOAttributes() noexcept;
-  void fillBufferData();
+	enum DIRECTION : int
+	{
+		UP = 0, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, UP_LEFT, NUM_DIRECTIONS
+	};
 
-  /** @note additional buffer collection containing data from transform feedback rendering */
-  BufferCollection culledBuffers;
-  WaterShader& shaders;
-  size_t numVertices;
-  size_t numTiles;
-  std::unique_ptr<GLfloat[]> vertices;
-  map2D_f postProcessMap;
+	void generateMap();
+	void expandWaterArea();
+	void setNewDirection( unsigned int & curveDistanceStep,
+						  unsigned int & curveMaxDistance,
+						  DIRECTION & currentDirection,
+						  DIRECTION validDirectionLeft,
+						  DIRECTION validDirectionRight ) noexcept;
+	void fattenKernel( int x, 
+					   int y, 
+					   int & kernelCounter, 
+					   int & riverWidthOffset, 
+					   bool & riverWidthIncrease );
+	void bufferVertex( GLfloat * vertices, 
+					   int offset, 
+					   WaterVertex vertex ) noexcept;
+	void setupVBOAttributes() noexcept;
+	void fillBufferData();
+
+	/** @note additional buffer collection containing data from transform feedback rendering */
+	BufferCollection culledBuffers;
+	WaterShader & shaders;
+	size_t numVertices;
+	size_t numTiles;
+	std::unique_ptr<GLfloat[]> vertices;
+	map2D_f postProcessMap;
 };

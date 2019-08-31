@@ -28,9 +28,9 @@ class HillsShader;
 
 namespace HILL_DENSITY
 {
-  constexpr float HILLS_THIN = 3.1f * (float)WORLD_WIDTH;
-  constexpr float HILLS_MEDIUM = 3.0f * (float)WORLD_WIDTH;
-  constexpr float HILLS_DENSE = 2.9f * (float)WORLD_WIDTH;
+	constexpr float HILLS_THIN = 3.1f * (float)WORLD_WIDTH;
+	constexpr float HILLS_MEDIUM = 3.0f * (float)WORLD_WIDTH;
+	constexpr float HILLS_DENSE = 2.9f * (float)WORLD_WIDTH;
 }
 
 /**
@@ -41,69 +41,77 @@ namespace HILL_DENSITY
 class HillsGenerator : public Generator
 {
 public:
-  HillsGenerator(HillsShader& shaders, const map2D_f& waterMap);
-  void setup();
-  void createTiles();
-  void createAuxiliaryMaps();
+	HillsGenerator( HillsShader & shaders, 
+					const map2D_f & waterMap );
+	void setup();
+	void createTiles();
+	void createAuxiliaryMaps();
 
 private:
-  friend class HillsRenderer;
-  friend class HillsFacade;
+	friend class HillsRenderer;
+	friend class HillsFacade;
 
-  /**
-  * @brief representation of the hill vertex as it is on the OpenGL side
-  */
-  struct HillVertex
-  {
-    constexpr static unsigned int NUMBER_OF_ELEMENTS = 14;
-    HillVertex(glm::vec3 pos,
-               glm::vec2 texCoords,
-               glm::vec3 normal,
-               glm::vec3 tangent,
-               glm::vec3 bitangent) noexcept;
-	struct 
+	/**
+	* @brief representation of the hill vertex as it is on the OpenGL side
+	*/
+	struct HillVertex
 	{
-		float x, y, z;
-	} position;
-	struct 
-	{
-		float x, y;
-	} texCoords;
-	struct
-	{
-		float x, y, z;
-	} normal;
-	struct
-	{
-		float x, y, z;;
-	} tangent;
-	struct
-	{
-		float x, y, z;
-	} bitangent;
-  };
+		constexpr static unsigned int NUMBER_OF_ELEMENTS = 14;
+		HillVertex( glm::vec3 pos,
+					glm::vec2 texCoords,
+					glm::vec3 normal,
+					glm::vec3 tangent,
+					glm::vec3 bitangent ) noexcept;
+		struct
+		{
+			float x, y, z;
+		} position;
+		struct
+		{
+			float x, y;
+		} texCoords;
+		struct
+		{
+			float x, y, z;
+		} normal;
+		struct
+		{
+			float x, y, z;;
+		} tangent;
+		struct
+		{
+			float x, y, z;
+		} bitangent;
+	};
 
-  void generateMap(int cycles, float density);
-  void generateKernel(int cycles, float density);
-  void fattenKernel(int cycles);
-  void bufferVertex(GLfloat* vertices, int offset, HillVertex vertex) noexcept;
-  void fillBufferData();
-  void setupVBOAttributes() noexcept;
-  bool hasWaterNearby(int centerX, int centerY, int radius);
-  void compressMap(float thresholdAbsValue, float ratio);
-  void updateMaxHeight();
-  void removePlateaus(float hubbleHeight);
-  void removeOrphanHills();
-  void smoothMapSinks();
-  void createTangentMap();
-  void createBitangentMap();
+	void generateMap( int cycles, 
+					  float density );
+	void generateKernel( int cycles, 
+						 float density );
+	void fattenKernel( int cycles );
+	void bufferVertex( GLfloat * vertices, 
+					   int offset, 
+					   HillVertex vertex ) noexcept;
+	void fillBufferData();
+	void setupVBOAttributes() noexcept;
+	bool hasWaterNearby( int centerX, 
+						 int centerY, 
+						 int radius );
+	void compressMap( float thresholdAbsValue, 
+					  float ratio );
+	void updateMaxHeight();
+	void removePlateaus( float hubbleHeight );
+	void removeOrphanHills();
+	void smoothMapSinks();
+	void createTangentMap();
+	void createBitangentMap();
 
-  BufferCollection culledBuffers;
-  HillsShader& shaders;
-  float maxHeight;
-  const map2D_f& waterMap;
-  map2D_vec3 normalMap;
-  map2D_vec3 tangentMap;
-  map2D_vec3 bitangentMap;
-  std::default_random_engine randomizer;
+	BufferCollection culledBuffers;
+	HillsShader & shaders;
+	float maxHeight;
+	const map2D_f & waterMap;
+	map2D_vec3 normalMap;
+	map2D_vec3 tangentMap;
+	map2D_vec3 bitangentMap;
+	std::default_random_engine randomizer;
 };

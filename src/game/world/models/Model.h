@@ -37,31 +37,40 @@ class ModelChunk;
 class Model
 {
 public:
-  Model(const std::string& path, bool isLowPoly, unsigned int numRepetitions = 1, bool isInstanced = true);
-  static void bindTextureLoader(TextureLoader& textureLoader) noexcept;
-  void draw(bool isShadow);
-  void drawWorldReflection();
-  void drawOneInstance();
-  void prepareIndirectBufferData(const std::vector<std::pair<ModelChunk, unsigned int> > &visibleChunks,
-                                 unsigned int modelIndex,
-                                 float loadingDistance,
-                                 float loadingDistanceShadow);
-  void updateIndirectBufferData();
-  void loadModelInstances(const std::vector<glm::mat4> &instanceMatrices);
-  unsigned int getRepeatCount() const noexcept;
+	Model( const std::string & path, 
+		   bool isLowPoly, 
+		   unsigned int numRepetitions = 1, 
+		   bool isInstanced = true );
+	static void bindTextureLoader( TextureLoader & textureLoader ) noexcept;
+	void draw( bool isShadow );
+	void drawWorldReflection();
+	void drawOneInstance();
+	void prepareIndirectBufferData( const std::vector<std::pair<ModelChunk, unsigned int> > & visibleChunks,
+									unsigned int modelIndex,
+									float loadingDistance,
+									float loadingDistanceShadow );
+	void updateIndirectBufferData();
+	void loadModelInstances( const std::vector<glm::mat4> & instanceMatrices );
+	unsigned int getRepeatCount() const noexcept;
 
 private:
-  static TextureLoader* textureLoader;
-  void load(const std::string& path);
-  void processNode(const aiNode *node, const aiScene* scene, GLuint &meshVertexIndexOffset);
-  void loadMaterialTextures(const aiMaterial *material, aiTextureType type, const std::string &typeName, unsigned int &textureIndex);
+	static TextureLoader * textureLoader;
 
-  std::string directory;
-  std::vector<Mesh::Vertex> vertices;
-  std::vector<GLuint> indices;
-  bool isInstanced;
-  bool isLowPoly;
-  unsigned int numRepetitions;
-  ModelGPUDataManager GPUDataManager;
-  ModelRenderer renderer;
+	void load( const std::string & path );
+	void processNode( const aiNode * node, 
+					  const aiScene * scene, 
+					  GLuint & meshVertexIndexOffset );
+	void loadMaterialTextures( const aiMaterial * material, 
+							   aiTextureType type, 
+							   const std::string & typeName, 
+							   unsigned int &textureIndex );
+
+	std::string directory;
+	std::vector<Mesh::Vertex> vertices;
+	std::vector<GLuint> indices;
+	bool isInstanced;
+	bool isLowPoly;
+	unsigned int numRepetitions;
+	ModelGPUDataManager GPUDataManager;
+	ModelRenderer renderer;
 };

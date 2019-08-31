@@ -25,28 +25,27 @@
  * @brief initialize member variables and setup array buffer
  */
 TheSun::TheSun() noexcept
-  :
-    ROTATION_VECTOR(0.0f, 0.0f, 1.0f),
-    basicGLBuffers(VAO | VBO),
-    currentPosition(HALF_WORLD_WIDTH_F, 0.0f, 0.0f)
+	: ROTATION_VECTOR( 0.0f, 0.0f, 1.0f )
+	, basicGLBuffers( VAO | VBO )
+	, currentPosition( HALF_WORLD_WIDTH_F, 0.0f, 0.0f )
 {
-  basicGLBuffers.bind(VAO | VBO);
-  GLfloat vertices[4] = {1.0f, 0.0f, 0.0f, 1.0f};
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
-  BufferCollection::bindZero(VAO | VBO);
+	basicGLBuffers.bind( VAO | VBO );
+	GLfloat vertices[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	glBufferData( GL_ARRAY_BUFFER, sizeof( vertices ), vertices, GL_STATIC_DRAW );
+	glEnableVertexAttribArray( 0 );
+	glVertexAttribPointer( 0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof( GLfloat ), 0 );
+	BufferCollection::bindZero( VAO | VBO );
 }
 
 /**
  * @brief calculates new position, light direction and updates transformation matrix
  * @param angleDegrees angle to rotate in degrees
  */
-void TheSun::move(float angleDegrees)
+void TheSun::move( float angleDegrees )
 {
-  currentPosition = glm::rotate(currentPosition, glm::radians(angleDegrees), ROTATION_VECTOR);
-  rotationTransform = glm::rotate(rotationTransform, glm::radians(angleDegrees), ROTATION_VECTOR);
-  lightDirTo = glm::normalize(-currentPosition);
+	currentPosition = glm::rotate( currentPosition, glm::radians( angleDegrees ), ROTATION_VECTOR );
+	rotationTransform = glm::rotate( rotationTransform, glm::radians( angleDegrees ), ROTATION_VECTOR );
+	lightDirTo = glm::normalize( -currentPosition );
 }
 
 /**
@@ -54,24 +53,24 @@ void TheSun::move(float angleDegrees)
  * @param angleDegrees angle to set in degrees
  * @todo TEST ONLY! remove this from the game release version
  */
-void TheSun::moveAbsolutePosition(float angleDegrees)
+void TheSun::moveAbsolutePosition( float angleDegrees )
 {
-  currentPosition = glm::rotate(START_POSITION, glm::radians(angleDegrees), ROTATION_VECTOR);
-  rotationTransform = glm::rotate(START_MODEL, glm::radians(angleDegrees), ROTATION_VECTOR);
-  lightDirTo = glm::normalize(-currentPosition);
+	currentPosition = glm::rotate( START_POSITION, glm::radians( angleDegrees ), ROTATION_VECTOR );
+	rotationTransform = glm::rotate( START_MODEL, glm::radians( angleDegrees ), ROTATION_VECTOR );
+	lightDirTo = glm::normalize( -currentPosition );
 }
 
-const glm::vec3& TheSun::getPosition() const noexcept
+const glm::vec3 & TheSun::getPosition() const noexcept
 {
-  return currentPosition;
+	return currentPosition;
 }
 
-const glm::vec3 &TheSun::getLightDir() const noexcept
+const glm::vec3 & TheSun::getLightDir() const noexcept
 {
-  return lightDirTo;
+	return lightDirTo;
 }
 
-const glm::mat4 &TheSun::getRotationTransform() const noexcept
+const glm::mat4 & TheSun::getRotationTransform() const noexcept
 {
-  return rotationTransform;
+	return rotationTransform;
 }

@@ -25,9 +25,8 @@
 * @brief plain ctor
 * @param surface underwater surface
 */
-UnderwaterRenderer::UnderwaterRenderer(UnderwaterSurface &surface) noexcept
-  :
-    surface(surface)
+UnderwaterRenderer::UnderwaterRenderer( UnderwaterSurface & surface ) noexcept
+	: surface( surface )
 {}
 
 /**
@@ -35,6 +34,6 @@ UnderwaterRenderer::UnderwaterRenderer(UnderwaterSurface &surface) noexcept
 */
 void UnderwaterRenderer::render()
 {
-  surface.basicGLBuffers.bind(VAO);
-  glDrawElements(GL_TRIANGLES, VERTICES_PER_QUAD, GL_UNSIGNED_BYTE, 0);
+	surface.basicGLBuffers.bind( VAO );
+	glDrawElements( GL_TRIANGLES, VERTICES_PER_QUAD, GL_UNSIGNED_BYTE, 0 );
 }

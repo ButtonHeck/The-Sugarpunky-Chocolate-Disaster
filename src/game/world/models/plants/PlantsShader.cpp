@@ -27,10 +27,10 @@
  * @param renderPhongShader compiled Phong shader program to use during rendering
  * @param renderGouraudShader compiled Gouraud shader program to use during rendering
  */
-PlantsShader::PlantsShader(Shader &renderPhongShader, Shader &renderGouraudShader) noexcept
-  :
-    renderPhongShader(renderPhongShader),
-    renderGouraudShader(renderGouraudShader)
+PlantsShader::PlantsShader( Shader & renderPhongShader,
+							Shader & renderGouraudShader ) noexcept
+	: renderPhongShader( renderPhongShader )
+	, renderGouraudShader( renderGouraudShader )
 {}
 
 /**
@@ -43,25 +43,25 @@ PlantsShader::PlantsShader(Shader &renderPhongShader, Shader &renderGouraudShade
  * @param useShadows define whether to use shadows
  * @param useLandBlending define whether to use blending
  */
-void PlantsShader::updateAllPlants(bool usePhongShading,
-                                   const glm::vec3 &lightDir,
-                                   const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                                   const glm::mat4 &projectionView,
-                                   const glm::vec3 &viewPosition,
-                                   bool useShadows,
-                                   bool useLandBlending)
+void PlantsShader::updateAllPlants( bool usePhongShading,
+									const glm::vec3 & lightDir,
+									const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+									const glm::mat4 & projectionView,
+									const glm::vec3 & viewPosition,
+									bool useShadows,
+									bool useLandBlending )
 {
-  currentShader = usePhongShading ? &renderPhongShader : &renderGouraudShader;
-  currentShader->use();
-  currentShader->setMat4("u_projectionView", projectionView);
-  currentShader->setVec3("u_viewPosition", viewPosition);
-  currentShader->setBool("u_shadowEnable", useShadows);
-  currentShader->setBool("u_useLandBlending", useLandBlending);
-  //send this as reverse direction
-  currentShader->setVec3("u_lightDir", -lightDir);
-  currentShader->setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrices[0]);
-  currentShader->setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrices[1]);
-  currentShader->setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrices[2]);
+	currentShader = usePhongShading ? &renderPhongShader : &renderGouraudShader;
+	currentShader->use();
+	currentShader->setMat4( "u_projectionView", projectionView );
+	currentShader->setVec3( "u_viewPosition", viewPosition );
+	currentShader->setBool( "u_shadowEnable", useShadows );
+	currentShader->setBool( "u_useLandBlending", useLandBlending );
+	//send this as reverse direction
+	currentShader->setVec3( "u_lightDir", -lightDir );
+	currentShader->setMat4( "u_lightSpaceMatrix[0]", lightSpaceMatrices[0] );
+	currentShader->setMat4( "u_lightSpaceMatrix[1]", lightSpaceMatrices[1] );
+	currentShader->setMat4( "u_lightSpaceMatrix[2]", lightSpaceMatrices[2] );
 }
 
 /**
@@ -69,23 +69,23 @@ void PlantsShader::updateAllPlants(bool usePhongShading,
  */
 void PlantsShader::updateGrassKeyframe()
 {
-  currentShader->setFloat("u_grassPosDistrubution", glfwGetTime() * 4.3f);
+	currentShader->setFloat( "u_grassPosDistrubution", glfwGetTime() * 4.3f );
 }
 
 /**
  * @brief sets integer "type" of current plant to draw, matches with shader source code types
  * @param type integer representation of plant type
  */
-void PlantsShader::setType(int type)
+void PlantsShader::setType( int type )
 {
-  currentShader->setInt("u_type", type);
+	currentShader->setInt( "u_type", type );
 }
 
 /**
  * @brief tells shader whether plain or low-poly model is currently being rendered
  * @param isLowPoly bool flag to shader program
  */
-void PlantsShader::setLowPolyMode(bool isLowPoly)
+void PlantsShader::setLowPolyMode( bool isLowPoly )
 {
-  currentShader->setBool("u_isLowPoly", isLowPoly);
+	currentShader->setBool( "u_isLowPoly", isLowPoly );
 }

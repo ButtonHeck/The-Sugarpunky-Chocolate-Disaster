@@ -27,35 +27,40 @@
 
 /**
 * @brief Generator for land terrain data. Has two types of storages: square tile chunks (that are not cut off by shore)
-* and cells chunks (non-square regions nearby shore). 
+* and cells chunks (non-square regions nearby shore).
 */
 class LandGenerator : public Generator
 {
 public:
-  LandGenerator() noexcept;
-  virtual ~LandGenerator() = default;
-  void setup(const map2D_f &shoreMap);
-  void updateCellsIndirectBuffer(const Frustum &frustum);
+	LandGenerator() noexcept;
+	virtual ~LandGenerator() = default;
+	void setup( const map2D_f & shoreMap );
+	void updateCellsIndirectBuffer( const Frustum & frustum );
 
 private:
-  friend class LandRenderer;
-  friend class LandFacade;
+	friend class LandRenderer;
+	friend class LandFacade;
 
-  void generateMap(const map2D_f &shoreMap);
-  void splitChunks(int chunkSize);
-  void splitCellChunks(int chunkSize);
-  void fillBufferData();
-  void fillCellBufferData();
-  void bufferData(BufferCollection &bufferCollection, GLfloat *buffer, size_t size);
-  void setupVBOAttributes() noexcept;
-  void setupVBOInstancedAttributes() noexcept;
-  void addIndirectBufferData(GLuint* buffer, GLuint& dataOffset, GLuint numInstances, GLuint instanceOffset) noexcept;
+	void generateMap( const map2D_f & shoreMap );
+	void splitChunks( int chunkSize );
+	void splitCellChunks( int chunkSize );
+	void fillBufferData();
+	void fillCellBufferData();
+	void bufferData( BufferCollection & bufferCollection, 
+					 GLfloat * buffer, 
+					 size_t size );
+	void setupVBOAttributes() noexcept;
+	void setupVBOInstancedAttributes() noexcept;
+	void addIndirectBufferData( GLuint * buffer, 
+								GLuint & dataOffset, 
+								GLuint numInstances, 
+								GLuint instanceOffset ) noexcept;
 
-  BufferCollection cellBuffers;
-  map2D_f chunkMap;
-  std::vector<TerrainTile> cellTiles;
-  std::default_random_engine randomizer;
-  std::vector<LandChunk> chunks;
-  std::vector<LandChunk> cellChunks;
-  GLuint cellPrimitiveCount;
+	BufferCollection cellBuffers;
+	map2D_f chunkMap;
+	std::vector<TerrainTile> cellTiles;
+	std::default_random_engine randomizer;
+	std::vector<LandChunk> chunks;
+	std::vector<LandChunk> cellChunks;
+	GLuint cellPrimitiveCount;
 };

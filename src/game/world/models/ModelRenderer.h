@@ -27,20 +27,21 @@
 class BufferCollection;
 
 /**
-* @brief renderer for model for both onscreen and depthmap modes. 
+* @brief renderer for model for both onscreen and depthmap modes.
 * Has two options: render only one model and instanced indirect rendering
 */
 class ModelRenderer
 {
 public:
-  ModelRenderer(BufferCollection& basicGLBuffers, 
-				BufferCollection& depthmapDIBO, 
-				BufferCollection& reflectionDIBO) noexcept;
-  void render(MODEL_INDIRECT_BUFFER_TYPE type, GLsizei primCount);
-  void renderOneInstance(GLsizei numIndices);
+	ModelRenderer( BufferCollection & basicGLBuffers,
+				   BufferCollection & depthmapDIBO,
+				   BufferCollection & reflectionDIBO ) noexcept;
+	void render( MODEL_INDIRECT_BUFFER_TYPE type, 
+				 GLsizei primCount );
+	void renderOneInstance( GLsizei numIndices );
 
 private:
-  BufferCollection& basicGLBuffers;
-  BufferCollection& depthmapDIBO;
-  BufferCollection& reflectionDIBO;
+	BufferCollection & basicGLBuffers;
+	BufferCollection & depthmapDIBO;
+	BufferCollection & reflectionDIBO;
 };

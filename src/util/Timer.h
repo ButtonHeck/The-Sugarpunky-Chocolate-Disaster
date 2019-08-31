@@ -28,14 +28,19 @@
 class Timer
 {
 public:
-  Timer() noexcept;
-  float tick();
-  unsigned int getFPS() noexcept;
+	Timer() noexcept;
+	float tick();
+	unsigned int getFPS() noexcept;
 
 private:
-  using chronoClock = std::chrono::high_resolution_clock;
+	using chronoClock = std::chrono::high_resolution_clock;
 
-  float lastTime, nowTime, delta;
-  decltype(chronoClock::now()) frameTime, currentTime;
-  unsigned int frames, fps, updateCount;
+	float lastTime;
+	float nowTime;
+	float delta;
+	decltype( chronoClock::now() ) frameTime;
+	decltype( frameTime ) currentTime;
+	unsigned int frames;
+	unsigned int fps;
+	unsigned int updateCount;
 };

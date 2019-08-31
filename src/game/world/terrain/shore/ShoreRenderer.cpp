@@ -25,9 +25,8 @@
 * @brief plain ctor
 * @param generator generator object to fetch vao from
 */
-ShoreRenderer::ShoreRenderer(ShoreGenerator &generator) noexcept
-  :
-    generator(generator)
+ShoreRenderer::ShoreRenderer( ShoreGenerator & generator ) noexcept
+	: generator( generator )
 {}
 
 /**
@@ -35,8 +34,8 @@ ShoreRenderer::ShoreRenderer(ShoreGenerator &generator) noexcept
 */
 void ShoreRenderer::render()
 {
-  generator.basicGLBuffers.bind(VAO);
-  glDrawElements(GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
+	generator.basicGLBuffers.bind( VAO );
+	glDrawElements( GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0 );
 }
 
 /**
@@ -44,14 +43,14 @@ void ShoreRenderer::render()
 * @param primitiveType GL defined primitive type to render
 * @todo remove this in release version of the game
 */
-void ShoreRenderer::debugRender(GLenum primitiveType)
+void ShoreRenderer::debugRender( GLenum primitiveType )
 {
-  generator.basicGLBuffers.bind(VAO);
-  glLineWidth(2.0f);
-  glDisable(GL_CULL_FACE);
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  glDrawElements(primitiveType, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0);
-  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  glEnable(GL_CULL_FACE);
-  glLineWidth(1.0f);
+	generator.basicGLBuffers.bind( VAO );
+	glLineWidth( 2.0f );
+	glDisable( GL_CULL_FACE );
+	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+	glDrawElements( primitiveType, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0 );
+	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+	glEnable( GL_CULL_FACE );
+	glLineWidth( 1.0f );
 }

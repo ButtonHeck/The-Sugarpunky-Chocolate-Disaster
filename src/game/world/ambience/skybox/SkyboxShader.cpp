@@ -24,9 +24,8 @@
 /**
  * @param renderShader precompiled shader program which is used during rendering
  */
-SkyboxShader::SkyboxShader(Shader &renderShader) noexcept
-  :
-    renderShader(renderShader)
+SkyboxShader::SkyboxShader( Shader & renderShader ) noexcept
+	: renderShader( renderShader )
 {}
 
 /**
@@ -35,22 +34,22 @@ SkyboxShader::SkyboxShader(Shader &renderShader) noexcept
  * @param viewPosition current position of the camera
  * @param lightDir direction of the sunlight (directional lighting)
  */
-void SkyboxShader::update(const glm::mat4 &projectionView,
-                          const glm::vec3 &viewPosition,
-                          const glm::vec3 &lightDir)
+void SkyboxShader::update( const glm::mat4 & projectionView,
+						   const glm::vec3 & viewPosition,
+						   const glm::vec3 & lightDir )
 {
-  renderShader.use();
-  renderShader.setMat4("u_projectionView", projectionView);
-  renderShader.setVec3("u_viewPosition", viewPosition);
-  //send this as reverse direction
-  renderShader.setVec3("u_lightDir", -lightDir);
+	renderShader.use();
+	renderShader.setMat4( "u_projectionView", projectionView );
+	renderShader.setVec3( "u_viewPosition", viewPosition );
+	//send this as reverse direction
+	renderShader.setVec3( "u_lightDir", -lightDir );
 }
 
 /**
  * @brief sets integer "type" uniform in the shader, matched with shader source code types
  * @param type integer representation of the skybox type
  */
-void SkyboxShader::selectSkyboxType(int type)
+void SkyboxShader::selectSkyboxType( int type )
 {
-  renderShader.setInt("u_type", type);
+	renderShader.setInt( "u_type", type );
 }

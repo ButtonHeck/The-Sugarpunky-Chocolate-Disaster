@@ -26,10 +26,10 @@
  * @param path path to the .obj model file
  * @param initialTransform initial rotation transform
  */
-Skysphere::Skysphere(const std::string &path, const glm::mat4 &initialTransform)
-  :
-    model(path, false, 1, false),
-    modelRotationTransform(initialTransform)
+Skysphere::Skysphere( const std::string & path, 
+					  const glm::mat4 & initialTransform )
+	: model( path, false, 1, false )
+	, modelRotationTransform( initialTransform )
 {}
 
 /**
@@ -37,9 +37,10 @@ Skysphere::Skysphere(const std::string &path, const glm::mat4 &initialTransform)
  * @param angleDegrees angle to rotate in degrees
  * @param rotationVector vector around which to rotate
  */
-void Skysphere::rotate(float angleDegrees, const glm::vec3 &rotationVector)
+void Skysphere::rotate( float angleDegrees, 
+						const glm::vec3 & rotationVector )
 {
-  modelRotationTransform = glm::rotate(modelRotationTransform, glm::radians(angleDegrees), rotationVector);
+	modelRotationTransform = glm::rotate( modelRotationTransform, glm::radians( angleDegrees ), rotationVector );
 }
 
 /**
@@ -47,10 +48,10 @@ void Skysphere::rotate(float angleDegrees, const glm::vec3 &rotationVector)
  */
 void Skysphere::draw()
 {
-  model.drawOneInstance();
+	model.drawOneInstance();
 }
 
-const glm::mat4 &Skysphere::getRotationTransform() const noexcept
+const glm::mat4 & Skysphere::getRotationTransform() const noexcept
 {
-  return modelRotationTransform;
+	return modelRotationTransform;
 }

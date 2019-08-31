@@ -56,86 +56,88 @@ class MouseInputManager;
 class Game
 {
 public:
-  Game(GLFWwindow* window, const ScreenResolution& screenResolution);
-  virtual ~Game();
-  void setup();
-  void loop();
+	Game( GLFWwindow * window, 
+		  const ScreenResolution & screenResolution );
+	virtual ~Game();
+	void setup();
+	void loop();
 
 private:
-  void drawFrame(const glm::mat4& projectionView);
-  void drawFrustumVisualizations(const glm::mat4 &projectionView);
-  void drawFrameReflection();
-  void drawFrameRefraction(const glm::mat4& projectionView);
-  void recreate();
-  void drawDepthmap();
-  void saveState();
-  void loadState();
+	void drawFrame( const glm::mat4 & projectionView );
+	void drawFrustumVisualizations( const glm::mat4 & projectionView );
+	void drawFrameReflection();
+	void drawFrameRefraction( const glm::mat4 & projectionView );
+	void recreate();
+	void drawDepthmap();
+	void saveState();
+	void loadState();
 
-  //context and hardware related
-  /** 
-  * @note for now, screen resolution is supposed to be fixed during app workflow 
-  * @todo make it possible to change screen resolution "on the fly" (possibly with windowed mode option)
-  */
-  const ScreenResolution& screenResolution;
-  GLFWwindow* window;
+	//context and hardware related
+	/**
+	* @note for now, screen resolution is supposed to be fixed during app workflow
+	* @todo make it possible to change screen resolution "on the fly" (possibly with windowed mode option)
+	*/
+	const ScreenResolution & screenResolution;
+	GLFWwindow * window;
 
-  //frame management
-  Timer CPU_timer;
-  unsigned long updateCount;
+	//frame management
+	Timer CPU_timer;
+	unsigned long updateCount;
 
-  //camera and related stuff
-  Camera camera; 
-  /** 
-  * @brief additional camera defining shadow regions, intended to be used only for visual debugging
-  * @todo remove shadow camera in the release version of the game
-  */
-  Camera shadowCamera;
-  Frustum viewFrustum; 
-  /** @brief dedicated view frustum for hills used to perform custom frustum culling algorithm */
-  Frustum cullingViewFrustum;
-  std::array<Frustum, NUM_SHADOW_LAYERS> shadowRegionsFrustums;
-  /** @note don't need the farthest shadow region frustum visualization, thus size is 2 instead of 3 */
-  std::array<FrustumRenderer, NUM_SHADOW_LAYERS-1> shadowRegionsFrustumsRenderers;
-  glm::mat4 projection; 
-  /** @brief dedicated projection matrix used with culling frustum, has wider FOV */
-  glm::mat4 cullingProjection;
-  std::array<glm::mat4, NUM_SHADOW_LAYERS> shadowRegionsProjections;
+	//camera and related stuff
+	Camera camera;
+	/**
+	* @brief additional camera defining shadow regions, intended to be used only for visual debugging
+	* @todo remove shadow camera in the release version of the game
+	*/
+	Camera shadowCamera;
+	Frustum viewFrustum;
+	/** @brief dedicated view frustum for hills used to perform custom frustum culling algorithm */
+	Frustum cullingViewFrustum;
+	std::array<Frustum, NUM_SHADOW_LAYERS> shadowRegionsFrustums;
+	/** @note don't need the farthest shadow region frustum visualization, thus size is 2 instead of 3 */
+	std::array<FrustumRenderer, NUM_SHADOW_LAYERS - 1> shadowRegionsFrustumsRenderers;
+	glm::mat4 projection;
+	/** @brief dedicated projection matrix used with culling frustum, has wider FOV */
+	glm::mat4 cullingProjection;
+	std::array<glm::mat4, NUM_SHADOW_LAYERS> shadowRegionsProjections;
 
-  //options
-  Options options;
+	//options
+	Options options;
 
-  //graphics
-  ShaderManager shaderManager;
-  TextureLoader textureLoader;
-  TextureManager textureManager;
-  CoordinateSystemRenderer csRenderer;
-  ScreenFramebuffer screenFramebuffer;
-  DepthmapFramebuffer depthmapFramebuffer;
-  WaterReflectionFramebuffer reflectionFramebuffer;
-  WaterRefractionFramebuffer refractionFramebuffer;
+	//graphics
+	ShaderManager shaderManager;
+	TextureLoader textureLoader;
+	TextureManager textureManager;
+	CoordinateSystemRenderer csRenderer;
+	ScreenFramebuffer screenFramebuffer;
+	DepthmapFramebuffer depthmapFramebuffer;
+	WaterReflectionFramebuffer reflectionFramebuffer;
+	WaterRefractionFramebuffer refractionFramebuffer;
 
-  //world
-  ShadowVolume shadowVolume;
-  Scene scene;
-  /** @todo remove this in the game release version*/
-  ShadowVolumeRenderer shadowVolumeRenderer;
-  SaveLoadManager saveLoadManager;
+	//world
+	ShadowVolume shadowVolume;
+	Scene scene;
+	/** @todo remove this in the game release version*/
+	ShadowVolumeRenderer shadowVolumeRenderer;
+	SaveLoadManager saveLoadManager;
 
-  //input
-  KeyboardManager keyboard;
-  MouseInputManager& mouseInput;
+	//input
+	KeyboardManager keyboard;
+	MouseInputManager & mouseInput;
 
-  //GUI and text
-  TextManager textManager;
+	//GUI and text
+	TextManager textManager;
 
-  //multithreading
-  void setupThreads();
+	//multithreading
+	void setupThreads();
 
-  std::unique_ptr<std::thread> meshIndirectBufferUpdater;
-  std::mutex modelIndirectUpdateThreadMutex;
-  std::condition_variable modelsIndirectBufferNeedUpdateCV;
-  std::atomic_bool modelsIndirectBufferPrepared, modelsIndirectBufferNeedUpdate;
+	std::unique_ptr<std::thread> meshIndirectBufferUpdater;
+	std::mutex modelIndirectUpdateThreadMutex;
+	std::condition_variable modelsIndirectBufferNeedUpdateCV;
+	std::atomic_bool modelsIndirectBufferPrepared;
+	std::atomic_bool modelsIndirectBufferNeedUpdate;
 
-  /** @note not used in any other threads, thus no need to declare as atomic */
-  bool landIndirectBufferHasUpdated;
+	/** @note not used in any other threads, thus no need to declare as atomic */
+	bool landIndirectBufferHasUpdated;
 };

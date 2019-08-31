@@ -31,11 +31,13 @@
 class UnderwaterFacade
 {
 public:
-  UnderwaterFacade(Shader& renderShader) noexcept;
-  void draw(const glm::vec3 &lightDir, const glm::mat4 &projectionView, bool useDesaturation);
+	UnderwaterFacade( Shader & renderShader ) noexcept;
+	void draw( const glm::vec3 & lightDir,
+			   const glm::mat4 & projectionView, 
+			   bool useDesaturation );
 
 private:
-  UnderwaterShader shader;
-  UnderwaterSurface surface;
-  UnderwaterRenderer renderer;
+	UnderwaterShader shader;
+	UnderwaterSurface surface;
+	UnderwaterRenderer renderer;
 };

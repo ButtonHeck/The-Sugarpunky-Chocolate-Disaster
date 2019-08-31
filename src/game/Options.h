@@ -30,10 +30,10 @@
 class Options
 {
 public:
-  Options() noexcept;
-  std::bitset<OPTIONS_COUNT>::reference operator[](OPTION option);
-  void toggle(OPTION option);
+	Options() noexcept;
+	std::bitset<OPTIONS_COUNT>::reference operator[]( OPTION option );
+	void toggle( OPTION option );
 
 private:
-  std::bitset<OPTIONS_COUNT> options;
+	std::bitset<OPTIONS_COUNT> options;
 };

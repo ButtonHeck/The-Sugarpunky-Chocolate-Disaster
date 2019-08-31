@@ -29,66 +29,97 @@
 /**
 * @brief client representation of a compiled GL shader program.
 * Responsible for creating, compiling and linking a shader program from given source files, managing uniform update calls
-* @note objects of this class should be default-constructible as they're used as unordered_map values in shader manager 
+* @note objects of this class should be default-constructible as they're used as unordered_map values in shader manager
 * @see ShaderManager
 */
 class Shader
 {
 public:
-  /** @note a pair of GL defined shader type and source code file name */
-  using ShaderSource = std::pair<GLenum, const std::string>;
+	/** @note a pair of GL defined shader type and source code file name */
+	using ShaderSource = std::pair<GLenum, const std::string>;
 
-  /** 
-  * @note a list of ShaderSource objects (might be empty) 
-  * @see ShaderSource
-  */
-  using ShaderIncludeList = std::initializer_list<std::pair<GLenum, std::string>>;
+	/**
+	* @note a list of ShaderSource objects (might be empty)
+	* @see ShaderSource
+	*/
+	using ShaderIncludeList = std::initializer_list<std::pair<GLenum, std::string>>;
 
-  static void setCachingOfUniformsMode(bool useCache) noexcept;
+	static void setCachingOfUniformsMode( bool useCache ) noexcept;
 
-  Shader() = default;
-  Shader(ShaderSource srcFile1, ShaderIncludeList includes = {});
-  Shader(ShaderSource srcFile1, ShaderSource srcFile2, ShaderIncludeList includes = {});
-  Shader(ShaderSource srcFile1, ShaderSource srcFile2, ShaderSource srcFile3, ShaderIncludeList includes = {});
-  void link();
-  GLuint getID() const noexcept;
-  void use() const noexcept;
-  GLuint getUniformLocation(const char* uniformName) const;
-  void setInt(const char* uniformName, int value);
-  void setUint64(const char* uniformName, GLuint64 value);
-  void setFloat(const char* uniformName, float value);
-  void setBool(const char* uniformName, bool value);
-  void setVec3(const char* uniformName, const glm::vec3 &vec);
-  void setVec3(const char* uniformName, float x, float y, float z);
-  void setVec2(const char* uniformName, const glm::vec2 &vec);
-  void setVec2(const char* uniformName, float x, float y);
-  void setVec4(const char* uniformName, const glm::vec4 &vec);
-  void setVec4(const char* uniformName, float x, float y, float z, float w);
-  void setMat3(const char* uniformName, const glm::mat3 &mat);
-  void setMat4(const char* uniformName, const glm::mat4 &mat);
-  void cleanUp() noexcept;
+	Shader() = default;
+	Shader( ShaderSource srcFile1, 
+			ShaderIncludeList includes = {} );
+	Shader( ShaderSource srcFile1, 
+			ShaderSource srcFile2, 
+			ShaderIncludeList includes = {} );
+	Shader( ShaderSource srcFile1, 
+			ShaderSource srcFile2, 
+			ShaderSource srcFile3, 
+			ShaderIncludeList includes = {} );
+	void link();
+	GLuint getID() const noexcept;
+	void use() const noexcept;
+	GLuint getUniformLocation( const char * uniformName ) const;
+	void setInt( const char * uniformName, 
+				 int value );
+	void setUint64( const char * uniformName, 
+					GLuint64 value );
+	void setFloat( const char * uniformName, 
+				   float value );
+	void setBool( const char * uniformName, 
+				  bool value );
+	void setVec3( const char * uniformName, 
+				  const glm::vec3 & vec );
+	void setVec3( const char * uniformName, 
+				  float x, 
+				  float y, 
+				  float z );
+	void setVec2( const char * uniformName, 
+				  const glm::vec2 & vec );
+	void setVec2( const char * uniformName, 
+				  float x, 
+				  float y );
+	void setVec4( const char * uniformName, 
+				  const glm::vec4 & vec );
+	void setVec4( const char * uniformName, 
+				  float x, 
+				  float y, 
+				  float z, 
+				  float w );
+	void setMat3( const char * uniformName, 
+				  const glm::mat3 & mat );
+	void setMat4( const char * uniformName, 
+				  const glm::mat4 & mat );
+	void cleanUp() noexcept;
 
 private:
-  static bool useCachingOfUniforms;
-  GLuint createShader(GLenum shaderType, const std::string& filename, ShaderIncludeList includes);
-  void parseIncludes(GLenum shaderType, std::string& stringSrc, ShaderIncludeList includes);
-  void regexReplace(std::string& source, const std::string& toReplace, const std::string& substitution);
+	static bool useCachingOfUniforms;
+	GLuint createShader( GLenum shaderType, 
+						 const std::string & filename, 
+						 ShaderIncludeList includes );
+	void parseIncludes( GLenum shaderType, 
+						std::string & stringSrc, 
+						ShaderIncludeList includes );
+	void regexReplace( std::string & source, 
+					   const std::string & toReplace, 
+					   const std::string & substitution );
 
-  GLuint ID;
-  std::string shaderName;
-  int status;
-  char infoLog[512];
-  std::unordered_map<const char*, GLint> uniformCache;
+	GLuint ID;
+	std::string shaderName;
+	int status;
+	char infoLog[512];
+	std::unordered_map<const char *, GLint> uniformCache;
 };
 
 /**
 * @brief updates vec4 uniform
 * @param uniformName name of the uniform in program
-* @param vec value 
+* @param vec value
 */
-inline void Shader::setVec4(const char* uniformName, const glm::vec4 &vec)
+inline void Shader::setVec4( const char * uniformName, 
+							 const glm::vec4 & vec )
 {
-  setVec4(uniformName, vec.x, vec.y, vec.z, vec.w);
+	setVec4( uniformName, vec.x, vec.y, vec.z, vec.w );
 }
 
 /**
@@ -96,9 +127,10 @@ inline void Shader::setVec4(const char* uniformName, const glm::vec4 &vec)
 * @param uniformName name of the uniform in program
 * @param vec value
 */
-inline void Shader::setVec3(const char* uniformName, const glm::vec3 &vec)
+inline void Shader::setVec3( const char * uniformName, 
+							 const glm::vec3 & vec )
 {
-  setVec3(uniformName, vec.x, vec.y, vec.z);
+	setVec3( uniformName, vec.x, vec.y, vec.z );
 }
 
 /**
@@ -106,7 +138,8 @@ inline void Shader::setVec3(const char* uniformName, const glm::vec3 &vec)
 * @param uniformName name of the uniform in program
 * @param vec value
 */
-inline void Shader::setVec2(const char* uniformName, const glm::vec2 &vec)
+inline void Shader::setVec2( const char * uniformName, 
+							 const glm::vec2 & vec )
 {
-  setVec2(uniformName, vec.x, vec.y);
+	setVec2( uniformName, vec.x, vec.y );
 }

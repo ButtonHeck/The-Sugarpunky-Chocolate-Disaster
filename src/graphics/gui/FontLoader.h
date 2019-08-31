@@ -26,8 +26,16 @@
 /**
 * @brief representation of a plain text symbol
 */
-struct Character {
-  int asciiCode, x, y, width, height, xoffset, yoffset, xadvance;
+struct Character
+{
+	int asciiCode;
+	int x;
+	int y;
+	int width;
+	int height;
+	int xoffset;
+	int yoffset;
+	int xadvance;
 };
 
 /**
@@ -36,12 +44,15 @@ struct Character {
 class FontLoader
 {
 public:
-  FontLoader(const std::string& fontFile, const std::string& fontTexture);
-  std::unordered_map<char, Character>& getAlphabet() noexcept;
-  GLuint getTextureWidth() const noexcept;
-  GLuint getTextureHeight() const noexcept;
+	FontLoader( const std::string & fontFile, 
+				const std::string & fontTexture );
+	std::unordered_map<char, Character> & getAlphabet() noexcept;
+	GLuint getTextureWidth() const noexcept;
+	GLuint getTextureHeight() const noexcept;
 
 private:
-  std::unordered_map<char, Character> alphabet;
-  GLuint fontTexture, textureWidth, textureHeight;
+	std::unordered_map<char, Character> alphabet;
+	GLuint fontTexture;
+	GLuint textureWidth;
+	GLuint textureHeight;
 };

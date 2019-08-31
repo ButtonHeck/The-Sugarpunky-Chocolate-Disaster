@@ -28,9 +28,10 @@ class Shader;
 class LensFlareShader
 {
 public:
-  LensFlareShader(Shader& renderShader) noexcept;
-  void update(float brightnessFlares, float brightnessHalo);
+	LensFlareShader( Shader & renderShader ) noexcept;
+	void update( float brightnessFlares, 
+				 float brightnessHalo );
 
 private:
-  Shader& renderShader;
+	Shader & renderShader;
 };

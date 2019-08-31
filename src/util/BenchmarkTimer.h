@@ -30,13 +30,13 @@
  * if in release build - just bypass and do nothing
  */
 #if 0
-	#ifdef _DEBUG
-	#define BENCHMARK(benchmarkName, perFrame) BenchmarkTimer b(benchmarkName, perFrame);
-	#else
-	#define BENCHMARK(dont, care) //noop
-	#endif
+#ifdef _DEBUG
+#define BENCHMARK(benchmarkName, perFrame) BenchmarkTimer b(benchmarkName, perFrame);
+#else
+#define BENCHMARK(dont, care) //noop
+#endif
 #else 
-	#define BENCHMARK(dont, care) //noop
+#define BENCHMARK(dont, care) //noop
 #endif
 #define FORCE_BENCHMARK(benchmarkName, perFrame) BenchmarkTimer b(benchmarkName, perFrame);
 
@@ -48,27 +48,31 @@
 class BenchmarkTimer
 {
 public:
-  BenchmarkTimer() = default;
-  BenchmarkTimer(const std::string& title, bool isPerFrame);
-  void operator()(const std::string& title, bool isPerFrame);
-  virtual ~BenchmarkTimer();
-  static void finish(unsigned int updateCount);
-  static void printApplicationBenchmarks(unsigned int updateCount);
-  static void printFrameBenchmarks(unsigned int updateCount, unsigned int ups);
-  static void resetFrameBenchmarks();
+	BenchmarkTimer() = default;
+	BenchmarkTimer( const std::string & title, 
+					bool isPerFrame );
+	void operator()( const std::string & title, 
+					 bool isPerFrame );
+	virtual ~BenchmarkTimer();
+	static void finish( unsigned int updateCount );
+	static void printApplicationBenchmarks( unsigned int updateCount );
+	static void printFrameBenchmarks( unsigned int updateCount, 
+									  unsigned int ups );
+	static void resetFrameBenchmarks();
 
 private:
-  using chronoClock = std::chrono::high_resolution_clock;
-  static constexpr int BENCH_TITLE_MAX_LENGTH = 40;
+	using chronoClock = std::chrono::high_resolution_clock;
+	static constexpr int BENCH_TITLE_MAX_LENGTH = 40;
 
-  static std::ofstream perFrameLogStream, perAppLogStream;
-  static bool outputCreated;
-  static std::map<std::string, float> applicationBenchmarksTimings;
-  static std::map<std::string, unsigned long> frameBenchmarksTimings;
-  static std::map<std::string, int> frameBenchmarksInvocations;
+	static std::ofstream perFrameLogStream;
+	static std::ofstream perAppLogStream;
+	static bool outputCreated;
+	static std::map<std::string, float> applicationBenchmarksTimings;
+	static std::map<std::string, unsigned long> frameBenchmarksTimings;
+	static std::map<std::string, int> frameBenchmarksInvocations;
 
-  std::string benchmarkTitle;
-  bool isPerFrame;
-  decltype(chronoClock::now()) startTimestamp = chronoClock::now();
-  decltype(startTimestamp) endTimestamp = startTimestamp;
+	std::string benchmarkTitle;
+	bool isPerFrame;
+	decltype( chronoClock::now() ) startTimestamp = chronoClock::now();
+	decltype( startTimestamp ) endTimestamp = startTimestamp;
 };

@@ -30,22 +30,24 @@ vec2D_template<BindlessTexture> BindlessTextureManager::textures;
 * @param textureID ID of a texture in OpenGL
 * @param textureType semantic type of a texture
 */
-void BindlessTextureManager::emplaceBack(const std::string &textureSamplerUniformName, GLuint textureID, BINDLESS_TEXTURE_TYPE textureType)
+void BindlessTextureManager::emplaceBack( const std::string & textureSamplerUniformName, 
+										  GLuint textureID, 
+										  BINDLESS_TEXTURE_TYPE textureType )
 {
-  static bool capacityReserved = false;
-  if (!capacityReserved)
-    {
-      textures.reserve(BINDLESS_TEXTURE_NUM_TYPES);
-      for (unsigned int textureTypeIndex = 0; textureTypeIndex < BINDLESS_TEXTURE_NUM_TYPES; textureTypeIndex++)
-        {
-          std::vector<BindlessTexture> emptyVec;
-          textures.push_back(emptyVec);
-          textures[textureTypeIndex].reserve(INITIAL_CAPACITY);
-        }
-      capacityReserved = true;
-    }
-  GLuint64 textureHandle = glGetTextureHandleARB(textureID);
-  textures[textureType].emplace_back(textureSamplerUniformName, textureID, textureHandle);
+	static bool capacityReserved = false;
+	if( !capacityReserved )
+	{
+		textures.reserve( BINDLESS_TEXTURE_NUM_TYPES );
+		for( unsigned int textureTypeIndex = 0; textureTypeIndex < BINDLESS_TEXTURE_NUM_TYPES; textureTypeIndex++ )
+		{
+			std::vector<BindlessTexture> emptyVec;
+			textures.push_back( emptyVec );
+			textures[textureTypeIndex].reserve( INITIAL_CAPACITY );
+		}
+		capacityReserved = true;
+	}
+	GLuint64 textureHandle = glGetTextureHandleARB( textureID );
+	textures[textureType].emplace_back( textureSamplerUniformName, textureID, textureHandle );
 }
 
 /**
@@ -54,11 +56,13 @@ void BindlessTextureManager::emplaceBack(const std::string &textureSamplerUnifor
 */
 void BindlessTextureManager::makeAllResident()
 {
-  for (unsigned int textureTypeIndex = 0; textureTypeIndex < textures.size(); textureTypeIndex++)
-    {
-      for (BindlessTexture& texture : textures[textureTypeIndex])
-        glMakeTextureHandleResidentARB(texture.handle);
-    }
+	for( unsigned int textureTypeIndex = 0; textureTypeIndex < textures.size(); textureTypeIndex++ )
+	{
+		for( BindlessTexture & texture : textures[textureTypeIndex] )
+		{
+			glMakeTextureHandleResidentARB( texture.handle );
+		}
+	}
 }
 
 /**
@@ -66,11 +70,14 @@ void BindlessTextureManager::makeAllResident()
 * @param shader shader that uses bindless textures of a given type
 * @param textureType semantic type of a texture. It is programmer's responsibility to make sure that given type is correct for the shader
 */
-void BindlessTextureManager::loadToShader(Shader &shader, BINDLESS_TEXTURE_TYPE textureType)
+void BindlessTextureManager::loadToShader( Shader & shader, 
+										   BINDLESS_TEXTURE_TYPE textureType )
 {
-  shader.use();
-  for (BindlessTexture& texture : textures.at(textureType))
-    shader.setUint64(texture.samplerUniformName.c_str(), texture.handle);
+	shader.use();
+	for( BindlessTexture & texture : textures.at( textureType ) )
+	{
+		shader.setUint64( texture.samplerUniformName.c_str(), texture.handle );
+	}
 }
 
 /**
@@ -79,25 +86,26 @@ void BindlessTextureManager::loadToShader(Shader &shader, BINDLESS_TEXTURE_TYPE 
 */
 void BindlessTextureManager::makeAllNonResident()
 {
-  for (unsigned int textureTypeIndex = 0; textureTypeIndex < textures.size(); textureTypeIndex++)
-    {
-      for (BindlessTexture& texture : textures[textureTypeIndex])
-        {
-          glMakeTextureHandleNonResidentARB(texture.handle);
-          glDeleteTextures(1, &texture.id);
-        }
-    }
+	for( unsigned int textureTypeIndex = 0; textureTypeIndex < textures.size(); textureTypeIndex++ )
+	{
+		for( BindlessTexture & texture : textures[textureTypeIndex] )
+		{
+			glMakeTextureHandleNonResidentARB( texture.handle );
+			glDeleteTextures( 1, &texture.id );
+		}
+	}
 }
 
 /**
 * @brief creates a bindless texture object with all necessary params
 * @param textureSamplerUniformName name of a texture used as a sampler name in a shader
 * @param textureID ID of a texture in OpenGL
-* @param handle 64-bit handle promoted to OpenGL as a pointer to the actual residental texture  
+* @param handle 64-bit handle promoted to OpenGL as a pointer to the actual residental texture
 */
-BindlessTexture::BindlessTexture(const std::string &textureSamplerUniformName, GLuint textureID, GLuint64 handle)
-  :
-    samplerUniformName(textureSamplerUniformName),
-    id(textureID),
-    handle(handle)
+BindlessTexture::BindlessTexture( const std::string & textureSamplerUniformName, 
+								  GLuint textureID, 
+								  GLuint64 handle )
+	: samplerUniformName( textureSamplerUniformName )
+	, id( textureID )
+	, handle( handle )
 {}

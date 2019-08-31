@@ -21,9 +21,9 @@
 #include "DirectoriesSettings"
 
 #ifdef _WIN32
-	#include <direct.h>
+#include <direct.h>
 #elif defined __linux__
-	#include <unistd.h>
+#include <unistd.h>
 #endif
 
 /**
@@ -31,8 +31,8 @@
 */
 const std::string getResourcesDirectory()
 {
-  char cwd_buffer[FILENAME_MAX];
-  getcwd(cwd_buffer, FILENAME_MAX);
-  std::string cwd(cwd_buffer);
-  return cwd.substr(0, cwd.find_last_of("/"));
+	char cwd_buffer[FILENAME_MAX];
+	getcwd( cwd_buffer, FILENAME_MAX );
+	std::string cwd( cwd_buffer );
+	return cwd.substr( 0, cwd.find_last_of( "/" ) );
 }

@@ -27,9 +27,9 @@
  * @param renderPhongShader compiled Phong shader program provided to a personal shader manager
  * @param renderGouraudShader compiled Gouraud shader program provided to a personal shader manager
  */
-PlantsFacade::PlantsFacade(Shader &renderPhongShader, Shader &renderGouraudShader) noexcept
-  :
-    shaders(renderPhongShader, renderGouraudShader)
+PlantsFacade::PlantsFacade( Shader & renderPhongShader, 
+							Shader & renderGouraudShader ) noexcept
+	: shaders( renderPhongShader, renderGouraudShader )
 {}
 
 /**
@@ -38,12 +38,14 @@ PlantsFacade::PlantsFacade(Shader &renderPhongShader, Shader &renderGouraudShade
  * @param hillMap map of the hills
  * @param hillsNormalMap map of the hills normals
  */
-void PlantsFacade::setup(const map2D_f &landMap, const map2D_f &hillMap, const map2D_vec3 &hillsNormalMap)
+void PlantsFacade::setup( const map2D_f & landMap, 
+						  const map2D_f & hillMap, 
+						  const map2D_vec3 & hillsNormalMap )
 {
-  prepareDistributionMap();
-  landPlantsGenerator.setup(landMap, hillMap, distributionMap);
-  grassGenerator.setup(landMap, hillMap, distributionMap);
-  hillTreesGenerator.setup(hillMap, distributionMap, hillsNormalMap);
+	prepareDistributionMap();
+	landPlantsGenerator.setup( landMap, hillMap, distributionMap );
+	grassGenerator.setup( landMap, hillMap, distributionMap );
+	hillTreesGenerator.setup( hillMap, distributionMap, hillsNormalMap );
 }
 
 /**
@@ -51,11 +53,12 @@ void PlantsFacade::setup(const map2D_f &landMap, const map2D_f &hillMap, const m
  * @param landMap map of the land
  * @param hillMap map of the hills
  */
-void PlantsFacade::initializeModelRenderChunks(const map2D_f &landMap, const map2D_f &hillMap)
+void PlantsFacade::initializeModelRenderChunks( const map2D_f & landMap, 
+												const map2D_f & hillMap )
 {
-  landPlantsGenerator.initializeModelRenderChunks(landMap);
-  grassGenerator.initializeModelRenderChunks(landMap);
-  hillTreesGenerator.initializeModelRenderChunks(hillMap);
+	landPlantsGenerator.initializeModelRenderChunks( landMap );
+	grassGenerator.initializeModelRenderChunks( landMap );
+	hillTreesGenerator.initializeModelRenderChunks( hillMap );
 }
 
 /**
@@ -63,11 +66,12 @@ void PlantsFacade::initializeModelRenderChunks(const map2D_f &landMap, const map
  * @param cameraPositionXZ X and Z coordinates of a current view position
  * @param viewFrustum frustum to perform CPU culling
  */
-void PlantsFacade::prepareIndirectBufferData(const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum)
+void PlantsFacade::prepareIndirectBufferData( const glm::vec2 & cameraPositionXZ, 
+											  const Frustum & viewFrustum )
 {
-  landPlantsGenerator.prepareIndirectBufferData(cameraPositionXZ, viewFrustum);
-  hillTreesGenerator.prepareIndirectBufferData(cameraPositionXZ, viewFrustum);
-  grassGenerator.prepareIndirectBufferData(cameraPositionXZ, viewFrustum);
+	landPlantsGenerator.prepareIndirectBufferData( cameraPositionXZ, viewFrustum );
+	hillTreesGenerator.prepareIndirectBufferData( cameraPositionXZ, viewFrustum );
+	grassGenerator.prepareIndirectBufferData( cameraPositionXZ, viewFrustum );
 }
 
 /**
@@ -75,10 +79,10 @@ void PlantsFacade::prepareIndirectBufferData(const glm::vec2 &cameraPositionXZ, 
  */
 void PlantsFacade::updateIndirectBufferData()
 {
-  BENCHMARK("PlantsFacade: updateIndirectBuffer", true);
-  landPlantsGenerator.updateIndirectBufferData();
-  hillTreesGenerator.updateIndirectBufferData();
-  grassGenerator.updateIndirectBufferData();
+	BENCHMARK( "PlantsFacade: updateIndirectBuffer", true );
+	landPlantsGenerator.updateIndirectBufferData();
+	hillTreesGenerator.updateIndirectBufferData();
+	grassGenerator.updateIndirectBufferData();
 }
 
 /**
@@ -92,91 +96,99 @@ void PlantsFacade::updateIndirectBufferData()
  * @param useLandBlending define whether to use blending
  * @param worldReflectionMode define whether world reflection rendering stage is currently on
  */
-void PlantsFacade::draw(const glm::vec3 &lightDir,
-                        const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                        const glm::mat4 &projectionView,
-                        const glm::vec3 &viewPosition,
-                        bool usePhongShading,
-                        bool useShadows,
-                        bool useLandBlending,
-						bool worldReflectionMode)
+void PlantsFacade::draw( const glm::vec3 & lightDir,
+						 const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+						 const glm::mat4 & projectionView,
+						 const glm::vec3 & viewPosition,
+						 bool usePhongShading,
+						 bool useShadows,
+						 bool useLandBlending,
+						 bool worldReflectionMode )
 {
-  if (useLandBlending && !worldReflectionMode)
-    glEnable(GL_BLEND);
-  else
-    glDisable(GL_BLEND);
+	if( useLandBlending && !worldReflectionMode )
+	{
+		glEnable( GL_BLEND );
+	}
+	else
+	{
+		glDisable( GL_BLEND );
+	}
 
-  shaders.updateAllPlants(usePhongShading,
-                          lightDir,
-                          lightSpaceMatrices,
-                          projectionView,
-                          viewPosition,
-                          useShadows,
-                          useLandBlending);
+	shaders.updateAllPlants( usePhongShading,
+							 lightDir,
+							 lightSpaceMatrices,
+							 projectionView,
+							 viewPosition,
+							 useShadows,
+							 useLandBlending );
 
-  //draw trees and hill models first (plain and low-poly)
-  shaders.setType(PLANT_STATIC);
-  if (!worldReflectionMode)
-  {
-	  shaders.setLowPolyMode(false);
-	  treesRenderer.render(landPlantsGenerator.getModels(false), hillTreesGenerator.getModels(false), false);
-	  shaders.setLowPolyMode(true);
-	  treesRenderer.render(landPlantsGenerator.getModels(true), hillTreesGenerator.getModels(true), false);
-  }
-  else
-  {
-	  shaders.setLowPolyMode(true);
-	  treesRenderer.renderWorldReflection(landPlantsGenerator.getModels(true), hillTreesGenerator.getModels(true));
-  }
-  
+	//draw trees and hill models first (plain and low-poly)
+	shaders.setType( PLANT_STATIC );
+	if( !worldReflectionMode )
+	{
+		shaders.setLowPolyMode( false );
+		treesRenderer.render( landPlantsGenerator.getModels( false ), hillTreesGenerator.getModels( false ), false );
+		shaders.setLowPolyMode( true );
+		treesRenderer.render( landPlantsGenerator.getModels( true ), hillTreesGenerator.getModels( true ), false );
+	}
+	else
+	{
+		shaders.setLowPolyMode( true );
+		treesRenderer.renderWorldReflection( landPlantsGenerator.getModels( true ), hillTreesGenerator.getModels( true ) );
+	}
 
-  //draw grass (plain and low-poly), no need to render it if world reflection rendering stage is on
-  if (!worldReflectionMode)
-  {
-	  shaders.setType(PLANT_ANIMATED);
-	  shaders.updateGrassKeyframe();
-	  shaders.setLowPolyMode(false);
-	  grassRenderer.render(grassGenerator.getModels(false), false);
-	  shaders.setLowPolyMode(true);
-	  grassRenderer.render(grassGenerator.getModels(true), false);
-  } 
 
-  if (useLandBlending || worldReflectionMode)
-    glDisable(GL_BLEND);
+	//draw grass (plain and low-poly), no need to render it if world reflection rendering stage is on
+	if( !worldReflectionMode )
+	{
+		shaders.setType( PLANT_ANIMATED );
+		shaders.updateGrassKeyframe();
+		shaders.setLowPolyMode( false );
+		grassRenderer.render( grassGenerator.getModels( false ), false );
+		shaders.setLowPolyMode( true );
+		grassRenderer.render( grassGenerator.getModels( true ), false );
+	}
+
+	if( useLandBlending || worldReflectionMode )
+	{
+		glDisable( GL_BLEND );
+	}
 }
 
 /**
  * @brief performs shadow mode rendering process
  * @param grassCastShadow define whether grass would be drawn in shadow maps
  */
-void PlantsFacade::drawDepthmap(bool grassCastShadow)
+void PlantsFacade::drawDepthmap( bool grassCastShadow )
 {
-  treesRenderer.render(landPlantsGenerator.getModels(false), hillTreesGenerator.getModels(false), true);
-  treesRenderer.render(landPlantsGenerator.getModels(true), hillTreesGenerator.getModels(true), true);
-  if (grassCastShadow)
-    grassRenderer.render(grassGenerator.getModels(false), true);
+	treesRenderer.render( landPlantsGenerator.getModels( false ), hillTreesGenerator.getModels( false ), true );
+	treesRenderer.render( landPlantsGenerator.getModels( true ), hillTreesGenerator.getModels( true ), true );
+	if( grassCastShadow )
+	{
+		grassRenderer.render( grassGenerator.getModels( false ), true );
+	}
 }
 
 /**
  * @brief delegates serialization command to generators
  * @param output file stream to write data to
  */
-void PlantsFacade::serialize(std::ofstream &output)
+void PlantsFacade::serialize( std::ofstream & output )
 {
-  landPlantsGenerator.serialize(output);
-  grassGenerator.serialize(output);
-  hillTreesGenerator.serialize(output);
+	landPlantsGenerator.serialize( output );
+	grassGenerator.serialize( output );
+	hillTreesGenerator.serialize( output );
 }
 
 /**
  * @brief delegates deserialization command to generators
  * @param input file stream to read data from
  */
-void PlantsFacade::deserialize(std::ifstream &input)
+void PlantsFacade::deserialize( std::ifstream & input )
 {
-  landPlantsGenerator.deserialize(input);
-  grassGenerator.deserialize(input);
-  hillTreesGenerator.deserialize(input);
+	landPlantsGenerator.deserialize( input );
+	grassGenerator.deserialize( input );
+	hillTreesGenerator.deserialize( input );
 }
 
 /**
@@ -184,36 +196,42 @@ void PlantsFacade::deserialize(std::ifstream &input)
  */
 void PlantsFacade::prepareDistributionMap()
 {
-  Generator::initializeMap(distributionMap);
+	Generator::initializeMap( distributionMap );
 
-  //for each subsequent cycle distribution kernel would be one unit wider in radius
-  for (int cycle = 1; cycle <= PLANTS_DISTRIBUTION_FREQUENCY; cycle++)
-    {
-      for (unsigned int startY = 0; startY < distributionMap.size(); startY++)
-        {
-          for (unsigned int startX = 0; startX < distributionMap[0].size(); startX++)
-            {
-              if (rand() % (PLANTS_DISTRIBUTION_FREQUENCY * 5) == 0) //check for randomizer "hit"
-                {
-                  unsigned int yBorder = startY + cycle - 1;
-                  //calculate borders for kernel
-                  if (yBorder >= distributionMap.size())
-                    yBorder = distributionMap.size() - 1;
-                  unsigned int xBorder = startX + cycle - 1;
-                  if (xBorder >= distributionMap[0].size())
-                    xBorder = distributionMap.size() - 1;
+	//for each subsequent cycle distribution kernel would be one unit wider in radius
+	for( int cycle = 1; cycle <= PLANTS_DISTRIBUTION_FREQUENCY; cycle++ )
+	{
+		for( unsigned int startY = 0; startY < distributionMap.size(); startY++ )
+		{
+			for( unsigned int startX = 0; startX < distributionMap[0].size(); startX++ )
+			{
+				if( rand() % ( PLANTS_DISTRIBUTION_FREQUENCY * 5 ) == 0 ) //check for randomizer "hit"
+				{
+					//calculate borders for kernel
+					unsigned int yBorder = startY + cycle - 1;
+					if( yBorder >= distributionMap.size() )
+					{
+						yBorder = distributionMap.size() - 1;
+					}
+					unsigned int xBorder = startX + cycle - 1;
+					if( xBorder >= distributionMap[0].size() )
+					{
+						xBorder = distributionMap.size() - 1;
+					}
 
-                  //fatten kernel if necessary
-                  for (unsigned int y = startY; y <= yBorder; y++)
-                    {
-                      for (unsigned int x = startX; x <= xBorder; x++)
-                        {
-                          if (distributionMap[y][x] < PLANTS_DISTRIBUTION_FREQUENCY)
-                            distributionMap[y][x]++;
-                        }
-                    }
-                }
-            }
-        }
-    }
+					//fatten kernel if necessary
+					for( unsigned int y = startY; y <= yBorder; y++ )
+					{
+						for( unsigned int x = startX; x <= xBorder; x++ )
+						{
+							if( distributionMap[y][x] < PLANTS_DISTRIBUTION_FREQUENCY )
+							{
+								distributionMap[y][x]++;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }

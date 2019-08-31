@@ -26,19 +26,20 @@ class WaterGenerator;
 class WaterShader;
 
 /**
-* @brief renderer for water. 
+* @brief renderer for water.
 * Responsible for delegating draw calls to OpenGL and managing query operations during rendering
 */
 class WaterRenderer
 {
 public:
-  WaterRenderer(WaterShader& shaders, WaterGenerator& generator) noexcept;
-  void render(bool useFrustumCulling);
-  void debugRender(GLenum primitiveType);
-  bool anySamplesPassed() const noexcept;
+	WaterRenderer( WaterShader & shaders, 
+				   WaterGenerator & generator ) noexcept;
+	void render( bool useFrustumCulling );
+	void debugRender( GLenum primitiveType );
+	bool anySamplesPassed() const noexcept;
 
 private:
-  WaterShader& shaders;
-  WaterGenerator& generator;
-  Query anySamplesPassedQuery;
+	WaterShader & shaders;
+	WaterGenerator & generator;
+	Query anySamplesPassedQuery;
 };

@@ -20,30 +20,30 @@
 
 #include "LensFlareElement"
 
-LensFlareElement::LensFlareElement(float pointSize, GLuint textureID)
-  :
-    pointSize(pointSize),
-    textureID(textureID)
+LensFlareElement::LensFlareElement( float pointSize,
+									GLuint textureID )
+	: pointSize( pointSize )
+	, textureID( textureID )
 {}
 
-void LensFlareElement::setPosition(const glm::vec2 &position) noexcept
+void LensFlareElement::setPosition( const glm::vec2 & position ) noexcept
 {
-  this->position = position;
+	this->position = position;
 }
 
-const glm::vec2 &LensFlareElement::getPosition() const noexcept
+const glm::vec2 & LensFlareElement::getPosition() const noexcept
 {
-  return position;
+	return position;
 }
 
 float LensFlareElement::getPointSize() const noexcept
 {
-  return pointSize;
+	return pointSize;
 }
 
 GLuint LensFlareElement::getTextureID() const noexcept
 {
-  return textureID;
+	return textureID;
 }
 
 /**
@@ -52,7 +52,7 @@ GLuint LensFlareElement::getTextureID() const noexcept
  * (might be greater than 1.0 if current screen resolution is greater than the reference
  * or lesser than 1.0 otherwise)
  */
-void LensFlareElement::adjustPointSize(float pointSizeDivisor) noexcept
+void LensFlareElement::adjustPointSize( float pointSizeDivisor ) noexcept
 {
-  pointSize *= pointSizeDivisor;
+	pointSize *= pointSizeDivisor;
 }

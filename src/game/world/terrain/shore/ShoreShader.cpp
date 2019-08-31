@@ -26,10 +26,10 @@
 * @param renderShader shader program used for onscreen rendering
 * @param normalsShader shader program used for onscreen rendering of normals
 */
-ShoreShader::ShoreShader(Shader &renderShader, Shader &normalsShader) noexcept
-  :
-    renderShader(renderShader),
-    normalsShader(normalsShader)
+ShoreShader::ShoreShader( Shader & renderShader, 
+						  Shader & normalsShader ) noexcept
+	: renderShader( renderShader )
+	, normalsShader( normalsShader )
 {}
 
 /**
@@ -41,22 +41,22 @@ ShoreShader::ShoreShader(Shader &renderShader, Shader &normalsShader) noexcept
 * @param useClipDistanceReflection indicator of whether clip distance will be used by OpenGL for reflection rendering
 * @param useClipDistanceRefraction indicator of whether clip distance will be used by OpenGL for refraction rendering
 */
-void ShoreShader::update(const glm::vec3 &lightDir,
-                         const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                         const glm::mat4 &projectionView,
-                         bool useShadows,
-                         bool useClipDistanceReflection,
-                         bool useClipDistanceRefraction)
+void ShoreShader::update( const glm::vec3 & lightDir,
+						  const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+						  const glm::mat4 & projectionView,
+						  bool useShadows,
+						  bool useClipDistanceReflection,
+						  bool useClipDistanceRefraction )
 {
-  renderShader.use();
-  renderShader.setMat4("u_projectionView", projectionView);
-  renderShader.setBool("u_shadowEnable", useShadows);
-  renderShader.setVec3("u_lightDir", -lightDir);
-  renderShader.setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrices[0]);
-  renderShader.setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrices[1]);
-  renderShader.setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrices[2]);
-  renderShader.setBool("u_useClipDistanceReflection", useClipDistanceReflection);
-  renderShader.setBool("u_useClipDistanceRefraction", useClipDistanceRefraction);
+	renderShader.use();
+	renderShader.setMat4( "u_projectionView", projectionView );
+	renderShader.setBool( "u_shadowEnable", useShadows );
+	renderShader.setVec3( "u_lightDir", -lightDir );
+	renderShader.setMat4( "u_lightSpaceMatrix[0]", lightSpaceMatrices[0] );
+	renderShader.setMat4( "u_lightSpaceMatrix[1]", lightSpaceMatrices[1] );
+	renderShader.setMat4( "u_lightSpaceMatrix[2]", lightSpaceMatrices[2] );
+	renderShader.setBool( "u_useClipDistanceReflection", useClipDistanceReflection );
+	renderShader.setBool( "u_useClipDistanceRefraction", useClipDistanceRefraction );
 }
 
 /**
@@ -64,10 +64,10 @@ void ShoreShader::update(const glm::vec3 &lightDir,
 * @param projectionView "projection * view" matrix
 * @todo remove this in release version of the game
 */
-void ShoreShader::updateNormals(const glm::mat4 &projectionView)
+void ShoreShader::updateNormals( const glm::mat4 & projectionView )
 {
-  normalsShader.use();
-  normalsShader.setMat4("u_projectionView", projectionView);
+	normalsShader.use();
+	normalsShader.setMat4( "u_projectionView", projectionView );
 }
 
 /**
@@ -75,8 +75,8 @@ void ShoreShader::updateNormals(const glm::mat4 &projectionView)
 * @param enable indicator of whether debug rendering mode is on
 * @todo remove this in release version of the game
 */
-void ShoreShader::debugRenderMode(bool enable)
+void ShoreShader::debugRenderMode( bool enable )
 {
-  renderShader.use();
-  renderShader.setBool("u_debugRenderMode", enable);
+	renderShader.use();
+	renderShader.setBool( "u_debugRenderMode", enable );
 }

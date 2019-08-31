@@ -29,6 +29,6 @@
 class WaterRefractionFramebuffer : public Framebuffer
 {
 public:
-  WaterRefractionFramebuffer(TextureManager& textureManager) noexcept;
-  virtual void setup() override;
+	WaterRefractionFramebuffer( TextureManager & textureManager ) noexcept;
+	virtual void setup() override;
 };

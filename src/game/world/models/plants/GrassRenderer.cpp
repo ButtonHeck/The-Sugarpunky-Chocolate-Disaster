@@ -26,11 +26,14 @@
  * @param models vector of models to go through
  * @param isShadow define whether depthmap or plain on-screen rendering mode is on
  */
-void GrassRenderer::render(std::vector<Model> &models, bool isShadow)
+void GrassRenderer::render( std::vector<Model> & models, 
+							bool isShadow )
 {
-  //grass polygon's back face is the same as front, so make sure no culling is applied here
-  glDisable(GL_CULL_FACE);
-  for (Model& grassModel : models)
-    grassModel.draw(isShadow);
-  glEnable(GL_CULL_FACE);
+    //grass polygon's back face is the same as front, so make sure no culling is applied here
+	glDisable( GL_CULL_FACE );
+	for( Model & grassModel : models )
+	{
+		grassModel.draw( isShadow );
+	}
+	glEnable( GL_CULL_FACE );
 }

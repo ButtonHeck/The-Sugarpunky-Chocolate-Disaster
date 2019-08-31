@@ -20,7 +20,10 @@
 
 #include "ModelChunk"
 
-ModelChunk::ModelChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom, float height)
-  :
-    Chunk(left, right, top, bottom, height)
+ModelChunk::ModelChunk( unsigned int left, 
+						unsigned int right, 
+						unsigned int top, 
+						unsigned int bottom, 
+						float height )
+	: Chunk( left, right, top, bottom, height )
 {}

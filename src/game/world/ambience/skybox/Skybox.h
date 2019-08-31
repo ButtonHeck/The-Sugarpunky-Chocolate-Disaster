@@ -31,56 +31,56 @@
 class Skybox
 {
 public:
-  Skybox() noexcept;
-  void draw();
+	Skybox() noexcept;
+	void draw();
 
 private:
-  constexpr static unsigned int VERTICES_PER_SKYBOX = VERTICES_PER_QUAD * VERTICES_PER_QUAD;
-  constexpr static unsigned int BUFFER_SIZE_FLOATS = 3 * VERTICES_PER_SKYBOX;
+	constexpr static unsigned int VERTICES_PER_SKYBOX = VERTICES_PER_QUAD * VERTICES_PER_QUAD;
+	constexpr static unsigned int BUFFER_SIZE_FLOATS = 3 * VERTICES_PER_SKYBOX;
 
-  BufferCollection basicGLBuffers;
-  //offset a bit higher on the Y for aesthetic purpose
-  GLfloat vertices[BUFFER_SIZE_FLOATS] = {
-    -1.0f,  1.2f, -1.0f,
-    -1.0f, -0.8f, -1.0f,
-     1.0f, -0.8f, -1.0f,
-     1.0f, -0.8f, -1.0f,
-     1.0f,  1.2f, -1.0f,
-    -1.0f,  1.2f, -1.0f,
+	BufferCollection basicGLBuffers;
+	//offset a bit higher on the Y for aesthetic purpose
+	GLfloat vertices[BUFFER_SIZE_FLOATS] = {
+	  -1.0f,  1.2f, -1.0f,
+	  -1.0f, -0.8f, -1.0f,
+	   1.0f, -0.8f, -1.0f,
+	   1.0f, -0.8f, -1.0f,
+	   1.0f,  1.2f, -1.0f,
+	  -1.0f,  1.2f, -1.0f,
 
-    -1.0f, -0.8f,  1.0f,
-    -1.0f, -0.8f, -1.0f,
-    -1.0f,  1.2f, -1.0f,
-    -1.0f,  1.2f, -1.0f,
-    -1.0f,  1.2f,  1.0f,
-    -1.0f, -0.8f,  1.0f,
+	  -1.0f, -0.8f,  1.0f,
+	  -1.0f, -0.8f, -1.0f,
+	  -1.0f,  1.2f, -1.0f,
+	  -1.0f,  1.2f, -1.0f,
+	  -1.0f,  1.2f,  1.0f,
+	  -1.0f, -0.8f,  1.0f,
 
-     1.0f, -0.8f, -1.0f,
-     1.0f, -0.8f,  1.0f,
-     1.0f,  1.2f,  1.0f,
-     1.0f,  1.2f,  1.0f,
-     1.0f,  1.2f, -1.0f,
-     1.0f, -0.8f, -1.0f,
+	   1.0f, -0.8f, -1.0f,
+	   1.0f, -0.8f,  1.0f,
+	   1.0f,  1.2f,  1.0f,
+	   1.0f,  1.2f,  1.0f,
+	   1.0f,  1.2f, -1.0f,
+	   1.0f, -0.8f, -1.0f,
 
-    -1.0f, -0.8f,  1.0f,
-    -1.0f,  1.2f,  1.0f,
-     1.0f,  1.2f,  1.0f,
-     1.0f,  1.2f,  1.0f,
-     1.0f, -0.8f,  1.0f,
-    -1.0f, -0.8f,  1.0f,
+	  -1.0f, -0.8f,  1.0f,
+	  -1.0f,  1.2f,  1.0f,
+	   1.0f,  1.2f,  1.0f,
+	   1.0f,  1.2f,  1.0f,
+	   1.0f, -0.8f,  1.0f,
+	  -1.0f, -0.8f,  1.0f,
 
-    -1.0f,  1.2f, -1.0f,
-     1.0f,  1.2f, -1.0f,
-     1.0f,  1.2f,  1.0f,
-     1.0f,  1.2f,  1.0f,
-    -1.0f,  1.2f,  1.0f,
-    -1.0f,  1.2f, -1.0f,
+	  -1.0f,  1.2f, -1.0f,
+	   1.0f,  1.2f, -1.0f,
+	   1.0f,  1.2f,  1.0f,
+	   1.0f,  1.2f,  1.0f,
+	  -1.0f,  1.2f,  1.0f,
+	  -1.0f,  1.2f, -1.0f,
 
-    -1.0f, -0.8f, -1.0f,
-    -1.0f, -0.8f,  1.0f,
-     1.0f, -0.8f, -1.0f,
-     1.0f, -0.8f, -1.0f,
-    -1.0f, -0.8f,  1.0f,
-     1.0f, -0.8f,  1.0f
-  };
+	  -1.0f, -0.8f, -1.0f,
+	  -1.0f, -0.8f,  1.0f,
+	   1.0f, -0.8f, -1.0f,
+	   1.0f, -0.8f, -1.0f,
+	  -1.0f, -0.8f,  1.0f,
+	   1.0f, -0.8f,  1.0f
+	};
 };

@@ -24,43 +24,47 @@
 
 namespace RendererState
 {
-  /**
-  * @brief setup initial OpenGL state
-  * @param useMultisample indicator of multisampling mode for rendering
-  */
-  void setInitialRenderingState(bool useMultisample) noexcept
-  {
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_DITHER);
-    if (useMultisample)
-      glEnable(GL_MULTISAMPLE);
-    else
-      glDisable(GL_MULTISAMPLE);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  }
+	/**
+	* @brief setup initial OpenGL state
+	* @param useMultisample indicator of multisampling mode for rendering
+	*/
+	void setInitialRenderingState( bool useMultisample ) noexcept
+	{
+		glEnable( GL_CULL_FACE );
+		glEnable( GL_DEPTH_TEST );
+		glDisable( GL_DITHER );
+		if( useMultisample )
+		{
+			glEnable( GL_MULTISAMPLE );
+		}
+		else
+		{
+			glDisable( GL_MULTISAMPLE );
+		}
+		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	}
 
-  /**
-  * @brief set OpenGL rendering state for ambience type data (sun, lens flares etc.)
-  * @param isOn flag for ambience state mode
-  */
-  void setAmbienceRenderingState(bool isOn) noexcept
-  {
-    if (isOn)
-      {
-        glDisable(GL_MULTISAMPLE);
-        glDisable(GL_CULL_FACE);
-        glDepthFunc(GL_LEQUAL);
-        glEnable(GL_BLEND);
-        glDepthMask(GL_FALSE);
-      }
-    else
-      {
-        glDepthMask(GL_TRUE);
-        glDisable(GL_BLEND);
-        glDepthFunc(GL_LESS);
-        glEnable(GL_CULL_FACE);
-        glEnable(GL_MULTISAMPLE);
-      }
-  }
+	/**
+	* @brief set OpenGL rendering state for ambience type data (sun, lens flares etc.)
+	* @param isOn flag for ambience state mode
+	*/
+	void setAmbienceRenderingState( bool isOn ) noexcept
+	{
+		if( isOn )
+		{
+			glDisable( GL_MULTISAMPLE );
+			glDisable( GL_CULL_FACE );
+			glDepthFunc( GL_LEQUAL );
+			glEnable( GL_BLEND );
+			glDepthMask( GL_FALSE );
+		}
+		else
+		{
+			glDepthMask( GL_TRUE );
+			glDisable( GL_BLEND );
+			glDepthFunc( GL_LESS );
+			glEnable( GL_CULL_FACE );
+			glEnable( GL_MULTISAMPLE );
+		}
+	}
 }

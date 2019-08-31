@@ -34,20 +34,21 @@ class Shader;
 class PlantsShader
 {
 public:
-  PlantsShader(Shader& renderPhongShader, Shader& renderGouraudShader) noexcept;
-  void updateAllPlants(bool usePhongShading,
-                       const glm::vec3 &lightDir,
-                       const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                       const glm::mat4 &projectionView,
-                       const glm::vec3 &viewPosition,
-                       bool useShadows,
-                       bool useLandBlending);
-  void updateGrassKeyframe();
-  void setType(int type);
-  void setLowPolyMode(bool isLowPoly);
+	PlantsShader( Shader & renderPhongShader,
+				  Shader & renderGouraudShader ) noexcept;
+	void updateAllPlants( bool usePhongShading,
+						  const glm::vec3 & lightDir,
+						  const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+						  const glm::mat4 & projectionView,
+						  const glm::vec3 & viewPosition,
+						  bool useShadows,
+						  bool useLandBlending );
+	void updateGrassKeyframe();
+	void setType( int type );
+	void setLowPolyMode( bool isLowPoly );
 
 private:
-  Shader& renderPhongShader;
-  Shader& renderGouraudShader;
-  Shader* currentShader;
+	Shader & renderPhongShader;
+	Shader & renderGouraudShader;
+	Shader * currentShader;
 };

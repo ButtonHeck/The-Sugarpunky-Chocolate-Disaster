@@ -32,23 +32,24 @@
 class TheSun
 {
 public:
-  TheSun() noexcept;
-  void move(float angleDegrees);
-  void moveAbsolutePosition(float angleDegrees);
-  const glm::vec3 &getPosition() const noexcept;
-  const glm::vec3 &getLightDir() const noexcept;
-  const glm::mat4 &getRotationTransform() const noexcept;
+	TheSun() noexcept;
+	void move( float angleDegrees );
+	void moveAbsolutePosition( float angleDegrees );
+	const glm::vec3 & getPosition() const noexcept;
+	const glm::vec3 & getLightDir() const noexcept;
+	const glm::mat4 & getRotationTransform() const noexcept;
 
 private:
-  //renderer would need access of the VAO to use
-  friend class TheSunRenderer;
-  const glm::vec3 ROTATION_VECTOR;
-  BufferCollection basicGLBuffers;
-  glm::mat4 rotationTransform;
-  glm::vec3 currentPosition;
-  glm::vec3 lightDirTo;
+	//renderer would need access of the VAO to use
+	friend class TheSunRenderer;
 
-  //constants for absolute positioning
-  const glm::vec3 START_POSITION = currentPosition;
-  const glm::mat4 START_MODEL = glm::mat4();
+	const glm::vec3 ROTATION_VECTOR;
+	BufferCollection basicGLBuffers;
+	glm::mat4 rotationTransform;
+	glm::vec3 currentPosition;
+	glm::vec3 lightDirTo;
+
+	//constants for absolute positioning
+	const glm::vec3 START_POSITION = currentPosition;
+	const glm::mat4 START_MODEL = glm::mat4();
 };

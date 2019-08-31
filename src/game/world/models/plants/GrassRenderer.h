@@ -31,6 +31,7 @@ class Model;
 class GrassRenderer
 {
 public:
-  GrassRenderer() = default;
-  void render(std::vector<Model>& models, bool isShadow);
+	GrassRenderer() = default;
+	void render( std::vector<Model> & models, 
+				 bool isShadow );
 };

@@ -27,11 +27,13 @@
 * @param normalsShader shader program used during normals visualization rendering
 * @param waterMap map of the water tiles
 */
-HillsFacade::HillsFacade(Shader &renderShader, Shader &cullingShader, Shader &normalsShader, const map2D_f &waterMap)
-  :
-    shaders(renderShader, cullingShader, normalsShader),
-    generator(shaders, waterMap),
-    renderer(shaders, generator)
+HillsFacade::HillsFacade( Shader & renderShader, 
+						  Shader & cullingShader, 
+						  Shader & normalsShader, 
+						  const map2D_f & waterMap )
+	: shaders( renderShader, cullingShader, normalsShader )
+	, generator( shaders, waterMap )
+	, renderer( shaders, generator )
 {}
 
 /**
@@ -39,7 +41,7 @@ HillsFacade::HillsFacade(Shader &renderShader, Shader &cullingShader, Shader &no
 */
 void HillsFacade::setup()
 {
-  generator.setup();
+	generator.setup();
 }
 
 /**
@@ -47,28 +49,28 @@ void HillsFacade::setup()
 */
 void HillsFacade::recreateTilesAndBufferData()
 {
-  generator.updateMaxHeight();
-  generator.createTiles();
-  generator.createAuxiliaryMaps();
-  generator.fillBufferData();
+	generator.updateMaxHeight();
+	generator.createTiles();
+	generator.createAuxiliaryMaps();
+	generator.fillBufferData();
 }
 
 /**
 * @brief delegates serialization call to generator
 * @param output file stream to write data to
 */
-void HillsFacade::serialize(std::ofstream &output)
+void HillsFacade::serialize( std::ofstream & output )
 {
-  generator.serialize(output, true, 4);
+	generator.serialize( output, true, 4 );
 }
 
 /**
 * @brief delegates deserialization call to generator
 * @param input file stream to read data from
 */
-void HillsFacade::deserialize(std::ifstream &input)
+void HillsFacade::deserialize( std::ifstream & input )
 {
-  generator.deserialize(input);
+	generator.deserialize( input );
 }
 
 /**
@@ -84,34 +86,34 @@ void HillsFacade::deserialize(std::ifstream &input)
 * @param useDebugRender indicator of whether to draw additional details (mesh grid and normals), used for visual debug only
 * @todo remove debug render mode in the release version of the game
 */
-void HillsFacade::draw(const glm::vec3 &lightDir,
-                       const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                       const glm::mat4& projectionView,
-                       const glm::vec3 &viewPosition,
-                       const glm::vec2 &viewAcceleration,
-                       const Frustum &viewFrustum,
-                       bool useFrustumCulling,
-                       bool useShadows,
-                       bool useDebugRender)
+void HillsFacade::draw( const glm::vec3 & lightDir,
+						const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+						const glm::mat4 & projectionView,
+						const glm::vec3 & viewPosition,
+						const glm::vec2 & viewAcceleration,
+						const Frustum & viewFrustum,
+						bool useFrustumCulling,
+						bool useShadows,
+						bool useDebugRender )
 {
-  shaders.update(lightDir,
-                 lightSpaceMatrices,
-                 projectionView,
-                 viewPosition,
-                 viewFrustum,
-                 generator.maxHeight,
-                 useFrustumCulling,
-                 useShadows);
-  shaders.debugRenderMode(false);
-  renderer.render(useFrustumCulling, viewAcceleration);
+	shaders.update( lightDir,
+					lightSpaceMatrices,
+					projectionView,
+					viewPosition,
+					viewFrustum,
+					generator.maxHeight,
+					useFrustumCulling,
+					useShadows );
+	shaders.debugRenderMode( false );
+	renderer.render( useFrustumCulling, viewAcceleration );
 
-  if (useDebugRender)
-    {
-      shaders.debugRenderMode(true);
-      renderer.debugRender(GL_TRIANGLES);
-      shaders.updateNormals(projectionView);
-      renderer.debugRender(GL_POINTS);
-    }
+	if( useDebugRender )
+	{
+		shaders.debugRenderMode( true );
+		renderer.debugRender( GL_TRIANGLES );
+		shaders.updateNormals( projectionView );
+		renderer.debugRender( GL_POINTS );
+	}
 }
 
 /**
@@ -119,15 +121,15 @@ void HillsFacade::draw(const glm::vec3 &lightDir,
 */
 void HillsFacade::drawDepthmap()
 {
-  renderer.renderDepthmap();
+	renderer.renderDepthmap();
 }
 
-const map2D_f &HillsFacade::getMap() const noexcept
+const map2D_f & HillsFacade::getMap() const noexcept
 {
-  return generator.getMap();
+	return generator.getMap();
 }
 
-const map2D_vec3 &HillsFacade::getNormalMap() const noexcept
+const map2D_vec3 & HillsFacade::getNormalMap() const noexcept
 {
-  return generator.normalMap;
+	return generator.normalMap;
 }

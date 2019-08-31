@@ -35,13 +35,13 @@ class TextureLoader;
 class TextureManager
 {
 public:
-  TextureManager(TextureLoader& loader);
-  virtual ~TextureManager();
-  void createUnderwaterReliefTexture(const map2D_f &waterMap);
-  GLuint& get(int textureUnit);
-  TextureLoader& getLoader() noexcept;
+	TextureManager( TextureLoader & loader );
+	virtual ~TextureManager();
+	void createUnderwaterReliefTexture( const map2D_f & waterMap );
+	GLuint & get( int textureUnit );
+	TextureLoader & getLoader() noexcept;
 
 private:
-  TextureLoader& loader;
-  std::unordered_map<int, GLuint> textures;
+	TextureLoader & loader;
+	std::unordered_map<int, GLuint> textures;
 };

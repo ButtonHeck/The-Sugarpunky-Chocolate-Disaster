@@ -32,9 +32,9 @@ bool Shader::useCachingOfUniforms = false;
 * @brief sets uniforms caching mode
 * @param useCache caching flag
 */
-void Shader::setCachingOfUniformsMode(bool useCache) noexcept
+void Shader::setCachingOfUniformsMode( bool useCache ) noexcept
 {
-  Shader::useCachingOfUniforms = useCache;
+	Shader::useCachingOfUniforms = useCache;
 }
 
 /**
@@ -42,15 +42,16 @@ void Shader::setCachingOfUniformsMode(bool useCache) noexcept
 * @param srcFile1 source file
 * @param includes list of auxiliary source files including in the shader source (might be empty)
 */
-Shader::Shader(ShaderSource srcFile1, ShaderIncludeList includes)
+Shader::Shader( ShaderSource srcFile1, 
+				ShaderIncludeList includes )
 {
-  const std::string& src = srcFile1.second;
-  GLuint shader = createShader(srcFile1.first, std::string(SHADER_DIR + src), includes);
-  ID = glCreateProgram();
-  shaderName = src.substr(0, src.find('/'));
-  glAttachShader(ID, shader);
-  link();
-  glDeleteShader(shader);
+	const std::string & src = srcFile1.second;
+	GLuint shader = createShader( srcFile1.first, std::string( SHADER_DIR + src ), includes );
+	ID = glCreateProgram();
+	shaderName = src.substr( 0, src.find( '/' ) );
+	glAttachShader( ID, shader );
+	link();
+	glDeleteShader( shader );
 }
 
 /**
@@ -59,19 +60,21 @@ Shader::Shader(ShaderSource srcFile1, ShaderIncludeList includes)
 * @param srcFile2 second source file
 * @param includes list of auxiliary source files including in the shader sources (might be empty)
 */
-Shader::Shader(ShaderSource srcFile1, ShaderSource srcFile2, ShaderIncludeList includes)
+Shader::Shader( ShaderSource srcFile1, 
+				ShaderSource srcFile2, 
+				ShaderIncludeList includes )
 {
-  const std::string& src1 = srcFile1.second;
-  const std::string& src2 = srcFile2.second;
-  GLuint shader1 = createShader(srcFile1.first, std::string(SHADER_DIR + src1), includes);
-  GLuint shader2 = createShader(srcFile2.first, std::string(SHADER_DIR + src2), includes);
-  ID = glCreateProgram();
-  shaderName = src1.substr(0, src1.find('/'));
-  glAttachShader(ID, shader1);
-  glAttachShader(ID, shader2);
-  link();
-  glDeleteShader(shader1);
-  glDeleteShader(shader2);
+	const std::string & src1 = srcFile1.second;
+	const std::string & src2 = srcFile2.second;
+	GLuint shader1 = createShader( srcFile1.first, std::string( SHADER_DIR + src1 ), includes );
+	GLuint shader2 = createShader( srcFile2.first, std::string( SHADER_DIR + src2 ), includes );
+	ID = glCreateProgram();
+	shaderName = src1.substr( 0, src1.find( '/' ) );
+	glAttachShader( ID, shader1 );
+	glAttachShader( ID, shader2 );
+	link();
+	glDeleteShader( shader1 );
+	glDeleteShader( shader2 );
 }
 
 /**
@@ -81,23 +84,26 @@ Shader::Shader(ShaderSource srcFile1, ShaderSource srcFile2, ShaderIncludeList i
 * @param srcFile3 third source file
 * @param includes list of auxiliary source files including in the shader sources (might be empty)
 */
-Shader::Shader(ShaderSource srcFile1, ShaderSource srcFile2, ShaderSource srcFile3, ShaderIncludeList includes)
+Shader::Shader( ShaderSource srcFile1, 
+				ShaderSource srcFile2, 
+				ShaderSource srcFile3, 
+				ShaderIncludeList includes )
 {
-  const std::string& src1 = srcFile1.second;
-  const std::string& src2 = srcFile2.second;
-  const std::string& src3 = srcFile3.second;
-  GLuint shader1 = createShader(srcFile1.first, std::string(SHADER_DIR + src1), includes);
-  GLuint shader2 = createShader(srcFile2.first, std::string(SHADER_DIR + src2), includes);
-  GLuint shader3 = createShader(srcFile3.first, std::string(SHADER_DIR + src3), includes);
-  ID = glCreateProgram();
-  shaderName = src1.substr(0, src1.find('/'));
-  glAttachShader(ID, shader1);
-  glAttachShader(ID, shader2);
-  glAttachShader(ID, shader3);
-  link();
-  glDeleteShader(shader1);
-  glDeleteShader(shader2);
-  glDeleteShader(shader3);
+	const std::string & src1 = srcFile1.second;
+	const std::string & src2 = srcFile2.second;
+	const std::string & src3 = srcFile3.second;
+	GLuint shader1 = createShader( srcFile1.first, std::string( SHADER_DIR + src1 ), includes );
+	GLuint shader2 = createShader( srcFile2.first, std::string( SHADER_DIR + src2 ), includes );
+	GLuint shader3 = createShader( srcFile3.first, std::string( SHADER_DIR + src3 ), includes );
+	ID = glCreateProgram();
+	shaderName = src1.substr( 0, src1.find( '/' ) );
+	glAttachShader( ID, shader1 );
+	glAttachShader( ID, shader2 );
+	glAttachShader( ID, shader3 );
+	link();
+	glDeleteShader( shader1 );
+	glDeleteShader( shader2 );
+	glDeleteShader( shader3 );
 }
 
 /**
@@ -105,18 +111,18 @@ Shader::Shader(ShaderSource srcFile1, ShaderSource srcFile2, ShaderSource srcFil
 */
 void Shader::link()
 {
-  glLinkProgram(ID);
-  glGetProgramiv(ID, GL_LINK_STATUS, &status);
-  if (status != 1)
-    {
-      glGetProgramInfoLog(ID, 512, NULL, infoLog);
-      Logger::log("%\n", infoLog);
-    }
+	glLinkProgram( ID );
+	glGetProgramiv( ID, GL_LINK_STATUS, &status );
+	if( status != 1 )
+	{
+		glGetProgramInfoLog( ID, 512, NULL, infoLog );
+		Logger::log( "%\n", infoLog );
+	}
 }
 
 GLuint Shader::getID() const noexcept
 {
-  return ID;
+	return ID;
 }
 
 /**
@@ -124,19 +130,21 @@ GLuint Shader::getID() const noexcept
 */
 void Shader::use() const noexcept
 {
-  glUseProgram(ID);
+	glUseProgram( ID );
 }
 
 /**
 * @brief returns GL defined uniform location for a uniform
 * @param uniformName name of the uniform in program
 */
-GLuint Shader::getUniformLocation(const char* uniformName) const
+GLuint Shader::getUniformLocation( const char * uniformName ) const
 {
-  auto uniformLocation = glGetUniformLocation(ID, uniformName);
-  if (uniformLocation == -1)
-    Logger::log("Unknown uniform: % for: %\n", uniformName, shaderName);
-  return uniformLocation;
+	auto uniformLocation = glGetUniformLocation( ID, uniformName );
+	if( uniformLocation == -1 )
+	{
+		Logger::log( "Unknown uniform: % for: %\n", uniformName, shaderName );
+	}
+	return uniformLocation;
 }
 
 /**
@@ -144,16 +152,21 @@ GLuint Shader::getUniformLocation(const char* uniformName) const
 * @param uniformName name of the uniform in program
 * @param value value
 */
-void Shader::setInt(const char* uniformName, int value)
+void Shader::setInt( const char * uniformName, 
+					 int value )
 {
-  if (Shader::useCachingOfUniforms)
-    {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName] = getUniformLocation(uniformName);
-      glUniform1i(uniformCache[uniformName], value);
-    }
-  else
-    glUniform1i(getUniformLocation(uniformName), value);
+	if( Shader::useCachingOfUniforms )
+	{
+		if( uniformCache.find( uniformName ) == uniformCache.end() )
+		{
+			uniformCache[uniformName] = getUniformLocation( uniformName );
+		}
+		glUniform1i( uniformCache[uniformName], value );
+	}
+	else
+	{
+		glUniform1i( getUniformLocation( uniformName ), value );
+	}
 }
 
 /**
@@ -161,16 +174,21 @@ void Shader::setInt(const char* uniformName, int value)
 * @param uniformName name of the uniform in program
 * @param value value
 */
-void Shader::setUint64(const char* uniformName, GLuint64 value)
+void Shader::setUint64( const char * uniformName, 
+						GLuint64 value )
 {
-  if (Shader::useCachingOfUniforms)
-    {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName] = getUniformLocation(uniformName);
-      glUniform1ui64ARB(uniformCache[uniformName], value);
-    }
-  else
-    glUniform1ui64ARB(getUniformLocation(uniformName), value);
+	if( Shader::useCachingOfUniforms )
+	{
+		if( uniformCache.find( uniformName ) == uniformCache.end() )
+		{
+			uniformCache[uniformName] = getUniformLocation( uniformName );
+		}
+		glUniform1ui64ARB( uniformCache[uniformName], value );
+	}
+	else
+	{
+		glUniform1ui64ARB( getUniformLocation( uniformName ), value );
+	}
 }
 
 /**
@@ -178,16 +196,21 @@ void Shader::setUint64(const char* uniformName, GLuint64 value)
 * @param uniformName name of the uniform in program
 * @param value value
 */
-void Shader::setFloat(const char* uniformName, float value)
+void Shader::setFloat( const char * uniformName, 
+					   float value )
 {
-  if (Shader::useCachingOfUniforms)
-    {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName] = getUniformLocation(uniformName);
-      glUniform1f(uniformCache[uniformName], value);
-    }
-  else
-    glUniform1f(getUniformLocation(uniformName), value);
+	if( Shader::useCachingOfUniforms )
+	{
+		if( uniformCache.find( uniformName ) == uniformCache.end() )
+		{
+			uniformCache[uniformName] = getUniformLocation( uniformName );
+		}
+		glUniform1f( uniformCache[uniformName], value );
+	}
+	else
+	{
+		glUniform1f( getUniformLocation( uniformName ), value );
+	}
 }
 
 /**
@@ -195,64 +218,90 @@ void Shader::setFloat(const char* uniformName, float value)
 * @param uniformName name of the uniform in program
 * @param value value
 */
-void Shader::setBool(const char* uniformName, bool value)
+void Shader::setBool( const char * uniformName, 
+					  bool value )
 {
-  if (Shader::useCachingOfUniforms)
-    {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName] = getUniformLocation(uniformName);
-      glUniform1i(uniformCache[uniformName], value);
-    }
-  else
-    glUniform1i(getUniformLocation(uniformName), value);
+	if( Shader::useCachingOfUniforms )
+	{
+		if( uniformCache.find( uniformName ) == uniformCache.end() )
+		{
+			uniformCache[uniformName] = getUniformLocation( uniformName );
+		}
+		glUniform1i( uniformCache[uniformName], value );
+	}
+	else
+	{
+		glUniform1i( getUniformLocation( uniformName ), value );
+	}
 }
 
 /**
 * @brief updates vec3 uniform
 * @param uniformName name of the uniform in program
 */
-void Shader::setVec3(const char* uniformName, float x, float y, float z)
+void Shader::setVec3( const char * uniformName, 
+					  float x, 
+					  float y, 
+					  float z )
 {
-  if (Shader::useCachingOfUniforms)
-    {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName] = getUniformLocation(uniformName);
-      glUniform3f(uniformCache[uniformName], x, y, z);
-    }
-  else
-    glUniform3f(getUniformLocation(uniformName), x, y ,z);
+	if( Shader::useCachingOfUniforms )
+	{
+		if( uniformCache.find( uniformName ) == uniformCache.end() )
+		{
+			uniformCache[uniformName] = getUniformLocation( uniformName );
+		}
+		glUniform3f( uniformCache[uniformName], x, y, z );
+	}
+	else
+	{
+		glUniform3f( getUniformLocation( uniformName ), x, y, z );
+	}
 }
 
 /**
 * @brief updates vec2 uniform
 * @param uniformName name of the uniform in program
 */
-void Shader::setVec2(const char* uniformName, float x, float y)
+void Shader::setVec2( const char * uniformName, 
+					  float x, 
+					  float y )
 {
-  if (Shader::useCachingOfUniforms)
-    {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName] = getUniformLocation(uniformName);
-      glUniform2f(uniformCache[uniformName], x, y);
-    }
-  else
-    glUniform2f(getUniformLocation(uniformName), x, y);
+	if( Shader::useCachingOfUniforms )
+	{
+		if( uniformCache.find( uniformName ) == uniformCache.end() )
+		{
+			uniformCache[uniformName] = getUniformLocation( uniformName );
+		}
+		glUniform2f( uniformCache[uniformName], x, y );
+	}
+	else
+	{
+		glUniform2f( getUniformLocation( uniformName ), x, y );
+	}
 }
 
 /**
 * @brief updates vec4 uniform
 * @param uniformName name of the uniform in program
 */
-void Shader::setVec4(const char* uniformName, float x, float y, float z, float w)
+void Shader::setVec4( const char * uniformName, 
+					  float x, 
+					  float y, 
+					  float z, 
+					  float w )
 {
-  if (Shader::useCachingOfUniforms)
-    {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName] = getUniformLocation(uniformName);
-      glUniform4f(uniformCache[uniformName], x, y, z, w);
-    }
-  else
-    glUniform4f(getUniformLocation(uniformName), x, y ,z, w);
+	if( Shader::useCachingOfUniforms )
+	{
+		if( uniformCache.find( uniformName ) == uniformCache.end() )
+		{
+			uniformCache[uniformName] = getUniformLocation( uniformName );
+		}
+		glUniform4f( uniformCache[uniformName], x, y, z, w );
+	}
+	else
+	{
+		glUniform4f( getUniformLocation( uniformName ), x, y, z, w );
+	}
 }
 
 /**
@@ -260,16 +309,21 @@ void Shader::setVec4(const char* uniformName, float x, float y, float z, float w
 * @param uniformName name of the uniform in program
 * @param mat 3x3 matrix
 */
-void Shader::setMat3(const char* uniformName, const glm::mat3 &mat)
+void Shader::setMat3( const char * uniformName, 
+					  const glm::mat3 & mat )
 {
-  if (Shader::useCachingOfUniforms)
-    {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName] = getUniformLocation(uniformName);
-      glUniformMatrix3fv(uniformCache[uniformName], 1, GL_FALSE, glm::value_ptr(mat));
-    }
-  else
-    glUniformMatrix3fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat));
+	if( Shader::useCachingOfUniforms )
+	{
+		if( uniformCache.find( uniformName ) == uniformCache.end() )
+		{
+			uniformCache[uniformName] = getUniformLocation( uniformName );
+		}
+		glUniformMatrix3fv( uniformCache[uniformName], 1, GL_FALSE, glm::value_ptr( mat ) );
+	}
+	else
+	{
+		glUniformMatrix3fv( getUniformLocation( uniformName ), 1, GL_FALSE, glm::value_ptr( mat ) );
+	}
 }
 
 /**
@@ -277,16 +331,21 @@ void Shader::setMat3(const char* uniformName, const glm::mat3 &mat)
 * @param uniformName name of the uniform in program
 * @param mat 4x4 matrix
 */
-void Shader::setMat4(const char* uniformName, const glm::mat4 &mat)
+void Shader::setMat4( const char * uniformName, 
+					  const glm::mat4 & mat )
 {
-  if (Shader::useCachingOfUniforms)
-    {
-      if (uniformCache.find(uniformName) == uniformCache.end())
-        uniformCache[uniformName] = getUniformLocation(uniformName);
-      glUniformMatrix4fv(uniformCache[uniformName], 1, GL_FALSE, glm::value_ptr(mat));
-    }
-  else
-    glUniformMatrix4fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat));
+	if( Shader::useCachingOfUniforms )
+	{
+		if( uniformCache.find( uniformName ) == uniformCache.end() )
+		{
+			uniformCache[uniformName] = getUniformLocation( uniformName );
+		}
+		glUniformMatrix4fv( uniformCache[uniformName], 1, GL_FALSE, glm::value_ptr( mat ) );
+	}
+	else
+	{
+		glUniformMatrix4fv( getUniformLocation( uniformName ), 1, GL_FALSE, glm::value_ptr( mat ) );
+	}
 }
 
 /**
@@ -294,7 +353,7 @@ void Shader::setMat4(const char* uniformName, const glm::mat4 &mat)
 */
 void Shader::cleanUp() noexcept
 {
-  glDeleteProgram(ID);
+	glDeleteProgram( ID );
 }
 
 /**
@@ -303,50 +362,54 @@ void Shader::cleanUp() noexcept
 * @param filename shader source file name
 * @param includes list of auxiliary source files including in the shader source (might be empty)
 */
-GLuint Shader::createShader(GLenum shaderType, const std::string &filename, ShaderIncludeList includes)
+GLuint Shader::createShader( GLenum shaderType, 
+							 const std::string & filename, 
+							 ShaderIncludeList includes )
 {
-  std::fstream fileStream(filename);
-  std::stringstream fileStringStream;
-  fileStringStream << fileStream.rdbuf();
-  fileStream.close();
-  std::string stringSrc = fileStringStream.str();
+	std::fstream fileStream( filename );
+	std::stringstream fileStringStream;
+	fileStringStream << fileStream.rdbuf();
+	fileStream.close();
+	std::string stringSrc = fileStringStream.str();
 
-  //inject pragma into source file for debug build
+	//inject pragma into source file for debug build
 #ifdef _DEBUG
-  std::string debugPragmaString = "#pragma debug(on)\n";
-  stringSrc.insert(13, debugPragmaString);
+	std::string debugPragmaString = "#pragma debug(on)\n";
+	stringSrc.insert( 13, debugPragmaString );
 #endif
 
-  //inject source code from included files
-  try
-  {
-    parseIncludes(shaderType, stringSrc, includes);
-  }
-  catch(std::invalid_argument& e)
-  {
-    Logger::log("% in file: %\n", e.what(), filename);
-    throw;
-  }
+	//inject source code from included files
+	try
+	{
+		parseIncludes( shaderType, stringSrc, includes );
+	}
+	catch( std::invalid_argument & e )
+	{
+		Logger::log( "% in file: %\n", e.what(), filename );
+		throw;
+	}
 
-  /*
-   * inject macro in source file if it has some HDR stuff (which is reflected in filename) 
-   * and if HDR mode is enabled in the game
-   */
-  if (filename.find_first_of("_hdr") != std::string::npos && HDR_ENABLED)
-    regexReplace(stringSrc, "#version 450\n", "#version 450\n#define HDR_ENABLED\n");
+	/*
+	 * inject macro in source file if it has some HDR stuff (which is reflected in filename)
+	 * and if HDR mode is enabled in the game
+	 */
+	if( filename.find_first_of( "_hdr" ) != std::string::npos && HDR_ENABLED )
+	{
+		regexReplace( stringSrc, "#version 450\n", "#version 450\n#define HDR_ENABLED\n" );
+	}
 
-  //after all preprocessing source code is ready to be loaded to OpenGL
-  const char* src = stringSrc.c_str();
-  GLuint shader = glCreateShader(shaderType);
-  glShaderSource(shader, 1, &src, NULL);
-  glCompileShader(shader);
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-  if (status != 1)
-    {
-      glGetShaderInfoLog(shader, 512, NULL, infoLog);
-      Logger::log("%\n", infoLog);
-    }
-  return shader;
+	//after all preprocessing source code is ready to be loaded to OpenGL
+	const char * src = stringSrc.c_str();
+	GLuint shader = glCreateShader( shaderType );
+	glShaderSource( shader, 1, &src, NULL );
+	glCompileShader( shader );
+	glGetShaderiv( shader, GL_COMPILE_STATUS, &status );
+	if( status != 1 )
+	{
+		glGetShaderInfoLog( shader, 512, NULL, infoLog );
+		Logger::log( "%\n", infoLog );
+	}
+	return shader;
 }
 
 /**
@@ -355,29 +418,35 @@ GLuint Shader::createShader(GLenum shaderType, const std::string &filename, Shad
 * @param stringSrc source code of a shader
 * @param includes list of auxiliary source files including in the shader source (might be empty)
 */
-void Shader::parseIncludes(GLenum shaderType, std::string &stringSrc, ShaderIncludeList includes)
+void Shader::parseIncludes( GLenum shaderType, 
+							std::string & stringSrc, 
+							ShaderIncludeList includes )
 {
-  for (auto i = includes.begin(); i < includes.end(); i++)
-    {
-	  //bypass file from include list if its shader type is different
-      if (i->first != shaderType)
-        continue;
+	for( auto i = includes.begin(); i < includes.end(); i++ )
+	{
+		//bypass file from include list if its shader type is different
+		if( i->first != shaderType )
+		{
+			continue;
+		}
 
-      std::string includeFileName = i->second;
-      std::fstream includeStream(std::string(SHADER_DIR + "include/" + i->second));
-      std::stringstream includeStringStream;
-      includeStringStream << includeStream.rdbuf();
-      includeStream.close();
-      std::string includeSrc = includeStringStream.str();
+		std::string includeFileName = i->second;
+		std::fstream includeStream( std::string( SHADER_DIR + "include/" + i->second ) );
+		std::stringstream includeStringStream;
+		includeStringStream << includeStream.rdbuf();
+		includeStream.close();
+		std::string includeSrc = includeStringStream.str();
 
-	  //replace custom lines of code in a source with the source from included file
-      std::string includeToken = std::string("@include ").append(includeFileName);
-      regexReplace(stringSrc, includeToken, includeSrc);
-    }
+		//replace custom lines of code in a source with the source from included file
+		std::string includeToken = std::string( "@include " ).append( includeFileName );
+		regexReplace( stringSrc, includeToken, includeSrc );
+	}
 
-  //if there are any custom lines left in the source code we must have fucked up with include list
-  if (stringSrc.find("@include") != std::string::npos)
-    throw std::invalid_argument("Some expected includes were not found");
+	//if there are any custom lines left in the source code we must have fucked up with include list
+	if( stringSrc.find( "@include" ) != std::string::npos )
+	{
+		throw std::invalid_argument( "Some expected includes were not found" );
+	}
 }
 
 /**
@@ -387,9 +456,13 @@ void Shader::parseIncludes(GLenum shaderType, std::string &stringSrc, ShaderIncl
 * @param substitution source code to be injected
 * @note purposely replaces only one occurence of custom line per function call
 */
-void Shader::regexReplace(std::string &source, const std::string &toReplace, const std::string &substitution)
+void Shader::regexReplace( std::string & source, 
+						   const std::string & toReplace, 
+						   const std::string & substitution )
 {
-  size_t positionOfReplaceOccurence = source.find(toReplace);
-  if(positionOfReplaceOccurence != std::string::npos)
-    source.replace(positionOfReplaceOccurence, toReplace.size(), substitution);
+	size_t positionOfReplaceOccurence = source.find( toReplace );
+	if( positionOfReplaceOccurence != std::string::npos )
+	{
+		source.replace( positionOfReplaceOccurence, toReplace.size(), substitution );
+	}
 }

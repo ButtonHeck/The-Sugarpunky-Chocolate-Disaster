@@ -30,25 +30,31 @@ class Camera;
 class TheSunFacade;
 
 /**
-* @brief manager for all keyboard-driven events. Responsible for processing keyboard events, 
+* @brief manager for all keyboard-driven events. Responsible for processing keyboard events,
 * binding different events and functions to dedicated keys
 */
 class KeyboardManager
 {
 public:
-  KeyboardManager(GLFWwindow* window, Camera& camera, Camera& shadowCamera, Options& options, TheSunFacade &sun) noexcept;
-  void processInput();
+	KeyboardManager( GLFWwindow * window, 
+					 Camera & camera, 
+					 Camera & shadowCamera, 
+					 Options & options, 
+					 TheSunFacade & sun ) noexcept;
+	void processInput();
 
 private:
-  void processKey(int keyCode, OPTION option);
-  void processKey(int keyCode, std::function<void()> function);
+	void processKey( int keyCode, 
+					 OPTION option );
+	void processKey( int keyCode, 
+					 std::function<void()> function );
 
-  bool keysPressed[GLFW_KEY_LAST];
-  GLFWwindow* window;
-  Camera& camera;
-  /** @todo remove from release version of the game */
-  Camera& shadowCamera;
-  Options& options;
-  /** @todo remove from release version of the game */
-  TheSunFacade& sun;
+	bool keysPressed[GLFW_KEY_LAST];
+	GLFWwindow * window;
+	Camera & camera;
+	/** @todo remove from release version of the game */
+	Camera & shadowCamera;
+	Options & options;
+	/** @todo remove from release version of the game */
+	TheSunFacade & sun;
 };

@@ -33,10 +33,12 @@ class Shader;
 class SkysphereShader
 {
 public:
-  SkysphereShader(Shader& renderShader) noexcept;
-  void update(const glm::mat4 &projectionView, const glm::vec3 &lightDir);
-  void setSkysphereType(int type, const glm::mat4 &transform);
+	SkysphereShader( Shader & renderShader ) noexcept;
+	void update( const glm::mat4 & projectionView, 
+				 const glm::vec3 & lightDir );
+	void setSkysphereType( int type, 
+						   const glm::mat4 & transform );
 
 private:
-  Shader& renderShader;
+	Shader & renderShader;
 };

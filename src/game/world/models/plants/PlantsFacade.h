@@ -37,39 +37,44 @@ class Frustum;
 class PlantsFacade
 {
 public:
-  PlantsFacade(Shader& renderPhongShader, Shader& renderGouraudShader) noexcept;
-  void setup(const map2D_f &landMap, const map2D_f &hillMap, const map2D_vec3 &hillsNormalMap);
-  void initializeModelRenderChunks(const map2D_f &landMap, const map2D_f &hillMap);
-  void prepareIndirectBufferData(const glm::vec2& cameraPositionXZ, const Frustum& viewFrustum);
-  void updateIndirectBufferData();
-  void draw(const glm::vec3 &lightDir,
-            const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-            const glm::mat4 &projectionView,
-            const glm::vec3 &viewPosition,
-            bool usePhongShading,
-            bool useShadows,
-            bool useLandBlending,
-			bool worldReflectionMode = false);
-  void drawDepthmap(bool grassCastShadow);
+	PlantsFacade( Shader & renderPhongShader, 
+				  Shader & renderGouraudShader ) noexcept;
+	void setup( const map2D_f & landMap, 
+				const map2D_f & hillMap, 
+				const map2D_vec3 & hillsNormalMap );
+	void initializeModelRenderChunks( const map2D_f & landMap, 
+									  const map2D_f & hillMap );
+	void prepareIndirectBufferData( const glm::vec2 & cameraPositionXZ, 
+									const Frustum & viewFrustum );
+	void updateIndirectBufferData();
+	void draw( const glm::vec3 & lightDir,
+			   const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+			   const glm::mat4 & projectionView,
+			   const glm::vec3 & viewPosition,
+			   bool usePhongShading,
+			   bool useShadows,
+			   bool useLandBlending,
+			   bool worldReflectionMode = false );
+	void drawDepthmap( bool grassCastShadow );
 
-  //save/load routine
-  void serialize(std::ofstream& output);
-  void deserialize(std::ifstream& input);
+	//save/load routine
+	void serialize( std::ofstream & output );
+	void deserialize( std::ifstream & input );
 
 private:
-  //define possible state for plants
-  enum PLANT_TYPE : int
-  {
-    PLANT_STATIC = 0,
-    PLANT_ANIMATED = 1
-  };
-  void prepareDistributionMap();
+	//define possible state for plants
+	enum PLANT_TYPE : int
+	{
+		PLANT_STATIC = 0,
+		PLANT_ANIMATED = 1
+	};
+	void prepareDistributionMap();
 
-  map2D_i distributionMap;
-  PlantsShader shaders;
-  LandPlantsGenerator landPlantsGenerator;
-  GrassGenerator grassGenerator;
-  HillTreesGenerator hillTreesGenerator;
-  TreesRenderer treesRenderer;
-  GrassRenderer grassRenderer;
+	map2D_i distributionMap;
+	PlantsShader shaders;
+	LandPlantsGenerator landPlantsGenerator;
+	GrassGenerator grassGenerator;
+	HillTreesGenerator hillTreesGenerator;
+	TreesRenderer treesRenderer;
+	GrassRenderer grassRenderer;
 };

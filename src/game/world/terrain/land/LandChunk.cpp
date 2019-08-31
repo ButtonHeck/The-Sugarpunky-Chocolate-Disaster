@@ -25,9 +25,13 @@
 * @param offset instance offset, for indirect buffer usage
 * @param instances number of tile instances in chunk, for indirect buffer usage
 */
-LandChunk::LandChunk(unsigned int left, unsigned int right, unsigned int top, unsigned int bottom, unsigned int offset, unsigned int instances) noexcept
-  :
-    Chunk(left, right, top, bottom),
-    instanceOffset(offset),
-    numInstances(instances)
+LandChunk::LandChunk( unsigned int left, 
+					  unsigned int right, 
+					  unsigned int top, 
+					  unsigned int bottom, 
+					  unsigned int offset, 
+					  unsigned int instances ) noexcept
+	: Chunk( left, right, top, bottom )
+	, instanceOffset( offset )
+	, numInstances( instances )
 {}

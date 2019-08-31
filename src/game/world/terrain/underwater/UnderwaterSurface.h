@@ -23,16 +23,16 @@
 #include "BufferCollection"
 
 /**
-* @brief representation of the underwater surface tile. 
+* @brief representation of the underwater surface tile.
 * Responsible for initializing buffer collection and loading underwater tile data to GPU
 */
 class UnderwaterSurface
 {
 public:
-  UnderwaterSurface() noexcept;
+	UnderwaterSurface() noexcept;
 
 private:
-  friend class UnderwaterRenderer;
+	friend class UnderwaterRenderer;
 
-  BufferCollection basicGLBuffers;
+	BufferCollection basicGLBuffers;
 };

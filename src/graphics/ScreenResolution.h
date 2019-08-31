@@ -21,24 +21,27 @@
 #pragma once
 
 /**
-* @brief Utility class representing screen resolution. 
+* @brief Utility class representing screen resolution.
 * Responsible for holding resolution parameters: width, height and ratio
 */
 class ScreenResolution
 {
 public:
-  constexpr static float REFERENCE_WIDTH = 1440.0f;
-  constexpr static float REFERENCE_HEIGHT = 900.0f;
+	constexpr static float REFERENCE_WIDTH = 1440.0f;
+	constexpr static float REFERENCE_HEIGHT = 900.0f;
 
-  ScreenResolution(int width, int height) noexcept;
-  void updateResolution(int newWidth, int newHeight) noexcept;
-  int getWidth() const noexcept;
-  int getHeight() const noexcept;
-  float getAspectRatio() const noexcept;
-  float getWidthRatioToReference() const noexcept;
-  float getHeightRatioToReference() const noexcept;
+	ScreenResolution( int width, 
+					  int height ) noexcept;
+	void updateResolution( int newWidth, 
+						   int newHeight ) noexcept;
+	int getWidth() const noexcept;
+	int getHeight() const noexcept;
+	float getAspectRatio() const noexcept;
+	float getWidthRatioToReference() const noexcept;
+	float getHeightRatioToReference() const noexcept;
 
 private:
-  int width, height;
-  float aspectRatio;
+	int width;
+	int height;
+	float aspectRatio;
 };

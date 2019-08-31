@@ -24,10 +24,9 @@
 /**
  * @param renderShader compiled program fed to personal shader manager
  */
-SkyboxFacade::SkyboxFacade(Shader &renderShader) noexcept
-  :
-    shader(renderShader),
-    skybox()
+SkyboxFacade::SkyboxFacade( Shader & renderShader ) noexcept
+	: shader( renderShader )
+	, skybox()
 {}
 
 /**
@@ -37,16 +36,16 @@ SkyboxFacade::SkyboxFacade(Shader &renderShader) noexcept
  * @param viewPosition current position of the camera
  * @param lightDir direction of the sunlight (directional lighting)
  */
-void SkyboxFacade::draw(const glm::mat4 &skyboxProjectionView,
-                        const glm::vec3 &viewPosition,
-                        const glm::vec3 &lightDir)
+void SkyboxFacade::draw( const glm::mat4 & skyboxProjectionView,
+						 const glm::vec3 & viewPosition,
+						 const glm::vec3 & lightDir )
 {
-  BENCHMARK("SkyboxFacade: draw all boxes", true);
-  shader.update(skyboxProjectionView, viewPosition, lightDir);
-  shader.selectSkyboxType(SKYBOX_CLOUDS);
-  skybox.draw();
-  shader.selectSkyboxType(SKYBOX_HILLS_NEAR);
-  skybox.draw();
-  shader.selectSkyboxType(SKYBOX_HIILS_FAR);
-  skybox.draw();
+	BENCHMARK( "SkyboxFacade: draw all boxes", true );
+	shader.update( skyboxProjectionView, viewPosition, lightDir );
+	shader.selectSkyboxType( SKYBOX_CLOUDS );
+	skybox.draw();
+	shader.selectSkyboxType( SKYBOX_HILLS_NEAR );
+	skybox.draw();
+	shader.selectSkyboxType( SKYBOX_HIILS_FAR );
+	skybox.draw();
 }

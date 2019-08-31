@@ -39,53 +39,68 @@ class Frustum;
 class ShadowVolume
 {
 public:
-  /** 
-  * @todo debug visualization constant, remove in release version of the game 
-  * @see ShadowVolumeRenderer
-  */
-  constexpr static unsigned int BOX_EXPECTED_VERTICES = 4;
-  /**
-  * @todo debug visualization constant, remove in release version of the game
-  * @see ShadowVolumeRenderer
-  */
-  constexpr static unsigned int BOX_ACTUAL_VERTICES = 8;
-  /** @brief minimal height of the shadow region box */
-  constexpr static float BOX_MIN_HEIGHT = 14.0f;
+	/**
+	* @todo debug visualization constant, remove in release version of the game
+	* @see ShadowVolumeRenderer
+	*/
+	constexpr static unsigned int BOX_EXPECTED_VERTICES = 4;
+	/**
+	* @todo debug visualization constant, remove in release version of the game
+	* @see ShadowVolumeRenderer
+	*/
+	constexpr static unsigned int BOX_ACTUAL_VERTICES = 8;
+	/** @brief minimal height of the shadow region box */
+	constexpr static float BOX_MIN_HEIGHT = 14.0f;
 
-  ShadowVolume() = default;
-  void update(const std::array<Frustum, NUM_SHADOW_LAYERS>& frustums, const TheSunFacade &theSunFacade);
-  const std::array<glm::mat4, NUM_SHADOW_LAYERS> &getLightSpaceMatrices() const noexcept;
+	ShadowVolume() = default;
+	void update( const std::array<Frustum, NUM_SHADOW_LAYERS> & frustums, 
+				 const TheSunFacade & theSunFacade );
+	const std::array<glm::mat4, NUM_SHADOW_LAYERS> & getLightSpaceMatrices() const noexcept;
 
 private:
-  /** 
-  * @brief additional maximum offset for a region on X axis, 
-  * need it to include some out-of-camera objects whose shadows should be visible 
-  */
-  constexpr static float SHADOW_BOX_MAX_OFFSET_X = 30.0f;
-  /**
-  * @brief additional offset for a region that is close to border,
-  * need it to mitigate shadowing artefacts on the edge of world map
-  */
-  constexpr static float SHADOW_BOX_MAP_BORDER_OFFSET = 0.5f;
-  const float SHADOW_BOXES_MIN_HEIGHT[NUM_SHADOW_LAYERS] = {BOX_MIN_HEIGHT, BOX_MIN_HEIGHT * 2, BOX_MIN_HEIGHT * 4};
+	/**
+	* @brief additional maximum offset for a region on X axis,
+	* need it to include some out-of-camera objects whose shadows should be visible
+	*/
+	constexpr static float SHADOW_BOX_MAX_OFFSET_X = 30.0f;
+	/**
+	* @brief additional offset for a region that is close to border,
+	* need it to mitigate shadowing artefacts on the edge of world map
+	*/
+	constexpr static float SHADOW_BOX_MAP_BORDER_OFFSET = 0.5f;
+	const float SHADOW_BOXES_MIN_HEIGHT[NUM_SHADOW_LAYERS] = { BOX_MIN_HEIGHT, BOX_MIN_HEIGHT * 2, BOX_MIN_HEIGHT * 4 };
 
-  /**
-  * @brief represents a shadow region box, used only for debug visualization
-  * @note lsPov - light source point of view
-  * @todo remove this in release version of the game
-  */
-  struct Box
-  {
-    glm::vec2 expectedLL, expectedLR, expectedUR, expectedUL;
-    glm::vec3 lsPovNearLL, lsPovNearLR, lsPovNearUR, lsPovNearUL;
-    glm::vec3 lsPovFarLL, lsPovFarLR, lsPovFarUR, lsPovFarUL;
-    glm::vec3 localLightSource;
-  };
-  friend class ShadowVolumeRenderer;
+	/**
+	* @brief represents a shadow region box, used only for debug visualization
+	* @note lsPov - light source point of view
+	* @todo remove this in release version of the game
+	*/
+	struct Box
+	{
+		glm::vec2 expectedLL;
+		glm::vec2 expectedLR;
+		glm::vec2 expectedUR;
+		glm::vec2 expectedUL;
+		glm::vec3 lsPovNearLL;
+		glm::vec3 lsPovNearLR;
+		glm::vec3 lsPovNearUR;
+		glm::vec3 lsPovNearUL;
+		glm::vec3 lsPovFarLL;
+		glm::vec3 lsPovFarLR;
+		glm::vec3 lsPovFarUR;
+		glm::vec3 lsPovFarUL;
+		glm::vec3 localLightSource;
+	};
+	friend class ShadowVolumeRenderer;
 
-  void updateLightSpaceMatrix(const Frustum& frustum, int layer, float sunAbsPositionY, float sunAbsPositionX);
+	void updateLightSpaceMatrix( const Frustum & frustum, 
+								 int layer, 
+								 float sunAbsPositionY, 
+								 float sunAbsPositionX );
 
-  glm::vec3 lightDirTo, lightDirRight, lightDirUp;
-  std::array<glm::mat4, 3> lightSpaceMatrices;
-  std::array<Box, NUM_SHADOW_LAYERS> shadowBoxes;
+	glm::vec3 lightDirTo;
+	glm::vec3 lightDirRight;
+	glm::vec3 lightDirUp;
+	std::array<glm::mat4, NUM_SHADOW_LAYERS> lightSpaceMatrices;
+	std::array<Box, NUM_SHADOW_LAYERS> shadowBoxes;
 };

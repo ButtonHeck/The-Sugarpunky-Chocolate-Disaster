@@ -34,18 +34,19 @@ class Shader;
 class ShoreShader
 {
 public:
-  ShoreShader(Shader& renderShader, Shader &normalsShader) noexcept;
-  void update(const glm::vec3 &lightDir,
-              const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-              const glm::mat4 &projectionView,
-              bool useShadows,
-              bool useClipDistanceReflection,
-              bool useClipDistanceRefraction);
-  void updateNormals(const glm::mat4 &projectionView);
-  void debugRenderMode(bool enable);
+	ShoreShader( Shader & renderShader, 
+				 Shader & normalsShader ) noexcept;
+	void update( const glm::vec3 & lightDir,
+				 const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+				 const glm::mat4 & projectionView,
+				 bool useShadows,
+				 bool useClipDistanceReflection,
+				 bool useClipDistanceRefraction );
+	void updateNormals( const glm::mat4 & projectionView );
+	void debugRenderMode( bool enable );
 
 private:
-  Shader& renderShader;
-  /** @todo remove this in release version of the game */
-  Shader& normalsShader;
+	Shader & renderShader;
+	/** @todo remove this in release version of the game */
+	Shader & normalsShader;
 };

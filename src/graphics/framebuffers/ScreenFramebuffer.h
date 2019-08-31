@@ -27,26 +27,32 @@ class ShaderManager;
 class ScreenResolution;
 
 /**
-* @brief framebuffer for plain onscreen rendering. Technically there are two GL framebuffers, one of which 
+* @brief framebuffer for plain onscreen rendering. Technically there are two GL framebuffers, one of which
 * is used for multisample rendering
 */
 class ScreenFramebuffer : public Framebuffer
 {
 public:
-  ScreenFramebuffer(TextureManager& textureManager, const ScreenResolution &screenResolution, ShaderManager& shaderManager);
-  virtual ~ScreenFramebuffer();
-  virtual void setup() override;
-  void bindToViewport(int viewportWidth, int viewportHeight) = delete;
-  void unbindToViewport(int viewportWidth, int viewportHeight) = delete;
-  void draw(bool useMultisampling, bool useDOF);
-  void bindAppropriateFBO(bool enableMultisampling) noexcept;
+	ScreenFramebuffer( TextureManager & textureManager, 
+					   const ScreenResolution & screenResolution, 
+					   ShaderManager & shaderManager );
+	virtual ~ScreenFramebuffer();
+	virtual void setup() override;
+	void bindToViewport( int viewportWidth, 
+						 int viewportHeight ) = delete;
+	void unbindToViewport( int viewportWidth, 
+						   int viewportHeight ) = delete;
+	void draw( bool useMultisampling, 
+			   bool useDOF );
+	void bindAppropriateFBO( bool enableMultisampling ) noexcept;
 
 private:
-  void setupFramebuffers();
-  void setupScreenQuadBuffer();
+	void setupFramebuffers();
+	void setupScreenQuadBuffer();
 
-  const ScreenResolution& screenResolution;
-  ShaderManager& shaderManager;
-  BufferCollection screenBuffers;
-  GLuint multisampleDepthRbo, multisampleFbo;
+	const ScreenResolution & screenResolution;
+	ShaderManager & shaderManager;
+	BufferCollection screenBuffers;
+	GLuint multisampleDepthRbo;
+	GLuint multisampleFbo;
 };

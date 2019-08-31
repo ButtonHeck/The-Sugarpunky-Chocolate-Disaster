@@ -29,9 +29,9 @@ class BufferCollection;
 class LensFlareRenderer
 {
 public:
-  LensFlareRenderer(BufferCollection& basicGLBuffer) noexcept;
-  void draw(unsigned int numFlares);
+	LensFlareRenderer( BufferCollection & basicGLBuffer ) noexcept;
+	void draw( unsigned int numFlares );
 
 private:
-  BufferCollection& basicGLBuffer;
+	BufferCollection & basicGLBuffer;
 };

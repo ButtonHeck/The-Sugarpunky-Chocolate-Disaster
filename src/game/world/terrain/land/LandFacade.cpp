@@ -24,38 +24,37 @@
 * @brief plain ctor. Creates all the member submodules
 * @param renderShader shader prograsm used during rendering
 */
-LandFacade::LandFacade(Shader &renderShader) noexcept
-  :
-    shader(renderShader),
-    generator(),
-    renderer(generator)
+LandFacade::LandFacade( Shader & renderShader ) noexcept
+	: shader( renderShader )
+	, generator()
+	, renderer( generator )
 {}
 
 /**
 * @brief delegates map generation routine to generator
 * @param shoreMap map of the shore tiles
 */
-void LandFacade::setup(const map2D_f &shoreMap)
+void LandFacade::setup( const map2D_f & shoreMap )
 {
-  generator.setup(shoreMap);
+	generator.setup( shoreMap );
 }
 
 /**
 * @brief delegates serialization call to generator
 * @param output file stream to write data to
 */
-void LandFacade::serialize(std::ofstream &output)
+void LandFacade::serialize( std::ofstream & output )
 {
-  generator.serialize(output);
+	generator.serialize( output );
 }
 
 /**
 * @brief delegates deserialization call to generator
 * @param input file stream to read data from
 */
-void LandFacade::deserialize(std::ifstream &input)
+void LandFacade::deserialize( std::ifstream & input )
 {
-  generator.deserialize(input);
+	generator.deserialize( input );
 }
 
 /**
@@ -65,25 +64,25 @@ void LandFacade::deserialize(std::ifstream &input)
 * @param projectionView "projection * view" matrix
 * @param useShadows indicator of whether shadows should be calculated
 */
-void LandFacade::draw(const glm::vec3 &lightDir,
-                      const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                      const glm::mat4& projectionView,
-                      bool useShadows)
+void LandFacade::draw( const glm::vec3 & lightDir,
+					   const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+					   const glm::mat4 & projectionView,
+					   bool useShadows )
 {
-  shader.update(lightDir, lightSpaceMatrices, projectionView, useShadows);
-  renderer.render();
+	shader.update( lightDir, lightSpaceMatrices, projectionView, useShadows );
+	renderer.render();
 }
 
-const map2D_f &LandFacade::getMap() const noexcept
+const map2D_f & LandFacade::getMap() const noexcept
 {
-  return generator.getMap();
+	return generator.getMap();
 }
 
 /**
 * @brief delegates update indirect buffer command to generator
 * @param frustum view frustum of the camera
 */
-void LandFacade::updateCellsIndirectBuffer(const Frustum &frustum)
+void LandFacade::updateCellsIndirectBuffer( const Frustum & frustum )
 {
-  generator.updateCellsIndirectBuffer(frustum);
+	generator.updateCellsIndirectBuffer( frustum );
 }

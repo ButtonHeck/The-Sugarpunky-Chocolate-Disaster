@@ -27,12 +27,18 @@
  * @param hillModels vector of hills trees models to go through
  * @param isShadow define whether depthmap or plain on-screen rendering mode is on
  */
-void TreesRenderer::render(std::vector<Model> &landModels, std::vector<Model> &hillModels, bool isShadow)
+void TreesRenderer::render( std::vector<Model> & landModels,
+							std::vector<Model> & hillModels,
+							bool isShadow )
 {
-  for (Model& landModel : landModels)
-    landModel.draw(isShadow);
-  for (Model& hillModel : hillModels)
-    hillModel.draw(isShadow);
+	for( Model & landModel : landModels )
+	{
+		landModel.draw( isShadow );
+	}
+	for( Model & hillModel : hillModels )
+	{
+		hillModel.draw( isShadow );
+	}
 }
 
 /**
@@ -40,10 +46,15 @@ void TreesRenderer::render(std::vector<Model> &landModels, std::vector<Model> &h
 * @param landModels vector of land trees models to go through
 * @param hillModels vector of hills trees models to go through
 */
-void TreesRenderer::renderWorldReflection(std::vector<Model>& landModels, std::vector<Model>& hillModels)
+void TreesRenderer::renderWorldReflection( std::vector<Model> & landModels,
+										   std::vector<Model> & hillModels )
 {
-	for (Model& landModel : landModels)
+	for( Model & landModel : landModels )
+	{
 		landModel.drawWorldReflection();
-	for (Model& hillModel : hillModels)
+	}
+	for( Model & hillModel : hillModels )
+	{
 		hillModel.drawWorldReflection();
+	}
 }

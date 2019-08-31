@@ -30,45 +30,49 @@
 class ShoreGenerator : public Generator
 {
 public:
-  ShoreGenerator(const map2D_f& waterMap);
-  void setup();
+	ShoreGenerator( const map2D_f & waterMap );
+	void setup();
 
 private:
-  friend class ShoreRenderer;
-  friend class ShoreFacade;
+	friend class ShoreRenderer;
+	friend class ShoreFacade;
 
-  /**
-  * @brief representation of a shore vertex as it is in the shore shader
-  */
-  struct ShoreVertex
-  {
-    constexpr static unsigned int NUMBER_OF_ELEMENTS = 8;
-    ShoreVertex(glm::vec3 position, glm::vec2 texCoords, glm::vec3 normal) noexcept;
-	struct
+	/**
+	* @brief representation of a shore vertex as it is in the shore shader
+	*/
+	struct ShoreVertex
 	{
-		float x, y, z;
-	} position;
-	struct
-	{
-		float x, y;
-	} texCoords;
-	struct
-	{
-		float x, y, z;
-	} normal;
-  };
+		constexpr static unsigned int NUMBER_OF_ELEMENTS = 8;
+		ShoreVertex( glm::vec3 position, 
+					 glm::vec2 texCoords, 
+					 glm::vec3 normal ) noexcept;
+		struct
+		{
+			float x, y, z;
+		} position;
+		struct
+		{
+			float x, y;
+		} texCoords;
+		struct
+		{
+			float x, y, z;
+		} normal;
+	};
 
-  void generateMap();
-  void shapeShoreProfile();
-  void randomizeShore();
-  void correctMapAtEdges();
-  void applySlopeToProfile(float ratio) noexcept;
-  void removeUnderwaterTiles(float thresholdValue);
-  void createTiles();
-  void fillBufferData();
-  void bufferVertex(GLfloat* vertices, int offset, ShoreVertex vertex) noexcept;
+	void generateMap();
+	void shapeShoreProfile();
+	void randomizeShore();
+	void correctMapAtEdges();
+	void applySlopeToProfile( float ratio ) noexcept;
+	void removeUnderwaterTiles( float thresholdValue );
+	void createTiles();
+	void fillBufferData();
+	void bufferVertex( GLfloat * vertices, 
+					   int offset, 
+					   ShoreVertex vertex ) noexcept;
 
-  const map2D_f& waterMap;
-  map2D_vec3 normalMap;
-  std::default_random_engine randomizer;
+	const map2D_f & waterMap;
+	map2D_vec3 normalMap;
+	std::default_random_engine randomizer;
 };

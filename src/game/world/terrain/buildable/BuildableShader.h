@@ -31,11 +31,13 @@ class Shader;
 class BuildableShader
 {
 public:
-  BuildableShader(Shader& buildableRenderShader, Shader& selectedRenderShader) noexcept;
-  void updateBuildable(const glm::mat4 &projectionView);
-  void updateSelected(const glm::mat4 &projectionView, const glm::vec4 &selectedTranslation);
+	BuildableShader( Shader & buildableRenderShader, 
+					 Shader & selectedRenderShader ) noexcept;
+	void updateBuildable( const glm::mat4 & projectionView );
+	void updateSelected( const glm::mat4 & projectionView, 
+						 const glm::vec4 & selectedTranslation );
 
 private:
-  Shader& buildableRenderShader;
-  Shader& selectedRenderShader;
+	Shader & buildableRenderShader;
+	Shader & selectedRenderShader;
 };

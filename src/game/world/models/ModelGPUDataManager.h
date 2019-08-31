@@ -38,54 +38,62 @@ class ModelChunk;
 class ModelGPUDataManager
 {
 public:
-  ModelGPUDataManager(bool isParentModelLowPoly);
-  void setupBuffers(const std::vector<Mesh::Vertex> &vertices, const std::vector<GLuint> &indices, bool useIndirectBuffer);
-  void prepareIndirectBufferData(const std::vector<std::pair<ModelChunk, unsigned int> > &chunks,
-                                 unsigned int modelIndex,
-                                 float loadingDistance,
-                                 float loadingDistanceShadow);
-  void updateIndirectBufferData();
-  void loadModelInstancesData(const std::vector<glm::mat4> &instanceMatrices);
-  GLsizei getPrimitiveCount(MODEL_INDIRECT_BUFFER_TYPE type) const noexcept;
-  GLuint getIndicesCount() const noexcept;
-  BufferCollection &getBasicGLBuffers() noexcept;
-  BufferCollection &getDepthmapDIBO() noexcept;
-  BufferCollection &getReflectionDIBO() noexcept;
+	ModelGPUDataManager( bool isParentModelLowPoly );
+	void setupBuffers( const std::vector<Mesh::Vertex> & vertices, 
+					   const std::vector<GLuint> & indices, 
+					   bool useIndirectBuffer );
+	void prepareIndirectBufferData( const std::vector<std::pair<ModelChunk, unsigned int> > & chunks,
+									unsigned int modelIndex,
+									float loadingDistance,
+									float loadingDistanceShadow );
+	void updateIndirectBufferData();
+	void loadModelInstancesData( const std::vector<glm::mat4> & instanceMatrices );
+	GLsizei getPrimitiveCount( MODEL_INDIRECT_BUFFER_TYPE type ) const noexcept;
+	GLuint getIndicesCount() const noexcept;
+	BufferCollection & getBasicGLBuffers() noexcept;
+	BufferCollection & getDepthmapDIBO() noexcept;
+	BufferCollection & getReflectionDIBO() noexcept;
 
 private:
-  /**
-  * @brief representation of one indirect draw command data token
-  */
-  struct IndirectBufferToken
-  {
-    //{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
-    IndirectBufferToken(GLuint numInstances, GLuint instanceOffset) noexcept;
-    GLuint numInstances, instanceOffset;
-    static const GLuint FIRST_INDEX = 0, BASE_VERTEX = 0;
-  };
+	/**
+	* @brief representation of one indirect draw command data token
+	*/
+	struct IndirectBufferToken
+	{
+		//{ indicesCount, numInstancesToDraw, firstIndex, baseVertex, baseInstance }
+		IndirectBufferToken( GLuint numInstances, 
+							 GLuint instanceOffset ) noexcept;
 
-  void setupIndirectBuffers();
-  void addIndirectBufferToken(GLuint numInstances, GLuint instanceOffset, MODEL_INDIRECT_BUFFER_TYPE type);
+		GLuint numInstances;
+		GLuint instanceOffset;
+		static const GLuint FIRST_INDEX = 0;
+		static const GLuint BASE_VERTEX = 0;
+	};
 
-  //parent model attributes
-  GLuint indicesCount;
-  bool isLowPoly;
+	void setupIndirectBuffers();
+	void addIndirectBufferToken( GLuint numInstances, 
+								 GLuint instanceOffset, 
+								 MODEL_INDIRECT_BUFFER_TYPE type );
 
-  //screen rendering related variables
-  BufferCollection basicGLBuffers;
-  std::unique_ptr<GLuint[]> multiDrawIndirectData;
-  std::vector<IndirectBufferToken> indirectTokens;
-  GLsizei drawIndirectCommandPrimCount = 0;
+	//parent model attributes
+	GLuint indicesCount;
+	bool isLowPoly;
 
-  //depthmap rendering related variables
-  BufferCollection depthmapDIBO;
-  std::unique_ptr<GLuint[]> multiDrawIndirectDataDepthmap;
-  std::vector<IndirectBufferToken> indirectTokensDepthmap;
-  GLsizei drawIndirectCommandPrimCountDepthmap = 0;
+	//screen rendering related variables
+	BufferCollection basicGLBuffers;
+	std::unique_ptr<GLuint[]> multiDrawIndirectData;
+	std::vector<IndirectBufferToken> indirectTokens;
+	GLsizei drawIndirectCommandPrimCount = 0;
 
-  //world reflection rendering related variables
-  BufferCollection reflectionDIBO;
-  std::unique_ptr<GLuint[]> multiDrawIndirectDataReflection;
-  std::vector<IndirectBufferToken> indirectTokensReflection;
-  GLsizei drawIndirectCommandPrimCountReflection = 0;
+	//depthmap rendering related variables
+	BufferCollection depthmapDIBO;
+	std::unique_ptr<GLuint[]> multiDrawIndirectDataDepthmap;
+	std::vector<IndirectBufferToken> indirectTokensDepthmap;
+	GLsizei drawIndirectCommandPrimCountDepthmap = 0;
+
+	//world reflection rendering related variables
+	BufferCollection reflectionDIBO;
+	std::unique_ptr<GLuint[]> multiDrawIndirectDataReflection;
+	std::vector<IndirectBufferToken> indirectTokensReflection;
+	GLsizei drawIndirectCommandPrimCountReflection = 0;
 };

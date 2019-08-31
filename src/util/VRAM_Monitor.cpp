@@ -26,17 +26,17 @@
 */
 VRAM_Monitor::VRAM_Monitor() noexcept
 {
-  glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ramSize);
-  ramSizeFloatPercentage = (float)ramSize / 100;
+	glGetIntegerv( GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ramSize );
+	ramSizeFloatPercentage = (float)ramSize / 100;
 }
 
 /**
 * @brief returns instance of a monitor
 */
-VRAM_Monitor &VRAM_Monitor::getInstance() noexcept
+VRAM_Monitor & VRAM_Monitor::getInstance() noexcept
 {
-  static VRAM_Monitor instance;
-  return instance;
+	static VRAM_Monitor instance;
+	return instance;
 }
 
 /**
@@ -44,12 +44,12 @@ VRAM_Monitor &VRAM_Monitor::getInstance() noexcept
 */
 void VRAM_Monitor::updateAvailable() noexcept
 {
-  glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &ramAvailable);
+	glGetIntegerv( GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &ramAvailable );
 }
 
 int VRAM_Monitor::getAvailableMemory() const noexcept
 {
-  return ramAvailable;
+	return ramAvailable;
 }
 
 /**
@@ -57,5 +57,5 @@ int VRAM_Monitor::getAvailableMemory() const noexcept
 */
 float VRAM_Monitor::getAvailableMemoryPercent() const noexcept
 {
-  return ramAvailable / ramSizeFloatPercentage;
+	return ramAvailable / ramSizeFloatPercentage;
 }

@@ -30,29 +30,32 @@ class Shader;
 class Frustum;
 
 /**
-* @brief shader manager for hills. Responsible for managing different hills related shader programs' settings 
+* @brief shader manager for hills. Responsible for managing different hills related shader programs' settings
 * and updating them.
 */
 class HillsShader
 {
 public:
-  HillsShader(Shader& renderShader, Shader& cullingShader, Shader& normalsShader) noexcept;
-  void setupCulling();
-  void update(const glm::vec3 &lightDir,
-              const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-              const glm::mat4 &projectionView,
-              const glm::vec3 &viewPosition,
-              const Frustum &viewFrustum,
-              float maxHillHeight,
-              bool useFrustumCulling,
-              bool useShadows);
-  void updateNormals(const glm::mat4 &projectionView);
-  void debugRenderMode(bool enable);
+	HillsShader( Shader & renderShader, 
+				 Shader & cullingShader, 
+				 Shader & normalsShader ) noexcept;
+	void setupCulling();
+	void update( const glm::vec3 & lightDir,
+				 const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+				 const glm::mat4 & projectionView,
+				 const glm::vec3 & viewPosition,
+				 const Frustum & viewFrustum,
+				 float maxHillHeight,
+				 bool useFrustumCulling,
+				 bool useShadows );
+	void updateNormals( const glm::mat4 & projectionView );
+	void debugRenderMode( bool enable );
 
 private:
-  friend class HillsRenderer;
-  Shader& renderShader;
-  Shader& cullingShader;
-  /** @todo for visual debugging only, delete this in release version of the game */
-  Shader& normalsShader;
+	friend class HillsRenderer;
+
+	Shader & renderShader;
+	Shader & cullingShader;
+	/** @todo for visual debugging only, delete this in release version of the game */
+	Shader & normalsShader;
 };

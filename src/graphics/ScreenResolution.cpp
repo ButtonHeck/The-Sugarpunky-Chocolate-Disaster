@@ -25,11 +25,11 @@
 * @param width width of resolution
 * @param height height of resolution
 */
-ScreenResolution::ScreenResolution(int width, int height) noexcept
-  :
-    width(width),
-    height(height),
-    aspectRatio((float)width / (float)height)
+ScreenResolution::ScreenResolution( int width, 
+									int height ) noexcept
+	: width( width )
+	, height( height )
+	, aspectRatio( (float)width / (float)height )
 {}
 
 /**
@@ -37,26 +37,27 @@ ScreenResolution::ScreenResolution(int width, int height) noexcept
 * @param newWidth new width of resolution
 * @param newHeight new height of resolution
 */
-void ScreenResolution::updateResolution(int newWidth, int newHeight) noexcept
+void ScreenResolution::updateResolution( int newWidth, 
+										 int newHeight ) noexcept
 {
-  width = newWidth;
-  height = newHeight;
-  aspectRatio = (float)newWidth / (float)newHeight;
+	width = newWidth;
+	height = newHeight;
+	aspectRatio = (float)newWidth / (float)newHeight;
 }
 
 int ScreenResolution::getWidth() const noexcept
 {
-  return width;
+	return width;
 }
 
 int ScreenResolution::getHeight() const noexcept
 {
-  return height;
+	return height;
 }
 
 float ScreenResolution::getAspectRatio() const noexcept
 {
-  return aspectRatio;
+	return aspectRatio;
 }
 
 /**
@@ -66,7 +67,7 @@ float ScreenResolution::getAspectRatio() const noexcept
 */
 float ScreenResolution::getWidthRatioToReference() const noexcept
 {
-  return width / REFERENCE_WIDTH;
+	return width / REFERENCE_WIDTH;
 }
 
 /**
@@ -76,5 +77,5 @@ float ScreenResolution::getWidthRatioToReference() const noexcept
 */
 float ScreenResolution::getHeightRatioToReference() const noexcept
 {
-  return height / REFERENCE_HEIGHT;
+	return height / REFERENCE_HEIGHT;
 }

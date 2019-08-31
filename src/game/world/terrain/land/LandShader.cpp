@@ -25,9 +25,8 @@
 * @brief plain ctor
 * @param renderShader shader program used during rendering
 */
-LandShader::LandShader(Shader &renderShader) noexcept
-  :
-    renderShader(renderShader)
+LandShader::LandShader( Shader & renderShader ) noexcept
+	: renderShader( renderShader )
 {}
 
 /**
@@ -37,16 +36,16 @@ LandShader::LandShader(Shader &renderShader) noexcept
 * @param projectionView "projection * view" matrix
 * @param useShadows indicator of whether shadows should be calculated
 */
-void LandShader::update(const glm::vec3 &lightDir,
-                        const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                        const glm::mat4 &projectionView,
-                        bool useShadows)
+void LandShader::update( const glm::vec3 & lightDir,
+						 const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+						 const glm::mat4 & projectionView,
+						 bool useShadows )
 {
-  renderShader.use();
-  renderShader.setMat4("u_projectionView", projectionView);
-  renderShader.setBool("u_shadowEnable", useShadows);
-  renderShader.setVec3("u_lightDir", -lightDir);
-  renderShader.setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrices[0]);
-  renderShader.setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrices[1]);
-  renderShader.setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrices[2]);
+	renderShader.use();
+	renderShader.setMat4( "u_projectionView", projectionView );
+	renderShader.setBool( "u_shadowEnable", useShadows );
+	renderShader.setVec3( "u_lightDir", -lightDir );
+	renderShader.setMat4( "u_lightSpaceMatrix[0]", lightSpaceMatrices[0] );
+	renderShader.setMat4( "u_lightSpaceMatrix[1]", lightSpaceMatrices[1] );
+	renderShader.setMat4( "u_lightSpaceMatrix[2]", lightSpaceMatrices[2] );
 }

@@ -34,26 +34,29 @@ class aiMesh;
 class Mesh
 {
 public:
-  /**
-   * @brief Structure of any mesh vertex in the game
-   */
-  struct Vertex
-  {
-    glm::vec3  Position;
-    glm::vec3  Normal;
-    glm::vec2  TexCoords;
-    glm::vec3  Tangent;
-    glm::vec3  Bitangent;
-    glm::uvec2 TexIndices;
-  };
+	/**
+	 * @brief Structure of any mesh vertex in the game
+	 */
+	struct Vertex
+	{
+		glm::vec3  Position;
+		glm::vec3  Normal;
+		glm::vec2  TexCoords;
+		glm::vec3  Tangent;
+		glm::vec3  Bitangent;
+		glm::uvec2 TexIndices;
+	};
 
-  static Mesh generate(const aiMesh *mesh, GLuint &diffuseSamplerIndex, GLuint &specularSamplerIndex, GLuint indexOffset);
-  const std::vector<Vertex>& getVertices() const noexcept;
-  const std::vector<unsigned int>& getIndices() const noexcept;
+	static Mesh generate( const aiMesh * mesh, 
+						  GLuint & diffuseSamplerIndex, 
+						  GLuint & specularSamplerIndex, 
+						  GLuint indexOffset );
+	const std::vector<Vertex> & getVertices() const noexcept;
+	const std::vector<unsigned int> & getIndices() const noexcept;
 
 private:
-  Mesh() = default;
+	Mesh() = default;
 
-  std::vector<Vertex> vertices;
-  std::vector<unsigned int> indices;
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
 };

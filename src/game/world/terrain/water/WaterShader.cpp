@@ -30,11 +30,12 @@
 * @param cullingShader shader program used for offscreen rendering with frustum culling
 * @param normalsShader shader program used for onscreen rendering of water normals
 */
-WaterShader::WaterShader(Shader &renderShader, Shader &cullingShader, Shader &normalsShader) noexcept
-  :
-    renderShader(renderShader),
-    cullingShader(cullingShader),
-    normalsShader(normalsShader)
+WaterShader::WaterShader( Shader & renderShader, 
+						  Shader & cullingShader, 
+						  Shader & normalsShader ) noexcept
+	: renderShader( renderShader )
+	, cullingShader( cullingShader )
+	, normalsShader( normalsShader )
 {}
 
 /**
@@ -43,10 +44,10 @@ WaterShader::WaterShader(Shader &renderShader, Shader &cullingShader, Shader &no
 */
 void WaterShader::setupCulling()
 {
-  const unsigned int TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT = 1;
-  const GLchar* varyings[TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT] = {"o_pos"};
-  glTransformFeedbackVaryings(cullingShader.getID(), TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT, varyings, GL_INTERLEAVED_ATTRIBS);
-  cullingShader.link();
+	const unsigned int TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT = 1;
+	const GLchar * varyings[TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT] = { "o_pos" };
+	glTransformFeedbackVaryings( cullingShader.getID(), TRANSFORM_FEEDBACK_OUTPUT_ATTRIBUTES_COUNT, varyings, GL_INTERLEAVED_ATTRIBS );
+	cullingShader.link();
 }
 
 /**
@@ -58,49 +59,51 @@ void WaterShader::setupCulling()
 * @param viewFrustum view frustum of the camera
 * @param useFrustumCulling indicator of whether to use frustum culling when drawing
 */
-void WaterShader::update(const glm::vec3 &lightDir,
-                         const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                         const glm::mat4 &projectionView,
-                         const glm::vec3 &viewPosition,
-                         const Frustum &viewFrustum,
-                         bool useFrustumCulling)
+void WaterShader::update( const glm::vec3 & lightDir,
+						  const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+						  const glm::mat4 & projectionView,
+						  const glm::vec3 & viewPosition,
+						  const Frustum & viewFrustum,
+						  bool useFrustumCulling )
 {
-  //declared static because this variable should keep its value from call to call
-  static float dudvMoveOffset = 0.0f;
-  if (useFrustumCulling)
-    {
-      cullingShader.use();
-      cullingShader.setVec4("u_frustumPlanes[0]", viewFrustum.getPlane(FRUSTUM_LEFT));
-      cullingShader.setVec4("u_frustumPlanes[1]", viewFrustum.getPlane(FRUSTUM_RIGHT));
-      cullingShader.setVec4("u_frustumPlanes[2]", viewFrustum.getPlane(FRUSTUM_BOTTOM));
-      cullingShader.setVec4("u_frustumPlanes[3]", viewFrustum.getPlane(FRUSTUM_TOP));
-      cullingShader.setVec4("u_frustumPlanes[4]", viewFrustum.getPlane(FRUSTUM_BACK));
-    }
-  renderShader.use();
-  renderShader.setFloat("u_time", glfwGetTime());
-  renderShader.setMat4("u_projectionView", projectionView);
-  renderShader.setVec3("u_viewPosition", viewPosition);
-  renderShader.setVec3("u_lightDir", -lightDir);
-  renderShader.setMat4("u_lightSpaceMatrix[0]", lightSpaceMatrices[0]);
-  renderShader.setMat4("u_lightSpaceMatrix[1]", lightSpaceMatrices[1]);
-  renderShader.setMat4("u_lightSpaceMatrix[2]", lightSpaceMatrices[2]);
-  renderShader.setFloat("u_dudvMoveOffset", dudvMoveOffset);
+	//declared static because this variable should keep its value from call to call
+	static float dudvMoveOffset = 0.0f;
+	if( useFrustumCulling )
+	{
+		cullingShader.use();
+		cullingShader.setVec4( "u_frustumPlanes[0]", viewFrustum.getPlane( FRUSTUM_LEFT ) );
+		cullingShader.setVec4( "u_frustumPlanes[1]", viewFrustum.getPlane( FRUSTUM_RIGHT ) );
+		cullingShader.setVec4( "u_frustumPlanes[2]", viewFrustum.getPlane( FRUSTUM_BOTTOM ) );
+		cullingShader.setVec4( "u_frustumPlanes[3]", viewFrustum.getPlane( FRUSTUM_TOP ) );
+		cullingShader.setVec4( "u_frustumPlanes[4]", viewFrustum.getPlane( FRUSTUM_BACK ) );
+	}
+	renderShader.use();
+	renderShader.setFloat( "u_time", glfwGetTime() );
+	renderShader.setMat4( "u_projectionView", projectionView );
+	renderShader.setVec3( "u_viewPosition", viewPosition );
+	renderShader.setVec3( "u_lightDir", -lightDir );
+	renderShader.setMat4( "u_lightSpaceMatrix[0]", lightSpaceMatrices[0] );
+	renderShader.setMat4( "u_lightSpaceMatrix[1]", lightSpaceMatrices[1] );
+	renderShader.setMat4( "u_lightSpaceMatrix[2]", lightSpaceMatrices[2] );
+	renderShader.setFloat( "u_dudvMoveOffset", dudvMoveOffset );
 
-  const float DUDV_ANIMATION_SPEED = 0.0004f;
-  dudvMoveOffset += DUDV_ANIMATION_SPEED;
-  if (dudvMoveOffset >= 2.0f)
-    dudvMoveOffset = 0.0f;
+	const float DUDV_ANIMATION_SPEED = 0.0004f;
+	dudvMoveOffset += DUDV_ANIMATION_SPEED;
+	if( dudvMoveOffset >= 2.0f )
+	{
+		dudvMoveOffset = 0.0f;
+	}
 }
 
 /**
 * @brief updates uniforms of the shader program for normals rendering
 * @param projectionView "projection * view" matrix
-* @todo remove this in release version of the game 
+* @todo remove this in release version of the game
 */
-void WaterShader::updateNormals(const glm::mat4 &projectionView)
+void WaterShader::updateNormals( const glm::mat4 & projectionView )
 {
-  normalsShader.use();
-  normalsShader.setMat4("u_projectionView", projectionView);
+	normalsShader.use();
+	normalsShader.setMat4( "u_projectionView", projectionView );
 }
 
 /**
@@ -108,8 +111,8 @@ void WaterShader::updateNormals(const glm::mat4 &projectionView)
 * @param enable on/off flag for visual debugging mode
 * @todo remove from release version of the game
 */
-void WaterShader::debugRenderMode(bool enable)
+void WaterShader::debugRenderMode( bool enable )
 {
-  renderShader.use();
-  renderShader.setBool("u_debugRenderMode", enable);
+	renderShader.use();
+	renderShader.setBool( "u_debugRenderMode", enable );
 }

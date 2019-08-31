@@ -25,9 +25,8 @@
  * @brief SkysphereShader::SkysphereShader
  * @param renderShader precompiled shader program which is used during rendering
  */
-SkysphereShader::SkysphereShader(Shader &renderShader) noexcept
-  :
-    renderShader(renderShader)
+SkysphereShader::SkysphereShader( Shader & renderShader ) noexcept
+	: renderShader( renderShader )
 {}
 
 /**
@@ -35,12 +34,13 @@ SkysphereShader::SkysphereShader(Shader &renderShader) noexcept
  * @param projectionView Projection*View matrix
  * @param lightDir direction of the sunlight (directional lighting)
  */
-void SkysphereShader::update(const glm::mat4 &projectionView, const glm::vec3 &lightDir)
+void SkysphereShader::update( const glm::mat4 & projectionView, 
+							  const glm::vec3 & lightDir )
 {
-  renderShader.use();
-  renderShader.setMat4("u_projectionView", projectionView);
-  //send this as reverse direction
-  renderShader.setVec3("u_lightDir", -lightDir);
+	renderShader.use();
+	renderShader.setMat4( "u_projectionView", projectionView );
+	//send this as reverse direction
+	renderShader.setVec3( "u_lightDir", -lightDir );
 }
 
 /**
@@ -48,8 +48,9 @@ void SkysphereShader::update(const glm::mat4 &projectionView, const glm::vec3 &l
  * @param type integer representation of skysphere type
  * @param transform matrix to apply for (hemi)sphere
  */
-void SkysphereShader::setSkysphereType(int type, const glm::mat4 &transform)
+void SkysphereShader::setSkysphereType( int type, 
+										const glm::mat4 & transform )
 {
-  renderShader.setBool("u_type", type);
-  renderShader.setMat4("u_model", transform);
+	renderShader.setBool( "u_type", type );
+	renderShader.setMat4( "u_model", transform );
 }

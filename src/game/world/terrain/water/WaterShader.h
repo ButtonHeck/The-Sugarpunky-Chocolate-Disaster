@@ -35,22 +35,24 @@ class Shader;
 class WaterShader
 {
 public:
-  WaterShader(Shader& renderShader, Shader& cullingShader, Shader& normalsShader) noexcept;
-  void setupCulling();
-  void update(const glm::vec3 &lightDir,
-              const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-              const glm::mat4 &projectionView,
-              const glm::vec3 &viewPosition,
-              const Frustum &viewFrustum,
-              bool useFrustumCulling);
-  void updateNormals(const glm::mat4 &projectionView);
-  void debugRenderMode(bool enable);
+	WaterShader( Shader & renderShader, 
+				 Shader & cullingShader, 
+				 Shader & normalsShader ) noexcept;
+	void setupCulling();
+	void update( const glm::vec3 & lightDir,
+				 const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+				 const glm::mat4 & projectionView,
+				 const glm::vec3 & viewPosition,
+				 const Frustum & viewFrustum,
+				 bool useFrustumCulling );
+	void updateNormals( const glm::mat4 & projectionView );
+	void debugRenderMode( bool enable );
 
 private:
-  friend class WaterRenderer;
+	friend class WaterRenderer;
 
-  Shader& renderShader;
-  Shader& cullingShader;
-  /** @todo remove this in release version of the game */
-  Shader& normalsShader;
+	Shader & renderShader;
+	Shader & cullingShader;
+	/** @todo remove this in release version of the game */
+	Shader & normalsShader;
 };

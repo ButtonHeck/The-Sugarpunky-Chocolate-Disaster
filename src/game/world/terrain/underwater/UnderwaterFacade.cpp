@@ -25,11 +25,10 @@
 * @brief plain ctor
 * @param renderShader shader program used for rendering
 */
-UnderwaterFacade::UnderwaterFacade(Shader &renderShader) noexcept
-  :
-    shader(renderShader),
-    surface(),
-    renderer(surface)
+UnderwaterFacade::UnderwaterFacade( Shader & renderShader ) noexcept
+	: shader( renderShader )
+	, surface()
+	, renderer( surface )
 {}
 
 /**
@@ -38,9 +37,11 @@ UnderwaterFacade::UnderwaterFacade(Shader &renderShader) noexcept
 * @param projectionView "projection * view" matrix
 * @param useDesaturation define whether to apply desaturation
 */
-void UnderwaterFacade::draw(const glm::vec3 &lightDir, const glm::mat4& projectionView, bool useDesaturation)
+void UnderwaterFacade::draw( const glm::vec3 & lightDir,
+							 const glm::mat4 & projectionView,
+							 bool useDesaturation )
 {
-  BENCHMARK("UnderwaterRenderer: draw", true);
-  shader.update(lightDir, projectionView, useDesaturation);
-  renderer.render();
+	BENCHMARK( "UnderwaterRenderer: draw", true );
+	shader.update( lightDir, projectionView, useDesaturation );
+	renderer.render();
 }

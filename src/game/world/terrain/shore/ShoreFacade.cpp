@@ -27,11 +27,12 @@
 * @param normalsShader shader program used for onscreen normals rendering
 * @param waterMap map of the water
 */
-ShoreFacade::ShoreFacade(Shader &renderShader, Shader &normalsShader, const map2D_f &waterMap)
-  :
-    shader(renderShader, normalsShader),
-    generator(waterMap),
-    renderer(generator)
+ShoreFacade::ShoreFacade( Shader & renderShader, 
+						  Shader & normalsShader, 
+						  const map2D_f & waterMap )
+	: shader( renderShader, normalsShader )
+	, generator( waterMap )
+	, renderer( generator )
 {}
 
 /**
@@ -39,25 +40,25 @@ ShoreFacade::ShoreFacade(Shader &renderShader, Shader &normalsShader, const map2
 */
 void ShoreFacade::setup()
 {
-  generator.setup();
+	generator.setup();
 }
 
 /**
 * @brief delegates serialization call to generator
 * @param output file stream to write data to
 */
-void ShoreFacade::serialize(std::ofstream &output)
+void ShoreFacade::serialize( std::ofstream & output )
 {
-  generator.serialize(output);
+	generator.serialize( output );
 }
 
 /**
 * @brief delegates deserialization call to generator
 * @param input file stream to read data from
 */
-void ShoreFacade::deserialize(std::ifstream &input)
+void ShoreFacade::deserialize( std::ifstream & input )
 {
-  generator.deserialize(input);
+	generator.deserialize( input );
 }
 
 /**
@@ -70,36 +71,36 @@ void ShoreFacade::deserialize(std::ifstream &input)
 * @param useClipDistanceReflection indicator of whether clip distance will be used by OpenGL for reflection rendering
 * @param useClipDistanceRefraction indicator of whether clip distance will be used by OpenGL for refraction rendering
 */
-void ShoreFacade::draw(const glm::vec3 &lightDir,
-                       const std::array<glm::mat4, NUM_SHADOW_LAYERS> &lightSpaceMatrices,
-                       const glm::mat4 &projectionView,
-                       bool useShadows,
-                       bool useDebugRender,
-                       bool useClipDistanceReflection,
-                       bool useClipDistanceRefraction)
+void ShoreFacade::draw( const glm::vec3 & lightDir,
+						const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,
+						const glm::mat4 & projectionView,
+						bool useShadows,
+						bool useDebugRender,
+						bool useClipDistanceReflection,
+						bool useClipDistanceRefraction )
 {
-  shader.update(lightDir,
-                lightSpaceMatrices,
-                projectionView,
-                useShadows,
-                useClipDistanceReflection,
-                useClipDistanceRefraction);
-  {
-    BENCHMARK("ShoreRenderer: draw", true);
-    shader.debugRenderMode(false);
-    renderer.render();
-  }
+	shader.update( lightDir,
+				   lightSpaceMatrices,
+				   projectionView,
+				   useShadows,
+				   useClipDistanceReflection,
+				   useClipDistanceRefraction );
+	{
+		BENCHMARK( "ShoreRenderer: draw", true );
+		shader.debugRenderMode( false );
+		renderer.render();
+	}
 
-  if (useDebugRender)
-    {
-      shader.debugRenderMode(true);
-      renderer.debugRender(GL_TRIANGLES);
-      shader.updateNormals(projectionView);
-      renderer.debugRender(GL_POINTS);
-    }
+	if( useDebugRender )
+	{
+		shader.debugRenderMode( true );
+		renderer.debugRender( GL_TRIANGLES );
+		shader.updateNormals( projectionView );
+		renderer.debugRender( GL_POINTS );
+	}
 }
 
-const map2D_f &ShoreFacade::getMap() const noexcept
+const map2D_f & ShoreFacade::getMap() const noexcept
 {
-  return generator.getMap();
+	return generator.getMap();
 }

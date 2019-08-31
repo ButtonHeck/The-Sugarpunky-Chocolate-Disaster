@@ -28,13 +28,12 @@
 * @param depthmapDIBO offscreen indirect draw buffer for depthmap rendering
 * @param reflectionDIBO onscreen indirect draw buffer for world reflection rendering
 */
-ModelRenderer::ModelRenderer(BufferCollection &basicGLBuffers, 
-							 BufferCollection &depthmapDIBO,
-							 BufferCollection& reflectionDIBO) noexcept
-  :
-    basicGLBuffers(basicGLBuffers),
-    depthmapDIBO(depthmapDIBO),
-	reflectionDIBO(reflectionDIBO)
+ModelRenderer::ModelRenderer( BufferCollection & basicGLBuffers,
+							  BufferCollection & depthmapDIBO,
+							  BufferCollection & reflectionDIBO ) noexcept
+	: basicGLBuffers( basicGLBuffers )
+	, depthmapDIBO( depthmapDIBO )
+	, reflectionDIBO( reflectionDIBO )
 {}
 
 /**
@@ -42,35 +41,36 @@ ModelRenderer::ModelRenderer(BufferCollection &basicGLBuffers,
 * @param isDepthmap rendering mode
 * @param primCount number of instances to render
 */
-void ModelRenderer::render(MODEL_INDIRECT_BUFFER_TYPE type, GLsizei primCount)
+void ModelRenderer::render( MODEL_INDIRECT_BUFFER_TYPE type, 
+							GLsizei primCount )
 {
-  basicGLBuffers.bind(VAO);
-  if (type == PLAIN_ONSCREEN)
-    {
-      basicGLBuffers.bind(DIBO);
-      BENCHMARK("Model: draw", true);
-      glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0);
-    }
-  else if (type == DEPTHMAP_OFFSCREEN)
-    {
-      depthmapDIBO.bind(DIBO);
-      BENCHMARK("Model: draw shadows", true);
-      glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0);
-    }
-  else
-  {
-	  reflectionDIBO.bind(DIBO);
-	  BENCHMARK("Model: draw reflections", true);
-	  glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0);
-  }
+	basicGLBuffers.bind( VAO );
+	if( type == PLAIN_ONSCREEN )
+	{
+		basicGLBuffers.bind( DIBO );
+		BENCHMARK( "Model: draw", true );
+		glMultiDrawElementsIndirect( GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0 );
+	}
+	else if( type == DEPTHMAP_OFFSCREEN )
+	{
+		depthmapDIBO.bind( DIBO );
+		BENCHMARK( "Model: draw shadows", true );
+		glMultiDrawElementsIndirect( GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0 );
+	}
+	else
+	{
+		reflectionDIBO.bind( DIBO );
+		BENCHMARK( "Model: draw reflections", true );
+		glMultiDrawElementsIndirect( GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0 );
+	}
 }
 
 /**
 * @brief sends draw call to OpenGL to render model as the singleton
 * @param numIndices number of indices in the model to render
 */
-void ModelRenderer::renderOneInstance(GLsizei numIndices)
+void ModelRenderer::renderOneInstance( GLsizei numIndices )
 {
-  basicGLBuffers.bind(VAO);
-  glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+	basicGLBuffers.bind( VAO );
+	glDrawElements( GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0 );
 }

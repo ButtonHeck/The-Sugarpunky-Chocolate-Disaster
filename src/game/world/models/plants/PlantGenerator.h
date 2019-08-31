@@ -39,46 +39,47 @@ class Model;
 class PlantGenerator
 {
 public:
-  PlantGenerator() noexcept;
-  void serialize(std::ofstream& output);
-  void deserialize(std::ifstream& input);
-  void initializeModelRenderChunks(const map2D_f &map);
-  void prepareIndirectBufferData(const glm::vec2 &cameraPositionXZ, const Frustum &viewFrustum);
-  void updateIndirectBufferData();
-  std::vector<Model>& getModels(bool isLowPoly) noexcept;
-  std::vector<ModelChunk>& getChunks() noexcept;
+	PlantGenerator() noexcept;
+	void serialize( std::ofstream & output );
+	void deserialize( std::ifstream & input );
+	void initializeModelRenderChunks( const map2D_f & map );
+	void prepareIndirectBufferData( const glm::vec2 & cameraPositionXZ, 
+									const Frustum & viewFrustum );
+	void updateIndirectBufferData();
+	std::vector<Model> & getModels( bool isLowPoly ) noexcept;
+	std::vector<ModelChunk> & getChunks() noexcept;
 
 protected:
-  void initializeModelChunks(const map2D_f &map);
-  void loadMatrices(const map2D_mat4& newMatrices);
-  map2D_mat4 substituteMatricesStorage();
+	void initializeModelChunks( const map2D_f & map );
+	void loadMatrices( const map2D_mat4 & newMatrices );
+	map2D_mat4 substituteMatricesStorage();
 
-  std::vector<Model> models;
-  std::vector<Model> lowPolyModels;
-  map2D_mat4 matrices;
-  std::unique_ptr<unsigned int[]> numPlants;
-  std::vector<ModelChunk> chunks;
-  decltype(chunks) renderChunks;
-  float cullingOffset;
-  std::default_random_engine randomizer;
+	std::vector<Model> models;
+	std::vector<Model> lowPolyModels;
+	map2D_mat4 matrices;
+	std::unique_ptr<unsigned int[]> numPlants;
+	std::vector<ModelChunk> chunks;
+	decltype( chunks ) renderChunks;
+	float cullingOffset;
+	std::default_random_engine randomizer;
 
 private:
-  /**
-   * @brief LOADING_DISTANCE_CHUNKS define distance of how far would plain models be seen
-   */
-  constexpr static unsigned int LOADING_DISTANCE_CHUNKS = 8;
-  constexpr static unsigned int LOADING_DISTANCE_UNITS = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS;
-  constexpr static unsigned int LOADING_DISTANCE_UNITS_SQUARE = LOADING_DISTANCE_UNITS * LOADING_DISTANCE_UNITS;
-  /**
-   * @brief LOADING_DISTANCE_CHUNKS_LOWPOLY define distance of how far would low-poly models be seen
-   */
-  constexpr static unsigned int LOADING_DISTANCE_CHUNKS_LOWPOLY = 32;
-  constexpr static unsigned int LOADING_DISTANCE_UNITS_LOWPOLY = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS_LOWPOLY;
-  constexpr static unsigned int LOADING_DISTANCE_UNITS_LOWPOLY_SQUARE = LOADING_DISTANCE_UNITS_LOWPOLY * LOADING_DISTANCE_UNITS_LOWPOLY;
-  /**
-   * @brief LOADING_DISTANCE_CHUNKS_SHADOW define distance of how far would models be casting shadows
-   */
-  constexpr static unsigned int LOADING_DISTANCE_CHUNKS_SHADOW = 16;
-  constexpr static unsigned int LOADING_DISTANCE_UNITS_SHADOW = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS_SHADOW;
-  constexpr static unsigned int LOADING_DISTANCE_UNITS_SHADOW_SQUARE = LOADING_DISTANCE_UNITS_SHADOW * LOADING_DISTANCE_UNITS_SHADOW;
+    /**
+     * @brief LOADING_DISTANCE_CHUNKS define distance of how far would plain models be seen
+     */
+	constexpr static unsigned int LOADING_DISTANCE_CHUNKS = 8;
+	constexpr static unsigned int LOADING_DISTANCE_UNITS = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS;
+	constexpr static unsigned int LOADING_DISTANCE_UNITS_SQUARE = LOADING_DISTANCE_UNITS * LOADING_DISTANCE_UNITS;
+	/**
+	 * @brief LOADING_DISTANCE_CHUNKS_LOWPOLY define distance of how far would low-poly models be seen
+	 */
+	constexpr static unsigned int LOADING_DISTANCE_CHUNKS_LOWPOLY = 32;
+	constexpr static unsigned int LOADING_DISTANCE_UNITS_LOWPOLY = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS_LOWPOLY;
+	constexpr static unsigned int LOADING_DISTANCE_UNITS_LOWPOLY_SQUARE = LOADING_DISTANCE_UNITS_LOWPOLY * LOADING_DISTANCE_UNITS_LOWPOLY;
+	/**
+	 * @brief LOADING_DISTANCE_CHUNKS_SHADOW define distance of how far would models be casting shadows
+	 */
+	constexpr static unsigned int LOADING_DISTANCE_CHUNKS_SHADOW = 16;
+	constexpr static unsigned int LOADING_DISTANCE_UNITS_SHADOW = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS_SHADOW;
+	constexpr static unsigned int LOADING_DISTANCE_UNITS_SHADOW_SQUARE = LOADING_DISTANCE_UNITS_SHADOW * LOADING_DISTANCE_UNITS_SHADOW;
 };

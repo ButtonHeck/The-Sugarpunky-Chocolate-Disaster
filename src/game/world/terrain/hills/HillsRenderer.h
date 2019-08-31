@@ -32,12 +32,14 @@ class HillsShader;
 class HillsRenderer
 {
 public:
-  HillsRenderer(HillsShader& shaders, HillsGenerator& generator) noexcept;
-  void render(bool useFrustumCulling, const glm::vec2 &viewAcceleration);
-  void renderDepthmap();
-  void debugRender(GLenum primitiveType);
+	HillsRenderer( HillsShader & shaders, 
+				   HillsGenerator & generator ) noexcept;
+	void render( bool useFrustumCulling, 
+				 const glm::vec2 & viewAcceleration );
+	void renderDepthmap();
+	void debugRender( GLenum primitiveType );
 
 private:
-  HillsShader& shaders;
-  HillsGenerator& generator;
+	HillsShader & shaders;
+	HillsGenerator & generator;
 };

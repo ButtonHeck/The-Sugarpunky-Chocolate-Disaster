@@ -41,15 +41,21 @@ constexpr unsigned int NUM_LENS_FLARES = 7;
 class LensFlareFacade
 {
 public:
-  LensFlareFacade(Shader &shader, TextureLoader& textureLoader, const ScreenResolution& screenResolution);
-  void draw(const glm::vec3 &sunWorldPosition, const glm::mat4 &projectionView, float brightnessAbs);
+	LensFlareFacade( Shader & shader, 
+					 TextureLoader & textureLoader, 
+					 const ScreenResolution & screenResolution );
+	void draw( const glm::vec3 & sunWorldPosition, 
+			   const glm::mat4 & projectionView, 
+			   float theSunVisibility );
 
 private:
-  const float BRIGHTNESS_HALO, BRIGHTNESS_FLARES, FLARES_SPACING;
-  void updateFlaresPositions(const glm::vec2 &sunScreenPosition, const glm::vec2 &sunToCenter);
-  std::vector<LensFlareElement> flares;
-  GLfloat vertices[NUM_LENS_FLARES * 3];
-  BufferCollection basicGLBuffers;
-  LensFlareShader shader;
-  LensFlareRenderer renderer;
+	const float BRIGHTNESS_HALO, BRIGHTNESS_FLARES, FLARES_SPACING;
+	void updateFlaresPositions( const glm::vec2 & sunScreenPosition, 
+								const glm::vec2 & sunScreenPositionToScreenCenter );
+
+	std::vector<LensFlareElement> flares;
+	GLfloat vertices[NUM_LENS_FLARES * 3];
+	BufferCollection basicGLBuffers;
+	LensFlareShader shader;
+	LensFlareRenderer renderer;
 };

@@ -38,42 +38,48 @@ constexpr unsigned int UNIQUE_VERTICES_PER_TILE = 4;
 class Generator
 {
 public:
-  Generator() noexcept;
-  virtual ~Generator() = default;
-  const map2D_f& getMap() const noexcept;
-  virtual void serialize(std::ofstream& output, bool usePrecision = false, unsigned int precision = 6);
-  virtual void deserialize(std::ifstream& input);
+	Generator() noexcept;
+	virtual ~Generator() = default;
+	const map2D_f & getMap() const noexcept;
+	virtual void serialize( std::ofstream & output, 
+							bool usePrecision = false, 
+							unsigned int precision = 6 );
+	virtual void deserialize( std::ifstream & input );
 
-  /**
-  * @brief creates storage for map data and initializes it with zeroes
-  * @param map 2D map to initialize
-  * @note made static because there might be use cases when non-member map are in use (e.g. distribution map for plants or normal map)
-  */
-  template <typename T>
-  static void initializeMap(map2D_template<T>& map)
-  {
-    map.clear();
-    map.reserve(WORLD_HEIGHT + 1);
-    for (size_t row = 0; row < WORLD_HEIGHT + 1; row++)
-      map.emplace_back(std::vector<T>(WORLD_WIDTH + 1, 0));
-  }
-  void smoothMapAdjacentHeights(float selfWeight, float sideNeighbourWeight, float diagonalNeighbourWeight);
-  void createNormalMap(map2D_vec3& normalMap);
+	/**
+	* @brief creates storage for map data and initializes it with zeroes
+	* @param map 2D map to initialize
+	* @note made static because there might be use cases when non-member map are in use (e.g. distribution map for plants or normal map)
+	*/
+	template <typename T>
+	static void initializeMap( map2D_template<T> & map )
+	{
+		map.clear();
+		map.reserve( WORLD_HEIGHT + 1 );
+		for( size_t row = 0; row < WORLD_HEIGHT + 1; row++ )
+		{
+			map.emplace_back( std::vector<T>( WORLD_WIDTH + 1, 0 ) );
+		}
+	}
+	void smoothMapAdjacentHeights( float selfWeight, 
+								   float sideNeighbourWeight, 
+								   float diagonalNeighbourWeight );
+	void createNormalMap( map2D_vec3 & normalMap );
 
 protected:
-  map2D_f map;
-  std::vector<TerrainTile> tiles;
-  BufferCollection basicGLBuffers;
+	map2D_f map;
+	std::vector<TerrainTile> tiles;
+	BufferCollection basicGLBuffers;
 
 private:
-  template <typename T>
-  void serializeRepeatValues(std::ofstream &output,
-                             T value,
-                             const unsigned int& row,
-                             unsigned int& column);
-  template <typename T>
-  void deserializeRepeatValues(std::ifstream &input,
-                               T value,
-                               const unsigned int& row,
-                               unsigned int& column);
+	template <typename T>
+	void serializeRepeatValues( std::ofstream & output,
+								T value,
+								const unsigned int & row,
+								unsigned int & column );
+	template <typename T>
+	void deserializeRepeatValues( std::ifstream & input,
+								  T value,
+								  const unsigned int & row,
+								  unsigned int & column );
 };

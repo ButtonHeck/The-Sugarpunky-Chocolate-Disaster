@@ -24,17 +24,17 @@
 /**
  * @param renderShader precompiled shader program which is used during rendering
  */
-LensFlareShader::LensFlareShader(Shader &renderShader) noexcept
-  :
-    renderShader(renderShader)
+LensFlareShader::LensFlareShader( Shader & renderShader ) noexcept
+	: renderShader( renderShader )
 {}
 
 /**
  * @brief activates shader program and update its uniforms
  */
-void LensFlareShader::update(float brightnessFlares, float brightnessHalo)
+void LensFlareShader::update( float brightnessFlares, 
+							  float brightnessHalo )
 {
-  renderShader.use();
-  renderShader.setFloat("u_brightnessFlare", brightnessFlares);
-  renderShader.setFloat("u_brightnessHalo", brightnessHalo);
+	renderShader.use();
+	renderShader.setFloat( "u_brightnessFlare", brightnessFlares );
+	renderShader.setFloat( "u_brightnessHalo", brightnessHalo );
 }

@@ -25,9 +25,8 @@
 * @brief plain ctor
 * @param renderShader shader program used for rendering
 */
-UnderwaterShader::UnderwaterShader(Shader &renderShader) noexcept
-  :
-    renderShader(renderShader)
+UnderwaterShader::UnderwaterShader( Shader & renderShader ) noexcept
+	: renderShader( renderShader )
 {}
 
 /**
@@ -36,10 +35,12 @@ UnderwaterShader::UnderwaterShader(Shader &renderShader) noexcept
 * @param projectionView "projection * view" matrix
 * @param useDesaturation define whether to apply desaturation
 */
-void UnderwaterShader::update(const glm::vec3 &lightDir, const glm::mat4 &projectionView, bool useDesaturation)
+void UnderwaterShader::update( const glm::vec3 & lightDir, 
+							   const glm::mat4 & projectionView, 
+							   bool useDesaturation )
 {
-  renderShader.use();
-  renderShader.setMat4("u_projectionView", projectionView);
-  renderShader.setVec3("u_lightDir", -lightDir);
-  renderShader.setBool("u_useDesaturation", useDesaturation);
+	renderShader.use();
+	renderShader.setMat4( "u_projectionView", projectionView );
+	renderShader.setVec3( "u_lightDir", -lightDir );
+	renderShader.setBool( "u_useDesaturation", useDesaturation );
 }
