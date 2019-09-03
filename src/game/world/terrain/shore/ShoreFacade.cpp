@@ -100,6 +100,17 @@ void ShoreFacade::draw( const glm::vec3 & lightDir,
 	}
 }
 
+/**
+* @brief delegates draw call to renderer, supposing that no dedicated shader for shore should be updated
+* @note while rendering shore to the depthmap it's necessary to disable face culling, otherwise most polygons would be ignored
+*/
+void ShoreFacade::drawDepthmap()
+{
+	glDisable( GL_CULL_FACE );
+	renderer.render();
+	glEnable( GL_CULL_FACE );
+}
+
 const map2D_f & ShoreFacade::getMap() const noexcept
 {
 	return generator.getMap();

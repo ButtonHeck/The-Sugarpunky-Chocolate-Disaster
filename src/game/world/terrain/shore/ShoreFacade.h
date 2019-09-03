@@ -43,6 +43,7 @@ public:
 			   bool useDebugRender,
 			   bool useClipDistanceReflection,
 			   bool useClipDistanceRefraction );
+	void drawDepthmap();
 	const map2D_f & getMap() const noexcept;
 
 private:
