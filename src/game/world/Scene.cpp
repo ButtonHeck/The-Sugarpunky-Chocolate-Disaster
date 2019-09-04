@@ -237,10 +237,10 @@ void Scene::drawWorldDepthmap( bool grassCastShadow )
 	shaderManager.get( SHADER_SHADOW_TERRAIN ).setMat4( "u_lightSpaceMatrix[0]", lightSpaceMatrices[0] );
 	shaderManager.get( SHADER_SHADOW_TERRAIN ).setMat4( "u_lightSpaceMatrix[1]", lightSpaceMatrices[1] );
 	shaderManager.get( SHADER_SHADOW_TERRAIN ).setMat4( "u_lightSpaceMatrix[2]", lightSpaceMatrices[2] );
-	shaderManager.get( SHADER_SHADOW_TERRAIN ).setBool( "u_hills", true );
+	shaderManager.get( SHADER_SHADOW_TERRAIN ).setInt( "u_terrainType", 0 );
 	hillsFacade.drawDepthmap();
 
-	shaderManager.get( SHADER_SHADOW_TERRAIN ).setBool( "u_hills", false );
+	shaderManager.get( SHADER_SHADOW_TERRAIN ).setInt( "u_terrainType", 1 );
 	shoreFacade.drawDepthmap();
 
 	if( options[OPT_DRAW_TREES] )

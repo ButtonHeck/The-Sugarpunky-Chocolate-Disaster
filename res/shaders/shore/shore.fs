@@ -99,7 +99,7 @@ void main()
             if (shadowMapIndex == 0) //use more precise algorithm for nearby fragments
                 luminosity = ext_calculateLuminosity5(shadowMapIndex, projectedCoords, u_bias);
             else
-                luminosity = ext_calculateLuminosity3(shadowMapIndex, projectedCoords, u_bias);
+                luminosity = ext_calculateLuminosity3(shadowMapIndex, projectedCoords, u_bias * (shadowMapIndex + 1));
 
             diffuseColor = mix(luminosity, 1.0, v_ShoreUnderwaterMix) * sampledDiffuse.rgb * diffuseComponent;
             resultColor = ambientColor + diffuseColor;

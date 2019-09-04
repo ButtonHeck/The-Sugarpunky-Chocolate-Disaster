@@ -98,12 +98,18 @@ void main()
         //world refraction
         vec4 sampledWorldRefraction = vec4(texture(u_refractionMap, screenSpaceTexCoordsRefraction + sampledWorldTexCoordsOffset).rgb, 1.0);
 
+		//detect kissel "deepness" at a fragment's position
+        float refractionDepth = linearizeDepth(texture(u_refractionDepthMap, screenSpaceTexCoordsRefraction).r);
+        float currentFragDepth = linearizeDepth(gl_FragCoord.z);
+        //emphasize this for smooth transition with shore, higher == sharper transition
+        float kisselShoreDepth = min((refractionDepth - currentFragDepth) * 192, 1.0);
+
         //shadowing
         int shadowMapIndex;
         vec3 projectedCoords;
         ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
         //apply DUDV offset here to make shadows on kissel surface more natural
-        projectedCoords.xy += dudvTextureOffset;
+        projectedCoords.xy += dudvTextureOffset * kisselShoreDepth * 0.3;
         //no LOD here
         float luminosity = ext_calculateLuminosity3(shadowMapIndex, projectedCoords, u_bias);
 
@@ -112,12 +118,6 @@ void main()
         float specularLuminosityInfluence = 1.0 - ((1.0 - luminosity) * SHADOW_INFLUENCE_RECIPROCAL);
         specularColor = specularLuminosityInfluence * specularComponent * sampledSpecular * 0.3;
         resultColor = ambientColor + diffuseColor + specularColor;
-
-        //detect kissel "deepness" at a fragment's position
-        float refractionDepth = linearizeDepth(texture(u_refractionDepthMap, screenSpaceTexCoordsRefraction).r);
-        float currentFragDepth = linearizeDepth(gl_FragCoord.z);
-        //emphasize this for smooth transition with shore, higher == sharper transition
-        float kisselShoreDepth = min((refractionDepth - currentFragDepth) * 192, 1.0);
 
 		//fresnel (!ain't sure whether it is done correct!)
         float perpendicularity = max(dot(viewDirection, shadingNormal), 0.0);

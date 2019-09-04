@@ -3,13 +3,13 @@
 layout (location = 0) in vec4 i_pos;
 layout (location = 2) in vec3 i_normal;
 
-uniform bool u_hills;
+uniform int u_terrainType;
 
 void main()
 {
-	if (u_hills)
+	vec4 pos = i_pos;
+	if (u_terrainType == 0)
 	{
-		vec4 pos = i_pos;
 		//slightly change y coord for smoother shadows at surface edges
 		pos.y -= 0.06;
 		/*
@@ -21,16 +21,15 @@ void main()
 		    pos.y -= 5.0;
 		gl_Position = pos;
 	}
-	else
+	else if (u_terrainType == 1)
 	{
-		vec4 pos = i_pos;
 		//slightly change y coord for smoother shadows at surface edges
-		pos.y -= 0.03;
+		pos.y -= 0.045;
 		//for shore move fragment on the opposite of the normal X direction 
 		if (i_normal.x > 0)
-			pos.x -= 0.07;
+			pos.x -= 0.08;
 		else
-			pos.x += 0.07;
+			pos.x += 0.08;
 		gl_Position = pos;
 	}
 }
