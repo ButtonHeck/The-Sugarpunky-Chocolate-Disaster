@@ -258,7 +258,7 @@ void Scene::drawWorldDepthmap( bool grassCastShadow )
 /**
 * @brief handles offscreen rendering of the world reflection image from the water surface point of view
 * @param projectionView 'projection * view' matrix
-* @param ambienceProjectionView auxiliary 'projection * view' matrix used for ambience-like objects (skybox, sun etc.)
+* @param ambienceProjectionView auxiliary 'projection * view' matrix used for ambience-like objects (i.e. skyboxes)
 * @param cullingViewFrustum auxiliary view frustum, used for hills frustum culling routine
 * @param camera player's camera
 */
@@ -294,7 +294,6 @@ void Scene::drawWorldReflection( const glm::mat4 & projectionView,
 
 	RendererState::setAmbienceRenderingState( true );
 	skysphereFacade.draw( theSunFacade.getRotationTransform(), ambienceProjectionView, lightDir );
-	theSunFacade.draw( ambienceProjectionView, false, true );
 	skyboxFacade.draw( ambienceProjectionView, viewPosition, lightDir );
 	RendererState::setAmbienceRenderingState( false );
 }
