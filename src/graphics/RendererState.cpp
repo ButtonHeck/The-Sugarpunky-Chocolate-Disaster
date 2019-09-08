@@ -52,8 +52,7 @@ namespace RendererState
 	{
 		if( isOn )
 		{
-			glDisable( GL_MULTISAMPLE );
-			glDisable( GL_CULL_FACE );
+			glFrontFace( GL_CW );
 			glDepthFunc( GL_LEQUAL );
 			glEnable( GL_BLEND );
 			glDepthMask( GL_FALSE );
@@ -63,8 +62,7 @@ namespace RendererState
 			glDepthMask( GL_TRUE );
 			glDisable( GL_BLEND );
 			glDepthFunc( GL_LESS );
-			glEnable( GL_CULL_FACE );
-			glEnable( GL_MULTISAMPLE );
+			glFrontFace( GL_CCW );
 		}
 	}
 }
