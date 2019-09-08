@@ -42,8 +42,6 @@ void SkyboxFacade::draw( const glm::mat4 & skyboxProjectionView,
 {
 	BENCHMARK( "SkyboxFacade: draw all boxes", true );
 	shader.update( skyboxProjectionView, viewPosition, lightDir );
-	shader.selectSkyboxType( SKYBOX_CLOUDS );
-	skybox.draw();
 	shader.selectSkyboxType( SKYBOX_HILLS_NEAR );
 	skybox.draw();
 	shader.selectSkyboxType( SKYBOX_HIILS_FAR );

@@ -212,7 +212,6 @@ void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolu
 	shader->setInt( "u_skyboxNormals[1]", TEX_SKYBOX_HILLS_NEAR_NORMAL );
 	shader->setInt( "u_skyboxColor[0]", TEX_SKYBOX_HILLS_FAR );
 	shader->setInt( "u_skyboxNormals[0]", TEX_SKYBOX_HILLS_FAR_NORMAL );
-	shader->setInt( "u_skyboxColor[2]", TEX_SKYBOX_CLOUDS );
 	shader->setFloat( "u_ambientDay", 0.08f );
 	shader->setFloat( "u_ambientNight", 0.03f );
 
@@ -258,6 +257,7 @@ void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolu
 	bindShaderUnit( shader, SHADER_SKYSPHERE );
 	shader->setInt( "u_theSunAmbientLightingDiffuse", TEX_SKYSPHERE_THE_SUN_AMBIENT_LIGHTING );
 	shader->setInt( "u_starsDiffuse", TEX_SKYSPHERE_STARS );
+	shader->setInt( "u_cloudsDiffuse", TEX_SKYSPHERE_CLOUDS );
 }
 
 Shader & ShaderManager::get( SHADER_UNIT type )

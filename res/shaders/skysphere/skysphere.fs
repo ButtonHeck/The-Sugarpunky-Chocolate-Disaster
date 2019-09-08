@@ -4,13 +4,16 @@ out vec4 o_FragColor;
 
 uniform sampler2D u_theSunAmbientLightingDiffuse;
 uniform sampler2D u_starsDiffuse;
+uniform sampler2D u_cloudsDiffuse;
 uniform vec3      u_lightDir;
 //u_type - defines what kind of skysphere is being rendered
 uniform int       u_type;
 
 const int   SKYSPHERE_TYPE_AMBIENT_LIGHTING = 0;
 const int   SKYSPHERE_TYPE_STARS = 1;
+const int	SKYSPHERE_TYPE_CLOUDS = 2;
 const float STARS_RGBA_DAMP_FACTOR = 1.7;
+const float CLOUDS_RGBA_DAMP_FACTOR = 1.3;
 /*
 STARS_TEXTURE_Y_DAMP_FACTOR - defines offset from lower and upper texture Y coordinate
 from which no mix with black color should occure
@@ -33,7 +36,7 @@ void main()
                                     sunPositionAttenuation);
         o_FragColor = texture(u_theSunAmbientLightingDiffuse, v_TexCoords) * normalInfluence * sunPositionAttenuation;
     }
-    else
+    else if (u_type == SKYSPHERE_TYPE_STARS)
     {
         /*
         the closer texture Y coordinate to 1.0 or 0.0 the more black it should be
@@ -52,4 +55,11 @@ void main()
         o_FragColor = pow(mix(vec4(0.0), texture(u_starsDiffuse, v_TexCoords), textureMix), vec4(STARS_RGBA_DAMP_FACTOR))
                       * (1.0 - sunPositionAttenuation);
     }
+	else
+	{
+		float sunPositionAmplification = mix(1.0, 0.0, clamp((u_lightDir.y + 0.2) * 4, 0.0, 1.0));
+		vec4 sampledClouds = texture(u_cloudsDiffuse, v_TexCoords);
+        //make clouds black during day time
+        o_FragColor = pow(mix(vec4(0.0, 0.0, 0.0, sampledClouds.a * 2), sampledClouds, sunPositionAmplification), vec4(CLOUDS_RGBA_DAMP_FACTOR));
+	}
 }

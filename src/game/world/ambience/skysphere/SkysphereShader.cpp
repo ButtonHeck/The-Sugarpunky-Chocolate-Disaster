@@ -51,6 +51,6 @@ void SkysphereShader::update( const glm::mat4 & projectionView,
 void SkysphereShader::setSkysphereType( int type, 
 										const glm::mat4 & transform )
 {
-	renderShader.setBool( "u_type", type );
+	renderShader.setInt( "u_type", type );
 	renderShader.setMat4( "u_model", transform );
 }

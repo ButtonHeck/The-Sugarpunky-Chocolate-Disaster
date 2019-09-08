@@ -29,6 +29,7 @@
 SkysphereFacade::SkysphereFacade( Shader & renderShader )
 	: theSunAmbientLightingHemisphere( "environment/hemisphere/hemisphere.obj" )
 	, starsSkysphere( "environment/sphere/sphere.obj", glm::rotate( glm::mat4(), glm::radians( 94.0f ), glm::vec3( 1.0f, 0.0f, -0.5f ) ) )
+	, cloudsCylinder( "environment/clouds/clouds.obj" )
 	, shader( renderShader )
 {}
 
@@ -46,6 +47,8 @@ void SkysphereFacade::draw( const glm::mat4 & transform,
 	shader.update( projectionView, lightDir );
 	shader.setSkysphereType( SKYSPHERE_AMBIENT_LIGHTING, transform );
 	theSunAmbientLightingHemisphere.draw();
+	shader.setSkysphereType( SKYSPHERE_CLOUDS, glm::mat4() );
+	cloudsCylinder.draw();
 	shader.setSkysphereType( SKYSPHERE_STARS, starsSkysphere.getRotationTransform() );
 	starsSkysphere.draw();
 }

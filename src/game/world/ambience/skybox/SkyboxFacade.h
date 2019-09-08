@@ -36,12 +36,11 @@ public:
 			   const glm::vec3 & lightDir );
 
 private:
-  //define three possible modes of skybox for shader
+	//define possible modes of skybox for shader
 	enum SKYBOX_TYPE : int
 	{
 		SKYBOX_HILLS_NEAR = 0,
-		SKYBOX_HIILS_FAR = 1,
-		SKYBOX_CLOUDS = 2
+		SKYBOX_HIILS_FAR = 1
 	};
 
 	SkyboxShader shader;

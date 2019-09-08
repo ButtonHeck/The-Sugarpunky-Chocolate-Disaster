@@ -42,11 +42,13 @@ private:
 	enum SKYSPHERE_TYPE : int
 	{
 		SKYSPHERE_AMBIENT_LIGHTING = 0,
-		SKYSPHERE_STARS = 1
+		SKYSPHERE_STARS = 1,
+		SKYSPHERE_CLOUDS = 2
 	};
 	const glm::vec3 SKYSPHERE_STARS_ROTATION = glm::normalize( glm::vec3( -0.5f, 1.0f, -0.2f ) );
 
 	Skysphere theSunAmbientLightingHemisphere;
 	Skysphere starsSkysphere;
+	Skysphere cloudsCylinder;
 	SkysphereShader shader;
 };

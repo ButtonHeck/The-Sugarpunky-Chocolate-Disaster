@@ -12,6 +12,7 @@ uniform int  u_type;
 
 const int SKYSPHERE_TYPE_AMBIENT_LIGHTING = 0;
 const int SKYSPHERE_TYPE_STARS = 1;
+const int SKYSPHERE_TYPE_CLOUDS = 2;
 
 out vec2 v_TexCoords;
 out vec3 v_Normal;
@@ -28,7 +29,7 @@ void main()
     */
     if (u_type == SKYSPHERE_TYPE_AMBIENT_LIGHTING)
         positionVerticalOffset -= mix(0.0, 0.5, sunPositionAttenuation);
-    else
+    else if (u_type == SKYSPHERE_TYPE_STARS)
         positionVerticalOffset -= 0.3;
     vec4 position = vec4((u_model * i_pos).xyz, 1.0);
     position.y += positionVerticalOffset;
