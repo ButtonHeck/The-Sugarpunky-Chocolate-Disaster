@@ -59,7 +59,7 @@ Game::Game( GLFWwindow * window,
 	, mouseInput( MouseInputManager::getInstance() )
 	, textManager( FONT_DIR + "font.fnt", FONT_DIR + "font.png", shaderManager.get( SHADER_FONT ), screenResolution )
 {
-	srand( time( NULL ) );
+	srand( time( nullptr ) );
 	Model::bindTextureLoader( textureLoader );
 
 	//setup shadow volume projections
@@ -119,13 +119,13 @@ void Game::loop()
 	glm::mat4 view;
 	glm::mat4 projectionView;
 
-	float timerDelta = CPU_timer.tick();
+	const float TIMER_DELTA = CPU_timer.tick();
 
 	{
 		BENCHMARK( "Game loop: process input and camera", true );
 		keyboard.processInput();
 		camera.updateViewDirection();
-		camera.move( timerDelta, scene.getHillsFacade().getMap() );
+		camera.move( TIMER_DELTA, scene.getHillsFacade().getMap() );
 
 		//projection and view matrices
 		if( !options[OPT_USE_SHADOW_CAMERA_MATRIX] )
@@ -145,17 +145,17 @@ void Game::loop()
 		if( !options[OPT_SHADOW_CAMERA_FIXED] )
 		{
 			shadowCamera.updateViewDirection();
-			shadowCamera.move( timerDelta, scene.getHillsFacade().getMap() );
+			shadowCamera.move( TIMER_DELTA, scene.getHillsFacade().getMap() );
 		}
 	}
 
 	//ambience update
-	scene.getSunFacade().move( timerDelta );
-	scene.getSkysphereFacade().moveStarsSkysphere( timerDelta * PLANET_MOVE_SPEED );
+	scene.getSunFacade().move( TIMER_DELTA );
+	scene.getSkysphereFacade().moveStarsSkysphere( TIMER_DELTA * PLANET_MOVE_SPEED );
 
 	//update sky color
-	glm::vec4 currentColor = glm::mix( NIGHT_SKY_COLOR, DAY_SKY_COLOR, glm::clamp( -scene.getSunFacade().getLightDir().y * 5, 0.0f, 1.0f ) );
-	glClearColor( currentColor.r, currentColor.g, currentColor.b, currentColor.a );
+	const glm::vec4 CURRENT_COLOR = glm::mix( NIGHT_SKY_COLOR, DAY_SKY_COLOR, glm::clamp( -scene.getSunFacade().getLightDir().y * 5, 0.0f, 1.0f ) );
+	glClearColor( CURRENT_COLOR.r, CURRENT_COLOR.g, CURRENT_COLOR.b, CURRENT_COLOR.a );
 
 	/*
 	* we might have to wait until models indirect buffer coroutine thread is done,
@@ -338,9 +338,9 @@ void Game::drawFrameReflection()
 	}
 
 	//for reflection rendering we need reflection view matrix
-	glm::mat4 viewReflected = camera.getReflectionViewMatrix();
-	scene.drawWorldReflection( projection * viewReflected,
-							   projection * glm::mat4( glm::mat3( viewReflected ) ),
+	const glm::mat4 VIEW_REFLECTED = camera.getReflectionViewMatrix();
+	scene.drawWorldReflection( projection * VIEW_REFLECTED,
+							   projection * glm::mat4( glm::mat3( VIEW_REFLECTED ) ),
 							   cullingViewFrustum,
 							   camera );
 
@@ -385,12 +385,12 @@ void Game::recreate()
 */
 void Game::drawDepthmap()
 {
-	glm::mat4 shadowView = shadowCamera.getViewMatrix();
+	const glm::mat4 SHADOW_VIEW = shadowCamera.getViewMatrix();
 
 	//update shadow regions view frustums
 	for( unsigned int layerIndex = 0; layerIndex < NUM_SHADOW_LAYERS; layerIndex++ )
 	{
-		shadowRegionsFrustums[layerIndex].updateFrustum( shadowRegionsProjections[layerIndex] * shadowView );
+		shadowRegionsFrustums[layerIndex].updateFrustum( shadowRegionsProjections[layerIndex] * SHADOW_VIEW );
 		shadowRegionsFrustums[layerIndex].calculateIntersectionPoints();
 	}
 
@@ -440,10 +440,10 @@ void Game::setupThreads()
 			if( modelsIndirectBufferNeedUpdate )
 			{
 				BENCHMARK( "(ST)Model: update meshes DIBs data", true );
-				float cameraOnMapX = glm::clamp( camera.getPosition().x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F );
-				float cameraOnMapZ = glm::clamp( camera.getPosition().z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F );
-				glm::vec2 cameraPositionXZ( cameraOnMapX, cameraOnMapZ );
-				scene.getPlantsFacade().prepareIndirectBufferData( cameraPositionXZ, viewFrustum );
+				const float CAMERA_ON_MAP_X = glm::clamp( camera.getPosition().x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F );
+				const float CAMERA_ON_MAP_Z = glm::clamp( camera.getPosition().z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F );
+				const glm::vec2 CAMERA_POSITION_XZ( CAMERA_ON_MAP_X, CAMERA_ON_MAP_Z );
+				scene.getPlantsFacade().prepareIndirectBufferData( CAMERA_POSITION_XZ, viewFrustum );
 				modelsIndirectBufferPrepared = true;
 				modelsIndirectBufferNeedUpdate = false;
 			}
