@@ -440,10 +440,7 @@ void Game::setupThreads()
 			if( modelsIndirectBufferNeedUpdate )
 			{
 				BENCHMARK( "(ST)Model: update meshes DIBs data", true );
-				const float CAMERA_ON_MAP_X = glm::clamp( camera.getPosition().x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F );
-				const float CAMERA_ON_MAP_Z = glm::clamp( camera.getPosition().z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F );
-				const glm::vec2 CAMERA_POSITION_XZ( CAMERA_ON_MAP_X, CAMERA_ON_MAP_Z );
-				scene.getPlantsFacade().prepareIndirectBufferData( CAMERA_POSITION_XZ, viewFrustum );
+				scene.getPlantsFacade().prepareIndirectBufferData( camera, viewFrustum, scene.getHillsFacade().getMap() );
 				modelsIndirectBufferPrepared = true;
 				modelsIndirectBufferNeedUpdate = false;
 			}

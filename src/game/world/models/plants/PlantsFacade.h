@@ -29,6 +29,7 @@
 #include "GrassRenderer"
 
 class Frustum;
+class Camera;
 
 /**
  * @brief Facade for plants related code module.
@@ -44,8 +45,9 @@ public:
 				const map2D_vec3 & hillsNormalMap );
 	void initializeModelRenderChunks( const map2D_f & landMap, 
 									  const map2D_f & hillMap );
-	void prepareIndirectBufferData( const glm::vec2 & cameraPositionXZ, 
-									const Frustum & viewFrustum );
+	void prepareIndirectBufferData( const Camera & camera,
+									const Frustum & viewFrustum,
+									const map2D_f & hillMap );
 	void updateIndirectBufferData();
 	void draw( const glm::vec3 & lightDir,
 			   const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,

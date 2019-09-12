@@ -44,9 +44,9 @@ int main()
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 4 );
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 5 );
 	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	glfwWindowHint( GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE );
-#endif
+//#endif
 	GLFWmonitor * monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode * vidmode = glfwGetVideoMode( monitor );
 	ScreenResolution screenResolution( vidmode->width, vidmode->height );
@@ -57,7 +57,7 @@ int main()
 	glewExperimental = GL_TRUE;
 	glewInit();
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	Logger::log( "%\n", glfwGetVersionString() );
 	GLint flags;
 	glGetIntegerv( GL_CONTEXT_FLAGS, &flags );
@@ -68,7 +68,7 @@ int main()
 		glDebugMessageCallback( Logger::glDebugCallback, nullptr );
 		glDebugMessageControl( GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE );
 	}
-#endif
+//#endif
 
 	//explicitly make non-current from this thread, as the context will mainly be used in the game child thread
 	glfwMakeContextCurrent( NULL );

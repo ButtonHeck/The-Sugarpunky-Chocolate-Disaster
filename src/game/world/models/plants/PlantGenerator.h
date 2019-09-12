@@ -30,6 +30,7 @@
 #include <random>
 
 class Model;
+class Camera;
 
 /**
  * @brief Boilerplate generator for all the plants.
@@ -43,8 +44,9 @@ public:
 	void serialize( std::ofstream & output );
 	void deserialize( std::ifstream & input );
 	void initializeModelRenderChunks( const map2D_f & map );
-	void prepareIndirectBufferData( const glm::vec2 & cameraPositionXZ, 
-									const Frustum & viewFrustum );
+	void prepareIndirectBufferData( const Camera & camera, 
+									const Frustum & viewFrustum,
+									const map2D_f & hillMap );
 	void updateIndirectBufferData();
 	std::vector<Model> & getModels( bool isLowPoly ) noexcept;
 	std::vector<ModelChunk> & getChunks() noexcept;

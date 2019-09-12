@@ -63,15 +63,17 @@ void PlantsFacade::initializeModelRenderChunks( const map2D_f & landMap,
 
 /**
  * @brief for each generator's models delegates command to prepare its indirect buffer data on CPU side
- * @param cameraPositionXZ X and Z coordinates of a current view position
+ * @param camera player's camera
  * @param viewFrustum frustum to perform CPU culling
+ * @param hillMap map of the hills
  */
-void PlantsFacade::prepareIndirectBufferData( const glm::vec2 & cameraPositionXZ, 
-											  const Frustum & viewFrustum )
+void PlantsFacade::prepareIndirectBufferData( const Camera & camera, 
+											  const Frustum & viewFrustum,
+											  const map2D_f & hillMap )
 {
-	landPlantsGenerator.prepareIndirectBufferData( cameraPositionXZ, viewFrustum );
-	hillTreesGenerator.prepareIndirectBufferData( cameraPositionXZ, viewFrustum );
-	grassGenerator.prepareIndirectBufferData( cameraPositionXZ, viewFrustum );
+	landPlantsGenerator.prepareIndirectBufferData( camera, viewFrustum, hillMap );
+	hillTreesGenerator.prepareIndirectBufferData( camera, viewFrustum, hillMap );
+	grassGenerator.prepareIndirectBufferData( camera, viewFrustum, hillMap );
 }
 
 /**

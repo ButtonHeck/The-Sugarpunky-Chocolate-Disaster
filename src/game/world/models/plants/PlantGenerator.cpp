@@ -20,6 +20,7 @@
 
 #include "PlantGenerator"
 #include "Model"
+#include "Camera"
 
 #include <iomanip>
 #include <chrono>
@@ -239,12 +240,18 @@ void PlantGenerator::deserialize( std::ifstream & input )
 
 /**
  * @brief for each model prepare its indirect buffer data using CPU frustum culling
- * @param cameraPositionXZ X and Z coordinates of a current view position
+ * @param camera player's camera
  * @param viewFrustum frustum to perform CPU culling
+ * @param hillMap map of the hills
  */
-void PlantGenerator::prepareIndirectBufferData( const glm::vec2 & cameraPositionXZ, 
-												const Frustum & viewFrustum )
+void PlantGenerator::prepareIndirectBufferData( const Camera & camera, 
+												const Frustum & viewFrustum,
+												const map2D_f & hillMap )
 {
+	const float CAMERA_ON_MAP_X = glm::clamp( camera.getPosition().x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F );
+	const float CAMERA_ON_MAP_Z = glm::clamp( camera.getPosition().z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F );
+	const glm::vec2 CAMERA_POSITION_XZ( CAMERA_ON_MAP_X, CAMERA_ON_MAP_Z );
+
 	//firstly precalculate only those chunks that are visible in a view frustum and close enough to a camera
 	std::vector<std::pair<ModelChunk, unsigned int>> visibleChunks;
 	visibleChunks.reserve( NUM_CHUNKS / 2 );
@@ -253,7 +260,7 @@ void PlantGenerator::prepareIndirectBufferData( const glm::vec2 & cameraPosition
 	{
 		if( chunk.isInsideFrustum( viewFrustum, cullingOffset ) )
 		{
-			glm::vec2 directionToChunkCenter = chunk.getMidPoint() - cameraPositionXZ;
+			glm::vec2 directionToChunkCenter = chunk.getMidPoint() - CAMERA_POSITION_XZ;
 			unsigned int distanceToChunk = glm::length2( directionToChunkCenter );
 
 			//if a chunk is farther than the low-poly render distance - just discard it
