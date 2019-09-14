@@ -49,15 +49,30 @@ void WaterGenerator::setup()
 /**
 * @brief additional post-process generation routine. Once we have shores smoothened, we should recalculate water
 * in order to eliminate gaps between water and shores
+* @param landMap map of the lands
 */
-void WaterGenerator::setupConsiderTerrain()
+void WaterGenerator::setupConsiderTerrain( const map2D_f & landMap )
 {
 	initializeMap( postProcessMap );
+
 	//by this moment we have smoothed shore, so make sure that water still covers it
 	for( unsigned int i = 0; i < SHORE_SMOOTH_CYCLES - 1; i++ )
 	{
 		expandWaterArea();
 	}
+
+	//remove water data if it is under zero-level tile (which represents flat land tile)
+	for( unsigned int y = 1; y < postProcessMap.size(); y++ )
+	{
+		for( unsigned int x = 1; x < postProcessMap[0].size(); x++ )
+		{
+			if( landMap[y][x] == 0 && landMap[y - 1][x] == 0 && landMap[y][x - 1] == 0 && landMap[y - 1][x - 1] == 0 )
+			{
+				postProcessMap[y][x] = 0;
+			}
+		}
+	}
+
 	createTiles();
 	fillBufferData();
 }

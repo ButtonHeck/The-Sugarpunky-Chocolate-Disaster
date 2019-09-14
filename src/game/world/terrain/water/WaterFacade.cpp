@@ -44,10 +44,11 @@ void WaterFacade::setup()
 
 /**
 * @brief delegates map post-process routine to generator
+* @param landMap map of the lands
 */
-void WaterFacade::setupConsiderTerrain()
+void WaterFacade::setupConsiderTerrain( const map2D_f & landMap )
 {
-	generator.setupConsiderTerrain();
+	generator.setupConsiderTerrain( landMap );
 }
 
 /**

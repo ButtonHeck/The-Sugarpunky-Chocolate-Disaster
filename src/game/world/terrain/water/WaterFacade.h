@@ -35,7 +35,7 @@ public:
 				 Shader & cullingShader, 
 				 Shader & normalsShader );
 	void setup();
-	void setupConsiderTerrain();
+	void setupConsiderTerrain( const map2D_f & landMap );
 	void serialize( std::ofstream & output );
 	void deserialize( std::ifstream & input );
 	void draw( const glm::vec3 & lightDir,

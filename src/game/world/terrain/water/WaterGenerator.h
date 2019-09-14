@@ -35,7 +35,7 @@ class WaterGenerator : public Generator
 public:
 	WaterGenerator( WaterShader & shaders );
 	void setup();
-	void setupConsiderTerrain();
+	void setupConsiderTerrain( const map2D_f & landMap );
 	void createTiles();
 
 private:

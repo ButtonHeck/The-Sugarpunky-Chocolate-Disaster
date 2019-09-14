@@ -77,7 +77,7 @@ void Scene::setup()
 	hillsFacade.setup();
 	shoreFacade.setup();
 	landFacade.setup( shoreFacade.getMap() );
-	waterFacade.setupConsiderTerrain();
+	waterFacade.setupConsiderTerrain( landFacade.getMap() );
 	buildableFacade.setup( landFacade.getMap(), hillsFacade.getMap() );
 	plantsFacade.setup( landFacade.getMap(), hillsFacade.getMap(), hillsFacade.getNormalMap() );
 	textureManager.createUnderwaterReliefTexture( waterFacade.getMap() );
@@ -103,7 +103,7 @@ void Scene::load()
 	hillsFacade.recreateTilesAndBufferData();
 	shoreFacade.setup();
 	landFacade.setup( shoreFacade.getMap() );
-	waterFacade.setupConsiderTerrain();
+	waterFacade.setupConsiderTerrain( landFacade.getMap() );
 	buildableFacade.setup( landFacade.getMap(), hillsFacade.getMap() );
 	textureManager.createUnderwaterReliefTexture( waterFacade.getMap() );
 	plantsFacade.reinitializeModelRenderChunks( landFacade.getMap(), hillsFacade.getMap() );
