@@ -271,6 +271,18 @@ void PlantGenerator::prepareIndirectBufferData( const Camera & camera,
 		}
 	}
 
+	//additional check of hills occlusion
+	for( auto & chunkIterator = visibleChunks.begin(); chunkIterator != visibleChunks.end(); )
+	{
+		ModelChunk & chunk = chunkIterator->first;
+		if( testHillsOcclusionChunk( camera, chunk, hillMap ) )
+		{
+			visibleChunks.erase( chunkIterator );
+			continue;
+		}
+		++chunkIterator;
+	}
+
 	for( unsigned int modelIndex = 0; modelIndex < models.size(); modelIndex++ )
 	{
 		Model & model = models[modelIndex];
@@ -341,6 +353,117 @@ map2D_mat4 PlantGenerator::substituteMatricesStorage()
 	}
 	matrices.clear();
 	return newMatrices;
+}
+
+bool PlantGenerator::testHillsOcclusionChunk( const Camera & camera, 
+											  const ModelChunk & chunk, 
+											  const map2D_f & hillMap )
+{
+	const glm::vec3 VIEW_POSITION( camera.getPosition().x + HALF_WORLD_WIDTH, 
+								   camera.getPosition().y, 
+								   camera.getPosition().z + HALF_WORLD_HEIGHT );
+	const glm::vec3 CHUNK_LL( chunk.getLeft(), 2.0f, chunk.getBottom() );
+	const glm::vec3 CHUNK_LR( chunk.getRight(), 2.0f, chunk.getBottom() );
+	const glm::vec3 CHUNK_UL( chunk.getLeft(), 2.0f, chunk.getTop() );
+	const glm::vec3 CHUNK_UR( chunk.getRight(), 2.0f, chunk.getTop() );
+
+	//discard this chunk only if all its key points are occluded
+	return( testHillsOcclusionPoint( CHUNK_LL, VIEW_POSITION, hillMap ) &&
+			testHillsOcclusionPoint( CHUNK_LR, VIEW_POSITION, hillMap ) &&
+			testHillsOcclusionPoint( CHUNK_UL, VIEW_POSITION, hillMap ) &&
+			testHillsOcclusionPoint( CHUNK_UR, VIEW_POSITION, hillMap ) );
+}
+
+bool PlantGenerator::testHillsOcclusionPoint( const glm::vec3 & endPoint, 
+											  const glm::vec3 & viewPosition,
+											  const map2D_f & hillMap )
+{
+	const glm::vec3 VIEW_DIRECTION( endPoint - viewPosition );
+
+	//culling based on crossing hills map vertical lines
+	if( VIEW_DIRECTION.x > 0 )
+	{
+		float xPosition = viewPosition.x;
+		while( xPosition < endPoint.x )
+		{
+			xPosition = std::trunc( xPosition + 1.0f );
+			float dx = ( xPosition - viewPosition.x ) / VIEW_DIRECTION.x;
+			float zPosition = viewPosition.z + VIEW_DIRECTION.z * dx;
+			float yPosition = viewPosition.y + VIEW_DIRECTION.y * dx;
+
+			if( yPosition < hillOccluderHeightAt( zPosition, xPosition, true, hillMap ) )
+			{
+				return true;
+			}
+		}
+	}
+	else
+	{
+		float xPosition = viewPosition.x;
+		while( xPosition > endPoint.x )
+		{
+			xPosition = std::trunc( xPosition );
+			float dx = std::abs( ( viewPosition.x - xPosition ) / VIEW_DIRECTION.x );
+			float zPosition = viewPosition.z + VIEW_DIRECTION.z * dx;
+			float yPosition = viewPosition.y + VIEW_DIRECTION.y * dx;
+
+			if( yPosition < hillOccluderHeightAt( zPosition, xPosition, true, hillMap ) )
+			{
+				return true;
+			}
+			xPosition -= 1.0f;
+		}
+	}
+
+	//culling based on crossing hills map horizontal lines
+	if( VIEW_DIRECTION.z > 0 )
+	{
+		float zPosition = viewPosition.z;
+		while( zPosition < endPoint.z )
+		{
+			zPosition = std::trunc( zPosition + 1.0f );
+			float dz = ( zPosition - viewPosition.z ) / VIEW_DIRECTION.z;
+			float xPosition = viewPosition.x + VIEW_DIRECTION.x * dz;
+			float yPosition = viewPosition.y + VIEW_DIRECTION.y * dz;
+
+			if( yPosition < hillOccluderHeightAt( xPosition, zPosition, false, hillMap ) )
+			{
+				return true;
+			}
+		}
+	}
+	else
+	{
+		float zPosition = viewPosition.z;
+		while( zPosition > endPoint.z )
+		{
+			zPosition = std::trunc( zPosition );
+			float dz = std::abs( ( viewPosition.z - zPosition ) / VIEW_DIRECTION.z );
+			float xPosition = viewPosition.x + VIEW_DIRECTION.x * dz;
+			float yPosition = viewPosition.y + VIEW_DIRECTION.y * dz;
+
+			if( yPosition < hillOccluderHeightAt( xPosition, zPosition, false, hillMap ) )
+			{
+				return true;
+			}
+			zPosition -= 1.0f;
+		}
+	}
+
+	return false;
+}
+
+float PlantGenerator::hillOccluderHeightAt( const float interpolantCoord,
+											const float fixedCoord,
+											const bool fixedCoordIsX,
+											const map2D_f & hillMap )
+{
+	const int MAP_COORD_1 = std::floor( interpolantCoord );
+	const int MAP_COORD_2 = std::ceil( interpolantCoord );
+	const float INTERPOLATION = glm::fract( std::abs( interpolantCoord ) );
+	float hillHeightAtCoord1 = hillMap[fixedCoordIsX ? MAP_COORD_1 : fixedCoord][fixedCoordIsX ? fixedCoord : MAP_COORD_1];
+	float hillHeightAtCoord2 = hillMap[fixedCoordIsX ? MAP_COORD_2 : fixedCoord][fixedCoordIsX ? fixedCoord : MAP_COORD_2];
+	return glm::mix( hillHeightAtCoord1, hillHeightAtCoord2, INTERPOLATION ) + HILLS_OFFSET_Y;
 }
 
 std::vector<Model> & PlantGenerator::getModels( bool isLowPoly ) noexcept

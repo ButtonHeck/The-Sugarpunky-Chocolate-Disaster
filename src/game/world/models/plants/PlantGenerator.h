@@ -55,6 +55,16 @@ protected:
 	void initializeModelChunks( const map2D_f & map );
 	void loadMatrices( const map2D_mat4 & newMatrices );
 	map2D_mat4 substituteMatricesStorage();
+	bool testHillsOcclusionChunk( const Camera & camera, 
+								  const ModelChunk & chunk,
+								  const map2D_f & hillMap );
+	bool testHillsOcclusionPoint( const glm::vec3 & endPoint,
+								  const glm::vec3 & viewPosition,
+								  const map2D_f & hillMap );
+	float hillOccluderHeightAt( const float interpolantCoord,
+								const float fixedCoord,
+								const bool fixedCoordIsX,
+								const map2D_f & hillMap );
 
 	std::vector<Model> models;
 	std::vector<Model> lowPolyModels;
