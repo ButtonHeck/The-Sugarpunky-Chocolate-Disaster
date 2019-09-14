@@ -76,7 +76,7 @@ void LandPlantsGenerator::setup( const map2D_f & landMap,
 {
 	initializeModelChunks( landMap );
 	setupMatrices( landMap, hillMap, distributionMap );
-	initializeModelRenderChunks( landMap );
+	initializeModelRenderChunks( landMap, APPROXIMATE_LAND_PLANTS_CHUNK_HEIGHT );
 }
 
 /**

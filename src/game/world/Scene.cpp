@@ -106,7 +106,7 @@ void Scene::load()
 	waterFacade.setupConsiderTerrain();
 	buildableFacade.setup( landFacade.getMap(), hillsFacade.getMap() );
 	textureManager.createUnderwaterReliefTexture( waterFacade.getMap() );
-	plantsFacade.initializeModelRenderChunks( landFacade.getMap(), hillsFacade.getMap() );
+	plantsFacade.reinitializeModelRenderChunks( landFacade.getMap(), hillsFacade.getMap() );
 }
 
 /**

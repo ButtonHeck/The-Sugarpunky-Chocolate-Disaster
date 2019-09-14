@@ -53,12 +53,12 @@ void PlantsFacade::setup( const map2D_f & landMap,
  * @param landMap map of the land
  * @param hillMap map of the hills
  */
-void PlantsFacade::initializeModelRenderChunks( const map2D_f & landMap, 
-												const map2D_f & hillMap )
+void PlantsFacade::reinitializeModelRenderChunks( const map2D_f & landMap, 
+												  const map2D_f & hillMap )
 {
-	landPlantsGenerator.initializeModelRenderChunks( landMap );
-	grassGenerator.initializeModelRenderChunks( landMap );
-	hillTreesGenerator.initializeModelRenderChunks( hillMap );
+	landPlantsGenerator.initializeModelRenderChunks( landMap, APPROXIMATE_LAND_PLANTS_CHUNK_HEIGHT );
+	grassGenerator.initializeModelRenderChunks( landMap, APPROXIMATE_GRASS_CHUNK_HEIGHT );
+	hillTreesGenerator.initializeModelRenderChunks( hillMap, APPROXIMATE_HILL_PLANTS_CHUNK_HEIGHT );
 }
 
 /**

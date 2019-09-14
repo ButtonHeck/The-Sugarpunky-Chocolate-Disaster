@@ -73,7 +73,7 @@ void HillTreesGenerator::setup( const map2D_f & hillMap,
 {
 	initializeModelChunks( hillMap );
 	setupMatrices( hillMap, distributionMap, hillsNormalMap );
-	initializeModelRenderChunks( hillMap );
+	initializeModelRenderChunks( hillMap, APPROXIMATE_HILL_PLANTS_CHUNK_HEIGHT );
 }
 
 /**

@@ -38,6 +38,9 @@ constexpr float UNDERWATER_TILE_Y = -4.0f;
 constexpr int RIVER_WIDTH_BASE = 5;
 constexpr unsigned int SHORE_SMOOTH_CYCLES = 5;
 constexpr int PLANTS_DISTRIBUTION_FREQUENCY = 8;
+constexpr float APPROXIMATE_LAND_PLANTS_CHUNK_HEIGHT = 2.0f;
+constexpr float APPROXIMATE_GRASS_CHUNK_HEIGHT = 0.5f;
+constexpr float APPROXIMATE_HILL_PLANTS_CHUNK_HEIGHT = 2.0f;
 
 //scene update & rendering config
 constexpr int CHUNK_SIZE = 4;

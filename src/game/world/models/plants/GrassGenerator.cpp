@@ -62,7 +62,7 @@ void GrassGenerator::setup( const map2D_f & landMap,
 {
 	initializeModelChunks( landMap );
 	setupMatrices( landMap, hillMap, distributionMap );
-	initializeModelRenderChunks( landMap );
+	initializeModelRenderChunks( landMap, APPROXIMATE_GRASS_CHUNK_HEIGHT );
 }
 
 /**

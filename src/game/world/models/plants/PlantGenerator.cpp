@@ -61,8 +61,10 @@ void PlantGenerator::initializeModelChunks( const map2D_f & map )
 /**
  * @brief setup chunks for actual rendering and update height values
  * @param map 2d map of the given terrain type
+ * @param approximateHeight approximate height for this chunk
  */
-void PlantGenerator::initializeModelRenderChunks( const map2D_f & map )
+void PlantGenerator::initializeModelRenderChunks( const map2D_f & map,
+												  const float approximateHeight )
 {
 	//in case of reinitialization make sure to clear previous content
 	renderChunks.clear();
@@ -87,7 +89,13 @@ void PlantGenerator::initializeModelRenderChunks( const map2D_f & map )
 
 	for( ModelChunk & renderChunk : renderChunks )
 	{
-		renderChunk.setHeight( glm::max( 0.0f, map[renderChunk.getTop()][renderChunk.getLeft()] ) );
+		float mapMaxHeight = glm::max( 
+									glm::max( 
+										glm::max( map[renderChunk.getTop()][renderChunk.getLeft()], 
+												  map[renderChunk.getBottom()][renderChunk.getLeft()] ),
+										map[renderChunk.getTop()][renderChunk.getRight()] ), 
+									map[renderChunk.getBottom()][renderChunk.getRight()] );
+		renderChunk.setHeight( glm::max( approximateHeight, mapMaxHeight + approximateHeight ) );
 	}
 }
 
@@ -355,6 +363,13 @@ map2D_mat4 PlantGenerator::substituteMatricesStorage()
 	return newMatrices;
 }
 
+/**
+* @brief performs test of hills occlusion for the given chunk
+* @param camera player's camera
+* @param chunk a chunk to test
+* @param hillMap map of the hills
+* @return true if this chunk is occluded by hills
+*/
 bool PlantGenerator::testHillsOcclusionChunk( const Camera & camera, 
 											  const ModelChunk & chunk, 
 											  const map2D_f & hillMap )
@@ -362,10 +377,11 @@ bool PlantGenerator::testHillsOcclusionChunk( const Camera & camera,
 	const glm::vec3 VIEW_POSITION( camera.getPosition().x + HALF_WORLD_WIDTH, 
 								   camera.getPosition().y, 
 								   camera.getPosition().z + HALF_WORLD_HEIGHT );
-	const glm::vec3 CHUNK_LL( chunk.getLeft(), 2.0f, chunk.getBottom() );
-	const glm::vec3 CHUNK_LR( chunk.getRight(), 2.0f, chunk.getBottom() );
-	const glm::vec3 CHUNK_UL( chunk.getLeft(), 2.0f, chunk.getTop() );
-	const glm::vec3 CHUNK_UR( chunk.getRight(), 2.0f, chunk.getTop() );
+	const float CHUNK_APPROXIMATE_HEIGHT = chunk.getHeight();
+	const glm::vec3 CHUNK_LL( chunk.getLeft(), CHUNK_APPROXIMATE_HEIGHT, chunk.getBottom() );
+	const glm::vec3 CHUNK_LR( chunk.getRight(), CHUNK_APPROXIMATE_HEIGHT, chunk.getBottom() );
+	const glm::vec3 CHUNK_UL( chunk.getLeft(), CHUNK_APPROXIMATE_HEIGHT, chunk.getTop() );
+	const glm::vec3 CHUNK_UR( chunk.getRight(), CHUNK_APPROXIMATE_HEIGHT, chunk.getTop() );
 
 	//discard this chunk only if all its key points are occluded
 	return( testHillsOcclusionPoint( CHUNK_LL, VIEW_POSITION, hillMap ) &&
@@ -374,17 +390,23 @@ bool PlantGenerator::testHillsOcclusionChunk( const Camera & camera,
 			testHillsOcclusionPoint( CHUNK_UR, VIEW_POSITION, hillMap ) );
 }
 
-bool PlantGenerator::testHillsOcclusionPoint( const glm::vec3 & endPoint, 
+/**
+* @brief performs test of hills occlusion for the given point
+* @param point a point to test
+* @param viewPosition current position of the camera
+* @param hillMap map of the hills
+*/
+bool PlantGenerator::testHillsOcclusionPoint( const glm::vec3 & point, 
 											  const glm::vec3 & viewPosition,
 											  const map2D_f & hillMap )
 {
-	const glm::vec3 VIEW_DIRECTION( endPoint - viewPosition );
+	const glm::vec3 VIEW_DIRECTION( point - viewPosition );
 
 	//culling based on crossing hills map vertical lines
 	if( VIEW_DIRECTION.x > 0 )
 	{
 		float xPosition = viewPosition.x;
-		while( xPosition < endPoint.x )
+		while( xPosition < point.x )
 		{
 			xPosition = std::trunc( xPosition + 1.0f );
 			float dx = ( xPosition - viewPosition.x ) / VIEW_DIRECTION.x;
@@ -400,7 +422,7 @@ bool PlantGenerator::testHillsOcclusionPoint( const glm::vec3 & endPoint,
 	else
 	{
 		float xPosition = viewPosition.x;
-		while( xPosition > endPoint.x )
+		while( xPosition > point.x )
 		{
 			xPosition = std::trunc( xPosition );
 			float dx = std::abs( ( viewPosition.x - xPosition ) / VIEW_DIRECTION.x );
@@ -419,7 +441,7 @@ bool PlantGenerator::testHillsOcclusionPoint( const glm::vec3 & endPoint,
 	if( VIEW_DIRECTION.z > 0 )
 	{
 		float zPosition = viewPosition.z;
-		while( zPosition < endPoint.z )
+		while( zPosition < point.z )
 		{
 			zPosition = std::trunc( zPosition + 1.0f );
 			float dz = ( zPosition - viewPosition.z ) / VIEW_DIRECTION.z;
@@ -435,7 +457,7 @@ bool PlantGenerator::testHillsOcclusionPoint( const glm::vec3 & endPoint,
 	else
 	{
 		float zPosition = viewPosition.z;
-		while( zPosition > endPoint.z )
+		while( zPosition > point.z )
 		{
 			zPosition = std::trunc( zPosition );
 			float dz = std::abs( ( viewPosition.z - zPosition ) / VIEW_DIRECTION.z );
@@ -453,6 +475,13 @@ bool PlantGenerator::testHillsOcclusionPoint( const glm::vec3 & endPoint,
 	return false;
 }
 
+/**
+* @brief returns height value in the given map for given coordinates
+* @param interpolantCoord coordinate that would be used for interpolation
+* @param fixedCoord coordinate that would be used as it is
+* @param fixedCoordIsX define whether fixed coords is used as X index for given map
+* @param hillMap map of the hills
+*/
 float PlantGenerator::hillOccluderHeightAt( const float interpolantCoord,
 											const float fixedCoord,
 											const bool fixedCoordIsX,

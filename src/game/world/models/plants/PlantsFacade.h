@@ -43,8 +43,8 @@ public:
 	void setup( const map2D_f & landMap, 
 				const map2D_f & hillMap, 
 				const map2D_vec3 & hillsNormalMap );
-	void initializeModelRenderChunks( const map2D_f & landMap, 
-									  const map2D_f & hillMap );
+	void reinitializeModelRenderChunks( const map2D_f & landMap, 
+									    const map2D_f & hillMap );
 	void prepareIndirectBufferData( const Camera & camera,
 									const Frustum & viewFrustum,
 									const map2D_f & hillMap );

@@ -41,6 +41,7 @@ public:
 	unsigned int getRight() const noexcept;
 	unsigned int getTop() const noexcept;
 	unsigned int getBottom() const noexcept;
+	float getHeight() const noexcept;
 	void setHeight( float height ) noexcept;
 	bool isInsideFrustum( const Frustum & frustum, 
 						  float cullingOffset ) const;
@@ -78,6 +79,11 @@ inline unsigned int Chunk::getTop() const noexcept
 inline unsigned int Chunk::getBottom() const noexcept
 {
 	return bottom;
+}
+
+inline float Chunk::getHeight() const noexcept
+{
+	return height;
 }
 
 inline void Chunk::setHeight( float height ) noexcept

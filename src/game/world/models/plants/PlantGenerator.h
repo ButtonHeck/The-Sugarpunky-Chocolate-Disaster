@@ -43,7 +43,8 @@ public:
 	PlantGenerator() noexcept;
 	void serialize( std::ofstream & output );
 	void deserialize( std::ifstream & input );
-	void initializeModelRenderChunks( const map2D_f & map );
+	void initializeModelRenderChunks( const map2D_f & map,
+									  const float approximateHeight );
 	void prepareIndirectBufferData( const Camera & camera, 
 									const Frustum & viewFrustum,
 									const map2D_f & hillMap );
@@ -58,7 +59,7 @@ protected:
 	bool testHillsOcclusionChunk( const Camera & camera, 
 								  const ModelChunk & chunk,
 								  const map2D_f & hillMap );
-	bool testHillsOcclusionPoint( const glm::vec3 & endPoint,
+	bool testHillsOcclusionPoint( const glm::vec3 & point,
 								  const glm::vec3 & viewPosition,
 								  const map2D_f & hillMap );
 	float hillOccluderHeightAt( const float interpolantCoord,
