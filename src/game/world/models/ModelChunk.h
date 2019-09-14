@@ -51,9 +51,14 @@ public:
 	unsigned int getNumInstances( int index ) const;
 	std::vector<unsigned int> & getNumInstancesVector() noexcept;
 
+	//occlusion
+	bool isOccluded() const noexcept;
+	void setOccluded( bool isOccluded ) noexcept;
+
 private:
 	std::vector<unsigned int> instanceOffsets;
 	std::vector<unsigned int> numInstances;
+	bool occluded;
 };
 
 inline void ModelChunk::setInstanceOffsetsVector( std::vector<unsigned int> & instanceOffsets )
@@ -102,4 +107,14 @@ inline unsigned int ModelChunk::getNumInstances( int index ) const
 inline std::vector<unsigned int> & ModelChunk::getNumInstancesVector() noexcept
 {
 	return numInstances;
+}
+
+inline bool ModelChunk::isOccluded() const noexcept
+{
+	return occluded;
+}
+
+inline void ModelChunk::setOccluded( bool isOccluded ) noexcept
+{
+	this->occluded = isOccluded;
 }

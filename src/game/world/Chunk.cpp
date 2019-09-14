@@ -53,5 +53,9 @@ bool Chunk::isInsideFrustum( const Frustum & frustum,
 	return frustum.isInside( midPointX - HALF_CHUNK_SIZE, height, midPointZ + HALF_CHUNK_SIZE, cullingOffset ) ||
 		   frustum.isInside( midPointX + HALF_CHUNK_SIZE, height, midPointZ + HALF_CHUNK_SIZE, cullingOffset ) ||
 		   frustum.isInside( midPointX + HALF_CHUNK_SIZE, height, midPointZ - HALF_CHUNK_SIZE, cullingOffset ) ||
-		   frustum.isInside( midPointX - HALF_CHUNK_SIZE, height, midPointZ - HALF_CHUNK_SIZE, cullingOffset );
+		   frustum.isInside( midPointX - HALF_CHUNK_SIZE, height, midPointZ - HALF_CHUNK_SIZE, cullingOffset ) ||
+		   frustum.isInside( midPointX - HALF_CHUNK_SIZE, 0.0f, midPointZ + HALF_CHUNK_SIZE, cullingOffset ) ||
+		   frustum.isInside( midPointX + HALF_CHUNK_SIZE, 0.0f, midPointZ + HALF_CHUNK_SIZE, cullingOffset ) ||
+		   frustum.isInside( midPointX + HALF_CHUNK_SIZE, 0.0f, midPointZ - HALF_CHUNK_SIZE, cullingOffset ) ||
+		   frustum.isInside( midPointX - HALF_CHUNK_SIZE, 0.0f, midPointZ - HALF_CHUNK_SIZE, cullingOffset );
 }

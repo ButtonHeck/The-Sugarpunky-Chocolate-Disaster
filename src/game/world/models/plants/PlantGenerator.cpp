@@ -280,15 +280,10 @@ void PlantGenerator::prepareIndirectBufferData( const Camera & camera,
 	}
 
 	//additional check of hills occlusion
-	for( auto & chunkIterator = visibleChunks.begin(); chunkIterator != visibleChunks.end(); )
+	for( auto & chunkDistancePair : visibleChunks )
 	{
-		ModelChunk & chunk = chunkIterator->first;
-		if( testHillsOcclusionChunk( camera, chunk, hillMap ) )
-		{
-			visibleChunks.erase( chunkIterator );
-			continue;
-		}
-		++chunkIterator;
+		ModelChunk & chunk = chunkDistancePair.first;
+		chunk.setOccluded( testHillsOcclusionChunk( camera, chunk, hillMap ) );
 	}
 
 	for( unsigned int modelIndex = 0; modelIndex < models.size(); modelIndex++ )

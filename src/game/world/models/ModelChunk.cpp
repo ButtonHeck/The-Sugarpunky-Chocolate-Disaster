@@ -26,4 +26,5 @@ ModelChunk::ModelChunk( unsigned int left,
 						unsigned int bottom, 
 						float height )
 	: Chunk( left, right, top, bottom, height )
+	, occluded( false )
 {}

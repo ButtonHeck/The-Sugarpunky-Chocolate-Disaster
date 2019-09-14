@@ -135,7 +135,7 @@ void ModelGPUDataManager::prepareIndirectBufferData( const std::vector<std::pair
 		{
 			if( !isLowPoly )
 			{
-				if( distanceToChunk < loadingDistance )
+				if( distanceToChunk < loadingDistance && !chunk.isOccluded() )
 				{
 					//draw nearby camera if fullpoly
 					addIndirectBufferToken( numInstancesInChunk, instanceOffsetInChunk, PLAIN_ONSCREEN );
@@ -148,13 +148,13 @@ void ModelGPUDataManager::prepareIndirectBufferData( const std::vector<std::pair
 			}
 		}
 		//draw farther from camera if lowpoly
-		if( isLowPoly && distanceToChunk >= loadingDistance )
+		if( isLowPoly && distanceToChunk >= loadingDistance && !chunk.isOccluded() )
 		{
 			addIndirectBufferToken( numInstancesInChunk, instanceOffsetInChunk, PLAIN_ONSCREEN );
 		}
 
 		//for world reflection rendering mode better render all models as lowpoly regardless of distance 
-		if( isLowPoly )
+		if( isLowPoly && !chunk.isOccluded() )
 		{
 			addIndirectBufferToken( numInstancesInChunk, instanceOffsetInChunk, REFLECTION_ONSCREEN );
 		}
