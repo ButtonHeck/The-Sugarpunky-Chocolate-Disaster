@@ -169,7 +169,7 @@ void Camera::move( float delta,
 		float x1HeightMix = glm::mix( x1z1Height, x1z2Height, zRatio );
 		float x2HeightMix = glm::mix( x2z1Height, x2z2Height, zRatio );
 		float medianHeight = glm::mix( x1HeightMix, x2HeightMix, xRatio );
-		position.y = glm::max( position.y, medianHeight + CAMERA_WORLD_MIN_HEIGHT_ON_HILLS );
+		position.y = glm::max( position.y, medianHeight + CAMERA_WORLD_MIN_HEIGHT );
 	}
 }
 

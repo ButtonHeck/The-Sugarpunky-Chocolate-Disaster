@@ -101,7 +101,6 @@ private:
 	const float MIN_PITCH = -65.0f;
 	const float CAMERA_WORLD_BORDER_OFFSET = 8.0f;
 	const float CAMERA_WORLD_MIN_HEIGHT = 2.0f;
-	const float CAMERA_WORLD_MIN_HEIGHT_ON_HILLS = CAMERA_WORLD_MIN_HEIGHT - HILLS_OFFSET_Y;
 	const float CAMERA_WORLD_MAX_HEIGHT = 30.0f;
 
 	void updateDirectionVectors();
