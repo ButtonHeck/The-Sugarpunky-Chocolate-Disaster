@@ -103,6 +103,7 @@ private:
 	void removePlateaus( float hubbleHeight );
 	void removeOrphanHills();
 	void smoothMapSinks();
+	void smoothLandTransitionEdges();
 	void createTangentMap();
 	void createBitangentMap();
 

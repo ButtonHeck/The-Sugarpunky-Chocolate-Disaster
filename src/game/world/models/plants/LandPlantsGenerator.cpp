@@ -110,8 +110,12 @@ void LandPlantsGenerator::setupMatrices( const map2D_f & landMap,
 			{
 				for( unsigned int x = startX; x < startX + CHUNK_SIZE; x++ )
 				{
-					if( ( landMap[y][x] == 0 && landMap[y + 1][x + 1] == 0 && landMap[y + 1][x] == 0 && landMap[y][x + 1] == 0 ) && //is there land
-						!( hillMap[y][x] != 0 || hillMap[y + 1][x + 1] != 0 || hillMap[y + 1][x] != 0 || hillMap[y][x + 1] != 0 ) && //is there no hills
+					//check if there is land and no visible hills
+					if( ( landMap[y][x] == 0 && landMap[y + 1][x + 1] == 0 && landMap[y + 1][x] == 0 && landMap[y][x + 1] == 0 ) &&
+						!( hillMap[y][x] > -HILLS_OFFSET_Y ||
+						   hillMap[y + 1][x + 1] > -HILLS_OFFSET_Y ||
+						   hillMap[y + 1][x] > -HILLS_OFFSET_Y ||
+						   hillMap[y][x + 1] > -HILLS_OFFSET_Y ) &&
 						( rand() % ( PLANTS_DISTRIBUTION_FREQUENCY / 2 ) ) == 0 &&      //is there a randomizer "hit"
 						distributionMap[y][x] > PLANTS_DISTRIBUTION_FREQUENCY / 2 )  //is a seed value at these coordinates high enough to proceed
 					{

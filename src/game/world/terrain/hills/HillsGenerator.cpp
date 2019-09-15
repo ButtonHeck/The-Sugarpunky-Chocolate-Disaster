@@ -55,7 +55,9 @@ void HillsGenerator::setup()
 	for( unsigned int i = 0; i < 4; i++ )
 	{
 		smoothMapAdjacentHeights( 0.6f, 0.05f, 0.05f );
+		smoothLandTransitionEdges();
 	}
+	updateMaxHeight();
 	createTiles();
 	createAuxiliaryMaps();
 	fillBufferData();
@@ -83,7 +85,14 @@ void HillsGenerator::createTiles()
 				float lr = map[y][x] + HILLS_OFFSET_Y;
 				float ur = map[y - 1][x] + HILLS_OFFSET_Y;
 				float ul = map[y - 1][x - 1] + HILLS_OFFSET_Y;
-				tiles.emplace_back( x, y, ll, lr, ur, ul );
+				/**
+				* after offset is applied it might be that new tile would be completely under the ground, 
+				* to prevent this submit new tile only if at least one of its vertices is higher than the ground level
+				*/
+				if( ll >= 0 || lr >= 0 || ur >= 0 || ul >= 0 )
+				{
+					tiles.emplace_back( x, y, ll, lr, ur, ul );
+				}
 			}
 		}
 	}
@@ -260,7 +269,7 @@ void HillsGenerator::fattenKernel( int cycles )
 							if( rand() % ( cycle + 2 ) > 1 )
 							{
 								//shortening the fattening borders to prevent hills generating over the shore and water
-								if( hasWaterNearby( x, y, 3 + SHORE_SMOOTH_CYCLES ) )
+								if( hasWaterNearby( x, y, 4 + SHORE_SMOOTH_CYCLES ) )
 								{
 									--bottom;
 									--right;
@@ -508,6 +517,41 @@ void HillsGenerator::smoothMapSinks()
 			}
 		}
 	}
+}
+
+/**
+* @brief smoothes hills at places nearby the land tiles, makes transition from land to hills softer
+* @note it's enough just to lift "corner" points of the hills
+*/
+void HillsGenerator::smoothLandTransitionEdges()
+{
+	map2D_f postProcessMap = map;
+	for( unsigned int y = 1; y < WORLD_HEIGHT; y++ )
+	{
+		for( unsigned int x = 1; x < WORLD_WIDTH; x++ )
+		{
+			if( map[y][x] == 0 )
+			{
+				if( map[y - 1][x - 1] > 0 && map[y + 1][x + 1] <= 0 )
+				{
+					postProcessMap[y][x] = map[y - 1][x - 1] / 2;
+				}
+				else if( map[y - 1][x + 1] > 0 && map[y + 1][x - 1] <= 0 )
+				{
+					postProcessMap[y][x] = map[y - 1][x + 1] / 2;
+				}
+				else if( map[y + 1][x - 1] > 0 && map[y - 1][x + 1] <= 0 )
+				{
+					postProcessMap[y][x] = map[y + 1][x - 1] / 2;
+				}
+				else if( map[y + 1][x + 1] > 0 && map[y - 1][x - 1] <= 0 )
+				{
+					postProcessMap[y][x] = map[y + 1][x + 1] / 2;
+				}
+			}
+		}
+	}
+	map = postProcessMap;
 }
 
 /**
