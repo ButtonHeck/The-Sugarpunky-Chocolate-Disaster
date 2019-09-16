@@ -85,13 +85,18 @@ void main()
         mix range stands for: 0.0 == fully land texture, 1.0 == fully hill texture
         */
         float terrainTypeMixClamped = clamp(v_TerrainTypeMix, 0.0, 1.0);
-        vec4 sampledDiffuse = mix(mix(texture(u_landDiffuse[0], v_TexCoords * u_textureTilingDimension),
-                                      texture(u_landDiffuse[1], v_TexCoords * u_textureTilingDimension),
-                                      diffuseTextureMix),
-                                  mix(texture(u_hillsDiffuse[0], v_TexCoords),
-                                      texture(u_hillsDiffuse[1], v_TexCoords),
-                                      diffuseTextureMix),
-                                  terrainTypeMixClamped);
+		vec4 sampledDiffuse = mix(texture(u_hillsDiffuse[0], v_TexCoords),
+                                  texture(u_hillsDiffuse[1], v_TexCoords),
+                                  diffuseTextureMix);
+		if (terrainTypeMixClamped <= 0.99)
+		{
+			vec2 landTexCoords = v_TexCoords * u_textureTilingDimension;
+			sampledDiffuse = mix(mix(texture(u_landDiffuse[0], landTexCoords),
+			                         texture(u_landDiffuse[1], landTexCoords),
+			                         diffuseTextureMix),
+			                     sampledDiffuse,
+			                     terrainTypeMixClamped);
+		}
 
         //no specular lighting for land
         vec4 sampledSpecular = mix(vec4(0.0), texture(u_hillsSpecular, v_TexCoords), terrainTypeMixClamped);
