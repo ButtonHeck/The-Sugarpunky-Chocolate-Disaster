@@ -26,7 +26,7 @@ in vec3 v_Normal;
 void main()
 {
     vec3 normal = normalize(v_Normal);
-    float sunPositionAttenuation = mix(0.0, 1.0, clamp((u_lightDir.y + 0.05) * 8, 0.0, 1.0));
+    float sunPositionAttenuation = clamp((u_lightDir.y + 0.05) * 8, 0.0, 1.0);
 
     if (u_type == SKYSPHERE_TYPE_AMBIENT_LIGHTING)
     {

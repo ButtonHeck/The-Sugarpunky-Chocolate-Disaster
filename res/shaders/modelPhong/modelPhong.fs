@@ -38,7 +38,7 @@ void main()
 
     @include shadingVariables.ifs
 
-    float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 3, 0.0, 1.0));
+    float sunPositionAttenuation = clamp(u_lightDir.y * 3, 0.0, 1.0);
     vec3 shadingNormal = normalize(v_Normal);
 
     float diffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0) * sunPositionAttenuation * (1.0 - u_ambientDay);

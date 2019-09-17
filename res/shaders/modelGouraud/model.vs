@@ -49,7 +49,7 @@ void main()
     vec3 normal = normalize(vec3(i_model * vec4(i_normal, 0)));
     v_NormalY = normal.y;
 
-    v_SunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 3, 0.0, 1.0));
+    v_SunPositionAttenuation = clamp(u_lightDir.y * 3, 0.0, 1.0);
     vec3 shadingNormal = normal;
 
     //diffuse

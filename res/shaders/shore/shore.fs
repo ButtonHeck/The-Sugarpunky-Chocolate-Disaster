@@ -84,7 +84,7 @@ void main()
 
         float diffuseComponentShore = max(dot(shadingNormalShore, u_lightDir), 0.0);
         float diffuseComponentLand = max(dot(shadingNormalLand, u_lightDir), 0.0);
-        float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+        float sunPositionAttenuation = clamp(u_lightDir.y * 10, 0.0, 1.0);
 
 		//underwater stuff
 		float diffuseComponentUnderwater = max(dot(sampledNormalUnderwater, u_lightDir), 0.0);

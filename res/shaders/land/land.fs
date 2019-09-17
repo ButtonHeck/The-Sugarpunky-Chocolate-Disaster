@@ -39,7 +39,7 @@ void main()
     shadingNormal = normalize(VERTEX_NORMAL_INFLUENCE * NORMAL +
                               (1.0 - VERTEX_NORMAL_INFLUENCE) * shadingNormal);
 
-    float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+    float sunPositionAttenuation = clamp(u_lightDir.y * 10, 0.0, 1.0);
     float diffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0) * sunPositionAttenuation;
 
     //no specular lighting for land

@@ -115,7 +115,7 @@ void main()
 
         float diffuseComponentHill = max(dot(shadingNormalHill, u_lightDir), 0.0);
         float diffuseComponentLand = max(dot(shadingNormalLand, u_lightDir), 0.0);
-        float sunPositionAttenuation = mix(0.0, 1.0, clamp(u_lightDir.y * 10, 0.0, 1.0));
+        float sunPositionAttenuation = clamp(u_lightDir.y * 10, 0.0, 1.0);
         float diffuseComponent = mix(diffuseComponentLand, diffuseComponentHill, terrainTypeMixClamped) * sunPositionAttenuation;
 
         ambientColor = mix(ambientColorNightSelf, ambientColorDaySelf, sunPositionAttenuation);
