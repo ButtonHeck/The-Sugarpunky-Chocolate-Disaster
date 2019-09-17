@@ -47,16 +47,24 @@ void main()
         clamping this value in fragment shader gives more visually pleasing result
         mix range stands for: 0.0 == fully shore texture, 1.0 == fully land texture
         */
-        float shoreLandMixClamped = clamp(v_ShoreLandMix, 0.0, 1.0);
-        vec4 sampledDiffuseShore = mix(mix(texture(u_shoreDiffuse[0], v_TexCoords),
-										   texture(u_shoreDiffuse[1], v_TexCoords),
-										   diffuseTextureMix),
-                                       mix(texture(u_landDiffuse[0], v_TexCoords),
-										   texture(u_landDiffuse[1], v_TexCoords),
-										   diffuseTextureMix),
-									   shoreLandMixClamped);
-		vec4 sampledDiffuseUnderwater = texture(u_underwaterDiffuse, v_TexCoords);
-		vec4 sampledDiffuse = mix(sampledDiffuseShore, sampledDiffuseUnderwater, v_ShoreUnderwaterMix);
+        float terrainTypeMixClamped = clamp(v_ShoreLandMix, 0.0, 1.0);
+		vec4 sampledDiffuse = mix(texture(u_shoreDiffuse[0], v_TexCoords),
+								  texture(u_shoreDiffuse[1], v_TexCoords),
+								  diffuseTextureMix);
+		if (terrainTypeMixClamped >= 0.01)
+		{
+			sampledDiffuse = mix(sampledDiffuse,
+			                     mix(texture(u_landDiffuse[0], v_TexCoords),
+									 texture(u_landDiffuse[1], v_TexCoords),
+									 diffuseTextureMix),
+								 terrainTypeMixClamped);
+		}
+		if (v_ShoreUnderwaterMix >= 0.01)
+		{
+			sampledDiffuse = mix(sampledDiffuse, 
+								 texture(u_underwaterDiffuse, v_TexCoords), 
+								 v_ShoreUnderwaterMix);
+		}
 
         //no specular lighting for shore and land
 
@@ -82,7 +90,7 @@ void main()
 		float diffuseComponentUnderwater = max(dot(sampledNormalUnderwater, u_lightDir), 0.0);
 		float reliefAttenuationUnderwater = 1.0 - texture(u_bottomReliefDiffuse, mapSpaceTextureCoords).r;
 
-        float diffuseComponent = mix(diffuseComponentShore, diffuseComponentLand, shoreLandMixClamped);
+        float diffuseComponent = mix(diffuseComponentShore, diffuseComponentLand, terrainTypeMixClamped);
 		diffuseComponent = mix(diffuseComponent, diffuseComponentUnderwater * reliefAttenuationUnderwater, v_ShoreUnderwaterMix)
 						   * sunPositionAttenuation;
 
@@ -107,7 +115,7 @@ void main()
 
             //apply no desaturation if there is no sun lit surface, or little if diffuse component is low enough
             float desaturatingValue = mix(0.0,
-                                          mix(MAX_DESATURATING_VALUE_SHORE, MAX_DESATURATING_VALUE_LAND, shoreLandMixClamped),
+                                          mix(MAX_DESATURATING_VALUE_SHORE, MAX_DESATURATING_VALUE_LAND, terrainTypeMixClamped),
                                           min(luminosity * sunPositionAttenuation, diffuseComponent + SHADOW_INFLUENCE));
 			float desaturatingValueUnderwater = mix(0.0, MAX_DESATURATING_VALUE_UNDERWATER, diffuseComponentUnderwater);
 			desaturatingValue = mix(desaturatingValue, desaturatingValueUnderwater, v_ShoreUnderwaterMix);
