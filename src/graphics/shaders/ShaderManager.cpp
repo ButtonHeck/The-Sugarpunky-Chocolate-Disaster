@@ -153,8 +153,7 @@ void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolu
 	bindShaderUnit( shader, SHADER_SHORE );
 	shader->setInt( "u_landDiffuse[0]", TEX_LAND );
 	shader->setInt( "u_landDiffuse[1]", TEX_LAND_2 );
-	shader->setInt( "u_shoreDiffuse[0]", TEX_SHORE );
-	shader->setInt( "u_shoreDiffuse[1]", TEX_SHORE_2 );
+	shader->setInt( "u_shoreDiffuse", TEX_SHORE );
 	shader->setInt( "u_diffuseMixMap", TEX_DIFFUSE_MIX_MAP );
 	shader->setInt( "u_normalMap", TEX_TERRAIN_NORMAL );
 	shader->setInt( "u_underwaterDiffuse", TEX_UNDERWATER_DIFFUSE );

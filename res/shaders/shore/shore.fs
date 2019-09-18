@@ -9,7 +9,7 @@ in float v_ShoreUnderwaterMix;
 in vec3  v_Normal;
 
 uniform sampler2D u_landDiffuse[2];
-uniform sampler2D u_shoreDiffuse[2];
+uniform sampler2D u_shoreDiffuse;
 uniform sampler2D u_diffuseMixMap;
 uniform sampler2D u_underwaterDiffuse;
 uniform sampler2D u_bottomReliefDiffuse;
@@ -48,9 +48,9 @@ void main()
         mix range stands for: 0.0 == fully shore texture, 1.0 == fully land texture
         */
         float terrainTypeMixClamped = clamp(v_ShoreLandMix, 0.0, 1.0);
-		vec4 sampledDiffuse = mix(texture(u_shoreDiffuse[0], v_TexCoords),
-								  texture(u_shoreDiffuse[1], v_TexCoords),
-								  diffuseTextureMix);
+
+		vec4 sampledDiffuse = texture(u_shoreDiffuse, v_TexCoords);
+		sampledDiffuse = mix(sampledDiffuse, sampledDiffuse * vec4(0.94, 0.88, 0.8, 1.0), diffuseTextureMix);
 		if (terrainTypeMixClamped >= 0.01)
 		{
 			sampledDiffuse = mix(sampledDiffuse,

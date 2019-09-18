@@ -40,7 +40,6 @@ TextureManager::TextureManager( TextureLoader & loader )
 	textures[TEX_HILL_SPECULAR] = loader.loadTexture( "hill_specular.png", TEX_HILL_SPECULAR, GL_REPEAT, GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, true, true, false, true );
 	textures[TEX_SHORE] = loader.loadTexture( "shore.jpg", TEX_SHORE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true );
 	textures[TEX_UNDERWATER_DIFFUSE] = loader.loadTexture( "underwater.jpg", TEX_UNDERWATER_DIFFUSE, GL_REPEAT, GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, false );
-	textures[TEX_SHORE_2] = loader.loadTexture( "shore2.jpg", TEX_SHORE_2, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true );
 	textures[TEX_SKYBOX_HILLS_NEAR] = loader.loadCubemap( "cubemapHillsNear/", TEX_SKYBOX_HILLS_NEAR, false );
 	textures[TEX_SKYBOX_HILLS_NEAR_NORMAL] = loader.loadCubemap( "cubemapHillsNearNormal/", TEX_SKYBOX_HILLS_NEAR_NORMAL, true );
 	textures[TEX_SKYBOX_HILLS_FAR] = loader.loadCubemap( "cubemapHillsFar/", TEX_SKYBOX_HILLS_FAR, false );
