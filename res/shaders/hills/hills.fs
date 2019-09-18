@@ -10,7 +10,7 @@ in float v_TerrainTypeMix;
 in float v_SpecularComponent;
 
 uniform sampler2D u_landDiffuse[2];
-uniform sampler2D u_hillsDiffuse[2];
+uniform sampler2D u_hillsDiffuse;
 uniform sampler2D u_hillsSpecular;
 uniform sampler2D u_diffuseMixMap;
 uniform sampler2D u_normalMap;
@@ -85,9 +85,9 @@ void main()
         mix range stands for: 0.0 == fully land texture, 1.0 == fully hill texture
         */
         float terrainTypeMixClamped = clamp(v_TerrainTypeMix, 0.0, 1.0);
-		vec4 sampledDiffuse = mix(texture(u_hillsDiffuse[0], v_TexCoords),
-                                  texture(u_hillsDiffuse[1], v_TexCoords),
-                                  diffuseTextureMix);
+
+		vec4 sampledDiffuse = texture(u_hillsDiffuse, v_TexCoords);
+		sampledDiffuse = mix(sampledDiffuse, sampledDiffuse * vec4(0.85, 0.83, 0.82, 1.0), diffuseTextureMix);
 		if (terrainTypeMixClamped <= 0.99)
 		{
 			vec2 landTexCoords = v_TexCoords * u_textureTilingDimension;

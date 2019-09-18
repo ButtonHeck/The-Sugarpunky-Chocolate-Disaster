@@ -138,8 +138,7 @@ void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolu
 	bindShaderUnit( shader, SHADER_HILLS );
 	shader->setInt( "u_landDiffuse[0]", TEX_LAND );
 	shader->setInt( "u_landDiffuse[1]", TEX_LAND_2 );
-	shader->setInt( "u_hillsDiffuse[0]", TEX_HILL );
-	shader->setInt( "u_hillsDiffuse[1]", TEX_HILL_2 );
+	shader->setInt( "u_hillsDiffuse", TEX_HILL );
 	shader->setInt( "u_hillsSpecular", TEX_HILL_SPECULAR );
 	shader->setInt( "u_diffuseMixMap", TEX_DIFFUSE_MIX_MAP );
 	shader->setInt( "u_normalMap", TEX_TERRAIN_NORMAL );
