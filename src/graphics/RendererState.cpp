@@ -33,6 +33,7 @@ namespace RendererState
 		glEnable( GL_CULL_FACE );
 		glEnable( GL_DEPTH_TEST );
 		glDisable( GL_DITHER );
+		glEnable( GL_SAMPLE_SHADING );
 		if( useMultisample )
 		{
 			glEnable( GL_MULTISAMPLE );
