@@ -19,7 +19,7 @@ out vec3 v_Normal;
 
 void main()
 {
-    float sunPositionAttenuation = mix(0.0, 1.0, clamp((u_lightDir.y + 0.05) * 8, 0.0, 1.0));
+    float sunPositionAttenuation = clamp((u_lightDir.y + 0.05) * 8, 0.0, 1.0);
     float positionVerticalOffset = 0.0;
     /*
     for stars we need place a sphere center lower from camera's perspective,
