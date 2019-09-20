@@ -57,7 +57,7 @@ void main()
     }
 	else
 	{
-		float sunPositionAmplification = mix(1.0, 0.0, clamp((u_lightDir.y + 0.2) * 4, 0.0, 1.0));
+		float sunPositionAmplification = 1.0 - clamp((u_lightDir.y + 0.2) * 4, 0.0, 1.0);
 		vec4 sampledClouds = texture(u_cloudsDiffuse, v_TexCoords);
         //make clouds black during day time
         o_FragColor = pow(mix(vec4(0.0, 0.0, 0.0, sampledClouds.a * 2), sampledClouds, sunPositionAmplification), vec4(CLOUDS_RGBA_DAMP_FACTOR));
