@@ -58,6 +58,8 @@ Game::Game( GLFWwindow * window,
 	, keyboard( window, camera, shadowCamera, options, scene.getSunFacade() )
 	, mouseInput( MouseInputManager::getInstance() )
 	, textManager( FONT_DIR + "font.fnt", FONT_DIR + "font.png", shaderManager.get( SHADER_FONT ), screenResolution )
+	, setupCompleted( false )
+	, mouseInputCallbacksInitialized( false )
 {
 	srand( time( nullptr ) );
 	Model::bindTextureLoader( textureLoader );
@@ -91,9 +93,8 @@ void Game::setup()
 	BENCHMARK( "Game: setup", false );
 	Shader::setCachingOfUniformsMode( true );
 	RendererState::setInitialRenderingState( options[OPT_USE_MULTISAMPLING] );
-	MouseInputManager::initialize( window, options, screenResolution, camera, shadowCamera );
-	MouseInputManager::setCallbacks();
 	scene.setup();
+	MouseInputManager::initialize( window, options, screenResolution, camera, shadowCamera );
 	BindlessTextureManager::makeAllResident();
 	BindlessTextureManager::loadToShader( shaderManager.get( SHADER_MODELS_GOURAUD ), BINDLESS_TEXTURE_MODEL );
 	BindlessTextureManager::loadToShader( shaderManager.get( SHADER_MODELS_PHONG ), BINDLESS_TEXTURE_MODEL );
@@ -104,6 +105,7 @@ void Game::setup()
 	depthmapFramebuffer.setup();
 	reflectionFramebuffer.setup();
 	refractionFramebuffer.setup();
+	setupCompleted = true;
 }
 
 /**
@@ -449,4 +451,30 @@ void Game::setupThreads()
 			lock.unlock();
 		}
 	} );
+}
+
+/**
+* @brief tells whether setup has been completed
+*/
+bool Game::setupHasCompleted() const
+{
+	return setupCompleted;
+}
+
+/**
+* @brief tells whether all necessary mouse input callbacks have been bound
+*/
+bool Game::mouseCallbacksBound() const
+{
+	return mouseInputCallbacksInitialized;
+}
+
+/**
+* @brief delegates mouse input callback bindings to mouse input manager and sets the flag after finishing
+* @note this function is supposed to be called from the same thread that created the window object!
+*/
+void Game::initializeMouseInputCallbacks()
+{
+	MouseInputManager::setCallbacks();
+	mouseInputCallbacksInitialized = true;
 }

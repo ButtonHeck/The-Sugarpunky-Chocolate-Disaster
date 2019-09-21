@@ -61,6 +61,9 @@ public:
 	virtual ~Game();
 	void setup();
 	void loop();
+	bool setupHasCompleted() const;
+	bool mouseCallbacksBound() const;
+	void initializeMouseInputCallbacks();
 
 private:
 	void drawFrame( const glm::mat4 & projectionView );
@@ -137,6 +140,8 @@ private:
 	std::condition_variable modelsIndirectBufferNeedUpdateCV;
 	std::atomic_bool modelsIndirectBufferPrepared;
 	std::atomic_bool modelsIndirectBufferNeedUpdate;
+	std::atomic_bool setupCompleted;
+	std::atomic_bool mouseInputCallbacksInitialized;
 
 	/** @note not used in any other threads, thus no need to declare as atomic */
 	bool landIndirectBufferHasUpdated;

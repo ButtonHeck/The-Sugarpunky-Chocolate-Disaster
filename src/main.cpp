@@ -40,7 +40,9 @@ int main()
 		Logger::log( "Error with GLFW library: %\n", msg );
 	} );
 	if( !glfwInit() )
+	{
 		throw std::runtime_error( "Error while loading GLFW\n" );
+	}
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 4 );
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 5 );
 	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
@@ -73,6 +75,9 @@ int main()
 	//explicitly make non-current from this thread, as the context will mainly be used in the game child thread
 	glfwMakeContextCurrent( NULL );
 
+	//we must keep pointer in this thread in order to keep track on time when game object is created and setup
+	Game * game = nullptr;
+
 	std::thread gameThread( [&]()
 	{
 		glfwMakeContextCurrent( window );
@@ -81,14 +86,39 @@ int main()
 		 * on the other hand, using smart pointer for this only because of warning is overkill,
 		 * so, plain old new/delete is ok here
 		 */
-		Game* game = new Game( window, screenResolution );
+		game = new Game( window, screenResolution );
 		game->setup();
+
+		//the game thread should wait until mouse input callbacks are bound from the main thread explicitly
+		while( !game->mouseCallbacksBound() )
+		{
+			std::this_thread::yield();
+		}
+
+		//it's ok to launch the game loop
 		while( !glfwWindowShouldClose( window ) )
 		{
 			game->loop();
 		}
 		delete game;
 	} );
+
+	/**
+	* mouse input callbacks should be bound within this thread, but those functions interoperate with Game member objects.
+	* Thus, before any callback binding, we should wait until a game object itself is created 
+	* and its member objects are created and initialized. 
+	* Also, this explains the necessity to keep a pointer to a game object in this thread
+	*/
+	while( !game )
+	{
+		std::this_thread::yield();
+	}
+	while( !game->setupHasCompleted() )
+	{
+		std::this_thread::yield();
+	}
+	//it is safe now to bind mouse input callbacks
+	game->initializeMouseInputCallbacks();
 
 	//don't know why pollEvents function is working as we nullified current context for this thread, but it works.
 	while( !glfwWindowShouldClose( window ) )
