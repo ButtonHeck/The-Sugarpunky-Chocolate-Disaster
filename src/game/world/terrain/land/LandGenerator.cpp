@@ -106,7 +106,7 @@ void LandGenerator::splitChunks( int chunkSize )
 					}
 				}
 				//for square map segments one tile is also one chunk
-				tiles.emplace_back( startX, startY, 0, 0, 0, 0 );
+				tiles.emplace_back( startX, startY, 0.0f, 0.0f, 0.0f, 0.0f );
 				chunks.emplace_back( startX, startX + chunkSize, startY, startY + chunkSize, chunkOffset, 1 );
 				++chunkOffset;
 			}
@@ -140,7 +140,7 @@ void LandGenerator::splitCellChunks( int chunkSize )
 						chunkMap[y - 1][x + 1] != CHUNK_NO_RENDER_VALUE &&
 						chunkMap[y][x + 1] != CHUNK_NO_RENDER_VALUE )
 					{
-						cellTiles.emplace_back( x, y, 0, 0, 0, 0 );
+						cellTiles.emplace_back( x, y, 0.0f, 0.0f, 0.0f, 0.0f );
 						cellInstances++;
 					}
 				}
