@@ -20,6 +20,13 @@ const float MAX_DESATURATING_VALUE = 0.5;
 
 void main()
 {
+	//hills skyboxes texcoords higher than 0.2 on Y are transparent, in that case just bypass any calculations
+	if ( v_TexCoords.y > 0.2 )
+	{
+		o_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+		return;
+	}
+
     vec4 sampledDiffuse = texture(u_skyboxColor[u_type], v_TexCoords);
     vec3 sampledNormal = texture(u_skyboxNormals[u_type], v_TexCoords).rgb * 2.0 - 1.0;
     sampledNormal = normalize(sampledNormal);
