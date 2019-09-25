@@ -35,7 +35,8 @@ class SkysphereShader
 public:
 	SkysphereShader( Shader & renderShader ) noexcept;
 	void update( const glm::mat4 & projectionView, 
-				 const glm::vec3 & lightDir );
+				 const glm::vec3 & lightDir,
+				 float sunPositionAttenuation );
 	void setSkysphereType( int type, 
 						   const glm::mat4 & transform );
 

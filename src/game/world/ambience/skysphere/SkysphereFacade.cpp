@@ -44,13 +44,25 @@ void SkysphereFacade::draw( const glm::mat4 & transform,
 							const glm::mat4 & projectionView,
 							const glm::vec3 & lightDir )
 {
-	shader.update( projectionView, lightDir );
-	shader.setSkysphereType( SKYSPHERE_AMBIENT_LIGHTING, transform );
-	theSunAmbientLightingHemisphere.draw();
+	float sunPositionAttenuation = glm::clamp( ( -lightDir.y + 0.05 ) * 8, 0.0, 1.0 );
+	shader.update( projectionView, lightDir, sunPositionAttenuation );
+
+	//is the Sun is low enough bypass drawing ambient lighting 
+	if( sunPositionAttenuation > 0.01 )
+	{
+		shader.setSkysphereType( SKYSPHERE_AMBIENT_LIGHTING, transform );
+		theSunAmbientLightingHemisphere.draw();
+	}
+
 	shader.setSkysphereType( SKYSPHERE_CLOUDS, glm::mat4() );
 	cloudsCylinder.draw();
-	shader.setSkysphereType( SKYSPHERE_STARS, starsSkysphere.getRotationTransform() );
-	starsSkysphere.draw();
+
+	//if the Sun is high enough bypass drawing stars
+	if( ( 1.0 - sunPositionAttenuation ) >= 0.01 )
+	{
+		shader.setSkysphereType( SKYSPHERE_STARS, starsSkysphere.getRotationTransform() );
+		starsSkysphere.draw();
+	}
 }
 
 void SkysphereFacade::moveStarsSkysphere( float angleDegrees )

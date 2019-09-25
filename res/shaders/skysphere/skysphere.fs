@@ -6,6 +6,7 @@ uniform sampler2D u_theSunAmbientLightingDiffuse;
 uniform sampler2D u_starsDiffuse;
 uniform sampler2D u_cloudsDiffuse;
 uniform vec3      u_lightDir;
+uniform float	  u_sunPositionAttenuation;
 //u_type - defines what kind of skysphere is being rendered
 uniform int       u_type;
 
@@ -26,15 +27,14 @@ in vec3 v_Normal;
 void main()
 {
     vec3 normal = normalize(v_Normal);
-    float sunPositionAttenuation = clamp((u_lightDir.y + 0.05) * 8, 0.0, 1.0);
 
     if (u_type == SKYSPHERE_TYPE_AMBIENT_LIGHTING)
     {
         //mimic more realistic ambient lighting transition during dusk/dawn
         float normalInfluence = mix(pow((1.0 - normal.y), 1.2),
                                     max(dot(u_lightDir, normal), 0.0),
-                                    sunPositionAttenuation);
-        o_FragColor = texture(u_theSunAmbientLightingDiffuse, v_TexCoords) * normalInfluence * sunPositionAttenuation;
+                                    u_sunPositionAttenuation);
+        o_FragColor = texture(u_theSunAmbientLightingDiffuse, v_TexCoords) * normalInfluence * u_sunPositionAttenuation;
     }
     else if (u_type == SKYSPHERE_TYPE_STARS)
     {
@@ -53,7 +53,7 @@ void main()
         secondly make sure no stars are visible when the sun is visible
         */
         o_FragColor = pow(mix(vec4(0.0), texture(u_starsDiffuse, v_TexCoords), textureMix), vec4(STARS_RGBA_DAMP_FACTOR))
-                      * (1.0 - sunPositionAttenuation);
+                      * (1.0 - u_sunPositionAttenuation);
     }
 	else
 	{

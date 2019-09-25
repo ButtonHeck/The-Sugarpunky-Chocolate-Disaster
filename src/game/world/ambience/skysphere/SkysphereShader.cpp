@@ -33,14 +33,17 @@ SkysphereShader::SkysphereShader( Shader & renderShader ) noexcept
  * @brief activates shader program and updates its uniforms
  * @param projectionView Projection*View matrix
  * @param lightDir direction of the sunlight (directional lighting)
+ * @param sunPositionAttenuation value defining how much the sun position would affect output color
  */
 void SkysphereShader::update( const glm::mat4 & projectionView, 
-							  const glm::vec3 & lightDir )
+							  const glm::vec3 & lightDir,
+							  float sunPositionAttenuation )
 {
 	renderShader.use();
 	renderShader.setMat4( "u_projectionView", projectionView );
 	//send this as reverse direction
 	renderShader.setVec3( "u_lightDir", -lightDir );
+	renderShader.setFloat( "u_sunPositionAttenuation", sunPositionAttenuation );
 }
 
 /**
