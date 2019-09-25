@@ -258,6 +258,41 @@ void ModelGPUDataManager::addIndirectBufferToken( GLuint numInstances,
 	}
 }
 
+/**
+* @brief reduces total number of indirect buffer tokens by merging adjacent ones into big one
+* @param tokens collection of tokens
+* @note unused, but kept for possible usage in a future
+*/
+void ModelGPUDataManager::reduceIndirectBufferTokens( std::vector<IndirectBufferToken> & tokens )
+{
+	std::vector<IndirectBufferToken> reduced;
+	reduced.reserve( tokens.size() );
+	for( unsigned int tokenIndex = 0; tokenIndex < tokens.size(); )
+	{
+		IndirectBufferToken & token = tokens[tokenIndex];
+		GLuint tokenNumInstances = token.numInstances;
+		GLuint tokenInstanceOffset = token.instanceOffset;
+		unsigned int tokenIndexOffset = 1;
+		while( tokenIndex + tokenIndexOffset < tokens.size() )
+		{
+			IndirectBufferToken & adjacentToken = tokens[tokenIndex + tokenIndexOffset];
+			if( adjacentToken.instanceOffset == tokenInstanceOffset + tokenNumInstances )
+			{
+				tokenNumInstances += adjacentToken.numInstances;
+				tokenInstanceOffset += adjacentToken.instanceOffset;
+				++tokenIndexOffset;
+			}
+			else
+			{
+				break;
+			}
+		}
+		reduced.emplace_back( tokenNumInstances, token.instanceOffset );
+		tokenIndex += tokenIndexOffset;
+	}
+	tokens.assign( reduced.begin(), reduced.end() );
+}
+
 GLsizei ModelGPUDataManager::getPrimitiveCount( MODEL_INDIRECT_BUFFER_TYPE type ) const noexcept
 {
 	if( type == PLAIN_ONSCREEN )

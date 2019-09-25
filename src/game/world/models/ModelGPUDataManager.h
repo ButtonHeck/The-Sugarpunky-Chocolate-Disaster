@@ -74,6 +74,7 @@ private:
 	void addIndirectBufferToken( GLuint numInstances, 
 								 GLuint instanceOffset, 
 								 MODEL_INDIRECT_BUFFER_TYPE type );
+	void reduceIndirectBufferTokens( std::vector<IndirectBufferToken> & tokens );
 
 	//parent model attributes
 	GLuint indicesCount;
