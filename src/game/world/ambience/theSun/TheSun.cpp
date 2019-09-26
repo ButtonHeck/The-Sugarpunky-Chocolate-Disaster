@@ -21,6 +21,9 @@
 #include "TheSun"
 #include "SceneSettings"
 
+#include <glm/gtc/type_ptr.hpp>
+#include <fstream>
+
 /**
  * @brief initialize member variables and setup array buffer
  */
@@ -57,6 +60,36 @@ void TheSun::moveAbsolutePosition( float angleDegrees )
 {
 	currentPosition = glm::rotate( START_POSITION, glm::radians( angleDegrees ), ROTATION_VECTOR );
 	rotationTransform = glm::rotate( START_MODEL, glm::radians( angleDegrees ), ROTATION_VECTOR );
+	lightDirTo = glm::normalize( -currentPosition );
+}
+
+/**
+ * @brief performs serialization of necessary data
+ * @param output file stream for serialization
+ */
+void TheSun::serialize( std::ofstream & output )
+{
+	//z component is considered to be fixed
+	output << currentPosition.x << " " << currentPosition.y << " ";
+	float * transformData = (float*)glm::value_ptr( rotationTransform );
+	for( unsigned int e = 0; e < 16; ++e )
+	{
+		output << transformData[e] << " ";
+	}
+}
+
+/**
+ * @brief performs deserialization of necessary data
+ * @param input file stream to read data from
+ */
+void TheSun::deserialize( std::ifstream & input )
+{
+	input >> currentPosition.x >> currentPosition.y;
+	float * transformData = (float*)glm::value_ptr( rotationTransform );
+	for( unsigned int e = 0; e < 16; ++e )
+	{
+		input >> transformData[e];
+	}
 	lightDirTo = glm::normalize( -currentPosition );
 }
 

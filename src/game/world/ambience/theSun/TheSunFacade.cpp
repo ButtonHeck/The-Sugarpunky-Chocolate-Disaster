@@ -27,13 +27,13 @@
  * @param renderShader compiled shader program fed to personal shader manager
  * @param screenResolution current screen resolution to determine maximum possible samples to be drawn
  */
-TheSunFacade::TheSunFacade( Shader & renderShader, 
+TheSunFacade::TheSunFacade( Shader & renderShader,
 							const ScreenResolution & screenResolution ) noexcept
 	: theSun()
 	, shader( renderShader )
 	, renderer( theSun )
 {
-    //calculate adjusted point size multiplier for plain rendering based on current screen resolution
+	//calculate adjusted point size multiplier for plain rendering based on current screen resolution
 	float pointSizeDivisorX = screenResolution.getWidthRatioToReference();
 	float pointSizeDivisorY = screenResolution.getHeightRatioToReference();
 	float pointSizeDivisor = ( pointSizeDivisorX + pointSizeDivisorY ) / 2;
@@ -82,12 +82,30 @@ void TheSunFacade::moveAbsolutePosition( float angleRadians )
  * @param doOcclusionTest define whether or not occlusion query takes place during rendering
  * @param useReflectionPointSize a flag for renderer indicating what point size to use
  */
-void TheSunFacade::draw( const glm::mat4 & skyProjectionView, 
-						 bool doOcclusionTest, 
+void TheSunFacade::draw( const glm::mat4 & skyProjectionView,
+						 bool doOcclusionTest,
 						 bool useReflectionPointSize )
 {
 	shader.update( skyProjectionView, theSun.getRotationTransform() );
 	renderer.render( doOcclusionTest, useReflectionPointSize );
+}
+
+/**
+ * @brief delegates serialization to the sun
+ * @param output file stream for serialization
+ */
+void TheSunFacade::serialize( std::ofstream & output )
+{
+	theSun.serialize( output );
+}
+
+/**
+ * @brief delegates deserialization to the sun
+ * @param input file stream to read data from
+ */
+void TheSunFacade::deserialize( std::ifstream & input )
+{
+	theSun.deserialize( input );
 }
 
 const glm::vec3 & TheSunFacade::getPosition() const noexcept
@@ -112,7 +130,7 @@ const glm::mat4 & TheSunFacade::getRotationTransform() const noexcept
  * camera is high enough
  * @return ranged from 0.0 to 1.0 value of how much lens flare effect the Sun gives
  */
-GLfloat TheSunFacade::getSunFlareBrightness( bool multisampled, 
+GLfloat TheSunFacade::getSunFlareBrightness( bool multisampled,
 											 float viewPositionY ) const
 {
 	GLfloat visibility = renderer.getSamplesPassedQueryResult() / ( multisampled ? maxSamplesPassedMultisampling : maxSamplesPassed );

@@ -121,6 +121,7 @@ void Scene::serialize( std::ofstream & output )
 	hillsFacade.serialize( output );
 	waterFacade.serialize( output );
 	plantsFacade.serialize( output );
+	theSunFacade.serialize( output );
 }
 
 /**
@@ -135,6 +136,7 @@ void Scene::deserialize( std::ifstream & input )
 	hillsFacade.deserialize( input );
 	waterFacade.deserialize( input );
 	plantsFacade.deserialize( input );
+	theSunFacade.deserialize( input );
 }
 
 /**

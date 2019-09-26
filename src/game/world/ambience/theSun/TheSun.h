@@ -35,6 +35,8 @@ public:
 	TheSun() noexcept;
 	void move( float angleDegrees );
 	void moveAbsolutePosition( float angleDegrees );
+	void serialize( std::ofstream & output );
+	void deserialize( std::ifstream & input );
 	const glm::vec3 & getPosition() const noexcept;
 	const glm::vec3 & getLightDir() const noexcept;
 	const glm::mat4 & getRotationTransform() const noexcept;
