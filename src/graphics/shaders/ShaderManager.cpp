@@ -146,7 +146,7 @@ void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolu
 	shader->setFloat( "u_normalMapTilingReciprocal", NORMAL_MAP_TILING_RECIPROCAL );
 	shader->setFloat( "u_mapDimensionReciprocal", 1.0f / (float)WORLD_WIDTH );
 	shader->setInt( "u_shadowMap", TEX_DEPTH_MAP_SUN );
-	shader->setFloat( "u_bias", 5.0f / DEPTH_MAP_TEXTURE_WIDTH );
+	shader->setFloat( "u_bias", 3.0f / DEPTH_MAP_TEXTURE_WIDTH );
 	shader->setFloat( "u_ambientDay", 0.08f );
 	shader->setFloat( "u_ambientNight", 0.03f );
 
