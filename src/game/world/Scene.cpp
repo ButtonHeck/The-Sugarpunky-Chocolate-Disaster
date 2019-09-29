@@ -28,6 +28,7 @@
 #include "RendererState"
 #include "Options"
 #include "BenchmarkTimer"
+#include "Logger"
 
 /**
 * @brief plain ctor, creates subsystems objects
@@ -118,10 +119,15 @@ void Scene::load()
 void Scene::serialize( std::ofstream & output )
 {
 	landFacade.serialize( output );
+	Logger::log( "land serialized successfully\n" );
 	hillsFacade.serialize( output );
+	Logger::log( "hills serialized successfully\n" );
 	waterFacade.serialize( output );
+	Logger::log( "water serialized successfully\n" );
 	plantsFacade.serialize( output );
+	Logger::log( "plants serialized successfully\n" );
 	theSunFacade.serialize( output );
+	Logger::log( "the Sun serialized successfully\n" );
 }
 
 /**
@@ -133,10 +139,15 @@ void Scene::serialize( std::ofstream & output )
 void Scene::deserialize( std::ifstream & input )
 {
 	landFacade.deserialize( input );
+	Logger::log( "land deserialized successfully\n" );
 	hillsFacade.deserialize( input );
+	Logger::log( "hills deserialized successfully\n" );
 	waterFacade.deserialize( input );
+	Logger::log( "water deserialized successfully\n" );
 	plantsFacade.deserialize( input );
+	Logger::log( "plants deserialized successfully\n" );
 	theSunFacade.deserialize( input );
+	Logger::log( "the Sun deserialized successfully\n" );
 }
 
 /**

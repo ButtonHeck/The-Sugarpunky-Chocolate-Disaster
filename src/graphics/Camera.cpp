@@ -20,6 +20,7 @@
 
 #include "Camera"
 #include "BenchmarkTimer"
+#include "Logger"
 
 #include <iomanip>
 #include <fstream>
@@ -412,6 +413,7 @@ void Camera::serialize( std::ofstream & output )
 	output << position.z << " ";
 	output << pitch << " ";
 	output << yaw << " ";
+	Logger::log( "camera serialized successfully\n" );
 }
 
 /**
@@ -422,6 +424,7 @@ void Camera::deserialize( std::ifstream & input )
 {
 	input >> position.x >> position.y >> position.z >> pitch >> yaw;
 	updateDirectionVectors();
+	Logger::log( "camera deserialized successfully\n" );
 }
 
 /**

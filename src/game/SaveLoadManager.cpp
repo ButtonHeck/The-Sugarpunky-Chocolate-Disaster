@@ -52,6 +52,7 @@ bool SaveLoadManager::saveToFile( const std::string & filename )
 	scene.serialize( output );
 	camera.serialize( output );
 	output.close();
+	Logger::log( "serialization finished\n---------------------------\n" );
 	return true;
 }
 
@@ -71,5 +72,6 @@ bool SaveLoadManager::loadFromFile( const std::string & filename )
 	camera.deserialize( input );
 	shadowCamera = camera; //temporary assignment as long as shadowCamera exists in application code
 	input.close();
+	Logger::log( "deserialization finished\n---------------------------\n" );
 	return true;
 }
