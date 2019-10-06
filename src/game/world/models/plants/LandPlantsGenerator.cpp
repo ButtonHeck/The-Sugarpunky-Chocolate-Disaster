@@ -43,6 +43,7 @@ LandPlantsGenerator::LandPlantsGenerator() noexcept
 	models.emplace_back( "landTrees/tree6_2/tree6_2.obj", false );
 	models.emplace_back( "landTrees/tree7/tree7.obj", false );
 	models.emplace_back( "landTrees/tree8/tree8.obj", false );
+	models.emplace_back( "landTrees/treeCaramell/treeCaramell.obj", false );
 
 	lowPolyModels.reserve( 16 );
 	lowPolyModels.emplace_back( "landTrees/tree1LP/tree1LP.obj", true );
@@ -58,6 +59,7 @@ LandPlantsGenerator::LandPlantsGenerator() noexcept
 	lowPolyModels.emplace_back( "landTrees/tree6_2LP/tree6_2LP.obj", true );
 	lowPolyModels.emplace_back( "landTrees/tree7LP/tree7LP.obj", true );
 	lowPolyModels.emplace_back( "landTrees/tree8LP/tree8LP.obj", true );
+	lowPolyModels.emplace_back( "landTrees/treeCaramellLP/treeCaramellLP.obj", true );
 
 	assert( lowPolyModels.size() == models.size() );
 
