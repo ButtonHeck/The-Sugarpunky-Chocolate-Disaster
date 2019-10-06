@@ -125,7 +125,7 @@ void PlantsFacade::draw( const glm::vec3 & lightDir,
 							 useLandBlending );
 
 	//draw trees and hill models first (plain and low-poly)
-	shaders.setType( PLANT_STATIC );
+	shaders.setType( PLANT_TREES, 30.0f );
 	if( !worldReflectionMode )
 	{
 		shaders.setLowPolyMode( false );
@@ -143,7 +143,7 @@ void PlantsFacade::draw( const glm::vec3 & lightDir,
 	//draw grass (plain and low-poly), no need to render it if world reflection rendering stage is on
 	if( !worldReflectionMode )
 	{
-		shaders.setType( PLANT_ANIMATED );
+		shaders.setType( PLANT_GRASS, 40.0f );
 		shaders.updateGrassKeyframe();
 		shaders.setLowPolyMode( false );
 		grassRenderer.render( grassGenerator.getModels( false ), false );

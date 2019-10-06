@@ -5,24 +5,17 @@ uniform float u_grassPosDistrubution;
 //define a maximum position change during animation
 const vec3  GRASS_WAVE_XYZ = vec3(0.007, 0.0023, 0.0035);
 const vec3  GRASS_WAVE_XYZ_NORMALIZED = normalize(GRASS_WAVE_XYZ);
-//limit stones and rocks to be animated (calculated empirically)
+//limit stones and rocks to be animated (empirical value)
 const float MIN_HEIGHT_TO_ANIMATE = 0.38;
-//limit alpha transition for objects, the higher these values are - the faster transition ends
-const int   ALPHA_MULTIPLIER = 48;
-const int   GRASS_ALPHA_MULTIPLIER = 32;
-const int   PLANT_TYPE_STATIC = 0;
-const int   PLANT_TYPE_ANIMATED = 1;
-
-//v_AlphaValue - applied to the alpha component of a fragment to create smooth transition to the land surface
-out float v_AlphaValue;
+const int   PLANT_TYPE_GRASS = 1;
 
 /*
 this function firstly is responsible for calculation of position offsets for grass depending on distribution value
 and secondly it defines how much alpha component will take place for current fragment, both for grass and other models
 */
-void ext_animateAndBlend(inout vec4 worldPosition)
+void ext_animate(inout vec4 worldPosition)
 {
-    if (u_type == PLANT_TYPE_ANIMATED)
+    if (u_type == PLANT_TYPE_GRASS)
     {
         if (i_pos.y > MIN_HEIGHT_TO_ANIMATE)
         {
@@ -34,15 +27,5 @@ void ext_animateAndBlend(inout vec4 worldPosition)
                                                   GRASS_WAVE_XYZ + i_normal * 0.005,
                                                   abs(dot(GRASS_WAVE_XYZ_NORMALIZED, i_normal))));
         }
-        v_AlphaValue = worldPosition.y * GRASS_ALPHA_MULTIPLIER;
-    }
-    else
-    {
-        /*
-        clamp to 4.0 due to interpolation in a fragment shader, which might fuck up whole transition
-        if any vertex of a triangle is overly higher than the other two. Every steep triangle with at least
-        one of its vertices close to 0.0 in Y, would only be opaque at higher vertices without overclamping
-        */
-        v_AlphaValue = clamp(worldPosition.y * ALPHA_MULTIPLIER, 0.0, 4.0);
     }
 }

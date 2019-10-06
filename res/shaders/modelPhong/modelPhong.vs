@@ -22,7 +22,7 @@ out vec3        v_Normal;
 out vec3        v_FragPos;
 flat out uvec2  v_TexIndices;
 
-@include modelGrassAnimationAndBlending.ivs
+@include modelGrassAnimation.ivs
 
 void main()
 {
@@ -30,11 +30,9 @@ void main()
     v_FragPos = vec3(worldPosition);
 
     float distanceToObject = distance(u_viewPosition, v_FragPos);
-    //initially set this to 4.0 (watch comments in modelGrassAnimationAndBlending file)
-    v_AlphaValue = 4.0;
 
     if (distanceToObject < MAX_ANIMATION_DISTANCE)
-        ext_animateAndBlend(worldPosition);
+        ext_animate(worldPosition);
 
     gl_Position = u_projectionView * worldPosition;
     v_TexCoords = i_texCoords;

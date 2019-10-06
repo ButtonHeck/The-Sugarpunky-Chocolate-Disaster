@@ -67,8 +67,8 @@ private:
 	//define possible state for plants
 	enum PLANT_TYPE : int
 	{
-		PLANT_STATIC = 0,
-		PLANT_ANIMATED = 1
+		PLANT_TREES = 0,
+		PLANT_GRASS = 1
 	};
 	void prepareDistributionMap();
 

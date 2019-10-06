@@ -76,13 +76,13 @@ ShaderManager::ShaderManager() noexcept
 								  { GL_FRAGMENT_SHADER, "theSun/theSun.fs" } );
 	shaders[SHADER_MODELS_GOURAUD] = Shader( { GL_VERTEX_SHADER, "modelGouraud/model.vs" },
 											 { GL_FRAGMENT_SHADER, "modelGouraud/model.fs" },
-											 { {GL_VERTEX_SHADER, "modelGrassAnimationAndBlending.ivs"},
+											 { {GL_VERTEX_SHADER, "modelGrassAnimation.ivs"},
 											 {GL_FRAGMENT_SHADER, "shadowSampling.ifs"},
 											 {GL_FRAGMENT_SHADER, "desaturationFunc.ifs"},
 											 {GL_FRAGMENT_SHADER, "shadingVariables.ifs"} } );
 	shaders[SHADER_MODELS_PHONG] = Shader( { GL_VERTEX_SHADER, "modelPhong/modelPhong.vs" },
 										   { GL_FRAGMENT_SHADER, "modelPhong/modelPhong.fs" },
-										   { {GL_VERTEX_SHADER, "modelGrassAnimationAndBlending.ivs"},
+										   { {GL_VERTEX_SHADER, "modelGrassAnimation.ivs"},
 										   {GL_FRAGMENT_SHADER, "shadowSampling.ifs"},
 										   {GL_FRAGMENT_SHADER, "desaturationFunc.ifs"},
 										   {GL_FRAGMENT_SHADER, "shadingVariables.ifs"} } );

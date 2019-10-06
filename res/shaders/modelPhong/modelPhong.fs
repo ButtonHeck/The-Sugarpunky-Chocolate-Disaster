@@ -6,7 +6,6 @@ out vec4 o_FragColor;
 
 in vec2         v_TexCoords;
 in vec3         v_Normal;
-in float        v_AlphaValue;
 in vec3         v_FragPos;
 flat in uvec2   v_TexIndices;
 
@@ -22,11 +21,12 @@ uniform float     u_ambientDay;
 uniform float     u_ambientNight;
 uniform vec3      u_viewPosition;
 uniform bool      u_isLowPoly;
+uniform float	  u_alphaValueScaler;
 
 const float MAX_DESATURATING_VALUE = 0.5;
 const float SPECULAR_SHININESS = 4.0;
-const int   PLANT_TYPE_STATIC = 0;
-const int   PLANT_TYPE_ANIMATED = 1;
+const int   PLANT_TYPE_TREES = 0;
+const int   PLANT_TYPE_GRASS = 1;
 
 @include shadowSampling.ifs
 @include desaturationFunc.ifs
@@ -43,7 +43,7 @@ void main()
 
     float diffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0) * sunPositionAttenuation * (1.0 - u_ambientDay);
 
-    if (u_type == PLANT_TYPE_ANIMATED)
+    if (u_type == PLANT_TYPE_GRASS)
     {
         /*
         make grass diffuse lighting look more natural by calculating diffuse component for its reversed normal
@@ -109,5 +109,8 @@ void main()
 
     //make closer to ground fragment color mix a bit with land texture (just a visual flavour)
     if(u_useLandBlending)
-        o_FragColor.a = mix(0.0, 1.0, v_AlphaValue);
+	{
+		float alphaValue = v_FragPos.y * u_alphaValueScaler;
+        o_FragColor.a = mix(0.0, 1.0, alphaValue);
+	}
 }

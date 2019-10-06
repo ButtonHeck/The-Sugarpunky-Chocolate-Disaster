@@ -44,7 +44,8 @@ public:
 						  bool useShadows,
 						  bool useLandBlending );
 	void updateGrassKeyframe();
-	void setType( int type );
+	void setType( int type,
+				  float alphaScaler );
 	void setLowPolyMode( bool isLowPoly );
 
 private:

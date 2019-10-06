@@ -75,10 +75,13 @@ void PlantsShader::updateGrassKeyframe()
 /**
  * @brief sets integer "type" of current plant to draw, matches with shader source code types
  * @param type integer representation of plant type
+ * @param alphaScaler multiplier to an alpha component used for land blending
  */
-void PlantsShader::setType( int type )
+void PlantsShader::setType( int type,
+							float alphaScaler )
 {
 	currentShader->setInt( "u_type", type );
+	currentShader->setFloat( "u_alphaValueScaler", alphaScaler );
 }
 
 /**

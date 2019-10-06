@@ -7,7 +7,6 @@ out vec4 o_FragColor;
 in vec2         v_TexCoords;
 in float        v_DiffuseComponent;
 in float        v_SpecularComponent;
-in float        v_AlphaValue;
 in float        v_SunPositionAttenuation;
 in float        v_NormalY;
 in vec3         v_FragPos;
@@ -25,6 +24,7 @@ uniform float     u_ambientNight;
 uniform vec3      u_viewPosition;
 //switch used for shadow calculation algorithms precision
 uniform bool      u_isLowPoly;
+uniform float	  u_alphaValueScaler;
 
 const float MAX_DESATURATING_VALUE = 0.5;
 
@@ -87,5 +87,8 @@ void main()
 
     //make closer to ground fragment color mix a bit with land texture (just a visual flavour)
     if(u_useLandBlending)
-        o_FragColor.a = mix(0.0, 1.0, v_AlphaValue);
+	{
+		float alphaValue = v_FragPos.y * u_alphaValueScaler;
+        o_FragColor.a = mix(0.0, 1.0, alphaValue);
+	}
 }
