@@ -24,6 +24,7 @@
 #include "GraphicsSettings"
 #include "SceneSettings"
 #include "Logger"
+#include "TextureResourceLoader"
 
 #include <algorithm>
 #include <IL/il.h>
@@ -37,7 +38,7 @@ TextureLoader::TextureLoader( const ScreenResolution & screenResolution ) noexce
 {
 	ilInit();
 	ilEnable( IL_ORIGIN_SET );
-	ilOriginFunc( IL_ORIGIN_LOWER_LEFT );
+	ilOriginFunc( IL_ORIGIN_UPPER_LEFT );
 }
 
 /**
@@ -126,6 +127,62 @@ GLuint TextureLoader::loadTexture( const std::string & filename,
 }
 
 /**
+* @brief loads texture from file and initializes its parameters
+* @param path file name of the texture
+* @param textureUnit texture unit to bind
+* @param wrapType GL defined wrapping mode
+* @param magFilter GL defined magnification filter
+* @param minFilter GL defined minification filter
+* @param useAnisotropy defines whether anisotropic filtering should be applied for this texture
+* @param isBindless defines whether this texture is a bindless one
+* @param explicitNoSRGB if true - forces RGB(A) format for texture even if HDR is enabled
+*/
+GLuint TextureLoader::loadTextureResource( const std::string & path, 
+										   GLuint textureUnit, 
+										   GLenum wrapType, 
+										   GLint magFilter, 
+										   GLint minFilter, 
+										   bool useAnisotropy, 
+										   bool isBindless, 
+										   bool explicitNoSRGB )
+{
+	GLuint textureID = createTextureObject( GL_TEXTURE_2D, textureUnit, isBindless );
+	const TextureResource & TEXTURE_RESOURCE = TextureResourceLoader::getTextureResource( path );
+
+	auto textureWidth = TEXTURE_RESOURCE.width;
+	auto textureHeight = TEXTURE_RESOURCE.height;
+	auto textureChannels = TEXTURE_RESOURCE.channels;
+	GLenum internalFormat;
+	GLenum dataFormat;
+	if( textureChannels == 4 )
+	{
+		internalFormat = explicitNoSRGB ? GL_RGBA8 : ( HDR_ENABLED ? GL_SRGB8_ALPHA8 : GL_RGBA8 );
+		dataFormat = GL_RGBA;
+	}
+	else if( textureChannels == 3 )
+	{
+		internalFormat = explicitNoSRGB ? GL_RGB8 : ( HDR_ENABLED ? GL_SRGB8 : GL_RGB8 );
+		dataFormat = GL_RGB;
+	}
+	else
+	{
+		throw std::invalid_argument( "Could not handle image with: " + std::to_string( textureChannels ) + " channels" );
+	}
+	GLsizei mipLevel = ( (GLsizei)log2( std::max( textureWidth, textureHeight ) ) + 1 );
+
+	glTextureStorage2D( textureID, mipLevel, internalFormat, textureWidth, textureHeight );
+	glTextureSubImage2D( textureID, 0, 0, 0, textureWidth, textureHeight, dataFormat, GL_UNSIGNED_BYTE, TEXTURE_RESOURCE.data );
+	glGenerateTextureMipmap( textureID );
+	setTexture2DParameters( textureID, magFilter, minFilter, wrapType );
+	if( useAnisotropy )
+	{
+		glTextureParameterf( textureID, GL_TEXTURE_MAX_ANISOTROPY, ANISOTROPY );
+	}
+
+	return textureID;
+}
+
+/**
 * @brief creates and initializes frame multisampled texture object
 * @param textureUnit texture unit to bind
 * @param multisamples multisampling value
@@ -203,38 +260,41 @@ GLuint TextureLoader::createDepthMapTexture( GLuint textureUnit,
 * @param explicitNoSRGB if true - forces RGB(A) format for texture even if HDR is enabled
 * @note it is programmer's responsibility to match filenames of a cubemap sides textures with what this function demands
 */
-GLuint TextureLoader::loadCubemap( const std::string & directory, 
-								   GLuint textureUnit, 
-								   bool explicitNoSRGB )
+GLuint TextureLoader::loadCubemapResource( const std::string & directory, GLuint textureUnit, bool explicitNoSRGB )
 {
 	std::vector<std::string> faces;
 	faces.assign(
 		{
-				TEXTURES_DIR + directory + "right.png",
-				TEXTURES_DIR + directory + "left.png",
-				TEXTURES_DIR + directory + "up.png",
-				TEXTURES_DIR + directory + "down.png",
-				TEXTURES_DIR + directory + "front.png",
-				TEXTURES_DIR + directory + "back.png"
+				directory + "right.png",
+				directory + "left.png",
+				directory + "up.png",
+				directory + "down.png",
+				directory + "front.png",
+				directory + "back.png"
 		} );
-	ilOriginFunc( IL_ORIGIN_UPPER_LEFT );
 
 	GLuint textureID = createTextureObject( GL_TEXTURE_CUBE_MAP, textureUnit, false );
 
 	//create and initialize cubemap sides textures
 	for( unsigned int i = 0; i < faces.size(); i++ )
 	{
-		if( !ilLoadImage( faces[i].c_str() ) )
+		const TextureResource & TEXTURE_RESOURCE = TextureResourceLoader::getTextureResource( faces[i] );
+		auto textureChannels = TEXTURE_RESOURCE.channels;
+		auto width = TEXTURE_RESOURCE.width;
+		auto height = TEXTURE_RESOURCE.height;
+		GLenum internalFormat;
+		GLenum dataFormat;
+		if( textureChannels == 4 )
 		{
-			Logger::log( "Error while loading cubemap element: %\n", faces[i].c_str() );
+			internalFormat = explicitNoSRGB ? GL_RGBA8 : ( HDR_ENABLED ? GL_SRGB8_ALPHA8 : GL_RGBA8 );
+			dataFormat = GL_RGBA;
 		}
-		auto format = ilGetInteger( IL_IMAGE_FORMAT );
-		auto width = ilGetInteger( IL_IMAGE_WIDTH );
-		auto height = ilGetInteger( IL_IMAGE_HEIGHT );
-		ILubyte * textureData = ilGetData();
-		GLenum internalFormat = explicitNoSRGB ? GL_RGBA8 : ( HDR_ENABLED ? GL_SRGB8_ALPHA8 : GL_RGBA8 );
-		glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, textureData );
-		ilDeleteImage( ilGetInteger( IL_ACTIVE_IMAGE ) );
+		else if( textureChannels == 3 )
+		{
+			internalFormat = explicitNoSRGB ? GL_RGB8 : ( HDR_ENABLED ? GL_SRGB8 : GL_RGB8 );
+			dataFormat = GL_RGB;
+		}
+		glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, TEXTURE_RESOURCE.data );
 	}
 
 	glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
