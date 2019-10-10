@@ -1,8 +1,5 @@
 #pragma once
 
-#include "DirectoriesSettings"
-
-#include <string>
 #include <unordered_map>
 
 struct TextureResource
@@ -12,7 +9,7 @@ struct TextureResource
 	int height;
 	int channels;
 	size_t dataSize;
-	unsigned char * data;
+	char * data;
 };
 
 class TextureResourceLoader

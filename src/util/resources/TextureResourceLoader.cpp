@@ -1,14 +1,17 @@
 #include "TextureResourceLoader"
 
-#include <iostream>
+#include <fstream>
+#include <string>
 
 std::unordered_map<std::string, TextureResource> TextureResourceLoader::textures;
 
-void TextureResourceLoader::initialize( const char * path, const char * flags )
+void TextureResourceLoader::initialize( const char * path, 
+										const char * flags )
 {
 	errno_t err;
 	FILE * file;
 	err = fopen_s( &file, path, flags );
+	std::ifstream fileStream( path, std::ios::binary );
 	int numTexturesInFile = getc( file );
 	textures.reserve( numTexturesInFile );
 
@@ -58,22 +61,24 @@ void TextureResourceLoader::initialize( const char * path, const char * flags )
 		textureResource.dataSize = texDataSize;
 
 		//deserialize texture data
-		textureResource.data = new unsigned char[textureResource.dataSize];
-		for( long i = 0; i < texDataSize; i++ )
-		{
-			textureResource.data[i] = getc( file );
-		}
+		textureResource.data = new char[textureResource.dataSize];		
+		fpos_t currentPos;
+		fgetpos( file, &currentPos );
+		fileStream.seekg( currentPos );
+		fileStream.read( textureResource.data, textureResource.dataSize );
+		fpos_t newPosition = currentPos + textureResource.dataSize;
+		fsetpos( file, &newPosition );
 
 		textures[textureResource.localName] = textureResource;
 	}
 	fclose( file );
+	fileStream.close();
 }
 
 void TextureResourceLoader::release()
 {
 	for( auto & token : textures )
 	{
-		std::cerr << token.first << '\n';
 		delete[] token.second.data;
 	}
 	textures.clear();
