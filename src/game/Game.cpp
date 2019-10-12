@@ -57,7 +57,7 @@ Game::Game( GLFWwindow * window,
 	, saveLoadManager( scene, camera, shadowCamera )
 	, keyboard( window, camera, shadowCamera, options, scene.getSunFacade() )
 	, mouseInput( MouseInputManager::getInstance() )
-	, textManager( FONT_DIR + "font.fnt", FONT_DIR + "font.png", shaderManager.get( SHADER_FONT ), screenResolution )
+	, textManager( "data\\font.fnt", "font.png", shaderManager.get( SHADER_FONT ), screenResolution )
 	, setupCompleted( false )
 	, mouseInputCallbacksInitialized( false )
 {

@@ -21,8 +21,8 @@
 #include "FontLoader"
 #include "TextureUnits"
 #include "Logger"
+#include "TextureResourceLoader"
 
-#include <IL/il.h>
 #include <fstream>
 #include <sstream>
 
@@ -35,17 +35,14 @@ FontLoader::FontLoader( const std::string & fontFile,
 						const std::string & textureFile )
 {
 	//load font texture
-	if( !ilLoadImage( textureFile.c_str() ) )
-	{
-		Logger::log( "Error loading font texture: %\n", textureFile.c_str() );
-	}
-	ILubyte * textureData = ilGetData();
-	textureWidth = ilGetInteger( IL_IMAGE_WIDTH );
-	textureHeight = ilGetInteger( IL_IMAGE_HEIGHT );
+	const TextureResource & FONT_TEXTURE_RESOURCE = TextureResourceLoader::getTextureResource( textureFile );
+	
+	textureWidth = FONT_TEXTURE_RESOURCE.width;
+	textureHeight = FONT_TEXTURE_RESOURCE.height;
 	glCreateTextures( GL_TEXTURE_2D, 1, &fontTexture );
 	glActiveTexture( GL_TEXTURE0 + TEX_FONT );
 	glBindTexture( GL_TEXTURE_2D, fontTexture );
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, FONT_TEXTURE_RESOURCE.data );
 	glGenerateTextureMipmap( fontTexture );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
