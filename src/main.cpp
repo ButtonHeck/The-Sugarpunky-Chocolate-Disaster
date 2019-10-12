@@ -22,6 +22,7 @@
 #include "ScreenResolution"
 #include "Logger"
 #include "TextureResourceLoader"
+#include "ShaderResourceLoader"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -78,6 +79,7 @@ int main()
 
 	//initialize resources before game has been created
 	TextureResourceLoader::initialize( "data\\textures.sprd", "rb" );
+	ShaderResourceLoader::initialize( "data\\shaders.sprd", "rb" );
 
 	//we must keep pointer in this thread in order to keep track on time when game object is created and setup
 	Game * game = nullptr;
@@ -126,6 +128,7 @@ int main()
 
 	//release resources after game has been created and initialized
 	TextureResourceLoader::release();
+	ShaderResourceLoader::release();
 
 	//don't know why pollEvents function is working as we nullified current context for this thread, but it works.
 	while( !glfwWindowShouldClose( window ) )
