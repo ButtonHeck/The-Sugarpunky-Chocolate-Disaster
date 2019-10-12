@@ -1,17 +1,43 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * TextureResourceLoader.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for TextureResourceLoader class
+ * @version 0.1.0
+ */
+
 #include "TextureResourceLoader"
 
-#include <fstream>
 #include <string>
 
+/**
+* @brief storage for the parsed texture resources
+*/
 std::unordered_map<std::string, TextureResource> TextureResourceLoader::textures;
 
+/**
+* @brief loads data from the .sprd file and creates separate texture resources based on the data
+* @param path local name of the texture
+* @param flags combination of flags for fopen
+*/
 void TextureResourceLoader::initialize( const char * path, 
 										const char * flags )
 {
 	errno_t err;
 	FILE * file;
 	err = fopen_s( &file, path, flags );
-	std::ifstream fileStream( path, std::ios::binary );
 	int numTexturesInFile = getc( file );
 	textures.reserve( numTexturesInFile );
 
@@ -64,17 +90,18 @@ void TextureResourceLoader::initialize( const char * path,
 		textureResource.data = new char[textureResource.dataSize];		
 		fpos_t currentPos;
 		fgetpos( file, &currentPos );
-		fileStream.seekg( currentPos );
-		fileStream.read( textureResource.data, textureResource.dataSize );
+		fread( textureResource.data, 1, textureResource.dataSize, file );
 		fpos_t newPosition = currentPos + textureResource.dataSize;
 		fsetpos( file, &newPosition );
 
 		textures[textureResource.localName] = textureResource;
 	}
 	fclose( file );
-	fileStream.close();
 }
 
+/**
+* @brief releases memory for all data
+*/
 void TextureResourceLoader::release()
 {
 	for( auto & token : textures )
@@ -84,6 +111,10 @@ void TextureResourceLoader::release()
 	textures.clear();
 }
 
+/**
+* @brief returns texture resource object for a given name
+* @param textureName local name of the texture
+*/
 const TextureResource & TextureResourceLoader::getTextureResource( const std::string & textureName )
 {
 	const TextureResource & resource = textures.at( textureName );
