@@ -1,7 +1,6 @@
 #include "ShaderResourceLoader.h"
 
 #include <string>
-#include <iostream>
 
 std::unordered_map<std::string, ShaderResource> ShaderResourceLoader::shaders;
 
@@ -43,15 +42,14 @@ void ShaderResourceLoader::initialize( const char * path,
 		resource.dataSize = shaderSourceLength;
 
 		//deserialize shader source text
-		resource.data = new char[resource.dataSize];
+		resource.data = new char[resource.dataSize + 1];
 		fgetpos( file, &currentPos );
 		fread( resource.data, 1, resource.dataSize, file );
 		currentPos += resource.dataSize;
 		fsetpos( file, &currentPos );
+		resource.data[resource.dataSize] = '\0';
 
 		shaders[resource.localName] = resource;
-
-		std::cerr << shaderIndex << "\t" << resource.localName << std::endl;
 	}
 	fclose( file );
 }

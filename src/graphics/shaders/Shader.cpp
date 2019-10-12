@@ -19,11 +19,9 @@
  */
 
 #include "Shader"
-#include "DirectoriesSettings"
 #include "Logger"
+#include "ShaderResourceLoader"
 
-#include <sstream>
-#include <fstream>
 #include <glm/gtc/type_ptr.hpp>
 
 bool Shader::useCachingOfUniforms = false;
@@ -46,9 +44,9 @@ Shader::Shader( ShaderSource srcFile1,
 				ShaderIncludeList includes )
 {
 	const std::string & src = srcFile1.second;
-	GLuint shader = createShader( srcFile1.first, std::string( SHADER_DIR + src ), includes );
+	GLuint shader = createShader( srcFile1.first, src, includes );
 	ID = glCreateProgram();
-	shaderName = src.substr( 0, src.find( '/' ) );
+	shaderName = src.substr( 0, src.find( '\\' ) );
 	glAttachShader( ID, shader );
 	link();
 	glDeleteShader( shader );
@@ -66,10 +64,10 @@ Shader::Shader( ShaderSource srcFile1,
 {
 	const std::string & src1 = srcFile1.second;
 	const std::string & src2 = srcFile2.second;
-	GLuint shader1 = createShader( srcFile1.first, std::string( SHADER_DIR + src1 ), includes );
-	GLuint shader2 = createShader( srcFile2.first, std::string( SHADER_DIR + src2 ), includes );
+	GLuint shader1 = createShader( srcFile1.first, src1, includes );
+	GLuint shader2 = createShader( srcFile2.first, src2, includes );
 	ID = glCreateProgram();
-	shaderName = src1.substr( 0, src1.find( '/' ) );
+	shaderName = src1.substr( 0, src1.find( '\\' ) );
 	glAttachShader( ID, shader1 );
 	glAttachShader( ID, shader2 );
 	link();
@@ -92,11 +90,11 @@ Shader::Shader( ShaderSource srcFile1,
 	const std::string & src1 = srcFile1.second;
 	const std::string & src2 = srcFile2.second;
 	const std::string & src3 = srcFile3.second;
-	GLuint shader1 = createShader( srcFile1.first, std::string( SHADER_DIR + src1 ), includes );
-	GLuint shader2 = createShader( srcFile2.first, std::string( SHADER_DIR + src2 ), includes );
-	GLuint shader3 = createShader( srcFile3.first, std::string( SHADER_DIR + src3 ), includes );
+	GLuint shader1 = createShader( srcFile1.first, src1, includes );
+	GLuint shader2 = createShader( srcFile2.first, src2, includes );
+	GLuint shader3 = createShader( srcFile3.first, src3, includes );
 	ID = glCreateProgram();
-	shaderName = src1.substr( 0, src1.find( '/' ) );
+	shaderName = src1.substr( 0, src1.find( '\\' ) );
 	glAttachShader( ID, shader1 );
 	glAttachShader( ID, shader2 );
 	glAttachShader( ID, shader3 );
@@ -366,11 +364,8 @@ GLuint Shader::createShader( GLenum shaderType,
 							 const std::string & filename, 
 							 ShaderIncludeList includes )
 {
-	std::fstream fileStream( filename );
-	std::stringstream fileStringStream;
-	fileStringStream << fileStream.rdbuf();
-	fileStream.close();
-	std::string stringSrc = fileStringStream.str();
+	const ShaderResource & SHADER_RESOURCE = ShaderResourceLoader::getShaderResource( filename );
+	std::string shaderSourceString( SHADER_RESOURCE.data );
 
 	//inject pragma into source file for debug build
 #ifdef _DEBUG
@@ -381,7 +376,7 @@ GLuint Shader::createShader( GLenum shaderType,
 	//inject source code from included files
 	try
 	{
-		parseIncludes( shaderType, stringSrc, includes );
+		parseIncludes( shaderType, shaderSourceString, includes );
 	}
 	catch( std::invalid_argument & e )
 	{
@@ -395,11 +390,11 @@ GLuint Shader::createShader( GLenum shaderType,
 	 */
 	if( filename.find_first_of( "_hdr" ) != std::string::npos && HDR_ENABLED )
 	{
-		regexReplace( stringSrc, "#version 450\n", "#version 450\n#define HDR_ENABLED\n" );
+		regexReplace( shaderSourceString, "#version 450\n", "#version 450\n#define HDR_ENABLED\n" );
 	}
 
 	//after all preprocessing source code is ready to be loaded to OpenGL
-	const char * src = stringSrc.c_str();
+	const char * src = shaderSourceString.c_str();
 	GLuint shader = glCreateShader( shaderType );
 	glShaderSource( shader, 1, &src, NULL );
 	glCompileShader( shader );
@@ -415,7 +410,7 @@ GLuint Shader::createShader( GLenum shaderType,
 /**
 * @brief preprocess source code according to include sources list
 * @param shaderType GL defined type of a shader
-* @param stringSrc source code of a shader
+* @param shaderSourceString source code of a shader
 * @param includes list of auxiliary source files including in the shader source (might be empty)
 */
 void Shader::parseIncludes( GLenum shaderType, 
@@ -431,15 +426,13 @@ void Shader::parseIncludes( GLenum shaderType,
 		}
 
 		std::string includeFileName = i->second;
-		std::fstream includeStream( std::string( SHADER_DIR + "include/" + i->second ) );
-		std::stringstream includeStringStream;
-		includeStringStream << includeStream.rdbuf();
-		includeStream.close();
-		std::string includeSrc = includeStringStream.str();
+		const ShaderResource & SHADER_RESOURCE = ShaderResourceLoader::getShaderResource( includeFileName );
+		std::string includeShaderSourceString( SHADER_RESOURCE.data );
 
 		//replace custom lines of code in a source with the source from included file
-		std::string includeToken = std::string( "@include " ).append( includeFileName );
-		regexReplace( stringSrc, includeToken, includeSrc );
+		std::string rawIncludeName = includeFileName.substr( includeFileName.find( "\\" ) + 1 );
+		std::string includeToken = std::string( "@include " ).append( rawIncludeName );
+		regexReplace( stringSrc, includeToken, includeShaderSourceString );
 	}
 
 	//if there are any custom lines left in the source code we must have fucked up with include list

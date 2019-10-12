@@ -31,82 +31,82 @@
 */
 ShaderManager::ShaderManager() noexcept
 {
-	shaders[SHADER_HILLS_CULLING] = Shader( { GL_VERTEX_SHADER, "hillsFC/hillsFC.vs" },
-											{ GL_GEOMETRY_SHADER, "hillsFC/hillsFC.gs" } );
-	shaders[SHADER_HILLS] = Shader( { GL_VERTEX_SHADER, "hills/hills.vs" },
-									{ GL_FRAGMENT_SHADER, "hills/hills.fs" },
-									{ {GL_FRAGMENT_SHADER, "shadowSampling.ifs"},
-									{GL_FRAGMENT_SHADER, "desaturationFunc.ifs"},
-									{GL_FRAGMENT_SHADER, "shadingVariables.ifs"} } );
-	shaders[SHADER_HILLS_NORMALS] = Shader( { GL_VERTEX_SHADER, "normals/hills_normals.vs" },
-											{ GL_GEOMETRY_SHADER, "normals/_normals.gs" },
-											{ GL_FRAGMENT_SHADER, "normals/_normals.fs" } );
-	shaders[SHADER_SHORE] = Shader( { GL_VERTEX_SHADER, "shore/shore.vs" },
-									{ GL_FRAGMENT_SHADER, "shore/shore.fs" },
-									{ {GL_FRAGMENT_SHADER, "shadowSampling.ifs"},
-									{GL_FRAGMENT_SHADER, "desaturationFunc.ifs"},
-									{GL_FRAGMENT_SHADER, "shadingVariables.ifs"} } );
-	shaders[SHADER_SHORE_NORMALS] = Shader( { GL_VERTEX_SHADER, "normals/shore_normals.vs" },
-											{ GL_GEOMETRY_SHADER, "normals/_normals.gs" },
-											{ GL_FRAGMENT_SHADER, "normals/_normals.fs" } );
-	shaders[SHADER_UNDERWATER] = Shader( { GL_VERTEX_SHADER, "underwater/underwater.vs" },
-										 { GL_FRAGMENT_SHADER, "underwater/underwater.fs" },
-										 { {GL_FRAGMENT_SHADER, "desaturationFunc.ifs"},
-										 {GL_FRAGMENT_SHADER, "shadingVariables.ifs"} } );
-	shaders[SHADER_LAND] = Shader( { GL_VERTEX_SHADER, "land/land.vs" },
-								   { GL_FRAGMENT_SHADER, "land/land.fs" },
-								   { {GL_FRAGMENT_SHADER, "shadowSampling.ifs"},
-								   {GL_FRAGMENT_SHADER, "desaturationFunc.ifs"},
-								   {GL_FRAGMENT_SHADER, "shadingVariables.ifs"} } );
-	shaders[SHADER_WATER_CULLING] = Shader( { GL_VERTEX_SHADER, "waterFC/waterFC.vs" },
-											{ GL_GEOMETRY_SHADER, "waterFC/waterFC.gs" } );
-	shaders[SHADER_WATER] = Shader( { GL_VERTEX_SHADER, "water/water.vs" },
-									{ GL_FRAGMENT_SHADER, "water/water.fs" },
-									{ {GL_FRAGMENT_SHADER, "shadowSampling.ifs"},
-									{GL_FRAGMENT_SHADER, "desaturationFunc.ifs"},
-									{GL_FRAGMENT_SHADER, "shadingVariables.ifs"} } );
-	shaders[SHADER_WATER_NORMALS] = Shader( { GL_VERTEX_SHADER, "normals/water_normals.vs" },
-											{ GL_GEOMETRY_SHADER, "normals/_normals.gs" },
-											{ GL_FRAGMENT_SHADER, "normals/_normals.fs" } );
-	shaders[SHADER_SKYBOX] = Shader( { GL_VERTEX_SHADER, "skybox/skybox.vs" },
-									 { GL_FRAGMENT_SHADER, "skybox/skybox.fs" },
-									 { {GL_FRAGMENT_SHADER, "shadingVariables.ifs"},
-									 {GL_FRAGMENT_SHADER, "desaturationFunc.ifs"} } );
-	shaders[SHADER_SUN] = Shader( { GL_VERTEX_SHADER, "theSun/theSun.vs" },
-								  { GL_FRAGMENT_SHADER, "theSun/theSun.fs" } );
-	shaders[SHADER_MODELS_GOURAUD] = Shader( { GL_VERTEX_SHADER, "modelGouraud/model.vs" },
-											 { GL_FRAGMENT_SHADER, "modelGouraud/model.fs" },
-											 { {GL_VERTEX_SHADER, "modelGrassAnimation.ivs"},
-											 {GL_FRAGMENT_SHADER, "shadowSampling.ifs"},
-											 {GL_FRAGMENT_SHADER, "desaturationFunc.ifs"},
-											 {GL_FRAGMENT_SHADER, "shadingVariables.ifs"} } );
-	shaders[SHADER_MODELS_PHONG] = Shader( { GL_VERTEX_SHADER, "modelPhong/modelPhong.vs" },
-										   { GL_FRAGMENT_SHADER, "modelPhong/modelPhong.fs" },
-										   { {GL_VERTEX_SHADER, "modelGrassAnimation.ivs"},
-										   {GL_FRAGMENT_SHADER, "shadowSampling.ifs"},
-										   {GL_FRAGMENT_SHADER, "desaturationFunc.ifs"},
-										   {GL_FRAGMENT_SHADER, "shadingVariables.ifs"} } );
-	shaders[SHADER_FONT] = Shader( { GL_VERTEX_SHADER, "font/font.vs" },
-								   { GL_FRAGMENT_SHADER, "font/font.fs" } );
-	shaders[SHADER_COORDINATE_SYSTEM] = Shader( { GL_VERTEX_SHADER, "coordinateSystem/coordinateSystem.vs" },
-												{ GL_GEOMETRY_SHADER, "coordinateSystem/coordinateSystem.gs" },
-												{ GL_FRAGMENT_SHADER, "coordinateSystem/coordinateSystem.fs" } );
-	shaders[SHADER_BUILDABLE] = Shader( { GL_VERTEX_SHADER, "buildable/buildableTiles.vs" },
-										{ GL_FRAGMENT_SHADER, "buildable/buildableTiles.fs" } );
-	shaders[SHADER_SELECTED] = Shader( { GL_VERTEX_SHADER, "selected/selectedTile.vs" },
-									   { GL_FRAGMENT_SHADER, "selected/selectedTile.fs" } );
-	shaders[SHADER_MS_TO_DEFAULT] = Shader( { GL_VERTEX_SHADER, "screen/MS_toDefault.vs" },
-											{ GL_FRAGMENT_SHADER, "screen/MS_toDefault_hdr.fs" } );
-	shaders[SHADER_SHADOW_TERRAIN] = Shader( { GL_VERTEX_SHADER, "shadow/terrain_shadow.vs" },
-											 { GL_GEOMETRY_SHADER, "shadow/shadow.gs" } );
-	shaders[SHADER_SHADOW_MODELS] = Shader( { GL_VERTEX_SHADER, "shadow/model_shadow.vs" },
-											{ GL_GEOMETRY_SHADER, "shadow/shadow.gs" } );
-	shaders[SHADER_FRUSTUM] = Shader( { GL_VERTEX_SHADER, "frustum/frustum.vs" },
-									  { GL_FRAGMENT_SHADER, "frustum/frustum.fs" } );
-	shaders[SHADER_LENS_FLARE] = Shader( { GL_VERTEX_SHADER, "lensFlare/lensFlare.vs" },
-										 { GL_FRAGMENT_SHADER, "lensFlare/lensFlare.fs" } );
-	shaders[SHADER_SKYSPHERE] = Shader( { GL_VERTEX_SHADER, "skysphere/skysphere.vs" },
-										{ GL_FRAGMENT_SHADER, "skysphere/skysphere.fs" } );
+	shaders[SHADER_HILLS_CULLING] = Shader( { GL_VERTEX_SHADER, "hillsFC\\hillsFC.vs" },
+											{ GL_GEOMETRY_SHADER, "hillsFC\\hillsFC.gs" } );
+	shaders[SHADER_HILLS] = Shader( { GL_VERTEX_SHADER, "hills\\hills.vs" },
+									{ GL_FRAGMENT_SHADER, "hills\\hills.fs" },
+									{ {GL_FRAGMENT_SHADER, "include\\shadowSampling.ifs"},
+									{GL_FRAGMENT_SHADER, "include\\desaturationFunc.ifs"},
+									{GL_FRAGMENT_SHADER, "include\\shadingVariables.ifs"} } );
+	shaders[SHADER_HILLS_NORMALS] = Shader( { GL_VERTEX_SHADER, "normals\\hills_normals.vs" },
+											{ GL_GEOMETRY_SHADER, "normals\\_normals.gs" },
+											{ GL_FRAGMENT_SHADER, "normals\\_normals.fs" } );
+	shaders[SHADER_SHORE] = Shader( { GL_VERTEX_SHADER, "shore\\shore.vs" },
+									{ GL_FRAGMENT_SHADER, "shore\\shore.fs" },
+									{ {GL_FRAGMENT_SHADER, "include\\shadowSampling.ifs"},
+									{GL_FRAGMENT_SHADER, "include\\desaturationFunc.ifs"},
+									{GL_FRAGMENT_SHADER, "include\\shadingVariables.ifs"} } );
+	shaders[SHADER_SHORE_NORMALS] = Shader( { GL_VERTEX_SHADER, "normals\\shore_normals.vs" },
+											{ GL_GEOMETRY_SHADER, "normals\\_normals.gs" },
+											{ GL_FRAGMENT_SHADER, "normals\\_normals.fs" } );
+	shaders[SHADER_UNDERWATER] = Shader( { GL_VERTEX_SHADER, "underwater\\underwater.vs" },
+										 { GL_FRAGMENT_SHADER, "underwater\\underwater.fs" },
+										 { {GL_FRAGMENT_SHADER, "include\\desaturationFunc.ifs"},
+										 {GL_FRAGMENT_SHADER, "include\\shadingVariables.ifs"} } );
+	shaders[SHADER_LAND] = Shader( { GL_VERTEX_SHADER, "land\\land.vs" },
+								   { GL_FRAGMENT_SHADER, "land\\land.fs" },
+								   { {GL_FRAGMENT_SHADER, "include\\shadowSampling.ifs"},
+								   {GL_FRAGMENT_SHADER, "include\\desaturationFunc.ifs"},
+								   {GL_FRAGMENT_SHADER, "include\\shadingVariables.ifs"} } );
+	shaders[SHADER_WATER_CULLING] = Shader( { GL_VERTEX_SHADER, "waterFC\\waterFC.vs" },
+											{ GL_GEOMETRY_SHADER, "waterFC\\waterFC.gs" } );
+	shaders[SHADER_WATER] = Shader( { GL_VERTEX_SHADER, "water\\water.vs" },
+									{ GL_FRAGMENT_SHADER, "water\\water.fs" },
+									{ {GL_FRAGMENT_SHADER, "include\\shadowSampling.ifs"},
+									{GL_FRAGMENT_SHADER, "include\\desaturationFunc.ifs"},
+									{GL_FRAGMENT_SHADER, "include\\shadingVariables.ifs"} } );
+	shaders[SHADER_WATER_NORMALS] = Shader( { GL_VERTEX_SHADER, "normals\\water_normals.vs" },
+											{ GL_GEOMETRY_SHADER, "normals\\_normals.gs" },
+											{ GL_FRAGMENT_SHADER, "normals\\_normals.fs" } );
+	shaders[SHADER_SKYBOX] = Shader( { GL_VERTEX_SHADER, "skybox\\skybox.vs" },
+									 { GL_FRAGMENT_SHADER, "skybox\\skybox.fs" },
+									 { {GL_FRAGMENT_SHADER, "include\\shadingVariables.ifs"},
+									 {GL_FRAGMENT_SHADER, "include\\desaturationFunc.ifs"} } );
+	shaders[SHADER_SUN] = Shader( { GL_VERTEX_SHADER, "theSun\\theSun.vs" },
+								  { GL_FRAGMENT_SHADER, "theSun\\theSun.fs" } );
+	shaders[SHADER_MODELS_GOURAUD] = Shader( { GL_VERTEX_SHADER, "modelGouraud\\model.vs" },
+											 { GL_FRAGMENT_SHADER, "modelGouraud\\model.fs" },
+											 { {GL_VERTEX_SHADER, "include\\modelGrassAnimation.ivs"},
+											 {GL_FRAGMENT_SHADER, "include\\shadowSampling.ifs"},
+											 {GL_FRAGMENT_SHADER, "include\\desaturationFunc.ifs"},
+											 {GL_FRAGMENT_SHADER, "include\\shadingVariables.ifs"} } );
+	shaders[SHADER_MODELS_PHONG] = Shader( { GL_VERTEX_SHADER, "modelPhong\\modelPhong.vs" },
+										   { GL_FRAGMENT_SHADER, "modelPhong\\modelPhong.fs" },
+										   { {GL_VERTEX_SHADER, "include\\modelGrassAnimation.ivs"},
+										   {GL_FRAGMENT_SHADER, "include\\shadowSampling.ifs"},
+										   {GL_FRAGMENT_SHADER, "include\\desaturationFunc.ifs"},
+										   {GL_FRAGMENT_SHADER, "include\\shadingVariables.ifs"} } );
+	shaders[SHADER_FONT] = Shader( { GL_VERTEX_SHADER, "font\\font.vs" },
+								   { GL_FRAGMENT_SHADER, "font\\font.fs" } );
+	shaders[SHADER_COORDINATE_SYSTEM] = Shader( { GL_VERTEX_SHADER, "coordinateSystem\\coordinateSystem.vs" },
+												{ GL_GEOMETRY_SHADER, "coordinateSystem\\coordinateSystem.gs" },
+												{ GL_FRAGMENT_SHADER, "coordinateSystem\\coordinateSystem.fs" } );
+	shaders[SHADER_BUILDABLE] = Shader( { GL_VERTEX_SHADER, "buildable\\buildableTiles.vs" },
+										{ GL_FRAGMENT_SHADER, "buildable\\buildableTiles.fs" } );
+	shaders[SHADER_SELECTED] = Shader( { GL_VERTEX_SHADER, "selected\\selectedTile.vs" },
+									   { GL_FRAGMENT_SHADER, "selected\\selectedTile.fs" } );
+	shaders[SHADER_MS_TO_DEFAULT] = Shader( { GL_VERTEX_SHADER, "screen\\MS_toDefault.vs" },
+											{ GL_FRAGMENT_SHADER, "screen\\MS_toDefault_hdr.fs" } );
+	shaders[SHADER_SHADOW_TERRAIN] = Shader( { GL_VERTEX_SHADER, "shadow\\terrain_shadow.vs" },
+											 { GL_GEOMETRY_SHADER, "shadow\\shadow.gs" } );
+	shaders[SHADER_SHADOW_MODELS] = Shader( { GL_VERTEX_SHADER, "shadow\\model_shadow.vs" },
+											{ GL_GEOMETRY_SHADER, "shadow\\shadow.gs" } );
+	shaders[SHADER_FRUSTUM] = Shader( { GL_VERTEX_SHADER, "frustum\\frustum.vs" },
+									  { GL_FRAGMENT_SHADER, "frustum\\frustum.fs" } );
+	shaders[SHADER_LENS_FLARE] = Shader( { GL_VERTEX_SHADER, "lensFlare\\lensFlare.vs" },
+										 { GL_FRAGMENT_SHADER, "lensFlare\\lensFlare.fs" } );
+	shaders[SHADER_SKYSPHERE] = Shader( { GL_VERTEX_SHADER, "skysphere\\skysphere.vs" },
+										{ GL_FRAGMENT_SHADER, "skysphere\\skysphere.fs" } );
 }
 
 /**

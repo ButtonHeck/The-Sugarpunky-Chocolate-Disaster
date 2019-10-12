@@ -25,7 +25,6 @@
 
 const std::string getResourcesDirectory();
 const std::string RES_DIR = getResourcesDirectory() + "/res/";
-const std::string SHADER_DIR = RES_DIR + "shaders/";
 const std::string TEXTURES_DIR = RES_DIR + "textures/";
 const std::string MODELS_DIR = RES_DIR + "models/";
 const std::string FONT_DIR = RES_DIR + "fonts/";
