@@ -1,59 +1,83 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * ShaderResourceLoader.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for ShaderResourceLoader class
+ * @version 0.1.0
+ */
+
 #include "ShaderResourceLoader.h"
 
 #include <string>
+#include <fstream>
 
+/**
+* @brief storage for shader sources resources
+*/
 std::unordered_map<std::string, ShaderResource> ShaderResourceLoader::shaders;
 
-void ShaderResourceLoader::initialize( const char * path, 
-									   const char * flags )
+/**
+* @brief loads data from .sprd file and creates shader resources based on parsed data
+* @param path name of the shader sources .sprd file
+*/
+void ShaderResourceLoader::initialize( const char * path )
 {
-	errno_t err;
-	FILE * file;
-	err = fopen_s( &file, path, flags );
-	int numShaderSources = getc( file );
+	std::ifstream file( path, std::ios::binary );
+	
+	int numShaderSources = 0;
+	file.read( reinterpret_cast<char*>( &numShaderSources ), sizeof( numShaderSources ) );
 	shaders.reserve( numShaderSources );
 
 	for( int shaderIndex = 0; shaderIndex < numShaderSources; shaderIndex++ )
 	{
 		ShaderResource resource;
 
+		//deserialize name length
+		int shaderNameLength = 0;
+		file.read( reinterpret_cast<char*>( &shaderNameLength ), sizeof( shaderNameLength ) );
+
 		//deserialize name
-		int shaderNameLength = getc( file );
 		std::unique_ptr<char[]> nameBuffer( new char[shaderNameLength + 1] );
-		fpos_t currentPos;
-		fgetpos( file, &currentPos );
-		fread( nameBuffer.get(), 1, shaderNameLength, file );
-		currentPos += shaderNameLength;
-		fsetpos( file, &currentPos );
+		file.read( nameBuffer.get(), shaderNameLength );
 		nameBuffer[shaderNameLength] = '\0';
 		std::string shaderName( nameBuffer.get() );
 		resource.localName = shaderName;
 
 		//deserialize type
-		resource.type = getc( file );
+		int sourceType = 0;
+		file.read( reinterpret_cast<char*>( &sourceType ), sizeof( sourceType ) );
+		resource.type = sourceType;
 
-		//deserialize shader source string length
-		int shaderSizeStringLength = getc( file );
-		std::unique_ptr<char[]> shaderSizeStringBuffer( new char[shaderSizeStringLength + 2] );
-		fgets( shaderSizeStringBuffer.get(), shaderSizeStringLength + 1, file );
-		shaderSizeStringBuffer[shaderSizeStringLength + 1] = '\0';
-		std::string shaderSizeString( shaderSizeStringBuffer.get() );
-		int shaderSourceLength = std::stoi( shaderSizeString );
-		resource.dataSize = shaderSourceLength;
+		//deserialize shader source data size
+		int dataSize = 0;
+		file.read( reinterpret_cast<char*>( &dataSize ), sizeof( dataSize ) );
+		resource.dataSize = dataSize;
 
 		//deserialize shader source text
 		resource.data = new char[resource.dataSize + 1];
-		fgetpos( file, &currentPos );
-		fread( resource.data, 1, resource.dataSize, file );
-		currentPos += resource.dataSize;
-		fsetpos( file, &currentPos );
+		file.read( resource.data, resource.dataSize );
 		resource.data[resource.dataSize] = '\0';
 
 		shaders[resource.localName] = resource;
 	}
-	fclose( file );
+	file.close();
 }
 
+/**
+* @brief releases memory for all data
+*/
 void ShaderResourceLoader::release()
 {
 	for( auto & token : shaders )
@@ -63,6 +87,10 @@ void ShaderResourceLoader::release()
 	shaders.clear();
 }
 
+/**
+* @brief returns shader resource object for a given name
+* @param shaderSourceName local name of the shader source
+*/
 const ShaderResource & ShaderResourceLoader::getShaderResource( const std::string & shaderSourceName )
 {
 	const ShaderResource & resource = shaders.at( shaderSourceName );

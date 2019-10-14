@@ -78,8 +78,8 @@ int main()
 	glfwMakeContextCurrent( NULL );
 
 	//initialize resources before game has been created
-	TextureResourceLoader::initialize( "data\\textures.sprd", "rb" );
-	ShaderResourceLoader::initialize( "data\\shaders.sprd", "rb" );
+	TextureResourceLoader::initialize( "data\\textures.sprd" );
+	ShaderResourceLoader::initialize( "data\\shaders.sprd" );
 
 	//we must keep pointer in this thread in order to keep track on time when game object is created and setup
 	Game * game = nullptr;

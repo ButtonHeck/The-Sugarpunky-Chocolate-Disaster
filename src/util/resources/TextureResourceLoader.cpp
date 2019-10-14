@@ -21,6 +21,7 @@
 #include "TextureResourceLoader"
 
 #include <string>
+#include <fstream>
 
 /**
 * @brief storage for the parsed texture resources
@@ -29,74 +30,76 @@ std::unordered_map<std::string, TextureResource> TextureResourceLoader::textures
 
 /**
 * @brief loads data from the .sprd file and creates separate texture resources based on the data
-* @param path local name of the texture
-* @param flags combination of flags for fopen
+* @param path name of the textures .sprd file
 */
-void TextureResourceLoader::initialize( const char * path, 
-										const char * flags )
+void TextureResourceLoader::initialize( const char * path )
 {
-	errno_t err;
-	FILE * file;
-	err = fopen_s( &file, path, flags );
-	int numTexturesInFile = getc( file );
-	textures.reserve( numTexturesInFile );
+	textures.reserve( 512 );
+	std::ifstream file( path, std::ios::binary );
 
-	for( int textureIndex = 0; textureIndex < numTexturesInFile; textureIndex++ )
+	//Plain textures deserialization
+	int numPlainTextures = 0;
+	file.read( reinterpret_cast<char*>( &numPlainTextures ), sizeof( numPlainTextures ) );
+	for( int textureIndex = 0; textureIndex < numPlainTextures; textureIndex++ )
 	{
-		TextureResource textureResource;
-
-		int textureNameLength = getc( file );
-		std::unique_ptr<char[]> nameBuffer( new char[textureNameLength + 1] );
-		for( size_t charIndex = 0; charIndex < textureNameLength; ++charIndex )
-		{
-			nameBuffer[charIndex] = getc( file );
-		}
-		nameBuffer[textureNameLength] = '\0';
-		std::string textureName( nameBuffer.get() );
-		textureResource.localName = textureName;
-
-		//deserialize texture width
-		int texWidthStringLength = getc( file );
-		std::unique_ptr<char[]> texWidthStringBuffer( new char[texWidthStringLength + 2] );
-		fgets( texWidthStringBuffer.get(), texWidthStringLength + 1, file );
-		texWidthStringBuffer[texWidthStringLength + 1] = '\0';
-		std::string texWidthString( texWidthStringBuffer.get() );
-		int texWidth = std::stoi( texWidthString );
-		textureResource.width = texWidth;
-
-		//deserialize texture height
-		int texHeightStringLength = getc( file );
-		std::unique_ptr<char[]> texHeightStringBuffer( new char[texHeightStringLength + 2] );
-		fgets( texHeightStringBuffer.get(), texHeightStringLength + 1, file );
-		texHeightStringBuffer[texHeightStringLength + 1] = '\0';
-		std::string texHeightString( texHeightStringBuffer.get() );
-		int texHeight = std::stoi( texHeightString );
-		textureResource.height = texHeight;
-
-		//deserialize texture channels
-		int texChannels = getc( file );
-		textureResource.channels = texChannels;
-
-		//deserialize texture data size
-		int texDataSizeStringLength = getc( file );
-		std::unique_ptr<char[]> texDataSizeStringBuffer( new char[texDataSizeStringLength + 2] );
-		fgets( texDataSizeStringBuffer.get(), texDataSizeStringLength + 1, file );
-		texDataSizeStringBuffer[texDataSizeStringLength + 1] = '\0';
-		std::string texDataSizeString( texDataSizeStringBuffer.get() );
-		long texDataSize = std::stol( texDataSizeString );
-		textureResource.dataSize = texDataSize;
-
-		//deserialize texture data
-		textureResource.data = new char[textureResource.dataSize];		
-		fpos_t currentPos;
-		fgetpos( file, &currentPos );
-		fread( textureResource.data, 1, textureResource.dataSize, file );
-		fpos_t newPosition = currentPos + textureResource.dataSize;
-		fsetpos( file, &newPosition );
-
-		textures[textureResource.localName] = textureResource;
+		deserializeTexture( file );
 	}
-	fclose( file );
+
+	//models textures deserialization
+	int numModelTextures = 0;
+	file.read( reinterpret_cast<char*>( &numModelTextures ), sizeof( numModelTextures ) );
+	for( int textureIndex = 0; textureIndex < numModelTextures; textureIndex++ )
+	{
+		deserializeTexture( file );
+	}
+
+	file.close();
+}
+
+/**
+* @brief helper function to deserialize single texture resource using file stream
+* @param file file stream to read data from
+*/
+void TextureResourceLoader::deserializeTexture( std::ifstream & file )
+{
+	TextureResource textureResource;
+
+	//deserialize texture local name length
+	int textureNameLength = 0;
+	file.read( reinterpret_cast<char*>( &textureNameLength ), sizeof( textureNameLength ) );
+
+	//deserialize texture local name
+	std::unique_ptr<char[]> nameBuffer( new char[textureNameLength + 1] );
+	file.read( nameBuffer.get(), textureNameLength );;
+	nameBuffer[textureNameLength] = '\0';
+	std::string textureName( nameBuffer.get() );
+	textureResource.localName = textureName;
+
+	//deserialize texture width
+	int texWidth = 0;
+	file.read( reinterpret_cast<char*>( &texWidth ), sizeof( texWidth ) );
+	textureResource.width = texWidth;
+
+	//deserialize texture height
+	int texHeight = 0;
+	file.read( reinterpret_cast<char*>( &texHeight ), sizeof( texHeight ) );
+	textureResource.height = texHeight;
+
+	//deserialize texture channels
+	int texChannels = 0;
+	file.read( reinterpret_cast<char*>( &texChannels ), sizeof( texChannels ) );
+	textureResource.channels = texChannels;
+
+	//deserialize texture data size
+	int texDataSize = 0;
+	file.read( reinterpret_cast<char*>( &texDataSize ), sizeof( texDataSize ) );
+	textureResource.dataSize = texDataSize;
+
+	//deserialize texture data
+	textureResource.data = new char[textureResource.dataSize];
+	file.read( textureResource.data, textureResource.dataSize );
+
+	textures[textureResource.localName] = textureResource;
 }
 
 /**

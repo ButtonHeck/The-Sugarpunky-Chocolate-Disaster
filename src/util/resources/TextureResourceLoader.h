@@ -22,6 +22,9 @@
 
 #include <unordered_map>
 
+/**
+* @brief representation of the texture resource structure
+*/
 struct TextureResource
 {
 	std::string localName;
@@ -39,11 +42,11 @@ class TextureResourceLoader
 {
 public:
 	TextureResourceLoader() = delete;
-	static void initialize( const char * path,
-							const char * flags );
+	static void initialize( const char * path );
 	static void release();
 	static const TextureResource & getTextureResource( const std::string & textureName );
 
 private:
+	static void deserializeTexture( std::ifstream & file );
 	static std::unordered_map<std::string, TextureResource> textures;
 };
