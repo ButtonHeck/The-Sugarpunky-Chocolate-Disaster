@@ -21,6 +21,8 @@
 #include "ModelGPUDataManager"
 #include "BenchmarkTimer"
 #include "ModelChunk"
+#include "ModelVertex"
+#include "SceneSettings"
 
 /**
 * @brief plain ctor
@@ -37,27 +39,27 @@ ModelGPUDataManager::ModelGPUDataManager( bool isParentModelLowPoly )
 * @param indices storage with indices data
 * @param useIndirectBuffer indicator of whether indirect buffer will be used for this model
 */
-void ModelGPUDataManager::setupBuffers( const std::vector<Mesh::Vertex> & vertices, 
+void ModelGPUDataManager::setupBuffers( const std::vector<ModelVertex> & vertices,
 										const std::vector<GLuint> & indices, 
 										bool useIndirectBuffer )
 {
 	indicesCount = indices.size();
 	basicGLBuffers.bind( VAO | VBO | EBO );
-	glBufferData( GL_ARRAY_BUFFER, sizeof( Mesh::Vertex ) * vertices.size(), &vertices[0], GL_STATIC_DRAW );
+	glBufferData( GL_ARRAY_BUFFER, sizeof( ModelVertex ) * vertices.size(), &vertices[0], GL_STATIC_DRAW );
 	glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( GLuint ) * indicesCount, &indices[0], GL_STATIC_DRAW );
 	glEnableVertexAttribArray( 0 );
-	glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof( Mesh::Vertex ), (void*)0 );
+	glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof( ModelVertex ), (void*)0 );
 	glEnableVertexAttribArray( 1 );
-	glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof( Mesh::Vertex ), (void*)offsetof( Mesh::Vertex, Normal ) );
+	glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof( ModelVertex ), (void*)offsetof( ModelVertex, Normal ) );
 	glEnableVertexAttribArray( 2 );
-	glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, sizeof( Mesh::Vertex ), (void*)offsetof( Mesh::Vertex, TexCoords ) );
+	glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, sizeof( ModelVertex ), (void*)offsetof( ModelVertex, TexCoords ) );
 	glEnableVertexAttribArray( 3 );
-	glVertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof( Mesh::Vertex ), (void*)offsetof( Mesh::Vertex, Tangent ) );
+	glVertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof( ModelVertex ), (void*)offsetof( ModelVertex, Tangent ) );
 	glEnableVertexAttribArray( 4 );
-	glVertexAttribPointer( 4, 3, GL_FLOAT, GL_FALSE, sizeof( Mesh::Vertex ), (void*)offsetof( Mesh::Vertex, Bitangent ) );
+	glVertexAttribPointer( 4, 3, GL_FLOAT, GL_FALSE, sizeof( ModelVertex ), (void*)offsetof( ModelVertex, Bitangent ) );
 	glEnableVertexAttribArray( 9 );
 	//intentionally set GL_FLOAT although the data is a pair of unsigned integers
-	glVertexAttribPointer( 9, 2, GL_FLOAT, GL_FALSE, sizeof( Mesh::Vertex ), (void*)offsetof( Mesh::Vertex, TexIndices ) );
+	glVertexAttribPointer( 9, 2, GL_FLOAT, GL_FALSE, sizeof( ModelVertex ), (void*)offsetof( ModelVertex, TexIndices ) );
 
 	if( useIndirectBuffer )
 	{

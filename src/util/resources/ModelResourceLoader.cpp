@@ -1,5 +1,5 @@
-#include "ModelResourceLoader.h"
-#include "Mesh"
+#include "ModelResourceLoader"
+#include "ModelVertex"
 
 #include <fstream>
 
@@ -43,7 +43,7 @@ void ModelResourceLoader::deserializeModel( std::ifstream & file )
 	file.read( reinterpret_cast<char*>( &verticesCount ), sizeof( verticesCount ) );
 	modelResource.numVertices = verticesCount;
 	//read vertices data
-	size_t vertexSize = sizeof( Mesh::Vertex );
+	size_t vertexSize = sizeof( ModelVertex );
 	int verticesNumBytes = vertexSize * verticesCount;
 	modelResource.verticesData = new char[verticesNumBytes];
 	file.read( modelResource.verticesData, verticesNumBytes );
@@ -113,6 +113,8 @@ void ModelResourceLoader::deserializeModel( std::ifstream & file )
 		textureData.localName = textureName;
 		modelResource.specularTextures.push_back( textureData );
 	}
+
+	models[modelResource.localName] = modelResource;
 }
 
 void ModelResourceLoader::release()

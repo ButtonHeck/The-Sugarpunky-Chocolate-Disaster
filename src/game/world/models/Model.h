@@ -20,24 +20,23 @@
 
 #pragma once
 
-#include "Mesh"
 #include "ModelGPUDataManager"
 #include "ModelRenderer"
-
-#include <assimp/scene.h>
+#include "ModelVertex"
 
 class TextureLoader;
 class ModelChunk;
+class ModelResource;
 
 /**
  * @brief Wrapper for .obj model.
- * Responsible for compiling model's meshes data into one contiguous storage and delegating tasks
+ * Responsible for compiling model's data from related resource into one contiguous storage and delegating tasks
  * among its member objects
  */
 class Model
 {
 public:
-	Model( const std::string & path, 
+	Model( const std::string & localName, 
 		   bool isLowPoly, 
 		   unsigned int numRepetitions = 1, 
 		   bool isInstanced = true );
@@ -56,17 +55,10 @@ public:
 private:
 	static TextureLoader * textureLoader;
 
-	void load( const std::string & path );
-	void processNode( const aiNode * node, 
-					  const aiScene * scene, 
-					  GLuint & meshVertexIndexOffset );
-	void loadMaterialTextures( const aiMaterial * material, 
-							   aiTextureType type, 
-							   const std::string & typeName, 
-							   unsigned int &textureIndex );
+	void load( const std::string & localName );
+	void loadTextures( const ModelResource & resource );
 
-	std::string directory;
-	std::vector<Mesh::Vertex> vertices;
+	std::vector<ModelVertex> vertices;
 	std::vector<GLuint> indices;
 	bool isInstanced;
 	bool isLowPoly;

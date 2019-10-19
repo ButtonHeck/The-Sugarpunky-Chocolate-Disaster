@@ -20,16 +20,14 @@
 
 #pragma once
 
-#include "Mesh"
 #include "BufferCollection"
-#include "SceneSettings"
-#include "ModelIndirectBufferTypes.h"
+#include "ModelIndirectBufferTypes"
 
-#include <GL/glew.h>
 #include <glm/mat4x4.hpp>
 #include <memory>
 
 class ModelChunk;
+class ModelVertex;
 
 /**
 * @brief manager for GPU model data. Responsible for initializing and updating data for indirect rendering of a model.
@@ -39,7 +37,7 @@ class ModelGPUDataManager
 {
 public:
 	ModelGPUDataManager( bool isParentModelLowPoly );
-	void setupBuffers( const std::vector<Mesh::Vertex> & vertices, 
+	void setupBuffers( const std::vector<ModelVertex> & vertices, 
 					   const std::vector<GLuint> & indices, 
 					   bool useIndirectBuffer );
 	void prepareIndirectBufferData( const std::vector<std::pair<ModelChunk, unsigned int> > & chunks,
@@ -66,8 +64,8 @@ private:
 
 		GLuint numInstances;
 		GLuint instanceOffset;
-		static const GLuint FIRST_INDEX = 0;
-		static const GLuint BASE_VERTEX = 0;
+		static constexpr GLuint FIRST_INDEX = 0;
+		static constexpr GLuint BASE_VERTEX = 0;
 	};
 
 	void setupIndirectBuffers();

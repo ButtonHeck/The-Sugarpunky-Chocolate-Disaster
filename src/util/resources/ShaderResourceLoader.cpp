@@ -18,7 +18,7 @@
  * @version 0.1.0
  */
 
-#include "ShaderResourceLoader.h"
+#include "ShaderResourceLoader"
 
 #include <string>
 #include <fstream>

@@ -21,11 +21,9 @@
 #include "Model"
 #include "BindlessTextureManager"
 #include "TextureLoader"
-#include "DirectoriesSettings"
-#include "Logger"
+#include "ModelResourceLoader"
 
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
+#include <string>
 
 TextureLoader * Model::textureLoader;
 void Model::bindTextureLoader( TextureLoader & textureLoader ) noexcept
@@ -35,12 +33,12 @@ void Model::bindTextureLoader( TextureLoader & textureLoader ) noexcept
 
 /**
  * @brief plain ctor
- * @param path model's relative path to preset models directory
+ * @param localName model's relative path and name
  * @param isLowPoly defines whether this model would be approached as low-poly
  * @param numRepetitions defines how many times in a row this model would be used during allocation on the map
  * @param isInstanced defines whether this model would be rendered with instancing
  */
-Model::Model( const std::string & path,
+Model::Model( const std::string & localName,
 			  bool isLowPoly,
 			  unsigned int numRepetitions,
 			  bool isInstanced )
@@ -50,87 +48,64 @@ Model::Model( const std::string & path,
 	, GPUDataManager( isLowPoly )
 	, renderer( GPUDataManager.getBasicGLBuffers(), GPUDataManager.getDepthmapDIBO(), GPUDataManager.getReflectionDIBO() )
 {
-	load( MODELS_DIR + path );
+	load( localName );
 }
 
 /**
- * @brief parses assimp data to own data storage
- * @param path model's relative path to preset models directory
+ * @brief parses model resource data to own data storage
+ * @param localName model's relative path and name
  */
-void Model::load( const std::string & path )
+void Model::load( const std::string & localName )
 {
-	Assimp::Importer importer;
-	const aiScene * scene = importer.ReadFile( path, aiProcess_CalcTangentSpace |
-											   aiProcess_FlipUVs |
-											   aiProcess_Triangulate |
-											   aiProcess_JoinIdenticalVertices );
-	if( !scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE )
+	const ModelResource & resource = ModelResourceLoader::getModelResource( localName );
+
+	//parse vertices
+	vertices.reserve( resource.numVertices );
+	for( int vertexIndex = 0; vertexIndex < resource.numVertices; vertexIndex++ )
 	{
-		Logger::log( "Error while loading Assimp: %\n", importer.GetErrorString() );
+		vertices.emplace_back( resource.verticesData, vertexIndex );
 	}
-	else
+
+	//parse indices
+	indices.reserve( resource.numIndices );
+	for( int nIndex = 0; nIndex < resource.numIndices; nIndex++ )
 	{
-		directory = path.substr( 0, path.find_last_of( '/' ) );
-		GLuint meshVertexIndexOffset = 0;
-		processNode( scene->mRootNode, scene, meshVertexIndexOffset );
-		GPUDataManager.setupBuffers( vertices, indices, isInstanced );
-		//once we have model's data loaded to GPU memory we don't need it on the CPU side
-		vertices.clear();
-		indices.clear();
+		size_t byteOffset = nIndex * sizeof( unsigned int );
+		indices.emplace_back( *( reinterpret_cast<unsigned int*>( resource.indicesData + byteOffset ) ) );
 	}
+
+	//parse textures
+	loadTextures( resource );
+
+	GPUDataManager.setupBuffers( vertices, indices, isInstanced );
+	//once we have model's data loaded to GPU memory we don't need it on the CPU side
+	vertices.clear();
+	indices.clear();
 }
 
 /**
- * @brief parses particular mesh node
- * @param node current node to process
- * @param scene model's scene
- * @param meshVertexIndexOffset offset applied for node vertices in the index buffer
- */
-void Model::processNode( const aiNode * node,
-						 const aiScene * scene,
-						 GLuint & meshVertexIndexOffset )
+* @brief helper function to parse and load model textures 
+* @param resource model resource
+*/
+void Model::loadTextures( const ModelResource & resource )
 {
-	static unsigned int diffuseSamplerIndex = 0, specularSamplerIndex = 0;
-	for( unsigned int meshIndex = 0; meshIndex < node->mNumMeshes; meshIndex++ )
+	//load diffuse textures
+	for( int dTextureIndex = 0; dTextureIndex < resource.numDiffuseTextures; dTextureIndex++ )
 	{
-		const aiMesh * mesh = scene->mMeshes[node->mMeshes[meshIndex]];
-		Mesh processedMesh = Mesh::generate( mesh, diffuseSamplerIndex, specularSamplerIndex, meshVertexIndexOffset );
-		const aiMaterial * material = scene->mMaterials[mesh->mMaterialIndex];
-		loadMaterialTextures( material, aiTextureType_DIFFUSE, "u_textureDiffuse", diffuseSamplerIndex );
-		loadMaterialTextures( material, aiTextureType_SPECULAR, "u_textureSpecular", specularSamplerIndex );
-		vertices.insert( vertices.end(), processedMesh.getVertices().begin(), processedMesh.getVertices().end() );
-		indices.insert( indices.end(), processedMesh.getIndices().begin(), processedMesh.getIndices().end() );
-		meshVertexIndexOffset += processedMesh.getVertices().size();
+		const std::string & TEXTURE_NAME = resource.diffuseTextures[dTextureIndex].localName;
+		GLuint texture = textureLoader->loadTextureResource( TEXTURE_NAME, 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, true, false );
+		std::string textureUniformName( "u_textureDiffuse[" );
+		textureUniformName.append( std::to_string( resource.diffuseTextures[dTextureIndex].samplerIndex )).append( "]" );
+		BindlessTextureManager::emplaceBack( textureUniformName, texture, BINDLESS_TEXTURE_MODEL );
 	}
-	for( unsigned int childNodeIndex = 0; childNodeIndex < node->mNumChildren; childNodeIndex++ )
+	//load specular textures
+	for( int sTextureIndex = 0; sTextureIndex < resource.numSpecularTextures; sTextureIndex++ )
 	{
-		processNode( node->mChildren[childNodeIndex], scene, meshVertexIndexOffset );
-	}
-}
-
-/**
- * @brief load texture from given material and add it to bindless texture manager
- * @param material material to load texture from
- * @param type texture type
- * @param uniformName glsl uniform name for the texture
- * @param samplerIndex index for glsl sampler array in a shader
- */
-void Model::loadMaterialTextures( const aiMaterial * material,
-								  aiTextureType type,
-								  const std::string & uniformName,
-								  unsigned int & samplerIndex )
-{
-	for( unsigned int textureIndex = 0; textureIndex < material->GetTextureCount( type ); textureIndex++ )
-	{
-		aiString texturePath;
-		material->GetTexture( type, textureIndex, &texturePath );
-		std::string path = this->directory + '/' + texturePath.C_Str();
-		GLenum magFilter = type == aiTextureType_DIFFUSE ? GL_LINEAR : GL_NEAREST;
-		GLenum minFilter = type == aiTextureType_DIFFUSE ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
-		bool useNoSRGB = type == aiTextureType_SPECULAR;
-		GLuint texture = textureLoader->loadTexture( path, 0, GL_REPEAT, magFilter, minFilter, true, false, true, useNoSRGB );
-		BindlessTextureManager::emplaceBack( uniformName + "[" + std::to_string( samplerIndex ) + "]", texture, BINDLESS_TEXTURE_MODEL );
-		samplerIndex++;
+		const std::string & TEXTURE_NAME = resource.specularTextures[sTextureIndex].localName;
+		GLuint texture = textureLoader->loadTextureResource( TEXTURE_NAME, 0, GL_REPEAT, GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, true, true, true );
+		std::string textureUniformName( "u_textureSpecular[" );
+		textureUniformName.append( std::to_string( resource.specularTextures[sTextureIndex].samplerIndex ) ).append( "]" );
+		BindlessTextureManager::emplaceBack( textureUniformName, texture, BINDLESS_TEXTURE_MODEL );
 	}
 }
 
