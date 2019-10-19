@@ -20,7 +20,6 @@
 
 #include "ShaderResourceLoader"
 
-#include <string>
 #include <fstream>
 
 /**

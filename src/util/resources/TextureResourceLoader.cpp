@@ -20,7 +20,6 @@
 
 #include "TextureResourceLoader"
 
-#include <string>
 #include <fstream>
 
 /**

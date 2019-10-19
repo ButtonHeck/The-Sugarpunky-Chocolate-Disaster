@@ -1,10 +1,37 @@
+/*
+ * Copyright 2019 Ilya Malgin
+ * ModelResourceLoader.cpp
+ * This file is part of The Sugarpunky Chocolate Disaster project
+ *
+ * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The Sugarpunky Chocolate Disaster project is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * See <http://www.gnu.org/licenses/>
+ *
+ * Purpose: contains definitions for ModelResourceLoader class
+ * @version 0.1.0
+ */
+
 #include "ModelResourceLoader"
 #include "ModelVertex"
 
 #include <fstream>
 
+/**
+* @brief storage for models resources
+*/
 std::unordered_map<std::string, ModelResource> ModelResourceLoader::models;
 
+/**
+* @brief loads data from .sprd file and creates model resources based on parsed data
+* @param path name of the models .sprd file
+*/
 void ModelResourceLoader::initialize( const char * path )
 {
 	std::ifstream file( path, std::ios::binary );
@@ -23,6 +50,10 @@ void ModelResourceLoader::initialize( const char * path )
 	file.close();
 }
 
+/**
+* @brief helper function to deserialize single model out of the file stream
+* @param file file stream to read data from
+*/
 void ModelResourceLoader::deserializeModel( std::ifstream & file )
 {
 	ModelResource modelResource;
@@ -117,6 +148,9 @@ void ModelResourceLoader::deserializeModel( std::ifstream & file )
 	models[modelResource.localName] = modelResource;
 }
 
+/**
+* @brief releases memory for all data
+*/
 void ModelResourceLoader::release()
 {
 	for( auto & token : models )
@@ -127,6 +161,10 @@ void ModelResourceLoader::release()
 	models.clear();
 }
 
+/**
+* @brief return model resource object for a given name
+* @param localName local name of the model
+*/
 const ModelResource & ModelResourceLoader::getModelResource( const std::string & localName )
 {
 	const ModelResource & resource = models.at( localName );
