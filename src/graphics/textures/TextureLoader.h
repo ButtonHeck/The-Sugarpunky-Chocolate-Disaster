@@ -39,17 +39,8 @@ public:
 						GLint magFilter,
 						GLint minFilter,
 						bool useAnisotropy,
-						bool includeCWD = true,
 						bool isBindless = false,
 						bool explicitNoSRGB = false );
-	GLuint loadTextureResource( const std::string & path,
-								GLuint textureUnit,
-								GLenum wrapType,
-								GLint magFilter,
-								GLint minFilter,
-								bool useAnisotropy,
-								bool isBindless = false,
-								bool explicitNoSRGB = false );
 	GLuint createFrameMSTexture( GLuint textureUnit, 
 								 int multisamples ) noexcept;
 	GLuint createFrameTexture( GLuint textureUnit, 

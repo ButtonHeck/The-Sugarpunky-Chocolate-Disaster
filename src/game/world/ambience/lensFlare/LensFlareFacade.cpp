@@ -41,13 +41,13 @@ LensFlareFacade::LensFlareFacade( Shader & shader,
 	, renderer( basicGLBuffers )
 {
 	flares.reserve( NUM_LENS_FLARES );
-	flares.emplace_back( 1300.0f, textureLoader.loadTextureResource( "lensFlares\\flare11.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
-	flares.emplace_back( 220.0f, textureLoader.loadTextureResource( "lensFlares\\flare2.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
-	flares.emplace_back( 150.0f, textureLoader.loadTextureResource( "lensFlares\\flare5.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
-	flares.emplace_back( 75.0f, textureLoader.loadTextureResource( "lensFlares\\flare6.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
-	flares.emplace_back( 160.0f, textureLoader.loadTextureResource( "lensFlares\\flare1.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
-	flares.emplace_back( 180.0f, textureLoader.loadTextureResource( "lensFlares\\flare9.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
-	flares.emplace_back( 340.0f, textureLoader.loadTextureResource( "lensFlares\\flare3.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
+	flares.emplace_back( 1300.0f, textureLoader.loadTexture( "lensFlares\\flare11.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
+	flares.emplace_back( 220.0f, textureLoader.loadTexture( "lensFlares\\flare2.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
+	flares.emplace_back( 150.0f, textureLoader.loadTexture( "lensFlares\\flare5.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
+	flares.emplace_back( 75.0f, textureLoader.loadTexture( "lensFlares\\flare6.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
+	flares.emplace_back( 160.0f, textureLoader.loadTexture( "lensFlares\\flare1.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
+	flares.emplace_back( 180.0f, textureLoader.loadTexture( "lensFlares\\flare9.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
+	flares.emplace_back( 340.0f, textureLoader.loadTexture( "lensFlares\\flare3.png", 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, true ) );
 
 	/*
 	 * register flare textures in the dedicated bindless texture manager's vector,

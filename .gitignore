@@ -5,9 +5,7 @@
 /The Sugarpunky Chocolate Disaster.vcxproj
 /Debug
 /Release
-/res/perFrameLog.txt
-/res/perAppLog.txt
-/res/saves/testSave.txt
+/res
 /packages.config
 /packages
 /Doxyfile

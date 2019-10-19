@@ -20,26 +20,18 @@
 
 #include "TextureLoader"
 #include "ScreenResolution"
-#include "DirectoriesSettings"
 #include "GraphicsSettings"
 #include "SceneSettings"
 #include "Logger"
 #include "TextureResourceLoader"
 
-#include <algorithm>
-#include <IL/il.h>
-
 /**
-* @brief plain ctor, initializes DevIL library
+* @brief plain ctor
 * @param screenResolution current resolution of the screen
 */
 TextureLoader::TextureLoader( const ScreenResolution & screenResolution ) noexcept
 	: screenResolution( screenResolution )
-{
-	ilInit();
-	ilEnable( IL_ORIGIN_SET );
-	ilOriginFunc( IL_ORIGIN_UPPER_LEFT );
-}
+{}
 
 /**
 * @brief sends create texture command to OpenGL, optionally activates and binds it to appropriate texture slot
@@ -64,70 +56,6 @@ GLuint TextureLoader::createTextureObject( GLenum target,
 
 /**
 * @brief loads texture from file and initializes its parameters
-* @param filename file name of the texture
-* @param textureUnit texture unit to bind
-* @param wrapType GL defined wrapping mode
-* @param magFilter GL defined magnification filter
-* @param minFilter GL defined minification filter
-* @param useAnisotropy defines whether anisotropic filtering should be applied for this texture
-* @param includeCWD defines whether CWD variable should be added to given file name
-* @param isBindless defines whether this texture is a bindless one
-* @param explicitNoSRGB if true - forces RGB(A) format for texture even if HDR is enabled
-*/
-GLuint TextureLoader::loadTexture( const std::string & filename,
-								   GLuint textureUnit,
-								   GLenum wrapType,
-								   GLint magFilter,
-								   GLint minFilter,
-								   bool useAnisotropy,
-								   bool includeCWD,
-								   bool isBindless,
-								   bool explicitNoSRGB )
-{
-	GLuint textureID = createTextureObject( GL_TEXTURE_2D, textureUnit, isBindless );
-	std::string fullname = includeCWD ? std::string( TEXTURES_DIR + filename ) : filename;
-	if( !ilLoadImage( fullname.c_str() ) )
-	{
-		Logger::log( "Error when loading texture: %\n", fullname.c_str() );
-	}
-
-	ILubyte * textureData = ilGetData();
-	auto textureWidth = ilGetInteger( IL_IMAGE_WIDTH );
-	auto textureHeight = ilGetInteger( IL_IMAGE_HEIGHT );
-	auto textureChannels = ilGetInteger( IL_IMAGE_CHANNELS );
-	GLenum internalFormat;
-	GLenum dataFormat;
-	if( textureChannels == 4 )
-	{
-		internalFormat = explicitNoSRGB ? GL_RGBA8 : ( HDR_ENABLED ? GL_SRGB8_ALPHA8 : GL_RGBA8 );
-		dataFormat = GL_RGBA;
-	}
-	else if( textureChannels == 3 )
-	{
-		internalFormat = explicitNoSRGB ? GL_RGB8 : ( HDR_ENABLED ? GL_SRGB8 : GL_RGB8 );
-		dataFormat = GL_RGB;
-	}
-	else
-	{
-		throw std::invalid_argument( "Could not handle image with: " + std::to_string( textureChannels ) + " channels" );
-	}
-	GLsizei mipLevel = ( (GLsizei)log2( std::max( textureWidth, textureHeight ) ) + 1 );
-
-	glTextureStorage2D( textureID, mipLevel, internalFormat, textureWidth, textureHeight );
-	glTextureSubImage2D( textureID, 0, 0, 0, textureWidth, textureHeight, dataFormat, GL_UNSIGNED_BYTE, textureData );
-	glGenerateTextureMipmap( textureID );
-	setTexture2DParameters( textureID, magFilter, minFilter, wrapType );
-	if( useAnisotropy )
-	{
-		glTextureParameterf( textureID, GL_TEXTURE_MAX_ANISOTROPY, ANISOTROPY );
-	}
-
-	ilDeleteImage( ilGetInteger( IL_ACTIVE_IMAGE ) );
-	return textureID;
-}
-
-/**
-* @brief loads texture from file and initializes its parameters
 * @param path file name of the texture
 * @param textureUnit texture unit to bind
 * @param wrapType GL defined wrapping mode
@@ -137,14 +65,14 @@ GLuint TextureLoader::loadTexture( const std::string & filename,
 * @param isBindless defines whether this texture is a bindless one
 * @param explicitNoSRGB if true - forces RGB(A) format for texture even if HDR is enabled
 */
-GLuint TextureLoader::loadTextureResource( const std::string & path, 
-										   GLuint textureUnit, 
-										   GLenum wrapType, 
-										   GLint magFilter, 
-										   GLint minFilter, 
-										   bool useAnisotropy, 
-										   bool isBindless, 
-										   bool explicitNoSRGB )
+GLuint TextureLoader::loadTexture( const std::string & path, 
+								   GLuint textureUnit, 
+								   GLenum wrapType, 
+								   GLint magFilter, 
+								   GLint minFilter, 
+								   bool useAnisotropy, 
+								   bool isBindless, 
+								   bool explicitNoSRGB )
 {
 	GLuint textureID = createTextureObject( GL_TEXTURE_2D, textureUnit, isBindless );
 	const TextureResource & TEXTURE_RESOURCE = TextureResourceLoader::getTextureResource( path );
@@ -168,7 +96,7 @@ GLuint TextureLoader::loadTextureResource( const std::string & path,
 	{
 		throw std::invalid_argument( "Could not handle image with: " + std::to_string( textureChannels ) + " channels" );
 	}
-	GLsizei mipLevel = ( (GLsizei)log2( std::max( textureWidth, textureHeight ) ) + 1 );
+	GLsizei mipLevel = ( (GLsizei)log2( glm::max( textureWidth, textureHeight ) ) + 1 );
 
 	glTextureStorage2D( textureID, mipLevel, internalFormat, textureWidth, textureHeight );
 	glTextureSubImage2D( textureID, 0, 0, 0, textureWidth, textureHeight, dataFormat, GL_UNSIGNED_BYTE, TEXTURE_RESOURCE.data );

@@ -93,7 +93,7 @@ void Model::loadTextures( const ModelResource & resource )
 	for( int dTextureIndex = 0; dTextureIndex < resource.numDiffuseTextures; dTextureIndex++ )
 	{
 		const std::string & TEXTURE_NAME = resource.diffuseTextures[dTextureIndex].localName;
-		GLuint texture = textureLoader->loadTextureResource( TEXTURE_NAME, 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, true, false );
+		GLuint texture = textureLoader->loadTexture( TEXTURE_NAME, 0, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true, true, false );
 		std::string textureUniformName( "u_textureDiffuse[" );
 		textureUniformName.append( std::to_string( resource.diffuseTextures[dTextureIndex].samplerIndex )).append( "]" );
 		BindlessTextureManager::emplaceBack( textureUniformName, texture, BINDLESS_TEXTURE_MODEL );
@@ -102,7 +102,7 @@ void Model::loadTextures( const ModelResource & resource )
 	for( int sTextureIndex = 0; sTextureIndex < resource.numSpecularTextures; sTextureIndex++ )
 	{
 		const std::string & TEXTURE_NAME = resource.specularTextures[sTextureIndex].localName;
-		GLuint texture = textureLoader->loadTextureResource( TEXTURE_NAME, 0, GL_REPEAT, GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, true, true, true );
+		GLuint texture = textureLoader->loadTexture( TEXTURE_NAME, 0, GL_REPEAT, GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, true, true, true );
 		std::string textureUniformName( "u_textureSpecular[" );
 		textureUniformName.append( std::to_string( resource.specularTextures[sTextureIndex].samplerIndex ) ).append( "]" );
 		BindlessTextureManager::emplaceBack( textureUniformName, texture, BINDLESS_TEXTURE_MODEL );
