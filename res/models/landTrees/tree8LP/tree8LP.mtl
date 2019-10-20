@@ -1,38 +1,14 @@
-# Blender MTL File: 'tree8LP.blend'
-# Material Count: 3
+# Blender MTL File: 'None'
+# Material Count: 1
 
-newmtl Material
-Ns 96.078431
+newmtl TREE8
+Ns 225.000000
 Ka 1.000000 1.000000 1.000000
-Kd 0.640000 0.640000 0.640000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
+Ke 0.0 0.0 0.0
+Ni 1.450000
 d 1.000000
 illum 2
-map_Kd tree.jpg
-map_Ks tree_spec.jpg
-
-newmtl Material.001
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.640000 0.640000 0.640000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd foliage.png
-map_Ks foliage_spec.png
-
-newmtl foliage2
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.640000 0.640000 0.640000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd foliage2.png
-map_Ks foliage2_spec.png
+map_Kd texture\\TREE8_Base_ColorLP.png
+map_Ks texture\\TREE8_RoughnessLP.png

@@ -1,34 +1,14 @@
-# Blender MTL File: 'tree3_2LP.blend'
-# Material Count: 3
+# Blender MTL File: 'None'
+# Material Count: 1
 
-newmtl None
-Ns 0
-Ka 0.000000 0.000000 0.000000
-Kd 0.8 0.8 0.8
-Ks 0.8 0.8 0.8
-d 1
-illum 2
-map_Kd nut.png
-
-newmtl foliage-red
-Ns 96.078431
+newmtl tree3_2
+Ns 140.466394
 Ka 1.000000 1.000000 1.000000
-Kd 0.640000 0.640000 0.640000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
+Ke 0.0 0.0 0.0
+Ni 1.450000
 d 1.000000
 illum 2
-map_Kd foliage-red.png
-
-newmtl foliage1
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.640000 0.640000 0.640000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd foliage1.png
-map_Ks foliage1_spec.png
+map_Kd texture\\tree3-2_Base_ColorLP.png
+map_Ks texture\\tree3-2_Specular_levelLP.png
