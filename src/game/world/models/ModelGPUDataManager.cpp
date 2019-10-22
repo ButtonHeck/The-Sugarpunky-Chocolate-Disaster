@@ -45,21 +45,21 @@ void ModelGPUDataManager::setupBuffers( const std::vector<ModelVertex> & vertice
 {
 	indicesCount = indices.size();
 	basicGLBuffers.bind( VAO | VBO | EBO );
-	glBufferData( GL_ARRAY_BUFFER, sizeof( ModelVertex ) * vertices.size(), &vertices[0], GL_STATIC_DRAW );
+	glBufferData( GL_ARRAY_BUFFER, MODEL_VERTEX_SIZE * vertices.size(), &vertices[0], GL_STATIC_DRAW );
 	glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( GLuint ) * indicesCount, &indices[0], GL_STATIC_DRAW );
 	glEnableVertexAttribArray( 0 );
-	glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof( ModelVertex ), (void*)0 );
+	glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, MODEL_VERTEX_SIZE, (void*)0 );
 	glEnableVertexAttribArray( 1 );
-	glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof( ModelVertex ), (void*)offsetof( ModelVertex, Normal ) );
+	glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, MODEL_VERTEX_SIZE, (void*)offsetof( ModelVertexImpl, Normal ) );
 	glEnableVertexAttribArray( 2 );
-	glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, sizeof( ModelVertex ), (void*)offsetof( ModelVertex, TexCoords ) );
+	glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, MODEL_VERTEX_SIZE, (void*)offsetof( ModelVertexImpl, TexCoords ) );
 	glEnableVertexAttribArray( 3 );
-	glVertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof( ModelVertex ), (void*)offsetof( ModelVertex, Tangent ) );
+	glVertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, MODEL_VERTEX_SIZE, (void*)offsetof( ModelVertexImpl, Tangent ) );
 	glEnableVertexAttribArray( 4 );
-	glVertexAttribPointer( 4, 3, GL_FLOAT, GL_FALSE, sizeof( ModelVertex ), (void*)offsetof( ModelVertex, Bitangent ) );
+	glVertexAttribPointer( 4, 3, GL_FLOAT, GL_FALSE, MODEL_VERTEX_SIZE, (void*)offsetof( ModelVertexImpl, Bitangent ) );
 	glEnableVertexAttribArray( 9 );
 	//intentionally set GL_FLOAT although the data is a pair of unsigned integers
-	glVertexAttribPointer( 9, 2, GL_FLOAT, GL_FALSE, sizeof( ModelVertex ), (void*)offsetof( ModelVertex, TexIndices ) );
+	glVertexAttribPointer( 9, 2, GL_FLOAT, GL_FALSE, MODEL_VERTEX_SIZE, (void*)offsetof( ModelVertexImpl, TexIndices ) );
 
 	if( useIndirectBuffer )
 	{

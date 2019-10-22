@@ -20,51 +20,17 @@
 
 #include "ModelVertex"
 
+#include <cstring>
+
 /**
 * @brief constructor that assembles vertex out of the byte array
 * @param data byte array containing vertex data
 * @param index current vertex index in byte array (not the byte offset!)
+* @note using 'union' lets us just do memcpy
 */
 ModelVertex::ModelVertex( char * data, 
 						  int index )
 {
-	size_t byteOffset = index * sizeof( ModelVertex );
-
-	Position.x = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( Position.x );
-	Position.y = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( Position.y );
-	Position.z = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( Position.z );
-
-	Normal.x = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( Normal.x );
-	Normal.y = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( Normal.y );
-	Normal.z = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( Normal.z );
-
-	TexCoords.x = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( TexCoords.x );
-	TexCoords.y = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( TexCoords.y );
-
-	Tangent.x = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( Tangent.x );
-	Tangent.y = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( Tangent.y );
-	Tangent.z = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( Tangent.z );
-
-	Bitangent.x = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( Bitangent.x );
-	Bitangent.y = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( Bitangent.y );
-	Bitangent.z = *( reinterpret_cast<float*>( data + byteOffset ) );
-	byteOffset += sizeof( Bitangent.z );
-
-	TexIndices.x = *( reinterpret_cast<unsigned int*>( data + byteOffset ) );
-	byteOffset += sizeof( TexIndices.x );
-	TexIndices.y = *( reinterpret_cast<unsigned int*>( data + byteOffset ) );
-	byteOffset += sizeof( TexIndices.y );
+	size_t byteOffset = index * MODEL_VERTEX_SIZE;
+	memcpy( vertexRaw, data + byteOffset, MODEL_VERTEX_SIZE );
 }

@@ -24,16 +24,29 @@
 #include <glm/vec2.hpp>
 
 /**
-* @brief Representation of a model vertex
+* @brief Model vertex internal structure
 */
-struct ModelVertex
+struct ModelVertexImpl
 {
-	ModelVertex( char * data,
-				 int index );
 	glm::vec3  Position;
 	glm::vec3  Normal;
 	glm::vec2  TexCoords;
 	glm::vec3  Tangent;
 	glm::vec3  Bitangent;
 	glm::uvec2 TexIndices;
+};
+constexpr size_t MODEL_VERTEX_SIZE = sizeof( ModelVertexImpl );
+
+/**
+* @brief Representation of a model vertex
+*/
+struct ModelVertex
+{
+	ModelVertex( char * data,
+				 int index );
+	union
+	{
+		ModelVertexImpl impl;
+		char vertexRaw[MODEL_VERTEX_SIZE];
+	};	
 };
