@@ -13,6 +13,7 @@ uniform float     u_screenWidth;
 uniform float     u_aspectRatio;
 uniform bool      u_useDOF;
 uniform float     u_dofDistanceLinear;
+uniform bool	  u_useVignette;
 
 #ifdef HDR_ENABLED
 const float GAMMA = 1.4;
@@ -109,6 +110,9 @@ void main()
     #endif
 
     //finally apply vignette filter to a fragment's green and blue channels separately
-    float vignetteSampledAlpha = texture(u_vignetteTexture, v_TexCoords).a;
-    o_FragColor.gb *= 1.0 - vec2(pow(vignetteSampledAlpha, 5.0), pow(vignetteSampledAlpha, 4.0));
+	if(u_useVignette)
+	{
+		float vignetteSampledAlpha = texture(u_vignetteTexture, v_TexCoords).a;
+		o_FragColor.gb *= 1.0 - vec2(pow(vignetteSampledAlpha, 5.0), pow(vignetteSampledAlpha, 4.0));
+	}
 }

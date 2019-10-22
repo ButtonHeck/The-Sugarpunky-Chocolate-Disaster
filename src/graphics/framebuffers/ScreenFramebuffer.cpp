@@ -112,9 +112,11 @@ void ScreenFramebuffer::setupScreenQuadBuffer()
 * containing texture of current frame
 * @param useMultisampling multisampling mode flag
 * @param useDOF depth-of-field mode flag
+* @param useVignette vignette filter flag
 */
 void ScreenFramebuffer::draw( bool useMultisampling, 
-							  bool useDOF )
+							  bool useDOF,
+							  bool useVignette )
 {
 	BENCHMARK( "ScreenBuffer: draw", true );
 	if( useMultisampling )
@@ -133,8 +135,10 @@ void ScreenFramebuffer::draw( bool useMultisampling,
 	}
 
 	//activate shader and set DOF uniform state
-	shaderManager.get( SHADER_MS_TO_DEFAULT ).use();
-	shaderManager.get( SHADER_MS_TO_DEFAULT ).setBool( "u_useDOF", useDOF );
+	Shader & screenShader = shaderManager.get( SHADER_MS_TO_DEFAULT );
+	screenShader.use();
+	screenShader.setBool( "u_useDOF", useDOF );
+	screenShader.setBool( "u_useVignette", useVignette );
 
 	//render frame texture onto screen
 	screenBuffers.bind( VAO );

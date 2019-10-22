@@ -221,7 +221,7 @@ void Game::loop()
 	bool multisamplingEnabled = options[OPT_USE_MULTISAMPLING];
 	screenFramebuffer.bindAppropriateFBO( multisamplingEnabled );
 	drawFrame( projectionView );
-	screenFramebuffer.draw( multisamplingEnabled, options[OPT_USE_DOF] );
+	screenFramebuffer.draw( multisamplingEnabled, options[OPT_USE_DOF], options[OPT_USE_VIGNETTE] );
 
 	//save/load routines
 	if( options[OPT_SAVE_REQUEST] )

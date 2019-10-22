@@ -43,7 +43,8 @@ public:
 	void unbindToViewport( int viewportWidth, 
 						   int viewportHeight ) = delete;
 	void draw( bool useMultisampling, 
-			   bool useDOF );
+			   bool useDOF,
+			   bool useVignette );
 	void bindAppropriateFBO( bool enableMultisampling ) noexcept;
 
 private:

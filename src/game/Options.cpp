@@ -50,6 +50,7 @@ Options::Options() noexcept
 	options[OPT_EXPECTED_VOLUME_VISUALIZATION] = true;
 	options[OPT_ACTUAL_VOLUME_VISUALIZATION] = true;
 	options[OPT_USE_DOF] = true;
+	options[OPT_USE_VIGNETTE] = true;
 	options[OPT_GRASS_SHADOW] = false;
 	options[OPT_SHOW_VRAM_AVAILABLE] = false;
 }
