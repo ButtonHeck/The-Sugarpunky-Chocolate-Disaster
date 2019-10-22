@@ -113,6 +113,7 @@ void TextManager::addDebugText( const Camera & camera,
 	}
 	addString( ss.str(), LEFT_BORDER_OFFSET * resolutionRelativeOffset.x, screenHeight - ( UPPER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++ ) * resolutionRelativeOffset.y, scale );
 
+	ss << std::defaultfloat; //undo std::fixed
 	lineCounter = 0;
 	ss.str( "" );
 	ss << "Water culling: " << std::boolalpha << options[OPT_WATER_CULLING];
@@ -145,7 +146,7 @@ void TextManager::addDebugText( const Camera & camera,
 	addString( ss.str(), LEFT_BORDER_OFFSET * resolutionRelativeOffset.x, ( LOWER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++ ) * resolutionRelativeOffset.y, scale );
 
 	ss.str( "" );
-	ss << "Sun position: " << std::defaultfloat << std::setprecision( 3 ) << std::setw( 3 )
+	ss << "Sun position: " << std::setprecision( 3 ) << std::setw( 3 )
 		<< sunPosition.x << ": " << sunPosition.y << ": " << sunPosition.z;
 	addString( ss.str(), LEFT_BORDER_OFFSET * resolutionRelativeOffset.x, ( LOWER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++ ) * resolutionRelativeOffset.y, scale );
 }
