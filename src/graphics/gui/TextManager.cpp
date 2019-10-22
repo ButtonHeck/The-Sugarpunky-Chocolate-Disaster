@@ -81,12 +81,12 @@ void TextManager::addDebugText( const Camera & camera,
 	const float LOWER_BORDER_OFFSET = 20.0f;
 	unsigned int lineCounter = 0;
 
-	ss << "FPS: " << fps << std::setprecision( 5 ) << std::setw( 5 )
-		<< ", Frame time: " << 1.0f / fps << "ms";
+	ss << "FPS: " << fps << std::setprecision( 3 ) << std::fixed
+		<< ", Frame time: " << 1000.0f / fps << " ms";
 	addString( ss.str(), LEFT_BORDER_OFFSET * resolutionRelativeOffset.x, screenHeight - ( UPPER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++ ) * resolutionRelativeOffset.y, scale );
 
 	ss.str( "" );
-	ss << "Camera pos: " << std::setprecision( 4 ) << std::setw( 4 )
+	ss << "Camera pos: " << std::setprecision( 3 ) << std::setw( 3 )
 		<< viewPosition.x << ": " << viewPosition.y << ": " << viewPosition.z;
 	addString( ss.str(), LEFT_BORDER_OFFSET * resolutionRelativeOffset.x, screenHeight - ( UPPER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++ ) * resolutionRelativeOffset.y, scale );
 
@@ -145,7 +145,7 @@ void TextManager::addDebugText( const Camera & camera,
 	addString( ss.str(), LEFT_BORDER_OFFSET * resolutionRelativeOffset.x, ( LOWER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++ ) * resolutionRelativeOffset.y, scale );
 
 	ss.str( "" );
-	ss << "Sun position: " << std::setprecision( 3 ) << std::setw( 3 )
+	ss << "Sun position: " << std::defaultfloat << std::setprecision( 3 ) << std::setw( 3 )
 		<< sunPosition.x << ": " << sunPosition.y << ": " << sunPosition.z;
 	addString( ss.str(), LEFT_BORDER_OFFSET * resolutionRelativeOffset.x, ( LOWER_BORDER_OFFSET + CROSSLINE_OFFSET_Y * lineCounter++ ) * resolutionRelativeOffset.y, scale );
 }
