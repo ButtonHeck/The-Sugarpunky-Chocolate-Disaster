@@ -92,6 +92,11 @@ GLuint TextureLoader::loadTexture( const std::string & path,
 		internalFormat = explicitNoSRGB ? GL_RGB8 : ( HDR_ENABLED ? GL_SRGB8 : GL_RGB8 );
 		dataFormat = GL_RGB;
 	}
+	else if( textureChannels == 1 )
+	{
+		internalFormat = explicitNoSRGB ? GL_R8 : ( HDR_ENABLED ? GL_SR8_EXT : GL_R8 );
+		dataFormat = GL_RED;
+	}
 	else
 	{
 		throw std::invalid_argument( "Could not handle image with: " + std::to_string( textureChannels ) + " channels" );
