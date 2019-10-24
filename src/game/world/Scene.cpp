@@ -173,15 +173,18 @@ void Scene::drawWorld( const glm::mat4 & projectionView,
 	bool useShadows = options[OPT_USE_SHADOWS];
 	bool isDebugRender = options[OPT_DEBUG_RENDER];
 
-	hillsFacade.draw( lightDir,
-					  lightSpaceMatrices,
-					  projectionView,
-					  viewPosition,
-					  camera.getViewAcceleration(),
-					  cullingViewFrustum,
-					  options[OPT_HILLS_CULLING],
-					  useShadows,
-					  isDebugRender );
+	if( options[OPT_DRAW_HILLS] )
+	{
+		hillsFacade.draw( lightDir,
+						  lightSpaceMatrices,
+						  projectionView,
+						  viewPosition,
+						  camera.getViewAcceleration(),
+						  cullingViewFrustum,
+						  options[OPT_HILLS_CULLING],
+						  useShadows,
+						  isDebugRender );
+	}	
 
 	if( options[OPT_DRAW_LAND] )
 	{
@@ -247,11 +250,14 @@ void Scene::drawWorldDepthmap( bool grassCastShadow )
 
 	/** @todo smells like it is code duplicate, may be move this part to shader manager as separate function */
 	shaderManager.get( SHADER_SHADOW_TERRAIN ).use();
-	shaderManager.get( SHADER_SHADOW_TERRAIN ).setMat4( "u_lightSpaceMatrix[0]", lightSpaceMatrices[0] );
-	shaderManager.get( SHADER_SHADOW_TERRAIN ).setMat4( "u_lightSpaceMatrix[1]", lightSpaceMatrices[1] );
-	shaderManager.get( SHADER_SHADOW_TERRAIN ).setMat4( "u_lightSpaceMatrix[2]", lightSpaceMatrices[2] );
-	shaderManager.get( SHADER_SHADOW_TERRAIN ).setInt( "u_terrainType", 0 );
-	hillsFacade.drawDepthmap();
+	if( options[OPT_DRAW_HILLS] )
+	{
+		shaderManager.get( SHADER_SHADOW_TERRAIN ).setMat4( "u_lightSpaceMatrix[0]", lightSpaceMatrices[0] );
+		shaderManager.get( SHADER_SHADOW_TERRAIN ).setMat4( "u_lightSpaceMatrix[1]", lightSpaceMatrices[1] );
+		shaderManager.get( SHADER_SHADOW_TERRAIN ).setMat4( "u_lightSpaceMatrix[2]", lightSpaceMatrices[2] );
+		shaderManager.get( SHADER_SHADOW_TERRAIN ).setInt( "u_terrainType", 0 );
+		hillsFacade.drawDepthmap();
+	}	
 
 	shaderManager.get( SHADER_SHADOW_TERRAIN ).setInt( "u_terrainType", 1 );
 	shoreFacade.drawDepthmap();
@@ -286,15 +292,18 @@ void Scene::drawWorldReflection( const glm::mat4 & projectionView,
 	const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices = shadowVolume.getLightSpaceMatrices();
 	viewPosition.y *= -1;
 
-	hillsFacade.draw( lightDir,
-					  lightSpaceMatrices,
-					  projectionView,
-					  viewPosition,
-					  camera.getViewAcceleration(),
-					  cullingViewFrustum,
-					  options[OPT_HILLS_CULLING],
-					  options[OPT_USE_SHADOWS],
-					  false );
+	if( options[OPT_DRAW_HILLS] )
+	{
+		hillsFacade.draw( lightDir,
+						  lightSpaceMatrices,
+						  projectionView,
+						  viewPosition,
+						  camera.getViewAcceleration(),
+						  cullingViewFrustum,
+						  options[OPT_HILLS_CULLING],
+						  options[OPT_USE_SHADOWS],
+						  false );
+	}	
 
 	glEnable( GL_CLIP_DISTANCE0 );
 	shoreFacade.draw( lightDir, lightSpaceMatrices, projectionView, false, false, true, false );

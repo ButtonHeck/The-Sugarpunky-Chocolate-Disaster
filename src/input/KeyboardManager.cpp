@@ -79,7 +79,6 @@ void KeyboardManager::processInput()
 		options[OPT_LOAD_REQUEST] = true;
 	} );
 	processKey( GLFW_KEY_T, OPT_HILLS_CULLING );
-	processKey( GLFW_KEY_Y, OPT_WATER_CULLING );
 	processKey( GLFW_KEY_M, [&]()
 	{
 		options.toggle( OPT_USE_MULTISAMPLING );
@@ -95,6 +94,7 @@ void KeyboardManager::processInput()
 	processKey( GLFW_KEY_Q, OPT_USE_SHADOWS );
 	processKey( GLFW_KEY_H, OPT_DRAW_LAND );
 	processKey( GLFW_KEY_G, OPT_DRAW_WATER );
+	processKey( GLFW_KEY_Y, OPT_DRAW_HILLS );
 	processKey( GLFW_KEY_U, OPT_MODELS_LAND_BLENDING );
 	processKey( GLFW_KEY_L, OPT_POLYGON_LINE );
 	processKey( GLFW_KEY_P, OPT_DEBUG_RENDER );
