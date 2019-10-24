@@ -59,28 +59,10 @@ void Model::load( const std::string & localName )
 {
 	const ModelResource & resource = ModelResourceLoader::getModelResource( localName );
 
-	//parse vertices
-	vertices.reserve( resource.numVertices );
-	for( int vertexIndex = 0; vertexIndex < resource.numVertices; vertexIndex++ )
-	{
-		vertices.emplace_back( resource.verticesData, vertexIndex );
-	}
-
-	//parse indices
-	indices.reserve( resource.numIndices );
-	for( int nIndex = 0; nIndex < resource.numIndices; nIndex++ )
-	{
-		size_t byteOffset = nIndex * sizeof( unsigned int );
-		indices.emplace_back( *( reinterpret_cast<unsigned int*>( resource.indicesData + byteOffset ) ) );
-	}
-
 	//parse textures
 	loadTextures( resource );
 
-	GPUDataManager.setupBuffers( vertices, indices, isInstanced );
-	//once we have model's data loaded to GPU memory we don't need it on the CPU side
-	vertices.clear();
-	indices.clear();
+	GPUDataManager.setupBuffers( resource.verticesData, resource.numVertices, resource.indicesData, resource.numIndices, isInstanced );
 }
 
 /**

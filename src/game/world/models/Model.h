@@ -22,7 +22,6 @@
 
 #include "ModelGPUDataManager"
 #include "ModelRenderer"
-#include "ModelVertex"
 
 class TextureLoader;
 class ModelChunk;
@@ -58,8 +57,6 @@ private:
 	void load( const std::string & localName );
 	void loadTextures( const ModelResource & resource );
 
-	std::vector<ModelVertex> vertices;
-	std::vector<GLuint> indices;
 	bool isInstanced;
 	bool isLowPoly;
 	unsigned int numRepetitions;

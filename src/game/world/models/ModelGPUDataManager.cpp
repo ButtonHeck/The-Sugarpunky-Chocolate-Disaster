@@ -35,17 +35,21 @@ ModelGPUDataManager::ModelGPUDataManager( bool isParentModelLowPoly )
 
 /**
 * @brief setup OpenGL buffers state and buffer necessary data to GPU
-* @param vertices storage with vertices data
-* @param indices storage with indices data
+* @param vertices array of vertices data
+* @param numVertices number of vertices in array
+* @param indices array of indices data
+* @param indicesCount number of indices in array
 * @param useIndirectBuffer indicator of whether indirect buffer will be used for this model
 */
-void ModelGPUDataManager::setupBuffers( const std::vector<ModelVertex> & vertices,
-										const std::vector<GLuint> & indices, 
+void ModelGPUDataManager::setupBuffers( const char * vertices, 
+										unsigned int numVertices, 
+										const char * indices, 
+										unsigned int indicesCount, 
 										bool useIndirectBuffer )
 {
-	indicesCount = indices.size();
+	this->indicesCount = indicesCount;
 	basicGLBuffers.bind( VAO | VBO | EBO );
-	glBufferData( GL_ARRAY_BUFFER, MODEL_VERTEX_SIZE * vertices.size(), &vertices[0], GL_STATIC_DRAW );
+	glBufferData( GL_ARRAY_BUFFER, MODEL_VERTEX_SIZE * numVertices, &vertices[0], GL_STATIC_DRAW );
 	glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( GLuint ) * indicesCount, &indices[0], GL_STATIC_DRAW );
 	glEnableVertexAttribArray( 0 );
 	glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, MODEL_VERTEX_SIZE, (void*)0 );

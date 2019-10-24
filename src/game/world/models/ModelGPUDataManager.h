@@ -27,7 +27,6 @@
 #include <memory>
 
 class ModelChunk;
-class ModelVertex;
 
 /**
 * @brief manager for GPU model data. Responsible for initializing and updating data for indirect rendering of a model.
@@ -37,8 +36,10 @@ class ModelGPUDataManager
 {
 public:
 	ModelGPUDataManager( bool isParentModelLowPoly );
-	void setupBuffers( const std::vector<ModelVertex> & vertices, 
-					   const std::vector<GLuint> & indices, 
+	void setupBuffers( const char * vertices,
+					   unsigned int numVertices,
+					   const char * indices,
+					   unsigned int indicesCount,
 					   bool useIndirectBuffer );
 	void prepareIndirectBufferData( const std::vector<std::pair<ModelChunk, unsigned int> > & chunks,
 									unsigned int modelIndex,
