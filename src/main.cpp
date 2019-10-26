@@ -22,6 +22,7 @@
 #include "ScreenResolution"
 #include "Logger"
 #include "ResourceLoader"
+#include "SettingsManager"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -34,6 +35,9 @@ float debug_sunSpeed = 2.0f;
 
 int main()
 {
+	//read settings
+	SettingsManager::init( "config.ini" );
+
 	//initialize GLFW stuff
 	glfwSetErrorCallback( []( int,
 							  const char * msg )

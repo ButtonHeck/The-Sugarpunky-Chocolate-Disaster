@@ -19,8 +19,8 @@
  */
 
 #include "WaterReflectionFramebuffer"
-#include "GraphicsSettings"
 #include "TextureManager"
+#include "SettingsManager"
 
 /**
 * @brief plain ctor, additionally sends create renderbuffer call to OpenGL
@@ -47,7 +47,9 @@ void WaterReflectionFramebuffer::setup()
 	glBindFramebuffer( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureManager.get( TEX_FRAME_WATER_REFLECTION ), 0 );
 	glBindRenderbuffer( GL_RENDERBUFFER, rbo );
-	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT );
+	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 
+						   SettingsManager::getInt( "GRAPHICS", "frame_water_reflection_width" ), 
+						   SettingsManager::getInt( "GRAPHICS", "frame_water_reflection_height" ) );
 	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo );
 	checkStatus();
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );

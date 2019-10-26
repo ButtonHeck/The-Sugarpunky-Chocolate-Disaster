@@ -20,7 +20,7 @@
 
 #include "TheSunFacade"
 #include "ScreenResolution"
-#include "GraphicsSettings"
+#include "SettingsManager"
 
 /**
  * @brief initialize member variables, setup renderer point size and calculate maximum samples values
@@ -38,8 +38,8 @@ TheSunFacade::TheSunFacade( Shader & renderShader,
 	float pointSizeDivisorY = screenResolution.getHeightRatioToReference();
 	float pointSizeDivisor = ( pointSizeDivisorX + pointSizeDivisorY ) / 2;
 	//calculate adjusted point size multiplier for world reflection rendering based on current screen resolution
-	float reflectionPointSizeDivisorX = FRAME_WATER_REFLECTION_WIDTH / ScreenResolution::REFERENCE_WIDTH;
-	float reflectionPointSizeDivisorY = FRAME_WATER_REFLECTION_HEIGHT / ScreenResolution::REFERENCE_HEIGHT;
+	float reflectionPointSizeDivisorX = SettingsManager::getInt( "GRAPHICS", "frame_water_reflection_width" ) / ScreenResolution::REFERENCE_WIDTH;
+	float reflectionPointSizeDivisorY = SettingsManager::getInt( "GRAPHICS", "frame_water_reflection_height" ) / ScreenResolution::REFERENCE_HEIGHT;
 	float reflectionPointSizeDivisor = ( reflectionPointSizeDivisorX + reflectionPointSizeDivisorY ) / 2;
 
 	renderer.setPointSize( renderer.DEFAULT_SUN_POINT_SIZE * pointSizeDivisor );
@@ -48,7 +48,7 @@ TheSunFacade::TheSunFacade( Shader & renderShader,
 	//and now set maximum samples passed values after renderer has been calculated actual point size
 	float pointSize = renderer.getPointSize();
 	maxSamplesPassed = pointSize * pointSize;
-	maxSamplesPassedMultisampling = maxSamplesPassed * MULTISAMPLES;
+	maxSamplesPassedMultisampling = maxSamplesPassed * SettingsManager::getInt( "GRAPHICS", "multisamples" );
 }
 
 /**

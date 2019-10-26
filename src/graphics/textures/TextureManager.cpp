@@ -19,8 +19,8 @@
  */
 
 #include "TextureManager"
-#include "GraphicsSettings"
 #include "TextureLoader"
+#include "SettingsManager"
 
 /**
 * @brief plain ctor, initializes all non-bindless textures with appropriate parameters
@@ -48,15 +48,29 @@ TextureManager::TextureManager( TextureLoader & loader )
 	textures[TEX_SKYSPHERE_THE_SUN_AMBIENT_LIGHTING] = loader.loadTexture( "theSunEnvironmentLight.png", TEX_SKYSPHERE_THE_SUN_AMBIENT_LIGHTING, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false );
 	textures[TEX_SKYSPHERE_STARS] = loader.loadTexture( "stars.png", TEX_SKYSPHERE_STARS, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true );
 	textures[TEX_SKYSPHERE_CLOUDS] = loader.loadTexture( "cloudsSeamless.png", TEX_SKYSPHERE_CLOUDS, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, true );
-	textures[TEX_FRAME_MULTISAMPLED] = loader.createFrameMSTexture( TEX_FRAME_MULTISAMPLED, MULTISAMPLES );
+	textures[TEX_FRAME_MULTISAMPLED] = loader.createFrameMSTexture( TEX_FRAME_MULTISAMPLED, SettingsManager::getInt( "GRAPHICS", "multisamples" ) );
 	textures[TEX_FRAME] = loader.createFrameTexture( TEX_FRAME, false );
 	textures[TEX_FRAME_HDR] = loader.createFrameTexture( TEX_FRAME_HDR, false );
 	textures[TEX_FRAME_DEPTH] = loader.createFrameTexture( TEX_FRAME_DEPTH, true );
 	textures[TEX_FRAME_VIGNETTE] = loader.loadTexture( "vignetteHoneycomb.png", TEX_FRAME_VIGNETTE, GL_REPEAT, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, false, false, true );
-	textures[TEX_FRAME_WATER_REFLECTION] = loader.createFrameTextureSized( TEX_FRAME_WATER_REFLECTION, false, FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT, true );
-	textures[TEX_FRAME_WATER_REFRACTION] = loader.createFrameTextureSized( TEX_FRAME_WATER_REFRACTION, false, FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT, true );
-	textures[TEX_FRAME_WATER_REFRACTION_DEPTH] = loader.createFrameTextureSized( TEX_FRAME_WATER_REFRACTION_DEPTH, true, FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT, true );
-	textures[TEX_DEPTH_MAP_SUN] = loader.createDepthMapTexture( TEX_DEPTH_MAP_SUN, DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT );
+	textures[TEX_FRAME_WATER_REFLECTION] = loader.createFrameTextureSized( TEX_FRAME_WATER_REFLECTION, 
+																		   false, 
+																		   SettingsManager::getInt( "GRAPHICS", "frame_water_reflection_width" ), 
+																		   SettingsManager::getInt( "GRAPHICS", "frame_water_reflection_height" ), 
+																		   true );
+	textures[TEX_FRAME_WATER_REFRACTION] = loader.createFrameTextureSized( TEX_FRAME_WATER_REFRACTION, 
+																		   false, 
+																		   SettingsManager::getInt( "GRAPHICS", "frame_water_refraction_width" ), 
+																		   SettingsManager::getInt( "GRAPHICS", "frame_water_refraction_height" ), 
+																		   true );
+	textures[TEX_FRAME_WATER_REFRACTION_DEPTH] = loader.createFrameTextureSized( TEX_FRAME_WATER_REFRACTION_DEPTH, 
+																				 true, 
+																				 SettingsManager::getInt( "GRAPHICS", "frame_water_refraction_width" ), 
+																				 SettingsManager::getInt( "GRAPHICS", "frame_water_refraction_height" ), 
+																				 true );
+	textures[TEX_DEPTH_MAP_SUN] = loader.createDepthMapTexture( TEX_DEPTH_MAP_SUN, 
+																SettingsManager::getInt( "GRAPHICS", "depthmap_texture_width" ), 
+																SettingsManager::getInt( "GRAPHICS", "depthmap_texture_height" ) );
 }
 
 /**

@@ -21,10 +21,10 @@
 #include <GLFW/glfw3.h>
 #include "MouseInputManager"
 #include "SceneSettings"
-#include "GraphicsSettings"
 #include "Options"
 #include "Camera"
 #include "ScreenResolution"
+#include "SettingsManager"
 
 #include <glm/glm.hpp>
 
@@ -90,6 +90,7 @@ void MouseInputManager::cursorMoveCallback( GLFWwindow *,
 
 	if( ( *options )[OPT_SHOW_CURSOR] )
 	{
+		float nearPlane = SettingsManager::getFloat( "GRAPHICS", "near_plane" );
 		mouseInput.lastX = x;
 		mouseInput.lastY = y;
 		glfwGetCursorPos( window, &cursorScreenX, &cursorScreenY );
@@ -97,7 +98,7 @@ void MouseInputManager::cursorMoveCallback( GLFWwindow *,
 		glm::vec3 viewHorizontal = camera->getRight(); //normalized
 		glm::vec3 viewVertical = camera->getUp(); //normalized
 		float fovRad = glm::radians( camera->getZoom() );
-		float verticalLength = std::tan( fovRad / 2 ) * NEAR_PLANE;
+		float verticalLength = std::tan( fovRad / 2 ) * nearPlane;
 		float horizontalLength = verticalLength * screenResolution->getAspectRatio();
 		viewHorizontal *= horizontalLength;
 		viewVertical *= verticalLength;
@@ -109,7 +110,7 @@ void MouseInputManager::cursorMoveCallback( GLFWwindow *,
 		cursorScreenY -= halfScreenHeight;
 		cursorScreenX /= halfScreenWidth;
 		cursorScreenY /= halfScreenHeight;
-		glm::vec3 newPosition = camera->getPosition() + viewDirection * NEAR_PLANE //get point on the near plane
+		glm::vec3 newPosition = camera->getPosition() + viewDirection * nearPlane //get point on the near plane
 			+ //horizontal pick shifting corresponds with the cursor horizontal direction
 			viewHorizontal * (float)cursorScreenX //shift picked cursor point horizontally
 			- //but vertical shifting is reflected (because window coordinate system Y axis is reflected)

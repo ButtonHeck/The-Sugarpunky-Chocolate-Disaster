@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include "GraphicsSettings"
-
 #include <unordered_map>
 #include <GL/glew.h>
 #include <glm/mat4x4.hpp>

@@ -26,13 +26,14 @@
 #include "RendererState"
 #include "Shader"
 #include "BenchmarkTimer"
+#include "SettingsManager"
 
 /**
 * @brief plain ctor. Creates all the submodules, sets randomizer seed
 * @param window window of the game
 * @param screenResolution current resolution of the screen
 */
-Game::Game( GLFWwindow * window, 
+Game::Game( GLFWwindow * window,
 			const ScreenResolution & screenResolution )
 	: screenResolution( screenResolution )
 	, window( window )
@@ -40,8 +41,12 @@ Game::Game( GLFWwindow * window,
 	, camera( glm::vec3( 0.0f, 12.0f, 0.0f ) )
 	, shadowCamera( camera )
 	, shadowRegionsFrustumsRenderers( { {shadowRegionsFrustums[0], shadowRegionsFrustums[1]} } )
-	, projection( glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE ) )
-	, cullingProjection( glm::perspective( glm::radians( camera.getZoom() + 10.0f ), screenResolution.getAspectRatio(), NEAR_PLANE, FAR_PLANE ) )
+	, projection( glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(),
+									SettingsManager::getFloat( "GRAPHICS", "near_plane" ),
+									SettingsManager::getFloat( "GRAPHICS", "far_plane" ) ) )
+	, cullingProjection( glm::perspective( glm::radians( camera.getZoom() + 10.0f ), screenResolution.getAspectRatio(), 
+										   SettingsManager::getFloat( "GRAPHICS", "near_plane" ), 
+										   SettingsManager::getFloat( "GRAPHICS", "far_plane" ) ) )
 	, options()
 	, shaderManager()
 	, textureLoader( screenResolution )
@@ -65,9 +70,15 @@ Game::Game( GLFWwindow * window,
 	Model::bindTextureLoader( textureLoader );
 
 	//setup shadow volume projections
-	shadowRegionsProjections[0] = glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(), NEAR_PLANE, SHADOW_DISTANCE_LAYER1 );
-	shadowRegionsProjections[1] = glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(), SHADOW_DISTANCE_LAYER1, SHADOW_DISTANCE_LAYER2 );
-	shadowRegionsProjections[2] = glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(), SHADOW_DISTANCE_LAYER2, FAR_PLANE );
+	shadowRegionsProjections[0] = glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(), 
+													SettingsManager::getFloat( "GRAPHICS", "near_plane" ), 
+													SettingsManager::getFloat( "GRAPHICS", "shadow_distance_layer1" ) );
+	shadowRegionsProjections[1] = glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(), 
+													SettingsManager::getFloat( "GRAPHICS", "shadow_distance_layer1" ),
+													SettingsManager::getFloat( "GRAPHICS", "shadow_distance_layer2" ) );
+	shadowRegionsProjections[2] = glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(), 
+													SettingsManager::getFloat( "GRAPHICS", "shadow_distance_layer2" ),
+													SettingsManager::getFloat( "GRAPHICS", "far_plane" ) );
 
 	//threads stuff
 	modelsIndirectBufferPrepared = false;
@@ -210,9 +221,11 @@ void Game::loop()
 	*/
 	if( scene.getWaterFacade().hasWaterInFrame() )
 	{
-		reflectionFramebuffer.bindToViewport( FRAME_WATER_REFLECTION_WIDTH, FRAME_WATER_REFLECTION_HEIGHT );
+		reflectionFramebuffer.bindToViewport( SettingsManager::getInt( "GRAPHICS", "frame_water_reflection_width" ), 
+											  SettingsManager::getInt( "GRAPHICS", "frame_water_reflection_height" ) );
 		drawFrameReflection();
-		refractionFramebuffer.bindToViewport( FRAME_WATER_REFRACTION_WIDTH, FRAME_WATER_REFRACTION_HEIGHT );
+		refractionFramebuffer.bindToViewport( SettingsManager::getInt( "GRAPHICS", "frame_water_refraction_width" ),
+											  SettingsManager::getInt( "GRAPHICS", "frame_water_refraction_height" ) );
 		drawFrameRefraction( projectionView );
 		refractionFramebuffer.unbindToViewport( screenResolution.getWidth(), screenResolution.getHeight() );
 	}
@@ -403,7 +416,8 @@ void Game::drawDepthmap()
 	}
 
 	//draw scene onto depthmap
-	depthmapFramebuffer.bindToViewport( DEPTH_MAP_TEXTURE_WIDTH, DEPTH_MAP_TEXTURE_HEIGHT );
+	depthmapFramebuffer.bindToViewport( SettingsManager::getInt( "GRAPHICS", "depthmap_texture_width" ), 
+										SettingsManager::getInt( "GRAPHICS", "depthmap_texture_height" ) );
 	scene.drawWorldDepthmap( options[OPT_GRASS_SHADOW] );
 	depthmapFramebuffer.unbindToViewport( screenResolution.getWidth(), screenResolution.getHeight() );
 }

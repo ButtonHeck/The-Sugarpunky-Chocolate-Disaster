@@ -24,6 +24,7 @@
 #include "ShaderManager"
 #include "Shader"
 #include "ScreenResolution"
+#include "SettingsManager"
 
 /**
 * @brief plain ctor, externally creates multisample framebuffer object and related renderbuffer
@@ -71,7 +72,7 @@ void ScreenFramebuffer::setupFramebuffers()
 	glBindFramebuffer( GL_FRAMEBUFFER, multisampleFbo );
 	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, textureManager.get( TEX_FRAME_MULTISAMPLED ), 0 );
 	glBindRenderbuffer( GL_RENDERBUFFER, multisampleDepthRbo );
-	glRenderbufferStorageMultisample( GL_RENDERBUFFER, MULTISAMPLES, GL_DEPTH_COMPONENT24, screenResolution.getWidth(), screenResolution.getHeight() );
+	glRenderbufferStorageMultisample( GL_RENDERBUFFER, SettingsManager::getInt("GRAPHICS", "multisamples"), GL_DEPTH_COMPONENT24, screenResolution.getWidth(), screenResolution.getHeight() );
 	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, multisampleDepthRbo );
 	checkStatus();
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
@@ -79,7 +80,7 @@ void ScreenFramebuffer::setupFramebuffers()
 	//intermediate FBO (or direct off-screen FBO without multisampling)
 	glBindFramebuffer( GL_FRAMEBUFFER, fbo );
 	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-							HDR_ENABLED ? textureManager.get( TEX_FRAME_HDR ) : textureManager.get( TEX_FRAME ), 0 );
+							SettingsManager::getBool( "GRAPHICS", "hdr" ) ? textureManager.get( TEX_FRAME_HDR ) : textureManager.get( TEX_FRAME ), 0 );
 	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureManager.get( TEX_FRAME_DEPTH ), 0 );
 	checkStatus();
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );

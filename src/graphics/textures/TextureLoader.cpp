@@ -20,10 +20,10 @@
 
 #include "TextureLoader"
 #include "ScreenResolution"
-#include "GraphicsSettings"
 #include "SceneSettings"
 #include "Logger"
 #include "TextureResourceLoader"
+#include "SettingsManager"
 
 /**
 * @brief plain ctor
@@ -82,6 +82,7 @@ GLuint TextureLoader::loadTexture( const std::string & path,
 	auto textureChannels = TEXTURE_RESOURCE.channels;
 	GLenum internalFormat;
 	GLenum dataFormat;
+	const bool HDR_ENABLED = SettingsManager::getBool( "GRAPHICS", "hdr" );
 	if( textureChannels == 4 )
 	{
 		internalFormat = explicitNoSRGB ? GL_RGBA8 : ( HDR_ENABLED ? GL_SRGB8_ALPHA8 : GL_RGBA8 );
@@ -109,7 +110,7 @@ GLuint TextureLoader::loadTexture( const std::string & path,
 	setTexture2DParameters( textureID, magFilter, minFilter, wrapType );
 	if( useAnisotropy )
 	{
-		glTextureParameterf( textureID, GL_TEXTURE_MAX_ANISOTROPY, ANISOTROPY );
+		glTextureParameterf( textureID, GL_TEXTURE_MAX_ANISOTROPY, SettingsManager::getFloat( "GRAPHICS", "anisotropy" ) );
 	}
 
 	return textureID;
@@ -160,7 +161,7 @@ GLuint TextureLoader::createFrameTextureSized( GLuint textureUnit,
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 	if( useAnisotropy )
 	{
-		glTextureParameterf( textureID, GL_TEXTURE_MAX_ANISOTROPY, ANISOTROPY );
+		glTextureParameterf( textureID, GL_TEXTURE_MAX_ANISOTROPY, SettingsManager::getFloat( "GRAPHICS", "anisotropy" ) );
 	}
 	return textureID;
 }
@@ -217,6 +218,7 @@ GLuint TextureLoader::loadCubemapResource( const std::string & directory, GLuint
 		auto height = TEXTURE_RESOURCE.height;
 		GLenum internalFormat;
 		GLenum dataFormat;
+		const bool HDR_ENABLED = SettingsManager::getBool( "GRAPHICS", "hdr" );
 		if( textureChannels == 4 )
 		{
 			internalFormat = explicitNoSRGB ? GL_RGBA8 : ( HDR_ENABLED ? GL_SRGB8_ALPHA8 : GL_RGBA8 );

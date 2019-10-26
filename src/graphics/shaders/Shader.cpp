@@ -21,6 +21,7 @@
 #include "Shader"
 #include "Logger"
 #include "ShaderResourceLoader"
+#include "SettingsManager"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -367,12 +368,6 @@ GLuint Shader::createShader( GLenum shaderType,
 	const ShaderResource & SHADER_RESOURCE = ShaderResourceLoader::getShaderResource( filename );
 	std::string shaderSourceString( SHADER_RESOURCE.data );
 
-	//inject pragma into source file for debug build
-#ifdef _DEBUG
-	std::string debugPragmaString = "#pragma debug(on)\n";
-	stringSrc.insert( 13, debugPragmaString );
-#endif
-
 	//inject source code from included files
 	try
 	{
@@ -388,7 +383,7 @@ GLuint Shader::createShader( GLenum shaderType,
 	 * inject macro in source file if it has some HDR stuff (which is reflected in filename)
 	 * and if HDR mode is enabled in the game
 	 */
-	if( filename.find_first_of( "_hdr" ) != std::string::npos && HDR_ENABLED )
+	if( filename.find_first_of( "_hdr" ) != std::string::npos && SettingsManager::getBool( "GRAPHICS", "hdr" ) )
 	{
 		regexReplace( shaderSourceString, "#version 450\n", "#version 450\n#define HDR_ENABLED\n" );
 	}
