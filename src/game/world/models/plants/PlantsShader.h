@@ -23,7 +23,7 @@
 #include <array>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
-#include "GraphicsSettings"
+#include "GraphicsConstants"
 
 class Shader;
 

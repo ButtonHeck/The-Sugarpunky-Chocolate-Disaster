@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "GraphicsSettings"
+#include "GraphicsConstants"
 
 #include <array>
 #include <glm/vec4.hpp>

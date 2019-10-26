@@ -1,6 +1,6 @@
 /*
  * Copyright 2019 Ilya Malgin
- * GraphicsSettings.h
+ * GraphicsConstants.h
  * This file is part of The Sugarpunky Chocolate Disaster project
  *
  * The Sugarpunky Chocolate Disaster project is free software: you can redistribute it and/or modify
@@ -22,7 +22,6 @@
 
 #include <glm/vec4.hpp>
 
-//constants for lighting calculations
 const glm::vec4 NIGHT_SKY_COLOR( 0.02f, 0.0112f, 0.0088f, 1.0f );
 const glm::vec4 DAY_SKY_COLOR( 0.75f, 0.38f, 0.3f, 1.0f );
 constexpr unsigned int NUM_SHADOW_LAYERS = 3;
