@@ -47,6 +47,11 @@ SettingsManagerImpl::SettingsManagerImpl( const char * settingsFilepath )
 		if( line.find( '[' ) != std::string::npos )
 		{
 			name = line.substr( line.find( '[' ) + 1, line.find( ']' ) - 1 );
+			//check first if the settings map contains storage for a name
+			if( settings.find( name ) == settings.end() )
+			{
+				settings[name] = settingsStorage();
+			}
 			continue;
 		}
 
@@ -57,6 +62,31 @@ SettingsManagerImpl::SettingsManagerImpl( const char * settingsFilepath )
 
 		std::string settingKey = line.substr( 0, typeHintIndex );
 		std::string valueStr = line.substr( delimiterIndex + 1 );
+
+		//parse aliasing for a value string (if has one)
+		if( valueStr.find( '<' ) != std::string::npos )
+		{
+			size_t openBracketIndex = valueStr.find( '<' );
+			size_t closeBracketIndex = valueStr.find( '>' );
+			std::string aliasValueStr = valueStr.substr( openBracketIndex + 1, closeBracketIndex - 1 );
+
+			//substitute this string with a value that matches alias key (an alias key should already be in the map!)
+			switch( typeHint )
+			{
+			case 'i':
+				valueStr = std::to_string( getInt( name.c_str(), aliasValueStr.c_str() ) );
+				break;
+			case 'f':
+				valueStr = std::to_string( getFloat( name.c_str(), aliasValueStr.c_str() ) );
+				break;
+			case 'b':
+				valueStr = std::to_string( getBool( name.c_str(), aliasValueStr.c_str() ) );
+				break;
+			default:
+				Logger::log( "invalid type hint found for key: %\n", settingKey );
+				throw std::exception();
+			}
+		}
 
 		//define setting value based on a type hint (single character)
 		std::any settingValue;
@@ -74,12 +104,6 @@ SettingsManagerImpl::SettingsManagerImpl( const char * settingsFilepath )
 		default:
 			Logger::log( "invalid type hint found for key: %\n", settingKey );
 			throw std::exception();
-		}
-
-		//check first if the settings map contains storage for a name
-		if( settings.find( name ) == settings.end() )
-		{
-			settings[name] = settingsStorage();
 		}
 
 		//put setting token to the settings storage
