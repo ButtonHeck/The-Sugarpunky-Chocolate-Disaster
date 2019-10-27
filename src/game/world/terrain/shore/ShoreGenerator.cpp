@@ -19,6 +19,7 @@
  */
 
 #include "ShoreGenerator"
+#include "SettingsManager"
 
 #include <chrono>
 #include <memory>
@@ -83,7 +84,7 @@ void ShoreGenerator::generateMap()
 void ShoreGenerator::shapeShoreProfile()
 {
 	const float HEIGHT_SMOOTH_OFFSET = 0.25f;
-	float waterLevel = WATER_LEVEL + HEIGHT_SMOOTH_OFFSET;
+	float waterLevel = SettingsManager::getFloat( "SCENE", "water_level" ) + HEIGHT_SMOOTH_OFFSET;
 
 	//smooth tile below on map
 	for( unsigned int y = 1; y < WORLD_HEIGHT + 1; y++ )

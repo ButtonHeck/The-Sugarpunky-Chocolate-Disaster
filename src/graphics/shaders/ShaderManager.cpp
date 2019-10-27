@@ -163,7 +163,7 @@ void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolu
 	shader->setFloat( "u_mapDimensionReciprocal", 1.0f / (float)WORLD_WIDTH );
 	shader->setInt( "u_shadowMap", TEX_DEPTH_MAP_SUN );
 	shader->setFloat( "u_underwaterSurfaceLevel", -UNDERWATER_TILE_Y );
-	shader->setFloat( "u_waterLevel", WATER_LEVEL );
+	shader->setFloat( "u_waterLevel", SettingsManager::getFloat( "SCENE", "water_level" ) );
 	shader->setFloat( "u_bias", 1.0f / SettingsManager::getInt( "GRAPHICS", "depthmap_texture_width" ) );
 	shader->setFloat( "u_ambientDay", 0.08f );
 	shader->setFloat( "u_ambientNight", 0.03f );

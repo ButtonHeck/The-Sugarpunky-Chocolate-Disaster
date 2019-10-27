@@ -35,7 +35,11 @@ SettingsManagerImpl::SettingsManagerImpl( const char * settingsFilepath )
 	std::string line;
 	while( std::getline( settingsFileStream, line, '\n' ) )
 	{
-		lines.push_back( line );
+		//check if a line is not empty (contains only \n character) and is not a commentary (the one that starts with '#')
+		if( line.size() > 1 && line[0] != '#' )
+		{
+			lines.push_back( line );
+		}
 	}
 	settingsFileStream.close();
 

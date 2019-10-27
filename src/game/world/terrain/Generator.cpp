@@ -19,6 +19,7 @@
  */
 
 #include "Generator"
+#include "SettingsManager"
 
 #include <iomanip>
 #include <fstream>
@@ -48,6 +49,7 @@ void Generator::serialize( std::ofstream & output,
 						   bool setPrecision,
 						   unsigned int precision )
 {
+	const float WATER_LEVEL = SettingsManager::getFloat( "SCENE", "water_level" );
 	for( unsigned int row = 0; row < map.size(); row++ )
 	{
 		for( unsigned int column = 0; column < map[row].size(); )
@@ -87,6 +89,7 @@ void Generator::serialize( std::ofstream & output,
 */
 void Generator::deserialize( std::ifstream & input )
 {
+	const float WATER_LEVEL = SettingsManager::getFloat( "SCENE", "water_level" );
 	for( unsigned int row = 0; row < map.size(); row++ )
 	{
 		for( unsigned int column = 0; column < map[row].size(); )

@@ -20,6 +20,7 @@
 
 #include "WaterGenerator"
 #include "WaterShader"
+#include "SettingsManager"
 
 /**
 * @brief plain ctor
@@ -273,6 +274,7 @@ void WaterGenerator::expandWaterArea()
 */
 void WaterGenerator::generateMap()
 {
+	const float WATER_LEVEL = SettingsManager::getFloat( "SCENE", "water_level" );
 	numTiles = 0;
 	bool startAxisFromX = rand() % 2 == 0;
 	bool riverEnd = false;
@@ -581,6 +583,7 @@ void WaterGenerator::fattenKernel( int x,
 	int yBottom = ( (int)( y + shoreSizeYB + riverWidthOffset ) >= WORLD_HEIGHT ? WORLD_HEIGHT : y + shoreSizeYB + riverWidthOffset );
 
 	//pour the water around
+	const float WATER_LEVEL = SettingsManager::getFloat( "SCENE", "water_level" );
 	for( int y1 = yTop; y1 <= yBottom; y1++ )
 	{
 		for( int x1 = xLeft; x1 <= xRight; x1++ )
