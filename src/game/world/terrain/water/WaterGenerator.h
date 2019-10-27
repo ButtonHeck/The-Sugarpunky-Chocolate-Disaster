@@ -22,8 +22,6 @@
 
 #include "Generator"
 
-#include <memory>
-
 class WaterShader;
 
 /**
@@ -89,6 +87,5 @@ private:
 	WaterShader & shaders;
 	size_t numVertices;
 	size_t numTiles;
-	std::unique_ptr<GLfloat[]> vertices;
 	map2D_f postProcessMap;
 };

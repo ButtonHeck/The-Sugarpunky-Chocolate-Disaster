@@ -38,6 +38,7 @@ WaterGenerator::WaterGenerator( WaterShader & shaders )
 void WaterGenerator::setup()
 {
 	generateMap();
+
 	//if there are too little or too much water in the map - try generation again
 	const int RIVER_WIDTH_BASE = SettingsManager::getInt( "SCENE", "river_width_base" );
 	while( numTiles < WORLD_WIDTH * ( RIVER_WIDTH_BASE + 2 ) * ( RIVER_WIDTH_BASE + 2 ) * 9 ||
@@ -115,7 +116,7 @@ void WaterGenerator::createTiles()
 void WaterGenerator::fillBufferData()
 {
 	numVertices = tiles.size() * UNIQUE_VERTICES_PER_TILE * WaterVertex::NUMBER_OF_ELEMENTS;
-	vertices.reset( new GLfloat[numVertices] );
+	std::unique_ptr<GLfloat[]> vertices( new GLfloat[numVertices] );
 	const size_t INDICES_DATA_LENGTH = tiles.size() * VERTICES_PER_QUAD;
 	std::unique_ptr<GLuint[]> indices( new GLuint[INDICES_DATA_LENGTH] );
 	size_t indicesBufferIndex = 0;
