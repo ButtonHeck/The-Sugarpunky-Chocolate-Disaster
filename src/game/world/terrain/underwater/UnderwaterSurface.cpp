@@ -20,6 +20,7 @@
 
 #include "UnderwaterSurface"
 #include "SceneSettings"
+#include "SettingsManager"
 
 /**
 * @brief plain ctor, creates one huge quad representing the underwater surface
@@ -27,11 +28,12 @@
 UnderwaterSurface::UnderwaterSurface() noexcept
 	: basicGLBuffers( VAO | VBO | EBO )
 {
-	constexpr GLfloat VERTICES[20] = {
-	  -HALF_WORLD_WIDTH_F, UNDERWATER_TILE_Y, HALF_WORLD_HEIGHT_F, 0.0f,        0.0f,
-	   HALF_WORLD_WIDTH_F, UNDERWATER_TILE_Y, HALF_WORLD_HEIGHT_F, WORLD_WIDTH, 0.0f,
-	   HALF_WORLD_WIDTH_F, UNDERWATER_TILE_Y,-HALF_WORLD_HEIGHT_F, WORLD_WIDTH, WORLD_HEIGHT,
-	  -HALF_WORLD_WIDTH_F, UNDERWATER_TILE_Y,-HALF_WORLD_HEIGHT_F, 0.0f,        WORLD_HEIGHT
+	const float UNDERWATER_LEVEL = SettingsManager::getFloat( "SCENE", "underwater_level" );
+	const GLfloat VERTICES[20] = {
+	  -HALF_WORLD_WIDTH_F, UNDERWATER_LEVEL, HALF_WORLD_HEIGHT_F, 0.0f,        0.0f,
+	   HALF_WORLD_WIDTH_F, UNDERWATER_LEVEL, HALF_WORLD_HEIGHT_F, WORLD_WIDTH, 0.0f,
+	   HALF_WORLD_WIDTH_F, UNDERWATER_LEVEL,-HALF_WORLD_HEIGHT_F, WORLD_WIDTH, WORLD_HEIGHT,
+	  -HALF_WORLD_WIDTH_F, UNDERWATER_LEVEL,-HALF_WORLD_HEIGHT_F, 0.0f,        WORLD_HEIGHT
 	};
 	basicGLBuffers.bind( VAO | VBO | EBO );
 	glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( QUAD_INDICES ), QUAD_INDICES, GL_STATIC_DRAW );

@@ -124,6 +124,7 @@ private:
 	/** @todo remove this in the game release version*/
 	ShadowVolumeRenderer shadowVolumeRenderer;
 	SaveLoadManager saveLoadManager;
+	const float PLANET_MOVE_SPEED;
 
 	//input
 	KeyboardManager keyboard;

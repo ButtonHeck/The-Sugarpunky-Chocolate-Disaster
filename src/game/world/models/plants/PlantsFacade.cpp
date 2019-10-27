@@ -22,6 +22,7 @@
 #include "Generator"
 #include "BenchmarkTimer"
 #include "Model"
+#include "SettingsManager"
 
 /**
  * @param renderPhongShader compiled Phong shader program provided to a personal shader manager
@@ -199,6 +200,8 @@ void PlantsFacade::deserialize( std::ifstream & input )
 void PlantsFacade::prepareDistributionMap()
 {
 	Generator::initializeMap( distributionMap );
+
+	const int PLANTS_DISTRIBUTION_FREQUENCY = SettingsManager::getInt( "SCENE", "plants_distribution_freq" );
 
 	//for each subsequent cycle distribution kernel would be one unit wider in radius
 	for( int cycle = 1; cycle <= PLANTS_DISTRIBUTION_FREQUENCY; cycle++ )

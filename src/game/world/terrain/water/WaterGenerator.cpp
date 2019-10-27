@@ -39,6 +39,7 @@ void WaterGenerator::setup()
 {
 	generateMap();
 	//if there are too little or too much water in the map - try generation again
+	const int RIVER_WIDTH_BASE = SettingsManager::getInt( "SCENE", "river_width_base" );
 	while( numTiles < WORLD_WIDTH * ( RIVER_WIDTH_BASE + 2 ) * ( RIVER_WIDTH_BASE + 2 ) * 9 ||
 		   numTiles > WORLD_WIDTH * ( RIVER_WIDTH_BASE + 3 ) * ( RIVER_WIDTH_BASE + 3 ) * 9 )
 	{
@@ -57,6 +58,7 @@ void WaterGenerator::setupConsiderTerrain( const map2D_f & landMap )
 	initializeMap( postProcessMap );
 
 	//by this moment we have smoothed shore, so make sure that water still covers it
+	const int SHORE_SMOOTH_CYCLES = SettingsManager::getInt( "SCENE", "shore_smooth_cycles" );
 	for( unsigned int i = 0; i < SHORE_SMOOTH_CYCLES - 1; i++ )
 	{
 		expandWaterArea();
@@ -553,6 +555,7 @@ void WaterGenerator::fattenKernel( int x,
 								   bool & riverWidthIncrease )
 {
 	//calculate area coordinates to add water to
+	const int RIVER_WIDTH_BASE = SettingsManager::getInt( "SCENE", "river_width_base" );
 	int shoreSizeYT = rand() % 2 + RIVER_WIDTH_BASE;
 	int shoreSizeYB = rand() % 2 + RIVER_WIDTH_BASE;
 	int shoreSizeXL = rand() % 2 + RIVER_WIDTH_BASE;

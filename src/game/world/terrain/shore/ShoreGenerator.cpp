@@ -41,6 +41,8 @@ ShoreGenerator::ShoreGenerator( const map2D_f & waterMap )
 void ShoreGenerator::setup()
 {
 	generateMap();
+
+	const int SHORE_SMOOTH_CYCLES = SettingsManager::getInt( "SCENE", "shore_smooth_cycles" );
 	for( unsigned int cycleCount = 0; cycleCount < SHORE_SMOOTH_CYCLES; cycleCount++ )
 	{
 		shapeShoreProfile();
@@ -52,8 +54,7 @@ void ShoreGenerator::setup()
 	randomizeShore();
 	applySlopeToProfile( 2.0f );
 	correctMapAtEdges();
-	const float SHORE_CUT_LEVEL = -4.0f;
-	removeUnderwaterTiles( SHORE_CUT_LEVEL );
+	removeUnderwaterTiles( SettingsManager::getFloat( "SCENE", "underwater_level" ) );
 	createTiles();
 	createNormalMap( normalMap );
 	fillBufferData();

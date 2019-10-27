@@ -263,6 +263,7 @@ GLuint TextureLoader::createUnderwaterReliefTexture( GLuint textureUnit,
 	float waterCount;
 
 	//walk through water map and fill texture data accordingly
+	const int RIVER_WIDTH_BASE = SettingsManager::getInt( "SCENE", "river_width_base" );
 	for( int y = 1; y < WORLD_HEIGHT; y++ )
 	{
 		for( int x = 0; x < WORLD_WIDTH - 1; x++ )

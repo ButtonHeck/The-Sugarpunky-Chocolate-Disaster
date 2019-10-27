@@ -60,6 +60,7 @@ Game::Game( GLFWwindow * window,
 	, scene( shaderManager, options, textureManager, screenResolution, shadowVolume )
 	, shadowVolumeRenderer( shadowVolume )
 	, saveLoadManager( scene, camera, shadowCamera )
+	, PLANET_MOVE_SPEED( SettingsManager::getFloat( "SCENE", "planet_move_speed" ) )
 	, keyboard( window, camera, shadowCamera, options, scene.getSunFacade() )
 	, mouseInput( MouseInputManager::getInstance() )
 	, textManager( "data\\font.fnt", "font.png", shaderManager.get( SHADER_FONT ), screenResolution )

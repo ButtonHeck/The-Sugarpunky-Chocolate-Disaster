@@ -20,6 +20,7 @@
 
 #include "GrassGenerator"
 #include "Model"
+#include "SettingsManager"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -75,6 +76,8 @@ void GrassGenerator::setupMatrices( const map2D_f & landMap,
 									const map2D_f & hillMap, 
 									const map2D_i & distributionMap )
 {
+	const int PLANTS_DISTRIBUTION_FREQUENCY = SettingsManager::getInt( "SCENE", "plants_distribution_freq" );
+
     //get empty boilerplate storage to fill during (re)allocation
 	map2D_mat4 matricesStorage = substituteMatricesStorage();
 	std::uniform_real_distribution<float> modelSizeDistribution( MIN_SCALE, MAX_SCALE );

@@ -20,6 +20,7 @@
 
 #include "HillsGenerator"
 #include "HillsShader"
+#include "SettingsManager"
 
 #include <chrono>
 
@@ -244,6 +245,7 @@ void HillsGenerator::fattenKernel( int cycles )
 	const float CYCLE_FATTENING_DAMPING_FACTOR = 0.05f;
 	const float MIN_FATTENING_HEIGHT = 0.3f;
 	const float MAX_FATTENING_HEIGHT = 0.8f;
+	const int SHORE_SMOOTH_CYCLES = SettingsManager::getInt( "SCENE", "shore_smooth_cycles" );
 
 	std::uniform_real_distribution<float> heightDistribution( MIN_FATTENING_HEIGHT, MAX_FATTENING_HEIGHT );
 	for( int cycle = 1; cycle <= cycles; cycle++ )
