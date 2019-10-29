@@ -21,7 +21,6 @@
 #pragma once
 
 #include "TypeAliases"
-#include "SceneSettings"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -85,23 +84,19 @@ public:
 
 private:
 	const glm::vec3 WORLD_UP = glm::vec3( 0.0f, 1.0f, 0.0f );
-	const float FOV;
-	const float MOVE_SPEED;
-	const float INITIAL_MOUSE_SENSITIVITY;
 	const float MAX_MOUSE_SENSITIVITY = 0.02f;
 	const float MIN_MOUSE_SENSITIVITY = 0.002f;
-	const float INITIAL_VIEW_ACCELERATION_SENSITIVITY;
-	const float VIEW_ACCELERATION_DAMPENING_FACTOR;
 	/**@note this value is actually might be used during hills frustum culling*/
 	const float DEFAULT_VIEW_ACCELERATION = 20.0f;
-	const float INITIAL_MOVE_ACCELERATION_SENSITIVITY;
-	const float MOVE_ACCELERATION_DAMPENING_FACTOR;
 	const float INITIAL_YAW_ANGLE_DEGREES = -90.0f;
 	const float MAX_PITCH = 89.9f;
 	const float MIN_PITCH = -65.0f;
 	const float CAMERA_WORLD_BORDER_OFFSET = 8.0f;
+
+	//constants loaded from settings file
 	const float CAMERA_WORLD_MIN_HEIGHT;
-	const float CAMERA_WORLD_MAX_HEIGHT = 30.0f;
+	const float CAMERA_WORLD_MAX_HEIGHT;
+	const float MOVE_ACCELERATION_DAMPENING_FACTOR;
 
 	void updateDirectionVectors();
 	void diminishMoveAcceleration( float & directionAccelerationValue );
@@ -115,6 +110,7 @@ private:
 	float viewAccelerationX;
 	float viewAccelerationY;
 	float viewAccelerationSensitivity;
+	float viewAccelerationDampeningFactor;
 	float moveAccelerationSide;
 	float moveAccelerationVertical;
 	float moveAccelerationFront;

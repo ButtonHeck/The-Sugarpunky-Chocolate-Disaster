@@ -21,6 +21,7 @@
 #include "Camera"
 #include "BenchmarkTimer"
 #include "Logger"
+#include "SceneSettings"
 #include "SettingsManager"
 
 #include <iomanip>
@@ -31,20 +32,17 @@
 * @param position initial world position of a camera
 */
 Camera::Camera( glm::vec3 position )
-	: FOV( SettingsManager::getFloat( "OTHER_CRAP", "camera_fov" ) )
-	, MOVE_SPEED( SettingsManager::getFloat( "OTHER_CRAP", "camera_move_speed" ) )
-	, INITIAL_MOUSE_SENSITIVITY( SettingsManager::getFloat( "OTHER_CRAP", "camera_initial_mouse_sensitivity" ) )
-	, INITIAL_VIEW_ACCELERATION_SENSITIVITY( SettingsManager::getFloat( "OTHER_CRAP", "camera_initial_view_acceleration_sensitivity" ) )
-	, VIEW_ACCELERATION_DAMPENING_FACTOR( SettingsManager::getFloat( "OTHER_CRAP", "camera_view_acceleration_dampening_factor" ) )
-	, INITIAL_MOVE_ACCELERATION_SENSITIVITY( SettingsManager::getFloat( "OTHER_CRAP", "camera_initial_move_acceleration_sensitivity" ) )
+	: CAMERA_WORLD_MIN_HEIGHT( SettingsManager::getFloat( "OTHER_CRAP", "camera_min_height" ) )
+	, CAMERA_WORLD_MAX_HEIGHT( SettingsManager::getFloat( "OTHER_CRAP", "camera_max_height" ) )
 	, MOVE_ACCELERATION_DAMPENING_FACTOR( SettingsManager::getFloat( "OTHER_CRAP", "camera_move_acceleration_dampening_factor" ) )
-	, CAMERA_WORLD_MIN_HEIGHT( SettingsManager::getFloat( "OTHER_CRAP", "camera_min_height" ) )
-	, zoom( FOV )
-	, moveSpeed( MOVE_SPEED )
-	, mouseSensitivity( INITIAL_MOUSE_SENSITIVITY )
+
+	, zoom( SettingsManager::getFloat( "OTHER_CRAP", "camera_fov" ) )
+	, moveSpeed( SettingsManager::getFloat( "OTHER_CRAP", "camera_move_speed" ) )
+	, mouseSensitivity( SettingsManager::getFloat( "OTHER_CRAP", "camera_initial_mouse_sensitivity" ) )
 	, useAcceleration( true )
-	, viewAccelerationSensitivity( INITIAL_VIEW_ACCELERATION_SENSITIVITY )
-	, moveAccelerationSensitivity( INITIAL_MOVE_ACCELERATION_SENSITIVITY )
+	, viewAccelerationSensitivity( SettingsManager::getFloat( "OTHER_CRAP", "camera_initial_view_acceleration_sensitivity" ) )
+	, viewAccelerationDampeningFactor( SettingsManager::getFloat( "OTHER_CRAP", "camera_view_acceleration_dampening_factor" ) )
+	, moveAccelerationSensitivity( SettingsManager::getFloat( "OTHER_CRAP", "camera_initial_move_acceleration_sensitivity" ) )
 	, yaw( INITIAL_YAW_ANGLE_DEGREES )
 	, position( position )
 {
@@ -78,6 +76,7 @@ Camera & Camera::operator=( const Camera & rhs )
 {
 	if( this != &rhs )
 	{
+		this->zoom = rhs.zoom;
 		this->mouseSensitivity = rhs.mouseSensitivity;
 		this->useAcceleration = rhs.useAcceleration;
 		this->firstPersonShooterMode = rhs.firstPersonShooterMode;
@@ -88,6 +87,7 @@ Camera & Camera::operator=( const Camera & rhs )
 		this->viewAccelerationX = rhs.viewAccelerationX;
 		this->viewAccelerationY = rhs.viewAccelerationY;
 		this->viewAccelerationSensitivity = rhs.viewAccelerationSensitivity;
+		this->viewAccelerationDampeningFactor = rhs.viewAccelerationDampeningFactor;
 		this->moveAccelerationSide = rhs.moveAccelerationSide;
 		this->moveAccelerationFront = rhs.moveAccelerationFront;
 		this->moveAccelerationVertical = rhs.moveAccelerationVertical;
@@ -214,8 +214,8 @@ void Camera::updateViewDirection()
 		pitch = MIN_PITCH;
 	}
 
-	viewAccelerationX *= useAcceleration ? VIEW_ACCELERATION_DAMPENING_FACTOR : 0;
-	viewAccelerationY *= useAcceleration ? VIEW_ACCELERATION_DAMPENING_FACTOR : 0;
+	viewAccelerationX *= useAcceleration ? viewAccelerationDampeningFactor : 0;
+	viewAccelerationY *= useAcceleration ? viewAccelerationDampeningFactor : 0;
 
 	updateDirectionVectors();
 }
