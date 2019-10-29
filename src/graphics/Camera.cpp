@@ -21,6 +21,7 @@
 #include "Camera"
 #include "BenchmarkTimer"
 #include "Logger"
+#include "SettingsManager"
 
 #include <iomanip>
 #include <fstream>
@@ -30,7 +31,15 @@
 * @param position initial world position of a camera
 */
 Camera::Camera( glm::vec3 position )
-	: zoom( FOV )
+	: FOV( SettingsManager::getFloat( "OTHER_CRAP", "camera_fov" ) )
+	, MOVE_SPEED( SettingsManager::getFloat( "OTHER_CRAP", "camera_move_speed" ) )
+	, INITIAL_MOUSE_SENSITIVITY( SettingsManager::getFloat( "OTHER_CRAP", "camera_initial_mouse_sensitivity" ) )
+	, INITIAL_VIEW_ACCELERATION_SENSITIVITY( SettingsManager::getFloat( "OTHER_CRAP", "camera_initial_view_acceleration_sensitivity" ) )
+	, VIEW_ACCELERATION_DAMPENING_FACTOR( SettingsManager::getFloat( "OTHER_CRAP", "camera_view_acceleration_dampening_factor" ) )
+	, INITIAL_MOVE_ACCELERATION_SENSITIVITY( SettingsManager::getFloat( "OTHER_CRAP", "camera_initial_move_acceleration_sensitivity" ) )
+	, MOVE_ACCELERATION_DAMPENING_FACTOR( SettingsManager::getFloat( "OTHER_CRAP", "camera_move_acceleration_dampening_factor" ) )
+	, CAMERA_WORLD_MIN_HEIGHT( SettingsManager::getFloat( "OTHER_CRAP", "camera_min_height" ) )
+	, zoom( FOV )
 	, moveSpeed( MOVE_SPEED )
 	, mouseSensitivity( INITIAL_MOUSE_SENSITIVITY )
 	, useAcceleration( true )
