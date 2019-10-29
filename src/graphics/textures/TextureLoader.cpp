@@ -65,7 +65,7 @@ GLuint TextureLoader::createTextureObject( GLenum target,
 * @param isBindless defines whether this texture is a bindless one
 * @param explicitNoSRGB if true - forces RGB(A) format for texture even if HDR is enabled
 */
-GLuint TextureLoader::loadTexture( const std::string & path, 
+GLuint TextureLoader::loadTexture( const char * path, 
 								   GLuint textureUnit, 
 								   GLenum wrapType, 
 								   GLint magFilter, 
@@ -194,17 +194,17 @@ GLuint TextureLoader::createDepthMapTexture( GLuint textureUnit,
 * @param explicitNoSRGB if true - forces RGB(A) format for texture even if HDR is enabled
 * @note it is programmer's responsibility to match filenames of a cubemap sides textures with what this function demands
 */
-GLuint TextureLoader::loadCubemapResource( const std::string & directory, GLuint textureUnit, bool explicitNoSRGB )
+GLuint TextureLoader::loadCubemapResource( const char * directory, GLuint textureUnit, bool explicitNoSRGB )
 {
 	std::vector<std::string> faces;
 	faces.assign(
 		{
-				directory + "right.png",
-				directory + "left.png",
-				directory + "up.png",
-				directory + "down.png",
-				directory + "front.png",
-				directory + "back.png"
+				std::string( directory ) + "right.png",
+				std::string( directory ) + "left.png",
+				std::string( directory ) + "up.png",
+				std::string( directory ) + "down.png",
+				std::string( directory ) + "front.png",
+				std::string( directory ) + "back.png"
 		} );
 
 	GLuint textureID = createTextureObject( GL_TEXTURE_CUBE_MAP, textureUnit, false );

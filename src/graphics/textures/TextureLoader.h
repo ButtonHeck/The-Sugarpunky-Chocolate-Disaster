@@ -33,7 +33,7 @@ class TextureLoader
 {
 public:
 	TextureLoader( const ScreenResolution & screenResolution ) noexcept;
-	GLuint loadTexture( const std::string & path,
+	GLuint loadTexture( const char * path,
 						GLuint textureUnit,
 						GLenum wrapType,
 						GLint magFilter,
@@ -53,7 +53,7 @@ public:
 	GLuint createDepthMapTexture( GLuint textureUnit, 
 								  int width, 
 								  int height ) noexcept;
-	GLuint loadCubemapResource( const std::string & directory,
+	GLuint loadCubemapResource( const char * directory,
 								GLuint textureUnit,
 								bool explicitNoSRGB );
 	GLuint createUnderwaterReliefTexture( GLuint textureUnit, 
