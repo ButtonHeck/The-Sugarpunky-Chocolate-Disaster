@@ -29,6 +29,8 @@
  */
 GrassGenerator::GrassGenerator() noexcept
 	: PlantGenerator()
+	, MIN_SCALE( SettingsManager::getFloat( "GRASS", "min_scale" ) )
+	, MAX_SCALE( SettingsManager::getFloat( "GRASS", "max_scale" ) )
 {
 	models.reserve( 8 );
 	models.emplace_back( "grass/grass1/grass1.obj", false );
@@ -57,8 +59,8 @@ GrassGenerator::GrassGenerator() noexcept
  * @param hillMap map of the hills
  * @param distributionMap map filled with distribution seed values
  */
-void GrassGenerator::setup( const map2D_f & landMap, 
-							const map2D_f & hillMap, 
+void GrassGenerator::setup( const map2D_f & landMap,
+							const map2D_f & hillMap,
 							const map2D_i & distributionMap )
 {
 	initializeModelChunks( landMap );
@@ -72,13 +74,13 @@ void GrassGenerator::setup( const map2D_f & landMap,
  * @param hillMap map of the hills
  * @param distributionMap map filled with distribution seed values
  */
-void GrassGenerator::setupMatrices( const map2D_f & landMap, 
-									const map2D_f & hillMap, 
+void GrassGenerator::setupMatrices( const map2D_f & landMap,
+									const map2D_f & hillMap,
 									const map2D_i & distributionMap )
 {
 	const int PLANTS_DISTRIBUTION_FREQUENCY = SettingsManager::getInt( "SCENE", "plants_distribution_freq" );
 
-    //get empty boilerplate storage to fill during (re)allocation
+	//get empty boilerplate storage to fill during (re)allocation
 	map2D_mat4 matricesStorage = substituteMatricesStorage();
 	std::uniform_real_distribution<float> modelSizeDistribution( MIN_SCALE, MAX_SCALE );
 
@@ -100,9 +102,9 @@ void GrassGenerator::setupMatrices( const map2D_f & landMap,
 				{
 					//check if there is land and no visible hills
 					if( ( landMap[y][x] == 0 && landMap[y + 1][x + 1] == 0 && landMap[y + 1][x] == 0 && landMap[y][x + 1] == 0 ) &&
-						!( hillMap[y][x] > -HILLS_OFFSET_Y || 
-						   hillMap[y + 1][x + 1] > -HILLS_OFFSET_Y || 
-						   hillMap[y + 1][x] > -HILLS_OFFSET_Y || 
+						!( hillMap[y][x] > -HILLS_OFFSET_Y ||
+						   hillMap[y + 1][x + 1] > -HILLS_OFFSET_Y ||
+						   hillMap[y + 1][x] > -HILLS_OFFSET_Y ||
 						   hillMap[y][x + 1] > -HILLS_OFFSET_Y ) &&
 						rand() % ( PLANTS_DISTRIBUTION_FREQUENCY / 2 - 1 ) == 0 &&     //is there a randomizer "hit"
 						distributionMap[y][x] > PLANTS_DISTRIBUTION_FREQUENCY / 2 )   //is a seed value at these coordinates high enough to proceed

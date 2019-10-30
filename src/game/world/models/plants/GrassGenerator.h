@@ -34,8 +34,8 @@ public:
 				const map2D_i & distributionMap );
 
 private:
-	const float MIN_SCALE = 0.189f;
-	const float MAX_SCALE = 0.224f;
+	const float MIN_SCALE;
+	const float MAX_SCALE;
 
 	void setupMatrices( const map2D_f & landMap, 
 						const map2D_f & hillMap, 

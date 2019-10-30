@@ -29,6 +29,16 @@
  */
 HillTreesGenerator::HillTreesGenerator() noexcept
 	: PlantGenerator()
+	, MIN_SCALE_TREES( SettingsManager::getFloat( "HILL_TREES", "min_scale_trees" ) )
+	, MAX_SCALE_TREES( SettingsManager::getFloat( "HILL_TREES", "max_scale_trees" ) )
+	, MIN_SCALE_ROCKS( MIN_SCALE_TREES * SettingsManager::getFloat( "HILL_TREES", "rocks_scale_multiplier" ) )
+	, MAX_SCALE_ROCKS( MAX_SCALE_TREES * SettingsManager::getFloat( "HILL_TREES", "rocks_scale_multiplier" ) )
+	, MIN_POSITION_OFFSET( SettingsManager::getFloat( "HILL_TREES", "min_position_offset" ) )
+	, MAX_POSITION_OFFSET( SettingsManager::getFloat( "HILL_TREES", "max_position_offset" ) )
+	, MIN_ROTATION_OFFSET( SettingsManager::getFloat( "HILL_TREES", "min_rotation_offset" ) )
+	, MAX_ROTATION_OFFSET( SettingsManager::getFloat( "HILL_TREES", "max_rotation_offset" ) )
+	, MAX_SURFACE_SLOPE_FOR_TREES( SettingsManager::getFloat( "HILL_TREES", "max_surface_slope_for_trees" ) )
+	, MAX_SURFACE_SLOPE_FOR_ROCKS( SettingsManager::getFloat( "HILL_TREES", "max_surface_slope_for_rocks" ) )
 {
 	models.reserve( 16 );
 	models.emplace_back( "hillTrees/hillTree1/hillTree1.obj", false, 3 );
