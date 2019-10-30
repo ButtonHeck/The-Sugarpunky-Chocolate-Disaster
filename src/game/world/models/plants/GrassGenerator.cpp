@@ -29,8 +29,6 @@
  */
 GrassGenerator::GrassGenerator() noexcept
 	: PlantGenerator()
-	, MIN_SCALE( SettingsManager::getFloat( "GRASS", "min_scale" ) )
-	, MAX_SCALE( SettingsManager::getFloat( "GRASS", "max_scale" ) )
 {
 	models.reserve( 8 );
 	models.emplace_back( "grass/grass1/grass1.obj", false );
@@ -79,6 +77,8 @@ void GrassGenerator::setupMatrices( const map2D_f & landMap,
 									const map2D_i & distributionMap )
 {
 	const int PLANTS_DISTRIBUTION_FREQUENCY = SettingsManager::getInt( "SCENE", "plants_distribution_freq" );
+	const float MIN_SCALE( SettingsManager::getFloat( "GRASS", "min_scale" ) );
+	const float MAX_SCALE( SettingsManager::getFloat( "GRASS", "max_scale" ) );
 
 	//get empty boilerplate storage to fill during (re)allocation
 	map2D_mat4 matricesStorage = substituteMatricesStorage();

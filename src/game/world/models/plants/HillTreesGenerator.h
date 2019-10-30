@@ -35,17 +35,6 @@ public:
 				const map2D_vec3 & hillsNormalMap );
 
 private:
-	const float MIN_SCALE_TREES;
-	const float MAX_SCALE_TREES;
-	const float MIN_SCALE_ROCKS;
-	const float MAX_SCALE_ROCKS;
-	const float MIN_POSITION_OFFSET;
-	const float MAX_POSITION_OFFSET;
-	const float MIN_ROTATION_OFFSET;
-	const float MAX_ROTATION_OFFSET;
-	const float MAX_SURFACE_SLOPE_FOR_TREES;
-	const float MAX_SURFACE_SLOPE_FOR_ROCKS;
-
 	void setupMatrices( const map2D_f & hillMap, 
 						const map2D_i & distributionMap, 
 						const map2D_vec3 & hillsNormalMap );
