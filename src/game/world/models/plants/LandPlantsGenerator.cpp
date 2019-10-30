@@ -93,6 +93,10 @@ void LandPlantsGenerator::setupMatrices( const map2D_f & landMap,
 										 const map2D_i & distributionMap )
 {
 	const int PLANTS_DISTRIBUTION_FREQUENCY = SettingsManager::getInt( "SCENE", "plants_distribution_freq" );
+	const float MIN_SCALE = SettingsManager::getFloat( "LAND_TREES", "min_scale" );
+	const float MAX_SCALE = SettingsManager::getFloat( "LAND_TREES", "max_scale" );
+	const float MIN_POSITION_OFFSET = SettingsManager::getFloat( "LAND_TREES", "min_position_offset" );;
+	const float MAX_POSITION_OFFSET = SettingsManager::getFloat( "LAND_TREES", "max_position_offset" );;
 
 	//get empty boilerplate storage to fill during (re)allocation
 	map2D_mat4 matricesStorage = substituteMatricesStorage();
