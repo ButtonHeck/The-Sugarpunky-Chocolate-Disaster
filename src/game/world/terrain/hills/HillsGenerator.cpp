@@ -47,8 +47,8 @@ void HillsGenerator::setup()
 {
 	//in case of recreation need to reinit maximum height value
 	maxHeight = 1.0f;
-	generateMap( 12, HILL_DENSITY::HILLS_DENSE );
-	generateMap( 6, HILL_DENSITY::HILLS_THIN );
+	generateMap( SettingsManager::getInt( "HILLS_GENERATOR", "dense_cycles" ), HILL_DENSITY::HILLS_DENSE );
+	generateMap( SettingsManager::getInt( "HILLS_GENERATOR", "thin_cycles" ), HILL_DENSITY::HILLS_THIN );
 	smoothMapSinks();
 	compressMap( 0.00f, 1.33f ); //compress entire range
 	compressMap( 0.66f * maxHeight, 2.0f ); //compress top-most peaks
