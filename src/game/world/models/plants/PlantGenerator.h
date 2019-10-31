@@ -80,19 +80,19 @@ private:
     /**
      * @brief LOADING_DISTANCE_CHUNKS define distance of how far would plain models be seen
      */
-	constexpr static unsigned int LOADING_DISTANCE_CHUNKS = 8;
-	constexpr static unsigned int LOADING_DISTANCE_UNITS = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS;
-	constexpr static unsigned int LOADING_DISTANCE_UNITS_SQUARE = LOADING_DISTANCE_UNITS * LOADING_DISTANCE_UNITS;
+	const unsigned int LOADING_DISTANCE_CHUNKS;
+	const unsigned int LOADING_DISTANCE_UNITS;
+	const unsigned int LOADING_DISTANCE_UNITS_SQUARE;
 	/**
 	 * @brief LOADING_DISTANCE_CHUNKS_LOWPOLY define distance of how far would low-poly models be seen
 	 */
-	constexpr static unsigned int LOADING_DISTANCE_CHUNKS_LOWPOLY = 32;
-	constexpr static unsigned int LOADING_DISTANCE_UNITS_LOWPOLY = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS_LOWPOLY;
-	constexpr static unsigned int LOADING_DISTANCE_UNITS_LOWPOLY_SQUARE = LOADING_DISTANCE_UNITS_LOWPOLY * LOADING_DISTANCE_UNITS_LOWPOLY;
+	const unsigned int LOADING_DISTANCE_CHUNKS_LOWPOLY;
+	const unsigned int LOADING_DISTANCE_UNITS_LOWPOLY;
+	const unsigned int LOADING_DISTANCE_UNITS_LOWPOLY_SQUARE;
 	/**
 	 * @brief LOADING_DISTANCE_CHUNKS_SHADOW define distance of how far would models be casting shadows
 	 */
-	constexpr static unsigned int LOADING_DISTANCE_CHUNKS_SHADOW = 16;
-	constexpr static unsigned int LOADING_DISTANCE_UNITS_SHADOW = CHUNK_SIZE * LOADING_DISTANCE_CHUNKS_SHADOW;
-	constexpr static unsigned int LOADING_DISTANCE_UNITS_SHADOW_SQUARE = LOADING_DISTANCE_UNITS_SHADOW * LOADING_DISTANCE_UNITS_SHADOW;
+	const unsigned int LOADING_DISTANCE_CHUNKS_SHADOW;
+	const unsigned int LOADING_DISTANCE_UNITS_SHADOW;
+	const unsigned int LOADING_DISTANCE_UNITS_SHADOW_SQUARE;
 };

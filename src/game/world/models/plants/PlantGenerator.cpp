@@ -21,6 +21,7 @@
 #include "PlantGenerator"
 #include "Model"
 #include "Camera"
+#include "SettingsManager"
 
 #include <iomanip>
 #include <chrono>
@@ -31,6 +32,17 @@
  * @brief sets seed for randomizer
  */
 PlantGenerator::PlantGenerator() noexcept
+	: LOADING_DISTANCE_CHUNKS( SettingsManager::getInt( "PLANT_GENERATOR", "loading_distance_chunks" ) )
+	, LOADING_DISTANCE_UNITS( CHUNK_SIZE * LOADING_DISTANCE_CHUNKS )
+	, LOADING_DISTANCE_UNITS_SQUARE( LOADING_DISTANCE_UNITS * LOADING_DISTANCE_UNITS )
+
+	, LOADING_DISTANCE_CHUNKS_LOWPOLY( SettingsManager::getInt( "PLANT_GENERATOR", "loading_distance_chunks_lowpoly" ) )
+	, LOADING_DISTANCE_UNITS_LOWPOLY( CHUNK_SIZE * LOADING_DISTANCE_CHUNKS_LOWPOLY )
+	, LOADING_DISTANCE_UNITS_LOWPOLY_SQUARE( LOADING_DISTANCE_UNITS_LOWPOLY * LOADING_DISTANCE_UNITS_LOWPOLY )
+
+	, LOADING_DISTANCE_CHUNKS_SHADOW( SettingsManager::getInt( "PLANT_GENERATOR", "loading_distance_chunks_shadow" ) )
+	, LOADING_DISTANCE_UNITS_SHADOW( CHUNK_SIZE * LOADING_DISTANCE_CHUNKS_SHADOW )
+	, LOADING_DISTANCE_UNITS_SHADOW_SQUARE( LOADING_DISTANCE_UNITS_SHADOW * LOADING_DISTANCE_UNITS_SHADOW )
 {
 	static bool randomizerInitialized = false;
 	if( !randomizerInitialized )
@@ -89,12 +101,12 @@ void PlantGenerator::initializeModelRenderChunks( const map2D_f & map,
 
 	for( ModelChunk & renderChunk : renderChunks )
 	{
-		float mapMaxHeight = glm::max( 
-									glm::max( 
-										glm::max( map[renderChunk.getTop()][renderChunk.getLeft()], 
-												  map[renderChunk.getBottom()][renderChunk.getLeft()] ),
-										map[renderChunk.getTop()][renderChunk.getRight()] ), 
-									map[renderChunk.getBottom()][renderChunk.getRight()] );
+		float mapMaxHeight = glm::max(
+			glm::max(
+				glm::max( map[renderChunk.getTop()][renderChunk.getLeft()],
+						  map[renderChunk.getBottom()][renderChunk.getLeft()] ),
+				map[renderChunk.getTop()][renderChunk.getRight()] ),
+			map[renderChunk.getBottom()][renderChunk.getRight()] );
 		renderChunk.setHeight( glm::max( approximateHeight, mapMaxHeight + approximateHeight ) );
 	}
 }
@@ -252,7 +264,7 @@ void PlantGenerator::deserialize( std::ifstream & input )
  * @param viewFrustum frustum to perform CPU culling
  * @param hillMap map of the hills
  */
-void PlantGenerator::prepareIndirectBufferData( const Camera & camera, 
+void PlantGenerator::prepareIndirectBufferData( const Camera & camera,
 												const Frustum & viewFrustum,
 												const map2D_f & hillMap )
 {
@@ -365,12 +377,12 @@ map2D_mat4 PlantGenerator::substituteMatricesStorage()
 * @param hillMap map of the hills
 * @return true if this chunk is occluded by hills
 */
-bool PlantGenerator::testHillsOcclusionChunk( const Camera & camera, 
-											  const ModelChunk & chunk, 
+bool PlantGenerator::testHillsOcclusionChunk( const Camera & camera,
+											  const ModelChunk & chunk,
 											  const map2D_f & hillMap )
 {
-	const glm::vec3 VIEW_POSITION( camera.getPosition().x + HALF_WORLD_WIDTH, 
-								   camera.getPosition().y, 
+	const glm::vec3 VIEW_POSITION( camera.getPosition().x + HALF_WORLD_WIDTH,
+								   camera.getPosition().y,
 								   camera.getPosition().z + HALF_WORLD_HEIGHT );
 	const float CHUNK_APPROXIMATE_HEIGHT = chunk.getHeight();
 	const glm::vec3 CHUNK_LL( chunk.getLeft(), CHUNK_APPROXIMATE_HEIGHT, chunk.getBottom() );
@@ -391,7 +403,7 @@ bool PlantGenerator::testHillsOcclusionChunk( const Camera & camera,
 * @param viewPosition current position of the camera
 * @param hillMap map of the hills
 */
-bool PlantGenerator::testHillsOcclusionPoint( const glm::vec3 & point, 
+bool PlantGenerator::testHillsOcclusionPoint( const glm::vec3 & point,
 											  const glm::vec3 & viewPosition,
 											  const map2D_f & hillMap )
 {
