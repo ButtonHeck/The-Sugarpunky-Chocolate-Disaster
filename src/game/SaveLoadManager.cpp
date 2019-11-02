@@ -41,12 +41,12 @@ SaveLoadManager::SaveLoadManager( Scene & scene,
 * @brief handles file saving routine
 * @param filename string file name to write data to
 */
-bool SaveLoadManager::saveToFile( const std::string & filename )
+bool SaveLoadManager::saveToFile( const char * filename )
 {
 	std::ofstream output( filename );
 	if( !output )
 	{
-		Logger::log( "Could not open file for saving: %\n", filename.c_str() );
+		Logger::log( "Could not open file for saving: %\n", filename );
 		return false;
 	}
 	scene.serialize( output );
@@ -60,12 +60,12 @@ bool SaveLoadManager::saveToFile( const std::string & filename )
 * @brief handles file loading routine
 * @param filename string file name to read data from
 */
-bool SaveLoadManager::loadFromFile( const std::string & filename )
+bool SaveLoadManager::loadFromFile( const char * filename )
 {
 	std::ifstream input( filename );
 	if( !input )
 	{
-		Logger::log( "Could not open file for loading: %\n", filename.c_str() );
+		Logger::log( "Could not open file for loading: %\n", filename );
 		return false;
 	}
 	scene.deserialize( input );

@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include <string>
-
 class Camera;
 class Scene;
 
@@ -36,8 +34,8 @@ public:
 	SaveLoadManager( Scene & scene, 
 					 Camera & camera, 
 					 Camera & shadowCamera ) noexcept;
-	bool saveToFile( const std::string & filename );
-	bool loadFromFile( const std::string & filename );
+	bool saveToFile( const char * filename );
+	bool loadFromFile( const char * filename );
 
 private:
 	Scene & scene;

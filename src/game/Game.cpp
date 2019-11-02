@@ -44,8 +44,8 @@ Game::Game( GLFWwindow * window,
 	, projection( glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(),
 									SettingsManager::getFloat( "GRAPHICS", "near_plane" ),
 									SettingsManager::getFloat( "GRAPHICS", "far_plane" ) ) )
-	, cullingProjection( glm::perspective( glm::radians( camera.getZoom() + 10.0f ), screenResolution.getAspectRatio(), 
-										   SettingsManager::getFloat( "GRAPHICS", "near_plane" ), 
+	, cullingProjection( glm::perspective( glm::radians( camera.getZoom() + 10.0f ), screenResolution.getAspectRatio(),
+										   SettingsManager::getFloat( "GRAPHICS", "near_plane" ),
 										   SettingsManager::getFloat( "GRAPHICS", "far_plane" ) ) )
 	, options()
 	, shaderManager()
@@ -70,13 +70,13 @@ Game::Game( GLFWwindow * window,
 	Model::bindTextureLoader( textureLoader );
 
 	//setup shadow volume projections
-	shadowRegionsProjections[0] = glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(), 
-													SettingsManager::getFloat( "GRAPHICS", "near_plane" ), 
+	shadowRegionsProjections[0] = glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(),
+													SettingsManager::getFloat( "GRAPHICS", "near_plane" ),
 													SettingsManager::getFloat( "GRAPHICS", "shadow_distance_layer1" ) );
-	shadowRegionsProjections[1] = glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(), 
+	shadowRegionsProjections[1] = glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(),
 													SettingsManager::getFloat( "GRAPHICS", "shadow_distance_layer1" ),
 													SettingsManager::getFloat( "GRAPHICS", "shadow_distance_layer2" ) );
-	shadowRegionsProjections[2] = glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(), 
+	shadowRegionsProjections[2] = glm::perspective( glm::radians( camera.getZoom() ), screenResolution.getAspectRatio(),
 													SettingsManager::getFloat( "GRAPHICS", "shadow_distance_layer2" ),
 													SettingsManager::getFloat( "GRAPHICS", "far_plane" ) );
 
@@ -221,7 +221,7 @@ void Game::loop()
 	*/
 	if( scene.getWaterFacade().hasWaterInFrame() )
 	{
-		reflectionFramebuffer.bindToViewport( SettingsManager::getInt( "GRAPHICS", "frame_water_reflection_width" ), 
+		reflectionFramebuffer.bindToViewport( SettingsManager::getInt( "GRAPHICS", "frame_water_reflection_width" ),
 											  SettingsManager::getInt( "GRAPHICS", "frame_water_reflection_height" ) );
 		drawFrameReflection();
 		refractionFramebuffer.bindToViewport( SettingsManager::getInt( "GRAPHICS", "frame_water_refraction_width" ),
@@ -416,7 +416,7 @@ void Game::drawDepthmap()
 	}
 
 	//draw scene onto depthmap
-	depthmapFramebuffer.bindToViewport( SettingsManager::getInt( "GRAPHICS", "depthmap_texture_width" ), 
+	depthmapFramebuffer.bindToViewport( SettingsManager::getInt( "GRAPHICS", "depthmap_texture_width" ),
 										SettingsManager::getInt( "GRAPHICS", "depthmap_texture_height" ) );
 	scene.drawWorldDepthmap( options[OPT_GRASS_SHADOW] );
 	depthmapFramebuffer.unbindToViewport( screenResolution.getWidth(), screenResolution.getHeight() );
@@ -428,7 +428,7 @@ void Game::drawDepthmap()
 */
 void Game::saveState()
 {
-	saveLoadManager.saveToFile( SAVES_DIR + "testSave.txt" );
+	saveLoadManager.saveToFile( ( SAVES_DIR + "testSave.txt" ).c_str() );
 	options[OPT_SAVE_REQUEST] = false;
 }
 
@@ -438,7 +438,7 @@ void Game::saveState()
 */
 void Game::loadState()
 {
-	saveLoadManager.loadFromFile( SAVES_DIR + "testSave.txt" );
+	saveLoadManager.loadFromFile( ( SAVES_DIR + "testSave.txt" ).c_str() );
 	scene.load();
 	options[OPT_LOAD_REQUEST] = false;
 }
