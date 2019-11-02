@@ -82,6 +82,8 @@ public:
 	SkysphereFacade & getSkysphereFacade() noexcept;
 	LandFacade & getLandFacade() noexcept;
 
+	const float PLANET_MOVE_SPEED;
+
 private:
 	ShaderManager & shaderManager;
 	Options & options;

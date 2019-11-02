@@ -60,7 +60,6 @@ Game::Game( GLFWwindow * window,
 	, scene( shaderManager, options, textureManager, screenResolution, shadowVolume )
 	, shadowVolumeRenderer( shadowVolume )
 	, saveLoadManager( scene, camera, shadowCamera )
-	, PLANET_MOVE_SPEED( SettingsManager::getFloat( "SCENE", "planet_move_speed" ) )
 	, keyboard( window, camera, shadowCamera, options, scene.getSunFacade() )
 	, mouseInput( MouseInputManager::getInstance() )
 	, textManager( "data\\font.fnt", "font.png", shaderManager.get( SHADER_FONT ), screenResolution )
@@ -165,7 +164,7 @@ void Game::loop()
 
 	//ambience update
 	scene.getSunFacade().move( TIMER_DELTA );
-	scene.getSkysphereFacade().moveStarsSkysphere( TIMER_DELTA * PLANET_MOVE_SPEED );
+	scene.getSkysphereFacade().moveStarsSkysphere( TIMER_DELTA * scene.PLANET_MOVE_SPEED );
 
 	//update sky color
 	const glm::vec4 CURRENT_COLOR = glm::mix( NIGHT_SKY_COLOR, DAY_SKY_COLOR, glm::clamp( -scene.getSunFacade().getLightDir().y * 5, 0.0f, 1.0f ) );

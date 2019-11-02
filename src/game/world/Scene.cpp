@@ -29,6 +29,7 @@
 #include "Options"
 #include "BenchmarkTimer"
 #include "Logger"
+#include "SettingsManager"
 
 /**
 * @brief plain ctor, creates subsystems objects
@@ -42,7 +43,8 @@ Scene::Scene( ShaderManager & shaderManager,
 			  TextureManager & textureManager,
 			  const ScreenResolution & screenResolution,
 			  const ShadowVolume & shadowVolume )
-	: shaderManager( shaderManager )
+	: PLANET_MOVE_SPEED( SettingsManager::getFloat( "SCENE", "planet_move_speed" ) )
+	, shaderManager( shaderManager )
 	, options( options )
 	, textureManager( textureManager )
 	, shadowVolume( shadowVolume )
