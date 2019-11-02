@@ -32,6 +32,7 @@
 */
 ShaderManager::ShaderManager() noexcept
 {
+	shaders.reserve( NUM_SHADERS );
 	shaders[SHADER_HILLS_CULLING] = Shader( { GL_VERTEX_SHADER, "hillsFC\\hillsFC.vs" },
 											{ GL_GEOMETRY_SHADER, "hillsFC\\hillsFC.gs" } );
 	shaders[SHADER_HILLS] = Shader( { GL_VERTEX_SHADER, "hills\\hills.vs" },
