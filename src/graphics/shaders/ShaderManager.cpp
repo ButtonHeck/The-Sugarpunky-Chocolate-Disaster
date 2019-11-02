@@ -135,6 +135,12 @@ ShaderManager::~ShaderManager()
 */
 void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolution )
 {
+	const float AMBIENT_DAY_TERRAIN = SettingsManager::getFloat( "SHADERS", "u_ambient_day_terrain" );
+	const float AMBIENT_DAY_PLANTS = SettingsManager::getFloat( "SHADERS", "u_ambient_day_plants" );
+	const float AMBEINT_NIGHT_TERRAIN = SettingsManager::getFloat( "SHADERS", "u_ambient_night_terrain" );
+	const float AMBIENT_NIGHT_PLANTS = SettingsManager::getFloat( "SHADERS", "u_ambient_night_plants" );
+	const int DEPTHMAP_TEXTURE_WIDTH = SettingsManager::getInt( "GRAPHICS", "depthmap_texture_width" );
+
 	Shader * shader = nullptr;
 	bindShaderUnit( shader, SHADER_HILLS );
 	shader->setInt( "u_landDiffuse[0]", TEX_LAND );
@@ -147,9 +153,9 @@ void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolu
 	shader->setFloat( "u_normalMapTilingReciprocal", NORMAL_MAP_TILING_RECIPROCAL );
 	shader->setFloat( "u_mapDimensionReciprocal", 1.0f / (float)WORLD_WIDTH );
 	shader->setInt( "u_shadowMap", TEX_DEPTH_MAP_SUN );
-	shader->setFloat( "u_bias", 3.0f / SettingsManager::getInt( "GRAPHICS", "depthmap_texture_width" ) );
-	shader->setFloat( "u_ambientDay", 0.08f );
-	shader->setFloat( "u_ambientNight", 0.03f );
+	shader->setFloat( "u_bias", SettingsManager::getFloat( "SHADERS", "hills_bias" ) / DEPTHMAP_TEXTURE_WIDTH );
+	shader->setFloat( "u_ambientDay", AMBIENT_DAY_TERRAIN );
+	shader->setFloat( "u_ambientNight", AMBEINT_NIGHT_TERRAIN );
 
 	bindShaderUnit( shader, SHADER_SHORE );
 	shader->setInt( "u_landDiffuse[0]", TEX_LAND );
@@ -164,9 +170,9 @@ void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolu
 	shader->setInt( "u_shadowMap", TEX_DEPTH_MAP_SUN );
 	shader->setFloat( "u_underwaterSurfaceLevel", -SettingsManager::getFloat( "SCENE", "underwater_level" ) );
 	shader->setFloat( "u_waterLevel", SettingsManager::getFloat( "SCENE", "water_level" ) );
-	shader->setFloat( "u_bias", 1.0f / SettingsManager::getInt( "GRAPHICS", "depthmap_texture_width" ) );
-	shader->setFloat( "u_ambientDay", 0.08f );
-	shader->setFloat( "u_ambientNight", 0.03f );
+	shader->setFloat( "u_bias", SettingsManager::getFloat( "SHADERS", "shore_bias" ) / DEPTHMAP_TEXTURE_WIDTH );
+	shader->setFloat( "u_ambientDay", AMBIENT_DAY_TERRAIN );
+	shader->setFloat( "u_ambientNight", AMBEINT_NIGHT_TERRAIN );
 
 	bindShaderUnit( shader, SHADER_UNDERWATER );
 	shader->setInt( "u_underwaterDiffuse", TEX_UNDERWATER_DIFFUSE );
@@ -174,8 +180,8 @@ void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolu
 	shader->setInt( "u_normalMap", TEX_TERRAIN_NORMAL );
 	shader->setFloat( "u_normalMapTilingReciprocal", NORMAL_MAP_TILING_RECIPROCAL );
 	shader->setFloat( "u_mapDimensionReciprocal", 1.0f / (float)WORLD_WIDTH );
-	shader->setFloat( "u_ambientDay", 0.08f );
-	shader->setFloat( "u_ambientNight", 0.03f );
+	shader->setFloat( "u_ambientDay", AMBIENT_DAY_TERRAIN );
+	shader->setFloat( "u_ambientNight", AMBEINT_NIGHT_TERRAIN );
 
 	bindShaderUnit( shader, SHADER_LAND );
 	shader->setInt( "u_landDiffuse[0]", TEX_LAND );
@@ -185,9 +191,9 @@ void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolu
 	shader->setFloat( "u_mapDimensionReciprocal", 1.0f / (float)WORLD_WIDTH );
 	shader->setFloat( "u_normalMapTilingReciprocal", NORMAL_MAP_TILING_RECIPROCAL );
 	shader->setInt( "u_shadowMap", TEX_DEPTH_MAP_SUN );
-	shader->setFloat( "u_bias", 5.0f / SettingsManager::getInt( "GRAPHICS", "depthmap_texture_width" ) );
-	shader->setFloat( "u_ambientDay", 0.08f );
-	shader->setFloat( "u_ambientNight", 0.03f );
+	shader->setFloat( "u_bias", SettingsManager::getFloat( "SHADERS", "land_bias" ) / DEPTHMAP_TEXTURE_WIDTH );
+	shader->setFloat( "u_ambientDay", AMBIENT_DAY_TERRAIN );
+	shader->setFloat( "u_ambientNight", AMBEINT_NIGHT_TERRAIN );
 
 	bindShaderUnit( shader, SHADER_WATER );
 	shader->setInt( "u_normalMap", TEX_WATER_NORMAL );
@@ -198,9 +204,9 @@ void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolu
 	shader->setInt( "u_refractionMap", TEX_FRAME_WATER_REFRACTION );
 	shader->setInt( "u_refractionDepthMap", TEX_FRAME_WATER_REFRACTION_DEPTH );
 	shader->setFloat( "u_normalMapTilingReciprocal", NORMAL_MAP_TILING_RECIPROCAL );
-	shader->setFloat( "u_bias", 4.0f / SettingsManager::getInt( "GRAPHICS", "depthmap_texture_width" ) );
-	shader->setFloat( "u_ambientDay", 0.08f );
-	shader->setFloat( "u_ambientNight", 0.03f );
+	shader->setFloat( "u_bias", SettingsManager::getFloat( "SHADERS", "water_bias" ) / DEPTHMAP_TEXTURE_WIDTH );
+	shader->setFloat( "u_ambientDay", AMBIENT_DAY_TERRAIN );
+	shader->setFloat( "u_ambientNight", AMBEINT_NIGHT_TERRAIN );
 	shader->setFloat( "u_screenWidth", screenResolution.getWidth() );
 	shader->setFloat( "u_screenHeight", screenResolution.getHeight() );
 	shader->setFloat( "u_near", SettingsManager::getFloat( "GRAPHICS", "near_plane" ) );
@@ -211,8 +217,8 @@ void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolu
 	shader->setInt( "u_skyboxNormals[1]", TEX_SKYBOX_HILLS_NEAR_NORMAL );
 	shader->setInt( "u_skyboxColor[0]", TEX_SKYBOX_HILLS_FAR );
 	shader->setInt( "u_skyboxNormals[0]", TEX_SKYBOX_HILLS_FAR_NORMAL );
-	shader->setFloat( "u_ambientDay", 0.08f );
-	shader->setFloat( "u_ambientNight", 0.03f );
+	shader->setFloat( "u_ambientDay", AMBIENT_DAY_TERRAIN );
+	shader->setFloat( "u_ambientNight", AMBEINT_NIGHT_TERRAIN );
 
 	bindShaderUnit( shader, SHADER_SUN );
 	shader->setInt( "u_texture", TEX_THE_SUN );
@@ -223,15 +229,15 @@ void ShaderManager::setupConstantUniforms( const ScreenResolution & screenResolu
 
 	bindShaderUnit( shader, SHADER_MODELS_GOURAUD );
 	shader->setInt( "u_shadowMap", TEX_DEPTH_MAP_SUN );
-	shader->setFloat( "u_bias", 8.0f / SettingsManager::getInt( "GRAPHICS", "depthmap_texture_width" ) );
-	shader->setFloat( "u_ambientDay", 0.16f );
-	shader->setFloat( "u_ambientNight", 0.03f );
+	shader->setFloat( "u_bias", SettingsManager::getFloat( "SHADERS", "models_bias" ) / DEPTHMAP_TEXTURE_WIDTH );
+	shader->setFloat( "u_ambientDay", AMBIENT_DAY_PLANTS );
+	shader->setFloat( "u_ambientNight", AMBIENT_NIGHT_PLANTS );
 
 	bindShaderUnit( shader, SHADER_MODELS_PHONG );
 	shader->setInt( "u_shadowMap", TEX_DEPTH_MAP_SUN );
-	shader->setFloat( "u_bias", 8.0f / SettingsManager::getInt( "GRAPHICS", "depthmap_texture_width" ) );
-	shader->setFloat( "u_ambientDay", 0.16f );
-	shader->setFloat( "u_ambientNight", 0.03f );
+	shader->setFloat( "u_bias", SettingsManager::getFloat( "SHADERS", "models_bias" ) / DEPTHMAP_TEXTURE_WIDTH );
+	shader->setFloat( "u_ambientDay", AMBIENT_DAY_PLANTS );
+	shader->setFloat( "u_ambientNight", AMBIENT_NIGHT_PLANTS );
 
 	bindShaderUnit( shader, SHADER_MS_TO_DEFAULT );
 	shader->setInt( "u_frameTexture", SettingsManager::getBool( "GRAPHICS", "hdr" ) ? TEX_FRAME_HDR : TEX_FRAME );
