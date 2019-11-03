@@ -32,17 +32,17 @@
 * @param position initial world position of a camera
 */
 Camera::Camera( glm::vec3 position )
-	: CAMERA_WORLD_MIN_HEIGHT( SettingsManager::getFloat( "OTHER_CRAP", "camera_min_height" ) )
-	, CAMERA_WORLD_MAX_HEIGHT( SettingsManager::getFloat( "OTHER_CRAP", "camera_max_height" ) )
-	, MOVE_ACCELERATION_DAMPENING_FACTOR( SettingsManager::getFloat( "OTHER_CRAP", "camera_move_acceleration_dampening_factor" ) )
+	: CAMERA_WORLD_MIN_HEIGHT( SettingsManager::getFloat( "CAMERA", "min_height" ) )
+	, CAMERA_WORLD_MAX_HEIGHT( SettingsManager::getFloat( "CAMERA", "max_height" ) )
+	, MOVE_ACCELERATION_DAMPENING_FACTOR( SettingsManager::getFloat( "CAMERA", "move_acceleration_dampening_factor" ) )
 
-	, zoom( SettingsManager::getFloat( "OTHER_CRAP", "camera_fov" ) )
-	, moveSpeed( SettingsManager::getFloat( "OTHER_CRAP", "camera_move_speed" ) )
-	, mouseSensitivity( SettingsManager::getFloat( "OTHER_CRAP", "camera_initial_mouse_sensitivity" ) )
+	, zoom( SettingsManager::getFloat( "CAMERA", "fov" ) )
+	, moveSpeed( SettingsManager::getFloat( "CAMERA", "move_speed" ) )
+	, mouseSensitivity( SettingsManager::getFloat( "CAMERA", "initial_mouse_sensitivity" ) )
 	, useAcceleration( true )
-	, viewAccelerationSensitivity( SettingsManager::getFloat( "OTHER_CRAP", "camera_initial_view_acceleration_sensitivity" ) )
-	, viewAccelerationDampeningFactor( SettingsManager::getFloat( "OTHER_CRAP", "camera_view_acceleration_dampening_factor" ) )
-	, moveAccelerationSensitivity( SettingsManager::getFloat( "OTHER_CRAP", "camera_initial_move_acceleration_sensitivity" ) )
+	, viewAccelerationSensitivity( SettingsManager::getFloat( "CAMERA", "initial_view_acceleration_sensitivity" ) )
+	, viewAccelerationDampeningFactor( SettingsManager::getFloat( "CAMERA", "view_acceleration_dampening_factor" ) )
+	, moveAccelerationSensitivity( SettingsManager::getFloat( "CAMERA", "initial_move_acceleration_sensitivity" ) )
 	, yaw( INITIAL_YAW_ANGLE_DEGREES )
 	, position( position )
 {
