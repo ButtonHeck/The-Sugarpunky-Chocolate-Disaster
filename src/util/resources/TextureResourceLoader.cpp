@@ -117,7 +117,7 @@ void TextureResourceLoader::release()
 * @brief returns texture resource object for a given name
 * @param textureName local name of the texture
 */
-const TextureResource & TextureResourceLoader::getTextureResource( const std::string & textureName )
+const TextureResource & TextureResourceLoader::getTextureResource( const char * textureName )
 {
 	const TextureResource & resource = textures.at( textureName );
 	return resource;

@@ -31,8 +31,8 @@
 * @param fontFile text file representing each character parameters such as position in the texture, its width/height etc.
 * @param textureFile image file containing symbols sheet
 */
-FontLoader::FontLoader( const std::string & fontFile, 
-						const std::string & textureFile )
+FontLoader::FontLoader( const char * fontFile, 
+						const char * textureFile )
 {
 	//load font texture
 	const TextureResource & FONT_TEXTURE_RESOURCE = TextureResourceLoader::getTextureResource( textureFile );

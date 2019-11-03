@@ -44,7 +44,7 @@ public:
 	TextureResourceLoader() = delete;
 	static void initialize( const char * path );
 	static void release();
-	static const TextureResource & getTextureResource( const std::string & textureName );
+	static const TextureResource & getTextureResource( const char * textureName );
 
 private:
 	static void deserializeTexture( std::ifstream & file );

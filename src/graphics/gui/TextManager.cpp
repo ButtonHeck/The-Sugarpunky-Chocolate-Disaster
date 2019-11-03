@@ -37,8 +37,8 @@
 * @param shader shader program for text rendering
 * @param screenResolution current resolution of the screen
 */
-TextManager::TextManager( const std::string & fontFile,
-						  const std::string & fontTexture,
+TextManager::TextManager( const char * fontFile,
+						  const char * fontTexture,
 						  Shader & shader,
 						  const ScreenResolution & screenResolution )
 	: fontLoader( fontFile, fontTexture )

@@ -37,8 +37,8 @@ class MouseInputManager;
 class TextManager
 {
 public:
-	TextManager( const std::string & fontFile, 
-				 const std::string & fontTexture, 
+	TextManager( const char * fontFile, 
+				 const char * fontTexture, 
 				 Shader & shader, 
 				 const ScreenResolution & screenResolution );
 	void addDebugText( const Camera & camera,

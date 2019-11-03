@@ -44,8 +44,8 @@ struct Character
 class FontLoader
 {
 public:
-	FontLoader( const std::string & fontFile, 
-				const std::string & fontTexture );
+	FontLoader( const char * fontFile, 
+				const char * fontTexture );
 	std::unordered_map<char, Character> & getAlphabet() noexcept;
 	GLuint getTextureWidth() const noexcept;
 	GLuint getTextureHeight() const noexcept;

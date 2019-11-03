@@ -212,7 +212,7 @@ GLuint TextureLoader::loadCubemapResource( const char * directory, GLuint textur
 	//create and initialize cubemap sides textures
 	for( unsigned int i = 0; i < faces.size(); i++ )
 	{
-		const TextureResource & TEXTURE_RESOURCE = TextureResourceLoader::getTextureResource( faces[i] );
+		const TextureResource & TEXTURE_RESOURCE = TextureResourceLoader::getTextureResource( faces[i].c_str() );
 		auto textureChannels = TEXTURE_RESOURCE.channels;
 		auto width = TEXTURE_RESOURCE.width;
 		auto height = TEXTURE_RESOURCE.height;
