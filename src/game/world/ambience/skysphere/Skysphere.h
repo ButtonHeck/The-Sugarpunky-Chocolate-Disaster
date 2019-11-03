@@ -29,7 +29,7 @@
 class Skysphere
 {
 public:
-	Skysphere( const std::string & path, 
+	Skysphere( const char * path, 
 			   const glm::mat4 & initialTransform = glm::mat4() );
 	void rotate( float angleDegrees, 
 				 const glm::vec3 & rotationVector );

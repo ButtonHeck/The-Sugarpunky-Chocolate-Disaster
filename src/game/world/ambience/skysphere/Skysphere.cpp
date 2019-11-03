@@ -26,7 +26,7 @@
  * @param path path to the .obj model file
  * @param initialTransform initial rotation transform
  */
-Skysphere::Skysphere( const std::string & path, 
+Skysphere::Skysphere( const char * path, 
 					  const glm::mat4 & initialTransform )
 	: model( path, false, 1, false )
 	, modelRotationTransform( initialTransform )

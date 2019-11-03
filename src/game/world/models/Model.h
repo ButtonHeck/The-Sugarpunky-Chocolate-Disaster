@@ -35,7 +35,7 @@ class ModelResource;
 class Model
 {
 public:
-	Model( const std::string & localName, 
+	Model( const char * localName, 
 		   bool isLowPoly, 
 		   unsigned int numRepetitions = 1, 
 		   bool isInstanced = true );
@@ -54,7 +54,7 @@ public:
 private:
 	static TextureLoader * textureLoader;
 
-	void load( const std::string & localName );
+	void load( const char * localName );
 	void loadTextures( const ModelResource & resource );
 
 	bool isInstanced;

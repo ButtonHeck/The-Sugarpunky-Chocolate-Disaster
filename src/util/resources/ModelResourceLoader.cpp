@@ -165,7 +165,7 @@ void ModelResourceLoader::release()
 * @brief return model resource object for a given name
 * @param localName local name of the model
 */
-const ModelResource & ModelResourceLoader::getModelResource( const std::string & localName )
+const ModelResource & ModelResourceLoader::getModelResource( const char * localName )
 {
 	const ModelResource & resource = models.at( localName );
 	return resource;

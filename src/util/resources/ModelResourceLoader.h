@@ -56,7 +56,7 @@ public:
 	ModelResourceLoader() = delete;
 	static void initialize( const char * path );
 	static void release();
-	static const ModelResource & getModelResource( const std::string & localName );
+	static const ModelResource & getModelResource( const char * localName );
 
 private:
 	static void deserializeModel( std::ifstream & file );

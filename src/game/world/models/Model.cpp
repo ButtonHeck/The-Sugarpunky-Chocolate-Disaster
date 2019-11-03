@@ -38,7 +38,7 @@ void Model::bindTextureLoader( TextureLoader & textureLoader ) noexcept
  * @param numRepetitions defines how many times in a row this model would be used during allocation on the map
  * @param isInstanced defines whether this model would be rendered with instancing
  */
-Model::Model( const std::string & localName,
+Model::Model( const char * localName,
 			  bool isLowPoly,
 			  unsigned int numRepetitions,
 			  bool isInstanced )
@@ -55,7 +55,7 @@ Model::Model( const std::string & localName,
  * @brief parses model resource data to own data storage
  * @param localName model's relative path and name
  */
-void Model::load( const std::string & localName )
+void Model::load( const char * localName )
 {
 	const ModelResource & resource = ModelResourceLoader::getModelResource( localName );
 
