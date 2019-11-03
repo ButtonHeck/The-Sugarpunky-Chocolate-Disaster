@@ -109,10 +109,14 @@ void main()
         o_FragColor = vec4(sampledColor, 1.0);
     #endif
 
-    //finally apply vignette filter to a fragment's green and blue channels separately
+    /*
+	 * finally apply vignette filter to a fragment's green and blue channels separately
+	 * the vignette texture supposed to be preprocessed by the resource packer,
+	 * so it rather keeps GB multiplier values applied output color components, rather than vignette colors itself
+	 */
 	if(u_useVignette)
 	{
-		float vignetteSampledAlpha = texture(u_vignetteTexture, v_TexCoords).a;
-		o_FragColor.gb *= 1.0 - vec2(pow(vignetteSampledAlpha, 5.0), pow(vignetteSampledAlpha, 4.0));
+		vec2 vignetteGB = texture(u_vignetteTexture, v_TexCoords).gb;
+		o_FragColor.gb *= 1.0 - vignetteGB;
 	}
 }
