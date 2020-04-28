@@ -12,3 +12,4 @@
 /data
 *.lnk
 /config.ini
+/docs/html/*
