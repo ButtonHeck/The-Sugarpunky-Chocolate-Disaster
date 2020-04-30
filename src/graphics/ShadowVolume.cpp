@@ -38,6 +38,19 @@ void ShadowVolume::update( const std::array<Frustum, NUM_SHADOW_LAYERS> & frustu
 	float sunAbsPositionX = sunPosition.x / HALF_WORLD_WIDTH_F;
 
 	lightDirTo = theSunFacade.getLightDir();
+
+	//in case the sun is exactly at the zenith point (or exactly "below" the world) there might be problems with calculations of lightSpace matrices
+	//this is a hackfix for such cases
+	const float ABS_X_POS_MIN_STABLE_VALUE_LIGHTDIRTO = 0.00005;
+	if( lightDirTo.x > 0.0 && lightDirTo.x < ABS_X_POS_MIN_STABLE_VALUE_LIGHTDIRTO )
+	{
+		lightDirTo.x = ABS_X_POS_MIN_STABLE_VALUE_LIGHTDIRTO;
+	}
+	else if( lightDirTo.x < 0.0 && lightDirTo.x > -ABS_X_POS_MIN_STABLE_VALUE_LIGHTDIRTO )
+	{
+		lightDirTo.x = -ABS_X_POS_MIN_STABLE_VALUE_LIGHTDIRTO;
+	}
+
 	lightDirRight = glm::normalize( glm::cross( lightDirTo, glm::vec3( 0.0f, 1.0f, 0.0f ) ) );
 	/*
 	 * for "up" vector no need to normalize it explicitly
