@@ -57,7 +57,7 @@ public:
 			   const map2D_f & hillsMap );
 	void updateViewAcceleration( float xOffset, 
 								 float yOffset ) noexcept;
-	void updateViewDirection();
+	void updateViewDirection( float frameDelta );
 	void adjustMouseSensitivity( float yOffset );
 	void updateMoveAccelerations( CAMERA_MOVE_DIRECTION dir );
 	void setYaw( float newYaw );

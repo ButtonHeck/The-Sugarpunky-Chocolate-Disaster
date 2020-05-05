@@ -28,6 +28,8 @@
 class Timer
 {
 public:
+	static constexpr double FRAME_TICK_TIME_60_FPS = 1.0 / 60.0;
+
 	Timer() noexcept;
 	float tick();
 	unsigned int getFPS() noexcept;

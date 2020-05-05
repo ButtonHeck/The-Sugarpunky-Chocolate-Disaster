@@ -23,6 +23,7 @@
 #include "Logger"
 #include "SceneSettings"
 #include "SettingsManager"
+#include "Timer"
 
 #include <iomanip>
 #include <fstream>
@@ -198,9 +199,9 @@ void Camera::updateViewAcceleration( float xOffset,
 /**
 * @brief process view direction vector's transition tick: update Euler angles with acceleration values
 * and damp acceleration itself (or set to 0 if no acceleration is used at all)
-* @todo adjust acceleration dampening so that it is independent of the game's framerate
+* @param frameDelta frame tick time used to adjust view dampening ratio depend on current average framerate
 */
-void Camera::updateViewDirection()
+void Camera::updateViewDirection( float frameDelta )
 {
 	BENCHMARK( "Camera: update view direction", true );
 	yaw -= viewAccelerationX;
@@ -214,8 +215,9 @@ void Camera::updateViewDirection()
 		pitch = MIN_PITCH;
 	}
 
-	viewAccelerationX *= useAcceleration ? viewAccelerationDampeningFactor : 0;
-	viewAccelerationY *= useAcceleration ? viewAccelerationDampeningFactor : 0;
+	const double CURRENT_FRAME_VIEW_DAMPENING_FACTOR = glm::pow( viewAccelerationDampeningFactor, frameDelta / Timer::FRAME_TICK_TIME_60_FPS );
+	viewAccelerationX *= useAcceleration ? CURRENT_FRAME_VIEW_DAMPENING_FACTOR : 0;
+	viewAccelerationY *= useAcceleration ? CURRENT_FRAME_VIEW_DAMPENING_FACTOR : 0;
 
 	updateDirectionVectors();
 }
