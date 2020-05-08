@@ -19,8 +19,10 @@
 
 #include "SettingsManagerImpl"
 #include "Logger"
+#include "defaultConfig.hpp"
 
 #include <fstream>
+#include <filesystem>
 
 /**
 * @param ctor that parses settings file
@@ -28,7 +30,19 @@
 */
 SettingsManagerImpl::SettingsManagerImpl( const char * settingsFilepath )
 {
+	if( !std::filesystem::exists(settingsFilepath) )
+	{
+		Logger::log( "% - config file not found\n", settingsFilepath );
+		std::ofstream settingsFileStreamOutput( settingsFilepath );
+		settingsFileStreamOutput << SUGARPUNK_DEFAULT_CONFIG;
+		settingsFileStreamOutput.close();
+	}
 	std::ifstream settingsFileStream( settingsFilepath );
+	if( !settingsFileStream.good() )
+	{
+		Logger::log( "% - error while opening config file\n" );
+		throw std::exception( "error while opening config file" );
+	}
 
 	//read all the lines from a file first
 	std::vector<std::string> lines;
@@ -66,31 +80,6 @@ SettingsManagerImpl::SettingsManagerImpl( const char * settingsFilepath )
 
 		std::string settingKey = line.substr( 0, typeHintIndex );
 		std::string valueStr = line.substr( delimiterIndex + 1 );
-
-		//parse aliasing for a value string (if has one)
-		if( valueStr.find( '<' ) != std::string::npos )
-		{
-			size_t openBracketIndex = valueStr.find( '<' );
-			size_t closeBracketIndex = valueStr.find( '>' );
-			std::string aliasValueStr = valueStr.substr( openBracketIndex + 1, closeBracketIndex - 1 );
-
-			//substitute this string with a value that matches alias key (an alias key should already be in the map!)
-			switch( typeHint )
-			{
-			case 'i':
-				valueStr = std::to_string( getInt( name.c_str(), aliasValueStr.c_str() ) );
-				break;
-			case 'f':
-				valueStr = std::to_string( getFloat( name.c_str(), aliasValueStr.c_str() ) );
-				break;
-			case 'b':
-				valueStr = std::to_string( getBool( name.c_str(), aliasValueStr.c_str() ) );
-				break;
-			default:
-				Logger::log( "invalid type hint found for key: %\n", settingKey );
-				throw std::exception();
-			}
-		}
 
 		//define setting value based on a type hint (single character)
 		std::any settingValue;
