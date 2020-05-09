@@ -18,5 +18,3 @@ Sugarpunk mascot
 
 ![Non-trivial shading and color saturation calculation algorithms](https://user-images.githubusercontent.com/29004250/52479573-28cdd400-2bba-11e9-8871-d4aa3ae7d35f.png)
 Non-trivial shadowing and color saturation calculation algorithms
-
-You may also check and subscribe to the dedicated [VK webpage](https://vk.com/sugarpunk) for more information about the working process or if you wish to support me :v:
