@@ -59,7 +59,8 @@ public:
 								 float yOffset ) noexcept;
 	void updateViewDirection( float frameDelta );
 	void adjustMouseSensitivity( float yOffset );
-	void updateMoveAccelerations( CAMERA_MOVE_DIRECTION dir );
+	void updateMoveAccelerations( CAMERA_MOVE_DIRECTION dir,
+								  float frameDelta );
 	void setYaw( float newYaw );
 	void setPitch( float newPitch );
 	void switchFPSmode() noexcept;
@@ -99,7 +100,8 @@ private:
 	const float MOVE_ACCELERATION_DAMPENING_FACTOR;
 
 	void updateDirectionVectors();
-	void diminishMoveAcceleration( float & directionAccelerationValue );
+	void diminishMoveAcceleration( float & directionAccelerationValue,
+								   float frameDelta );
 	void moveCameraFrontAxial( float velocity );
 
 	//options

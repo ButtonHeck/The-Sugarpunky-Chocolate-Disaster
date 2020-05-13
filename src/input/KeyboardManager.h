@@ -41,7 +41,7 @@ public:
 					 Camera & shadowCamera, 
 					 Options & options, 
 					 TheSunFacade & sun ) noexcept;
-	void processInput();
+	void processInput( float frameDelta );
 
 private:
 	void processKey( int keyCode, 

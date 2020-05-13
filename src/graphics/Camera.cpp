@@ -116,7 +116,7 @@ void Camera::move( float delta,
 	{
 		if( !accumulateMoveFront )
 		{
-			diminishMoveAcceleration( moveAccelerationFront );
+			diminishMoveAcceleration( moveAccelerationFront, delta );
 		}
 		//this kind of movement might be different from others, depending on FPS mode
 		moveCameraFrontAxial( velocity );
@@ -127,7 +127,7 @@ void Camera::move( float delta,
 	{
 		if( !accumulateMoveSide )
 		{
-			diminishMoveAcceleration( moveAccelerationSide );
+			diminishMoveAcceleration( moveAccelerationSide, delta );
 		}
 		glm::vec3 move = right * velocity * moveAccelerationSide;
 		position += move;
@@ -138,7 +138,7 @@ void Camera::move( float delta,
 	{
 		if( !accumulateMoveVertical )
 		{
-			diminishMoveAcceleration( moveAccelerationVertical );
+			diminishMoveAcceleration( moveAccelerationVertical, delta );
 		}
 		glm::vec3 move = WORLD_UP * velocity * moveAccelerationVertical;
 		position += move;
@@ -235,9 +235,13 @@ void Camera::adjustMouseSensitivity( float yOffset )
 /**
 * @brief process movement acceleration tick: for each axis and both directions check if need to accumulate acceleration
 * @param dir direction of current movement
+* @param frameDelta frame tick time used to adjust move acceleration value depend on current average framerate
 */
-void Camera::updateMoveAccelerations( CAMERA_MOVE_DIRECTION dir )
+void Camera::updateMoveAccelerations( CAMERA_MOVE_DIRECTION dir,
+									  float frameDelta )
 {
+	const double CURRENT_FRAME_MOVE_ACCELERATION_VALUE = moveAccelerationSensitivity * ( frameDelta / Timer::FRAME_TICK_TIME_60_FPS );
+
 	//forward / backward
 	if( dir == FORWARD )
 	{
@@ -248,7 +252,7 @@ void Camera::updateMoveAccelerations( CAMERA_MOVE_DIRECTION dir )
 		}
 		else
 		{
-			moveAccelerationFront += moveAccelerationSensitivity;
+			moveAccelerationFront += CURRENT_FRAME_MOVE_ACCELERATION_VALUE;
 			moveAccelerationFront = glm::min( moveAccelerationFront, 1.0f );
 		}
 	}
@@ -261,7 +265,7 @@ void Camera::updateMoveAccelerations( CAMERA_MOVE_DIRECTION dir )
 		}
 		else
 		{
-			moveAccelerationFront -= moveAccelerationSensitivity;
+			moveAccelerationFront -= CURRENT_FRAME_MOVE_ACCELERATION_VALUE;
 			moveAccelerationFront = glm::max( moveAccelerationFront, -1.0f );
 		}
 	}
@@ -276,7 +280,7 @@ void Camera::updateMoveAccelerations( CAMERA_MOVE_DIRECTION dir )
 		}
 		else
 		{
-			moveAccelerationSide += moveAccelerationSensitivity;
+			moveAccelerationSide += CURRENT_FRAME_MOVE_ACCELERATION_VALUE;
 			moveAccelerationSide = glm::min( moveAccelerationSide, 1.0f );
 		}
 	}
@@ -289,7 +293,7 @@ void Camera::updateMoveAccelerations( CAMERA_MOVE_DIRECTION dir )
 		}
 		else
 		{
-			moveAccelerationSide -= moveAccelerationSensitivity;
+			moveAccelerationSide -= CURRENT_FRAME_MOVE_ACCELERATION_VALUE;
 			moveAccelerationSide = glm::max( moveAccelerationSide, -1.0f );
 		}
 	}
@@ -304,7 +308,7 @@ void Camera::updateMoveAccelerations( CAMERA_MOVE_DIRECTION dir )
 		}
 		else
 		{
-			moveAccelerationVertical += moveAccelerationSensitivity;
+			moveAccelerationVertical += CURRENT_FRAME_MOVE_ACCELERATION_VALUE;
 			moveAccelerationVertical = glm::min( moveAccelerationVertical, 1.0f );
 		}
 	}
@@ -317,7 +321,7 @@ void Camera::updateMoveAccelerations( CAMERA_MOVE_DIRECTION dir )
 		}
 		else
 		{
-			moveAccelerationVertical -= moveAccelerationSensitivity;
+			moveAccelerationVertical -= CURRENT_FRAME_MOVE_ACCELERATION_VALUE;
 			moveAccelerationVertical = glm::max( moveAccelerationVertical, -1.0f );
 		}
 	}
@@ -457,16 +461,19 @@ void Camera::updateDirectionVectors()
 /**
 * @brief damp acceleration value of movement if acceleration is used, otherwise just set it to 0
 * @param directionAccelerationValue reference to acceleration value to damp
+* @param frameDelta frame tick time used to adjust move dampening ratio depend on current average framerate
 */
-void Camera::diminishMoveAcceleration( float & directionAccelerationValue )
+void Camera::diminishMoveAcceleration( float & directionAccelerationValue,
+									   float frameDelta )
 {
+	const double CURRENT_FRAME_MOVE_DAMPENING_FACTOR = glm::pow( MOVE_ACCELERATION_DAMPENING_FACTOR, frameDelta / Timer::FRAME_TICK_TIME_60_FPS );
 	if( !useAcceleration )
 	{
 		directionAccelerationValue = 0.0f;
 	}
 	else
 	{
-		directionAccelerationValue *= MOVE_ACCELERATION_DAMPENING_FACTOR;
+		directionAccelerationValue *= CURRENT_FRAME_MOVE_DAMPENING_FACTOR;
 		if( glm::abs( directionAccelerationValue ) <= 0.01f )
 		{
 			directionAccelerationValue = 0.0f;

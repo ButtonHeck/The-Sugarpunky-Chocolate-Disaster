@@ -47,8 +47,9 @@ KeyboardManager::KeyboardManager( GLFWwindow * window,
 
 /**
 * @brief walks through all the possible keys and processes binded events if a certain key is pressed/released
+* @param frameDelta frame tick time used to adjust camera move acceleration ratio depend on current average framerate
 */
-void KeyboardManager::processInput()
+void KeyboardManager::processInput( float frameDelta )
 {
 	if( glfwGetKey( window, GLFW_KEY_ESCAPE ) == GLFW_PRESS )
 	{
@@ -225,38 +226,38 @@ void KeyboardManager::processInput()
 	if( glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS &&
 		glfwGetKey( window, GLFW_KEY_S ) != GLFW_PRESS )
 	{
-		camera.updateMoveAccelerations( FORWARD );
-		shadowCamera.updateMoveAccelerations( FORWARD );
+		camera.updateMoveAccelerations( FORWARD, frameDelta );
+		shadowCamera.updateMoveAccelerations( FORWARD, frameDelta );
 	}
 	if( glfwGetKey( window, GLFW_KEY_S ) == GLFW_PRESS &&
 		glfwGetKey( window, GLFW_KEY_W ) != GLFW_PRESS )
 	{
-		camera.updateMoveAccelerations( BACKWARD );
-		shadowCamera.updateMoveAccelerations( BACKWARD );
+		camera.updateMoveAccelerations( BACKWARD, frameDelta );
+		shadowCamera.updateMoveAccelerations( BACKWARD, frameDelta );
 	}
 	if( glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS &&
 		glfwGetKey( window, GLFW_KEY_D ) != GLFW_PRESS )
 	{
-		camera.updateMoveAccelerations( LEFT );
-		shadowCamera.updateMoveAccelerations( LEFT );
+		camera.updateMoveAccelerations( LEFT, frameDelta );
+		shadowCamera.updateMoveAccelerations( LEFT, frameDelta );
 	}
 	if( glfwGetKey( window, GLFW_KEY_D ) == GLFW_PRESS &&
 		glfwGetKey( window, GLFW_KEY_A ) != GLFW_PRESS )
 	{
-		camera.updateMoveAccelerations( RIGHT );
-		shadowCamera.updateMoveAccelerations( RIGHT );
+		camera.updateMoveAccelerations( RIGHT, frameDelta );
+		shadowCamera.updateMoveAccelerations( RIGHT, frameDelta );
 	}
 	if( glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS &&
 		glfwGetKey( window, GLFW_KEY_SPACE ) != GLFW_PRESS )
 	{
-		camera.updateMoveAccelerations( DOWN );
-		shadowCamera.updateMoveAccelerations( DOWN );
+		camera.updateMoveAccelerations( DOWN, frameDelta );
+		shadowCamera.updateMoveAccelerations( DOWN, frameDelta );
 	}
 	if( glfwGetKey( window, GLFW_KEY_SPACE ) == GLFW_PRESS &&
 		glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) != GLFW_PRESS )
 	{
-		camera.updateMoveAccelerations( UP );
-		shadowCamera.updateMoveAccelerations( UP );
+		camera.updateMoveAccelerations( UP, frameDelta );
+		shadowCamera.updateMoveAccelerations( UP, frameDelta );
 	}
 }
 

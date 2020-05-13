@@ -136,7 +136,7 @@ void Game::loop()
 
 	{
 		BENCHMARK( "Game loop: process input and camera", true );
-		keyboard.processInput();
+		keyboard.processInput( TIMER_DELTA );
 		camera.updateViewDirection( TIMER_DELTA );
 		camera.move( TIMER_DELTA, scene.getHillsFacade().getMap() );
 
