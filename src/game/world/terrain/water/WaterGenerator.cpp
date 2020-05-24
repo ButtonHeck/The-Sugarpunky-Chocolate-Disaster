@@ -176,15 +176,20 @@ void WaterGenerator::fillBufferData()
 */
 void WaterGenerator::expandWaterArea()
 {
+	auto updatePostProcessMap = [&]( map2D_f & map, size_t sourceX, size_t sourceY, size_t conditionX, size_t conditionY )
+	{
+		if( map[conditionY][conditionX] != 0 )
+		{
+			postProcessMap[sourceY][sourceX] = map[conditionY][conditionX];
+		}
+	};
+
 	//add water above the tile
 	for( unsigned int y = 0; y < WORLD_HEIGHT - 1; y++ )
 	{
 		for( unsigned int x = 0; x < WORLD_WIDTH; x++ )
 		{
-			if( map[y + 1][x] != 0 )
-			{
-				postProcessMap[y][x] = map[y + 1][x];
-			}
+			updatePostProcessMap( map, x, y, x, y + 1 );
 		}
 	}
 	//add more water above the tile
@@ -192,10 +197,7 @@ void WaterGenerator::expandWaterArea()
 	{
 		for( unsigned int x = 0; x < WORLD_WIDTH; x++ )
 		{
-			if( postProcessMap[y + 1][x] != 0 )
-			{
-				postProcessMap[y][x] = postProcessMap[y + 1][x];
-			}
+			updatePostProcessMap( postProcessMap, x, y, x, y + 1 );
 		}
 	}
 
@@ -204,10 +206,7 @@ void WaterGenerator::expandWaterArea()
 	{
 		for( unsigned int x = 0; x < WORLD_WIDTH; x++ )
 		{
-			if( map[y - 1][x] != 0 )
-			{
-				postProcessMap[y][x] = map[y - 1][x];
-			}
+			updatePostProcessMap( map, x, y, x, y - 1 );
 		}
 	}
 	//add more water below the tile
@@ -215,10 +214,7 @@ void WaterGenerator::expandWaterArea()
 	{
 		for( unsigned int x = 0; x < WORLD_WIDTH; x++ )
 		{
-			if( postProcessMap[y - 1][x] != 0 )
-			{
-				postProcessMap[y][x] = postProcessMap[y - 1][x];
-			}
+			updatePostProcessMap( postProcessMap, x, y, x, y - 1 );
 		}
 	}
 
@@ -227,10 +223,7 @@ void WaterGenerator::expandWaterArea()
 	{
 		for( unsigned int y = 0; y < WORLD_HEIGHT; y++ )
 		{
-			if( map[y][x + 1] != 0 )
-			{
-				postProcessMap[y][x] = map[y][x + 1];
-			}
+			updatePostProcessMap( map, x, y, x + 1, y );
 		}
 	}
 	//add more water left to the tile
@@ -238,10 +231,7 @@ void WaterGenerator::expandWaterArea()
 	{
 		for( unsigned int y = 0; y < WORLD_HEIGHT; y++ )
 		{
-			if( postProcessMap[y][x + 1] != 0 )
-			{
-				postProcessMap[y][x] = postProcessMap[y][x + 1];
-			}
+			updatePostProcessMap( postProcessMap, x, y, x + 1, y );
 		}
 	}
 
@@ -250,10 +240,7 @@ void WaterGenerator::expandWaterArea()
 	{
 		for( unsigned int y = 0; y < WORLD_HEIGHT; y++ )
 		{
-			if( map[y][x - 1] != 0 )
-			{
-				postProcessMap[y][x] = map[y][x - 1];
-			}
+			updatePostProcessMap( map, x, y, x - 1, y );
 		}
 	}
 	//add more water right to the tile
@@ -261,10 +248,7 @@ void WaterGenerator::expandWaterArea()
 	{
 		for( unsigned int y = 0; y < WORLD_HEIGHT; y++ )
 		{
-			if( postProcessMap[y][x - 1] != 0 )
-			{
-				postProcessMap[y][x] = postProcessMap[y][x - 1];
-			}
+			updatePostProcessMap( postProcessMap, x, y, x - 1, y );
 		}
 	}
 }
@@ -288,7 +272,7 @@ void WaterGenerator::generateMap()
 	int riverWidthOffset = 0, kernelCounter = 0;
 	bool riverWidthIncrease = true;
 
-	auto clampRiverCoord = [&]( int & coord, int min, int max ) mutable
+	auto clampRiverCoord = [&]( int & coord, int min, int max )
 	{
 		if( coord <= min )
 		{
@@ -308,6 +292,14 @@ void WaterGenerator::generateMap()
 		clampRiverCoord( x, 0, WORLD_WIDTH );
 		clampRiverCoord( y, 0, WORLD_HEIGHT );
 	};
+	auto applyCustomOffset = [&]( int & coord, int coordUpperLimit )
+	{
+		if( rand() % 4 == 0 )
+		{
+			coord += rand() % 2 == 0 ? 2 : -2;
+			clampRiverCoord( coord, 0, coordUpperLimit );
+		}
+	};
 
 	while( !riverEnd )
 	{
@@ -317,11 +309,7 @@ void WaterGenerator::generateMap()
 		case UP:
 		{
 			coordUpdateFunction( 0, -1 );
-			if( rand() % 4 == 0 )
-			{
-				x += rand() % 2 == 0 ? 2 : -2;
-			}
-			clampRiverCoord( x, 0, WORLD_WIDTH );
+			applyCustomOffset( x, WORLD_WIDTH );
 			break;
 		}
 		case UP_RIGHT:
@@ -332,11 +320,7 @@ void WaterGenerator::generateMap()
 		case RIGHT:
 		{
 			coordUpdateFunction( 1, 0 );
-			if( rand() % 4 == 0 )
-			{
-				y += rand() % 2 == 0 ? 2 : -2;
-			}
-			clampRiverCoord( y, 0, WORLD_HEIGHT );
+			applyCustomOffset( y, WORLD_HEIGHT );
 			break;
 		}
 		case DOWN_RIGHT:
@@ -347,11 +331,7 @@ void WaterGenerator::generateMap()
 		case DOWN:
 		{
 			coordUpdateFunction( 0, 1 );
-			if( rand() % 4 == 0 )
-			{
-				x += rand() % 2 == 0 ? 2 : -2;
-			}
-			clampRiverCoord( x, 0, WORLD_WIDTH );
+			applyCustomOffset( x, WORLD_WIDTH );
 			break;
 		}
 		case DOWN_LEFT:
@@ -362,11 +342,7 @@ void WaterGenerator::generateMap()
 		case LEFT:
 		{
 			coordUpdateFunction( -1, 0 );
-			if( rand() % 4 == 0 )
-			{
-				y += rand() % 2 == 0 ? 2 : -2;
-			}
-			clampRiverCoord( y, 0, WORLD_HEIGHT );
+			applyCustomOffset( y, WORLD_HEIGHT );
 			break;
 		}
 		case UP_LEFT:
@@ -376,6 +352,7 @@ void WaterGenerator::generateMap()
 		}
 		}
 
+		//update 
 		if( curveDistanceStep == curveMaxDistance )
 		{
 			setNewDirection( curveDistanceStep, curveMaxDistance, riverDirection );
@@ -383,6 +360,7 @@ void WaterGenerator::generateMap()
 		map[y][x] = WATER_LEVEL;
 		++numTiles;
 
+		//fattening kernel
 		if( BIZARRE_GENERATION_MODE )
 		{
 			fatternKernelBizarreMode( x, y );
