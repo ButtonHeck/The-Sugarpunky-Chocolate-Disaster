@@ -93,17 +93,14 @@ void WaterGenerator::createTiles()
 	{
 		for( unsigned int x = 1; x < postProcessMap[0].size(); x++ )
 		{
-			if( postProcessMap[y][x] == TILE_NO_RENDER_VALUE )
+			const float MAP_VALUE = postProcessMap[y][x];
+			if( MAP_VALUE == TILE_NO_RENDER_VALUE )
 			{
 				continue;
 			}
-			if( postProcessMap[y][x] != 0 )
+			if( MAP_VALUE != 0 )
 			{
-				float lowLeft = postProcessMap[y][x];
-				float lowRight = postProcessMap[y][x];
-				float upRight = postProcessMap[y][x];
-				float upLeft = postProcessMap[y][x];
-				tiles.emplace_back( x, y, lowLeft, lowRight, upRight, upLeft );
+				tiles.emplace_back( x, y, MAP_VALUE, MAP_VALUE, MAP_VALUE, MAP_VALUE );
 			}
 		}
 	}
@@ -279,266 +276,146 @@ void WaterGenerator::generateMap()
 {
 	const float WATER_LEVEL = SettingsManager::getFloat( "SCENE", "water_level" );
 	numTiles = 0;
-	bool startAxisFromX = rand() % 2 == 0;
+	const bool START_FROM_X_AXIS = rand() % 2 == 0;
 	bool riverEnd = false;
 	unsigned int curveMaxDistance = rand() % RIVER_DIRECTION_CHANGE_DELAY + RIVER_DIRECTION_CHANGE_DELAY;
 	unsigned int curveDistanceStep = 0;
-	int y, x;
-	unsigned int startCoord = rand() % WORLD_HEIGHT;
-	x = startAxisFromX ? startCoord : 0;
-	y = startAxisFromX ? 0 : startCoord;
-	DIRECTION riverDirection = startAxisFromX ? DOWN : RIGHT;
+	const unsigned int START_COORD = rand() % WORLD_HEIGHT;
+	int x = START_FROM_X_AXIS ? START_COORD : 0;
+	int y = START_FROM_X_AXIS ? 0 : START_COORD;
+	DIRECTION riverDirection = START_FROM_X_AXIS ? DOWN : RIGHT;
 	int riverWidthOffset = 0, kernelCounter = 0;
 	bool riverWidthIncrease = true;
 
+	auto clampRiverCoord = [&]( int & coord, int min, int max ) mutable
+	{
+		if( coord <= min )
+		{
+			coord = min;
+			riverEnd = true;
+		}
+		else if( coord >= max )
+		{
+			coord = max;
+			riverEnd = true;
+		}
+	};
+	auto coordUpdateFunction = [&]( int xOffset, int yOffset )
+	{
+		x += xOffset;
+		y += yOffset;
+		clampRiverCoord( x, 0, WORLD_WIDTH );
+		clampRiverCoord( y, 0, WORLD_HEIGHT );
+	};
+
 	while( !riverEnd )
 	{
+		++curveDistanceStep;
 		switch( riverDirection )
 		{
 		case UP:
 		{
-			++curveDistanceStep;
-			--y;
-			if( y <= 0 )
-			{
-				y = 0;
-				riverEnd = true;
-			}
+			coordUpdateFunction( 0, -1 );
 			if( rand() % 4 == 0 )
 			{
 				x += rand() % 2 == 0 ? 2 : -2;
 			}
-			if( x <= 0 )
-			{
-				x = 0;
-				riverEnd = true;
-			}
-			if( x >= WORLD_WIDTH )
-			{
-				x = WORLD_WIDTH;
-				riverEnd = true;
-			}
-			map[y][x] = WATER_LEVEL;
-			++numTiles;
-			if( curveDistanceStep == curveMaxDistance )
-			{
-				setNewDirection( curveDistanceStep, curveMaxDistance, riverDirection, UP_LEFT, UP_RIGHT );
-			}
+			clampRiverCoord( x, 0, WORLD_WIDTH );
 			break;
 		}
 		case UP_RIGHT:
 		{
-			++curveDistanceStep;
-			y -= rand() % 2;
-			x += rand() % 2;
-			if( y <= 0 )
-			{
-				y = 0;
-				riverEnd = true;
-			}
-			if( x >= WORLD_WIDTH )
-			{
-				x = WORLD_WIDTH;
-				riverEnd = true;
-			}
-			map[y][x] = WATER_LEVEL;
-			++numTiles;
-			if( curveDistanceStep == curveMaxDistance )
-			{
-				setNewDirection( curveDistanceStep, curveMaxDistance, riverDirection, UP, RIGHT );
-			}
+			coordUpdateFunction( rand() % 2, -( rand() % 2 ) );
 			break;
 		}
 		case RIGHT:
 		{
-			++curveDistanceStep;
-			++x;
-			if( x >= WORLD_WIDTH )
-			{
-				x = WORLD_WIDTH;
-				riverEnd = true;
-			}
+			coordUpdateFunction( 1, 0 );
 			if( rand() % 4 == 0 )
 			{
 				y += rand() % 2 == 0 ? 2 : -2;
 			}
-			if( y <= 0 )
-			{
-				y = 0;
-				riverEnd = true;
-			}
-			if( y >= WORLD_HEIGHT )
-			{
-				y = WORLD_HEIGHT;
-				riverEnd = true;
-			}
-			map[y][x] = WATER_LEVEL;
-			++numTiles;
-			if( curveDistanceStep == curveMaxDistance )
-			{
-				setNewDirection( curveDistanceStep, curveMaxDistance, riverDirection, UP_RIGHT, DOWN_RIGHT );
-			}
+			clampRiverCoord( y, 0, WORLD_HEIGHT );
 			break;
 		}
 		case DOWN_RIGHT:
 		{
-			++curveDistanceStep;
-			y += rand() % 2;
-			x += rand() % 2;
-			if( y >= WORLD_HEIGHT )
-			{
-				y = WORLD_HEIGHT;
-				riverEnd = true;
-			}
-			if( x >= WORLD_WIDTH )
-			{
-				x = WORLD_WIDTH;
-				riverEnd = true;
-			}
-			map[y][x] = WATER_LEVEL;
-			++numTiles;
-			if( curveDistanceStep == curveMaxDistance )
-			{
-				setNewDirection( curveDistanceStep, curveMaxDistance, riverDirection, DOWN, RIGHT );
-			}
+			coordUpdateFunction( rand() % 2, rand() % 2 );
 			break;
 		}
 		case DOWN:
 		{
-			++curveDistanceStep;
-			++y;
-			if( y >= WORLD_HEIGHT )
-			{
-				y = WORLD_HEIGHT;
-				riverEnd = true;
-			}
+			coordUpdateFunction( 0, 1 );
 			if( rand() % 4 == 0 )
 			{
 				x += rand() % 2 == 0 ? 2 : -2;
 			}
-			if( x <= 0 )
-			{
-				x = 0;
-				riverEnd = true;
-			}
-			if( x >= WORLD_WIDTH )
-			{
-				x = WORLD_WIDTH;
-				riverEnd = true;
-			}
-			map[y][x] = WATER_LEVEL;
-			++numTiles;
-			if( curveDistanceStep == curveMaxDistance )
-			{
-				setNewDirection( curveDistanceStep, curveMaxDistance, riverDirection, DOWN_RIGHT, DOWN_LEFT );
-			}
+			clampRiverCoord( x, 0, WORLD_WIDTH );
 			break;
 		}
 		case DOWN_LEFT:
 		{
-			++curveDistanceStep;
-			y += rand() % 2;
-			x -= rand() % 2;
-			if( y >= WORLD_HEIGHT )
-			{
-				y = WORLD_HEIGHT;
-				riverEnd = true;
-			}
-			if( x <= 0 )
-			{
-				x = 0;
-				riverEnd = true;
-			}
-			map[y][x] = WATER_LEVEL;
-			++numTiles;
-			if( curveDistanceStep == curveMaxDistance )
-			{
-				setNewDirection( curveDistanceStep, curveMaxDistance, riverDirection, DOWN, LEFT );
-			}
+			coordUpdateFunction( -( rand() % 2 ), rand() % 2 );
 			break;
 		}
 		case LEFT:
 		{
-			++curveDistanceStep;
-			--x;
-			if( x <= 0 )
-			{
-				x = 0;
-				riverEnd = true;
-			}
+			coordUpdateFunction( -1, 0 );
 			if( rand() % 4 == 0 )
 			{
 				y += rand() % 2 == 0 ? 2 : -2;
 			}
-			if( y <= 0 )
-			{
-				y = 0;
-				riverEnd = true;
-			}
-			if( y >= WORLD_HEIGHT )
-			{
-				y = WORLD_HEIGHT;
-				riverEnd = true;
-			}
-			map[y][x] = WATER_LEVEL;
-			++numTiles;
-			if( curveDistanceStep == curveMaxDistance )
-			{
-				setNewDirection( curveDistanceStep, curveMaxDistance, riverDirection, UP_LEFT, DOWN_LEFT );
-			}
+			clampRiverCoord( y, 0, WORLD_HEIGHT );
 			break;
 		}
 		case UP_LEFT:
 		{
-			++curveDistanceStep;
-			y -= rand() % 2;
-			x -= rand() % 2;
-			if( x <= 0 )
-			{
-				x = 0;
-				riverEnd = true;
-			}
-			if( y <= 0 )
-			{
-				y = 0;
-				riverEnd = true;
-			}
-			map[y][x] = WATER_LEVEL;
-			++numTiles;
-			if( curveDistanceStep == curveMaxDistance )
-			{
-				setNewDirection( curveDistanceStep, curveMaxDistance, riverDirection, UP, LEFT );
-			}
+			coordUpdateFunction( -( rand() % 2 ), -( rand() % 2 ) );
 			break;
 		}
-		default:
-			break;
 		}
+
+		if( curveDistanceStep == curveMaxDistance )
+		{
+			setNewDirection( curveDistanceStep, curveMaxDistance, riverDirection );
+		}
+		map[y][x] = WATER_LEVEL;
+		++numTiles;
+
 		fattenKernel( x, y, kernelCounter, riverWidthOffset, riverWidthIncrease );
 	}
 }
 
 /**
-* @brief sets new incremental generating direction
-* @param curveDistanceStep incremental step of previous direction of generating
-* @param curveMaxDistance maximum steps for new direction during generating process
-* @param currentDirection current direction of generating
-* @param validDirectionLeft valid expected new direction if it curves left
-* @param validDirectionRight valid expected new direction if it curves right
+* @brief sets new incremental river generating direction
+* @param curveDistanceStep incremental step of previous direction of river generating
+* @param curveMaxDistance maximum steps for new direction during river generating process
+* @param currentDirection current direction of river generating
 */
 void WaterGenerator::setNewDirection( unsigned int & curveDistanceStep,
 									  unsigned int & curveMaxDistance,
-									  DIRECTION & currentDirection,
-									  DIRECTION validDirectionLeft,
-									  DIRECTION validDirectionRight ) noexcept
+									  DIRECTION & currentDirection ) noexcept
 {
+	using NEXT_DIRECTIONS = std::pair<DIRECTION, DIRECTION>;
+	auto getNextPossibleDirections = []( DIRECTION currentDirection )
+	{
+		switch( currentDirection )
+		{
+		case UP:			return NEXT_DIRECTIONS{ UP_LEFT, UP_RIGHT };
+		case UP_RIGHT:		return NEXT_DIRECTIONS{ UP, RIGHT };
+		case RIGHT:			return NEXT_DIRECTIONS{ UP_RIGHT, DOWN_RIGHT };
+		case DOWN_RIGHT:	return NEXT_DIRECTIONS{ DOWN, RIGHT };
+		case DOWN:			return NEXT_DIRECTIONS{ DOWN_RIGHT, DOWN_LEFT };
+		case DOWN_LEFT:		return NEXT_DIRECTIONS{ DOWN, LEFT };
+		case LEFT:			return NEXT_DIRECTIONS{ UP_LEFT, DOWN_LEFT };
+		default:			return NEXT_DIRECTIONS{ UP, LEFT };
+		}
+	};
+	NEXT_DIRECTIONS nextPossibleDirections = getNextPossibleDirections( currentDirection );
+
 	curveDistanceStep = 0;
 	curveMaxDistance = rand() % RIVER_DIRECTION_CHANGE_DELAY + RIVER_DIRECTION_CHANGE_DELAY;
-	currentDirection = (DIRECTION)( rand() % DIRECTION::NUM_DIRECTIONS );
-	while( currentDirection != validDirectionLeft && currentDirection != validDirectionRight )
-	{
-		currentDirection = (DIRECTION)( rand() % DIRECTION::NUM_DIRECTIONS );
-	}
+	currentDirection = rand() % 2 == 0 ? nextPossibleDirections.first : nextPossibleDirections.second;
 }
 
 /**

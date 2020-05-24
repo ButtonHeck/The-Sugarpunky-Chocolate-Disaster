@@ -47,8 +47,8 @@ private:
 	struct WaterVertex
 	{
 		constexpr static unsigned int NUMBER_OF_ELEMENTS = 4;
-		const float X_POS_ANIM_MULTIPLIER = 15.11f;
-		const float X_POS_ANIM_OFFSET = 121.197f;
+		constexpr static float X_POS_ANIM_MULTIPLIER = 15.11f;
+		constexpr static float X_POS_ANIM_OFFSET = 121.197f;
 		WaterVertex( glm::vec3 position, 
 					 glm::vec2 animationOffset ) noexcept;
 
@@ -68,9 +68,7 @@ private:
 	void expandWaterArea();
 	void setNewDirection( unsigned int & curveDistanceStep,
 						  unsigned int & curveMaxDistance,
-						  DIRECTION & currentDirection,
-						  DIRECTION validDirectionLeft,
-						  DIRECTION validDirectionRight ) noexcept;
+						  DIRECTION & currentDirection ) noexcept;
 	void fattenKernel( int x, 
 					   int y, 
 					   int & kernelCounter, 
