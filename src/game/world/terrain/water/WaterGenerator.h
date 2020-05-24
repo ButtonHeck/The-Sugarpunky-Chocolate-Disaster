@@ -74,6 +74,8 @@ private:
 					   int & kernelCounter, 
 					   int & riverWidthOffset, 
 					   bool & riverWidthIncrease );
+	void fatternKernelBizarreMode( int x,
+								   int y );
 	void bufferVertex( GLfloat * vertices, 
 					   int offset, 
 					   WaterVertex vertex ) noexcept;

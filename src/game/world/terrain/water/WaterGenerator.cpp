@@ -275,6 +275,7 @@ void WaterGenerator::expandWaterArea()
 void WaterGenerator::generateMap()
 {
 	const float WATER_LEVEL = SettingsManager::getFloat( "SCENE", "water_level" );
+	const bool BIZARRE_GENERATION_MODE = SettingsManager::getBool( "SCENE", "river_generation_bizarre_mode" );
 	numTiles = 0;
 	const bool START_FROM_X_AXIS = rand() % 2 == 0;
 	bool riverEnd = false;
@@ -382,7 +383,14 @@ void WaterGenerator::generateMap()
 		map[y][x] = WATER_LEVEL;
 		++numTiles;
 
-		fattenKernel( x, y, kernelCounter, riverWidthOffset, riverWidthIncrease );
+		if( BIZARRE_GENERATION_MODE )
+		{
+			fatternKernelBizarreMode( x, y );
+		}
+		else
+		{
+			fattenKernel( x, y, kernelCounter, riverWidthOffset, riverWidthIncrease );
+		}
 	}
 }
 
@@ -471,6 +479,38 @@ void WaterGenerator::fattenKernel( int x,
 		{
 			map[y1][x1] = WATER_LEVEL;
 			++numTiles;
+		}
+	}
+}
+
+/**
+* @brief fattens generated water kernel value if bizarre generation mode is enabled
+* @param x x coordinate of water kernel
+* @param y y coordinate of water kernel
+*/
+void WaterGenerator::fatternKernelBizarreMode( int x, 
+											   int y )
+{
+	const int RIVER_WIDTH_BASE = SettingsManager::getInt( "SCENE", "river_width_base" );
+
+	//sanitize area coordinates
+	int xLeft = ( (int)( x - RIVER_WIDTH_BASE ) <= 0 ? 0 : x - RIVER_WIDTH_BASE );
+	int xRight = ( (int)( x + RIVER_WIDTH_BASE ) >= WORLD_WIDTH ? WORLD_WIDTH : x + RIVER_WIDTH_BASE );
+	int yTop = ( (int)( y - RIVER_WIDTH_BASE ) <= 0 ? 0 : y - RIVER_WIDTH_BASE );
+	int yBottom = ( (int)( y + RIVER_WIDTH_BASE ) >= WORLD_HEIGHT ? WORLD_HEIGHT : y + RIVER_WIDTH_BASE );
+
+	//pour the water around
+	const float WATER_LEVEL = SettingsManager::getFloat( "SCENE", "water_level" );
+	for( int y1 = yTop; y1 <= yBottom; y1++ )
+	{
+		for( int x1 = xLeft; x1 <= xRight; x1++ )
+		{
+			float coordDistanceFromKernel = glm::sqrt( glm::pow( y1 - y, 2 ) + glm::pow( x1 - x, 2 ) );
+			if( coordDistanceFromKernel - 2 <= RIVER_WIDTH_BASE )
+			{
+				map[y1][x1] = WATER_LEVEL;
+				++numTiles;
+			}
 		}
 	}
 }
