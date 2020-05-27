@@ -19,7 +19,6 @@
  */
 
 #include "Camera"
-#include "BenchmarkTimer"
 #include "Logger"
 #include "SceneSettings"
 #include "SettingsManager"
@@ -108,7 +107,6 @@ Camera & Camera::operator=( const Camera & rhs )
 void Camera::move( float delta, 
 				   const map2D_f & hillsMap )
 {
-	BENCHMARK( "Camera: move", true );
 	float velocity = delta * moveSpeed;
 
 	//Moving forward/backward
@@ -203,7 +201,6 @@ void Camera::updateViewAcceleration( float xOffset,
 */
 void Camera::updateViewDirection( float frameDelta )
 {
-	BENCHMARK( "Camera: update view direction", true );
 	yaw -= viewAccelerationX;
 	pitch -= viewAccelerationY;
 	if( pitch >= MAX_PITCH )

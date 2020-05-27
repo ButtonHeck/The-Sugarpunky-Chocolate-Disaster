@@ -22,7 +22,6 @@
 #include "WaterGenerator"
 #include "WaterShader"
 #include "Shader"
-#include "BenchmarkTimer"
 #include "RendererState"
 
 /**
@@ -49,37 +48,31 @@ void WaterRenderer::render( bool useFrustumCulling )
 		shaders.cullingShader.use();
 		generator.basicGLBuffers.bind( VAO );
 		GLuint transformFeedback = generator.culledBuffers.get( TFBO );
-		{
-			BENCHMARK( "WaterRenderer: draw to TFB", true );
-			RendererState::enableState( GL_RASTERIZER_DISCARD );
-			glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, transformFeedback );
-			glBeginTransformFeedback( GL_TRIANGLES );
-			glDrawElements( GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0 );
-			glEndTransformFeedback();
-			RendererState::disableState( GL_RASTERIZER_DISCARD );
-		}
-		{
-			BENCHMARK( "WaterRenderer: draw from TFB", true );
-			shaders.renderShader.use();
-			generator.culledBuffers.bind( VAO );
+		RendererState::enableState( GL_RASTERIZER_DISCARD );
+		glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, transformFeedback );
+		glBeginTransformFeedback( GL_TRIANGLES );
+		glDrawElements( GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0 );
+		glEndTransformFeedback();
+		RendererState::disableState( GL_RASTERIZER_DISCARD );
 
-			//optionally inject query into rendering process if necessary
-			if( !anySamplesPassedQuery.isInUse() )
-			{
-				anySamplesPassedQuery.start();
-				glDrawTransformFeedback( GL_TRIANGLES, transformFeedback );
-				anySamplesPassedQuery.end();
-			}
-			else
-			{
-				glDrawTransformFeedback( GL_TRIANGLES, transformFeedback );
-			}
+		shaders.renderShader.use();
+		generator.culledBuffers.bind( VAO );
+
+		//optionally inject query into rendering process if necessary
+		if( !anySamplesPassedQuery.isInUse() )
+		{
+			anySamplesPassedQuery.start();
+			glDrawTransformFeedback( GL_TRIANGLES, transformFeedback );
+			anySamplesPassedQuery.end();
+		}
+		else
+		{
+			glDrawTransformFeedback( GL_TRIANGLES, transformFeedback );
 		}
 	}
 	else
 	{
 		//just plain rendering without transform feedback
-		BENCHMARK( "WaterRenderer: draw", true );
 		shaders.renderShader.use();
 		generator.basicGLBuffers.bind( VAO );
 
@@ -109,7 +102,6 @@ void WaterRenderer::render( bool useFrustumCulling )
 */
 void WaterRenderer::debugRender( GLenum primitiveType )
 {
-	BENCHMARK( "WaterRenderer: draw normals", true );
 	generator.basicGLBuffers.bind( VAO );
 	glLineWidth( 2.0f );
 	RendererState::disableState( GL_CULL_FACE );

@@ -20,7 +20,6 @@
 
 #include "PlantsFacade"
 #include "Generator"
-#include "BenchmarkTimer"
 #include "Model"
 #include "SettingsManager"
 
@@ -82,7 +81,6 @@ void PlantsFacade::prepareIndirectBufferData( const Camera & camera,
  */
 void PlantsFacade::updateIndirectBufferData()
 {
-	BENCHMARK( "PlantsFacade: updateIndirectBuffer", true );
 	landPlantsGenerator.updateIndirectBufferData();
 	hillTreesGenerator.updateIndirectBufferData();
 	grassGenerator.updateIndirectBufferData();

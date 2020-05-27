@@ -19,7 +19,6 @@
  */
 
 #include "Frustum"
-#include "BenchmarkTimer"
 
 #include <algorithm>
 #include <glm/gtc/type_ptr.hpp>
@@ -54,7 +53,6 @@ void Frustum::normalizePlane( FRUSTUM_PLANE plane )
 */
 void Frustum::updateFrustum( const glm::mat4 & projectionView )
 {
-	BENCHMARK( "Frustum: update", true );
 	const float * projectionViewElements = glm::value_ptr( projectionView );
 	planes[FRUSTUM_RIGHT].x = projectionViewElements[3] - projectionViewElements[0];
 	planes[FRUSTUM_RIGHT].y = projectionViewElements[7] - projectionViewElements[4];

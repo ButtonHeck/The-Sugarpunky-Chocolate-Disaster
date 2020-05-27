@@ -19,7 +19,6 @@
  */
 
 #include "ShoreFacade"
-#include "BenchmarkTimer"
 #include "RendererState"
 
 /**
@@ -90,11 +89,8 @@ void ShoreFacade::draw( const glm::vec3 & lightDir,
 				   useShadows,
 				   useClipDistanceReflection,
 				   useClipDistanceRefraction );
-	{
-		BENCHMARK( "ShoreRenderer: draw", true );
-		shader.debugRenderMode( false );
-		renderer.render();
-	}
+	shader.debugRenderMode( false );
+	renderer.render();
 
 	if( useDebugRender )
 	{

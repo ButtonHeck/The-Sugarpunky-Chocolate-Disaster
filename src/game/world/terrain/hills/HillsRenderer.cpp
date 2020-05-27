@@ -22,7 +22,6 @@
 #include "HillsGenerator"
 #include "HillsShader"
 #include "Shader"
-#include "BenchmarkTimer"
 #include "RendererState"
 
 /**
@@ -73,7 +72,6 @@ void HillsRenderer::render( bool useFrustumCulling,
 		if( updateTransformFeedbackCounter == 0 )
 		{
 			//render hills offscreen with transform feedback
-			BENCHMARK( "HillsRenderer: draw to TFB", true );
 			shaders.cullingShader.use();
 			generator.basicGLBuffers.bind( VAO );
 			RendererState::enableState( GL_RASTERIZER_DISCARD );
@@ -88,18 +86,14 @@ void HillsRenderer::render( bool useFrustumCulling,
 		{
 			updateTransformFeedbackCounter = 0;
 		}
-		{
-			//render feedback onscreen
-			BENCHMARK( "HillsRenderer: draw from TFB", true );
-			shaders.renderShader.use();
-			generator.culledBuffers.bind( VAO );
-			glDrawTransformFeedback( GL_TRIANGLES, transformFeedback );
-		}
+		//render feedback onscreen
+		shaders.renderShader.use();
+		generator.culledBuffers.bind( VAO );
+		glDrawTransformFeedback( GL_TRIANGLES, transformFeedback );
 	}
 	else
 	{
 		//plain onscreen rendering
-		BENCHMARK( "HillsRenderer: draw", true );
 		shaders.renderShader.use();
 		generator.basicGLBuffers.bind( VAO );
 		glDrawElements( GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0 );
@@ -111,7 +105,6 @@ void HillsRenderer::render( bool useFrustumCulling,
 */
 void HillsRenderer::renderDepthmap()
 {
-	BENCHMARK( "HillsRenderer: render depthmap", true );
 	generator.basicGLBuffers.bind( VAO );
 	glDrawElements( GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0 );
 }

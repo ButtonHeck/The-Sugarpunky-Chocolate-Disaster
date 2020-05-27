@@ -20,7 +20,6 @@
 
 #include "ModelRenderer"
 #include "BufferCollection"
-#include "BenchmarkTimer"
 
 /**
 * @brief plain ctor
@@ -48,21 +47,16 @@ void ModelRenderer::render( MODEL_INDIRECT_BUFFER_TYPE type,
 	if( type == PLAIN_ONSCREEN )
 	{
 		basicGLBuffers.bind( DIBO );
-		BENCHMARK( "Model: draw", true );
-		glMultiDrawElementsIndirect( GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0 );
 	}
 	else if( type == DEPTHMAP_OFFSCREEN )
 	{
 		depthmapDIBO.bind( DIBO );
-		BENCHMARK( "Model: draw shadows", true );
-		glMultiDrawElementsIndirect( GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0 );
 	}
 	else
 	{
 		reflectionDIBO.bind( DIBO );
-		BENCHMARK( "Model: draw reflections", true );
-		glMultiDrawElementsIndirect( GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0 );
 	}
+	glMultiDrawElementsIndirect( GL_TRIANGLES, GL_UNSIGNED_INT, 0, primCount, 0 );
 }
 
 /**

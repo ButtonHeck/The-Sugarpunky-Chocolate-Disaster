@@ -22,7 +22,6 @@
 #include "Camera"
 #include "ScreenResolution"
 #include "Options"
-#include "BenchmarkTimer"
 #include "VRAM_Monitor"
 #include "Shader"
 #include "MouseInputManager"
@@ -72,7 +71,6 @@ void TextManager::addDebugText( const Camera & camera,
 								const glm::vec3 & sunPosition,
 								unsigned int fps )
 {
-	BENCHMARK( "TextManager: add text", true );
 	float screenHeight = (float)screenResolution.getHeight();
 	glm::vec3 viewPosition = camera.getPosition();
 	std::stringstream ss;
@@ -227,7 +225,6 @@ void TextManager::addString( const std::string & text,
 */
 void TextManager::drawText()
 {
-	BENCHMARK( "TextManager: draw", true );
 	shader.use();
 	basicGLBuffers.bind( VAO | VBO );
 	glBufferData( GL_ARRAY_BUFFER, bufferOffset * sizeof( GLfloat ), vertexData, GL_STATIC_DRAW );

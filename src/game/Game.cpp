@@ -25,7 +25,6 @@
 #include "ScreenResolution"
 #include "RendererState"
 #include "Shader"
-#include "BenchmarkTimer"
 #include "SettingsManager"
 
 /**
@@ -92,7 +91,6 @@ Game::Game( GLFWwindow * window,
 Game::~Game()
 {
 	meshIndirectBufferUpdater->join();
-	BenchmarkTimer::finish( updateCount );
 	BindlessTextureManager::makeAllNonResident();
 }
 
@@ -101,7 +99,6 @@ Game::~Game()
 */
 void Game::setup()
 {
-	BENCHMARK( "Game: setup", false );
 	Shader::setCachingOfUniformsMode( true );
 	RendererState::setInitialRenderingState( options[OPT_USE_MULTISAMPLING] );
 	scene.setup();
@@ -134,32 +131,29 @@ void Game::loop()
 
 	const float TIMER_DELTA = CPU_timer.tick();
 
+	keyboard.processInput( TIMER_DELTA );
+	camera.updateViewDirection( TIMER_DELTA );
+	camera.move( TIMER_DELTA, scene.getHillsFacade().getMap() );
+
+	//projection and view matrices
+	if( !options[OPT_USE_SHADOW_CAMERA_MATRIX] )
 	{
-		BENCHMARK( "Game loop: process input and camera", true );
-		keyboard.processInput( TIMER_DELTA );
-		camera.updateViewDirection( TIMER_DELTA );
-		camera.move( TIMER_DELTA, scene.getHillsFacade().getMap() );
+		view = camera.getViewMatrix();
+	}
+	else
+	{
+		view = shadowCamera.getViewMatrix();
+	}
+	projectionView = projection * view;
 
-		//projection and view matrices
-		if( !options[OPT_USE_SHADOW_CAMERA_MATRIX] )
-		{
-			view = camera.getViewMatrix();
-		}
-		else
-		{
-			view = shadowCamera.getViewMatrix();
-		}
-		projectionView = projection * view;
+	//frustums update
+	viewFrustum.updateFrustum( projectionView );
+	cullingViewFrustum.updateFrustum( cullingProjection * view );
 
-		//frustums update
-		viewFrustum.updateFrustum( projectionView );
-		cullingViewFrustum.updateFrustum( cullingProjection * view );
-
-		if( !options[OPT_SHADOW_CAMERA_FIXED] )
-		{
-			shadowCamera.updateViewDirection( TIMER_DELTA );
-			shadowCamera.move( TIMER_DELTA, scene.getHillsFacade().getMap() );
-		}
+	if( !options[OPT_SHADOW_CAMERA_FIXED] )
+	{
+		shadowCamera.updateViewDirection( TIMER_DELTA );
+		shadowCamera.move( TIMER_DELTA, scene.getHillsFacade().getMap() );
 	}
 
 	//ambience update
@@ -176,22 +170,19 @@ void Game::loop()
 	* and then just chill till second thread is ready. Otherwise explicitly update land indirect buffer after
 	*/
 	landIndirectBufferHasUpdated = false;
+	while( !modelsIndirectBufferPrepared && updateCount != 0 )
 	{
-		BENCHMARK( "Game loop: wait models DIBs ready", true );
-		while( !modelsIndirectBufferPrepared && updateCount != 0 )
+		if( !landIndirectBufferHasUpdated )
 		{
-			if( !landIndirectBufferHasUpdated )
-			{
-				scene.getLandFacade().updateCellsIndirectBuffer( viewFrustum );
-				landIndirectBufferHasUpdated = true;
-			}
-			else
-			{
-				std::this_thread::yield();
-			}
+			scene.getLandFacade().updateCellsIndirectBuffer( viewFrustum );
+			landIndirectBufferHasUpdated = true;
 		}
-		modelsIndirectBufferPrepared = false;
+		else
+		{
+			std::this_thread::yield();
+		}
 	}
+	modelsIndirectBufferPrepared = false;
 	if( !landIndirectBufferHasUpdated )
 	{
 		scene.getLandFacade().updateCellsIndirectBuffer( viewFrustum );
@@ -247,10 +238,7 @@ void Game::loop()
 	}
 
 	//wait for buffer swapping
-	{
-		BENCHMARK( "GLFW: swapBuffers", true );
-		glfwSwapBuffers( window );
-	}
+	glfwSwapBuffers( window );
 
 	//frame is complete
 	++updateCount;
@@ -262,7 +250,6 @@ void Game::loop()
 */
 void Game::drawFrame( const glm::mat4 & projectionView )
 {
-	BENCHMARK( "Game loop: draw frame", true );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	glPolygonMode( GL_FRONT_AND_BACK, options[OPT_POLYGON_LINE] ? GL_LINE : GL_FILL );
 
@@ -390,7 +377,6 @@ void Game::drawFrameRefraction( const glm::mat4 & projectionView )
 */
 void Game::recreate()
 {
-	BENCHMARK( "Game loop: recreate", true );
 	scene.recreate();
 	options[OPT_RECREATE_TERRAIN_REQUEST] = false;
 }
@@ -410,10 +396,7 @@ void Game::drawDepthmap()
 	}
 
 	//update shadow volume
-	{
-		BENCHMARK( "Shadow volume: update", true );
-		shadowVolume.update( shadowRegionsFrustums, scene.getSunFacade() );
-	}
+	shadowVolume.update( shadowRegionsFrustums, scene.getSunFacade() );
 
 	//draw scene onto depthmap
 	depthmapFramebuffer.bindToViewport( SettingsManager::getInt( "GRAPHICS", "depthmap_texture_width" ),
@@ -455,7 +438,6 @@ void Game::setupThreads()
 		{
 			if( modelsIndirectBufferNeedUpdate )
 			{
-				BENCHMARK( "(ST)Model: update meshes DIBs data", true );
 				scene.getPlantsFacade().prepareIndirectBufferData( camera, viewFrustum, scene.getHillsFacade().getMap() );
 				modelsIndirectBufferPrepared = true;
 				modelsIndirectBufferNeedUpdate = false;

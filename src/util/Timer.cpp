@@ -19,7 +19,6 @@
  */
 
 #include "Timer"
-#include "BenchmarkTimer"
 
 #include <GLFW/glfw3.h>
 
@@ -53,11 +52,6 @@ float Timer::tick()
 	{
 		frameTime = currentTime;
 		fps = frames;
-		if( updateCount > 1 )
-		{
-			BenchmarkTimer::printFrameBenchmarks( updateCount, fps );
-			BenchmarkTimer::resetFrameBenchmarks();
-		}
 		frames = 0;
 		++updateCount;
 	}

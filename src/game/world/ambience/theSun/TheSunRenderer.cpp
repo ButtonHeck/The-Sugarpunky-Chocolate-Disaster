@@ -19,7 +19,6 @@
  */
 
 #include "TheSunRenderer"
-#include "BenchmarkTimer"
 #include "TheSun"
 
 /**
@@ -39,7 +38,6 @@ TheSunRenderer::TheSunRenderer( TheSun & theSun ) noexcept
 void TheSunRenderer::render( bool doOcclusionTest, 
 							 bool useReflectionPointSize )
 {
-	BENCHMARK( "SunRenderer: draw", true );
 	glPointSize( useReflectionPointSize ? reflectionPointSize : pointSize );
 	theSun.basicGLBuffers.bind( VAO );
 	if( doOcclusionTest && !samplesPassedQuery.isInUse() )

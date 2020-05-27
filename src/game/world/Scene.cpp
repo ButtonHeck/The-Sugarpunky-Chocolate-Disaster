@@ -27,7 +27,6 @@
 #include "ShadowVolume"
 #include "RendererState"
 #include "Options"
-#include "BenchmarkTimer"
 #include "Logger"
 #include "SettingsManager"
 
@@ -75,7 +74,6 @@ Scene::Scene( ShaderManager & shaderManager,
 */
 void Scene::setup()
 {
-	BENCHMARK( "Scene: setup", false );
 	waterFacade.setup();
 	hillsFacade.setup();
 	shoreFacade.setup();
@@ -168,7 +166,6 @@ void Scene::drawWorld( const glm::mat4 & projectionView,
 					   const Camera & camera,
 					   MouseInputManager & mouseInput )
 {
-	BENCHMARK( "Scene: draw all", true );
 	glm::vec3 viewPosition = camera.getPosition();
 	const glm::vec3 & lightDir = theSunFacade.getLightDir();
 	const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices = shadowVolume.getLightSpaceMatrices();
@@ -249,7 +246,6 @@ void Scene::drawWorld( const glm::mat4 & projectionView,
 */
 void Scene::drawWorldDepthmap( bool grassCastShadow )
 {
-	BENCHMARK( "Scene: draw world depthmap", true );
 	const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices = shadowVolume.getLightSpaceMatrices();
 	glClear( GL_DEPTH_BUFFER_BIT );
 
@@ -294,7 +290,6 @@ void Scene::drawWorldReflection( const glm::mat4 & projectionView,
 								 const Frustum & cullingViewFrustum,
 								 const Camera & camera )
 {
-	BENCHMARK( "Scene: draw world reflection", true );
 	glm::vec3 viewPosition = camera.getPosition();
 	const glm::vec3 & lightDir = theSunFacade.getLightDir();
 	const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices = shadowVolume.getLightSpaceMatrices();
@@ -336,7 +331,6 @@ void Scene::drawWorldReflection( const glm::mat4 & projectionView,
 */
 void Scene::drawWorldRefraction( const glm::mat4 & projectionView )
 {
-	BENCHMARK( "Scene: draw world refraction", true );
 	const glm::vec3 & lightDir = theSunFacade.getLightDir();
 	const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices = shadowVolume.getLightSpaceMatrices();
 

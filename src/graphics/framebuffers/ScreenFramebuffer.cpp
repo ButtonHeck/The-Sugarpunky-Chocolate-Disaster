@@ -20,7 +20,6 @@
 
 #include "ScreenFramebuffer"
 #include "TextureManager"
-#include "BenchmarkTimer"
 #include "ShaderManager"
 #include "Shader"
 #include "ScreenResolution"
@@ -59,7 +58,6 @@ ScreenFramebuffer::~ScreenFramebuffer()
 */
 void ScreenFramebuffer::setup()
 {
-	BENCHMARK( "ScreenBuffer: setup", false );
 	setupFramebuffers();
 	setupScreenQuadBuffer();
 }
@@ -120,7 +118,6 @@ void ScreenFramebuffer::draw( bool useMultisampling,
 							  bool useDOF,
 							  bool useVignette )
 {
-	BENCHMARK( "ScreenBuffer: draw", true );
 	if( useMultisampling )
 	{
 		glBindFramebuffer( GL_READ_FRAMEBUFFER, multisampleFbo );

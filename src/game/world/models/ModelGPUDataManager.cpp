@@ -19,7 +19,6 @@
  */
 
 #include "ModelGPUDataManager"
-#include "BenchmarkTimer"
 #include "ModelChunk"
 #include "ModelVertex"
 #include "SceneSettings"
@@ -115,7 +114,6 @@ void ModelGPUDataManager::prepareIndirectBufferData( const std::vector<std::pair
 													 float loadingDistance,
 													 float loadingDistanceShadow )
 {
-	BENCHMARK( "(ST)Model: prepare indirect buffer", true );
 	//recreate indirect draw commands storages
 	indirectTokens.clear();
 	indirectTokens.reserve( visibleChunks.size() );
@@ -206,7 +204,6 @@ void ModelGPUDataManager::prepareIndirectBufferData( const std::vector<std::pair
 */
 void ModelGPUDataManager::updateIndirectBufferData()
 {
-	BENCHMARK( "Model: load indirect data to GPU", true );
 	basicGLBuffers.bind( DIBO );
 	glBufferSubData( GL_DRAW_INDIRECT_BUFFER, 0, INDIRECT_DRAW_COMMAND_BYTE_SIZE * drawIndirectCommandPrimCount, multiDrawIndirectData.get() );
 	depthmapDIBO.bind( DIBO );

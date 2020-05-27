@@ -19,7 +19,6 @@
  */
 
 #include "UnderwaterFacade"
-#include "BenchmarkTimer"
 
 /**
 * @brief plain ctor
@@ -41,7 +40,6 @@ void UnderwaterFacade::draw( const glm::vec3 & lightDir,
 							 const glm::mat4 & projectionView,
 							 bool useDesaturation )
 {
-	BENCHMARK( "UnderwaterRenderer: draw", true );
 	shader.update( lightDir, projectionView, useDesaturation );
 	renderer.render();
 }
