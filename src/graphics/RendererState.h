@@ -29,6 +29,8 @@ namespace RendererState
 {
 	void setInitialRenderingState( bool useMultisample ) noexcept;
 	void setAmbienceRenderingState( bool isOn ) noexcept;
+	void enableState( unsigned int state ) noexcept;
+	void disableState( unsigned int state ) noexcept;
 	void enableStates( const std::initializer_list<unsigned int> & states ) noexcept;
 	void disableStates( const std::initializer_list<unsigned int> & states ) noexcept;
 };

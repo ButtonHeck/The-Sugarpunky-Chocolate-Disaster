@@ -54,6 +54,16 @@ namespace RendererState
 		glDepthFunc( isOn ? GL_LEQUAL : GL_LESS );
 	}
 
+	void enableState( unsigned int state ) noexcept
+	{
+		glEnable( state );
+	}
+
+	void disableState( unsigned int state ) noexcept
+	{
+		glDisable( state );
+	}
+
 	void enableStates( const std::initializer_list<unsigned int> & states ) noexcept
 	{
 		for( unsigned int state : states )

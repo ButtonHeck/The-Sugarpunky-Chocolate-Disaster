@@ -20,6 +20,7 @@
 
 #include "GrassRenderer"
 #include "Model"
+#include "RendererState"
 
 /**
  * @brief just delegates a draw call for each given model and switches GL_CULL_FACE setting
@@ -30,10 +31,10 @@ void GrassRenderer::render( std::vector<Model> & models,
 							bool isShadow )
 {
     //grass polygon's back face is the same as front, so make sure no culling is applied here
-	glDisable( GL_CULL_FACE );
+	RendererState::disableState( GL_CULL_FACE );
 	for( Model & grassModel : models )
 	{
 		grassModel.draw( isShadow );
 	}
-	glEnable( GL_CULL_FACE );
+	RendererState::enableState( GL_CULL_FACE );
 }

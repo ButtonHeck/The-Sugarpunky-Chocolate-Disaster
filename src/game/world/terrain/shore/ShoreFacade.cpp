@@ -20,6 +20,7 @@
 
 #include "ShoreFacade"
 #include "BenchmarkTimer"
+#include "RendererState"
 
 /**
 * @brief plain ctor. Creates all member submodules
@@ -79,6 +80,10 @@ void ShoreFacade::draw( const glm::vec3 & lightDir,
 						bool useClipDistanceReflection,
 						bool useClipDistanceRefraction )
 {
+	if( useClipDistanceReflection || useClipDistanceRefraction )
+	{
+		RendererState::enableState( GL_CLIP_DISTANCE0 );
+	}
 	shader.update( lightDir,
 				   lightSpaceMatrices,
 				   projectionView,
@@ -98,6 +103,11 @@ void ShoreFacade::draw( const glm::vec3 & lightDir,
 		shader.updateNormals( projectionView );
 		renderer.debugRender( GL_POINTS );
 	}
+
+	if( useClipDistanceReflection || useClipDistanceRefraction )
+	{
+		RendererState::disableState( GL_CLIP_DISTANCE0 );
+	}
 }
 
 /**
@@ -106,9 +116,9 @@ void ShoreFacade::draw( const glm::vec3 & lightDir,
 */
 void ShoreFacade::drawDepthmap()
 {
-	glDisable( GL_CULL_FACE );
+	RendererState::disableState( GL_CULL_FACE );
 	renderer.render();
-	glEnable( GL_CULL_FACE );
+	RendererState::enableState( GL_CULL_FACE );
 }
 
 const map2D_f & ShoreFacade::getMap() const noexcept

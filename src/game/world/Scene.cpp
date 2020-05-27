@@ -199,7 +199,7 @@ void Scene::drawWorld( const glm::mat4 & projectionView,
 
 	//render everything that requires blending
 
-	RendererState::enableStates( { GL_BLEND } );
+	RendererState::enableState( GL_BLEND );
 
 	if( options[OPT_DRAW_BUILDABLE] )
 	{
@@ -240,7 +240,7 @@ void Scene::drawWorld( const glm::mat4 & projectionView,
 		lensFlareFacade.draw( theSunFacade.getPosition(), ambienceProjectionView, flareBrightness );
 	}
 
-	RendererState::disableStates( { GL_BLEND } );
+	RendererState::disableState( GL_BLEND );
 }
 
 /**
@@ -254,7 +254,7 @@ void Scene::drawWorldDepthmap( bool grassCastShadow )
 	glClear( GL_DEPTH_BUFFER_BIT );
 
 	//must disable multisampling for this rendering mode
-	glDisable( GL_MULTISAMPLE );
+	RendererState::disableState( GL_MULTISAMPLE );
 
 	/** @todo smells like it is code duplicate, may be move this part to shader manager as separate function */
 	shaderManager.get( SHADER_SHADOW_TERRAIN ).use();
@@ -279,7 +279,7 @@ void Scene::drawWorldDepthmap( bool grassCastShadow )
 		plantsFacade.drawDepthmap( grassCastShadow );
 	}
 
-	glEnable( GL_MULTISAMPLE );
+	RendererState::enableState( GL_MULTISAMPLE );
 }
 
 /**
@@ -313,9 +313,7 @@ void Scene::drawWorldReflection( const glm::mat4 & projectionView,
 						  false );
 	}	
 
-	glEnable( GL_CLIP_DISTANCE0 );
 	shoreFacade.draw( lightDir, lightSpaceMatrices, projectionView, false, false, true, false );
-	glDisable( GL_CLIP_DISTANCE0 );
 
 	if( options[OPT_DRAW_TREES] )
 	{
@@ -340,9 +338,7 @@ void Scene::drawWorldRefraction( const glm::mat4 & projectionView )
 
 	underwaterFacade.draw( lightDir, projectionView, options[OPT_USE_SHADOWS] );
 
-	glEnable( GL_CLIP_DISTANCE0 );
 	shoreFacade.draw( lightDir, lightSpaceMatrices, projectionView, false, false, false, true );
-	glDisable( GL_CLIP_DISTANCE0 );
 }
 
 WaterFacade & Scene::getWaterFacade() noexcept

@@ -23,6 +23,7 @@
 #include "HillsShader"
 #include "Shader"
 #include "BenchmarkTimer"
+#include "RendererState"
 
 /**
 * @brief plain ctor.
@@ -75,12 +76,12 @@ void HillsRenderer::render( bool useFrustumCulling,
 			BENCHMARK( "HillsRenderer: draw to TFB", true );
 			shaders.cullingShader.use();
 			generator.basicGLBuffers.bind( VAO );
-			glEnable( GL_RASTERIZER_DISCARD );
+			RendererState::enableState( GL_RASTERIZER_DISCARD );
 			glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, transformFeedback );
 			glBeginTransformFeedback( GL_TRIANGLES );
 			glDrawElements( GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0 );
 			glEndTransformFeedback();
-			glDisable( GL_RASTERIZER_DISCARD );
+			RendererState::disableState( GL_RASTERIZER_DISCARD );
 		}
 		updateTransformFeedbackCounter += updateIncrement;
 		if( updateTransformFeedbackCounter >= FEEDBACK_UPDATE_FRAMERATE )
@@ -124,10 +125,10 @@ void HillsRenderer::debugRender( GLenum primitiveType )
 {
 	generator.basicGLBuffers.bind( VAO );
 	glLineWidth( 2.0f );
-	glDisable( GL_CULL_FACE );
+	RendererState::disableState( GL_CULL_FACE );
 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 	glDrawElements( primitiveType, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0 );
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-	glEnable( GL_CULL_FACE );
+	RendererState::enableState( GL_CULL_FACE );
 	glLineWidth( 1.0f );
 }

@@ -132,7 +132,6 @@ void PlantsFacade::draw( const glm::vec3 & lightDir,
 		treesRenderer.renderWorldReflection( landPlantsGenerator.getModels( true ), hillTreesGenerator.getModels( true ) );
 	}
 
-
 	//draw grass (plain and low-poly), no need to render it if world reflection rendering stage is on
 	if( !worldReflectionMode )
 	{
