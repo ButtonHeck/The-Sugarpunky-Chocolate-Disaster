@@ -197,6 +197,10 @@ void Scene::drawWorld( const glm::mat4 & projectionView,
 
 	shoreFacade.draw( lightDir, lightSpaceMatrices, projectionView, useShadows, isDebugRender, false, false );
 
+	//render everything that requires blending
+
+	RendererState::enableStates( { GL_BLEND } );
+
 	if( options[OPT_DRAW_BUILDABLE] )
 	{
 		buildableFacade.drawBuildable( projectionView );
@@ -235,6 +239,8 @@ void Scene::drawWorld( const glm::mat4 & projectionView,
 	{
 		lensFlareFacade.draw( theSunFacade.getPosition(), ambienceProjectionView, flareBrightness );
 	}
+
+	RendererState::disableStates( { GL_BLEND } );
 }
 
 /**

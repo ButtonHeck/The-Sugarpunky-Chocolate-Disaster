@@ -61,7 +61,6 @@ void WaterRenderer::render( bool useFrustumCulling )
 			BENCHMARK( "WaterRenderer: draw from TFB", true );
 			shaders.renderShader.use();
 			generator.culledBuffers.bind( VAO );
-			glEnable( GL_BLEND );
 
 			//optionally inject query into rendering process if necessary
 			if( !anySamplesPassedQuery.isInUse() )
@@ -74,8 +73,6 @@ void WaterRenderer::render( bool useFrustumCulling )
 			{
 				glDrawTransformFeedback( GL_TRIANGLES, transformFeedback );
 			}
-
-			glDisable( GL_BLEND );
 		}
 	}
 	else
@@ -84,7 +81,6 @@ void WaterRenderer::render( bool useFrustumCulling )
 		BENCHMARK( "WaterRenderer: draw", true );
 		shaders.renderShader.use();
 		generator.basicGLBuffers.bind( VAO );
-		glEnable( GL_BLEND );
 
 		//optionally inject query into rendering process if necessary
 		if( !anySamplesPassedQuery.isInUse() )
@@ -97,8 +93,6 @@ void WaterRenderer::render( bool useFrustumCulling )
 		{
 			glDrawElements( GL_TRIANGLES, generator.tiles.size() * VERTICES_PER_QUAD, GL_UNSIGNED_INT, 0 );
 		}
-
-		glDisable( GL_BLEND );
 	}
 
 	if( anySamplesPassedQuery.isResultAvailable() )

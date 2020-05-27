@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <initializer_list>
+
 /**
 * @brief contains a bunch of OpenGL render related functions
 */
@@ -27,4 +29,6 @@ namespace RendererState
 {
 	void setInitialRenderingState( bool useMultisample ) noexcept;
 	void setAmbienceRenderingState( bool isOn ) noexcept;
+	void enableStates( const std::initializer_list<unsigned int> & states ) noexcept;
+	void disableStates( const std::initializer_list<unsigned int> & states ) noexcept;
 };

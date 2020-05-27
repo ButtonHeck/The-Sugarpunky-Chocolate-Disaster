@@ -108,8 +108,6 @@ void PlantsFacade::draw( const glm::vec3 & lightDir,
 						 bool useLandBlending,
 						 bool worldReflectionMode )
 {
-	glEnable( GL_BLEND );
-
 	shaders.updateAllPlants( usePhongShading,
 							 lightDir,
 							 lightSpaceMatrices,
@@ -145,8 +143,6 @@ void PlantsFacade::draw( const glm::vec3 & lightDir,
 		shaders.setLowPolyMode( true );
 		grassRenderer.render( grassGenerator.getModels( true ), false );
 	}
-
-	glDisable( GL_BLEND );
 }
 
 /**

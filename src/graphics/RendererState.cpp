@@ -30,10 +30,8 @@ namespace RendererState
 	*/
 	void setInitialRenderingState( bool useMultisample ) noexcept
 	{
-		glEnable( GL_CULL_FACE );
-		glEnable( GL_DEPTH_TEST );
+		enableStates( { GL_CULL_FACE, GL_DEPTH_TEST, GL_SAMPLE_SHADING } );
 		glDisable( GL_DITHER );
-		glEnable( GL_SAMPLE_SHADING );
 		if( useMultisample )
 		{
 			glEnable( GL_MULTISAMPLE );
@@ -51,19 +49,24 @@ namespace RendererState
 	*/
 	void setAmbienceRenderingState( bool isOn ) noexcept
 	{
-		if( isOn )
+		glFrontFace( isOn ? GL_CW : GL_CCW );
+		glDepthMask( isOn ? GL_FALSE : GL_TRUE );
+		glDepthFunc( isOn ? GL_LEQUAL : GL_LESS );
+	}
+
+	void enableStates( const std::initializer_list<unsigned int> & states ) noexcept
+	{
+		for( unsigned int state : states )
 		{
-			glFrontFace( GL_CW );
-			glDepthFunc( GL_LEQUAL );
-			glEnable( GL_BLEND );
-			glDepthMask( GL_FALSE );
+			glEnable( state );
 		}
-		else
+	}
+
+	void disableStates( const std::initializer_list<unsigned int> & states ) noexcept
+	{
+		for( unsigned int state : states )
 		{
-			glDepthMask( GL_TRUE );
-			glDisable( GL_BLEND );
-			glDepthFunc( GL_LESS );
-			glFrontFace( GL_CCW );
+			glDisable( state );
 		}
 	}
 }
