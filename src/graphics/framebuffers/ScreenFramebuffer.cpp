@@ -25,6 +25,7 @@
 #include "Shader"
 #include "ScreenResolution"
 #include "SettingsManager"
+#include "RendererState"
 
 /**
 * @brief plain ctor, externally creates multisample framebuffer object and related renderbuffer
@@ -143,9 +144,9 @@ void ScreenFramebuffer::draw( bool useMultisampling,
 
 	//render frame texture onto screen
 	screenBuffers.bind( VAO );
-	glDisable( GL_DEPTH_TEST );
+	RendererState::disableState( GL_DEPTH_TEST );
 	glDrawArrays( GL_TRIANGLES, 0, VERTICES_PER_QUAD );
-	glEnable( GL_DEPTH_TEST );
+	RendererState::enableState( GL_DEPTH_TEST );
 }
 
 /**

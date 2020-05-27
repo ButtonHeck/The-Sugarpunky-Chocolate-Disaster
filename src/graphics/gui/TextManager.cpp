@@ -26,6 +26,7 @@
 #include "VRAM_Monitor"
 #include "Shader"
 #include "MouseInputManager"
+#include "RendererState"
 
 #include <sstream>
 #include <iomanip>
@@ -231,9 +232,9 @@ void TextManager::drawText()
 	basicGLBuffers.bind( VAO | VBO );
 	glBufferData( GL_ARRAY_BUFFER, bufferOffset * sizeof( GLfloat ), vertexData, GL_STATIC_DRAW );
 
-	glEnable( GL_BLEND );
+	RendererState::enableState( GL_BLEND );
 	glDrawArrays( GL_TRIANGLES, 0, glyphsCount * VERTICES_PER_QUAD );
-	glDisable( GL_BLEND );
+	RendererState::disableState( GL_BLEND );
 
 	//do not forget to nullify these guys to protect from out-of-bounds indexing and overdrawing unnecessary stuff
 	bufferOffset = 0;

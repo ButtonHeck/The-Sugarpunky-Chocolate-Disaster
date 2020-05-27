@@ -349,7 +349,7 @@ void Game::drawFrameReflection()
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	if( options[OPT_USE_MULTISAMPLING] )
 	{
-		glDisable( GL_MULTISAMPLE );
+		RendererState::disableState( GL_MULTISAMPLE );
 	}
 
 	//for reflection rendering we need reflection view matrix
@@ -361,7 +361,7 @@ void Game::drawFrameReflection()
 
 	if( options[OPT_USE_MULTISAMPLING] )
 	{
-		glEnable( GL_MULTISAMPLE );
+		RendererState::enableState( GL_MULTISAMPLE );
 	}
 }
 
@@ -374,14 +374,14 @@ void Game::drawFrameRefraction( const glm::mat4 & projectionView )
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	if( options[OPT_USE_MULTISAMPLING] )
 	{
-		glDisable( GL_MULTISAMPLE );
+		RendererState::disableState( GL_MULTISAMPLE );
 	}
 
 	scene.drawWorldRefraction( projectionView );
 
 	if( options[OPT_USE_MULTISAMPLING] )
 	{
-		glEnable( GL_MULTISAMPLE );
+		RendererState::enableState( GL_MULTISAMPLE );
 	}
 }
 

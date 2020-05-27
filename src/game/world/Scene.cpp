@@ -315,6 +315,8 @@ void Scene::drawWorldReflection( const glm::mat4 & projectionView,
 
 	shoreFacade.draw( lightDir, lightSpaceMatrices, projectionView, false, false, true, false );
 
+	RendererState::enableState( GL_BLEND );
+
 	if( options[OPT_DRAW_TREES] )
 	{
 		plantsFacade.draw( lightDir, lightSpaceMatrices, projectionView, viewPosition, false, false, false, true );
@@ -324,6 +326,8 @@ void Scene::drawWorldReflection( const glm::mat4 & projectionView,
 	skysphereFacade.draw( theSunFacade.getRotationTransform(), ambienceProjectionView, lightDir );
 	skyboxFacade.draw( ambienceProjectionView, viewPosition, lightDir );
 	RendererState::setAmbienceRenderingState( false );
+
+	RendererState::disableState( GL_BLEND );
 }
 
 /**

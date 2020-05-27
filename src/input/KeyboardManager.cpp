@@ -21,6 +21,7 @@
 #include "KeyboardManager"
 #include "Camera"
 #include "TheSunFacade"
+#include "RendererState"
 
 /** @todo remove this from release version of the game */
 extern float debug_sunSpeed;
@@ -85,11 +86,11 @@ void KeyboardManager::processInput( float frameDelta )
 		options.toggle( OPT_USE_MULTISAMPLING );
 		if( options[OPT_USE_MULTISAMPLING] )
 		{
-			glEnable( GL_MULTISAMPLE );
+			RendererState::enableState( GL_MULTISAMPLE );
 		}
 		else
 		{
-			glDisable( GL_MULTISAMPLE );
+			RendererState::disableState( GL_MULTISAMPLE );
 		}
 	} );
 	processKey( GLFW_KEY_Q, OPT_USE_SHADOWS );
