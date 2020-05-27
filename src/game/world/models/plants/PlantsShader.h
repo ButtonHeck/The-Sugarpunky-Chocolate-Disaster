@@ -42,7 +42,8 @@ public:
 						  const glm::mat4 & projectionView,
 						  const glm::vec3 & viewPosition,
 						  bool useShadows,
-						  bool useLandBlending );
+						  bool useLandBlending,
+						  unsigned int loadDistance );
 	void updateGrassKeyframe();
 	void setType( int type,
 				  float alphaScaler );

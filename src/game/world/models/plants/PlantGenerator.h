@@ -51,6 +51,7 @@ public:
 	void updateIndirectBufferData();
 	std::vector<Model> & getModels( bool isLowPoly ) noexcept;
 	std::vector<ModelChunk> & getChunks() noexcept;
+	unsigned int getLoadingDistanceLowPoly() const noexcept;
 
 protected:
 	void initializeModelChunks( const map2D_f & map );

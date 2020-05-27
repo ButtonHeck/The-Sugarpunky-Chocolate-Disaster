@@ -42,6 +42,7 @@ PlantsShader::PlantsShader( Shader & renderPhongShader,
  * @param viewPosition current position of the camera
  * @param useShadows define whether to use shadows
  * @param useLandBlending define whether to use blending
+ * @param loadDistance loading distance used for fadeout
  */
 void PlantsShader::updateAllPlants( bool usePhongShading,
 									const glm::vec3 & lightDir,
@@ -49,7 +50,8 @@ void PlantsShader::updateAllPlants( bool usePhongShading,
 									const glm::mat4 & projectionView,
 									const glm::vec3 & viewPosition,
 									bool useShadows,
-									bool useLandBlending )
+									bool useLandBlending,
+									unsigned int loadDistance )
 {
 	currentShader = usePhongShading ? &renderPhongShader : &renderGouraudShader;
 	currentShader->use();
@@ -62,6 +64,7 @@ void PlantsShader::updateAllPlants( bool usePhongShading,
 	currentShader->setMat4( "u_lightSpaceMatrix[0]", lightSpaceMatrices[0] );
 	currentShader->setMat4( "u_lightSpaceMatrix[1]", lightSpaceMatrices[1] );
 	currentShader->setMat4( "u_lightSpaceMatrix[2]", lightSpaceMatrices[2] );
+	currentShader->setInt( "u_loadDistance", loadDistance );
 }
 
 /**
@@ -81,7 +84,7 @@ void PlantsShader::setType( int type,
 							float alphaScaler )
 {
 	currentShader->setInt( "u_type", type );
-	currentShader->setFloat( "u_alphaValueScaler", alphaScaler );
+	currentShader->setFloat( "u_landBlendingAlphaValueScaler", alphaScaler );
 }
 
 /**

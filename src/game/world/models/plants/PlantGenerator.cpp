@@ -511,3 +511,8 @@ std::vector<ModelChunk> & PlantGenerator::getChunks() noexcept
 {
 	return chunks;
 }
+
+unsigned int PlantGenerator::getLoadingDistanceLowPoly() const noexcept
+{
+	return LOADING_DISTANCE_UNITS_LOWPOLY;
+}

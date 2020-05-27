@@ -21,7 +21,8 @@ uniform float     u_ambientDay;
 uniform float     u_ambientNight;
 uniform vec3      u_viewPosition;
 uniform bool      u_isLowPoly;
-uniform float	  u_alphaValueScaler;
+uniform float	  u_landBlendingAlphaValueScaler;
+uniform int		  u_loadDistance;
 
 const float MAX_DESATURATING_VALUE = 0.5;
 const float SPECULAR_SHININESS = 4.0;
@@ -106,11 +107,13 @@ void main()
         //no desaturation here as it requires luminosity calculation
         o_FragColor += clamp(o_FragColor * shadingNormal.y * 0.5, -0.04, 0.0);
     }
+	//fadeout of the most distant models
+	o_FragColor.a = clamp((u_loadDistance - length(u_viewPosition - v_FragPos) - 1) / 3, 0.0, 1.0);
 
     //make closer to ground fragment color mix a bit with land texture (just a visual flavour)
     if(u_useLandBlending)
 	{
-		float alphaValue = v_FragPos.y * u_alphaValueScaler;
-        o_FragColor.a = mix(0.0, 1.0, alphaValue);
+		float alphaValue = v_FragPos.y * u_landBlendingAlphaValueScaler;
+        o_FragColor.a = min(o_FragColor.a, mix(0.0, 1.0, alphaValue));
 	}
 }

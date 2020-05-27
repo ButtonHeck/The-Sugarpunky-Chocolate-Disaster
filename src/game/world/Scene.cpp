@@ -197,17 +197,6 @@ void Scene::drawWorld( const glm::mat4 & projectionView,
 
 	shoreFacade.draw( lightDir, lightSpaceMatrices, projectionView, useShadows, isDebugRender, false, false );
 
-	if( options[OPT_DRAW_TREES] )
-	{
-		plantsFacade.draw( lightDir,
-						   lightSpaceMatrices,
-						   projectionView,
-						   viewPosition,
-						   options[OPT_MODELS_PHONG_SHADING],
-						   useShadows,
-						   options[OPT_MODELS_LAND_BLENDING] );
-	}
-
 	if( options[OPT_DRAW_BUILDABLE] )
 	{
 		buildableFacade.drawBuildable( projectionView );
@@ -228,6 +217,17 @@ void Scene::drawWorld( const glm::mat4 & projectionView,
 	if( options[OPT_DRAW_WATER] )
 	{
 		waterFacade.draw( lightDir, lightSpaceMatrices, projectionView, viewPosition, viewFrustum, options[OPT_WATER_CULLING], isDebugRender );
+	}
+
+	if( options[OPT_DRAW_TREES] )
+	{
+		plantsFacade.draw( lightDir,
+						   lightSpaceMatrices,
+						   projectionView,
+						   viewPosition,
+						   options[OPT_MODELS_PHONG_SHADING],
+						   useShadows,
+						   options[OPT_MODELS_LAND_BLENDING] );
 	}
 
 	float flareBrightness = theSunFacade.getSunFlareBrightness( options[OPT_USE_MULTISAMPLING], viewPosition.y );

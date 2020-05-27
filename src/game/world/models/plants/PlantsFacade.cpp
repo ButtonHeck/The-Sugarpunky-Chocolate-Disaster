@@ -108,14 +108,7 @@ void PlantsFacade::draw( const glm::vec3 & lightDir,
 						 bool useLandBlending,
 						 bool worldReflectionMode )
 {
-	if( useLandBlending && !worldReflectionMode )
-	{
-		glEnable( GL_BLEND );
-	}
-	else
-	{
-		glDisable( GL_BLEND );
-	}
+	glEnable( GL_BLEND );
 
 	shaders.updateAllPlants( usePhongShading,
 							 lightDir,
@@ -123,7 +116,8 @@ void PlantsFacade::draw( const glm::vec3 & lightDir,
 							 projectionView,
 							 viewPosition,
 							 useShadows,
-							 useLandBlending );
+							 useLandBlending,
+							 landPlantsGenerator.getLoadingDistanceLowPoly() );
 
 	//draw trees and hill models first (plain and low-poly)
 	shaders.setType( PLANT_TREES, 30.0f );
@@ -152,10 +146,7 @@ void PlantsFacade::draw( const glm::vec3 & lightDir,
 		grassRenderer.render( grassGenerator.getModels( true ), false );
 	}
 
-	if( useLandBlending || worldReflectionMode )
-	{
-		glDisable( GL_BLEND );
-	}
+	glDisable( GL_BLEND );
 }
 
 /**
