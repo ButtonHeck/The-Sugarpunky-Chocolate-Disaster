@@ -14,7 +14,6 @@ uniform float     u_normalMapTilingReciprocal;
 uniform bool      u_shadowEnable;
 uniform float     u_ambientDay;
 uniform float     u_ambientNight;
-uniform vec3      u_viewPosition;
 
 const vec3  NORMAL = vec3(0.0, 1.0, 0.0);
 const float MAX_DESATURATING_VALUE = 0.5;
