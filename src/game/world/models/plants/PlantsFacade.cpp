@@ -113,7 +113,7 @@ void PlantsFacade::draw( const glm::vec3 & lightDir,
 							 viewPosition,
 							 useShadows,
 							 useLandBlending,
-							 landPlantsGenerator.getLoadingDistanceLowPoly() );
+							 landPlantsGenerator.getLoadingDistanceLowPoly() - 1 );
 
 	//draw trees and hill models first (plain and low-poly)
 	shaders.setType( PLANT_TREES, 30.0f );

@@ -18,20 +18,20 @@ out vec3 v_fColor;
 
 void main()
 {
-    v_fColor = vec3(abs(v_Normal[0].x) * 1.5, 0.0, abs(v_Normal[0]).z * 1.5);
+    v_fColor = vec3( abs( v_Normal[0].x ) * 1.5, 0.0, abs( v_Normal[0] ).z * 1.5 );
     gl_Position = gl_in[0].gl_Position;
     EmitVertex();
-    gl_Position = gl_in[0].gl_Position + u_projectionView * vec4(v_Normal[0], 0.0);
+    gl_Position = gl_in[0].gl_Position + u_projectionView * vec4( v_Normal[0], 0.0 );
     EmitVertex();
 
     gl_Position = gl_in[0].gl_Position;
     EmitVertex();
-    gl_Position = gl_in[0].gl_Position + u_projectionView * vec4(v_Tangent[0], 0.0);
+    gl_Position = gl_in[0].gl_Position + u_projectionView * vec4( v_Tangent[0], 0.0 );
     EmitVertex();
 
     gl_Position = gl_in[0].gl_Position;
     EmitVertex();
-    gl_Position = gl_in[0].gl_Position + u_projectionView * vec4(v_Bitangent[0], 0.0);
+    gl_Position = gl_in[0].gl_Position + u_projectionView * vec4( v_Bitangent[0], 0.0 );
     EmitVertex();
 
     EndPrimitive();

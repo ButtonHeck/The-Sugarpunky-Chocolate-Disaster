@@ -13,7 +13,7 @@ void main()
     v_fColor = v_gColor[0];
     gl_Position = gl_in[0].gl_Position;
     EmitVertex();
-    gl_Position = gl_in[0].gl_Position + vec4(v_gDirection[0], 0.0);
+    gl_Position = gl_in[0].gl_Position + vec4( v_gDirection[0], 0.0 );
     EmitVertex();
     EndPrimitive();
 }

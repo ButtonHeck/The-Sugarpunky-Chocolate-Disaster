@@ -35,25 +35,28 @@ void main()
     vec4 worldPosition = i_model * i_pos;
     v_FragPos = vec3(worldPosition);
 
-    float distanceToObject = distance(u_viewPosition, v_FragPos);
+    float distanceToObject = distance( u_viewPosition, v_FragPos );
 
-    if (distanceToObject < MAX_ANIMATION_DISTANCE)
+    if( distanceToObject < MAX_ANIMATION_DISTANCE )
+	{
         ext_animate(worldPosition);
+	}
 
     gl_Position = u_projectionView * worldPosition;
     v_TexCoords = i_texCoords;
     v_TexIndices = i_texIndices;
 
-    vec3 normal = normalize(vec3(i_model * vec4(i_normal, 0)));
+    vec3 normal = normalize( vec3( i_model * vec4( i_normal, 0 ) ) );
     v_NormalY = normal.y;
 
-    v_SunPositionAttenuation = clamp(u_lightDir.y * 3, 0.0, 1.0);
+    v_SunPositionAttenuation = clamp( u_lightDir.y * 3, 0.0, 1.0 );
     vec3 shadingNormal = normal;
 
     //diffuse
-    v_DiffuseComponent = max(dot(shadingNormal, u_lightDir), 0.0) * v_SunPositionAttenuation * (1.0 - u_ambientDay);
+	float oneMinusAmbientDay = 1.0 - u_ambientDay;
+    v_DiffuseComponent = max( dot( shadingNormal, u_lightDir ), 0.0 ) * v_SunPositionAttenuation * oneMinusAmbientDay;
 
-    if (u_type == PLANT_TYPE_GRASS)
+    if( u_type == PLANT_TYPE_GRASS )
     {
         /*
         make grass diffuse lighting look more natural by calculating diffuse component for its reversed normal
@@ -61,13 +64,13 @@ void main()
         in cases a leaf is almost vertical (horizontally oriented normal) and the sun is at zenith (vertical light direction),
         otherwise grass coloring would look unnatural too.
         */
-        float diffuseComponentNegative = max(dot(-shadingNormal, u_lightDir), 0.0) * v_SunPositionAttenuation * (1.0 - u_ambientDay);
-        v_DiffuseComponent = max(v_DiffuseComponent, diffuseComponentNegative);
-        v_DiffuseComponent = mix(v_DiffuseComponent, max(v_DiffuseComponent, 0.33), v_SunPositionAttenuation);
+        float diffuseComponentNegative = max( dot( -shadingNormal, u_lightDir ), 0.0 ) * v_SunPositionAttenuation * oneMinusAmbientDay;
+        v_DiffuseComponent = max( v_DiffuseComponent, diffuseComponentNegative );
+        v_DiffuseComponent = mix( v_DiffuseComponent, max( v_DiffuseComponent, 0.33 ), v_SunPositionAttenuation );
     }
 
     //specular
-    vec3 lightDirectionReflected = reflect(-u_lightDir, normal);
-    vec3 viewDirection = normalize(u_viewPosition - v_FragPos);
-    v_SpecularComponent = pow(max(dot(lightDirectionReflected, viewDirection), 0.0), SPECULAR_SHININESS) * v_SunPositionAttenuation;
+    vec3 lightDirectionReflected = reflect( -u_lightDir, normal );
+    vec3 viewDirection = normalize( u_viewPosition - v_FragPos );
+    v_SpecularComponent = pow( max( dot( lightDirectionReflected, viewDirection ), 0.0 ), SPECULAR_SHININESS ) * v_SunPositionAttenuation;
 }

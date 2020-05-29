@@ -21,32 +21,32 @@ const float MAX_DESATURATING_VALUE = 0.5;
 void main()
 {
 	//hills skyboxes texcoords higher than 0.2 on Y are transparent, in that case just bypass any calculations
-	if ( v_TexCoords.y > 0.2 )
+	if( v_TexCoords.y > 0.2 )
 	{
-		o_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+		o_FragColor = vec4(0.0);
 		return;
 	}
 
-    vec4 sampledDiffuse = texture(u_skyboxColor[u_type], v_TexCoords);
-    vec3 sampledNormal = texture(u_skyboxNormals[u_type], v_TexCoords).rgb * 2.0 - 1.0;
+    vec4 sampledDiffuse = texture( u_skyboxColor[u_type], v_TexCoords );
+    vec3 sampledNormal = texture( u_skyboxNormals[u_type], v_TexCoords ).rgb * 2.0 - 1.0;
     sampledNormal = normalize(sampledNormal);
 
     @include shadingVariables.ifs
 
-    float sunPositionAttenuation = clamp(u_lightDir.y * 10, 0.0, 1.0);
-    float diffuseComponent = max(dot(sampledNormal, u_lightDir), 0.0) * sunPositionAttenuation;
+    float sunPositionAttenuation = clamp( u_lightDir.y * 10, 0.0, 1.0 );
+    float diffuseComponent = max( dot( sampledNormal, u_lightDir ), 0.0 ) * sunPositionAttenuation;
 
-    ambientColor = mix(ambientColorNightSelf, ambientColorDaySelf, sunPositionAttenuation);
+    ambientColor = mix( ambientColorNightSelf, ambientColorDaySelf, sunPositionAttenuation );
     //add a bit of red in the night time
-    ambientColor += nightAmbientColor * (1.0 - sunPositionAttenuation);
+    ambientColor += nightAmbientColor * ( 1.0 - sunPositionAttenuation );
 
     diffuseColor = sampledDiffuse.rgb * diffuseComponent;
     resultColor = ambientColor + diffuseColor;
-    o_FragColor = vec4(resultColor, sampledDiffuse.a);
+    o_FragColor = vec4( resultColor, sampledDiffuse.a );
 
     //apply no desaturation if sun's Y coord is close to 0, or little if diffuse component is low enough
-    float desaturatingValue = mix(0.0,
-                                  MAX_DESATURATING_VALUE,
-                                  min(1.0 * sunPositionAttenuation, diffuseComponent + 0.5));
-    ext_desaturate(o_FragColor, desaturatingValue);
+    float desaturatingValue = mix( 0.0,
+                                   MAX_DESATURATING_VALUE,
+                                   min( 1.0 * sunPositionAttenuation, diffuseComponent + 0.5 ) );
+    ext_desaturate( o_FragColor, desaturatingValue );
 }

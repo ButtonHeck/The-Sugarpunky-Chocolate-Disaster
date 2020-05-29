@@ -14,15 +14,17 @@ void main()
     so for each layer we should calculate different set of data
     */
     int layer, vertex;
-    for (layer = 0; layer < NUM_LAYERS; layer++)
+    for( layer = 0; layer < NUM_LAYERS; layer++ )
     {
         gl_Layer = layer;
-        for (vertex = 0; vertex < gl_in.length(); vertex++)
+        for( vertex = 0; vertex < gl_in.length(); vertex++ )
         {
             gl_Position = u_lightSpaceMatrix[layer] * gl_in[vertex].gl_Position;
             //questionable(but working) trick to mimic hills be solid in order to remove shadow artefacts
-            if (gl_Position.z < -1.0)
+            if( gl_Position.z < -1.0 )
+			{
                 gl_Position.z = -1.0;
+			}
             EmitVertex();
         }
         EndPrimitive();

@@ -29,13 +29,15 @@ void main()
     vec4 worldPosition = i_model * i_pos;
     v_FragPos = vec3(worldPosition);
 
-    float distanceToObject = distance(u_viewPosition, v_FragPos);
+    float distanceToObject = distance( u_viewPosition, v_FragPos );
 
-    if (distanceToObject < MAX_ANIMATION_DISTANCE)
+    if ( distanceToObject < MAX_ANIMATION_DISTANCE )
+	{
         ext_animate(worldPosition);
+	}
 
     gl_Position = u_projectionView * worldPosition;
     v_TexCoords = i_texCoords;
     v_TexIndices = i_texIndices;
-    v_Normal = vec3(i_model * vec4(i_normal, 0));
+    v_Normal = vec3( i_model * vec4( i_normal, 0 ) );
 }

@@ -11,6 +11,6 @@ out float v_PositionY;
 void main()
 {
     //use W as Z, so after perspective division we get Z as 1.0
-    gl_Position = (u_projectionView * u_model * i_pos).xyww;
+    gl_Position = ( u_projectionView * u_model * i_pos ).xyww;
     v_PositionY = u_model[0][1];
 }

@@ -14,9 +14,11 @@ uniform float     u_brightnessHalo;
 
 void main()
 {
-    o_FragColor = texture(sampler2D(u_flares[v_TexIndex]), gl_PointCoord);
+    o_FragColor = texture( sampler2D( u_flares[v_TexIndex] ), gl_PointCoord );
     float brightness = u_brightnessFlare;
-    if (v_TexIndex == 0) //rendering halo
+    if( v_TexIndex == 0 ) //rendering halo
+	{
         brightness = u_brightnessHalo;
+	}
     o_FragColor *= brightness;
 }

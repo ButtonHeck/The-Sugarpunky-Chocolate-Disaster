@@ -13,9 +13,9 @@ uniform float     u_waterLevel;
 uniform bool      u_useClipDistanceReflection;
 uniform bool      u_useClipDistanceRefraction;
 
-const vec4  CLIP_PLANE_REFLECTION = vec4(0.0, 1.0, 0.0, u_waterLevel);
+const vec4  CLIP_PLANE_REFLECTION = vec4( 0.0, 1.0, 0.0, u_waterLevel );
 const float CLIP_PLANE_REFRACTION_DISTANCE_OFFSET = -1.6;
-const vec4  CLIP_PLANE_REFRACTION = vec4(0.0, -1.0, 0.0, -u_waterLevel + CLIP_PLANE_REFRACTION_DISTANCE_OFFSET);
+const vec4  CLIP_PLANE_REFRACTION = vec4( 0.0, -1.0, 0.0, -u_waterLevel + CLIP_PLANE_REFRACTION_DISTANCE_OFFSET );
 const float TERRAIN_TYPE_HEIGHT_DAMP_FACTOR = 1.75;
 
 out vec3  v_FragPos;
@@ -29,19 +29,23 @@ out vec3  v_Normal;
 void main()
 {
     gl_Position = u_projectionView * i_pos;
-    if (u_useClipDistanceReflection)
-        gl_ClipDistance[0] = dot(CLIP_PLANE_REFLECTION, i_pos);
-    if (u_useClipDistanceRefraction)
-        gl_ClipDistance[0] = dot(CLIP_PLANE_REFRACTION, i_pos);
+    if(u_useClipDistanceReflection)
+	{
+        gl_ClipDistance[0] = dot( CLIP_PLANE_REFLECTION, i_pos );
+	}
+    if(u_useClipDistanceRefraction)
+	{
+        gl_ClipDistance[0] = dot( CLIP_PLANE_REFRACTION, i_pos );
+	}
 
     v_FragPos = i_pos.xyz;
     v_TexCoords = i_texCoords;
     v_Normal = i_normal;
 
-	float terrainSplattingOffset = texture(u_diffuseMixMap, i_pos.xz * u_mapDimensionReciprocal * 0.125 + 0.5).g * 2;
-	terrainSplattingOffset = max(terrainSplattingOffset, 0.6);
+	float terrainSplattingOffset = texture( u_diffuseMixMap, i_pos.xz * u_mapDimensionReciprocal * 0.125 + 0.5 ).g * 2;
+	terrainSplattingOffset = max( terrainSplattingOffset, 0.6 );
 	v_ShoreLandMix = 0.4 + i_pos.y * TERRAIN_TYPE_HEIGHT_DAMP_FACTOR + terrainSplattingOffset;
 
     //for this its okay to clamp in a vertex shader stage
-    v_ShoreUnderwaterMix = 1.0 - clamp((i_pos.y + u_underwaterSurfaceLevel) * 0.5 - 0.1, 0.0, 1.0);
+    v_ShoreUnderwaterMix = 1.0 - clamp( ( i_pos.y + u_underwaterSurfaceLevel ) * 0.5 - 0.1, 0.0, 1.0 );
 }

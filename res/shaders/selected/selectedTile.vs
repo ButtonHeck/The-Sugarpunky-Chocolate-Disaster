@@ -7,5 +7,5 @@ uniform vec4 u_translation;
 
 void main()
 {
-    gl_Position = u_projectionView * (i_pos + u_translation);
+    gl_Position = u_projectionView * ( i_pos + u_translation );
 }

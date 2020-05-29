@@ -7,6 +7,6 @@ uniform sampler2D u_fontTextureAtlas;
 
 void main()
 {
-    float sampledAlpha = texture(u_fontTextureAtlas, v_TexCoords).a;
-    o_FragColor = vec4(0.0, 0.0, 0.0, sampledAlpha);
+    float opacityMask = texture( u_fontTextureAtlas, v_TexCoords ).a;
+    o_FragColor = vec4( 0.0, 0.0, 0.0, opacityMask );
 }

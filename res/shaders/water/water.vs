@@ -13,7 +13,7 @@ const float WAVE_AMPLITUDE = 0.0825;
 void main()
 {
     vec3 animatedPos = i_pos;
-    animatedPos.y += sin(u_time + i_animationOffset) * WAVE_AMPLITUDE;
-    gl_Position = u_projectionView * vec4(animatedPos, 1.0);
+    animatedPos.y += sin( u_time + i_animationOffset ) * WAVE_AMPLITUDE;
+    gl_Position = u_projectionView * vec4( animatedPos, 1.0 );
     v_FragPos = animatedPos;
 }

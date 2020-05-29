@@ -40,18 +40,18 @@ out mat3  v_TNB;
 
 void main()
 {
-    gl_Position = u_projectionView * vec4(i_pos, 1.0);
+    gl_Position = u_projectionView * vec4( i_pos, 1.0 );
 
     v_FragPos = i_pos;
     v_Normal = i_normal;
     v_TexCoords = i_texCoords;
-    v_TNB = mat3(i_tangent, i_normal, i_bitangent);
+    v_TNB = mat3( i_tangent, i_normal, i_bitangent );
 
-    float terrainSplattingRatio = texture(u_diffuseMixMap, i_pos.xz * u_mapDimensionReciprocal + 0.5).g;
-    v_TerrainTypeMix = i_pos.y * (1.0 - terrainSplattingRatio * TERRAIN_TYPE_HEIGHT_DAMP_FACTOR);
+    float terrainSplattingRatio = texture( u_diffuseMixMap, i_pos.xz * u_mapDimensionReciprocal + 0.5 ).g;
+    v_TerrainTypeMix = i_pos.y * ( 1.0 - terrainSplattingRatio * TERRAIN_TYPE_HEIGHT_DAMP_FACTOR );
 
     //specular component
-    vec3 lightDirReflected = reflect(-u_lightDir, i_normal);
-    vec3 viewDirection = normalize(u_viewPosition - i_pos);
-    v_SpecularComponent = pow(max(dot(lightDirReflected, viewDirection), 0.0), SPECULAR_SHININESS);
+    vec3 lightDirReflected = reflect( -u_lightDir, i_normal );
+    vec3 viewDirection = normalize( u_viewPosition - i_pos );
+    v_SpecularComponent = pow( max( dot( lightDirReflected, viewDirection ), 0.0 ), SPECULAR_SHININESS );
 }

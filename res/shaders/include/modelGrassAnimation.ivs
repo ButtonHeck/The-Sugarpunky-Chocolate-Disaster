@@ -3,7 +3,7 @@ uniform int   u_type;
 uniform float u_grassPosDistrubution;
 
 //define a maximum position change during animation
-const vec3  GRASS_WAVE_XYZ = vec3(0.007, 0.0023, 0.0035);
+const vec3  GRASS_WAVE_XYZ = vec3( 0.007, 0.0023, 0.0035 );
 const vec3  GRASS_WAVE_XYZ_NORMALIZED = normalize(GRASS_WAVE_XYZ);
 //limit stones and rocks to be animated (empirical value)
 const float MIN_HEIGHT_TO_ANIMATE = 0.38;
@@ -13,19 +13,19 @@ const int   PLANT_TYPE_GRASS = 1;
 this function firstly is responsible for calculation of position offsets for grass depending on distribution value
 and secondly it defines how much alpha component will take place for current fragment, both for grass and other models
 */
-void ext_animate(inout vec4 worldPosition)
+void ext_animate( inout vec4 worldPosition )
 {
-    if (u_type == PLANT_TYPE_GRASS)
+    if( u_type == PLANT_TYPE_GRASS )
     {
-        if (i_pos.y > MIN_HEIGHT_TO_ANIMATE)
+        if( i_pos.y > MIN_HEIGHT_TO_ANIMATE )
         {
-            vec2 fractionOfWorldCoords = fract(worldPosition.xz); //offset tweaks: X - coarse, Z - fine
+            vec2 fractionOfWorldCoords = fract( worldPosition.xz ); //offset tweaks: X - coarse, Z - fine
             //map range from [-1;1] to [-0.5;0.5]
-            float influence = sin(u_grassPosDistrubution * max(fractionOfWorldCoords.x, 0.75) + fractionOfWorldCoords.y) * 0.5;
+            float influence = sin( u_grassPosDistrubution * max( fractionOfWorldCoords.x, 0.75 ) + fractionOfWorldCoords.y ) * 0.5;
             //if normal(or its negation) is close to animation direction - add/subtract a bit of it to the final position offset
-            worldPosition.xyz += influence * (mix(GRASS_WAVE_XYZ,
-                                                  GRASS_WAVE_XYZ + i_normal * 0.005,
-                                                  abs(dot(GRASS_WAVE_XYZ_NORMALIZED, i_normal))));
+            worldPosition.xyz += influence * ( mix( GRASS_WAVE_XYZ,
+                                                    GRASS_WAVE_XYZ + i_normal * 0.005,
+                                                    abs( dot( GRASS_WAVE_XYZ_NORMALIZED, i_normal ) ) ) );
         }
     }
 }

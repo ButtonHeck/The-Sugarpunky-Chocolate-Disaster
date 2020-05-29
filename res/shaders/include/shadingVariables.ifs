@@ -1,6 +1,6 @@
 vec3 ambientColorDaySelf = u_ambientDay * sampledDiffuse.rgb;
 vec3 ambientColorNightSelf = u_ambientNight * sampledDiffuse.rgb;
-vec3 nightAmbientColor = vec3(0.0034, 0.0012, 0.0009);
+const vec3 nightAmbientColor = vec3( 0.0034, 0.0012, 0.0009 );
 
 vec3 ambientColor;
 vec3 diffuseColor;

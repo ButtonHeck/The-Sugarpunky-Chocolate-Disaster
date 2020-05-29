@@ -2,74 +2,74 @@ uniform sampler2DArray  u_shadowMap;
 uniform float           u_bias;
 uniform mat4            u_lightSpaceMatrix[3];
 
-const vec2  TEXEL_SIZE = 1.0 / textureSize(u_shadowMap, 0).xy;
+const vec2  TEXEL_SIZE = 1.0 / textureSize( u_shadowMap, 0 ).xy;
 const float SHADOW_INFLUENCE = 0.5;
 const float SHADOW_INFLUENCE_RECIPROCAL = 1.0 / SHADOW_INFLUENCE;
-const vec2  EARLY_BAILING_PCF3_CORNER_COORDS[4] = {vec2(-1,-1) * TEXEL_SIZE,
-                                                   vec2(1,-1)  * TEXEL_SIZE,
-                                                   vec2(-1,1)  * TEXEL_SIZE,
-                                                   vec2(1,1)   * TEXEL_SIZE};
+const vec2  EARLY_BAILING_PCF3_CORNER_COORDS[4] = { vec2( -1, -1 ) * TEXEL_SIZE,
+                                                    vec2( 1, -1 )  * TEXEL_SIZE,
+                                                    vec2( -1, 1 )  * TEXEL_SIZE,
+                                                    vec2( 1, 1 )   * TEXEL_SIZE };
 //using these assumes that early bailing coordinates have already been used and there is no need to duplicate them here
-const vec2  PCF3_COORDS[5] = {vec2(0,-1) * TEXEL_SIZE,
-                              vec2(-1,0) * TEXEL_SIZE,
-                              vec2(0,0)  * TEXEL_SIZE,
-                              vec2(1,0)  * TEXEL_SIZE,
-                              vec2(0,1)  * TEXEL_SIZE};
+const vec2  PCF3_COORDS[5] = { vec2( 0, -1 ) * TEXEL_SIZE,
+                               vec2( -1, 0 ) * TEXEL_SIZE,
+                               vec2( 0, 0 )  * TEXEL_SIZE,
+                               vec2( 1, 0 )  * TEXEL_SIZE,
+                               vec2( 0, 1 )  * TEXEL_SIZE };
 
-const vec2  EARLY_BAILING_PCF5_CORNER_COORDS[4] = {vec2(-2,-2) * TEXEL_SIZE,
-                                                   vec2(2,-2)  * TEXEL_SIZE,
-                                                   vec2(-2,2)  * TEXEL_SIZE,
-                                                   vec2(2,2)   * TEXEL_SIZE};
+const vec2  EARLY_BAILING_PCF5_CORNER_COORDS[4] = { vec2( -2, -2 ) * TEXEL_SIZE,
+                                                    vec2( 2, -2 )  * TEXEL_SIZE,
+                                                    vec2( -2, 2 )  * TEXEL_SIZE,
+                                                    vec2( 2, 2 )   * TEXEL_SIZE };
 //using these assumes that early bailing coordinates have already been used and there is no need to duplicate them here
-const vec2  PCF5_COORDS[21] = {vec2(-2,-1) * TEXEL_SIZE,
-                               vec2(-2,0) * TEXEL_SIZE,
-                               vec2(-2,1) * TEXEL_SIZE,
-                               vec2(-1,-2) * TEXEL_SIZE,
-                               vec2(-1,-1) * TEXEL_SIZE,
-                               vec2(-1,0) * TEXEL_SIZE,
-                               vec2(-1,1) * TEXEL_SIZE,
-                               vec2(-1,2) * TEXEL_SIZE,
-                               vec2(0,-2) * TEXEL_SIZE,
-                               vec2(0,-1) * TEXEL_SIZE,
-                               vec2(0,0) * TEXEL_SIZE,
-                               vec2(0,1) * TEXEL_SIZE,
-                               vec2(0,2) * TEXEL_SIZE,
-                               vec2(1,-2) * TEXEL_SIZE,
-                               vec2(1,-1) * TEXEL_SIZE,
-                               vec2(1,0) * TEXEL_SIZE,
-                               vec2(1,1) * TEXEL_SIZE,
-                               vec2(1,2) * TEXEL_SIZE,
-                               vec2(2,-1) * TEXEL_SIZE,
-                               vec2(2,0) * TEXEL_SIZE,
-                               vec2(2,1) * TEXEL_SIZE};
+const vec2  PCF5_COORDS[21] = { vec2( -2,-1 ) * TEXEL_SIZE,
+                                vec2( -2, 0 ) * TEXEL_SIZE,
+                                vec2( -2, 1 ) * TEXEL_SIZE,
+                                vec2( -1, -2 ) * TEXEL_SIZE,
+                                vec2( -1, -1 ) * TEXEL_SIZE,
+                                vec2( -1, 0 ) * TEXEL_SIZE,
+                                vec2( -1, 1 ) * TEXEL_SIZE,
+                                vec2( -1, 2 ) * TEXEL_SIZE,
+                                vec2( 0, -2 ) * TEXEL_SIZE,
+                                vec2( 0, -1 ) * TEXEL_SIZE,
+                                vec2( 0, 0 ) * TEXEL_SIZE,
+                                vec2( 0, 1 ) * TEXEL_SIZE,
+                                vec2( 0, 2 ) * TEXEL_SIZE,
+                                vec2( 1, -2 ) * TEXEL_SIZE,
+                                vec2( 1, -1 ) * TEXEL_SIZE,
+                                vec2( 1, 0 ) * TEXEL_SIZE,
+                                vec2( 1, 1 ) * TEXEL_SIZE,
+                                vec2( 1, 2 ) * TEXEL_SIZE,
+                                vec2( 2, -1 ) * TEXEL_SIZE,
+                                vec2( 2, 0 ) * TEXEL_SIZE,
+                                vec2( 2, 1 ) * TEXEL_SIZE };
 
 /*
 this function is responsible for calculating an index of the shadow map layer and calculation of coordinates
 in a particular texture layer for future texture fetches
 */
-void ext_calculateShadowMapIndexAndProjectedCoords(inout int shadowMapIndex, inout vec3 projectedCoords)
+void ext_calculateShadowMapIndexAndProjectedCoords( inout int shadowMapIndex, inout vec3 projectedCoords )
 {
-    vec4 fragPosLightSpace = u_lightSpaceMatrix[0] * vec4(v_FragPos, 1.0);
+    vec4 fragPosLightSpace = u_lightSpaceMatrix[0] * vec4( v_FragPos, 1.0 );
     vec3 projectedCoordsTransformed = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
-    bvec3 lesserCoords = lessThan(projectedCoordsTransformed, vec3(1.0, 1.0, 1.0));
-    bvec3 greaterCoords = greaterThan(projectedCoordsTransformed, vec3(0.0, 0.0, 0.0));
-    if (all(lesserCoords) && all(greaterCoords))
+    bvec3 lesserCoords = lessThan( projectedCoordsTransformed, vec3( 1.0, 1.0, 1.0 ) );
+    bvec3 greaterCoords = greaterThan( projectedCoordsTransformed, vec3( 0.0, 0.0, 0.0 ) );
+    if( all(lesserCoords) && all(greaterCoords) )
     {
         shadowMapIndex = 0;
     }
     else
     {
-        fragPosLightSpace = u_lightSpaceMatrix[1] * vec4(v_FragPos, 1.0);
+        fragPosLightSpace = u_lightSpaceMatrix[1] * vec4( v_FragPos, 1.0 );
         projectedCoordsTransformed = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
-        lesserCoords = lessThan(projectedCoordsTransformed, vec3(1.0, 1.0, 1.0));
-        greaterCoords = greaterThan(projectedCoordsTransformed, vec3(0.0, 0.0, 0.0));
-        if (all(lesserCoords) && all(greaterCoords))
+        lesserCoords = lessThan( projectedCoordsTransformed, vec3( 1.0, 1.0, 1.0 ) );
+        greaterCoords = greaterThan( projectedCoordsTransformed, vec3( 0.0, 0.0, 0.0 ) );
+        if( all(lesserCoords) && all(greaterCoords) )
         {
             shadowMapIndex = 1;
         }
         else
         {
-            fragPosLightSpace = u_lightSpaceMatrix[2] * vec4(v_FragPos, 1.0);
+            fragPosLightSpace = u_lightSpaceMatrix[2] * vec4( v_FragPos, 1.0 );
             projectedCoordsTransformed = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
             shadowMapIndex = 2;
         }
@@ -78,65 +78,70 @@ void ext_calculateShadowMapIndexAndProjectedCoords(inout int shadowMapIndex, ino
 }
 
 /*
-this one is the same as one above, but it check against only middle and far light space matrices,
+this one is the same as one above, but it checks against only middle and far light space matrices,
 use it only for fragments that far enough from current view position
 */
-void ext_calculateShadowMapIndexAndProjectedCoordsLowp(inout int shadowMapIndex, inout vec3 projectedCoords)
+void ext_calculateShadowMapIndexAndProjectedCoordsLowp( inout int shadowMapIndex, inout vec3 projectedCoords )
 {
-    vec4 fragPosLightSpace = u_lightSpaceMatrix[1] * vec4(v_FragPos, 1.0);
+    vec4 fragPosLightSpace = u_lightSpaceMatrix[1] * vec4( v_FragPos, 1.0 );
     vec3 projectedCoordsTransformed = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
-    bvec3 lesserCoords = lessThan(projectedCoordsTransformed, vec3(1.0, 1.0, 1.0));
-    bvec3 greaterCoords = greaterThan(projectedCoordsTransformed, vec3(0.0, 0.0, 0.0));
-    if (all(lesserCoords) && all(greaterCoords))
+    bvec3 lesserCoords = lessThan( projectedCoordsTransformed, vec3( 1.0, 1.0, 1.0 ) );
+    bvec3 greaterCoords = greaterThan( projectedCoordsTransformed, vec3( 0.0, 0.0, 0.0 ) );
+    if( all(lesserCoords) && all(greaterCoords) )
     {
         shadowMapIndex = 1;
     }
     else
     {
-        fragPosLightSpace = u_lightSpaceMatrix[2] * vec4(v_FragPos, 1.0);
+        fragPosLightSpace = u_lightSpaceMatrix[2] * vec4( v_FragPos, 1.0 );
         projectedCoordsTransformed = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
         shadowMapIndex = 2;
     }
     projectedCoords = projectedCoordsTransformed;
 }
 
-/*
-linear texture filtering of four closest integer coordinates
-*/
-float ext_sampleShadowMapLinear(int index, vec2 coords, float bias)
+//linear texture filtering of four closest integer coordinates
+float ext_sampleShadowMapLinear( int index, vec2 coords, float bias )
 {
     vec2 pixelPos = coords / TEXEL_SIZE + vec2(0.5);
     vec2 fractionalPart = fract(pixelPos);
-    vec2 startTexel = (pixelPos - fractionalPart) * TEXEL_SIZE;
-    vec2[4] startTexels = {startTexel,
-                           startTexel + vec2(TEXEL_SIZE.x, 0.0),
-                           startTexel + TEXEL_SIZE,
-                           startTexel + vec2(0.0, TEXEL_SIZE.y)};
+    vec2 startTexel = ( pixelPos - fractionalPart ) * TEXEL_SIZE;
+    vec2[4] startTexels = { startTexel,
+                            startTexel + vec2( TEXEL_SIZE.x, 0.0 ),
+                            startTexel + TEXEL_SIZE,
+                            startTexel + vec2( 0.0, TEXEL_SIZE.y ) };
     float[4] fetches;
-    for (int i = 0; i < 4; i++)
-        fetches[i] = step(texture(u_shadowMap, vec3(startTexels[i].xy, index)).r, bias);
+    for( int i = 0; i < 4; i++ )
+	{
+        fetches[i] = step( texture( u_shadowMap, vec3( startTexels[i].xy, index ) ).r, bias );
+	}
 
-    float mixLeft = mix(fetches[0], fetches[1], fractionalPart.y);
-    float mixRight = mix(fetches[2], fetches[3], fractionalPart.y);
-    return mix(mixLeft, mixRight, fractionalPart.x);
+    float mixLeft = mix( fetches[0], fetches[1], fractionalPart.y );
+    float mixRight = mix( fetches[2], fetches[3], fractionalPart.y );
+    return mix( mixLeft, mixRight, fractionalPart.x );
 }
 
 //PCF 3x3 Filtering
-float ext_calculateLuminosity3(int index, vec3 projectedCoords, float bias)
+float ext_calculateLuminosity3( int index, vec3 projectedCoords, float bias )
 {
     float shadow = 0.0;
     const int NUM_SAMPLES = 9;
+	float biasCorrected = projectedCoords.z - bias;
 
     //perform early bailing
-    for (int i = 0; i < 4; i++)
-        shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + EARLY_BAILING_PCF3_CORNER_COORDS[i], projectedCoords.z - bias);
+    for( int i = 0; i < 4; i++ )
+	{
+        shadow += ext_sampleShadowMapLinear( index, projectedCoords.xy + EARLY_BAILING_PCF3_CORNER_COORDS[i], biasCorrected );
+	}
 
     //if the shadow value is not almost 0 or almost (1 * earlyBailingNumSamples) we should consider full range
-    if (shadow > 0.5 && shadow < 3.5)
+    if( shadow > 0.5 && shadow < 3.5 )
     {
-        for (int i = 0; i < NUM_SAMPLES - 4; i++)
-            shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + PCF3_COORDS[i], projectedCoords.z - bias);
-        return 1.0 - (shadow / NUM_SAMPLES * SHADOW_INFLUENCE);
+        for( int i = 0; i < NUM_SAMPLES - 4; i++ )
+		{
+            shadow += ext_sampleShadowMapLinear( index, projectedCoords.xy + PCF3_COORDS[i], biasCorrected );
+		}
+        return 1.0 - ( shadow / NUM_SAMPLES * SHADOW_INFLUENCE );
     }
     /*
     otherwise a fragment is probably entirely lit by the sun or entirely occluded (for most of fragments it is)
@@ -144,43 +149,55 @@ float ext_calculateLuminosity3(int index, vec3 projectedCoords, float bias)
     to make a solution whether a fragment is completely shadowed or completely lit.
     */
     else
-        return 1.0 - (shadow / 4 * SHADOW_INFLUENCE);
+	{
+        return 1.0 - ( shadow / 4 * SHADOW_INFLUENCE );
+	}
 }
 
 //PCF 5x5 Filtering
-float ext_calculateLuminosity5(int index, vec3 projectedCoords, float bias)
+float ext_calculateLuminosity5( int index, vec3 projectedCoords, float bias )
 {
     float shadow = 0.0;
     const int NUM_SAMPLES = 25;
+	float biasCorrected = projectedCoords.z - bias;
 
     //perform early bailing
-    for (int i = 0; i < 4; i++)
-        shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + EARLY_BAILING_PCF5_CORNER_COORDS[i], projectedCoords.z - bias);
+    for( int i = 0; i < 4; i++ )
+	{
+        shadow += ext_sampleShadowMapLinear( index, projectedCoords.xy + EARLY_BAILING_PCF5_CORNER_COORDS[i], biasCorrected );
+	}
 
     //if the shadow value is not almost 0 or almost (1 * earlyBailingNumSamples) we should consider full range
-    if (shadow > 0.5 && shadow < 3.5)
+    if( shadow > 0.5 && shadow < 3.5 )
     {
-        for (int i = 0; i < NUM_SAMPLES - 4; i++)
-            shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + PCF5_COORDS[i], projectedCoords.z - bias);
-        return 1.0 - (shadow / NUM_SAMPLES * SHADOW_INFLUENCE);
+        for( int i = 0; i < NUM_SAMPLES - 4; i++ )
+		{
+            shadow += ext_sampleShadowMapLinear( index, projectedCoords.xy + PCF5_COORDS[i], biasCorrected );
+		}
+        return 1.0 - ( shadow / NUM_SAMPLES * SHADOW_INFLUENCE );
     }
     //otherwise a fragment is probably entirely lit by the sun or entirely occluded (for most of fragments it is)
     //so we do not need to perform all NUM_SAMPLES texture lookups, as only 4 lookups at the corners are enough
     //to make a solution whether a fragment is completely shadowed or completely lit.
     else
-        return 1.0 - (shadow / 4 * SHADOW_INFLUENCE);
+	{
+		return 1.0 - ( shadow / 4 * SHADOW_INFLUENCE );
+	}
 }
 
 /*
 PCF 3x3 Filtering low precision,
 use it only for fragments that far enough from current view position
 */
-float ext_calculateLuminosity3Lowp(int index, vec3 projectedCoords, float bias)
+float ext_calculateLuminosity3Lowp( int index, vec3 projectedCoords, float bias )
 {
     float shadow = 0.0;
+	float biasCorrected = projectedCoords.z - bias;
 
     //perform early bailing only
-    for (int i = 0; i < 4; i++)
-        shadow += ext_sampleShadowMapLinear(index, projectedCoords.xy + EARLY_BAILING_PCF3_CORNER_COORDS[i], projectedCoords.z - bias);
-    return 1.0 - (shadow / 4 * SHADOW_INFLUENCE);
+    for( int i = 0; i < 4; i++ )
+	{
+        shadow += ext_sampleShadowMapLinear( index, projectedCoords.xy + EARLY_BAILING_PCF3_CORNER_COORDS[i], biasCorrected );
+	}
+    return 1.0 - ( shadow / 4 * SHADOW_INFLUENCE );
 }

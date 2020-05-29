@@ -17,9 +17,9 @@ void main()
 {
     v_TexCoords = i_pos;
 	//apply some parallax to skybox position depending on the view position
-    vec3 newPos = i_pos - u_viewPosition * (PARALLAX_SCROLLING_OFFSET + u_type * PARALLAX_SCROLLING_OFFSET);
+    vec3 newPos = i_pos - u_viewPosition * ( PARALLAX_SCROLLING_OFFSET + u_type * PARALLAX_SCROLLING_OFFSET );
 
-    vec4 correctPosition = u_projectionView * vec4(newPos, 1.0);
+    vec4 correctPosition = u_projectionView * vec4( newPos, 1.0 );
     //use W as Z, so after perspective division we get Z as 1.0
     gl_Position = correctPosition.xyww;
 }

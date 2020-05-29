@@ -18,10 +18,12 @@ out vec3 o_bitangent;
 
 void main()
 {
-    for (int vertexIndex = 0; vertexIndex < gl_in.length(); vertexIndex++)
+    for( int vertexIndex = 0; vertexIndex < gl_in.length(); vertexIndex++ )
     {
-        if (v_visible[vertexIndex] != 1)
+        if( v_visible[vertexIndex] != 1 )
+		{
             break; //no need to continue as we would not get a triangle without all three vertices visible
+		}
         o_pos = v_pos[vertexIndex];
         o_texCoords = v_texCoords[vertexIndex];
         o_normal = v_normal[vertexIndex];

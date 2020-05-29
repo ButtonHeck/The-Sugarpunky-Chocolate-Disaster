@@ -34,64 +34,64 @@ const float MAX_DESATURATING_VALUE = 0.5;
 
 void main()
 {
-    vec4 sampledDiffuse = texture(sampler2D(u_textureDiffuse[v_TexIndices.x]), v_TexCoords);
-    vec4 sampledSpecular = sampledDiffuse * texture(sampler2D(u_textureSpecular[v_TexIndices.y]), v_TexCoords).r;
+    vec4 sampledDiffuse = texture( sampler2D( u_textureDiffuse[v_TexIndices.x] ), v_TexCoords );
+    vec4 sampledSpecular = sampledDiffuse * texture( sampler2D( u_textureSpecular[v_TexIndices.y] ), v_TexCoords ).r;
 
     @include shadingVariables.ifs
 
-    ambientColor = mix(ambientColorNightSelf, ambientColorDaySelf, v_SunPositionAttenuation);
+    ambientColor = mix( ambientColorNightSelf, ambientColorDaySelf, v_SunPositionAttenuation );
     //add a bit of red in the night time
-    ambientColor += nightAmbientColor * (1.0 - v_SunPositionAttenuation);
+    ambientColor += nightAmbientColor * ( 1.0 - v_SunPositionAttenuation );
 
-    if (u_shadowEnable)
+    if(u_shadowEnable)
     {
         int shadowMapIndex;
         vec3 projectedCoords;
         float luminosity;
-        if (!u_isLowPoly)
+        if( !u_isLowPoly )
         {
             //use more precise algorithms for nearby fragments
-            ext_calculateShadowMapIndexAndProjectedCoords(shadowMapIndex, projectedCoords);
-            luminosity = ext_calculateLuminosity5(shadowMapIndex, projectedCoords, u_bias);
+            ext_calculateShadowMapIndexAndProjectedCoords( shadowMapIndex, projectedCoords );
+            luminosity = ext_calculateLuminosity5( shadowMapIndex, projectedCoords, u_bias );
         }
         else
         {
             //low poly models could not be caught in the nearest layer of shadow map
-            ext_calculateShadowMapIndexAndProjectedCoordsLowp(shadowMapIndex, projectedCoords);
-            luminosity = ext_calculateLuminosity3Lowp(shadowMapIndex, projectedCoords, u_bias);
+            ext_calculateShadowMapIndexAndProjectedCoordsLowp( shadowMapIndex, projectedCoords );
+            luminosity = ext_calculateLuminosity3Lowp( shadowMapIndex, projectedCoords, u_bias );
         }
 
         diffuseColor = luminosity * sampledDiffuse.rgb * v_DiffuseComponent;
         //make sure that shadowed fragment do not have any specular reflection
-        float specularLuminosityInfluence = 1.0 - ((1.0 - luminosity) * SHADOW_INFLUENCE_RECIPROCAL);
+        float specularLuminosityInfluence = 1.0 - ( ( 1.0 - luminosity ) * SHADOW_INFLUENCE_RECIPROCAL );
         specularColor = specularLuminosityInfluence * luminosity * sampledSpecular.rgb * v_SpecularComponent;
         resultColor = ambientColor + diffuseColor + specularColor;
-        o_FragColor = vec4(resultColor, sampledDiffuse.a);
+        o_FragColor = vec4( resultColor, sampledDiffuse.a );
 
         //apply no desaturation if there is no sun lit surface, or little if diffuse component is low enough
-        float desaturatingValue = mix(0.0,
-                                      MAX_DESATURATING_VALUE,
-                                      min(luminosity * v_SunPositionAttenuation, v_DiffuseComponent + SHADOW_INFLUENCE));
-        ext_desaturate(o_FragColor, desaturatingValue);
+        float desaturatingValue = mix( 0.0,
+                                       MAX_DESATURATING_VALUE,
+                                       min( luminosity * v_SunPositionAttenuation, v_DiffuseComponent + SHADOW_INFLUENCE ) );
+        ext_desaturate( o_FragColor, desaturatingValue );
         //diminish Y negative oriented surfaces a bit (just a visual flavour)
-        o_FragColor += clamp(o_FragColor * v_NormalY * 0.5, -0.04, 0.0);
+        o_FragColor += clamp( o_FragColor * v_NormalY * 0.5, -0.04, 0.0 );
     }
     else
     {
         diffuseColor = sampledDiffuse.rgb * v_DiffuseComponent;
         specularColor = sampledSpecular.rgb * v_SpecularComponent;
         resultColor = ambientColor + diffuseColor + specularColor;
-        o_FragColor = vec4(resultColor, sampledDiffuse.a);
+        o_FragColor = vec4( resultColor, sampledDiffuse.a );
         //no desaturation here as it requires luminosity calculation
-        o_FragColor += clamp(o_FragColor * v_NormalY * 0.5, -0.04, 0.0);
+        o_FragColor += clamp( o_FragColor * v_NormalY * 0.5, -0.04, 0.0 );
     }
 	//fadeout of the most distant models
-	o_FragColor.a = clamp((u_loadDistance - length(u_viewPosition - v_FragPos) - 1) / 3, 0.0, 1.0);
+	o_FragColor.a = clamp( ( u_loadDistance - length( u_viewPosition - v_FragPos ) ) / 3, 0.0, 1.0 );
 
     //make closer to ground fragment color mix a bit with land texture (just a visual flavour)
     if(u_useLandBlending)
 	{
 		float alphaValue = v_FragPos.y * u_landBlendingAlphaValueScaler;
-        o_FragColor.a = min(o_FragColor.a, mix(0.0, 1.0, alphaValue));
+        o_FragColor.a = min( o_FragColor.a, alphaValue );
 	}
 }

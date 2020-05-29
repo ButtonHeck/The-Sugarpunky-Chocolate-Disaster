@@ -7,5 +7,5 @@ out vec4 v_FragPos;
 
 void main()
 {
-    v_FragPos = vec4(i_pos, i_animationOffset);
+    v_FragPos = vec4( i_pos, i_animationOffset );
 }

@@ -20,9 +20,9 @@ out vec3 v_Bitangent;
 void main()
 {
     gl_Position = u_projectionView * i_pos;
-    vec3 ShadingNormal = texture(u_normalMap, i_pos.xz * 0.125).xzy;
+    vec3 ShadingNormal = texture( u_normalMap, i_pos.xz * 0.125 ).xzy;
     ShadingNormal.xyz -= vec3(0.5);
-    v_Normal = normalize(i_normal + ShadingNormal);
+    v_Normal = normalize( i_normal + ShadingNormal );
     v_Tangent = normalize(i_tangent);
     v_Bitangent = normalize(i_bitangent);
 }

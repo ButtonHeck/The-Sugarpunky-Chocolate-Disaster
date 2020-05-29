@@ -17,14 +17,16 @@ out int  v_visible;
 uniform vec4 u_frustumPlanes[5];
 const float CULLING_OFFSET = 2;
 
-bool frustumCulling(vec3 position)
+bool frustumCulling( vec3 position )
 {
-    for (int planeIndex = 0; planeIndex < u_frustumPlanes.length(); planeIndex++)
+    for( int planeIndex = 0; planeIndex < u_frustumPlanes.length(); planeIndex++ )
     {
-        if (dot(u_frustumPlanes[planeIndex].xyz, position) <= -u_frustumPlanes[planeIndex].w - CULLING_OFFSET)
-          return false;
+        if( dot( u_frustumPlanes[planeIndex].xyz, position ) <= -u_frustumPlanes[planeIndex].w - CULLING_OFFSET )
+		{
+			return false;
+		}
     }
-  return true;
+	return true;
 }
 
 void main()
@@ -34,8 +36,12 @@ void main()
     v_normal = i_normal;
     v_tangent = i_tangent;
     v_bitangent = i_bitangent;
-    if (frustumCulling(i_pos))
+    if( frustumCulling(i_pos) )
+	{
         v_visible = 1;
+	}
     else
+	{
         v_visible = 0;
+	}
 }
