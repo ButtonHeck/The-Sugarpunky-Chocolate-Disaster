@@ -86,8 +86,22 @@ void main()
         vec3 shadingNormalShore = normalize( VERTEX_NORMAL_INFLUENCE_SHORE * v_Normal +
                                              ONE_MINUS_VERTEX_NORMAL_INFLUENCE_SHORE * sampledNormal );
 
-        float diffuseComponentShore = max( dot( shadingNormalShore, u_lightDir ), 0.0 );
-        float diffuseComponentLand = max( dot( shadingNormalLand, u_lightDir ), 0.0 );
+		//luminosity calculation
+        int shadowMapIndex;
+        vec3 projectedCoords;
+        float luminosity;
+        ext_calculateShadowMapIndexAndProjectedCoords( shadowMapIndex, projectedCoords );
+        if( shadowMapIndex == 0 ) //use more precise algorithm for nearby fragments
+		{
+            luminosity = ext_calculateLuminosity5( shadowMapIndex, projectedCoords, u_bias );
+		}
+        else
+		{
+            luminosity = ext_calculateLuminosity3( shadowMapIndex, projectedCoords, u_bias * ( shadowMapIndex + 1 ) );
+		}
+
+        float diffuseComponentShore = clamp( dot( shadingNormalShore, u_lightDir ), 0.0, luminosity );
+        float diffuseComponentLand = clamp( dot( shadingNormalLand, u_lightDir ), 0.0, luminosity );
         float sunPositionAttenuation = clamp( u_lightDir.y * 10, 0.0, 1.0 );
 
 		//underwater stuff
@@ -104,19 +118,6 @@ void main()
 
         if(u_shadowEnable)
         {
-            int shadowMapIndex;
-            vec3 projectedCoords;
-            float luminosity;
-            ext_calculateShadowMapIndexAndProjectedCoords( shadowMapIndex, projectedCoords );
-            if( shadowMapIndex == 0 ) //use more precise algorithm for nearby fragments
-			{
-                luminosity = ext_calculateLuminosity5( shadowMapIndex, projectedCoords, u_bias );
-			}
-            else
-			{
-                luminosity = ext_calculateLuminosity3( shadowMapIndex, projectedCoords, u_bias * ( shadowMapIndex + 1 ) );
-			}
-
             diffuseColor = mix( luminosity, 1.0, v_ShoreUnderwaterMix ) * sampledDiffuse.rgb * diffuseComponent;
             resultColor = ambientColor + diffuseColor;
             o_FragColor = vec4( resultColor, sampledDiffuse.a );

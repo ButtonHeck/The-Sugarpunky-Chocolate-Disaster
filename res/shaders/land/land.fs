@@ -39,8 +39,22 @@ void main()
     shadingNormal = normalize( VERTEX_NORMAL_INFLUENCE * NORMAL +
                                ONE_MINUS_VERTEX_NORMAL_INFLUENCE * shadingNormal );
 
+	//luminosity calculation
+    int shadowMapIndex;
+    vec3 projectedCoords;
+    float luminosity;
+    ext_calculateShadowMapIndexAndProjectedCoords( shadowMapIndex, projectedCoords );
+    if( shadowMapIndex == 0 ) //use more precise algorithm for nearby fragments
+	{
+        luminosity = ext_calculateLuminosity5( shadowMapIndex, projectedCoords, u_bias );
+	}
+    else
+	{
+        luminosity = ext_calculateLuminosity3Lowp( shadowMapIndex, projectedCoords, u_bias );
+	}
+
     float sunPositionAttenuation = clamp( u_lightDir.y * 10, 0.0, 1.0 );
-    float diffuseComponent = max( dot( shadingNormal, u_lightDir ), 0.0 ) * sunPositionAttenuation;
+    float diffuseComponent = clamp( dot( shadingNormal, u_lightDir ), 0.0, luminosity ) * sunPositionAttenuation;
 
     //no specular lighting for land
 
@@ -50,19 +64,6 @@ void main()
 
     if(u_shadowEnable)
     {
-        int shadowMapIndex;
-        vec3 projectedCoords;
-        float luminosity;
-        ext_calculateShadowMapIndexAndProjectedCoords( shadowMapIndex, projectedCoords );
-        if( shadowMapIndex == 0 ) //use more precise algorithm for nearby fragments
-		{
-            luminosity = ext_calculateLuminosity5( shadowMapIndex, projectedCoords, u_bias );
-		}
-        else
-		{
-            luminosity = ext_calculateLuminosity3Lowp( shadowMapIndex, projectedCoords, u_bias );
-		}
-
         diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
         resultColor = ambientColor + diffuseColor;
         o_FragColor = vec4( resultColor, sampledDiffuse.a );

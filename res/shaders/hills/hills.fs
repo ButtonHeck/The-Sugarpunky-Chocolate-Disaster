@@ -118,8 +118,24 @@ void main()
         vec3 shadingNormalHill = normalize( VERTEX_NORMAL_INFLUENCE_HILL * v_Normal +
                                             ONE_MINUS_VERTEX_NORMAL_INFLUENCE_HILL * ( v_TNB * sampledNormal ) );
 
-        float diffuseComponentHill = max( dot( shadingNormalHill, u_lightDir ), 0.0 );
-        float diffuseComponentLand = max( dot( shadingNormalLand, u_lightDir ), 0.0 );
+		//luminosity calculation
+		int shadowMapIndex;
+        vec3 projectedCoords;
+        float luminosity;
+        ext_calculateShadowMapIndexAndProjectedCoords( shadowMapIndex, projectedCoords );
+        //tweak bias to adjust it with light direction
+        float bias = u_bias * ( 2.0 - 1.0 * dot( u_lightDir, shadingNormalHill ) );
+        if( shadowMapIndex == 0 ) //use more precise algorithm for nearby fragments
+		{
+            luminosity = ext_calculateLuminosity5( shadowMapIndex, projectedCoords, bias );
+		}
+        else
+		{
+            luminosity = ext_calculateLuminosity3Lowp( shadowMapIndex, projectedCoords, bias );
+		}
+
+        float diffuseComponentHill = clamp( dot( shadingNormalHill, u_lightDir ), 0.0, luminosity );
+        float diffuseComponentLand = clamp( dot( shadingNormalLand, u_lightDir ), 0.0, luminosity );
         float sunPositionAttenuation = clamp( u_lightDir.y * 10, 0.0, 1.0 );
         float diffuseComponent = mix( diffuseComponentLand, diffuseComponentHill, terrainTypeMixClamped ) * sunPositionAttenuation;
 
@@ -129,22 +145,6 @@ void main()
 
         if(u_shadowEnable)
         {
-            int shadowMapIndex;
-            vec3 projectedCoords;
-            float luminosity;
-            ext_calculateShadowMapIndexAndProjectedCoords( shadowMapIndex, projectedCoords );
-            //tweak bias to adjust it with light direction
-            float bias = u_bias * ( 2.0 - 1.0 * dot( u_lightDir, shadingNormalHill ) );
-
-            if ( shadowMapIndex == 0 ) //use more precise algorithm for nearby fragments
-			{
-                luminosity = ext_calculateLuminosity5( shadowMapIndex, projectedCoords, bias );
-			}
-            else
-			{
-                luminosity = ext_calculateLuminosity3Lowp( shadowMapIndex, projectedCoords, bias );
-			}
-
             diffuseColor = luminosity * sampledDiffuse.rgb * diffuseComponent;
             //make sure that shadowed fragment do not have any specular reflection
             float specularLuminosityInfluence = 1.0 - ( ( 1.0 - luminosity ) * SHADOW_INFLUENCE_RECIPROCAL );
