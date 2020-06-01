@@ -46,7 +46,7 @@ void blur( inout vec3 fragColor, int coordOffset, float depthClip )
 {
     vec3 blurredColor = vec3(0.0);
     //we need to keep track of how many neighbour texels have impact on the final color
-    int texelFetches = 0;
+    float texelFetches = 0;
     for( int x = -coordOffset; x <= coordOffset; x++ )
     {
         for( int y = -coordOffset; y <= coordOffset; y++ )
@@ -54,11 +54,23 @@ void blur( inout vec3 fragColor, int coordOffset, float depthClip )
             vec2 neighbourTexCoords = vec2( v_TexCoords.x + x * BLUR_SIZE_HORIZONTAL, v_TexCoords.y + y * BLUR_SIZE_VERTICAL );
             float neighbourTexelDepth = texture( u_frameDepthTexture, neighbourTexCoords ).r;
             neighbourTexelDepth = linearizeDepth(neighbourTexelDepth);
-            //also make sure that the most farthest texels (as environment/skybox etc.) do not get blurred
-            if( neighbourTexelDepth > depthClip && neighbourTexelDepth < 0.999 )
+            if( neighbourTexelDepth > depthClip )
             {
-                blurredColor += texture( u_frameTexture, neighbourTexCoords ).rgb;
-                ++texelFetches;
+				if( x == 0 && y == 0 )
+				{
+					const float CENTER_WEIGHT = 64.0;
+					float slope = 1.0 / ( 1.0 - depthClip );
+					float currentCenterWeight = CENTER_WEIGHT - ( ( CENTER_WEIGHT - 1 ) 
+																  * slope 
+																  * ( min( neighbourTexelDepth * 4 - depthClip, 1.0 - depthClip ) ) );
+					blurredColor += texture( u_frameTexture, neighbourTexCoords ).rgb * currentCenterWeight;
+					texelFetches += currentCenterWeight;
+				}
+				else
+				{
+					blurredColor += texture( u_frameTexture, neighbourTexCoords ).rgb;
+					++texelFetches;
+				}
             }
         }
     }
