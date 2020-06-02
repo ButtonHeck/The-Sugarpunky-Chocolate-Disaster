@@ -58,8 +58,6 @@ HillTreesGenerator::HillTreesGenerator() noexcept
 
 	assert( lowPolyModels.size() == models.size() );
 	numSurfaceOrientedModels = 3;
-
-	cullingOffset = FRUSTUM_CULLING_DISTANCE_OFFSET;
 }
 
 /**

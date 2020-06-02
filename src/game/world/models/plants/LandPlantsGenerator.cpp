@@ -63,8 +63,6 @@ LandPlantsGenerator::LandPlantsGenerator() noexcept
 	lowPolyModels.emplace_back( "landTrees/treeCaramellLP/treeCaramellLP.obj", true );
 
 	assert( lowPolyModels.size() == models.size() );
-
-	cullingOffset = FRUSTUM_CULLING_DISTANCE_OFFSET;
 }
 
 /**

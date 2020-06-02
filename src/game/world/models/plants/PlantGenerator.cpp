@@ -32,7 +32,9 @@
  * @brief sets seed for randomizer
  */
 PlantGenerator::PlantGenerator() noexcept
-	: LOADING_DISTANCE_CHUNKS( SettingsManager::getInt( "PLANT_GENERATOR", "loading_distance_chunks" ) )
+	: cullingOffset( FRUSTUM_CULLING_DISTANCE_OFFSET )
+
+	, LOADING_DISTANCE_CHUNKS( SettingsManager::getInt( "PLANT_GENERATOR", "loading_distance_chunks" ) )
 	, LOADING_DISTANCE_UNITS( CHUNK_SIZE * LOADING_DISTANCE_CHUNKS )
 	, LOADING_DISTANCE_UNITS_SQUARE( LOADING_DISTANCE_UNITS * LOADING_DISTANCE_UNITS )
 
