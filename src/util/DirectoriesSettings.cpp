@@ -19,20 +19,12 @@
  */
 
 #include "DirectoriesSettings"
-
-#ifdef _WIN32
-#include <direct.h>
-#elif defined __linux__
-#include <unistd.h>
-#endif
+#include <filesystem>
 
 /**
 * @brief helper function to get CWD in runtime
 */
 const std::string getResourcesDirectory()
 {
-	char cwd_buffer[FILENAME_MAX];
-	getcwd( cwd_buffer, FILENAME_MAX );
-	std::string cwd( cwd_buffer );
-	return cwd.substr( 0, cwd.find_last_of( "/" ) );
+	return std::filesystem::current_path().generic_string();
 }
