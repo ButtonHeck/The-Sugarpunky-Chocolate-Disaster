@@ -438,7 +438,7 @@ void Game::setupThreads()
 		{
 			if( modelsIndirectBufferNeedUpdate )
 			{
-				scene.getPlantsFacade().prepareIndirectBufferData( camera, viewFrustum, scene.getHillsFacade().getMap() );
+				scene.getPlantsFacade().prepareIndirectBufferData( camera, viewFrustum, scene.getHillsFacade().getMap(), options[OPT_USE_OCCLUSION_CULLING] );
 				modelsIndirectBufferPrepared = true;
 				modelsIndirectBufferNeedUpdate = false;
 			}

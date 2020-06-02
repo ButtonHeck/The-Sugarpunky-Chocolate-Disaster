@@ -47,7 +47,8 @@ public:
 									    const map2D_f & hillMap );
 	void prepareIndirectBufferData( const Camera & camera,
 									const Frustum & viewFrustum,
-									const map2D_f & hillMap );
+									const map2D_f & hillMap,
+									bool useOcclusionCulling );
 	void updateIndirectBufferData();
 	void draw( const glm::vec3 & lightDir,
 			   const std::array<glm::mat4, NUM_SHADOW_LAYERS> & lightSpaceMatrices,

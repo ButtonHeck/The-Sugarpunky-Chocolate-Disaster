@@ -265,10 +265,12 @@ void PlantGenerator::deserialize( std::ifstream & input )
  * @param camera player's camera
  * @param viewFrustum frustum to perform CPU culling
  * @param hillMap map of the hills
+ * @param useOcclusionCulling flag to do occlusion culling
  */
 void PlantGenerator::prepareIndirectBufferData( const Camera & camera,
 												const Frustum & viewFrustum,
-												const map2D_f & hillMap )
+												const map2D_f & hillMap,
+												bool useOcclusionCulling )
 {
 	const glm::vec2 CAMERA_POSITION_XZ( camera.getPosition().x, camera.getPosition().z );
 
@@ -291,11 +293,14 @@ void PlantGenerator::prepareIndirectBufferData( const Camera & camera,
 		}
 	}
 
-	//additional check of hills occlusion
-	for( auto & chunkDistancePair : visibleChunks )
+	//additional check of hills occlusion if necessary
+	if( useOcclusionCulling )
 	{
-		ModelChunk & chunk = chunkDistancePair.first;
-		chunk.setOccluded( testHillsOcclusionChunk( camera, chunk, hillMap ) );
+		for( auto & chunkDistancePair : visibleChunks )
+		{
+			ModelChunk & chunk = chunkDistancePair.first;
+			chunk.setOccluded( testHillsOcclusionChunk( camera, chunk, hillMap ) );
+		}
 	}
 
 	for( unsigned int modelIndex = 0; modelIndex < models.size(); modelIndex++ )

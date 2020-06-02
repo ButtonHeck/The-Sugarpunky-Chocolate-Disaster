@@ -81,6 +81,7 @@ void KeyboardManager::processInput( float frameDelta )
 		options[OPT_LOAD_REQUEST] = true;
 	} );
 	processKey( GLFW_KEY_T, OPT_HILLS_CULLING );
+	processKey( GLFW_KEY_R, OPT_USE_OCCLUSION_CULLING );
 	processKey( GLFW_KEY_M, [&]()
 	{
 		options.toggle( OPT_USE_MULTISAMPLING );

@@ -66,14 +66,16 @@ void PlantsFacade::reinitializeModelRenderChunks( const map2D_f & landMap,
  * @param camera player's camera
  * @param viewFrustum frustum to perform CPU culling
  * @param hillMap map of the hills
+ * @param useOcclusionCulling flag to do occlusion culling
  */
 void PlantsFacade::prepareIndirectBufferData( const Camera & camera, 
 											  const Frustum & viewFrustum,
-											  const map2D_f & hillMap )
+											  const map2D_f & hillMap,
+											  bool useOcclusionCulling )
 {
-	landPlantsGenerator.prepareIndirectBufferData( camera, viewFrustum, hillMap );
-	hillTreesGenerator.prepareIndirectBufferData( camera, viewFrustum, hillMap );
-	grassGenerator.prepareIndirectBufferData( camera, viewFrustum, hillMap );
+	landPlantsGenerator.prepareIndirectBufferData( camera, viewFrustum, hillMap, useOcclusionCulling );
+	hillTreesGenerator.prepareIndirectBufferData( camera, viewFrustum, hillMap, useOcclusionCulling );
+	grassGenerator.prepareIndirectBufferData( camera, viewFrustum, hillMap, useOcclusionCulling );
 }
 
 /**

@@ -47,7 +47,8 @@ public:
 									  const float approximateHeight );
 	void prepareIndirectBufferData( const Camera & camera, 
 									const Frustum & viewFrustum,
-									const map2D_f & hillMap );
+									const map2D_f & hillMap,
+									bool useOcclusionCulling );
 	void updateIndirectBufferData();
 	std::vector<Model> & getModels( bool isLowPoly ) noexcept;
 	std::vector<ModelChunk> & getChunks() noexcept;
