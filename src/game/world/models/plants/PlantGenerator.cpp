@@ -270,9 +270,7 @@ void PlantGenerator::prepareIndirectBufferData( const Camera & camera,
 												const Frustum & viewFrustum,
 												const map2D_f & hillMap )
 {
-	const float CAMERA_ON_MAP_X = glm::clamp( camera.getPosition().x, -HALF_WORLD_WIDTH_F, HALF_WORLD_WIDTH_F );
-	const float CAMERA_ON_MAP_Z = glm::clamp( camera.getPosition().z, -HALF_WORLD_HEIGHT_F, HALF_WORLD_HEIGHT_F );
-	const glm::vec2 CAMERA_POSITION_XZ( CAMERA_ON_MAP_X, CAMERA_ON_MAP_Z );
+	const glm::vec2 CAMERA_POSITION_XZ( camera.getPosition().x, camera.getPosition().z );
 
 	//firstly precalculate only those chunks that are visible in a view frustum and close enough to a camera
 	std::vector<std::pair<ModelChunk, unsigned int>> visibleChunks;
