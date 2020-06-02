@@ -51,8 +51,9 @@ void ext_calculateShadowMapIndexAndProjectedCoords( inout int shadowMapIndex, in
 {
     vec4 fragPosLightSpace = u_lightSpaceMatrix[0] * vec4( v_FragPos, 1.0 );
     vec3 projectedCoordsTransformed = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
-    bvec3 lesserCoords = lessThan( projectedCoordsTransformed, vec3( 1.0, 1.0, 1.0 ) );
-    bvec3 greaterCoords = greaterThan( projectedCoordsTransformed, vec3( 0.0, 0.0, 0.0 ) );
+	//some offset applied to mitigate shadow artefacts on the edges of the nearest shadow volume
+    bvec3 lesserCoords = lessThan( projectedCoordsTransformed, vec3( 0.99, 0.99, 1.0 ) );
+    bvec3 greaterCoords = greaterThan( projectedCoordsTransformed, vec3( 0.01, 0.01, 0.01 ) );
     if( all(lesserCoords) && all(greaterCoords) )
     {
         shadowMapIndex = 0;
@@ -61,8 +62,9 @@ void ext_calculateShadowMapIndexAndProjectedCoords( inout int shadowMapIndex, in
     {
         fragPosLightSpace = u_lightSpaceMatrix[1] * vec4( v_FragPos, 1.0 );
         projectedCoordsTransformed = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
-        lesserCoords = lessThan( projectedCoordsTransformed, vec3( 1.0, 1.0, 1.0 ) );
-        greaterCoords = greaterThan( projectedCoordsTransformed, vec3( 0.0, 0.0, 0.0 ) );
+		//some offset applied to mitigate shadow artefacts on the edges of the middle shadow volume
+        lesserCoords = lessThan( projectedCoordsTransformed, vec3( 0.99, 0.99, 1.0 ) );
+        greaterCoords = greaterThan( projectedCoordsTransformed, vec3( 0.01, 0.01, 0.01 ) );
         if( all(lesserCoords) && all(greaterCoords) )
         {
             shadowMapIndex = 1;
@@ -85,8 +87,9 @@ void ext_calculateShadowMapIndexAndProjectedCoordsLowp( inout int shadowMapIndex
 {
     vec4 fragPosLightSpace = u_lightSpaceMatrix[1] * vec4( v_FragPos, 1.0 );
     vec3 projectedCoordsTransformed = fragPosLightSpace.xyz * 0.5 + 0.5; //transform from [-1;1] to [0;1]
-    bvec3 lesserCoords = lessThan( projectedCoordsTransformed, vec3( 1.0, 1.0, 1.0 ) );
-    bvec3 greaterCoords = greaterThan( projectedCoordsTransformed, vec3( 0.0, 0.0, 0.0 ) );
+	//some offset applied to mitigate shadow artefacts on the edges of the middle shadow volume
+    bvec3 lesserCoords = lessThan( projectedCoordsTransformed, vec3( 0.99, 0.99, 1.0 ) );
+    bvec3 greaterCoords = greaterThan( projectedCoordsTransformed, vec3( 0.01, 0.01, 0.01 ) );
     if( all(lesserCoords) && all(greaterCoords) )
     {
         shadowMapIndex = 1;
