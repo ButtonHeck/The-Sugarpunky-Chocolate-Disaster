@@ -41,27 +41,13 @@ LandGenerator::LandGenerator() noexcept
 void LandGenerator::setup( const map2D_f & shoreMap )
 {
 	initializeMap( chunkMap );
-	generateMap( shoreMap );
+	//for land generator just copy the shore map
+	map = shoreMap;
 	splitChunks( CHUNK_SIZE );
 	tiles.shrink_to_fit();
 	splitCellChunks( CHUNK_SIZE );
 	fillBufferData();
 	fillCellBufferData();
-}
-
-/**
-* @brief copies data from the shore map
-* @param shoreMap map of the shore tiles
-*/
-void LandGenerator::generateMap( const map2D_f & shoreMap )
-{
-	for( unsigned int y = 0; y <= WORLD_HEIGHT; y++ )
-	{
-		for( unsigned int x = 0; x <= WORLD_WIDTH; x++ )
-		{
-			map[y][x] = shoreMap[y][x];
-		}
-	}
 }
 
 /**

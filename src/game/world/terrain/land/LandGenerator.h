@@ -41,7 +41,6 @@ private:
 	friend class LandRenderer;
 	friend class LandFacade;
 
-	void generateMap( const map2D_f & shoreMap );
 	void splitChunks( int chunkSize );
 	void splitCellChunks( int chunkSize );
 	void fillBufferData();
