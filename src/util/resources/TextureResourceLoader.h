@@ -21,6 +21,8 @@
 #pragma once
 
 #include <unordered_map>
+#include <string>
+#include <fstream>
 
 /**
 * @brief representation of the texture resource structure

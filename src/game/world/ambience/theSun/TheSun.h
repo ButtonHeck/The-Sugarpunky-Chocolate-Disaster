@@ -22,6 +22,7 @@
 
 #include "BufferCollection"
 
+#include <fstream>
 #include <glm/gtx/rotate_vector.hpp>
 
 /**

@@ -20,6 +20,8 @@
 
 #include "BufferCollection"
 
+#include <stdexcept>
+
 /**
 * @brief creating a preset buffer objects pipeline according to given flags
 * @param flags integer union of individual flags

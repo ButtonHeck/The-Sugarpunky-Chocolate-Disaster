@@ -24,6 +24,7 @@
 #include "BufferCollection"
 
 #include <glm/vec2.hpp>
+#include <string>
 
 class Camera;
 class ScreenResolution;

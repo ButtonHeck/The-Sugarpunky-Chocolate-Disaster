@@ -21,6 +21,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <string>
 
 /**
 * @brief representation of a shader resource structure

@@ -21,6 +21,7 @@
 
 #include <unordered_map>
 #include <any>
+#include <string>
 
 typedef std::unordered_map<std::string, std::any> settingsStorage;
 typedef std::string settingsCategoryName;

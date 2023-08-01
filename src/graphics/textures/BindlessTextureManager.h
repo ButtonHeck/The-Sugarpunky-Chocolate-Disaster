@@ -23,6 +23,7 @@
 #include "TypeAliases"
 
 #include <GL/glew.h>
+#include <string>
 
 class Shader;
 

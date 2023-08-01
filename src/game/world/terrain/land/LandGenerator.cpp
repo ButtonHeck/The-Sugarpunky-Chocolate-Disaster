@@ -21,6 +21,7 @@
 #include "LandGenerator"
 
 #include <chrono>
+#include <memory>
 
 /**
 * @brief plain ctor. Explicitly initializes cells buffer collection for indirect buffer usage, initializes randomizer seed

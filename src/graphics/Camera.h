@@ -23,6 +23,7 @@
 #include "TypeAliases"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <fstream>
 
 enum CAMERA_MOVE_DIRECTION
 {

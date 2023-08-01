@@ -22,6 +22,8 @@
 
 #include "TypeAliases"
 
+#include <string>
+
 class Camera;
 class Options;
 class ScreenResolution;

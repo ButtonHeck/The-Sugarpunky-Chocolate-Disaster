@@ -21,6 +21,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <fstream>
 
 /**
 * @brief model specific texture data token 
